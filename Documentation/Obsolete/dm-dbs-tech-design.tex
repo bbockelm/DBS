@@ -668,85 +668,86 @@ Each principal entity in the schema should probably have a support table.
 \subsection{Creating an Analysis Dataset from another Analysis Dataset}
 \label{sec:createEvColl}
 
-The input to a user Application is the Analysis Dataset, and Analysis Datasets can be 
-created as the result of processing other Analysis Datasets.  We examine a few cases 
-here to illustrate how these processing results can be recorded using the DBS schema.
-The relation between Analysis Dataset and Event Collection 
-(figure \ref{fig:highlevel}) can have an attribute that tells the application how to select 
-out the data associated with the Event Collection given the whole Analysis Dataset as
-input.  
+The input to a user Application is either an Analysis Dataset or an Event Collection.
+We examine a few cases here to illustrate how these processing results can be 
+recorded using the DBS schema.  Practically, the 
+relation between Analysis Dataset and Event Collection 
+(figure \ref{fig:highlevel}) is that the latter has an additional attribute that tells 
+the application how to select out specific corresponding data from the former.  
+In general we think of Event Collections being processed ino other Event Collections. 
+But the results hold for Analysis Datasets too if we wrap the Input and Output Event Collections
+in an Analysis Dataset where needed.
 
-\subsubsection{Processing a Single Unit of Data}
+\subsubsection{Processing a Single Event Collection}
 
-A trivial case is where the Analysis Dataset consists of a single Event Collection. 
-This could be, for example, a single run.  The job processes the Analysis Dataset 
-and produces an output Analysis Dataset.  The output Analysis Dataset is associated 
+A trivial case is where the application input consists of a single Event Collection. 
+This could be, for example, a single run.  The job processes the Event Collection 
+and produces an output Event Collection, which is associated 
 with newly produced files.  The new files are stored back into the DBS as a child 
-Event Collection of the input,  and the output Analysis Dataset has this Event Collection 
-as its sole member. 
+Event Collection of the input.  
 
-\subsubsection{Processing Multiple Units of Data}
+\subsubsection{Processing Multiple Units of Data in Parallel}
 
-In this case, the event collection consists of multiple Event Collections. This 
-could be for example multiple runs.  If each component Event Collection can be 
-processed by a single job\footnote{The actual condition here is that the processing 
-of an input Event Collection produces a distinct set of files, up to a few common ``metadata'' 
-files.}, then as in the above case of a single Run, the results
-can be stored back into the system as child representations and then grouped
+In this case, application input consists of an Analysis Dataset
+comprising multiple Event Collections. This 
+could be multiple runs for example.  If each component Event Collection can be 
+processed by a single job\footnote{The processing is one to one input units to output 
+units.  The technical condition here is that the processing 
+of an input Event Collection produces a distinct set of files, up to a few common ``metadata'' files.}, then as in the above case of a single Event Collection, the results
+can be piecewise stored back into the system as child Event Collections and then grouped
 together to form an output Analysis Dataset.  
 
-\subsubsection{Filtering: Multiple Units of Data Input and Single Unit Output}
+\subsubsection{Filtering or Skimming: Multiple Units of Input Data and Single Unit Output}
 
-In this case, we assume that the output Analysis Dataset, though produced with
-many inputs, is become whole in that it is not useful (nor in some cases 
-even possible) to subdivide the output Analysis Dataset in terms of the 
-index used to define the input Event Collections.  For example, if the input is 
-a list of runs and the  output is a single colletcion consisting of a few 
-events from each run selected according  to some physics criterion. We 
+In this case, the application creates a single output Event Collection that is whole 
+from many inputs. It is not practicable to subdivide the output 
+Analysis Dataset in terms of whatever parameter
+was used to index the input Event Collections.  For example, the input may be 
+a list of runs and the output may be a single colletcion consisting of a few 
+events from each run selected according to some physics criterion.  We 
 assume that the output is a set of files for which there is no map
 showing which files contain which events.  Then there are two choices.
 \begin{enumerate}
 \item Store the output back into the system as a single Event Collection with 
-the output Analysis Dataset containing only that Event Collection.  Either it 
-is stored as a new Primary Event Collection and some limited parentage information 
-is kept in the form of a parent Analysis Dataset attribute,  or it 
-could also be allowed that a child can have many parents and then the strict 
-tree structure is destroyed.  (Kudzu vine structure?) 
-\item For each input Event Collection, create a child Event Collection that points 
-to the same entire set of files comprising the output Analysis Dataset.  This
-would preserve the tree structure and all of the relationships and might 
-result in faster queries.  
+the output Analysis Dataset containing only that Event Collection as a new 
+Primary Event Collection.   Some limited parentage information 
+is kept in the form of a parent Analysis Dataset attribute
+\item For each input Event Collection $i$, store the relation $(i,O)$ where 
+$O$ is the output Event Collection.  In other words, the same set of 
+files appears as the the output result of processing for each $i$.  This
+would preserve all of the relationships and would 
+result in more efficient queries.  
 \end{enumerate}
-More thought is needed as to the best way to do this.  More than one way could be 
-supported.  
 
-\subsubsection{Mixing: Multiple Units of Data Input and Multiple Mixed Outputs}
+\subsubsection{Reclustering: Multiple Units of Input Data and Multiple Mixed Outputs}
 
-In this case, we assume mixing is going on.  For exampe, the input could be 
+In this case, the application is accepting many input Event Collections
+and producing split outputs that have no obvious correspondence to the 
+inputs.  For exampe, the input could be 
 an Analysis Dataset comprising Event Collections according to $N$ runs and the 
-output could be an Analysis Dataset according to $M$ luminosity bins.  This 
-can be achieved as a duplication of the above case on filtering by 
-considering each output bin as corresponding to its own filter.  
+output could be an Analysis Dataset comprising outputs 
+according to $M$ luminosity bins.  This is also called reclustering.
 \begin{enumerate}
-\item Store the reclustered events back into the system as multiple 
-Event Collections, each one corresponding to a luminosity bin in the example. 
-The output EventCollection is the collection of all such Event Collections.
-As above, these could be new Primary Event Collections or multi-parented.
-\item For each output Event Collection, and then for each input Event Collection
-contributing to that output Event Collection, create a child Event Collection 
-that points to the same entire set of files comprising the output Event Collection.
-The entire collection then becomes the output Analysis Dataset.  
+\item Store each reclustered Event Collection back into the system as a
+primary Event Collection. 
+\item For each input Event Collection $i$ and for each output Event Collection $j$,
+store the relation $(i,j)$.  If it is at all known which specific inputs correspond to 
+on output Event Collection,  the size of the set of relations can be cut down. 
+In other words, the same set of 
+files appears as the the output result of processing ranging over the input 
+index $i$ holding the output index $j$ constant.  This 
+preserves  all of the relationships and would 
+result in more efficient queries.
 \end{enumerate}
-More thought is needed as to the best way to do this.  More than one way could be 
-supported.  For example, the first option is probably more efficient in terms of 
-space, but less efficient in terms of queries on the parentage information.
+
+
 
 \section{Architecture}
 
 
 At the top of the application stack is the application database server layer which contains
-the application logic.  (NB- This layer abstracts the clients from the schema and is not 
-to be confused with the database server proper such as Oracle which serves SQL requests.) 
+the application logic.  This layer abstracts the clients from the schema and is not 
+to be confused with the database server proper such as Oracle which serves SQL requests.
 The database server layer manages the API that user applications will see.  It needs to 
 support basic use cases of queries against the underlying database, such as discovering 
 datasets from metadata or asking for the number of events in a given run range.  It 
