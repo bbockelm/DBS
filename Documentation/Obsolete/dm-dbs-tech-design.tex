@@ -158,95 +158,98 @@ is mapped $N$ to $N$ with Logical Files. }
 
 \section{Implementation Concepts}
 
+The Dataset Bookkeeping System contains the following implementation concepts 
+that will be hidden from the users.  
+
 \begin{itemize}
-\item Files.
-\item Sites.
-\item Blocks.
+\item Files.  The DBS contains names of logical files.  It is not yet
+determined how much file level metadata will be tracked by the DBS. 
+\item Sites.  The DBS contains names of participating CMS sites that 
+will host CMS data.  
+\item Blocks.  The DBS contains Blocks as special aggregations of Event 
+Collections. Blocks are aggregations with respect to underlying 
+infrastructure parameters optimized for efficient storage and transfer.  
 \end{itemize}
 
-In contrast to the above abstractions, objects like files and sites are 
-of interest to the system underlying the dataset bookkeeping system and are considered 
-implementation details.  While we must keep track of such objects as well, 
-files and filenames should not contain physics metadata.  It will therefore
-be of interest later on how the abstractions above are related to actual OS 
-supported objects like files.  It was furthermore decided not to make special 
-accounting for special files, like the ``META'' files, that currently exist in the 
-CMS event data model (EDM) but are not intrinsic.  It is assumed that the EDM group will 
-make changes in the way data is written in CMS so that the number of special files tends 
-to zero in the long run.  
+The DBS will treat special files, such as ``META'' files, in 
+exactly the same way as all other logical files.  Special files that 
+appear in more than one Event Collection will appear in more than one
+relational row.  However, the EDM group will 
+make changes in the way data is written in CMS so that the number of 
+such special files tends to zero in the long run.  
 
 
 \section{Scenarios, Use Cases, and Example Queries}
 
-In this Section, we explore the most frequent use cases: data import
+In this Section, we explore data import
 ({\em putting} data into the system), queries ({\em seeing} what is there),
 and workflow for read access ({\em getting} data out of the system).
 
 \subsection{Data import}
 
-Even though data will probably be produced one file at a time, its import  
-into the data management system is probably best done in terms of the 
-more abstract Representation entity. We imagine the 
-following scenario to put  a Representation 
-into the system in such a way that supports streaming.
+Data will be imported into the system in terms of the 
+Event Collection entity.  
+
+%Even though data will be produced one file at a time, its import  
+%into the data management system is probably best done in terms of the 
+%more abstract Event Collection entity. We imagine the 
+%following scenario to put  a Event Collection 
+%into the system in such a way that supports streaming.
 
 \begin{itemize}
-\item An agent is in possession of files associated with a Representation
+\item An agent is in possession of a file or files associated with an Event Collection
 containing real data.
-\item The agent utilizes an API method addToDataset(*dataInfo).  The dataInfo structure 
+\item The agent utilizes an API method addToDataset(*evCollInfo).  The evCollInfo structure 
 will contain information like 
 \begin{itemize}
 \item Logical Filenames associated with the import
-\item Attributes associated with the production of the files, such as 
-the latest processing history and input description if not null. 
+\item Attributes associated with the production of the Event Collection, 
+including the latest processing step and the input Event Collection(s). 
 \end{itemize}
-\item The method searches for the best Event Collection to add the Representation to.  
-Special Event Collections called ``blocks'' are envisioned for this purpose.  
-\footnote{The blocks will have attributes of interest to a data transfer and storage 
+\item The method searches for the best block to which to add the Event Collection.  
+The ``block'' is a special Analysis Dataset envisioned for this purpose.  
+\footnote{Blocks will have attributes of interest to a data transfer and storage 
 system, like maximum size and location information. These are of system interest only.}
 It should reconcile the processing history with existing processing paths and 
-open a new Dataset Representation if necessary.
+open a new Processed Dataset if necessary.
 \begin{itemize}
-\item If there is an open block, the run is added to the open block.
-\item If there is no open block, a new open block is created and the run added to that one.
-\item If the new block size is greater than the max block size, the block is closed.  
+\item If there is an open block, the Event Collection is added to the open block.
+\item If there is no open block, a new open block is created and the Event Collection is added to that one.
+\item If the new block size is greater than the maximum block size, then the block is closed.  
 \end{itemize}
 \end{itemize}
 
-In order for this to work without a potentially complex synchronization system, 
-open blocks should not be transportable. Streaming is of obvious concern here, 
-and there is a tension between wanting to keep the blocksize small enough so that 
+Open blocks should not be transportable since that implies a complex wide area synchronization 
+system. Streaming is of obvious concern here, and there is a tension between wanting to keep 
+the blocksize small enough so that 
 new data can be transferred to interested sites quickly and large enough to satisfy 
 the needs of data management.
-
 Alternatively, data can be streamed file by file; but in that case we need to synchronize
 open blocks between sites sharing the particular data.
 
 \subsection{User Queries}
 
 Below we explore user queries corresponding to the various access modes,
-and subsequently attempt to generalize. Among the goals of this discussion
+and subsequently attempt to generalize. Among the goals of this section
 is clarification of the role of a ``run''.
 
 \subsubsection{Use case 1: Detector Expert}
 
-  The first use case for selecting on run(s) is detector studies, calibrations
-and data quality. Note that we are not talking about how the time-varying 
+  The first use case for selecting on run is doing detector studies, calibrations
+and data quality. This use case does not address the time-varying 
 calibrations/conditions are stored and accessed by applications from the 
 conditions database itself, but merely how someone doing such studies would 
-find the event data to do such studies (i.e. the task of the dataset 
-bookkeeping). The common paradigm in HEP is that this is done in terms
-of runs, so most likely the person could be (very generically) doing things 
-like:
+find the event data to do such studies. The common paradigm in HEP to access 
+data through runs.
 \begin{itemize}
-\item coming in the morning, reading the logbook and seeing that there was
-     some problem with their subsystem overnight in run NNN (e.g. a crate 
-     tripped off or was in some strange state, oddities seen in some 
-     monitoring histogram, etc.) and then wanting to look at some raw or 
-     rec data with some specialized application to learn more about the
-     run quality or problems (often to classify it in a data-quality sense).
-\item the detector expert (at some later date) may be trying to determine
-     some calibration or corrections. Also in this case it will be natural
+\item An expert coming in the morning, reading the logbook and seeing that there was
+     some problem with their subsystem overnight in run NNN; for example, if a crate 
+     tripped off or was in some strange state, or oddities were seen in some 
+     monitoring histogram, etc. Then the expert wants to look at some raw or 
+     reconstructed data with some specialized application to learn more about the
+     run quality or problems, often to classify it in a data-quality sense.
+\item The detector expert at some later date may try to determine
+     some calibration constants or corrections. Also in this case it will be natural
      for the expert to ask for different types of data, most typically with
      run ranges. Often what they do may include one component of actually 
      trying to break up the data into run ranges based on the problems and
@@ -255,29 +258,28 @@ like:
 \end{itemize}
 
 "Run" here represents a natural quantum for thinking about the problem and
-the DBS will be asked for data in these terms. Two implications:
+the DBS will be asked for data in these terms. Two implications are:
 \begin{itemize}
-\item The DBS will be asked for data (raw, rec and perhaps aod) from particular
+\item The DBS will be asked for data at any tier from particular
     primary datasets with "run" as a selection. This has to be supported and
     some means of configuring jobs at this granularity for at least these
     categories of data must be provided.
-
-\item The "data quality" attributes (good, bad, good for X only, ...) are likely 
+\item "Data quality" attributes are likely 
     to be specified with a granularity of a single run. These flags may be
-    specified for all representations of a particular run's data or just
+    specified for all data tiers of a particular run's data or just
     for particular ones. (As part of the discussions of the details of how
     "run" is defined, DM should bring this point up explicitly. As it is a 
     relatively common model in HEP, we can probably assume it for the moment.
     See below for further details.)
 \end{itemize}
 
-In terms of the schema presented above, run numbers will have to have been 
-stored with the Representations.  Possibly, we may have one Representation
+In terms of the entities presented above, run numbers will have to have been 
+stored with the Event Collections.  Possibly, we may have one Event Collection
 per run number within a Primary Dataset.  The use case is satisfied by 
 providing query attributes that can identify a Primary Dataset and by 
 providing a processing path (null for raw data).  Then, all 
-Representations matching the run number can be retrieved and files 
-identified corresponding to those Representations.\footnote{In fact, runs 
+Event Collections matching the run number can be retrieved and files 
+identified corresponding to those Event Collections.\footnote{In fact, runs 
 do not have to be used at all.  The only impportant thing is that the 
 basic units of data be distinct and enumerable.  Run number is just a convenient 
 illustrative device.}
@@ -289,7 +291,7 @@ are only read by applications and not the problem of DMS, this should pose no
 problems. (Similarly data quality decisions with a finer granularity than 
 run, if needed, can be pushed into the conditions database and require 
 the use of an application to access them.)  Run status flags can also be used 
-if they are imported along with the run numbers when importing Representations.
+if they are imported along with the run numbers when importing Event Collections.
 
 \subsubsection{Use case 2: Production}
 \label{sec:UCprod}
@@ -336,20 +338,20 @@ like (re-)reconstruction and aod production.
 \end{itemize}
 
 This use case is supported in much the same way as the last one.  An input 
-Primary Dataset and input processing path is given, and then all Representations
+Primary Dataset and input processing path is given, and then all Event Collections
 matching the run range can be retrieved.  As an additional possibility, an 
-Event Collection may be defined as a collection of such Representations and then will 
+Analysis Dataset may be defined as a collection of such Event Collections and then will 
 represent a collection of the corresponding runs.  In terms of tracking the processing
 taking place within the Primary Dataset, one interesting effect occurs when 
 processing such an event collection.  Even if the framework does not track processing
-of individual Representations within an Event Collection, the Representations 
+of individual Event Collections within an Analysis Dataset, the Event Collections 
 should be loaded into the DBS anyway.  This preserves the structure of tracking 
-the processing paths through Representations, and the set of 
-files corresponding to the whole processed Event Collection can be assigned to 
-each Representation in the derived Event Collection.  The additional cost is that 
-the Representation table must be accessed to determine the processing path between 
-two Event Collections.  With indexing and the constraint that Event Collections be 
-defined only over Representations at the same processing path, this is only a 
+the processing paths through Event Collections, and the set of 
+files corresponding to the whole processed Analysis Dataset can be assigned to 
+each Event Collection in the derived Analysis Dataset.  The additional cost is that 
+the Event Collection table must be accessed to determine the processing path between 
+two Analysis Datasets.  With indexing and the constraint that Analysis Datasets be 
+defined only over Event Collections at the same processing path, this is only a 
 constant time inefficiency.
 
 
@@ -388,15 +390,15 @@ be done by opening the data in some application which does it or by using
 some application which uses the conditions database, for example, to do the
 selection.)
 
-This use case is supported by the Event Collections because the Event Collections 
+This use case is supported by the Analysis Datasets because the Analysis Datasets 
 can be defined over multiple runs and processed through to other event collections
-as described in the previous section.  Even if individual runs or Representations 
+as described in the previous section.  Even if individual runs or Event Collections 
 are not tracked by the user, it is important for the DBS to do so.  In the case 
 where multiple jobs are doing the processing, the DBS can be used to keep track of
 which pieces have been processed successfully and which have not.  In the case
-where there is only one job processing the Event Collection, then it is still 
+where there is only one job processing the Analysis Dataset, then it is still 
 useful to be able to query and find out which components 
-(runs or Representations, it doesn't matter) were processed to 
+(runs or Event Collections, it doesn't matter) were processed to 
 arrive at the desired result.
 
 %  In the discussion above I've ignored luminosity for the moment. I think the 
@@ -404,7 +406,7 @@ arrive at the desired result.
 %how this is dealt with at hadron machines. More on that later.  
 
 %However, even if the data is sorted into luminosity bins, the luminosity bin
-%can serve as the basis for the Representation.
+%can serve as the basis for the Event Collection.
 
 %  I've also completely ignored runs for MC as they are significantly more
 %artificial than those for real data since there are far fewer reasons to 
@@ -421,34 +423,34 @@ Each of the following queries are listed with a short plan for resolving the que
 
 \begin{itemize}
 \item Find all files associated with a Primary Dataset.  Compound join on Primary
-Dataset, Dataset Representation, Representation, and File.
+Dataset, Processed Dataset, Event Collection, and File.
   \begin{itemize}
-  \item Find all files associated with a run.  Simple join on Representation, File and selection for run number.
-  \item Find all files associated with a block.  Compound join on Event Collection, Representation, 
+  \item Find all files associated with a run.  Simple join on Event Collection, File and selection for run number.
+  \item Find all files associated with a block.  Compound join on Analysis Dataset, Event Collection, 
 and File.
   \end{itemize}
-\item Find all Event Collections associated with a Dataset Representation.  Filtered selection on 
-simple join on Event Collection, Representation. (This query caused us to consider that runs 
+\item Find all Analysis Datasets associated with a Processed Dataset.  Filtered selection on 
+simple join on Analysis Dataset, Event Collection. (This query caused us to consider that runs 
 must belong to distinct datasets, or equivalently that the unique attributes of 
 run must include at least both run number and dataset id.  If it is not so, then 
 these types of queries become much more complex.)
   \begin{itemize}
   \item Find all assignments associated with a Monte-Carlo Primary Dataset. Filtered selection on join.
-  \item Find all blocks and block locations associated with a Dataset Representation. Filtered selection 
+  \item Find all blocks and block locations associated with a Processed Dataset. Filtered selection 
   on simple join.
   \end{itemize}
 \item Find all data. Unfiltered selection on Primary Dataset.
   \begin{itemize}
   \item Find all data matching a physics criterion.  Filtered selection on dataset or 
   on simple join on dataset, run.
-  \item How many are runs in a Dataset Representation.  
-Cardinality of simple join on dataset, Representation and selection on run number.
+  \item How many are runs in a Processed Dataset.  
+Cardinality of simple join on dataset, Event Collection and selection on run number.
   \item How many events in a dataset.  Selection on dataset.  (This query caused us to 
   consider keeping track of bulk properties such as total number of events that could be 
   updated every time a run is imported.  This could work for luminosity and cross section too.)
   \item Find digitized data corresponding to specific generated data. 
-  Filtered selection on Dataset Representation or compound filtered selection of the join of 
-Event Collection and Representation.  
+  Filtered selection on Processed Dataset or compound filtered selection of the join of 
+Analysis Dataset and Event Collection.  
   \end{itemize}
 \end{itemize}
 
@@ -475,10 +477,10 @@ interface between data management and workflow management.
 
 \begin{itemize}
 \item A physicist wants to create jobs based on data identified by queries against 
-the DBS going through the application layer.  A handle to an Event Collection or number N of
-Representations is returned.  The details of what is returned should be worked out.
+the DBS going through the application layer.  A handle to an Analysis Dataset or number N of
+Event Collections is returned.  The details of what is returned should be worked out.
 \item Physicist creates $M <= N$ jobs (i.e.- maybe some jobs process 
-more than one Representation.)  Job 
+more than one Event Collection.)  Job 
 creation tool creates jobs in a site independent fashion, knowing only about site 
 independent dataset parameters and run numbers etc and instructions for connecting to 
 the data (eg- a POOL catalog connection string.)
@@ -517,7 +519,7 @@ trigger bit information for real data.  The Primary Dataset contains all such
 data across all possible processing steps.  
 
 The next layer of abstraction
-is the Dataset Representation.  The Dataset Representation is obtained by 
+is the Processed Dataset.  The Processed Dataset is obtained by 
 selecting out of the Primary Dataset a particular subset of the data that has been 
 processed by a given sequence of application steps.  The sequence is stored 
 in a supporting table that stores individual ``processing paths''.  For example,
@@ -530,36 +532,36 @@ the processing\footnote{This is a fine grained example of what is sometimes call
 of application was run.  This has been generalized to contain much more information 
 about the processing path.}. 
 
-The next layer of abstraction is the Representation.  The Representation is a 
+The next layer of abstraction is the Event Collection.  The Event Collection is a 
 well defined result set of data obtained by processing a well defined chunk
 of data\footnote{A well defined ``chunk'' of data is a set of data that is 
 characterized only by the list of event IDs contained therein.} through a 
 number of well defined steps.  (see figure \ref{fig:forest}).
 
-The figure shows that a Representation can refer to other representations.  There
+The figure shows that a Event Collection can refer to other representations.  There
 are two possibilities which this supports.
 \begin{itemize}
-\item The Representation contains a reference to its parent. 
-\item The Representation may contain references to more than one 
+\item The Event Collection contains a reference to its parent. 
+\item The Event Collection may contain references to more than one 
 representation in the same processing tree.  
 \end{itemize}
 The former case can be implemented directly without loops by including the 
-full processing path in the unique key of the Representation as well as the 
-ID of the root node, or Primary Representation.  The second case may be
+full processing path in the unique key of the Event Collection as well as the 
+ID of the root node, or Primary Event Collection.  The second case may be
 supported by a simple mapping table, but the use case is not clear.  For example, 
-if the user wants to create an Event Collection consisting of both Hits and 
+if the user wants to create an Analysis Dataset consisting of both Hits and 
 Digis data in CMS, then the latter construct would be useful.
 
-The Event Collection is a set of Representations that share a processing path.  
-Therefore the Event Collection is a way of aggregating a Dataset Representation 
-horizontally (i.e.- by event ID) and the Dataset Representation is a way of 
+The Analysis Dataset is a set of Event Collections that share a processing path.  
+Therefore the Analysis Dataset is a way of aggregating a Processed Dataset 
+horizontally (i.e.- by event ID) and the Processed Dataset is a way of 
 aggregating a Primary Dataset vertically (i.e.- by data content or schema). 
 Although the CMS framework may make no distinction there, it is wise in a 
 relational database to make such a distinction.  The former is just normal aggregation
 of objects into sets, and the latter is specifically needed to model the implicit
 OO relationships (e.g.- inheritance) that are possible in the OO framework
 but not in an RDBMS. This entity also refers to itself, and this is simply to support
-the use case of one user adding to the Event Collection of another user.  Again, this
+the use case of one user adding to the Analysis Dataset of another user.  Again, this
 may be implemented by a simple mapping table.
 
 The following constraints should be applied to the DBS.  These may be included 
@@ -567,36 +569,36 @@ later into the schema itself or implemented at a higher software level.
 \begin{itemize}
 \item[R1]  A Primary Dataset can span data processed by many 
 different applications and versions of applications.  
-\item[R2] The data contained in a given Representation must 
-belong to exactly one Dataset Representation.\footnote{In the appendix, 
+\item[R2] The data contained in a given Event Collection must 
+belong to exactly one Processed Dataset.\footnote{In the appendix, 
 and in the schema diagrams, but not yet in the verbage, a Compound 
-Representation is also possible which combines more than one path.
-However, the Representation entity itself should still follow 
-this rule if the Compound Representation is properly contained in the 
-self-relationship defined on Representation.}  
-\item[R3] An Event Collection should not mix Representations from different 
+Event Collection is also possible which combines more than one path.
+However, the Event Collection entity itself should still follow 
+this rule if the Compound Event Collection is properly contained in the 
+self-relationship defined on Event Collection.}  
+\item[R3] An Analysis Dataset should not mix Event Collections from different 
 Primary Datasets.
 \end{itemize}
 
-The structure of the schema shows that a Dataset Representation has the same 
-structural relationship to Representation as does Event Collection.  However,
-the Dataset Representation has a special relationship to Representation in through 
-the constraint that a Representation belong to a specific Primary Dataset and a 
+The structure of the schema shows that a Processed Dataset has the same 
+structural relationship to Event Collection as does Analysis Dataset.  However,
+the Processed Dataset has a special relationship to Event Collection in through 
+the constraint that a Event Collection belong to a specific Primary Dataset and a 
 specific processing path.  In other words, some of the primary key attributes 
-of Representation flow through the Dataset Representation.  This does not occur 
-with Event Collection in general.
+of Event Collection flow through the Processed Dataset.  This does not occur 
+with Analysis Dataset in general.
 
-The processing path is a primary attribute of Representation, but it goes through 
-Dataset Representation.  This is because it should be possible to characterize and
-create a Dataset Representation before adding a Representation to it..  
+The processing path is a primary attribute of Event Collection, but it goes through 
+Processed Dataset.  This is because it should be possible to characterize and
+create a Processed Dataset before adding a Event Collection to it..  
 
 Finally, files are shown at the top of figure \ref{fig:highlevel}. Files are in a many to 
 many relationship with representations.  Special files like the CARF ``META'' files
-can belong to more than one Representation within a Primary Dataset at the moment.
-That the META files properly belong to a Dataset Representation is considered to 
+can belong to more than one Event Collection within a Primary Dataset at the moment.
+That the META files properly belong to a Processed Dataset is considered to 
 be a contemporary  implementation detail of the EDM, and we propose not to keep track 
-of them with a special association to Dataset Representation.  Instead, we can have 
-multiple associations to from several Representations to common META files.  The 
+of them with a special association to Processed Dataset.  Instead, we can have 
+multiple associations to from several Event Collections to common META files.  The 
 advantage of this 
 device is that it allows us to keep track of the META files when they are really needed, 
 (i.e.- when preparing data for analysis), and they can still be obtained with a 
@@ -622,17 +624,17 @@ recursive in order to support flexibility in their definition.
 %together into manageable pieces for transfer and storage.  This leads to the 
 %enhancements found in Figure \ref{fig:detailed}.
 
-The fundamental unit of import in the system is the Representation.  A Representation 
+The fundamental unit of import in the system is the Event Collection.  A Event Collection 
 can correspond to a run or any other chunk of data that is considered fundamental,  
-The Representation will be mapped to a set of files that may overlap with files in 
-other Representations.  (It is not a requirement that they be non-overlapping.) A
-special kind of Representation is the Primary Representation.  The Primary Representation
+The Event Collection will be mapped to a set of files that may overlap with files in 
+other Event Collections.  (It is not a requirement that they be non-overlapping.) A
+special kind of Event Collection is the Primary Event Collection.  The Primary Event Collection
 corresponds to the root node in a tree of figure \ref{fig:forest}.  This entity
 will contain attributes associated with the whole tree, possibly these are keys into 
 an external Monte Carlo request database or run conditions database.
 
-Event Collections can support different kinds of constraints.  The proposed 
-block would be a partition on Dataset Representations, and would have a 
+Analysis Datasets can support different kinds of constraints.  The proposed 
+block would be a partition on Processed Datasets, and would have a 
 relationship to a site entity.  
 \begin{figure}[hbtp]
   \begin{center}
@@ -641,24 +643,24 @@ relationship to a site entity.
     \label{fig:detailed}
   \end{center}
 \end{figure}
-Two types of Event Collection are recognized here: blocks and user collections.  The 
+Two types of Analysis Dataset are recognized here: blocks and user collections.  The 
 notion of block has been put forward in order to better manage physical placement of data.  
 Blocks are therefore distinguished by having a one to many relationship to a supporting site 
 entity.  It is furthermore proposed that blocks satisfy the constraint that they be 
-partitions on the Dataset Representation in the sense that no event IDs
+partitions on the Processed Dataset in the sense that no event IDs
 can exist in two different blocks of the same type (as determined by the paths of the 
-corresponding Event Collections.) This greatly simplifies the task of deciding which 
-blocks to transfer given a set of interesting Event Collections.
+corresponding Analysis Datasets.) This greatly simplifies the task of deciding which 
+blocks to transfer given a set of interesting Analysis Datasets.
 Blocks are special in that they represent a new implementation detail 
 that must be hidden from the physicist.  However, block constraints and behavior can be 
-hidden in an application layer.  Finally, the recursion in Event Collection 
+hidden in an application layer.  Finally, the recursion in Analysis Dataset 
 addresses oddities may arise 
 because the scale introduced by blocksize and number of blocks per dataset may change.  
 If one introduces blocks in order to deal with data on a given scale, one someday may need 
 to introduce "super-blocks" if that scale changes, and so on. 
 
-User collections are a type of Event Collection that supports the idea that users can specify 
-collections of interest.  User collections are just a list of Event Collections
+User collections are a type of Analysis Dataset that supports the idea that users can specify 
+collections of interest.  User collections are just a list of Analysis Datasets
 and can span multiple blocks.  
 In order to be able to include references to pre-existing user collections, recursion is 
 envisaged.  We can use the user collection to support a snapshot of the data, for example 
@@ -677,14 +679,14 @@ thought that this information can be provided by external tools, and checked in 
 external validation tool is desired.  Only logical filenames will be tracked. One 
 class of attributes we have not explored is access control.  It should be revisited later.
 
-The Representation entity should contain brief and essential attributes such as run number, 
+The Event Collection entity should contain brief and essential attributes such as run number, 
 number of events in the collection, cardinal times like creation and access times, 
 and a run status flag.  However, run conditions and calibration should probably 
 be kept in  an external conditions or calibration database.  Pointers can be kept 
-into those databases and vice-versa.  Part of the primary key of the Representation
-should be the Primary Dataset that the Representation 
+into those databases and vice-versa.  Part of the primary key of the Event Collection
+should be the Primary Dataset that the Event Collection 
 belongs to as well as the complete processing path.  This should be a unique key of 
-Dataset Representation.  
+Processed Dataset.  
 
 Blocks should contain a unique block id that identifies its partition, and should 
 have a block size and other low level metadata related to implementation.  Blocks 
@@ -695,9 +697,9 @@ associated with having blocks, it will be a requirement that open blocks be
 restricted to a single site.  This has obvious implications for streaming, and 
 can be dropped or revisited. 
 
-The Dataset Representation table should contain Primary Dataset and processing path 
-attributes to identify the Dataset Representation.  
-Like blocks, it should also contain a flag indicating whether or not the Dataset Representation 
+The Processed Dataset table should contain Primary Dataset and processing path 
+attributes to identify the Processed Dataset.  
+Like blocks, it should also contain a flag indicating whether or not the Processed Dataset 
 is open for writing.  A potential complication is the attribute 
 difference between Monte-Carlo and real data 
 datasets.  It is felt however that the differences in attributes can be expressed in support 
@@ -706,7 +708,7 @@ addition, quantities that need to be searchable should be included directly here
 blob data (non-queryable binary large objects such as compressed logs) can also be kept for provenance 
 purposes.  
 
-Event Collections can contain further attributes.  User collections should for 
+Analysis Datasets can contain further attributes.  User collections should for 
 example contain annotations indicating why they were created.  Blocks contain 
 pointers to sites.  Collections corresponding to assignment IDs could contain pointers 
 into the RefDB plus some metadata for querying.
@@ -719,57 +721,57 @@ simulation parameters for Monte-Carlo to run status information can be kept in s
 tables.   The support tables for the proposed schema have not been drawn for simplicity.  
 Each principal entity in the schema should probably have a support table.
 
-\subsection{Creating an Event Collection from another Event Collection}
+\subsection{Creating an Analysis Dataset from another Analysis Dataset}
 \label{sec:createEvColl}
 
-The input to a user Application is the Event Collection, and Event Collections can be 
-created as the result of processing other Event Collections.  We examine a few cases 
+The input to a user Application is the Analysis Dataset, and Analysis Datasets can be 
+created as the result of processing other Analysis Datasets.  We examine a few cases 
 here to illustrate how these processing results can be recorded using the DBS schema.
 Below, we make casual use of the ``Run'' construct again.  However, ``Run'' can be replaced
 by whatever data unit is actually used.  In the following,
-it can be safely assumed that the relation between Event Collection and Representation 
+it can be safely assumed that the relation between Analysis Dataset and Event Collection 
 (figure \ref{fig:highlevel}) can have an attribute that tells the application how to select 
-out the data associated with the Representation given the whole Event Collection as
+out the data associated with the Event Collection given the whole Analysis Dataset as
 input.  
 
 \subsubsection{Processing a Single Unit of Data}
 
-A trivial case is where the Event Collection consists of a single Representation. 
-This could be, for example, a single run.  The job processes the Event Collection 
-and produces an output Event Collection.  The output Event Collection is associated 
+A trivial case is where the Analysis Dataset consists of a single Event Collection. 
+This could be, for example, a single run.  The job processes the Analysis Dataset 
+and produces an output Analysis Dataset.  The output Analysis Dataset is associated 
 with newly produced files.  The new files are stored back into the DBS as a child 
-Representation of the input,  and the output Event Collection has this Representation 
+Event Collection of the input,  and the output Analysis Dataset has this Event Collection 
 as its sole member. 
 
 \subsubsection{Processing Multiple Units of Data}
 
-In this case, the event collection consists of multiple Representations. This 
-could be for example multiple runs.  If each component Representation can be 
+In this case, the event collection consists of multiple Event Collections. This 
+could be for example multiple runs.  If each component Event Collection can be 
 processed by a single job\footnote{The actual condition here is that the processing 
-of an input Representation produces a distinct set of files, up to a few common ``metadata'' 
+of an input Event Collection produces a distinct set of files, up to a few common ``metadata'' 
 files.}, then as in the above case of a single Run, the results
 can be stored back into the system as child representations and then grouped
-together to form an output Event Collection.  
+together to form an output Analysis Dataset.  
 
 \subsubsection{Filtering: Multiple Units of Data Input and Single Unit Output}
 
-In this case, we assume that the output Event Collection, though produced with
+In this case, we assume that the output Analysis Dataset, though produced with
 many inputs, is become whole in that it is not useful (nor in some cases 
-even possible) to subdivide the output Event Collection in terms of the 
-index used to define the input Representations.  For example, if the input is 
+even possible) to subdivide the output Analysis Dataset in terms of the 
+index used to define the input Event Collections.  For example, if the input is 
 a list of runs and the  output is a single colletcion consisting of a few 
 events from each run selected according  to some physics criterion. We 
 assume that the output is a set of files for which there is no map
 showing which files contain which events.  Then there are two choices.
 \begin{enumerate}
-\item Store the output back into the system as a single Representation with 
-the output Event Collection containing only that Representation.  Either it 
-is stored as a new Primary Representation and some limited parentage information 
-is kept in the form of a parent Event Collection attribute,  or it 
+\item Store the output back into the system as a single Event Collection with 
+the output Analysis Dataset containing only that Event Collection.  Either it 
+is stored as a new Primary Event Collection and some limited parentage information 
+is kept in the form of a parent Analysis Dataset attribute,  or it 
 could also be allowed that a child can have many parents and then the strict 
 tree structure is destroyed.  (Kudzu vine structure?) 
-\item For each input Representation, create a child Representation that points 
-to the same entire set of files comprising the output Event Collection.  This
+\item For each input Event Collection, create a child Event Collection that points 
+to the same entire set of files comprising the output Analysis Dataset.  This
 would preserve the tree structure and all of the relationships and might 
 result in faster queries.  
 \end{enumerate}
@@ -779,19 +781,19 @@ supported.
 \subsubsection{Mixing: Multiple Units of Data Input and Multiple Mixed Outputs}
 
 In this case, we assume mixing is going on.  For exampe, the input could be 
-an Event Collection comprising Representations according to $N$ runs and the 
-output could be an Event Collection according to $M$ luminosity bins.  This 
+an Analysis Dataset comprising Event Collections according to $N$ runs and the 
+output could be an Analysis Dataset according to $M$ luminosity bins.  This 
 can be achieved as a duplication of the above case on filtering by 
 considering each output bin as corresponding to its own filter.  
 \begin{enumerate}
 \item Store the reclustered events back into the system as multiple 
-Representations, each one corresponding to a luminosity bin in the example. 
-The output EventCollection is the collection of all such Representations.
-As above, these could be new Primary Representations or multi-parented.
-\item For each output Representation, and then for each input Representation
-contributing to that output Representation, create a child Representation 
-that points to the same entire set of files comprising the output Representation.
-The entire collection then becomes the output Event Collection.  
+Event Collections, each one corresponding to a luminosity bin in the example. 
+The output EventCollection is the collection of all such Event Collections.
+As above, these could be new Primary Event Collections or multi-parented.
+\item For each output Event Collection, and then for each input Event Collection
+contributing to that output Event Collection, create a child Event Collection 
+that points to the same entire set of files comprising the output Event Collection.
+The entire collection then becomes the output Analysis Dataset.  
 \end{enumerate}
 More thought is needed as to the best way to do this.  More than one way could be 
 supported.  For example, the first option is probably more efficient in terms of 
@@ -851,8 +853,8 @@ account a known fill structure.  Runs will change when irregularities occur and 
 the operators to shut down the current run and start a new one.  
 
 At this time, we do not foresee the need to create a dataset from a 
-pre-existing Event Collection.  In our current model, a dataset must be created 
-before one can add data to it, and therefore all of the Event Collections must 
+pre-existing Analysis Dataset.  In our current model, a dataset must be created 
+before one can add data to it, and therefore all of the Analysis Datasets must 
 already comprise data that belongs to a dataset.  
 
 
@@ -863,7 +865,7 @@ already comprise data that belongs to a dataset.
 In order to clarify the relationships between the given entities given in the main part of 
 this note, it was felt that some formulae would help. 
 
-\subsection{Representations and Datasets}
+\subsection{Event Collections and Datasets}
 
 \begin{enumerate}
 
