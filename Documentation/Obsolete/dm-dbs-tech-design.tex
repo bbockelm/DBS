@@ -549,31 +549,20 @@ with Analysis Dataset in general, and hence it is called out in the diagram.
 Furthermore it should be possible to characterize and
 create a Processed Dataset before adding a Event Collection to it.  
 
-{\bf END of Edit}
+The File enitity is in a many to 
+many relationship with representations.  It is intended that special files 
+like the CARF ``META'' files can belong to more than one Event Collection.
+The META files are a contemporary implementation detail of the EDM, 
+and the DBS will not track them differently from other files.  
+As the EDM improves in this 
+respect, the DBS will not have to adjust.
 
-Files are shown at the top of figure \ref{fig:highlevel}. Files are in a many to 
-many relationship with representations.  Special files like the CARF ``META'' files
-can belong to more than one Event Collection within a Primary Dataset at the moment.
-That the META files properly belong to a Processed Dataset is considered to 
-be a contemporary  implementation detail of the EDM, and we propose not to keep track 
-of them with a special association to Processed Dataset.  Instead, we can have 
-multiple associations to from several Event Collections to common META files.  The 
-advantage of this 
-device is that it allows us to keep track of the META files when they are really needed, 
-(i.e.- when preparing data for analysis), and they can still be obtained with a 
-small cost of removing duplicate rows from the result set.  As the EDM improves in this 
-respect, one can imagine progressively tighter constraints on the number of files included 
-with each run.   In the most extreme case, this number can be equal to one, and the schema 
-would still be valid.
-
-This progressive structure presents the following advantages.  First, queries 
+The progressive relationship of the entities allows queries 
 premised upon physics attributes on the Primary Dataset side 
-can naturally be drilled down by the system into queries about files without user awareness.
-Second,  the structure provides a natural set of categories within which to organize the 
-attributes that may be attached to the various entities.  Finally, run collections can be 
-defined upon the runs.  Depending upon the specific need, different types of run collections 
-may independently support different kinds of constraints.  Run collections are optionally 
-recursive in order to support flexibility in their definition.
+to be naturally drilled down by the system into queries about 
+files without specific user involvement.
+The structure also provides a natural heirarchy of categories within which to organize the 
+attributes according to their abstraction.  
 
 \subsection{Adding More Detail -- Relations and Constraints}
 
@@ -583,17 +572,18 @@ recursive in order to support flexibility in their definition.
 %together into manageable pieces for transfer and storage.  This leads to the 
 %enhancements found in Figure \ref{fig:detailed}.
 
-The fundamental unit of import in the system is the Event Collection.  A Event Collection 
-can correspond to a run or any other chunk of data that is considered fundamental,  
-The Event Collection will be mapped to a set of files that may overlap with files in 
-other Event Collections.  (It is not a requirement that they be non-overlapping.) A
-special kind of Event Collection is the Primary Event Collection.  The Primary Event Collection
-corresponds to the root node in a tree of figure \ref{fig:forest}.  This entity
+The fundamental unit of data import into the system is the Event Collection.  A Event Collection 
+can correspond to a run or any other chunk of data that is considered fundamental and can be 
+mapped to a set of files\footnote{The set of files in one Event Collection are allowed to overlap with 
+those in another Event Collection.  This accommodates metadata files, for example.  This 
+aspect can be tightened later as the EDM evolves.}.  
+A special kind of Event Collection is the Primary Event Collection.  The Primary Event Collection
+corresponds to the root node in a processing tree of figure \ref{fig:forest}.  This entity
 will contain attributes associated with the whole tree, possibly these are keys into 
 an external Monte Carlo request database or run conditions database.
 
-Analysis Datasets can support different kinds of constraints.  The proposed 
-block would be a partition on Processed Datasets, and would have a 
+Analysis Datasets can support different kinds of constraints depending on the 
+subtype.  The block would be a partition on Processed Datasets, and would have a 
 relationship to a site entity.  
 \begin{figure}[hbtp]
   \begin{center}
@@ -602,78 +592,73 @@ relationship to a site entity.
     \label{fig:detailed}
   \end{center}
 \end{figure}
-Two types of Analysis Dataset are recognized here: blocks and user collections.  The 
-notion of block has been put forward in order to better manage physical placement of data.  
+The block will aid in managing physical placement and storage of data.  
 Blocks are therefore distinguished by having a one to many relationship to a supporting site 
-entity.  It is furthermore proposed that blocks satisfy the constraint that they be 
-partitions on the Processed Dataset in the sense that no event IDs
-can exist in two different blocks of the same type (as determined by the paths of the 
-corresponding Analysis Datasets.) This greatly simplifies the task of deciding which 
+entity.  Blocks satisfy the extra constraint that they  
+partition the Processed Dataset\footnote{Technically, they partition the 
+Processed Dataset in the sense that no event IDs
+can exist in two different blocks.}.  This  simplifies the task of deciding which 
 blocks to transfer given a set of interesting Analysis Datasets.
-Blocks are special in that they represent a new implementation detail 
-that must be hidden from the physicist.  However, block constraints and behavior can be 
-hidden in an application layer.  Finally, the recursion in Analysis Dataset 
-addresses oddities may arise 
-because the scale introduced by blocksize and number of blocks per dataset may change.  
-If one introduces blocks in order to deal with data on a given scale, one someday may need 
-to introduce "super-blocks" if that scale changes, and so on. 
 
-User collections are a type of Analysis Dataset that supports the idea that users can specify 
-collections of interest.  User collections are just a list of Analysis Datasets
-and can span multiple blocks.  
-In order to be able to include references to pre-existing user collections, recursion is 
-envisaged.  We can use the user collection to support a snapshot of the data, for example 
-a collection of blocks in a streamed dataset that does not change or grow as the dataset 
-grows.  Also, the data associated with a RefDB production assignment can also be supported 
+Blocks are special in that they represent a new implementation detail 
+that must be hidden from the physicist.  However, block constraints and 
+behavior can be hidden in the application layer.  Blocksize 
+introduces a scale into the system,  however this can be addressed hierarchically 
+through the self relation of Analysis Dataset
+\footnote{If one introduces blocks in order to deal with data on a given scale, one someday may need 
+to introduce "super-blocks" if that scale changes, and so on.}. 
+
+User collections directly support the idea that users can specify 
+collections of interest to them.  User collections list component Event Collections
+and pre-existing Analysis Datasets and can span multiple blocks.  
+envisaged.  The data associated with a RefDB production assignment can also be supported 
 as a special kind of user collection.
 
+A further specialization is the Snapshot.  The Snapshot is an Analysis Dataset whose results 
+comprise the result of a query of the DBS.  The query itself is stored in a support table, and 
+the cretion time is recorded.
+The snapshot could be a closed set of Event Collections in a streamed dataset that does 
+not change or grow as the dataset grows.  
 
 \subsection{Even more detail -- tables and attributes}
 
-An initial set of attributes has been explored.  The file entity should contain obvious 
+The file entity contains obvious 
 file attributes, such as logical filename, file size, cardinal times like creation and 
-last access times, and checksum.  It should not contain site information, nor should 
-site information at the file level be kept in this database schema.  Rather, it is 
-thought that this information can be provided by external tools, and checked in an 
-external validation tool is desired.  Only logical filenames will be tracked. One 
-class of attributes we have not explored is access control.  It should be revisited later.
+last access times, and checksum.  It does not contain site information or physical filename 
+information.  Rather, replicas will be tracked externally.  
 
-The Event Collection entity should contain brief and essential attributes such as run number, 
+Event Collection will contain brief and essential attributes such as run number, 
 number of events in the collection, cardinal times like creation and access times, 
-and a run status flag.  However, run conditions and calibration should probably 
-be kept in  an external conditions or calibration database.  Pointers can be kept 
-into those databases and vice-versa.  Part of the primary key of the Event Collection
+and a run status flag.  Run conditions and calibration constants will
+be kept in external databases.  Part of the primary key of the Event Collection
 should be the Primary Dataset that the Event Collection 
 belongs to as well as the complete processing path.  This should be a unique key of 
 Processed Dataset.  
 
-Blocks should contain a unique block id that identifies its partition, and should 
-have a block size and other low level metadata related to implementation.  Blocks 
-should not contain physics metadata.  One of the special attributes needed in a 
-block is a flag to indicate whether or not it is open for writing.  This will be 
-explored in the next section.  Basically, in order to simplify the bookkeeping 
-associated with having blocks, it will be a requirement that open blocks be 
-restricted to a single site.  This has obvious implications for streaming, and 
-can be dropped or revisited. 
+Blocks will have a unique block id that identifies its partition within its processed dataset.
+It will have a block size and other low level attributes related to implementation.  Blocks 
+will not contain physics metadata.  
+Blocks will have a flag to indicate whether or not they are open for writing. 
+In order to simplify the problem of locating blocks to sites, it is a 
+requirement that open blocks be restricted to a single site\footnote{This has obvious 
+implications for streaming, and can be later dropped or revisited when we review the distributed 
+aspects.}.
 
-The Processed Dataset table should contain Primary Dataset and processing path 
-attributes to identify the Processed Dataset.  
-Like blocks, it should also contain a flag indicating whether or not the Processed Dataset 
-is open for writing.  A potential complication is the attribute 
-difference between Monte-Carlo and real data 
-datasets.  It is felt however that the differences in attributes can be expressed in support 
-tables.  The attributes need to indicate Monte-Carlo or real.  In 
-addition, quantities that need to be searchable should be included directly here.  However, 
-blob data (non-queryable binary large objects such as compressed logs) can also be kept for provenance 
-purposes.  
+The Processed Dataset will contain Primary Dataset and Processing Path 
+references.
+In addition, quantities that are determined to be "searchable" that are related to the 
+specific level of processing of this data should be included directly here for 
+users to query on.  
 
 Analysis Datasets can contain further attributes.  User collections should for 
 example contain annotations indicating why they were created.  Blocks contain 
-pointers to sites.  Collections corresponding to assignment IDs could contain pointers 
-into the RefDB plus some metadata for querying.
+pointers to sites.  Collections corresponding to assignment IDs will contain pointers 
+into the RefDB plus some metadata for querying. Snapshots will contain references to the
+text queries that created them.
 
 Storage of attributes supporting the various 
-entities in the proposed schema can be implemented as support tables.  The support table 
+entities  can be implemented as support tables when the actual schema is written down.  
+The support table 
 is a basic ER design pattern which allows metadata to be stored in a queryable format 
 outside of the table directly representing the entity.  Attributes such as generation and 
 simulation parameters for Monte-Carlo to run status information can be kept in support 
@@ -686,9 +671,7 @@ Each principal entity in the schema should probably have a support table.
 The input to a user Application is the Analysis Dataset, and Analysis Datasets can be 
 created as the result of processing other Analysis Datasets.  We examine a few cases 
 here to illustrate how these processing results can be recorded using the DBS schema.
-Below, we make casual use of the ``Run'' construct again.  However, ``Run'' can be replaced
-by whatever data unit is actually used.  In the following,
-it can be safely assumed that the relation between Analysis Dataset and Event Collection 
+The relation between Analysis Dataset and Event Collection 
 (figure \ref{fig:highlevel}) can have an attribute that tells the application how to select 
 out the data associated with the Event Collection given the whole Analysis Dataset as
 input.  
