@@ -12,9 +12,9 @@
 %  \conferencereport{2005/000}
    \date{\today}
 
-  \title{DRAFT Technical Design of the Dataset Bookkeeping Service DRAFT}
+  \title{DRAFT Technical Design of the Dataset Bookkeeping System DRAFT}
 
-  \note{Draft Version v0\_5}
+  \note{Draft Version v0\_6}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
@@ -31,16 +31,14 @@
 \collaboration{for the CMS collaboration}
 
   \begin{abstract}
-      This note describes the Dtaaset Bookkeeping Service (DBS) prototype for the 
-  CMS Data Management (DM) project.  The scope of the DBS is to provide a tools to 
+      This note describes the Dataset Bookkeeping System (DBS) prototype for the 
+  CMS Data Management (DM) project.  The DBS will
   store information about real and simulated CMS data in a queriable format.  The
-  supported queries should allow physicists and their agents to discover what 
-  data is available, subject to given constraints, to retrieve information 
-  about specific data and to define derived (``analysis'') datasets. This note
-  contains some use cases and requirements to be fulfilled by such a system.  
-  An Entity-Relationship diagram (conceptual schema) is presented for implementation 
-  of the system.
-  \end{abstract} 
+  supported queries will allow users and their agents to discover avaliable 
+  data, to retrieve further information about specific data, and to 
+  derive analysis datasets. This note contains some use cases and requirements
+  for the DBS.  The technical design of the DBS is presented.
+    \end{abstract} 
 
   
 \end{titlepage}
@@ -49,37 +47,30 @@
 
 \section{Introduction}
 
-The Dataset Bookkeeping Service (DBS) is designed to be the part of the
-CMS Data Management which hosts the attributes describing the actual event data
-(and some associated entities). It will contain sufficient information
-to discover, define and use for processing pieces of CMS data,
-such as {\em datasets} and other entities described herein.
+The Dataset Bookkeeping System (DBS) part of the CMS Data Management system
+provides the means to discover, define and use for processing CMS event data.
+It tracks primarily {\em datasets} and their associated attributes.
 
-The purpose of this document is to define DBS in sufficient detail as to
-be able to build this component as part of the Baseline Data Management
-System described elsewhere \cite{dmman}. To do so, we start with making
- certain detailed ``operating assumptions'' about the CMS data organisation, 
-based on the higher-level documents of 
-Data Management RTAG\cite{rtag7} and the CMS Computing Model\cite{CM}.
-We then include (by reference?) a set of use cases derived from
-our experiences. Finally, we assume that we will use a relational 
-database management system (RDBMS) for a persistent storage
-of all this information and design a {\it schema} 
-that represents entities introduced
-here and relations thereof. 
+This document describes the concepts used by CMS in data management and
+specifies the bookkeeping system in detail that is sufficient to build the
+baseline data management system described elsewhere~\cite{dmman}.  We begin
+with a description of the CMS data organisation by expanding on the work of
+the Data Management RTAG~\cite{rtag7} and the CMS Computing Model\~cite{CM}.
+This is followed by a set of scenarios illustrating the primary uses of the
+bookkeeping system.  Finally we provide a mapping of the organisational
+concepts to relational database entities followed by an architectural
+description of the components making up the bookkeeping system.
 
 Access to CMS data should take place through interfaces designed for an 
-appropriate level of abstraction for the physicist.  The physicist is not 
-interested in implementation details, such as files or transport mechanisms. 
-In fact, we expect that much of the schema will be hidden from the physicist
-as well by the properly designed (and implemented!) interfaces.
-
-The dataset bookkeeping service (DBS) should not include functionality that could in 
-principle be delivered by other services.  The schema design should therefore make 
-reference to external databases or services as required.  It should 
-concentrate on supporting the decomposition of datasets into event collections, finding the 
-components needed to analyze or to transfer an event collection, and the attributes 
-needed to support a sensible level of dataset discovery service.  
+appropriate level of abstraction for the end user.  The system will not require 
+knowledge of implementation details, such as files or transport mechanisms. 
+The dataset bookkeeping system (DBS) will take advantage of external infrastructure where 
+possible.  The design will occasionally make 
+reference to external databases or systems as required.  The DBS will 
+concentrate on supporting the decomposition of datasets into event collections, 
+finding the 
+components needed to analyze or to transfer an event collection, and the making 
+attributes available to support a sensible level of dataset discovery service.  
 
 
 %It was taken as an operating assumption that POOL can be considered to be a service that 
@@ -104,52 +95,55 @@ Representation.}
   \end{center}
 \end{figure}
 
-The following terms have been identified as being at an appropriate level 
-of abstraction:
+We following terms define the organisation of CMS data:
 
 \begin{itemize}
-\item {\bf Primary Dataset}. The basic category of analyzability, distinguished informally 
-by grouping data into groups that share the same generation parameters in the case on Monte
-Carlo or the same trigger/stream definitions in the case of real data.
-\item {\bf Dataset}. The basic category of homogeneity, distinguished informally 
-by grouping data into groups that could ordinarily be read as input by the same application 
-in the same job.  Items belonging to the same dataset will share attributes such as 
-processing parameters used in the creation of the dataset. This entity is also known as 
-``Dataset Representation'' because of the close association to the entity 
-Representation (see below). 
-\item{\bf Data Unit Representation}
- This represents the results of processing of a well defined data unit 
-(chunk of events) belonging to the same dataset through a well defined sequence of processing steps.
-The data inside of a representation could for example correspond to a ``run'' but it 
-does not have to.  It could correspond to a luminosity segment within a run.  This is 
-the entity which we will relate to logical files.
-\item {\bf Event Collection} This represents an arbitrary collection of representations within 
-the same dataset that have gone through equivalent processing steps.  The goal of the 
-analysis user or his/her agent is to use the DBS to discover and select an event 
-collection for analysis.\footnote{The Event Collection entity can contain both the concepts of 
-an Analysis Dataset as described in the RTAG, as well as the results of a skim.}
+\item {\bf (Online) Stream}.  A stream is the largest unit of data organisation
+and can be thought of as a collection of the output event data from the CMS
+detector grouped by sets of high-level triggers that ``go together'' for
+analysis purposes.  [FIXME: The bookkeeping system is not directly concerned
+with online streams, except as means to narrow down to interesting primary
+datasets.]
+
+\item {\bf Primary Dataset}, also Production Dataset.  The main
+data management concept: the unit of data accessed to analyse a given trigger.
+Discovery and delivery of data is mainly concerned about production datasets.
+CMS expects to have of the order of 50 production datasets.  Primary datasets
+comprise data generated with the same parameters for Monte Carlo data.
+
+\item {\bf Data Tier}. Type of content and degree of processing applied to the
+data: {\em RAW} The raw event data written by the filter farm; {\em RECO} All
+reconstructed data coming from the production engine; {\em FEVT} RAW + RECO;
+{\em AOD} [FIXME].
+
+\item {\bf Processed Dataset}. This is a selection of data from a Primary Dataset
+defined by the exact processing history applied to it.  For example, the reconstructed data
+is a {\em processed dataset}, namely it is the result of processing the raw data.
+Key parameters defining a processing include the primary dataset, data tier,
+processing pass number, program configuration [FIXME: algorithm parameter set
+ids], calibration version.
+
+\item{\bf Event Collection}. The smallest subset of a Processed Dataset that
+user is able to access through the bookkeeping system, i.e. without using an
+analysis application.  It maps to one or more files.  A ``run'' may be an
+event collection for instance.
+
+\item {\bf Analysis Dataset}.  A subset of a primary dataset, i.e. a set of
+event collections.  Many useful entities are expressed as Analysis Datasets, 
+such as the results of a skim or a managed block of data.
+
+\item {\bf Events}.  The data from a single crossing.  Events are not managed
+or accessible as such; one must use a data processing application to access
+detail below an event collection.
 \end{itemize}
 
-We attempt to present these entities in Figure \ref{fig:forest}.  A more precise definition
-of these entities in terms of subsets of the data appears in the Addendum.
-
-In contrast to the above abstractions, objects like files and sites are 
-of interest to the system underlying the dataset bookkeeping service and are considered 
-implementation details.  While we must keep track of such objects as well, 
-files and filenames should not contain physics metadata.  It will therefore
-be of interest later on how the abstractions above are related to actual OS 
-supported objects like files.  It was furthermore decided not to make special 
-accounting for special files, like the ``META'' files, that currently exist in the 
-CMS event data model (EDM) but are not intrinsic.  It is assumed that the EDM group will 
-make changes in the way data is written in CMS so that the number of special files tends 
-to zero in the long run.  
-
-The skeletal Entity-Relationship (ER) view onto this model is
-shown in Figure \ref{fig:highlevel}. We will discuss it further when
-we proceed to a the schema design after listing some important use
-cases.  Note that metadata/attribute support tables are not shown 
-in figure 2. Attributes that are mapped to the entities shown can be 
-stored on table or in supporting tables.
+We present these entities in Figure~\ref{fig:forest} and their relationships
+in Figure~\ref{fig:highlevel}.  The figures express the information model
+for the bookkeeping system, not the actual schema we will use.
+The mapping of the information model into a schema is discussed in more
+detail in section~\ref{details} after we have listed some primary use
+cases.  A more precise definition of these entities in terms of subsets of
+the data appears in the Appendix~\ref{appendix}.
 
 \begin{figure}[hbtp]
   \begin{center}
@@ -161,6 +155,25 @@ is mapped $N$ to $N$ with Logical Files. }
     \label{fig:highlevel}
   \end{center}
 \end{figure}
+
+\section{Implementation Concepts}
+
+\begin{itemize}
+\item Files.
+\item Sites.
+\item Blocks.
+\end{itemize}
+
+In contrast to the above abstractions, objects like files and sites are 
+of interest to the system underlying the dataset bookkeeping system and are considered 
+implementation details.  While we must keep track of such objects as well, 
+files and filenames should not contain physics metadata.  It will therefore
+be of interest later on how the abstractions above are related to actual OS 
+supported objects like files.  It was furthermore decided not to make special 
+accounting for special files, like the ``META'' files, that currently exist in the 
+CMS event data model (EDM) but are not intrinsic.  It is assumed that the EDM group will 
+make changes in the way data is written in CMS so that the number of special files tends 
+to zero in the long run.  
 
 
 \section{Scenarios, Use Cases, and Example Queries}
@@ -795,9 +808,9 @@ support basic use cases of queries against the underlying database, such as disc
 datasets from metadata or asking for the number of events in a given run range.  It 
 should also support an API to get the information needed to initiate an analysis.  
 
-The dataset bookkeeping service (DBS) proper is kept immediately below the database 
-server layer.  The dataset bookkeeping service was split into the "canonical" dataset 
-bookkeeping service (DBS) plus a dataset replica service(DRS).  This reflects the 
+The dataset bookkeeping system (DBS) proper is kept immediately below the database 
+server layer.  The dataset bookkeeping system was split into the "canonical" dataset 
+bookkeeping system (DBS) plus a dataset replica service(DRS).  This reflects the 
 desire to keep replica locating functionality out of the DBS altogether is possible, 
 and in a separate schema if absolutely necessary.    We agreed that if fine grained 
 site information was included, then access to site information (DRS) should be kept 
@@ -845,7 +858,7 @@ already comprise data that belongs to a dataset.
 
 \appendix
 
-\section{Addendum on Data ``Sets''}
+\section{Addendum on Data ``Sets''}\label{appendix}
 
 In order to clarify the relationships between the given entities given in the main part of 
 this note, it was felt that some formulae would help. 
@@ -866,7 +879,7 @@ and invocation parameters that
 characterizes the provenance of processed data.  The null path $\emptyset$ contains
 no applications and represents ``raw data'' in the sense that it is unprocessed.  
 
-\item {\bf A Dataset Representation $\Delta_{\pi}$} is a selection of data within a primary 
+\item {\bf A Processed Dataset $\Delta_{\pi}$} is a selection of data within a primary 
 dataset $\Delta$ that contains only data that has the provenance $\pi$.  For example, 
 ``Digi data'' within $\Delta$ is $\Delta_{\mbox{Digi}}$.  Of course, the provenance specification 
 can be as complicated as you wish.
@@ -887,21 +900,21 @@ it could be a luminosity bin within a raw data run,
 individual events, etc.  Let $R(\Delta)$ be the 
 set of all such indices in $\Delta$.
 
-\item A {\bf Data Unit Representation} $\Delta_{\pi}^{\rho}$ is the 
+\item An {\bf Event Collection} $\Delta_{\pi}^{\rho}$ is the 
 data in $\Delta$ that corresponds to the result of processing $\Delta_{\emptyset}^{\rho}$ 
 through the given path $\pi$.  
 
 \item The union
-of all Representations of data units at a at some path $\Delta_{\pi}^{\rho}$ is 
+of all Event Collections of data units at some path $\Delta_{\pi}^{\rho}$ is 
 \begin{equation}
 \bigcup_{\rho \in R(\Delta)} \Delta_{\pi}^{\rho} = \Delta_{\pi}
 \end{equation}
-which is just another way of writing the Dataset Representation.  
+which is just another way of writing the Processed Dataset.  
 
-\item A Representation $\Delta_{\pi}^{\rho}$ can 
+\item An Event Collection $\Delta_{\pi}^{\rho}$ can 
 be considered to be a node of data in a processing tree.  
-The root node of such a tree is the {\bf Primary Representation} $\Delta_{\emptyset}^{\rho}$ 
-of the unit of data.  The Primary Representation can correspond to a 
+The root node of such a tree is the {\bf Primary Collection} $\Delta_{\emptyset}^{\rho}$ 
+of the unit of data.  The Primary Collection can correspond to a 
 run of raw data, for example, or some other unit of data 
 (other than a run) to be determined.  
 
@@ -919,23 +932,23 @@ at $\rho$ can be represented as $\Delta^{\rho}$.
 \end{enumerate}
 
 
-\subsection{Event Collections}
+\subsection{Analysis Datasets}
 
-And for Event Collections, which are meant to be more flexible and user definable: 
+And for Analysis Datasets, which are meant to be more flexible and user definable: 
 
 \begin{enumerate}
 
-\item Defining an Event Collection as a collection of Representations of units of data.  
+\item Defining an Analysis Dataset as a collection of Event Collections of units of data.  
 Consider some
 subset $R_I$ of data indices of interest in $R(\Delta)$:  $R_I \subseteq R(\Delta)$.
 Say one is interested only in 
-data processed through some concrete path $\pi$.  An Event Collection $\xi_{\pi}^{R_I}$
+data processed through some concrete path $\pi$.  An Analysis Dataset $\xi_{\pi}^{R_I}$
 can be defined as 
 \begin{equation}
 \xi_{\pi}^{R_I} = \bigcup_{\rho \in R_I} \Delta_{\pi}^{\rho}
 \end{equation}
 
-\item Of course, one special case is a Dataset Representation. 
+\item Of course, one special case is a Processed Dataset. 
 \begin{equation} 
 \xi_{\pi}^{R(\Delta)} = \Delta_{\pi}
 \end{equation}
@@ -951,7 +964,7 @@ and
 y_i \cap y_j \neq \emptyset \mbox{ if and only if } i = j
 \end{equation}
  
-\item  Another special case of Event Collection 
+\item  Another special case of Analysis Dataset 
 is for ``blocks'', or ``dataset partitions''.  For example, if
 $P_N = \{ p_i \}$ is a partition over $R(\Delta)$ of size $N$, then : 
 \begin{equation}
@@ -961,43 +974,27 @@ is a set of ``blocks'' of data of type $\pi$.  For raw data, $\pi = \emptyset$.
 
 
 \item Let $\Pi_J$ define some collection of interesting processing paths, like ``Hits and Digis'', 
-in $\Pi(\Delta)$.  Let a Compound Representation $C_{\Pi_J}^{\rho}$ be defined by
+in $\Pi(\Delta)$.  Let a Compound Event Collection $C_{\Pi_J}^{\rho}$ be defined by
 \begin{equation}
 C_{\Pi_J}^{\rho} = \{ \Delta_{\pi}^{\rho} \mid \pi \in \Pi_J \}
 \end{equation}
-In the E-R schema provided in the document, the Compound Representation should be 
-represented in the self-relation on the Representation entity.  We draw attention to 
+In the E-R schema provided in the document, the Compound Event Collection is 
+represented in the self-relation on the Event Collection entity.  We draw attention to 
 this distinction here for clarity.
 
-\item Defining an Event Collection as a collection of compound Representations: 
+\item Defining an Analysis Dataset as a collection of compound Event Collections: 
 \begin{equation}
 \xi_{\Pi_J}^{R_I} = \bigcup_{\rho \in R_I} C_{\Pi_J}^{\rho} = \bigcup_{\rho \in R_I} \{ \Delta_{\pi}^{\rho} \mid \pi \in \Pi_J \}
 \end{equation}
 
-\item Blocks can be defined similarly over Compound Representations if the $R_I$ are a partition 
+\item Blocks can be defined similarly over Compound Event Collections if the $R_I$ are a partition 
 of $R(\Delta)$.
 
 \end{enumerate}
 
 All types of entities above can be represented in the provided schema.  (Or the schema
-is in error.)  The Event Collection can be understood as a cartesian product of some
+is in error.)  The Analysis Dataset can be understood as a cartesian product of some
 ``results of processing'' and some ``units of interesting data''.  
-
-\subsection{Error in Terminology}
-
-Previous versions ($\le 0.3$) of this document contained the following accidental obfuscation.  
-Partitioning a dataset ``horizontally'' means that the partitions should have something 
-to do with an event aggregate index, like a run number.  Horizontal partitions should 
-thus contain events.  Aggregating data horizontally means that the 
-event aggregate index (or run number) is ``summed out'' of the reference.  Aggregation 
-is thus complementary to partition.  
-
-In the referenced documents, the sense that the EventCollection entity 
-partitions the data ``horizontally'' was reversed in this way.  EventCollection really 
-aggregates the data ``horizontally'', and Representation aggregates the data ``vertically''
-(or according to data type.)  
-
-We apologize for any confusion.
 
 
 \begin{thebibliography}{9}
