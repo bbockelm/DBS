@@ -20,7 +20,7 @@ significant role in delivering the baseline data management system.
 The most important work of the project is to deliver a verified
 operational environment.
 
-The baseline is system will be developed by evolving and refactoring
+The baseline system will be developed by evolving and refactoring
 existing services.  This will ensure for one that there is always a
 working system, and for other teaches us how to develop a deployed
 system including planning and execution of version upgrades.
@@ -148,7 +148,7 @@ ability to evolve to meet new goals.
 
 The schedule chapter describes how the required functionality and
 evolution properties will be demonstrated.  In short, the baseline
-system will be evolved and refactored from the present existing
+system will be evolved and refactored from the present
 services to the desired system, continually maintaining a fully
 operational system.  Development is focused on integration testbed
 milestones approximately every three months.  A prescribed level of
@@ -163,9 +163,10 @@ backward/forward compatibility.]
 [FIXME: integration testbeds, challenges, certification, see
 scheduling chapter.]
 
-The rationale for the baseline system is described in a separate
-chapter.  In brief, we intend to retain the data management system
-as a fairly loosely coupled set of services and components.
+The rationale for the baseline system is described in the previous
+chapter.  In brief, we intend to retain the data management system as
+a fairly loosely coupled set of services and components where critical
+communication is in general asynchronous and agent-based.
 
 There is no fallback to the baseline solution as such.  Due to the
 development model there will always be a working system that can be
@@ -184,6 +185,13 @@ depend on them.
 
 Scheduling, project organisation and other planning is described
 in a separate chapter.
+
+FIXME: need to specify what is free for site to choose
+
+FIXME: CMS manages its own data in some large chunks.  CMS provides
+the system that tracks where the data is, and makes decisions on
+placements etc.  How to access the data is found out when jobs arrive
+at the site.
 
 ** System overview
 
@@ -268,6 +276,21 @@ sets, that gets queried
 FIXME: Run definition.
 
 *** Bookkeeping system
+
+Data atoms, unbreakable self-consistent unit of data (but consider
+data hierarchy and dependencies), unique key.  Could be different for
+data management and workload management (blocks vs. sets of runs) =>
+two-way negotiation for best job split.  Compromise between user
+desire of well-defined chunk and scalability.  Main issue: granularity
+of data management vs. workload management vs. application itself.
+User specification of input data dm and wm must refine into something
+that is then passed to application -- what is the correct "chunk" --
+LHC fill?  it becomes the set application needs to run on.
+
+For WM data atoms are abstract and somehow lead to files to be
+provided to the application to run on; wm doesn't know what files are
+in an atom, dm does; atom itself is the smallest unit delivered to an
+application.  Today: run / tier  + meta data => maps to N files.
 
 virtual data catalogue
 logical file catalogue
@@ -493,6 +516,26 @@ Where is what done?  DM tracks validation, need to define workflows.
 Who takes care of doing this.  Eventually a data quality system?  Is
 this a separate database?  Like luminosity/conditions tracking system?
 
+ validation shouldn't be tied to unit of dataset, but incremental
+   while files are being produced and stage in
+   as light-weight as possible
+   as early as possible
+
+ validation must also be possible at any time (disks lost, ...)
+   try to come up with finely grained list of all possible checks,
+    when what why how cost, how to record results
+    overlapping validations (e.g. hits validated by digitisation)
+      -> implications for analysis?
+
+ additional validation for skimming, file merging
+
+ validating the data management itself of the files
+   (when bookkeeping doesn't match files)
+
+ model for first-pass reconstruction, including calibration validations
+
+ when importing files, must not need to go through every file
+
 
 
 ** File catalogues and access authorization
@@ -629,6 +672,11 @@ Workflows etc.
 
 Priorities as fallback solutions.
 
+** Other stuff
+
+ how to update ddd with alignment?
+
+
 **********************************************************************
 * Workload management
 
@@ -643,7 +691,70 @@ Generating chains of jobs (cmkin, oscar, orca, dst, ntuple).
 
 Job splitting.
 
+User specification
+
+Gets data atoms from data management (self-consistent units of data
+with some unique key, suitable for scalable and manageable
+partitioning of jobs), negotiates job splitting.
+
+WM needs to discover from dm where data is, then tell framework what
+data to process and how to access it at the site.  As baseline will go
+to dataset bookkeeping system, then dataset location service, submit
+to resource broker / batch queue, jobs land on site, discover from
+site configuration where the data is (local catalogue and/or rules
+to create PFNs); no site-specific information will go with the job,
+it is all discovered at the site.
+
+In future resource broker may negotiate job splitting with dm (data
+location service in particular), but this is more complex than "just
+get list of locations" -- two-way negotiation of offering chunks,
+offering job split, getting available location list. Not however
+baseline system.
+
+What needs to go with the job: meta data (event directory?) from
+dataset bookkeeping system, other dm-provided meta data, local
+information (catalogue, PFNs).
+
+Job splitting can happen at user level, wm level, mixed; user may give
+only constraints (e.g. job run time, max amount of runs to process per
+job?).  Splitting is a set of jobs with the same requirements =>
+cluster that supports bulk operations (submit, query, status, cancel,
+...) + access to individual jobs.  subjob number available at wm
+level.  Authentication handshake.
+
+UI-level splitting is what we do now and will be the baseline system.
+Done by user, not data distribution, divided to job run-time etc.
+Typically need to provide whole dataset; don't see user-level
+splitting.
+
+RB-level splitting; not possible with current brokers.  User defines
+constraints (limit on # of jobs).  Need mechanism to negotiate split
+with data management and resource broker.
+
+In all cases, but especially in RB-level split, one significant issue
+is mapping job split into parameters to be passed to cobra: input
+collection and event range specification.
+
+Basic requirement for resource broker is that of a queue system.
+Baseline is: i want to run these sets of jobs on sites compatible
+with these constraints.  Resource broker makes no decisions or
+optimisation.
+
+Jobs discover local configuration when they land on site.  Part of
+VO-specific site configuration (source some environment script).
+Includes local catalogue etc. contacts.  Available to the jobs the
+same way as e.g. software is (shared file system typically).
+
+Workload management chooses minimal set of files to process.
+Finer grainer selection done by application, including use
+of event directory.
+
+Data block replica location and data quality attributes are
+separate sub-services.
+
 *** Job monitoring
+
+*** Other stuff
 
 in mcrunjob
  - module (evdservices) service to build datasets before ...
@@ -844,6 +955,13 @@ short-lived, others might be longer-lived.
 
 ** Schedule
 
+Built from components proven before then.
+
+Preceding system test milestones.
+
+Spreading data challenge into integration testbeds, DC06 dedicated
+focusing point.
+
 FIXME: Expanded version of the bits about scheduling in baseline
 description.
 
@@ -870,6 +988,14 @@ Integration testbed plans.
 What needs to be done immediately
 
 Development process, who does what.
+
+milestones
+  baseline always working
+  system tests; in beginning not all compoennts, inreasingly
+    more components into testbed, when work, moved into production
+
+ prs milestone to deliver condition details / volumes / latencies / rates?
+
 
 ** Operation
 
