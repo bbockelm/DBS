@@ -1,5 +1,5 @@
 
-  $Id:$
+  $Id: DMS.txt,v 1.5 2005/02/28 13:55:41 elmer Exp $
 
 **********************************************************************
 **********************************************************************
@@ -8,7 +8,7 @@
 **********************************************************************
 \mysubsection{Dataset Bookkeeping System}
 
-\mysubsubsection{Data Organization}
+\mysubsubsection{Data Organization}  
 
 FIXME: Brief description on the fundamental assumptions on data
 organization: event model, vertical streams and production datasets,
