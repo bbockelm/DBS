@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">136</attrib>
-		<attrib name="serial">105107</attrib>
+		<attrib name="build">137</attrib>
+		<attrib name="serial">105463</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -123,29 +123,29 @@
 					<output>DBS-DB.dd</output>
 				</xml>
 			</DatadictGenModule>
+			<SqlGenModule>
+				<stdSql>
+					<output>DBS-DB.sql</output>
+				</stdSql>
+			</SqlGenModule>
+			<SummaryGenModule>
+				<html>
+					<output>DBS-DB.html</output>
+				</html>
+			</SummaryGenModule>
 			<CodeGenModule>
 				<java>
 					<package>DBS-DB</package>
 					<output>DBS-DB.java</output>
 				</java>
 			</CodeGenModule>
-			<SummaryGenModule>
-				<html>
-					<output>DBS-DB.html</output>
-				</html>
-			</SummaryGenModule>
-			<SqlGenModule>
-				<stdSql>
-					<output>DBS-DB.sql</output>
-				</stdSql>
-			</SqlGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="DocsGenModule.html"/>
 			<module name="DatadictGenModule.xml"/>
 			<module name="SummaryGenModule.html"/>
-			<module name="SqlGenModule.stdSql"/>
 			<module name="DocsGenModule.pdf"/>
+			<module name="SqlGenModule.stdSql"/>
 			<module name="CodeGenModule.java"/>
 		</modsUsage>
 		<dataTypes>
@@ -301,7 +301,7 @@
 								<attrib name="name">SmallText</attrib>
 								<attrib name="ddEquiv">SmallText</attrib>
 								<attrib name="id">893</attrib>
-								<attrib name="size">1024</attrib>
+								<attrib name="size">255</attrib>
 							</attribs>
 							<domain>
 								<attribs>
@@ -322,7 +322,7 @@
 								<attrib name="name">BigName</attrib>
 								<attrib name="ddEquiv">BigName</attrib>
 								<attrib name="id">1510</attrib>
-								<attrib name="size">256</attrib>
+								<attrib name="size">255</attrib>
 							</attribs>
 							<domain>
 								<attribs>

@@ -84,7 +84,9 @@ class SchemaInterface:
                          'getConditions', \
                          'info', \
                          'subSchema', \
-                         'matchAttribute' ]
+                         'alias', \
+                         'matchAttribute', \
+                         'uniqueMatchAttribute' ]
     #  //
     # //  For abstract class, public interface methods should cause exception
     #//
@@ -142,6 +144,18 @@ class SchemaInterface:
         return None
     _ParseCondition = staticmethod(_ParseCondition)
 
+    def _IsLiteral(str) : 
+        """
+        Checks if str is a string or numeric literal
+        """
+        blah = str.strip()
+        if blah[0] == "'" or blah[0] == '"' : 
+            return 1
+        if blah[0] == "." or blah[0].isdigit() : 
+            return 1
+        return 0
+    _IsLiteral = staticmethod(_IsLiteral)
+
     #  //
     # //  Constructor
     #//
@@ -192,6 +206,14 @@ class SingleSchema(SchemaInterface) :
     #  //
     # //  Public interface
     #//
+    def alias(self) : 
+        """
+        Accessor to the alias of this schema.  For the SingleSchema, 
+        it is just the table name.
+        Implements SchemaInterface::alias().
+        """
+        return self._Name
+
     def names(self) : 
         """
         Accessor to the table name.  Returns a list of string names.
@@ -342,6 +364,30 @@ class SingleSchema(SchemaInterface) :
         else : 
             return [attr]
 
+    def uniqueMatchAttribute(self, attr) : 
+        """
+        Maps attribute to table.attribute format.  This method
+        always returns a unique attribute or throws an exception
+        in cases of amibuity or attribute not found.  Implements 
+        SchemaInterface::uniqueMatchAttribute().
+        """
+        tmpList = self.matchAttribute(attr)
+        if len(tmpList) == 0 : 
+            raise ViewObjectLayer("No matching attribute found.", \
+                Class = "SingleSchema", \
+                Method = "uniqueMatchAttribute", \
+                Module = "ViewObjectLayer", \
+                Attribute = attr)
+        elif len(tmpList) > 1 : 
+            raise ViewObjectLayer("Too many matching attributes found.", \
+                Class = "SingleSchema", \
+                Method = "uniqueMatchAttribute", \
+                Module = "ViewObjectLayer", \
+                Attribute = attr, \
+                Hint = "Did you include the foreign key target?", \
+                FoundMatches = tmpList.__str__())
+        return tmpList[0]
+
     def subSchema(self, selector) : 
         """
         For SingleSchema, this checks that the subschema asked for 
@@ -392,7 +438,7 @@ class MultiSchema(SchemaInterface) :
     This class represents the product of composing together schema 
     representing different tables.  
     """
-    def __init__(self, fkExcl = []) : 
+    def __init__(self, **opts) : 
         """
         Constructor
         """
@@ -412,12 +458,15 @@ class MultiSchema(SchemaInterface) :
         self._ForeignKeys = {}  # Dictionary of all foreign key relationships
                                 # of all schemas attached.
 
-        self._ForeignKeyExclusionList = fkExcl  # When building attributes 
+        self._ForeignKeyExclusionList = opts.get('fkExcl', [])
+                                # When building attributes 
                                 # and row structures, these are foriegn key 
                                 # target attribute names to ignore.  This is
                                 # be useful in some cases to exclude 
                                 # bookkeeping information from semantically
                                 # interesting relationships.
+
+        self._Alias = opts.get('alias', None)
 
         self._ViewConditions = []  # View or join conditions
 
@@ -462,7 +511,7 @@ class MultiSchema(SchemaInterface) :
         """
         self._Attributes = []
         for schema in self._SchemaOrder : 
-            schemaName = schema.names()[0]
+            schemaName = schema.alias()
             if len(self._SchemaInfo[schemaName]["FKList"]) == 0 : 
                 self._Attributes = self._Attributes + \
                     map(lambda x : schemaName + '.' + x, \
@@ -487,7 +536,7 @@ class MultiSchema(SchemaInterface) :
         # Attributes are added here in full Table.Attribute format.
         cartesianSuperkey = []
         for schema in self._SchemaOrder :
-            schemaName = schema.names()[0] 
+            schemaName = schema.alias() 
             if len(self._SchemaInfo[schemaName]['FKList']) == 0 : 
                 for item in map(lambda x : schemaName + '.' + x, \
                                               schema.primaryKey()) : 
@@ -549,6 +598,17 @@ class MultiSchema(SchemaInterface) :
     #  //
     # //  Public interface methods
     #//
+    def alias(self) : 
+        """
+        Returns the alias of the table given in the contructor.
+        If not given there, then it is a concatenation of names/
+        Implements SchemaInterface::alias()
+        """
+        if self._Alias != None : 
+            return self._Alias
+        else : 
+            return "".join(self.names())
+
     def names(self) : 
         """
         Returns the list of Component table names.  
@@ -571,25 +631,9 @@ class MultiSchema(SchemaInterface) :
         in table.attribute format, but it will attempt to find a match if not.
         Implements SchemaInterface::types().
         """
-        match = self.matchAttribute(attribute)
-        if len(match) == 0 : 
-            raise ViewObjectLayerException("Attribute not found.", \
-                Method = "types", \
-                Module = "ViewObjectLayer", \
-                Class = "MultiSchema", \
-                Hint = "Did you prepend the table name?", \
-                RequestedAttribute = attribute)
-        elif len(match) > 1 : 
-            raise ViewObjectLayerException("Too many matching attributes found.", \
-                Method = "types", \
-                Module = "ViewObjectLayer", \
-                Class = "MultiSchema", \
-                Hint = "Did you append a foreign key target?", \
-                RequestedAttribute = attribute, \
-                MatchingAttributes = match.__str__())
-        else : 
-            tb, at, fk = SchemaInterface._ParseKey(match[0])
-            return self._SchemaNameToSchemaMap[tb].types(at)
+        match = self.uniqueMatchAttribute(attribute)
+        tb, at, fk = SchemaInterface._ParseKey(match)
+        return self._SchemaNameToSchemaMap[tb].types(at)
 
     def defaults(self, attribute) : 
         """
@@ -695,7 +739,7 @@ class MultiSchema(SchemaInterface) :
         """
         retval = []
         for schema in self._SchemaOrder : 
-            schemaName = schema.names()[0]
+            schemaName = schema.alias()
             if len(self._SchemaInfo[schemaName]['FKList']) == 0 : 
                 retval = retval + map(lambda x : schemaName + '.' + x, \
                     schema.notNull())
@@ -711,9 +755,9 @@ class MultiSchema(SchemaInterface) :
         SchemaInterface::addCondition()
         """
         self._ViewConditions.append(condition)
-        self._MakePrimaryKey()
-        self._MakeAttributes()
         self._FixSchemaInfo()
+        self._MakeAttributes()
+        self._MakePrimaryKey()
 
     def getConditions(self) : 
         """
@@ -729,7 +773,7 @@ class MultiSchema(SchemaInterface) :
         """
         retval = []
         for schema in self._SchemaOrder :  
-            schemaName = schema.names()[0]
+            schemaName = schema.alias()
             retval = retval + map(lambda x : schemaName + '.' + x, \
                     schema.sequences())
         return retval
@@ -851,6 +895,30 @@ class MultiSchema(SchemaInterface) :
                 retval.append(item)
         return retval
 
+    def uniqueMatchAttribute(self, attr) : 
+        """
+        Maps attribute to table.attribute format.  This method
+        always returns a unique attribute or throws an exception
+        in cases of amibuity or attribute not found.  Implements 
+        SchemaInterface::uniqueMatchAttribute().
+        """
+        tmpList = self.matchAttribute(attr)
+        if len(tmpList) == 0 : 
+            raise ViewObjectLayerException("No matching attribute found.", \
+                Class = "SingleSchema", \
+                Method = "uniqueMatchAttribute", \
+                Module = "ViewObjectLayer", \
+                Attribute = attr)
+        elif len(tmpList) > 1 : 
+            raise ViewObjectLayerException("Too many matching attributes found.", \
+                Class = "SingleSchema", \
+                Method = "uniqueMatchAttribute", \
+                Module = "ViewObjectLayer", \
+                Attribute = attr, \
+                Hint = "Did you include the foreign key target?", \
+                FoundMatches = tmpList.__str__())
+        return tmpList[0]
+
     def addSchema(self, schema, nary = 0) : 
         """
         Adds a simple schema to the MultiSchema.
@@ -858,7 +926,7 @@ class MultiSchema(SchemaInterface) :
         many to one is desired. 
         """
         # Get the name of the schema to be added
-        schemaName = schema.names()[0]
+        schemaName = schema.alias()
         # Test if this table is added yet
         if schemaName in self._SchemaNames : 
             raise ViewObjectLayerException("Tried to add existing schema.", \
@@ -875,11 +943,15 @@ class MultiSchema(SchemaInterface) :
         # maintaining foreign-key order.
         newOrder = []
         for exSchema in self._SchemaOrder : 
-            exSchemaName = exSchema.names()[0]
+            exSchemaName = exSchema.alias()
             # Does the existing table depend on this one? 
+            appendDone = 0
             for fk, fv in exSchema.foreignKeys(1).items() :  
-                if fv.find(schemaName) >= 0 :
-                    newOrder.append(schema)
+                for searchSchema in schema.names() : 
+                    if fv.find(searchSchema) >= 0 and appendDone == 0 :
+                        newOrder.append(schema)
+                        appendDone = 1
+                if appendDone == 1 : 
                     break
             newOrder.append(exSchema)  
         if len(self._SchemaOrder) == len(newOrder) : 
@@ -888,7 +960,7 @@ class MultiSchema(SchemaInterface) :
         self._SchemaNameToSchemaMap[schemaName] = schema
 
         # Rebuild the name            
-        self._SchemaNames = map(lambda x : x.names()[0], self._SchemaOrder)
+        self._SchemaNames = map(lambda x : x.alias(), self._SchemaOrder)
 
         # Fix the foreign keys and schema info 
         for fkey, fval in schema.foreignKeys(0).items() : 
@@ -1036,8 +1108,10 @@ class Row(RowInterface, dict) :
                 non-None value to None value.  If both sides are None, 
                 nothing happens.  If both side are not None and unequal,
                 an exception is thrown.
+        Returns list of "fixed" attributes.
         Implements RowInterface::fixRow()
         """
+        fixed = []
         for item in self.keys() : 
             tb, at, fk = SchemaInterface._ParseKey(item)
             for fkey, fval in fKeyConditions.items() : 
@@ -1047,7 +1121,12 @@ class Row(RowInterface, dict) :
                 else : 
                     if fkey == tb + '.' + at : 
                         revattr = fval + '(' + fkey + ')'
-                        self.__setitem__(revattr,self[item])
+                        if revattr in self.possibleKeys() : 
+                            self.__setitem__(revattr,self[item])
+                            fixed.append(fval)
+                        else : 
+                            self.__setitem__(fval,self[item])
+                            fixed.append(fval)
         for cond in joinConditions : 
             lhs, rhs, th = SchemaInterface._ParseCondition(cond)
             lha = self.matchAttribute(lhs)
@@ -1057,15 +1136,17 @@ class Row(RowInterface, dict) :
                     if self[rha[0]] != self[lha[0]] :
                         raise ViewObjectLayerException(\
                              "Data inconsistency in equi-condition.", \
-                             Module = "VieObjectLayer", \
+                             Module = "ViewObjectLayer", \
                              Class = "Row", \
                              Method = "fixRow", \
                              LHS = lha[0], \
                              RHS = rha[0])
                 elif rha[0] in self.keys() and lha[0] not in self.keys() : 
                     self.__setitem__(lha[0],self[rha[0]],1)
+                    fixed.append(lha[0])
                 elif rha[0] not in self.keys() and lha[0] in self.keys() : 
                     self.__setitem__(rha[0],self[lha[0]],1)
+                    fixed.append(rha[0])
             elif len(lha) == 0 or len(rha) == 0 : 
                 raise ViewObjectLayerException(\
                       "Missing attribute in join condition.", \
@@ -1121,9 +1202,11 @@ class Row(RowInterface, dict) :
                                  RHS = useR)
                     elif useR in self.keys() and useL not in self.keys() : 
                         self.__setitem__(useL,self[useR],1)
+                        fixed.append(useL)
                     elif useR not in self.keys() and useL in self.keys() : 
                         self.__setitem__(useR,self[useL],1)
-          
+                        fixed.append(useR)
+        return fixed
 
     def schemaInfo(self, selector) : 
         """
@@ -1164,19 +1247,26 @@ class Row(RowInterface, dict) :
         be added to the schema corresponding to schemaName without 
         creating a new row.  Implements RowInterface::newData().
         """
-        if not schemaName in self._NarySubRows.keys() : 
-            raise ViewObjectLayerException("Tried to add data to singular schema.", \
+        if schemaName in self._NarySubRows.keys() : 
+            self._SubRows[schemaName].append({})
+        else : 
+            raise ViewObjectLayerException("Tried to add data to non-multi schema.", \
                      Module = "ViewObjectLayer", \
                      Method = "newData", \
                      Class = "Row", \
                      SchemaName = schemaName)
-        self._SubRows[schemaName].append({})
 
     def matchAttribute(self, attr) : 
         """
         Convenience method to access SchemaInterface::matchAttribute().
         """
         return self._ParentSchema.matchAttribute(attr)
+
+    def uniqueMatchAttribute(self, attr) : 
+        """
+        Convenience method to access SchemaInterface::uniqueMatchAttribute().
+        """
+        return self._ParentSchema.uniqueMatchAttribute(attr)
 
     def possibleKeys(self) : 
         """
@@ -1212,33 +1302,17 @@ class Row(RowInterface, dict) :
         of subrows, the last row only is set.  If allFlag is 1, 
         then all rows in an n-ary list get set.
         """
-        match = self.matchAttribute(key)
-        if len(match) == 0 : 
-            raise ViewObjectLayerException("Attribute not found.", \
-                Method = "__setitem__", \
-                Module = "ViewObjectLayer", \
-                Class = "Row", \
-                Hint = "Did you prepend the table name?", \
-                RequestedAttribute = key)
-        elif len(match) > 1 : 
-            raise ViewObjectLayerException("Too many matching attributes found.", \
-                Method = "__setitem__", \
-                Module = "ViewObjectLayer", \
-                Class = "Row", \
-                Hint = "Did you append a foreign key target?", \
-                RequestedAttribute = key, \
-                MatchingAttributes = match.__str__())
-        else : 
-            tb, at, fk = SchemaInterface._ParseKey(match[0])
-            # If is an n-ary or ordinary row...
-            if isinstance(self._SubRows[tb], list) :
-                if allFlag == 0 :
-                    self._SubRows[tb][-1][at] = value
-                else :
-                    for subr in self._SubRows[tb] : 
-                        subr[at] = value
-            elif isinstance(self._SubRows[tb], dict) :
-                 self._SubRows[tb][fk][at] = value
+        match = self.uniqueMatchAttribute(key)
+        tb, at, fk = SchemaInterface._ParseKey(match)
+        # If is an n-ary or ordinary row...
+        if isinstance(self._SubRows[tb], list) :
+            if allFlag == 0 :
+                self._SubRows[tb][-1][at] = value
+            else :
+                for subr in self._SubRows[tb] : 
+                    subr[at] = value
+        elif isinstance(self._SubRows[tb], dict) :
+             self._SubRows[tb][fk][at] = value
 
     def __delitem__(self, key, allFlag = 0) : 
         """
@@ -1247,30 +1321,14 @@ class Row(RowInterface, dict) :
         of subrows, the last row only is deleted.  If allFlag is 1, 
         then all rows in an n-ary list get deleted.
         """
-        match = self.matchAttribute(key)
-        if len(match) == 0 : 
-            raise ViewObjectLayerException("Attribute not found.", \
-                Method = "__delitem__", \
-                Module = "ViewObjectLayer", \
-                Class = "Row", \
-                Hint = "Did you prepend the table name?", \
-                RequestedAttribute = key)
-        elif len(match) > 1 : 
-            raise ViewObjectLayerException("Too many matching attributes found.", \
-                Method = "__delitem__", \
-                Module = "ViewObjectLayer", \
-                Class = "Row", \
-                Hint = "Did you append a foreign key target?", \
-                RequestedAttribute = key, \
-                MatchingAttributes = match.__str__())
-        else : 
-            tb, at, fk = SchemaInterface._ParseKey(match[0])
-            # If is an n-ary or ordinary row...
-            if isinstance(self._SubRows[tb], list) :
-                for subr in self._SubRows[tb] : 
-                    del subr[at] 
-            elif isinstance(self._SubRows[tb], dict) :
-                 del self._SubRows[tb][fk][at]
+        match = self.uniqueMatchAttribute(key)
+        tb, at, fk = SchemaInterface._ParseKey(match)
+        # If is an n-ary or ordinary row...
+        if isinstance(self._SubRows[tb], list) :
+            for subr in self._SubRows[tb] : 
+                del subr[at] 
+        elif isinstance(self._SubRows[tb], dict) :
+             del self._SubRows[tb][fk][at]
 
     def __getitem__(self, key, index = None) : 
         """
@@ -1279,31 +1337,15 @@ class Row(RowInterface, dict) :
         of subrows, the last row only is used to get the value.
         Optional index can be given to get data from the ith subrow.
         """
-        match = self.matchAttribute(key)
-        if len(match) == 0 : 
-            raise ViewObjectLayerException("Attribute not found.", \
-                Method = "__getitem__", \
-                Module = "ViewObjectLayer", \
-                Class = "Row", \
-                Hint = "Did you prepend the table name?", \
-                RequestedAttribute = key)
-        elif len(match) > 1 : 
-            raise ViewObjectLayerException("Too many matching attributes found.", \
-                Method = "__getitem__", \
-                Module = "ViewObjectLayer", \
-                Class = "Row", \
-                Hint = "Did you append a foreign key target?", \
-                RequestedAttribute = key, \
-                MatchingAttributes = match.__str__())
-        else : 
-            tb, at, fk = SchemaInterface._ParseKey(match[0])
-            if isinstance(self._SubRows[tb], list) :
-                if index == None : 
-                    return self._SubRows[tb][-1][at]
-                else : 
-                    return self._SubRows[tb][index][at]
-            elif isinstance(self._SubRows[tb], dict) :
-                return self._SubRows[tb][fk][at]
+        match = self.uniqueMatchAttribute(key)
+        tb, at, fk = SchemaInterface._ParseKey(match)
+        if isinstance(self._SubRows[tb], list) :
+            if index == None : 
+                return self._SubRows[tb][-1][at]
+            else : 
+                return self._SubRows[tb][index][at]
+        elif isinstance(self._SubRows[tb], dict) :
+            return self._SubRows[tb][fk][at]
 
 
 class TableInterface: 
@@ -1454,7 +1496,7 @@ class Table(TableInterface) :
             Builds an SQL insert statement from the given RowInterface.Row object
             and list of columns.
             """
-            tableName = self._subSchema.names()[0]
+            tableName = self._subSchema.alias()
             keyList = []
             fmtList = []
             valList = []
@@ -1482,7 +1524,7 @@ class Table(TableInterface) :
             Builds an SQL update statement from a list of columns, values, 
             and boolean conditions in conjunctive normal form.
             """     
-            tableName = self._subSchema.names()[0]
+            tableName = self._subSchema.alias()
             keyList = []
             fmtList = {}
             valList = {}
@@ -1513,7 +1555,7 @@ class Table(TableInterface) :
             Builds and SQL select statement from a list of columns and
             boolean conditions in conjunctive normal form.
             """
-            tableName = self._subSchema.names()[0]
+            tableName = self._subSchema.alias()
             query = "select "+','.join(colList) + " from " + tableName 
             if len(conditions) > 0 : 
                 query += " where " + " and ".join(conditions) + ";"
@@ -1526,7 +1568,7 @@ class Table(TableInterface) :
             Builds an SQL delete statment from boolean conditions in 
             conjunctive normal form.
             """
-            tableName = self._subSchema.names()[0]
+            tableName = self._subSchema.alias()
             query = "delete from " + tableName
             if len(conditions) > 0 : 
                 query += " where " + " and ".join(conditions) + ";"
@@ -1697,12 +1739,12 @@ class Table(TableInterface) :
                         result = result[0]
                         # propagate primary key
                         for key in self._subSchema.primaryKey() : 
-                            value = result._SubRows[self._subSchema.names()[0]][0][key]
+                            value = result._SubRows[self._subSchema.alias()][0][key]
                             row[key] = value
                         # Check consistency
                         for key in self._subSchema.attributes() : 
                             if key in row.keys() : 
-                                value = result._SubRows[self._subSchema.names()[0]][0][key]
+                                value = result._SubRows[self._subSchema.alias()][0][key]
                                 if row[key] != value : 
                                     raise ViewObjectLayerException(\
                                        "Data inconsistency.", \
@@ -1754,7 +1796,8 @@ class Table(TableInterface) :
                     NOTNULLSTATUS = 0
             if NOTNULLSTATUS != 1 : 
                 # Do not insert this row, but do not raise exception.
-                print "Null value in PK: Not inserting row", row, colList   
+                # print "Null value in PK: Not inserting row", row, colList   
+                pass
             else : 
                 self._parTable._Connection.queryExecute(self._SqlInsert(row, useList))       
 
@@ -1883,7 +1926,8 @@ class Table(TableInterface) :
             useList = row.keys()
         row.fixRow(self._Schema.foreignKeys(5), \
                     self._Schema.getConditions())
-        for subSchemaName in self._Schema.names() :
+        tableList = self._Schema.names()
+        for subSchemaName in tableList :
             subTable = self._SubSchemaNameToSubTableMap[subSchemaName]
             if subSchemaName in row.availableSchemas() : 
                 for item in row.getData(subSchemaName) : 
@@ -1891,6 +1935,26 @@ class Table(TableInterface) :
                         pk = subTable.smartInsert(item, item.keys(), \
                             skipOnEmpty = row.skipOnEmpty(subSchemaName))
             row.fixRow(self._Schema.foreignKeys(5), self._Schema.getConditions())
+            
+    def smartInsertEx(self, row, colList = []) : 
+        """
+        Does a smartInsert on the multi tables.
+        """ 
+        useList = colList
+        if len(useList) == 0 : 
+            useList = row.keys()
+        row.fixRow(self._Schema.foreignKeys(5), \
+                    self._Schema.getConditions())
+        tableList = self._Schema.names()
+        for subSchemaName in tableList :
+            subTable = self._SubSchemaNameToSubTableMap[subSchemaName]
+            if subSchemaName in row.availableSchemas() : 
+                for item in row.getData(subSchemaName) : 
+                    if len(item.keys()) > 0 : 
+                        pk = subTable.smartInsertEx(item, item.keys(), \
+                            skipOnEmpty = row.skipOnEmpty(subSchemaName))
+            row.fixRow(self._Schema.foreignKeys(5), self._Schema.getConditions())
+            
 
     def select(self, colList, conditions) : 
         """
@@ -1903,10 +1967,13 @@ class Table(TableInterface) :
         useList = colList
         if len(useList) == 0 : 
             useList = self.attributes()
-        # Flatten out the fk references in the attributes
+
+        # Put attributes into tb.at format.
+        # Flatten out the fk references in the attributes.
         useList2 = []
         for item in useList : 
-            tb, at, fk = SchemaInterface._ParseKey(item)
+            mItem = self._Schema.uniqueMatchAttribute(item)
+            tb, at, fk = SchemaInterface._ParseKey(mItem)
             tryKey = tb + '.' + at
             if not tryKey in useList2 : 
                 useList2.append(tryKey)
@@ -1916,59 +1983,256 @@ class Table(TableInterface) :
         newConditions = [] 
         for cond in conditions : 
             lhs, rhs, theta = SchemaInterface._ParseCondition(cond)
-            if len(self.schema().matchAttribute(lhs)) > 0 : 
-                tb, at, fk = SchemaInterface._ParseKey(lhs)
+            if SchemaInterface._IsLiteral(lhs) : 
+                nlhs = lhs
+            else : 
+                ulhs = self._Schema.uniqueMatchAttribute(lhs)
+                tb, at, fk = SchemaInterface._ParseKey(ulhs)
                 if tb != None : 
                     nlhs = tb + '.' + at
                 else : 
                     nlhs = at
+            if SchemaInterface._IsLiteral(rhs) : 
+                nrhs = rhs
             else : 
-                nlhs = lhs
-            tb, at, fk = SchemaInterface._ParseKey(rhs)
-            if len(self.schema().matchAttribute(rhs)) > 0 : 
-                tb, at, fk = SchemaInterface._ParseKey(rhs)
+                urhs = self._Schema.uniqueMatchAttribute(rhs)
+                tb, at, fk = SchemaInterface._ParseKey(urhs)
                 if tb != None : 
                     nrhs = tb + '.' + at
                 else : 
-                    nrhs = at
-            else : 
-                nrhs = rhs
+                    nrhs = at            
             ncond = nlhs + ' ' + theta + ' ' + nrhs
             newConditions.append(ncond)
 
         # Do the query
-        query = self._SqlSelect(useList, newConditions)
+        query = self._SqlSelect(useList, newConditions + \
+                         self._Schema.getConditions())
         results = self._Connection.queryExecuteWithResults(query)
         schemaReturned = results[0]
         objResult = []
         for row in results[1:] : 
             wRow = Row(self._Schema)
             for i in range(len(useList)) : 
-                # This may be ambiguous now
+                # This may be ambiguous now!
                 wRow[useList[i]] = row[i]
             objResult.append(wRow)
         return objResult
 
-    def smartSelect(self, colList, conditions) : 
+    def smartSelect(self, conditions, fixRows = 0) : 
         """
-        Does a multi-table select that completely retrieves
-        the objects.
+        Does a multi table select.  colList should be in 
+        TableName.AttributeName format.  What gets returned
+        is more or less just a flat row, and the attributes 
+        in the column list and conditions are flattened as
+        well.
         """
-        pass
+        # Get the initial attributes from the given select conditions.
+        # Scan the conditions for non-literals, and add those to the 
+        # list in full tb.at(fk) format.
+        initialAttributes = []
+        for cond in conditions : 
+            lhs, rhs, theta = SchemaInterface._ParseCondition(cond)
+            for x in [lhs, rhs] : 
+                if not SchemaInterface._IsLiteral(x) : 
+                    # This will throw an exception if x is ambiguous
+                    xx = self._Schema.uniqueMatchAttribute(x)
+                    initialAttributes.append(xx)
 
-    def _SqlSelect(self, colList, conditions) : 
+        # Start building the actual select list from the initialAttributes.
+        # Start by stripping off the (fk) parts from the initial attributes
+        # while keeping track of what (fk) is a map of tb -> fk.   If somehow
+        # more than one (fk) exists for a given tb, throw an exception.
+        useList = []
+        tableList = {}
+        for item in initialAttributes : 
+            mItem = self._Schema.uniqueMatchAttribute(item)
+            tb, at, fk = SchemaInterface._ParseKey(mItem)
+            if tb not in tableList.keys() : 
+                tableList[tb] = fk
+            else : 
+                if fk != tableList[tb] : 
+                    raise ViewObjectLayer(\
+                       "Cannot select on more than one instance of the same table.", \
+                       Class = "Table", \
+                       Method = "smartSelect", \
+                       Module = "ViewObjectLayer", \
+                       ExistingInstance = tb + '(' + tableList[tb] + ')', \
+                       ExtraInstance = tb + '(' + fk + ')', \
+                       Hint = "Try writing a complex query with temporary tables.")
+            useList.append(tb + '.' + at)
+
+        # Add other attributes from the same tables in the select from clause
+        for tb in tableList.keys() : 
+            sch = self._Schema.subSchema(tb)
+            for attr in sch.attributes() : 
+                newAttr = tb + '.' + attr
+                if not newAttr in useList : 
+                    useList.append(newAttr)
+
+        # Walk backwards from the foreign key relationships in the 
+        # tableList to get a fuller object to query.
+        foreignKeys = self._Schema.foreignKeys(5)
+        res = self._NewTablesFromForeignKeysInMultiSelect(foreignKeys, tableList.keys(), 1)
+        while len(res) > 0 :
+            for tbfk in res :
+                tb = tbfk[0]
+                fk = tbfk[1] 
+                if tb not in tableList.keys() : 
+                    tableList[tb] = fk
+            res = self._NewTablesFromForeignKeysInMultiSelect(foreignKeys, tableList.keys(), 1)
+
+        # Walk forwards from the foreign key relationships in the 
+        # tableList to get a fuller object to query.
+        res = self._NewTablesFromForeignKeysInMultiSelect(foreignKeys, tableList.keys(), 0)
+        while len(res) > 0 :
+            for tbfk in res :
+                tb = tbfk[0]
+                fk = tbfk[1] 
+                if tb not in tableList.keys() : 
+                    tableList[tb] = fk
+            res = self._NewTablesFromForeignKeysInMultiSelect(foreignKeys, tableList.keys(), 0)
+
+        # Add attributes for newly added tables
+        for tb in tableList.keys() : 
+            sch = self._Schema.subSchema(tb)
+            for attr in sch.attributes() : 
+                newAttr = tb + '.' + attr
+                if not newAttr in useList : 
+                    useList.append(newAttr)
+
+        # Get the correct conditions to use based on what tables are 
+        # included.
+        newConditions = [] 
+        allConditions = conditions + self._Schema.getConditions()
+        for cond in allConditions : 
+            tbl = atl = fkl = None
+            tbr = atr = fkr = None
+
+            lhs, rhs, theta = SchemaInterface._ParseCondition(cond)
+            if SchemaInterface._IsLiteral(lhs) : 
+                nlhs = lhs
+            else : 
+                ulhs = self._Schema.uniqueMatchAttribute(lhs)
+                tbl, atl, fkl = SchemaInterface._ParseKey(ulhs)
+                if tbl != None : 
+                    nlhs = tbl + '.' + atl
+                else : 
+                    nlhs = atl
+            if SchemaInterface._IsLiteral(rhs) : 
+                nrhs = rhs
+            else : 
+                urhs = self._Schema.uniqueMatchAttribute(rhs)
+                tbr, atr, fkr = SchemaInterface._ParseKey(urhs)
+                if tbr != None : 
+                    nrhs = tbr + '.' + atr
+                else : 
+                    nrhs = atr            
+
+            ncond = nlhs + ' ' + theta + ' ' + nrhs
+            ok = 1
+            if tbl != None : 
+                if tbl in tableList.keys() :  
+                   if tableList[tbl] != fkl : 
+                       ok = 0
+                else : 
+                    ok = 0
+            if tbr != None : 
+                if tbr in tableList.keys() :  
+                   if tableList[tbr] != fkr : 
+                       ok = 0
+                else : 
+                    ok = 0
+            if ok == 1 : 
+                newConditions.append(ncond)
+
+        # Do the query
+        query = self._SqlSelect(useList, newConditions, tableList.keys())
+        results = self._Connection.queryExecuteWithResults(query)
+        schemaReturned = results[0]
+        objResult = []
+        for row in results[1:] : 
+            wRow = Row(self._Schema)
+            for i in range(len(useList)) : 
+                tb, at, fk = SchemaInterface._ParseKey(useList[i])
+                wRow[useList[i]] = row[i]
+            objResult.append(wRow)
+
+        # Fix the results and import new rows
+        if fixRows != 0 : 
+
+            # To be fixed later
+
+            tablesLeft = {}
+            for tableName in self._Schema.names() : 
+                if not tableName in tableList.keys() : 
+                    tablesLeft[tableName] = []
+            fixedAttributes = [] 
+            for wRow in objResult : 
+                fixed = wRow.fixRow(self._Schema.foreignKeys(5), \
+                        self._Schema.getConditions(), 1)
+                for fa in fixed :  
+                    if not fa in fixedAttributes : 
+                        fixedAttributes.append(fa)
+            for fa in fixedAttributes : 
+                tb, at, fk = SchemaInterface._ParseKey(fa)
+                if tb in tablesLeft.keys() : 
+                    if fk not in tablesLeft[tb] : 
+                        tablesLeft[tb].append(fk)
+
+            # Should be in a for loop over tablesLeft.keys()
+            for keyTable in tablesLeft.keys() : 
+                fgetconditions = self._Schema.getConditions()
+                nfgetconditions = []
+                for cond in fgetconditions :  
+                    kick = 0
+                    lhs, rhs, theta = SchemaInterface._ParseCondition(cond)
+                    if not SchemaInterface._IsLiteral(lhs) : 
+                        tb, at, fk = SchemaInterface._ParseKey(lhs)
+                        if not tb == keyTable : 
+                            kick = 1
+                    if not SchemaInterface._IsLiteral(rhs) : 
+                        tb, at, fk = SchemaInterface._ParseKey(rhs)
+                        if not tb == keyTable : 
+                            kick = 1
+                    if not kick == 1 : nfgetconditions.append(cond)
+
+
+        return objResult
+
+    def _NewTablesFromForeignKeysInMultiSelect(self, forky, tably, dir = 0) : 
+        """
+        This highly specialized function checks for new tables connected
+        to the tables in tb by foreign keys IN foreign key direction.  
+        This only returns one step at a time, so that if x is two steps 
+        away from a table in tb, it will not be added.
+        """
+        retval = []
+        for target, source in forky.items() :             
+            tb1, at1, fk1 = SchemaInterface._ParseKey(source) 
+            tb2, at2, fk2 = SchemaInterface._ParseKey(target) 
+            if dir == 1 : 
+                if tb1 in tably and tb2 not in retval and tb2 not in tably : 
+                    retval.append((tb2, fk1))
+            else : 
+                if tb2 in tably and tb1 not in retval and tb1 not in tably : 
+                    retval.append((tb1, fk2))
+        return retval
+
+    def _SqlSelect(self, colList, conditions, tblNames = None) : 
         """
         Writes SQL for select. 
         """
+        names = tblNames 
+        if names == None : 
+            names = self._Schema.names()
         query = "select"
         query += " " + ', '.join(colList) + " "
         query += "from"
         query += " " + \
-                 ", ".join(self._Schema.names())
-        allConditions = self._Schema.getConditions() + conditions
-        if len(allConditions) > 0 : 
+                 ", ".join(names)
+        if len(conditions) > 0 : 
             query += " where "
-            query += " AND ".join(allConditions)
+            query += " AND ".join(conditions)
         query += ";"
         return query
 

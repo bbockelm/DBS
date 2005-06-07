@@ -1,722 +1,705 @@
 -- ======================================================================
--- ===   Sql Script for Database : DBS Prototype
+-- ===   sql script for database : dbs prototype
 -- ===
--- === Build : 136
+-- === build : 137
 -- ======================================================================
 
-CREATE TABLE Person
+create table person
   (
-    PersonID              int,
-    Name                  varchar(80)    unique not null,
-    DistinguishedName     varchar(256)   unique not null,
-    ContactInfo           varchar(256)   not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    personid              int,
+    name                  varchar(80)    unique not null,
+    distinguishedname     varchar(255)   unique not null,
+    contactinfo           varchar(255)   not null,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(PersonID),
+    primary key(personid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE Role
+create table role
   (
-    RoleID                int,
-    RoleName              varchar(80)     unique not null,
-    RoleDescription       varchar(1024)   not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    roleid                int,
+    rolename              varchar(80)    unique not null,
+    roledescription       varchar(255)   not null,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(RoleID),
+    primary key(roleid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE AssignedRole
+create table assignedrole
   (
-    AssignedRoleID        int,
-    PersonID              int    not null,
-    RoleID                int    not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    assignedroleid        int,
+    personid              int    not null,
+    roleid                int    not null,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(AssignedRoleID),
-    unique(PersonID,RoleID),
+    primary key(assignedroleid),
+    unique(personid,roleid),
 
-    foreign key(PersonID) references Person(PersonID) on update CASCADE on delete CASCADE,
-    foreign key(RoleID) references Role(RoleID) on update CASCADE on delete CASCADE,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(personid) references person(personid) on update cascade on delete cascade,
+    foreign key(roleid) references role(roleid) on update cascade on delete cascade,
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE PhysicsGroup
+create table physicsgroup
   (
-    PhysicsGroupID        int,
-    PhysicsGroupName      varchar(80)   unique not null,
-    PhysicsGroupConvener  int,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    physicsgroupid        int,
+    physicsgroupname      varchar(80)   unique not null,
+    physicsgroupconvener  int,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(PhysicsGroupID),
+    primary key(physicsgroupid),
 
-    foreign key(PhysicsGroupConvener) references Person(PersonID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(physicsgroupconvener) references person(personid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE AnalysisDatasetSubtype
+create table analysisdatasetsubtype
   (
-    AnalysisDatasetTypeID          int,
-    AnalysisDatasetTypeName        varchar(80)     unique not null,
-    AnalysisDatasetTypeAnnotation  varchar(1024)   not null,
-    CreatedBy                      int,
-    CreationDate                   date,
-    LastModifiedBy                 int,
-    LastModificationDate           date,
+    analysisdatasettypeid          int,
+    analysisdatasettypename        varchar(80)    unique not null,
+    analysisdatasettypeannotation  varchar(255)   not null,
+    createdby                      int,
+    creationdate                   date,
+    lastmodifiedby                 int,
+    lastmodificationdate           date,
 
-    primary key(AnalysisDatasetTypeID),
+    primary key(analysisdatasettypeid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ParameterSet
+create table parameterset
   (
-    ParameterSetID          int,
-    ParameterSetName        varchar(80)     not null,
-    ParameterSetVersion     varchar(80)     not null,
-    ParameterSetAnnotation  varchar(1024)   not null,
-    Composite               char(1)         not null,
-    CreationDate            date,
-    CreatedBy               int,
-    LastModificationDate    date,
-    LastModifiedBy          int,
+    parametersetid          int,
+    parametersetname        varchar(80)    not null,
+    parametersetversion     varchar(80)    not null,
+    parametersetannotation  varchar(255)   not null,
+    composite               varchar(80)    not null,
+    creationdate            date,
+    createdby               int,
+    lastmodificationdate    date,
+    lastmodifiedby          int,
 
-    primary key(ParameterSetID),
-    unique(ParameterSetName,ParameterSetVersion),
+    primary key(parametersetid),
+    unique(parametersetname,parametersetversion),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(Composite IN ('y', 'n'))
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ParameterBinding
+create table parameterbinding
   (
-    ParameterBindingID    int,
-    ParameterName         varchar(80)    not null,
-    ParameterValue        varchar(256)   not null,
-    ExternalDataType      varchar(80),
-    ParameterSetID        int            not null,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
+    parameterbindingid    int,
+    parametername         varchar(80)    not null,
+    parametervalue        varchar(255)   not null,
+    externaldatatype      varchar(80),
+    parametersetid        int            not null,
+    createdby             int,
+    creationdate          date,
+    lastmodifiedby        int,
+    lastmodificationdate  date,
 
-    primary key(ParameterBindingID),
-    unique(ParameterName,ParameterSetID),
+    primary key(parameterbindingid),
+    unique(parametername,parametersetid),
 
-    foreign key(ParameterSetID) references ParameterSet(ParameterSetID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(parametersetid) references parameterset(parametersetid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE TriggerPathDescription
+create table triggerpathdescription
   (
-    TriggerPathDescriptionID  int,
-    TriggerPathDescription    varchar(256)   unique not null,
-    CreatedBy                 int,
-    CreationDate              date,
-    LastModifiedBy            int,
-    LastModificationDate      date,
+    triggerpathdescriptionid  int,
+    triggerpathdescription    varchar(255)   unique not null,
+    createdby                 int,
+    creationdate              date,
+    lastmodifiedby            int,
+    lastmodificationdate      date,
 
-    primary key(TriggerPathDescriptionID),
+    primary key(triggerpathdescriptionid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE MCDescription
+create table mcdescription
   (
-    MCDescriptionID       int,
-    MCChannelDescription  varchar(256)   not null,
-    MCProduction          varchar(256),
-    MCDecayChain          varchar(256),
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
+    mcdescriptionid       int,
+    mcchanneldescription  varchar(255)   not null,
+    mcproduction          varchar(255),
+    mcdecaychain          varchar(255),
+    createdby             int,
+    creationdate          date,
+    lastmodifiedby        int,
+    lastmodificationdate  date,
 
-    primary key(MCDescriptionID),
-    unique(MCChannelDescription,MCProduction,MCDecayChain),
+    primary key(mcdescriptionid),
+    unique(mcchanneldescription,mcproduction,mcdecaychain),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE CompositeParameterSet
+create table compositeparameterset
   (
-    CompositeParameterSetID  int,
-    ChildParameterSetID      int,
+    compositeparametersetid  int,
+    childparametersetid      int,
 
-    primary key(CompositeParameterSetID,ChildParameterSetID),
+    primary key(compositeparametersetid,childparametersetid),
 
-    foreign key(CompositeParameterSetID) references ParameterSet(ParameterSetID) on update CASCADE on delete CASCADE,
-    foreign key(ChildParameterSetID) references ParameterSet(ParameterSetID)
+    foreign key(compositeparametersetid) references parameterset(parametersetid) on update cascade on delete cascade,
+    foreign key(childparametersetid) references parameterset(parametersetid)
   );
 
 -- ======================================================================
 
-CREATE TABLE AnalysisDataset
+create table analysisdataset
   (
-    AnalysisDatasetID          int,
-    AnalysisDatasetAnnotation  varchar(1024)   not null,
-    AnalysisDatasetTypeID      int             not null,
-    CompositeAnalysisDataset   char(1)         not null,
-    AuxilliaryPOOLCatalog      varchar(256),
-    CreatedBy                  int,
-    CreationDate               date,
-    LastModifiedBy             int,
-    LastModificationDate       date,
+    analysisdatasetid          int,
+    analysisdatasetannotation  varchar(255)   not null,
+    analysisdatasettypeid      int            not null,
+    compositeanalysisdataset   varchar(80)    not null,
+    auxilliarypoolcatalog      varchar(255),
+    createdby                  int,
+    creationdate               date,
+    lastmodifiedby             int,
+    lastmodificationdate       date,
 
-    primary key(AnalysisDatasetID),
+    primary key(analysisdatasetid),
 
-    foreign key(AnalysisDatasetTypeID) references AnalysisDatasetSubtype(AnalysisDatasetTypeID) on update SET NULL on delete SET NULL,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(CompositeAnalysisDataset IN ('y', 'n'))
+    foreign key(analysisdatasettypeid) references analysisdatasetsubtype(analysisdatasettypeid) on update set null on delete set null,
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE Stream
+create table stream
   (
-    StreamID              int             not null,
-    StreamName            varchar(80)     unique not null,
-    StreamAnnotation      varchar(1024)   not null,
-    StartDate             date,
-    EndDate               date,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    streamid              int,
+    streamname            varchar(80)    unique not null,
+    streamannotation      varchar(255)   not null,
+    startdate             date,
+    enddate               date,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(StreamID),
+    primary key(streamid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE FileStatus
+create table filestatus
   (
-    FileStatusID          int,
-    FileStatus            varchar(80)   unique not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    filestatusid          int,
+    filestatus            varchar(80)   unique not null,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(FileStatusID),
+    primary key(filestatusid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE AnalysisCollectionStatus
+create table analysiscollectionstatus
   (
-    AnalysisCollectionStatusID  int,
-    AnalysisCollectionStatus    varchar(80)   unique not null,
-    CreationDate                date,
-    CreatedBy                   int,
-    LastModificationDate        date,
-    LastModifiedBy              int,
+    analysiscollectionstatusid  int,
+    analysiscollectionstatus    varchar(80)   unique not null,
+    creationdate                date,
+    createdby                   int,
+    lastmodificationdate        date,
+    lastmodifiedby              int,
 
-    primary key(AnalysisCollectionStatusID),
+    primary key(analysiscollectionstatusid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ValidationStatus
+create table validationstatus
   (
-    ValidationStatusID    int,
-    ValidationStatus      varchar(80)   unique,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    validationstatusid    int,
+    validationstatus      varchar(80)   unique,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(ValidationStatusID),
+    primary key(validationstatusid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE FileType
+create table filetype
   (
-    FileTypeID            int,
-    FileType              varchar(80)   unique,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    filetypeid            int,
+    filetype              varchar(80)   unique,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(FileTypeID),
+    primary key(filetypeid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE CollectionType
+create table collectiontype
   (
-    CollectionTypeID      int,
-    CollectionType        varchar(80)   unique,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    collectiontypeid      int,
+    collectiontype        varchar(80)   unique,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(CollectionTypeID),
+    primary key(collectiontypeid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ApplicationFamily
+create table applicationfamily
   (
-    ApplicationFamilyID    int,
-    ApplicationFamilyName  varchar(80)   unique not null,
-    CreatedBy              int,
-    CreationDate           date,
-    LastModifiedBy         int,
-    LastModificationDate   date,
+    applicationfamilyid    int,
+    applicationfamilyname  varchar(80)   unique not null,
+    createdby              int,
+    creationdate           date,
+    lastmodifiedby         int,
+    lastmodificationdate   date,
 
-    primary key(ApplicationFamilyID),
+    primary key(applicationfamilyid),
 
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ProductionAssignment
+create table productionassignment
   (
-    ProductionAssignmentID   int,
-    ProductionRequestNumber  int           not null,
-    ProductionEra            varchar(80)   not null,
+    productionassignmentid   int,
+    productionrequestnumber  int           not null,
+    productionera            varchar(80)   not null,
 
-    primary key(ProductionAssignmentID),
-    unique(ProductionRequestNumber,ProductionEra),
+    primary key(productionassignmentid),
+    unique(productionrequestnumber,productionera),
 
-    foreign key(ProductionAssignmentID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE
+    foreign key(productionassignmentid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade
   );
 
 -- ======================================================================
 
-CREATE TABLE Block
+create table block
   (
-    BlockID         int,
-    Size            numeric(10,4),
-    Checksum        numeric(10,4),
-    OpenForWriting  char(1)         not null,
+    blockid         int,
+    size            numeric(10,4),
+    checksum        numeric(10,4),
+    openforwriting  varchar(80)     not null,
 
-    primary key(BlockID),
+    primary key(blockid),
 
-    foreign key(BlockID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE,
-
-    CHECK(OpenForWriting IN ('y', 'n'))
+    foreign key(blockid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade
   );
 
 -- ======================================================================
 
-CREATE TABLE UserCollection
+create table usercollection
   (
-    UserCollectionID          int,
-    UserCollectionAnnotation  varchar(1024)   not null,
+    usercollectionid          int,
+    usercollectionannotation  varchar(255)   not null,
 
-    primary key(UserCollectionID),
+    primary key(usercollectionid),
 
-    foreign key(UserCollectionID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE
+    foreign key(usercollectionid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade
   );
 
 -- ======================================================================
 
-CREATE TABLE Snapshot
+create table snapshot
   (
-    SnapshotID          int,
-    Query               varchar(1024)   not null,
-    SnapshotAnnotation  varchar(1024)   not null,
+    snapshotid          int,
+    query               varchar(255)   not null,
+    snapshotannotation  varchar(255)   not null,
 
-    primary key(SnapshotID),
+    primary key(snapshotid),
 
-    foreign key(SnapshotID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE
+    foreign key(snapshotid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade
   );
 
 -- ======================================================================
 
-CREATE TABLE Application
+create table application
   (
-    ApplicationID         int,
-    ExecutableName        varchar(80)   not null,
-    ApplicationVersion    varchar(80)   not null,
-    ApplicationFamily     int           not null,
-    InputCollectionType   int           not null,
-    OutputCollectionType  int           not null,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
+    applicationid         int,
+    executablename        varchar(80)   not null,
+    applicationversion    varchar(80)   not null,
+    applicationfamily     int           not null,
+    inputcollectiontype   int           not null,
+    outputcollectiontype  int           not null,
+    createdby             int,
+    creationdate          date,
+    lastmodifiedby        int,
+    lastmodificationdate  date,
 
-    primary key(ApplicationID),
-    unique(ExecutableName,ApplicationVersion,ApplicationFamily),
+    primary key(applicationid),
+    unique(executablename,applicationversion,applicationfamily),
 
-    foreign key(ApplicationFamily) references ApplicationFamily(ApplicationFamilyID),
-    foreign key(InputCollectionType) references CollectionType(CollectionTypeID),
-    foreign key(OutputCollectionType) references CollectionType(CollectionTypeID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(applicationfamily) references applicationfamily(applicationfamilyid),
+    foreign key(inputcollectiontype) references collectiontype(collectiontypeid),
+    foreign key(outputcollectiontype) references collectiontype(collectiontypeid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE CompositeAnalysisDataset
+create table compositeanalysisdataset
   (
-    CompositeAnalysisDatasetID  int,
-    ChildAnalysisDatasetID      int,
-    CreatedBy                   int,
-    CreationDate                date,
-    LastModifiedBy              int,
-    LastModificationDate        date,
+    compositeanalysisdatasetid  int,
+    childanalysisdatasetid      int,
+    createdby                   int,
+    creationdate                date,
+    lastmodifiedby              int,
+    lastmodificationdate        date,
 
-    primary key(CompositeAnalysisDatasetID,ChildAnalysisDatasetID),
+    primary key(compositeanalysisdatasetid,childanalysisdatasetid),
 
-    foreign key(CompositeAnalysisDatasetID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE,
-    foreign key(ChildAnalysisDatasetID) references AnalysisDataset(AnalysisDatasetID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(compositeanalysisdatasetid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade,
+    foreign key(childanalysisdatasetid) references analysisdataset(analysisdatasetid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE PrimaryDatasetDescription
+create table primarydatasetdescription
   (
-    PrimaryDatasetDescriptionID  int,
-    TriggerDescriptionID         int,
-    MCChannelDescriptionID       int,
-    MCDataset                    char(1)   not null,
-    CreatedBy                    int,
-    CreationDate                 date,
-    LastModifiedBy               int,
-    LastModificationDate         date,
+    primarydatasetdescriptionid  int,
+    triggerdescriptionid         int,
+    mcchanneldescriptionid       int,
+    mcdataset                    varchar(80)   not null,
+    createdby                    int,
+    creationdate                 date,
+    lastmodifiedby               int,
+    lastmodificationdate         date,
 
-    primary key(PrimaryDatasetDescriptionID),
-    unique(TriggerDescriptionID,MCChannelDescriptionID),
+    primary key(primarydatasetdescriptionid),
+    unique(triggerdescriptionid,mcchanneldescriptionid),
 
-    foreign key(TriggerDescriptionID) references TriggerPathDescription(TriggerPathDescriptionID),
-    foreign key(MCChannelDescriptionID) references MCDescription(MCDescriptionID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(MCDataset IN ('y', 'n'))
+    foreign key(triggerdescriptionid) references triggerpathdescription(triggerpathdescriptionid),
+    foreign key(mcchanneldescriptionid) references mcdescription(mcdescriptionid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE File
+create table file
   (
-    FileID                int,
-    LogicalFileName       varchar(256)   unique not null,
-    Checksum              varchar(256)   not null,
-    Size                  varchar(256)   not null,
-    FileStatus            int            not null,
-    FileType              int            not null,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
+    fileid                int,
+    logicalfilename       varchar(255)   unique not null,
+    checksum              varchar(255)   not null,
+    size                  varchar(255)   not null,
+    filestatus            int            not null,
+    filetype              int            not null,
+    createdby             int,
+    creationdate          date,
+    lastmodifiedby        int,
+    lastmodificationdate  date,
 
-    primary key(FileID),
+    primary key(fileid),
 
-    foreign key(FileStatus) references FileStatus(FileStatusID),
-    foreign key(FileType) references FileType(FileTypeID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(filestatus) references filestatus(filestatusid),
+    foreign key(filetype) references filetype(filetypeid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE PrimaryDataset
+create table primarydataset
   (
-    PrimaryDatasetID             int,
-    PrimaryDatasetName           varchar(80)     unique not null,
-    COBRADatasetName             varchar(256)    unique not null,
-    PrimaryDatasetAnnotation     varchar(1024)   not null,
-    PrimaryDatasetDescriptionID  int             not null,
-    StreamID                     int             not null,
-    PhysicsGroupID               int             not null,
-    OpenForWriting               char(1)         not null,
-    StartDate                    date,
-    EndDate                      date,
-    CreatedBy                    int,
-    CreationDate                 date,
-    LastModificationDate         date,
-    LastModifiedBy               int,
+    primarydatasetid             int,
+    primarydatasetname           varchar(80)    unique not null,
+    cobradatasetname             varchar(255)   unique not null,
+    primarydatasetannotation     varchar(255)   not null,
+    primarydatasetdescriptionid  int            not null,
+    streamid                     int            not null,
+    physicsgroupid               int            not null,
+    openforwriting               varchar(80)    not null,
+    startdate                    date,
+    enddate                      date,
+    createdby                    int,
+    creationdate                 date,
+    lastmodificationdate         date,
+    lastmodifiedby               int,
 
-    primary key(PrimaryDatasetID),
-    unique(PrimaryDatasetName,COBRADatasetName,PrimaryDatasetDescriptionID,StreamID,PhysicsGroupID),
+    primary key(primarydatasetid),
+    unique(primarydatasetname,cobradatasetname,primarydatasetdescriptionid,streamid,physicsgroupid),
 
-    foreign key(PrimaryDatasetDescriptionID) references PrimaryDatasetDescription(PrimaryDatasetDescriptionID),
-    foreign key(StreamID) references Stream(StreamID) on update SET NULL on delete SET NULL,
-    foreign key(PhysicsGroupID) references PhysicsGroup(PhysicsGroupID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(OpenForWriting IN ('y', 'n'))
+    foreign key(primarydatasetdescriptionid) references primarydatasetdescription(primarydatasetdescriptionid),
+    foreign key(streamid) references stream(streamid) on update set null on delete set null,
+    foreign key(physicsgroupid) references physicsgroup(physicsgroupid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ApplicationConfiguration
+create table applicationconfiguration
   (
-    ApplicationConfigurationID  int,
-    ApplicationID               int    not null,
-    ParameterSetID              int    not null,
-    CreatedBy                   int,
-    CreationDate                date,
-    LastModificationDate        date,
-    LastModifiedBy              int,
+    applicationconfigurationid  int,
+    applicationid               int    not null,
+    parametersetid              int    not null,
+    createdby                   int,
+    creationdate                date,
+    lastmodificationdate        date,
+    lastmodifiedby              int,
 
-    primary key(ApplicationConfigurationID),
-    unique(ApplicationID,ParameterSetID),
+    primary key(applicationconfigurationid),
+    unique(applicationid,parametersetid),
 
-    foreign key(ApplicationID) references Application(ApplicationID),
-    foreign key(ParameterSetID) references ParameterSet(ParameterSetID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(applicationid) references application(applicationid),
+    foreign key(parametersetid) references parameterset(parametersetid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ProcessingPath
+create table processingpath
   (
-    ProcessingPathID        int,
-    ParentProcessingPathID  int,
-    ProcessingRecordID      int            not null,
-    AggregatedPath          varchar(256),
-    CreationDate            date,
-    CreatedBy               int,
-    LastModificationDate    date,
-    LastModifiedBy          int,
+    processingpathid        int,
+    parentprocessingpathid  int,
+    processingrecordid      int            not null,
+    aggregatedpath          varchar(255),
+    creationdate            date,
+    createdby               int,
+    lastmodificationdate    date,
+    lastmodifiedby          int,
 
-    primary key(ProcessingPathID),
-    unique(ParentProcessingPathID,ProcessingRecordID),
+    primary key(processingpathid),
+    unique(parentprocessingpathid,processingrecordid),
 
-    foreign key(ParentProcessingPathID) references ProcessingPath(ProcessingPathID),
-    foreign key(ProcessingRecordID) references ApplicationConfiguration(ApplicationConfigurationID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(parentprocessingpathid) references processingpath(processingpathid),
+    foreign key(processingrecordid) references applicationconfiguration(applicationconfigurationid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE ProcessedDataset
+create table processeddataset
   (
-    ProcessedDatasetID    int,
-    PrimaryDatasetID      int           not null,
-    ProcessingPathID      int           not null,
-    OpenForWriting        char(1)       not null,
-    COBRAOwnerName        varchar(80)   not null,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
+    processeddatasetid    int,
+    primarydatasetid      int           not null,
+    processingpathid      int           not null,
+    openforwriting        varchar(80)   not null,
+    cobraownername        varchar(80)   not null,
+    createdby             int,
+    creationdate          date,
+    lastmodifiedby        int,
+    lastmodificationdate  date,
 
-    primary key(ProcessedDatasetID),
-    unique(PrimaryDatasetID,ProcessingPathID),
+    primary key(processeddatasetid),
+    unique(primarydatasetid,processingpathid),
 
-    foreign key(PrimaryDatasetID) references PrimaryDataset(PrimaryDatasetID) on update SET NULL on delete SET NULL,
-    foreign key(ProcessingPathID) references ProcessingPath(ProcessingPathID) on update SET NULL on delete SET NULL,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(OpenForWriting IN ('y', 'n'))
+    foreign key(primarydatasetid) references primarydataset(primarydatasetid) on update set null on delete set null,
+    foreign key(processingpathid) references processingpath(processingpathid) on update set null on delete set null,
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE EventCollection
+create table eventcollection
   (
-    EventCollectionID         int,
-    ProcessedDatasetID        int           not null,
-    EventCollectionIndex      int           not null,
-    PrimaryEventCollection    char(1)       not null,
-    CompositeEventCollection  char(1)       not null,
-    RunIDString               varchar(80),
-    CreationDate              date,
-    CreatedBy                 int,
-    LastModificationDate      date,
-    LastModifiedBy            int,
+    eventcollectionid         int,
+    processeddatasetid        int           not null,
+    eventcollectionindex      int           not null,
+    primaryeventcollection    varchar(80)   not null,
+    compositeeventcollection  varchar(80)   not null,
+    runidstring               varchar(80),
+    creationdate              date,
+    createdby                 int,
+    lastmodificationdate      date,
+    lastmodifiedby            int,
 
-    primary key(EventCollectionID),
-    unique(ProcessedDatasetID,EventCollectionIndex),
+    primary key(eventcollectionid),
+    unique(processeddatasetid,eventcollectionindex),
 
-    foreign key(ProcessedDatasetID) references ProcessedDataset(ProcessedDatasetID) on update SET NULL on delete SET NULL,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(PrimaryEventCollection IN ('y', 'n')),
-    CHECK(CompositeEventCollection IN ('y', 'n'))
+    foreign key(processeddatasetid) references processeddataset(processeddatasetid) on update set null on delete set null,
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE PrimaryEventCollection
+create table primaryeventcollection
   (
-    PrimaryECID                int,
-    PointerToExternalParamsDB  int   not null,
+    primaryecid                int,
+    pointertoexternalparamsdb  int   not null,
 
-    primary key(PrimaryECID),
+    primary key(primaryecid),
 
-    foreign key(PrimaryECID) references EventCollection(EventCollectionID) on update CASCADE on delete CASCADE
+    foreign key(primaryecid) references eventcollection(eventcollectionid) on update cascade on delete cascade
   );
 
 -- ======================================================================
 
-CREATE TABLE CompositeEventCollection
+create table compositeeventcollection
   (
-    CompositeECID         int,
-    ChildECID             int,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
+    compositeecid         int,
+    childecid             int,
+    createdby             int,
+    creationdate          date,
+    lastmodifiedby        int,
+    lastmodificationdate  date,
 
-    primary key(CompositeECID,ChildECID),
-    unique(CompositeECID,ChildECID),
+    primary key(compositeecid,childecid),
+    unique(compositeecid,childecid),
 
-    foreign key(CompositeECID) references EventCollection(EventCollectionID) on update CASCADE on delete CASCADE,
-    foreign key(ChildECID) references EventCollection(EventCollectionID) on update SET NULL on delete SET NULL,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(compositeecid) references eventcollection(eventcollectionid) on update cascade on delete cascade,
+    foreign key(childecid) references eventcollection(eventcollectionid) on update set null on delete set null,
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE AnalysisCollectionData
+create table analysiscollectiondata
   (
-    AnalysisCollectionDataID  int,
-    AnalysisDatasetID         int             unique,
-    EventCollectionID         int             unique,
-    NumberOfEvents            numeric(10,4)   not null,
-    EstimatedLuminosity       varchar(80),
-    AnalysisCollectionStatus  int             not null,
-    ValidationStatus          int             not null,
-    COBRACollectionName       varchar(256)    not null,
-    StartingRunNumber         int,
-    EndingRunNumber           int,
-    ContinuousRunRange        char(1),
-    StartingEventNumber       int,
-    EndingEventNumber         int,
-    OtherQueryableMetadata    int,
-    CreationDate              date,
-    CreatedBy                 int,
-    LastModificationDate      date,
-    LastModifiedBy            int,
+    analysiscollectiondataid  int,
+    analysisdatasetid         int             unique,
+    eventcollectionid         int             unique,
+    numberofevents            numeric(10,4)   not null,
+    estimatedluminosity       varchar(80),
+    analysiscollectionstatus  int             not null,
+    validationstatus          int             not null,
+    cobracollectionname       varchar(255)    not null,
+    startingrunnumber         int,
+    endingrunnumber           int,
+    continuousrunrange        varchar(80),
+    startingeventnumber       int,
+    endingeventnumber         int,
+    otherqueryablemetadata    int,
+    creationdate              date,
+    createdby                 int,
+    lastmodificationdate      date,
+    lastmodifiedby            int,
 
-    primary key(AnalysisCollectionDataID),
-    unique(AnalysisDatasetID,EventCollectionID),
+    primary key(analysiscollectiondataid),
+    unique(analysisdatasetid,eventcollectionid),
 
-    foreign key(AnalysisDatasetID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE,
-    foreign key(EventCollectionID) references EventCollection(EventCollectionID) on update CASCADE on delete CASCADE,
-    foreign key(AnalysisCollectionStatus) references AnalysisCollectionStatus(AnalysisCollectionStatusID),
-    foreign key(ValidationStatus) references ValidationStatus(ValidationStatusID),
-    foreign key(OtherQueryableMetadata) references ParameterSet(ParameterSetID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(ContinuousRunRange IN ('y', 'n'))
+    foreign key(analysisdatasetid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade,
+    foreign key(eventcollectionid) references eventcollection(eventcollectionid) on update cascade on delete cascade,
+    foreign key(analysiscollectionstatus) references analysiscollectionstatus(analysiscollectionstatusid),
+    foreign key(validationstatus) references validationstatus(validationstatusid),
+    foreign key(otherqueryablemetadata) references parameterset(parametersetid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE EvCollAnData
+create table evcollandata
   (
-    EvCollAnDataID        int,
-    AnalysisDatasetID     int    not null,
-    EventCollectionID     int    not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    evcollandataid        int,
+    analysisdatasetid     int    not null,
+    eventcollectionid     int    not null,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(EvCollAnDataID),
-    unique(AnalysisDatasetID,EventCollectionID),
+    primary key(evcollandataid),
+    unique(analysisdatasetid,eventcollectionid),
 
-    foreign key(AnalysisDatasetID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE,
-    foreign key(EventCollectionID) references EventCollection(EventCollectionID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(analysisdatasetid) references analysisdataset(analysisdatasetid) on update cascade on delete cascade,
+    foreign key(eventcollectionid) references eventcollection(eventcollectionid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================
 
-CREATE TABLE EvCollFile
+create table evcollfile
   (
-    EvCollFileID          int,
-    EvCollID              int    not null,
-    FileID                int    not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
+    evcollfileid          int,
+    evcollid              int    not null,
+    fileid                int    not null,
+    creationdate          date,
+    createdby             int,
+    lastmodificationdate  date,
+    lastmodifiedby        int,
 
-    primary key(EvCollFileID),
-    unique(EvCollID,FileID),
+    primary key(evcollfileid),
+    unique(evcollid,fileid),
 
-    foreign key(EvCollID) references EventCollection(EventCollectionID) on update CASCADE on delete CASCADE,
-    foreign key(FileID) references File(FileID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
+    foreign key(evcollid) references eventcollection(eventcollectionid) on update cascade on delete cascade,
+    foreign key(fileid) references file(fileid),
+    foreign key(createdby) references person(personid),
+    foreign key(lastmodifiedby) references person(personid)
   );
 
 -- ======================================================================

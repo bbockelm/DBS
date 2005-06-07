@@ -39,8 +39,8 @@ GEG 25-Apr-2005 : Removed "SQL" style methods from Connection class.
 GEG 27-Apr-2005 : Cleaned up the comments and exceptions.
 """
 
-__revision__ = "$Revision: 1.7 $"
-__version__ = "$Id: ConnectionLayer.py,v 1.7 2005/05/20 04:47:54 ggraham Exp $"
+__revision__ = "$Revision: 1.8 $"
+__version__ = "$Id: ConnectionLayer.py,v 1.8 2005/05/23 20:33:13 ggraham Exp $"
 
 
 import pgdb as databaseDriver
@@ -52,9 +52,10 @@ import os
 # Try to read from a file someday.
 # These defaults are for postgres/pgdb module.
 _defaultConnectionParms = {'database':'ggtest', \
-                          'user':'ggraham'}
+                           'user':'ggraham', \
+                           'host':'cmssrv18'}
 # Module debug flag
-_ConnectionLayer_Debug = 1
+_ConnectionLayer_Debug = 0
 
 
 class JacuzziException(genException.genException) : 

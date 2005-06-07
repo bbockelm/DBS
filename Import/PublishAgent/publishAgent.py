@@ -136,7 +136,7 @@ class DBSpublisher :
         self.cParms = {}
 
         # View that descibes Application Configurations
-        self.Applications  = MultiSchema(self.fkExclusionAttributes)
+        self.Applications  = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.Applications.addSchema(allSchemas['application'])
         self.Applications.addSchema(allSchemas['applicationfamily']) 
         self.Applications.addSchema(allSchemas['collectiontype']) 
@@ -155,7 +155,7 @@ class DBSpublisher :
         self.ApplicationsTable.initializeSequencers()
 
         # View that describes Administrative roles
-        self.Administrative = MultiSchema(self.fkExclusionAttributes)
+        self.Administrative = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.Administrative.addSchema(allSchemas['person'])
         self.Administrative.addSchema(allSchemas['role'])
         self.Administrative.addSchema(allSchemas['assignedrole'])
@@ -165,27 +165,36 @@ class DBSpublisher :
         self.AdministrativeTable.initializeSequencers()
 
         # View that describes Person
-        self.Person = MultiSchema(self.fkExclusionAttributes)
+        self.Person = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.Person.addSchema(allSchemas['person'])
         self.PersonTable = Table(self.Person, **self.cParms)
         self.PersonTable.initializeSequencers()
 
         # View that describes Role
-        self.Role = MultiSchema(self.fkExclusionAttributes)
+        self.Role = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.Role.addSchema(allSchemas['role'])
         self.RoleTable = Table(self.Role, **self.cParms)
         self.RoleTable.initializeSequencers()
 
         # View that describes PhysicsGroup
-        self.PhysicsGroup = MultiSchema(self.fkExclusionAttributes)
+        self.PhysicsGroup = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.PhysicsGroup.addSchema(allSchemas['physicsgroup'])
         self.PhysicsGroup.addSchema(allSchemas['person'])
         self.PhysicsGroup.addCondition('physicsgroup.physicsgroupconvener = person.personid')
         self.PhysicsGroupTable = Table(self.PhysicsGroup, **self.cParms)
         self.PhysicsGroupTable.initializeSequencers()
 
+        # View for generic parameter sets
+        self.GenParameterSets = MultiSchema(fkExcl = self.fkExclusionAttributes)
+        self.GenParameterSets.addSchema(allSchemas['parameterset'])
+        self.GenParameterSets.addSchema(allSchemas['parameterbinding'])
+        self.GenParameterSets.addCondition('parameterset.parametersetid = ' + \
+                                           'parameterbinding.parametersetid')
+        self.GenParameterSetsTable = Table(self.GenParameterSets, **self.cParms)
+        self.GenParameterSetsTable.initializeSequencers()
+
         # View that describes EventCollections
-        self.EventCollections = MultiSchema(self.fkExclusionAttributes)
+        self.EventCollections = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.EventCollections.addSchema(allSchemas['filetype'])
         self.EventCollections.addSchema(allSchemas['filestatus'])
         self.EventCollections.addSchema(allSchemas['file'])
@@ -194,13 +203,13 @@ class DBSpublisher :
         self.EventCollections.addSchema(allSchemas['analysiscollectiondata'])
         self.EventCollections.addSchema(allSchemas['validationstatus'])
         self.EventCollections.addSchema(allSchemas['analysiscollectionstatus'])
-        self.EventCollections.addSchema(allSchemas['parameterset'])
-        self.EventCollections.addSchema(allSchemas['parameterbinding'],1)
+#        self.EventCollections.addSchema(allSchemas['parameterset'])
+#        self.EventCollections.addSchema(allSchemas['parameterbinding'],1)
         self.EventCollections.addCondition('evcollfile.fileid = file.fileid')
-        self.EventCollections.addCondition('parameterset.parametersetid = ' + \
-                                           'parameterbinding.parametersetid')
-        self.EventCollections.addCondition('analysiscollectiondata.otherqueryablemetadata' + \
-                                               ' = parameterset.parametersetid')
+#        self.EventCollections.addCondition('parameterset.parametersetid = ' + \
+#                                           'parameterbinding.parametersetid')
+#        self.EventCollections.addCondition('analysiscollectiondata.otherqueryablemetadata' + \
+#                                               ' = parameterset.parametersetid')
         self.EventCollections.addCondition('file.filetype = filetype.filetypeid')
         self.EventCollections.addCondition('file.filestatus = filestatus.filestatusid')
         self.EventCollections.addCondition('evcollfile.evcollid = ' + \
@@ -216,7 +225,7 @@ class DBSpublisher :
 
         # View that describes EventCollections with complex 
         # parentage
-        self.EventCollections2 = MultiSchema(self.fkExclusionAttributes)
+        self.EventCollections2 = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.EventCollections2.addSchema(allSchemas['filetype'])
         self.EventCollections2.addSchema(allSchemas['filestatus'])
         self.EventCollections2.addSchema(allSchemas['file'])
@@ -226,13 +235,13 @@ class DBSpublisher :
         self.EventCollections2.addSchema(allSchemas['analysiscollectiondata'])
         self.EventCollections2.addSchema(allSchemas['validationstatus'])
         self.EventCollections2.addSchema(allSchemas['analysiscollectionstatus'])
-        self.EventCollections2.addSchema(allSchemas['parameterset'])
-        self.EventCollections2.addSchema(allSchemas['parameterbinding'],1)
+#        self.EventCollections2.addSchema(allSchemas['parameterset'])
+#        self.EventCollections2.addSchema(allSchemas['parameterbinding'],1)
         self.EventCollections2.addCondition('evcollfile.fileid = file.fileid')
-        self.EventCollections2.addCondition('parameterset.parametersetid = ' + \
-                                           'parameterbinding.parametersetid')
-        self.EventCollections2.addCondition('analysiscollectiondata.otherqueryablemetadata' + \
-                                               ' = parameterset.parametersetid')
+#        self.EventCollections2.addCondition('parameterset.parametersetid = ' + \
+#                                           'parameterbinding.parametersetid')
+#        self.EventCollections2.addCondition('analysiscollectiondata.otherqueryablemetadata' + \
+#                                               ' = parameterset.parametersetid')
         self.EventCollections2.addCondition('file.filetype = filetype.filetypeid')
         self.EventCollections2.addCondition('file.filestatus = filestatus.filestatusid')
         self.EventCollections2.addCondition('compositeeventcollection.childecid = ' + \
@@ -249,7 +258,7 @@ class DBSpublisher :
         self.EventCollectionsTable2.initializeSequencers()
 
         # View that describes primary/processed dataset parameters
-        self.PrimaryDataset = MultiSchema(self.fkExclusionAttributes)
+        self.PrimaryDataset = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.PrimaryDataset.addSchema(allSchemas['triggerpathdescription'])
         self.PrimaryDataset.addSchema(allSchemas['mcdescription'])
         self.PrimaryDataset.addSchema(allSchemas['primarydatasetdescription'])
@@ -269,7 +278,7 @@ class DBSpublisher :
         self.PrimaryDatasetTable.initializeSequencers()
 
         # View that describes processing path - self referencing
-        self.ProcessingPath = MultiSchema(self.fkExclusionAttributes)
+        self.ProcessingPath = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.ProcessingPath.addSchema(allSchemas['processingpath'])
         self.ProcessingPath.addSchema(allSchemas['processeddataset'])
         self.ProcessingPath.addSchema(allSchemas['primarydataset'])
@@ -281,7 +290,7 @@ class DBSpublisher :
         self.ProcessingPathTable.initializeSequencers()
 
         # View that describes AnalysisDatasets
-        self.AnalysisDataset = MultiSchema(self.fkExclusionAttributes)
+        self.AnalysisDataset = MultiSchema(fkExcl = self.fkExclusionAttributes)
         self.AnalysisDataset.addSchema(allSchemas['analysisdataset'])
         self.AnalysisDataset.addSchema(allSchemas['evcollandata'])
         self.AnalysisDataset.addSchema(allSchemas['analysiscollectiondata'])
@@ -293,7 +302,6 @@ class DBSpublisher :
         self.AnalysisDatasetTable = Table(self.AnalysisDataset, **self.cParms)
         self.AnalysisDatasetTable.initializeSequencers()
         self._Connection = self.AnalysisDatasetTable.getConnection()
-        print self._Connection.connectionName()
 
     def resetTransaction(self) : 
         """ 
@@ -524,7 +532,7 @@ class DBSpublisher :
 
     def publishEventCollection(self, evcollStatus, validationStatus, nEvents, \
           luminosity, collectionName, procDatasetID, evCollIndex, primaryEC, \
-          paramSetName, parameterBindings, filelist) : 
+          paramSetName, parameterBindings, filelist, oqm = None) : 
         """
         API to publish an EventCollection
         The arguments are in order: 
@@ -554,19 +562,19 @@ class DBSpublisher :
             boolean: is this a "primary" evCollection?  'y' for CMKIN, 'n' 
                        otherwise.
 
-          paramSetName
+          paramSetName 
             parameter set name : this is a unique name for the parameter set
                        associated with the Event Collection.  (This will be
                        automatically generated in the future.)
 
-          parameterBindings
+          parameterBindings 
             parameters : this is a dictionary containing the parameters 
                        describing this Event Collection. 
 
           filelist
             file list: list of tuples of 
                  (logical file name, checksum, size, status, type)            
-     
+
         NOTES: 
             This API is useful when event collections can be lined up  
             on the event collection index exactly across different 
@@ -585,18 +593,24 @@ class DBSpublisher :
         rowData['eventcollection.primaryeventcollection'] = primaryEC
         rowData['eventcollection.compositeeventcollection'] = 'n'
         rowData['eventcollection.eventcollectionindex'] = evCollIndex
-        rowData['parameterset.parametersetname'] = paramSetName
-        rowData['parameterset.parametersetversion'] = '1.0'
-        rowData['parameterset.parametersetannotation'] = \
-                   'Parameter set describing event collection ' + paramSetName
-        rowData['parameterset.composite'] = 'n'
+        
+        bowData = Row(self.GenParameterSets)
+        bowData['parameterset.parametersetname'] = paramSetName
+        bowData['parameterset.parametersetversion'] = '1.0'
+        bowData['parameterset.parametersetannotation'] = \
+               'Parameter set describing event collection ' + paramSetName
+        bowData['parameterset.composite'] = 'n'
         firstInsert = 1
         for key, val in parameterBindings.items() : 
             if firstInsert == 0 : 
-                rowData.newData('parameterbinding')
+                bowData.newData('parameterbinding')
             firstInsert = 0
-            rowData['parameterbinding.parametername'] = key
-            rowData['parameterbinding.parametervalue'] = val
+            bowData['parameterbinding.parametername'] = key
+            bowData['parameterbinding.parametervalue'] = val
+        self.GenParameterSetsTable.smartInsert(bowData, bowData.keys()) 
+        self.saveTransaction()
+        rowData['analysiscollectiondata.otherqueryablemetadata'] = bowData['parameterset.parametersetid']
+
         for i in range(len(filelist)) : 
             rowData['file.logicalfilename'] = filelist[i][0]
             rowData['file.checksum'] = filelist[i][1]
@@ -720,7 +734,27 @@ if __name__ == "__main__" :
   print c
   d = a.adminRole('admin','administrative')
   print d
+  d = a.adminRole('hokey','administrative')
+  print d
+  d = a.adminRole('pokey','administrative')
+  print d
+  d = a.adminRole('okey','administrative')
+  print d
+  d = a.adminRole('dokey','administrative')
+  print d
+  d = a.adminRole('smokey','administrative')
+  print d
   e = a.adminAssignRole('ggraham','admin')
+  print e
+  e = a.adminAssignRole('ggraham','okey')
+  print e
+  e = a.adminAssignRole('ggraham','dokey')
+  print e
+  e = a.adminAssignRole('ggraham','pokey')
+  print e
+  e = a.adminAssignRole('ggraham','smokey')
+  print e
+  e = a.adminAssignRole('ggraham','hokey')
   print e
   f = a.adminPhysicsGroup('egammaGroup', 'ggraham')
   print f
@@ -736,3 +770,7 @@ if __name__ == "__main__" :
             ('file4', '01273421', '120970112', 'OK', 'Data')] )
   print i
 
+
+  print a.Administrative.attributes()
+  j = a.AdministrativeTable.smartSelect(["name = 'ggraham'"]) 
+  print map(lambda x : x._SubRows['role'], j)
