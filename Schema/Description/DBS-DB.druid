@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">137</attrib>
-		<attrib name="serial">105463</attrib>
+		<attrib name="build">159</attrib>
+		<attrib name="serial">124751</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -123,29 +123,29 @@
 					<output>DBS-DB.dd</output>
 				</xml>
 			</DatadictGenModule>
-			<SqlGenModule>
-				<stdSql>
-					<output>DBS-DB.sql</output>
-				</stdSql>
-			</SqlGenModule>
-			<SummaryGenModule>
-				<html>
-					<output>DBS-DB.html</output>
-				</html>
-			</SummaryGenModule>
 			<CodeGenModule>
 				<java>
 					<package>DBS-DB</package>
 					<output>DBS-DB.java</output>
 				</java>
 			</CodeGenModule>
+			<SummaryGenModule>
+				<html>
+					<output>DBS-DB.html</output>
+				</html>
+			</SummaryGenModule>
+			<SqlGenModule>
+				<stdSql>
+					<output>DBS-DB.sql</output>
+				</stdSql>
+			</SqlGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="DocsGenModule.html"/>
 			<module name="DatadictGenModule.xml"/>
 			<module name="SummaryGenModule.html"/>
-			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.stdSql"/>
+			<module name="DocsGenModule.pdf"/>
 			<module name="CodeGenModule.java"/>
 		</modsUsage>
 		<dataTypes>
@@ -1492,7 +1492,7 @@ CREATE TABLE EvCollFile
 						<attrib name="colorId">98861</attrib>
 						<attrib name="locY">112</attrib>
 						<attrib name="details">af</attrib>
-						<attrib name="locX">804</attrib>
+						<attrib name="locX">790</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1503,9 +1503,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EvCollFile</attrib>
 						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">391</attrib>
+						<attrib name="locY">425</attrib>
 						<attrib name="details">af</attrib>
-						<attrib name="locX">807</attrib>
+						<attrib name="locX">796</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1516,9 +1516,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EventCollection</attrib>
 						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">421</attrib>
+						<attrib name="locY">417</attrib>
 						<attrib name="details">af</attrib>
-						<attrib name="locX">536</attrib>
+						<attrib name="locX">550</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1540,32 +1540,6 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">PrimaryDataset</attrib>
-						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">596</attrib>
-						<attrib name="details">af</attrib>
-						<attrib name="locX">783</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="103"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">AnalysisCollectionData</attrib>
-						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">13</attrib>
-						<attrib name="details">af</attrib>
-						<attrib name="locX">535</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="21364"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">ApplicationConfiguration</attrib>
 						<attrib name="colorId">98861</attrib>
 						<attrib name="locY">411</attrib>
@@ -1583,7 +1557,7 @@ CREATE TABLE EvCollFile
 						<attrib name="colorId">98861</attrib>
 						<attrib name="locY">692</attrib>
 						<attrib name="details">af</attrib>
-						<attrib name="locX">281</attrib>
+						<attrib name="locX">287</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1592,37 +1566,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">Application</attrib>
-						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">677</attrib>
-						<attrib name="details">af</attrib>
-						<attrib name="locX">45</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="13443"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">ParameterSet</attrib>
-						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">75</attrib>
-						<attrib name="details">af</attrib>
-						<attrib name="locX">274</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="13445"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">ParameterBinding</attrib>
 						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">78</attrib>
+						<attrib name="locY">74</attrib>
 						<attrib name="details">af</attrib>
-						<attrib name="locX">47</attrib>
+						<attrib name="locX">14</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1633,13 +1581,65 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">Application</attrib>
 						<attrib name="colorId">98861</attrib>
-						<attrib name="locY">391</attrib>
+						<attrib name="locY">387</attrib>
 						<attrib name="details">af</attrib>
-						<attrib name="locX">28</attrib>
+						<attrib name="locX">22</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="13443"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">GenericParameterGroup</attrib>
+						<attrib name="colorId">98861</attrib>
+						<attrib name="locY">121</attrib>
+						<attrib name="details">pf</attrib>
+						<attrib name="locX">265</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="13445"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionData</attrib>
+						<attrib name="colorId">98861</attrib>
+						<attrib name="locY">86</attrib>
+						<attrib name="details">pf</attrib>
+						<attrib name="locX">541</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105483"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AbstractDataset</attrib>
+						<attrib name="colorId">98861</attrib>
+						<attrib name="locY">699</attrib>
+						<attrib name="details">pf</attrib>
+						<attrib name="locX">761</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="103"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">CollectionType</attrib>
+						<attrib name="colorId">98861</attrib>
+						<attrib name="locY">674</attrib>
+						<attrib name="details">pf</attrib>
+						<attrib name="locX">32</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="41901"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -1747,9 +1747,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">File</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">62</attrib>
+						<attrib name="locY">447</attrib>
 						<attrib name="details">pf</attrib>
-						<attrib name="locX">12</attrib>
+						<attrib name="locX">4</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1793,6 +1793,32 @@ CREATE TABLE EvCollFile
 					<modsConfig/>
 					<tables>
 						<table id="3471"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">Run</attrib>
+						<attrib name="colorId">11284</attrib>
+						<attrib name="locY">58</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">8</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="106346"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionRun</attrib>
+						<attrib name="colorId">11284</attrib>
+						<attrib name="locY">51</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">213</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="108976"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -1863,9 +1889,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">Application</attrib>
 						<attrib name="colorId">66949</attrib>
-						<attrib name="locY">138</attrib>
+						<attrib name="locY">36</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">611</attrib>
+						<attrib name="locX">603</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1874,24 +1900,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">ParameterSet</attrib>
-						<attrib name="colorId">66949</attrib>
-						<attrib name="locY">468</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">256</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="13445"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">CompositeParameterSet</attrib>
 						<attrib name="colorId">64505</attrib>
-						<attrib name="locY">332</attrib>
+						<attrib name="locY">543</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">12</attrib>
+						<attrib name="locX">11</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1902,9 +1915,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ParameterBinding</attrib>
 						<attrib name="colorId">66949</attrib>
-						<attrib name="locY">110</attrib>
+						<attrib name="locY">44</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">231</attrib>
+						<attrib name="locX">16</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1915,9 +1928,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">CollectionType</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">254</attrib>
+						<attrib name="locY">229</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1015</attrib>
+						<attrib name="locX">1019</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1928,9 +1941,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ApplicationFamily</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">62</attrib>
+						<attrib name="locY">40</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1017</attrib>
+						<attrib name="locX">1014</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1941,13 +1954,26 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ApplicationConfiguration</attrib>
 						<attrib name="colorId">66949</attrib>
-						<attrib name="locY">485</attrib>
+						<attrib name="locY">313</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">615</attrib>
+						<attrib name="locX">553</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="13441"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">GenericParameterGroup</attrib>
+						<attrib name="colorId">66949</attrib>
+						<attrib name="locY">291</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">93</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="13445"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2120,9 +2146,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">AnalysisDataset</attrib>
 						<attrib name="colorId">71921</attrib>
-						<attrib name="locY">255</attrib>
+						<attrib name="locY">428</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">455</attrib>
+						<attrib name="locX">541</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2133,9 +2159,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EvCollAnData</attrib>
 						<attrib name="colorId">71921</attrib>
-						<attrib name="locY">550</attrib>
+						<attrib name="locY">714</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">509</attrib>
+						<attrib name="locX">585</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2146,9 +2172,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">Block</attrib>
 						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">81</attrib>
+						<attrib name="locY">72</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">731</attrib>
+						<attrib name="locX">837</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2157,63 +2183,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">ProductionAssignment</attrib>
-						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">360</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">930</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="7047"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">AnalysisDatasetSubtype</attrib>
-						<attrib name="colorId">68716</attrib>
-						<attrib name="locY">98</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">62</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="2311"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">UserCollection</attrib>
-						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">496</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">866</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="6841"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">Snapshot</attrib>
-						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">224</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">936</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="3778"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">EventCollection</attrib>
 						<attrib name="colorId">71921</attrib>
-						<attrib name="locY">846</attrib>
+						<attrib name="locY">986</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">491</attrib>
+						<attrib name="locX">535</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2222,24 +2196,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">AnalysisCollectionData</attrib>
-						<attrib name="colorId">68716</attrib>
-						<attrib name="locY">502</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">0</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="21364"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">ValidationStatus</attrib>
 						<attrib name="colorId">71922</attrib>
-						<attrib name="locY">298</attrib>
+						<attrib name="locY">381</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">93</attrib>
+						<attrib name="locX">121</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2248,15 +2209,54 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">AnalysisCollectionStatus</attrib>
-						<attrib name="colorId">71922</attrib>
-						<attrib name="locY">860</attrib>
+						<attrib name="name">EventCollectionData</attrib>
+						<attrib name="colorId">68716</attrib>
+						<attrib name="locY">640</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">71</attrib>
+						<attrib name="locX">29</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105483"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AnalysisDatasetData</attrib>
+						<attrib name="colorId">68716</attrib>
+						<attrib name="locY">30</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">387</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="21364"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AnalysisDatasetStatus</attrib>
+						<attrib name="colorId">71922</attrib>
+						<attrib name="locY">80</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">28</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="22087"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionStatus</attrib>
+						<attrib name="colorId">71922</attrib>
+						<attrib name="locY">1009</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">118</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105919"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2341,9 +2341,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EventCollection</attrib>
 						<attrib name="colorId">77706</attrib>
-						<attrib name="locY">316</attrib>
+						<attrib name="locY">318</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">442</attrib>
+						<attrib name="locX">450</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2354,26 +2354,13 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">PrimaryEventCollection</attrib>
 						<attrib name="colorId">77708</attrib>
-						<attrib name="locY">371</attrib>
+						<attrib name="locY">483</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">12</attrib>
+						<attrib name="locX">28</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="5612"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">AnalysisCollectionData</attrib>
-						<attrib name="colorId">71923</attrib>
-						<attrib name="locY">261</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">916</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="21364"/>
 					</tables>
 				</erEntity>
 				<erEntity>
@@ -2419,26 +2406,13 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ValidationStatus</attrib>
 						<attrib name="colorId">77707</attrib>
-						<attrib name="locY">28</attrib>
+						<attrib name="locY">31</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1005</attrib>
+						<attrib name="locX">953</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="40124"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">AnalysisCollectionStatus</attrib>
-						<attrib name="colorId">77707</attrib>
-						<attrib name="locY">644</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">994</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="22087"/>
 					</tables>
 				</erEntity>
 				<erEntity>
@@ -2465,6 +2439,58 @@ CREATE TABLE EvCollFile
 					<modsConfig/>
 					<tables>
 						<table id="40714"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionData</attrib>
+						<attrib name="colorId">71923</attrib>
+						<attrib name="locY">268</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">860</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105483"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionStatus</attrib>
+						<attrib name="colorId">77707</attrib>
+						<attrib name="locY">627</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">950</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105919"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">CompositeEventCollection</attrib>
+						<attrib name="colorId">71923</attrib>
+						<attrib name="locY">40</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">25</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="5056"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionParentage</attrib>
+						<attrib name="colorId">71923</attrib>
+						<attrib name="locY">260</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">22</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="106325"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2563,9 +2589,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">AnalysisDatasetSubtype</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">13</attrib>
+						<attrib name="locY">12</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">24</attrib>
+						<attrib name="locX">338</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2574,24 +2600,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">ProductionAssignment</attrib>
-						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">297</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">896</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="7047"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">Block</attrib>
 						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">25</attrib>
+						<attrib name="locY">51</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">840</attrib>
+						<attrib name="locX">725</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2600,37 +2613,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">UserCollection</attrib>
-						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">443</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">822</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="6841"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">Snapshot</attrib>
-						<attrib name="colorId">76979</attrib>
-						<attrib name="locY">174</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">899</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="3778"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">AnalysisDataset</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">208</attrib>
+						<attrib name="locY">253</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">367</attrib>
+						<attrib name="locX">271</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2641,9 +2628,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EvCollAnData</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">515</attrib>
+						<attrib name="locY">520</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">469</attrib>
+						<attrib name="locX">316</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2654,9 +2641,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EventCollection</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">779</attrib>
+						<attrib name="locY">1060</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">391</attrib>
+						<attrib name="locX">303</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2665,37 +2652,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">CompositeEventCollection</attrib>
-						<attrib name="colorId">64505</attrib>
-						<attrib name="locY">556</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">854</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="5056"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">AnalysisCollectionData</attrib>
-						<attrib name="colorId">64505</attrib>
-						<attrib name="locY">437</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">0</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="21364"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">EvCollFile</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">797</attrib>
+						<attrib name="locY">1067</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">852</attrib>
+						<attrib name="locX">926</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2706,9 +2667,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">File</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">1005</attrib>
+						<attrib name="locY">1352</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">879</attrib>
+						<attrib name="locX">958</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2719,9 +2680,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">FileStatus</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">1306</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">921</attrib>
+						<attrib name="locY">1439</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">729</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2732,9 +2693,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">FileType</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">1307</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">650</attrib>
+						<attrib name="locY">1248</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">730</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2745,9 +2706,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ProcessedDataset</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">1053</attrib>
+						<attrib name="locY">1339</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">398</attrib>
+						<attrib name="locX">321</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2758,9 +2719,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ProcessingPath</attrib>
 						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">1313</attrib>
+						<attrib name="locY">1676</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">0</attrib>
+						<attrib name="locX">21</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2769,24 +2730,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">PrimaryDataset</attrib>
-						<attrib name="colorId">11284</attrib>
-						<attrib name="locY">1492</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">438</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="103"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">Stream</attrib>
 						<attrib name="colorId">64505</attrib>
-						<attrib name="locY">1533</attrib>
+						<attrib name="locY">1660</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">957</attrib>
+						<attrib name="locX">1072</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2795,37 +2743,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">CompositeAnalysisDataset</attrib>
-						<attrib name="colorId">64505</attrib>
-						<attrib name="locY">15</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">394</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="6254"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">PrimaryDatasetDescription</attrib>
-						<attrib name="colorId">64505</attrib>
-						<attrib name="locY">1798</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">3</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="45041"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">MCDescription</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">1800</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">506</attrib>
+						<attrib name="locY">2022</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">25</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2836,9 +2758,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">ApplicationConfiguration</attrib>
 						<attrib name="colorId">66949</attrib>
-						<attrib name="locY">1068</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">7</attrib>
+						<attrib name="locY">1379</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">17</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2849,13 +2771,156 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">TriggerPathDescription</attrib>
 						<attrib name="colorId">76978</attrib>
-						<attrib name="locY">1540</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">80</attrib>
+						<attrib name="locY">1914</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">243</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="46335"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionData</attrib>
+						<attrib name="colorId">64505</attrib>
+						<attrib name="locY">1018</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">28</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105483"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AnalysisDatasetData</attrib>
+						<attrib name="colorId">64505</attrib>
+						<attrib name="locY">236</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">38</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="21364"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AnalysisDatasetStatus</attrib>
+						<attrib name="colorId">76978</attrib>
+						<attrib name="locY">14</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">0</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="22087"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionStatus</attrib>
+						<attrib name="colorId">76978</attrib>
+						<attrib name="locY">812</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">26</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105919"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AbstractDatasetDescription</attrib>
+						<attrib name="colorId">64505</attrib>
+						<attrib name="locY">2024</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">526</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="45041"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AbstractDataset</attrib>
+						<attrib name="colorId">11284</attrib>
+						<attrib name="locY">1625</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">504</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="103"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionParentage</attrib>
+						<attrib name="colorId">64505</attrib>
+						<attrib name="locY">892</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">972</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="106325"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">CompositeEventCollection</attrib>
+						<attrib name="colorId">64505</attrib>
+						<attrib name="locY">779</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">239</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="5056"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionRun</attrib>
+						<attrib name="colorId">11284</attrib>
+						<attrib name="locY">785</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">569</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="108976"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">Run</attrib>
+						<attrib name="colorId">11284</attrib>
+						<attrib name="locY">526</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">720</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="106346"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">RunQuality</attrib>
+						<attrib name="colorId">76978</attrib>
+						<attrib name="locY">535</attrib>
+						<attrib name="details">af</attrib>
+						<attrib name="locX">1088</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="107820"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2926,9 +2991,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">EventCollection</attrib>
 						<attrib name="colorId">77706</attrib>
-						<attrib name="locY">48</attrib>
+						<attrib name="locY">49</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">650</attrib>
+						<attrib name="locX">593</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2939,9 +3004,9 @@ CREATE TABLE EvCollFile
 					<attribs>
 						<attrib name="name">AnalysisDataset</attrib>
 						<attrib name="colorId">77706</attrib>
-						<attrib name="locY">59</attrib>
+						<attrib name="locY">55</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">117</attrib>
+						<attrib name="locX">64</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2964,10 +3029,10 @@ CREATE TABLE EvCollFile
 				<erEntity>
 					<attribs>
 						<attrib name="name">ApplicationConfiguration</attrib>
-						<attrib name="colorId">71923</attrib>
-						<attrib name="locY">900</attrib>
+						<attrib name="colorId">66949</attrib>
+						<attrib name="locY">878</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">675</attrib>
+						<attrib name="locX">547</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2989,11 +3054,11 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">AnalysisCollectionData</attrib>
+						<attrib name="name">AnalysisDatasetData</attrib>
 						<attrib name="colorId">71923</attrib>
-						<attrib name="locY">393</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">111</attrib>
+						<attrib name="locY">431</attrib>
+						<attrib name="details">pf</attrib>
+						<attrib name="locX">123</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -3002,15 +3067,28 @@ CREATE TABLE EvCollFile
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">ParameterSet</attrib>
-						<attrib name="colorId">71923</attrib>
-						<attrib name="locY">927</attrib>
+						<attrib name="name">GenericParameterGroup</attrib>
+						<attrib name="colorId">66949</attrib>
+						<attrib name="locY">825</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">162</attrib>
+						<attrib name="locX">214</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="13445"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">EventCollectionData</attrib>
+						<attrib name="colorId">71923</attrib>
+						<attrib name="locY">417</attrib>
+						<attrib name="details">pf</attrib>
+						<attrib name="locX">403</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="105483"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -4206,138 +4284,6 @@ CREATE TABLE EvCollFile
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">ProductionAssignment</attrib>
-						<attrib name="id">7047</attrib>
-						<attrib name="tempPK"/>
-						<attrib name="tempFK"/>
-						<attrib name="tempOther"/>
-						<attrib name="sqlCommands"/>
-					</attribs>
-					<modsConfig>
-						<SqlGenModule>
-							<stdSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</stdSql>
-						</SqlGenModule>
-					</modsConfig>
-					<docs>
-						<p>
-							<t>An analysis dataset subtype that contains he data produces by a production assignment.</t>
-						</p>
-					</docs>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">true</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">2134</attrib>
-							<attrib name="name">ProductionAssignmentID</attrib>
-							<attrib name="id">7049</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
-							<attrib name="refTable">2132</attrib>
-							<attrib name="type">0</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Primary key row id.</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">true</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">ProductionRequestNumber</attrib>
-							<attrib name="id">7153</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>A copy of or reference to the production request/assignment number tracked by the external production request/processing system.  </t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">true</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">ProductionEra</attrib>
-							<attrib name="id">7258</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">11</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>The name of the production era, like &quot;Spring2001&quot; or &quot;BigMinBias&quot;, since external production numbers may be repeated if the system is reset at the dawn of a new era.</t>
-							</p>
-						</docs>
-					</field>
-				</table>
-				<table>
-					<vars>
-						<list>
-							<header>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
-							</header>
-						</list>
-					</vars>
-					<triggers/>
-					<rules/>
-					<attribs>
-						<attrib name="comment"/>
 						<attrib name="name">Block</attrib>
 						<attrib name="id">2567</attrib>
 						<attrib name="tempPK"/>
@@ -4485,246 +4431,6 @@ CREATE TABLE EvCollFile
 						</docs>
 					</field>
 				</table>
-				<table>
-					<vars>
-						<list>
-							<header>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
-							</header>
-						</list>
-					</vars>
-					<triggers/>
-					<rules/>
-					<attribs>
-						<attrib name="comment"/>
-						<attrib name="name">UserCollection</attrib>
-						<attrib name="id">6841</attrib>
-						<attrib name="tempPK"/>
-						<attrib name="tempFK"/>
-						<attrib name="tempOther"/>
-						<attrib name="sqlCommands"/>
-					</attribs>
-					<modsConfig>
-						<SqlGenModule>
-							<stdSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</stdSql>
-						</SqlGenModule>
-					</modsConfig>
-					<docs>
-						<p>
-							<t>This is a generic user-created collection.</t>
-						</p>
-					</docs>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">true</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">2134</attrib>
-							<attrib name="name">UserCollectionID</attrib>
-							<attrib name="id">6844</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
-							<attrib name="refTable">2132</attrib>
-							<attrib name="type">0</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Foreign key from Analysis Dataset is the primary key.
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">UserCollectionAnnotation</attrib>
-							<attrib name="id">6945</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">893</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Annotation as to the purpose and definition of the user collection.</t>
-							</p>
-						</docs>
-					</field>
-				</table>
-				<table>
-					<vars>
-						<list>
-							<header>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
-							</header>
-						</list>
-					</vars>
-					<triggers/>
-					<rules/>
-					<attribs>
-						<attrib name="comment"/>
-						<attrib name="name">Snapshot</attrib>
-						<attrib name="id">3778</attrib>
-						<attrib name="tempPK"/>
-						<attrib name="tempFK"/>
-						<attrib name="tempOther"/>
-						<attrib name="sqlCommands"/>
-					</attribs>
-					<modsConfig>
-						<SqlGenModule>
-							<stdSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</stdSql>
-						</SqlGenModule>
-					</modsConfig>
-					<docs>
-						<p>
-							<t>This table contanis a special analysis dataset formed by the results of a query by the user against the DBS.</t>
-						</p>
-					</docs>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">true</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">2134</attrib>
-							<attrib name="name">SnapshotID</attrib>
-							<attrib name="id">3861</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
-							<attrib name="refTable">2132</attrib>
-							<attrib name="type">0</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Foreign key from analysis dataset is the primary key,
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">Query</attrib>
-							<attrib name="id">4024</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">893</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>The query that produced the dataset.
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">SnapshotAnnotation</attrib>
-							<attrib name="id">6742</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">893</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>User provided annotation as to the purpose or semantic meaning of the query.
-</t>
-							</p>
-						</docs>
-					</field>
-				</table>
 			</folder>
 			<folder>
 				<attribs>
@@ -4867,6 +4573,52 @@ CREATE TABLE EvCollFile
 </t>
 							</p>
 						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CalibrationVersionTag</attrib>
+							<attrib name="id">123174</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">11</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ConditionsVersionTag</attrib>
+							<attrib name="id">123567</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">11</attrib>
+						</attribs>
+						<modsConfig/>
 					</field>
 					<field>
 						<fieldAttribs>
@@ -5285,7 +5037,7 @@ CREATE TABLE EvCollFile
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">ParameterSet</attrib>
+						<attrib name="name">GenericParameterGroup</attrib>
 						<attrib name="id">13445</attrib>
 						<attrib name="tempPK"/>
 						<attrib name="tempFK"/>
@@ -5331,7 +5083,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">ParameterSetID</attrib>
+							<attrib name="name">GenericParameterGroupID</attrib>
 							<attrib name="id">14743</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5359,7 +5111,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">ParameterSetName</attrib>
+							<attrib name="name">GPGName</attrib>
 							<attrib name="id">14962</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5387,7 +5139,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">ParameterSetVersion</attrib>
+							<attrib name="name">GPGVersion</attrib>
 							<attrib name="id">31046</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5415,7 +5167,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">ParameterSetAnnotation</attrib>
+							<attrib name="name">GPGAnnotation</attrib>
 							<attrib name="id">15182</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5726,7 +5478,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">14743</attrib>
-							<attrib name="name">ParameterSetID</attrib>
+							<attrib name="name">GPGID</attrib>
 							<attrib name="id">30770</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5934,7 +5686,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">2134</attrib>
-							<attrib name="name">ChildAnalysisDatasetID</attrib>
+							<attrib name="name">MemberAnalysisDatasetID</attrib>
 							<attrib name="id">6355</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -6130,7 +5882,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">1320</attrib>
-							<attrib name="name">ChildECID</attrib>
+							<attrib name="name">MemberECID</attrib>
 							<attrib name="id">5151</attrib>
 							<attrib name="onDelete">s</attrib>
 							<attrib name="onUpdate">s</attrib>
@@ -6245,6 +5997,10 @@ CREATE TABLE EvCollFile
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -6252,7 +6008,203 @@ CREATE TABLE EvCollFile
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">PrimaryDatasetDescription</attrib>
+						<attrib name="name">EventCollectionParentage</attrib>
+						<attrib name="id">106325</attrib>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+						</SqlGenModule>
+					</modsConfig>
+					<docs>
+						<p>
+							<t>This table defines a self relation that allows for aggregation of EventCollections. Each relation is unique.</t>
+						</p>
+					</docs>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ParentECID</attrib>
+							<attrib name="refField">1320</attrib>
+							<attrib name="id">106326</attrib>
+							<attrib name="onDelete">c</attrib>
+							<attrib name="onUpdate">c</attrib>
+							<attrib name="refTable">1318</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Foreign key from Event Collection is the primary key.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ChildECID</attrib>
+							<attrib name="refField">1320</attrib>
+							<attrib name="id">106327</attrib>
+							<attrib name="onDelete">s</attrib>
+							<attrib name="onUpdate">s</attrib>
+							<attrib name="refTable">1318</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>A valid event collection id from EventCollection.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">106328</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">106329</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">106330</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">106331</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">AbstractDatasetDescription</attrib>
 						<attrib name="id">45041</attrib>
 						<attrib name="tempPK"/>
 						<attrib name="tempFK"/>
@@ -6298,7 +6250,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">PrimaryDatasetDescriptionID</attrib>
+							<attrib name="name">AbstractDatasetDescriptionID</attrib>
 							<attrib name="id">45043</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -6308,7 +6260,7 @@ CREATE TABLE EvCollFile
 						<modsConfig/>
 						<docs>
 							<p>
-								<t>Primary key row id.</t>
+								<t>AbstractDataset key row id.</t>
 							</p>
 						</docs>
 					</field>
@@ -6504,7 +6456,7 @@ CREATE TABLE EvCollFile
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">AnalysisCollectionData</attrib>
+						<attrib name="name">AnalysisDatasetData</attrib>
 						<attrib name="id">21364</attrib>
 						<attrib name="tempPK"/>
 						<attrib name="tempFK"/>
@@ -6550,7 +6502,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">AnalysisCollectionDataID</attrib>
+							<attrib name="name">AnalysisDatasetDataID</attrib>
 							<attrib name="id">36953</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -6571,7 +6523,7 @@ CREATE TABLE EvCollFile
 								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -6589,34 +6541,6 @@ CREATE TABLE EvCollFile
 						<docs>
 							<p>
 								<t>A valid analysis dataset id from the AnalysisDataset table, or null if describing an EventCollection.</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">true</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">1320</attrib>
-							<attrib name="name">EventCollectionID</attrib>
-							<attrib name="id">21370</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
-							<attrib name="refTable">1318</attrib>
-							<attrib name="type">0</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>A valid event collection  id from the EventCollection table, or null if describing an AnalysisDataset.</t>
 							</p>
 						</docs>
 					</field>
@@ -6691,7 +6615,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">22089</attrib>
-							<attrib name="name">AnalysisCollectionStatus</attrib>
+							<attrib name="name">AnalysisDatasetStatus</attrib>
 							<attrib name="id">21847</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -6737,7 +6661,7 @@ CREATE TABLE EvCollFile
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -6748,7 +6672,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">COBRACollectionName</attrib>
+							<attrib name="name">COBRAAccessorName</attrib>
 							<attrib name="id">38080</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -6759,150 +6683,6 @@ CREATE TABLE EvCollFile
 						<docs>
 							<p>
 								<t>The name of the collection in COBRA.</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">StartingRunNumber</attrib>
-							<attrib name="id">34846</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>The lowest run number in the EventCollection or AnalysisDataset.
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">EndingRunNumber</attrib>
-							<attrib name="id">35146</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>The highest run number in the EventCollection or AnalysisDataset.  If equal to the StartingRunNumber then there is only one run. 
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">ContinuousRunRange</attrib>
-							<attrib name="id">35447</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">12</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Boolean flag indicating if there is a continuous run range.  </t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">StartingEventNumber</attrib>
-							<attrib name="id">35749</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Starting event number.  
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">EndingEventNumber</attrib>
-							<attrib name="id">36052</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Ending event number.  
-</t>
 							</p>
 						</docs>
 					</field>
@@ -7574,6 +7354,417 @@ CREATE TABLE EvCollFile
 								<t>A valid parameter set (child) in the ParameterSet table.</t>
 							</p>
 						</docs>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">EventCollectionData</attrib>
+						<attrib name="id">105483</attrib>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+						</SqlGenModule>
+					</modsConfig>
+					<docs>
+						<p>
+							<t>This table contains information which can be kept for an EventCollection or an AnalysisDataset.</t>
+						</p>
+					</docs>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">EventCollectionDataID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105484</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">8</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Primary key row id.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">EventCollectionID</attrib>
+							<attrib name="refField">1320</attrib>
+							<attrib name="id">105486</attrib>
+							<attrib name="onDelete">c</attrib>
+							<attrib name="onUpdate">c</attrib>
+							<attrib name="refTable">1318</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>A valid event collection  id from the EventCollection table, or null if describing an AnalysisDataset.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">NumberOfEvents</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105487</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">10</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Number of events in the event collection, or the sum of events over the component EventCollections in an Analysis dataset.
+</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">EstimatedLuminosity</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105488</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">11</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Estimated luminosity in the event collection, or the sum of estimated luminosity over the component EventCollections in an Analysis dataset.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">EventCollectionStatus</attrib>
+							<attrib name="refField">105920</attrib>
+							<attrib name="id">105489</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">105919</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>A valid status id from the AnalysisCollectionStatus table.  To indicate physical status like files OK or files missing or checksums bad.
+</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ValidationStatus</attrib>
+							<attrib name="refField">40126</attrib>
+							<attrib name="id">105490</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">40124</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>The validation status of the EventCollection or Analysis Dataset.  This is the result of some physics validation run over the dataset.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">COBRACollectionName</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105491</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">1510</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>The name of the collection in COBRA.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">FirstEventNumber</attrib>
+							<attrib name="id">110920</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">6</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastEventNumber</attrib>
+							<attrib name="id">111311</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">6</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">OtherQueryableMetadata</attrib>
+							<attrib name="refField">14743</attrib>
+							<attrib name="id">105497</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">13445</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105498</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">105499</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105500</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">105501</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
 					</field>
 				</table>
 			</folder>
@@ -8797,64 +8988,6 @@ CREATE TABLE EvCollFile
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">CompositeEventCollection</attrib>
-							<attrib name="id">4966</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">12</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Boolean flag if this is a plain event collection or an aggregation of event collections across processing paths.  
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">RunIDString</attrib>
-							<attrib name="id">38659</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">11</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>The runid string.  This may be deprecated as the EDM develops other mechanisms for tracking COBRA metadata.
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
 								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
@@ -9774,7 +9907,7 @@ CREATE TABLE EvCollFile
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">PrimaryDataset</attrib>
+						<attrib name="name">AbstractDataset</attrib>
 						<attrib name="id">103</attrib>
 						<attrib name="tempPK"/>
 						<attrib name="tempFK"/>
@@ -9820,7 +9953,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">PrimaryDatasetID</attrib>
+							<attrib name="name">AbstractDatasetID</attrib>
 							<attrib name="id">104</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -9848,7 +9981,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">PrimaryDatasetName</attrib>
+							<attrib name="name">AbstractDatasetName</attrib>
 							<attrib name="id">130</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -9904,7 +10037,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">PrimaryDatasetAnnotation</attrib>
+							<attrib name="name">AbstractDatasetAnnotation</attrib>
 							<attrib name="id">593</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -9932,7 +10065,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">45043</attrib>
-							<attrib name="name">PrimaryDatasetDescriptionID</attrib>
+							<attrib name="name">AbstractDatasetDescriptionID</attrib>
 							<attrib name="id">86574</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -10169,6 +10302,506 @@ CREATE TABLE EvCollFile
 							<attrib name="refField">8079</attrib>
 							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">10663</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">Run</attrib>
+						<attrib name="id">106346</attrib>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">RunID</attrib>
+							<attrib name="id">106348</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">8</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">RunNumber</attrib>
+							<attrib name="id">106715</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">6</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">107822</attrib>
+							<attrib name="name">RunQuality</attrib>
+							<attrib name="id">107083</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">107820</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">FirstEventNumber</attrib>
+							<attrib name="id">110141</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">6</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastEventNumber</attrib>
+							<attrib name="id">110530</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">6</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">StartOfRun</attrib>
+							<attrib name="id">123961</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">EndOfRun</attrib>
+							<attrib name="id">124356</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">108574</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">108570</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">108582</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">108578</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">EventCollectionRun</attrib>
+						<attrib name="id">108976</attrib>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">EventCollectionRunID</attrib>
+							<attrib name="id">108978</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">8</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">1320</attrib>
+							<attrib name="name">EventCollectionID</attrib>
+							<attrib name="id">109360</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">1318</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">106348</attrib>
+							<attrib name="name">RunID</attrib>
+							<attrib name="id">109743</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">106346</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">108975</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">110130</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">110134</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">110138</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">8077</attrib>
@@ -10474,7 +11107,7 @@ CREATE TABLE EvCollFile
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">AnalysisCollectionStatus</attrib>
+						<attrib name="name">AnalysisDatasetStatus</attrib>
 						<attrib name="id">22087</attrib>
 						<attrib name="tempPK"/>
 						<attrib name="tempFK"/>
@@ -10515,7 +11148,7 @@ CREATE TABLE EvCollFile
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">AnalysisCollectionStatusID</attrib>
+							<attrib name="name">AnalysisDatasetStatusID</attrib>
 							<attrib name="id">22089</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -11360,6 +11993,372 @@ CREATE TABLE EvCollFile
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
 							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">EventCollectionStatus</attrib>
+						<attrib name="id">105919</attrib>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">EventCollectionStatusID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105920</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">8</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">AnalysisCollectionStatus</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105921</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">11</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105922</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">105923</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="id">105924</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">8079</attrib>
+							<attrib name="id">105925</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">RunQuality</attrib>
+						<attrib name="id">107820</attrib>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">RunQualityID</attrib>
+							<attrib name="id">107822</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">8</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">RunQualityName</attrib>
+							<attrib name="id">108193</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">11</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="id">108961</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">8079</attrib>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="id">108965</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="id">108969</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="refField">8079</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="id">108973</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">8077</attrib>
+							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
