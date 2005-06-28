@@ -14,14 +14,14 @@
 
   \title{DRAFT Technical Design of the Dataset Bookkeeping System DRAFT}
 
-  \note{Draft Version v0\_7}
+  \note{Draft Version v0.70710...}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
     Yujun Wu
        \Instfoot{fnal}{Fermi National Accelerator Laboratory}
     Lassi Tuura
-       \Instfoot{ne}{Northeastern Unversity, Boston, MA, USA}
+       \Instfoot{ne}{Northeastern University, Boston, MA, USA}
     Peter Elmer
        \Instfoot{prince}{Princeton University, Trenton, NJ, USA}
     Tim Barrass
@@ -33,11 +33,12 @@
   \begin{abstract}
       This note describes the Dataset Bookkeeping System (DBS) prototype for the 
   CMS Data Management (DM) project.  The DBS will
-  store information about real and simulated CMS data in a queriable format.  The
-  supported queries will allow users and their agents to discover avaliable 
+  store information about real and simulated CMS data in a queriable format. 
+  The supported queries will allow users and their agents to discover avaliable 
   data, to retrieve further information about specific data, and to 
-  derive analysis datasets. This note contains some use cases and requirements
-  for the DBS.  The technical design of the DBS is presented.
+  derive datasets for use in analysis. This note contains some use cases 
+  and requirements for the DBS.  The technical design of the DBS prototype
+  is presented.
     \end{abstract} 
 
   
@@ -48,15 +49,16 @@
 \section{Introduction}
 \label{sec:intro}
 
-The Dataset Bookkeeping System (DBS) part of the CMS Data Management system
-provides the means to discover, define and use for processing CMS event data.
-It tracks primarily {\em datasets} and their associated attributes.
+The Dataset Bookkeeping System (DBS) is part of the CMS Data Management system
+and provides the means to discover, define and use for processing CMS event 
+data. It tracks primarily {\em datasets} and their associated attributes.
 
 This document describes the concepts used by CMS in data management and
 specifies the bookkeeping system in detail that is sufficient to build the
 baseline data management system described elsewhere~\cite{dmman}.  We begin
 with a description of the CMS data organisation by expanding on the work of
-the Data Management RTAG~\cite{rtag7} and the CMS Computing Model\~cite{CM}.
+the Data Management RTAG~\cite{rtag7}, the CMS Computing Model~\cite{CM} and
+the CMS Computing Technical Design Report~\cite{CTDR}.
 This is followed by a set of scenarios illustrating the primary uses of the
 bookkeeping system.  Finally we provide a mapping of the organisational
 concepts to relational database entities followed by an architectural
@@ -73,10 +75,6 @@ finding the
 components needed to analyze or to transfer an event collection, and the making 
 attributes available to support a sensible level of dataset discovery service.  
 
-
-%It was taken as an operating assumption that POOL can be considered to be a service that 
-%exists for the duration of a running application only.  The DBS may contain POOL contact 
-%information, but will not rely on POOL itself to run queries or for replica information.
 
 \section{Refining the Data Organisation}
 
@@ -101,16 +99,15 @@ We following terms define the organisation of CMS data:
 \begin{itemize}
 \item {\bf (Online) Stream}.  A stream is the largest unit of data organisation
 and can be thought of as a collection of the output event data from the CMS
-detector grouped by sets of high-level triggers that ``go together'' for
-analysis purposes.  [FIXME: The bookkeeping system is not directly concerned
-with online streams, except as means to narrow down to interesting primary
-datasets.]
+detector grouped by sets of high-level triggers that roughly ``go together'' 
+for analysis purposes. 
 
 \item {\bf Primary Dataset}, also Production Dataset.  The main
 data management concept: the unit of data accessed to analyse a given trigger.
-Discovery and delivery of data is mainly concerned about production datasets.
-CMS expects to have of the order of 50 production datasets.  Primary datasets
-comprise data generated with the same parameters for Monte Carlo data.
+Discovery and delivery of data is mainly concerned about primary datasets.
+For real data CMS expects to have of the order of 50 primary datasets.  
+For Monte Carlo data ``primary datasets'' comprise data generated with the 
+same parameters.
 
 \item {\bf Data Tier}. Type of content and degree of processing applied to the
 data: {\em RAW} The raw event data written by the filter farm; {\em RECO} All
@@ -126,12 +123,13 @@ ids], calibration version.
 
 \item{\bf Event Collection}. The smallest subset of a Processed Dataset that
 user is able to access through the bookkeeping system, i.e. without using an
-analysis application.  It maps to one or more files.  A ``run'' may be an
-event collection for instance.
+analysis application.  It maps to one or more files.  An event collection
+may correspond to the data from one ``run'', for instance.
 
 \item {\bf Analysis Dataset}.  A subset of a primary dataset, i.e. a set of
 event collections.  Many useful entities are expressed as Analysis Datasets, 
-such as the results of a skim or a managed block of data.
+such as the results of a skim or a managed block of data. {\bf Is it really
+necessary to introduce a new concept here for the external user? - PE}
 
 \item {\bf Events}.  The data from a single crossing.  Events are not managed
 or accessible as such; one must use a data processing application to access
@@ -165,11 +163,11 @@ that will be hidden from the users.
 \begin{itemize}
 \item Files.  The DBS contains names of logical files.  It is not yet
 determined how much file level metadata will be tracked by the DBS. 
-\item Sites.  The DBS contains names of participating CMS sites that 
-will host CMS data.  
 \item Blocks.  The DBS contains Blocks as special aggregations of Event 
 Collections. Blocks are aggregations with respect to underlying 
 infrastructure parameters optimized for efficient storage and transfer.  
+{\bf Technically ``blocks'' should be aggregations of files, not event
+collections. - PE}
 \end{itemize}
 
 The DBS will treat special files, such as ``META'' files, in 
@@ -220,14 +218,6 @@ open a new Processed Dataset if necessary.
 \end{itemize}
 \end{itemize}
 
-Open blocks should not be transportable since that implies a complex wide area synchronization 
-system. Streaming is of obvious concern here, and there is a tension between wanting to keep 
-the blocksize small enough so that 
-new data can be transferred to interested sites quickly and large enough to satisfy 
-the needs of data management.
-Alternatively, data can be streamed file by file; but in that case we need to synchronize
-open blocks between sites sharing the particular data.
-
 \subsection{User Queries}
 
 Below we explore user queries corresponding to the various access modes,
@@ -258,19 +248,19 @@ data through runs.
      calibrations. 
 \end{itemize}
 
-"Run" here represents a natural quantum for thinking about the problem and
+``Run'' here represents a natural quantum for thinking about the problem and
 the DBS will be asked for data in these terms. Two implications are:
 \begin{itemize}
 \item The DBS will be asked for data at any tier from particular
-    primary datasets with "run" as a selection. This has to be supported and
+    primary datasets with ``run'' as a selection. This has to be supported and
     some means of configuring jobs at this granularity for at least these
     categories of data must be provided.
-\item "Data quality" attributes are likely 
+\item ``Data quality'' attributes are likely 
     to be specified with a granularity of a single run. These flags may be
     specified for all data tiers of a particular run's data or just
     for particular ones. 
 %    (As part of the discussions of the details of how
-%    "run" is defined, DM should bring this point up explicitly. As it is a 
+%    ``run'' is defined, DM should bring this point up explicitly. As it is a 
 %    relatively common model in HEP, we can probably assume it for the moment.
 %    See below for further details.)
 \end{itemize}
@@ -281,7 +271,7 @@ run number amounts to first querying on attributes that can identify a
 Primary Dataset and a history of Processing.  Then by providing the set of 
 interesting run numbers the corresponding Event Collections can be found.
 
-The fact that data is accessed by "run" does not imply that the 
+The fact that data is accessed by ``run'' does not imply that the 
 calibrations or conditions need to fall on run boundaries.  Up to a few 
 parameters of interest for querying, these are usually 
 read in bulk by applications so that there is no need to track these in the 
@@ -300,7 +290,7 @@ as input and processes it to produce a processed representation the input, or
 another Analysis Dataset or Processed Dataset. This use case includes reprocessing
 and Monte Carlo production.
 
-%  So how are "runs" sometimes used here? 
+%  So how are ``runs'' sometimes used here? 
 
 \begin{itemize}
 \item The input Analysis Dataset is specified by a run range or list
@@ -312,10 +302,10 @@ and Monte Carlo production.
 %     the run genealogy of each output can be followed back to an input.
 \end{itemize}
 
-The user may be interested in tracking two types of "history" here:
+The user may be interested in tracking two types of ``history'' here:
 \begin{itemize}
       \item macro level: how one dataset was transformed to another
-      \item micro level: how one "run" representation is mapped to anther one
+      \item micro level: how one ``run'' representation is mapped to anther one
 \end{itemize}
 The first is tracked by explicitly including the processing path in the
 definition of an Event Collection as represented internally in the DBS.  
@@ -327,8 +317,8 @@ partly incidental. If the goal of the production system is seen as
 processing one dataset into another, the run-ranges and/or run lists 
 should be captured explicitly in the DBS as an Analysis Dataset. 
 %I would claim that the proper 
-%concept for capturing this is a "dataset" (e.g. as some sort of "dataset 
-%tag"). 
+%concept for capturing this is a ``dataset'' (e.g. as some sort of ``dataset 
+%tag''). 
 
 If the output is intended to be queryable by run number, then the production 
 system may process the input dataset by breaking it up into runs.  This is the 
@@ -338,7 +328,7 @@ that input runs and output runs are in one to one correspondence.
 However, even the hard case involving splitting and merging can be represented here. 
 See section \ref{sec:createEvColl} for more information. 
 The production system is explicitly collaborating in propagating the
-"run" granularity from input to output.  It can choose any granularity it 
+``run'' granularity from input to output.  It can choose any granularity it 
 wishes as long as it is tracked by the DBS.  
 
 Otherwise, this use case is supported in much the same way as the previous one.  An input 
@@ -361,7 +351,7 @@ represented in the schema.
 \begin{itemize}
 \item The detector expert is still working and may decide, after the 
      analysis-user has already run their analysis over a dataset, that a
-     particular run was "bad" after all and should be excluded from their
+     particular run was ``bad'' after all and should be excluded from their
      end result. 
 \item The detector expert or analysis group may provide some set of
      corrections/updates which the analysis-user needs to apply themselves
@@ -455,32 +445,33 @@ the DBS.  A handle to an Analysis Dataset containing a number $N$ of
 Event Collections is returned.  
 \item The physicist or agent creates $M <= N$ jobs.  The agent may create jobs with more than 
 one Event Collection per job if optimization works out that way.  The job 
-creation tool creates jobs in a site independent fashion, knowing only about site 
-independent dataset parameters, input event collections, etc and instructions for 
-connecting to the data.  (eg- a POOL catalog connection string.)
-\item Physicist or agent submits jobs.  Job submission tool consults the DRS through the 
-application layer.  Information about sites where the data resides is obtained 
-now.  An algorithm, round robin for example, assigns jobs to sites based on where 
-corresponding blocks are located.
-\item Job files are transferred to the execution site along with the job using e.g. Phedex.
-\item The jobs are 'localized' upon transfer to the site.
-\item Output data is created and transferred by SRM to the final resting place.
+creation tool creates jobs in a site-independent fashion, knowing only about 
+site-independent dataset parameters, input event collections, etc 
+\item Physicist or agent submits jobs. Job submission tool consults the DLS. 
+Information about sites where the data resides is obtained now. Some element
+of the workload management system (e.g. the resource broker for LCG) will
+decide on which site the job may run.
+
+\item Job files are transferred to the execution site along with the job 
+\item The jobs are 'localized' upon transfer to the site. 
+\item Output data is created by the job. The job consigns this data to
+some storage at the site where the job ran. A data transport system may
+subsequently (and asynchronously with respect to the job ending) move that 
+data to some other final location.
 \item The output data is published into the DBS.
 \end{itemize}
 
 \section{The Entities and Relationships}
 \label{sec:details}
 
-The DBS keeps track of some implementation details in the backend, such as 
-Fil or Site.
 The schema proposed here has a progressive view of abstraction 
 with implementation specific objects at one end, and primary datasets at the 
 other end, and 
 intermediate abstractions between them.  The user is presented with the most
 abstract concepts first, and consciously has to drill 
 down to get to the progressively less and less abstract objects like 
-logical file names if he/she desires.  Mostly these objects will be covered by the
-API.  The detailed ER diagram is given in Figure \ref{fig:detailed}. We 
+logical file names if he/she desires.  Mostly these objects will be covered by 
+the API.  The detailed ER diagram is given in Figure \ref{fig:detailed}. We 
 would like to first go over the core entities introduced earlier and
 shown in Figure \ref{fig:highlevel}.
 
@@ -511,8 +502,8 @@ The Event Collection is a well defined result set of data obtained by processing
 well defined input chunk of data through a given Processing Path.  (See figure \ref{fig:forest}).
 It is also the smallest abstract entity that can be mapped to a specific set of files.
 
-The figure shows that a Event Collection can refer to other Event Collections.  This 
-supports directly the following two cases: 
+The figure shows that a Event Collection can refer to other Event Collections.  
+This supports directly the following two cases: 
 \begin{itemize}
 \item The Event Collection contains a reference to its parent. 
 \item The Event Collection may contain references to more than one 
@@ -607,7 +598,7 @@ behavior can be hidden in the application layer.  Blocksize
 introduces a scale into the system,  however this can be addressed hierarchically 
 through the self relation of Analysis Dataset
 \footnote{If one introduces blocks in order to deal with data on a given scale, one someday may need 
-to introduce "super-blocks" if that scale changes, and so on.}. 
+to introduce ``super-blocks'' if that scale changes, and so on.}. 
 
 User collections directly support the idea that users can specify 
 collections of interest to them.  User collections list component Event Collections
@@ -647,7 +638,7 @@ aspects.}.
 
 The Processed Dataset will contain Primary Dataset and Processing Path 
 references.
-In addition, quantities that are determined to be "searchable" that are related to the 
+In addition, quantities that are determined to be ``searchable'' that are related to the 
 specific level of processing of this data should be included directly here for 
 users to query on.  
 
@@ -675,7 +666,7 @@ recorded using the DBS schema.  Practically, the
 relation between Analysis Dataset and Event Collection 
 (figure \ref{fig:highlevel}) is that the latter has an additional attribute that tells 
 the application how to select out specific corresponding data from the former.  
-In general we think of Event Collections being processed ino other Event Collections. 
+In general we think of Event Collections being processed into other Event Collections. 
 But the results hold for Analysis Datasets too if we wrap the Input and Output Event Collections
 in an Analysis Dataset where needed.
 
@@ -755,14 +746,13 @@ datasets from metadata or asking for the number of events in a given run range. 
 should also support an API to get the information needed to initiate an analysis.  
 
 The dataset bookkeeping system (DBS) proper is kept immediately below the database 
-server layer.  The dataset bookkeeping system was split into the "canonical" dataset 
-bookkeeping system (DBS) plus a dataset replica service(DRS).  This reflects the 
+server layer.  The dataset bookkeeping system was split into the ``canonical'' dataset 
+bookkeeping system (DBS) plus a data loation service (DLS).  This reflects the 
 desire to keep replica locating functionality out of the DBS altogether is possible, 
 and in a separate schema if absolutely necessary.    We agreed that if fine grained 
-site information was included, then access to site information (DRS) should be kept 
+site information was included, then access to site information (DLS) should be kept 
 decoupled as possible from the actual core dataset bookkeeping functionality (DBS), 
-hence the two interfaces in the diagram.  (This is a somewhat arbitrary distinction, 
-and maybe it goes away upon further inspection.)
+hence the two interfaces in the diagram.  
 
 \begin{figure}[hbtp]
   \begin{center}
@@ -949,8 +939,10 @@ is in error.)  The Analysis Dataset can be understood as a cartesian product of 
   \bibitem{rtag7} {\bf CMS Internal Note 2004/038}, R. Harris et al., 
     {\it Report of the CMS Data Management RTAG}
 
-  \bibitem{CM} {\bf CMS Note 2004/031}, C. Grandi, D. Strickland,
+  \bibitem{CM} {\bf CMS Note 2004/031}, C. Grandi, D. Stickland,
                L. Taylor, {\bf The CMS Computing Model}
+
+  \bibitem{CTDR} {\bf ????}, , {\bf CMS Computing Technical Design Report}
 
   \bibitem {NOTE000} {\bf CMS Note 2005/000},
     X.Somebody et al.,
