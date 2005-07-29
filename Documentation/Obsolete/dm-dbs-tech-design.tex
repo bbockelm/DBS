@@ -14,7 +14,7 @@
 
   \title{DRAFT Technical Design of the Dataset Bookkeeping System DRAFT}
 
-  \note{Draft Version v0.70710...}
+  \note{Draft Version v0.8...}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
@@ -33,7 +33,7 @@
   \begin{abstract}
       This note describes the Dataset Bookkeeping System (DBS) prototype for the 
   CMS Data Management (DM) project.  The DBS will
-  store information about real and simulated CMS data in a queriable format. 
+  store information about real and simulated CMS data in a queryable format. 
   The supported queries will allow users and their agents to discover avaliable 
   data, to retrieve further information about specific data, and to 
   derive datasets for use in analysis. This note contains some use cases 
@@ -75,6 +75,19 @@ finding the
 components needed to analyze or to transfer an event collection, and the making 
 attributes available to support a sensible level of dataset discovery service.  
 
+The main features that will be provided by the DBS are 
+\begin{itemize}
+\item Dataset Discovery.  The user should be able to present the DBS with 
+interesting parameters describing data and retreive either a dataset or
+a set of Event Collections satifying the query.
+\item Dataset Creation and Characterization.  As a result of a query, the 
+user will be able to store a dataset definition along with information 
+characterizing the dataset.
+\item Input for Parallelization.  Tools for building parallel jobs used in MC 
+production, data reprocessing, and by users doing analysis will be able to use
+the DBS to render information for parallelizing a generic request for processing.
+This will take place behind the scenes without explicit user knowledge.
+\end{itemize}
 
 \section{Refining the Data Organisation}
 
@@ -82,14 +95,16 @@ attributes available to support a sensible level of dataset discovery service.
   \begin{center}
     \resizebox{10cm}{!}{\includegraphics{forest.eps}}
     \caption{The figure shows a forest of trees.  The root of each tree is a 
-chunk of data defined by some criterion, such as run number and trigger condition.
-The path to each node in the tree represents the result of processing that 
-data through a particular sequence of processing steps.  Each node is called 
-a ``data unit representation''.  There can be trees in different Primary Datasets (along the 
-axis pointing out of the page) and there can be Event Collections comprising nodes 
-within each Primary Dataset that have the same processing path. An Event Collection 
-that contains all possible like-path nodes in a Primary Dataset is a Dataset 
-Representation.}
+chunk of data indexed by some number monotonically increasing along the time axis, 
+such as run number or luminosity segment.
+The path to a node in the tree from the root represents the result of processing 
+the root node data through a particular sequence of processing steps.  Each node 
+along the way corresponds to an intermediate step.  The individual nodes correspond to objects 
+called Event Collections.  Along the axis pointing out of the page, the trees are 
+indexed by the qualitative kind of data, or by Primary Dataset. The collection of all 
+Event Collections at the same Processing Path within a Primary Dataset is known as a
+Processed Dataset. (Exampled of Processed Dataset are unfortunately labeled here 
+as "EC1" and "EC2".)}
     \label{fig:forest}
   \end{center}
 \end{figure}
@@ -100,44 +115,71 @@ We following terms define the organisation of CMS data:
 \item {\bf (Online) Stream}.  A stream is the largest unit of data organisation
 and can be thought of as a collection of the output event data from the CMS
 detector grouped by sets of high-level triggers that roughly ``go together'' 
-for analysis purposes. 
+for analysis purposes. This plays a minor role in the DBS.
 
-\item {\bf Primary Dataset}, also Production Dataset.  The main
-data management concept: the unit of data accessed to analyse a given trigger.
+\item {\bf Primary Dataset}, also known as Production Dataset or Abstract Dataset. 
+\footnote{Confusion arises in some quarters as to the meaning of "Primary Dataset", as 
+it also connotes a dataset consisting of only Raw data. "Abstract Dataset" was proposed
+as an alternative, but has not yet been adopted.} This is the the unit of 
+data accessed to analyse a given trigger.  It contains data at all levels of 
+processing pertaining to a given trigger or common MC production criteria.
 Discovery and delivery of data is mainly concerned about primary datasets.
 For real data CMS expects to have of the order of 50 primary datasets.  
 For Monte Carlo data ``primary datasets'' comprise data generated with the 
 same parameters.
 
-\item {\bf Data Tier}. Type of content and degree of processing applied to the
-data: {\em RAW} The raw event data written by the filter farm; {\em RECO} All
-reconstructed data coming from the production engine; {\em FEVT} RAW + RECO;
-{\em AOD} [FIXME].
-
-\item {\bf Processed Dataset}. This is a selection of data from a Primary Dataset
+\item {\bf Processed Dataset}. This is a slice of data from a Primary Dataset
 defined by the exact processing history applied to it.  For example, the reconstructed data
-is a {\em processed dataset}, namely it is the result of processing the raw data.
-Key parameters defining a processing include the primary dataset, data tier,
-processing pass number, program configuration [FIXME: algorithm parameter set
-ids], calibration version.
+processed with application A and version V and configuration C, and other cardinal 
+parameters is a 
+{\em processed dataset}, namely it is the result of processing the raw data.  The 
+exactness of the Processed Dataset is needed because this is the way the DBS 
+tells Event Collections apart if they have the same run number of luminosity 
+segments and yet different software versions produced them.
+
+
+\item {\bf Data Tier}. This is the type of content resulting from a 
+degree of processing applied to the data: {\em RAW} The raw event data 
+written by the filter farm; {\em RECO} All reconstructed data coming from 
+the production engine; {\em FEVT} RAW + RECO; etc. In practice, this is essentially
+like the Processed Dataset in that it is a slice of data from a Primary Dataset 
+defined by processing level, but it is a thicker slice.   By design the 
+Data Tier ignores distinctions between exact processing histories and 
+configurations where the user deems those distinctions unimportant.  For example, 
+if a minor change is made to the reconstruction code that is not deemed 
+important enough to go back and reprocess a hundred terabytes of data, then 
+the new code will produce data at the same Data Tier but at a different 
+Processed Dataset.  (The user will know about Data Tier- the Processed Dataset 
+will be used internally.)
 
 \item{\bf Event Collection}. The smallest subset of a Processed Dataset that
-user is able to access through the bookkeeping system, i.e. without using an
-analysis application.  It maps to one or more files.  An event collection
-may correspond to the data from one ``run'', for instance.
+user is able to access through the bookkeeping system without using an
+analysis application.  The Event Collection is indexed by some externally 
+provided number, such as run number of luminosity segment, and it maps to 
+one or more files.  These are the data management atoms that 
+the user has to play with.
 
-\item {\bf Analysis Dataset}.  A subset of a primary dataset, i.e. a set of
-event collections.  Many useful entities are expressed as Analysis Datasets, 
-such as the results of a skim or a managed block of data. {\bf Is it really
-necessary to introduce a new concept here for the external user? - PE}
+\item {\bf Analysis Dataset}. A user defined collection of Event Collections 
+within a Data Tier.  This may in general span multiple Processed Datasets 
+differing by no more than a minor difference in the Data Tier sense, but 
+it will not allow duplicate Event Collections in run number nor mixing of 
+Event Collections from different Primary Datasets.
 
-\item {\bf Events}.  The data from a single crossing.  Events are not managed
-or accessible as such; one must use a data processing application to access
-detail below an event collection.
-\end{itemize}
+\item {\bf Run}.  A run is a well defined index used in HEP experiments to 
+catalog data by time interval. The run is generally associated with quality 
+parameters and a rough luminosity estimate and with specific sets of calibration
+constants.
 
-We present these entities in Figure~\ref{fig:forest} and their relationships
-in Figure~\ref{fig:highlevel}.  The figures express the information model
+\item {\bf File}  The file reflects the physical container for the data.  It is
+an implementation detail which will be hidden from the user.  An N to N file 
+mapping with Event Collections is allowed, and a file is allowed to span 
+multiple Event Collections in order to support legacy cases.  In the future, 
+constraints may be applied to the data model here.
+
+\end{itemize} 
+
+We present these entities in Figure~\ref{fig:highlevel}.  
+The figure expresses the basic unadorned information model
 for the bookkeeping system, not the actual schema we will use.
 The mapping of the information model into a schema is discussed in more
 detail in section~\ref{sec:details} after we have listed some primary use
@@ -146,11 +188,11 @@ the data appears in the Appendix~\ref{appendix}.
 
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{6cm}{!}{\includegraphics{DatasetBookkeeping-1a.eps}}
+    \resizebox{9cm}{!}{\includegraphics{DatasetBookkeeping-new-1.eps}}
     \caption{Basic outline of the core DBS schema including the basic entities outlined 
-in the Introduction: Primary Dataset, Dataset Representation, Representation, 
-and Event Collection.  A few other supporting entities are shown as well.  Representation 
-is mapped $N$ to $N$ with Logical Files. }
+above: Primary Dataset, Processed Dataset, Data Tier, Event Collection, Analysis Dataset, Run, 
+Stream, and File.  Three mapping tables are required for N to N relationships of 
+Event Collection to each of Analysis Dataset, File, and Run for a total of eleven "core" tables. }
     \label{fig:highlevel}
   \end{center}
 \end{figure}
@@ -161,62 +203,70 @@ The Dataset Bookkeeping System contains the following implementation concepts
 that will be hidden from the users.  
 
 \begin{itemize}
-\item Files.  The DBS contains names of logical files.  It is not yet
-determined how much file level metadata will be tracked by the DBS. 
-\item Blocks.  The DBS contains Blocks as special aggregations of Event 
-Collections. Blocks are aggregations with respect to underlying 
-infrastructure parameters optimized for efficient storage and transfer.  
-{\bf Technically ``blocks'' should be aggregations of files, not event
-collections. - PE}
-\end{itemize}
-
+\item Files.  Although File is also a core concept, it is one that should be hidden 
+from the user.  The DBS contains names of logical files and not physical files or 
+locations.  It is not yet
+determined how much file level metadata will be tracked by the DBS, but this could include 
+size and checksum information.
 The DBS will treat special files, such as ``META'' files, in 
 exactly the same way as all other logical files.  Special files that 
 appear in more than one Event Collection will appear in more than one
 relational row.  However, the EDM group will 
 make changes in the way data is written in CMS so that the number of 
 such special files tends to zero in the long run.  
+\item File Blocks.  The DBS contains Blocks as special aggregations of Event 
+Collections. Blocks are aggregations with respect to underlying 
+infrastructure optimized for efficient storage and transfer.  The Data
+Transfer system is expecting that the File Blocks will be expressed in terms
+of files.  However, the DBS will store these as blocks of Event Collections and then 
+a simple query can be done to retreive the list of files as needed.  We assume that
+we will never want to ship a file that is a fractional part of an Event Collection
+without the other files in the event collection.  This adds a single table that is a 
+subtype of Analysis Dataset.  (Another table is needed to track subtypes.) 
+\item Application Parameters.  The DBS will contain p[arameters that are deemed interesting
+for user queries so that the users can find data.  The early identified "important" parameters
+such as number of events and estimated luminosity will be stored on table with the Event 
+Collections and Analysis Datasets.  However, we anticipate missing some interesting parameters
+to start out with, and we also anticipate users wanting to store parameters of interest to 
+specific users for later queries and not general interest parameters.  In the latter cases we 
+envision a generic parameter system that is somewhat slower to query but much more flexible in 
+what it can store.  These may include parameters marked as "queryable" 
+from the framework, for example.  
+\item Parentage Tracking and Compositeness.  Parentage and Compositeness can be added on an
+as needed basis to selected entities with a simple ER 
+design pattern of adding an N to N self-mapping table.  We envision that Analysis Datasets
+will need to track parentage since the API supports this, we also envision needing to track 
+parentage among Event Collections where filters and skimmers are processing multiple Event 
+Collections into one, and we envision possibly needing to track compositeness of Event Collections
+across Data Tiers (ie- the "RAW+REC" composite datatype.)   This accounts for three more tables.  
+\end{itemize}
 
+\subsection{More Information on Application Parameters}
+
+All general purpose parameters in the DBS are kept in String key/value format.  A 
+Parameter Binding entity keeps track of specific key/value pair bindings, while a 
+Queryable Parameter Set groups related bindings together. (The Parameter 
+Binding table can have duplicates to avoid the overhead of an N to N mapping table 
+here, since a key/value pair can obviously belong to more than one parameter set.) 
+An Application is described by a single table containing application name, version, 
+and edxecutable name.  Finally, the mapping table of Application to Parameter Set is 
+the Application Configuration.  It is instances of the mapping which are tracked 
+in the Processed Dataset. This leads to five more tables, plus any small support tables.
+These are shown in figure~\ref{fig:appl}.
+
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{9cm}{!}{\includegraphics{DatasetBookkeeping-new-2.eps}}
+    \caption{Basic outline of the application and parameter tracking parts of the schema. }
+    \label{fig:appl}
+  \end{center}
+\end{figure}
 
 \section{Scenarios, Use Cases, and Example Queries}
 
 In this Section, we explore data import
 ({\em putting} data into the system), queries ({\em seeing} what is there),
 and workflow for read access ({\em getting} data out of the system).
-
-\subsection{Data import}
-
-Data will be imported into the system in terms of the 
-Event Collection entity.  
-
-%Even though data will be produced one file at a time, its import  
-%into the data management system is probably best done in terms of the 
-%more abstract Event Collection entity. We imagine the 
-%following scenario to put  a Event Collection 
-%into the system in such a way that supports streaming.
-
-\begin{itemize}
-\item An agent is in possession of a file or files associated with an Event Collection
-containing real data.
-\item The agent utilizes an API method addToDataset(*evCollInfo).  The evCollInfo structure 
-will contain information like 
-\begin{itemize}
-\item Logical Filenames associated with the import
-\item Attributes associated with the production of the Event Collection, 
-including the latest processing step and the input Event Collection(s). 
-\end{itemize}
-\item The method searches for the best block to which to add the Event Collection.  
-The ``block'' is a special Analysis Dataset envisioned for this purpose.  
-\footnote{Blocks will have attributes of interest to a data transfer and storage 
-system, like maximum size and location information. These are of system interest only.}
-It should reconcile the processing history with existing processing paths and 
-open a new Processed Dataset if necessary.
-\begin{itemize}
-\item If there is an open block, the Event Collection is added to the open block.
-\item If there is no open block, a new open block is created and the Event Collection is added to that one.
-\item If the new block size is greater than the maximum block size, then the block is closed.  
-\end{itemize}
-\end{itemize}
 
 \subsection{User Queries}
 
@@ -371,71 +421,9 @@ have not.  In the case where there is only output product Analysis Dataset,
 then it is still useful to be able to query and find out which component
 input Event Collections, it doesn't matter were processed to 
 arrive at the desired result.  This is important to be able to track important 
-aggregte dataset properties like luminosity.
+aggregate dataset properties like luminosity.
 
-\subsubsection{Support for Generalized Queries}
-
-%The following queries can be covered in the proposed schema.  In most cases, the 
-%queries are straightforward in light of the proposed schema.  As with the diagrams, 
-%joins with support tables are omitted in the following for clarity.
-
-Each of the following queries are listed with a short plan for resolving the query.
-(This section to be fixed later.) 
-
-\begin{itemize}
-\item Find all files associated with a Primary Dataset.  Compound join on Primary
-Dataset, Processed Dataset, Event Collection, and File.
-  \begin{itemize}
-  \item Find all files associated with a run.  Simple join on Event Collection, File and selection for run number.
-  \item Find all files associated with a block.  Compound join on Analysis Dataset, Event Collection, 
-and File.
-  \end{itemize}
-\item Find all Analysis Datasets associated with a Processed Dataset.  Filtered selection on 
-simple join on Analysis Dataset, Event Collection. (This query caused us to consider that runs 
-must belong to distinct datasets, or equivalently that the unique attributes of 
-run must include at least both run number and dataset id.  If it is not so, then 
-these types of queries become much more complex.)
-  \begin{itemize}
-  \item Find all assignments associated with a Monte-Carlo Primary Dataset. Filtered selection on join.
-  \item Find all blocks and block locations associated with a Processed Dataset. Filtered selection 
-  on simple join.
-  \end{itemize}
-\item Find all data. Unfiltered selection on Primary Dataset.
-  \begin{itemize}
-  \item Find all data matching a physics criterion.  Filtered selection on dataset or 
-  on simple join on dataset, run.
-  \item How many are runs in a Processed Dataset.  
-Cardinality of simple join on dataset, Event Collection and selection on run number.
-  \item How many events in a dataset.  Selection on dataset.  (This query caused us to 
-  consider keeping track of bulk properties such as total number of events that could be 
-  updated every time a run is imported.  This could work for luminosity and cross section too.)
-  \item Find digitized data corresponding to specific generated data. 
-  Filtered selection on Processed Dataset or compound filtered selection of the join of 
-Analysis Dataset and Event Collection.  
-  \end{itemize}
-\end{itemize}
-
-\subsection{Defining derived datasets}
-%%
-%A user will be able to define new Analysis Datasets. 
-%Some of these datasets will represent the results of processing
-%of an entire production dataset and will be done on behalf of the entire
-%collaboration. Others will be defined by groups. Finally, ``private''
-%datasets defined by individual users for their own consumption may be
-%supported. We say that such user-defined (aka analysis, aka derived)
-%datasets have a {\em scope} associated with them.
-
-(This section to be fixed. Existing content was subsumed into the above sections.  
-New content should include discussion on snapshots and defining datasets by 
-query that we had on March 22.) 
-
-%Some of these derived datasets will also be ``filters'' of their parent
-%datasets, where the one-to-one relation between a parent and a child
-%event (representation) is not preserved. It shall therefore be possible
-%to mark such filtered datasets (sometimes called {\em skims}) appropriately
-%when defining them.
- 
-\subsection{Workflow scenario}
+\subsubsection{Workflow scenario}
 
 The following workflow building scenario explores the 
 interface between data management and workflow management.
@@ -443,7 +431,7 @@ interface between data management and workflow management.
 \item A physicist or agent creates jobs based on data identified by queries against 
 the DBS.  A handle to an Analysis Dataset containing a number $N$ of
 Event Collections is returned.  
-\item The physicist or agent creates $M <= N$ jobs.  The agent may create jobs with more than 
+\item The physicist or agent creates $M \le N$ jobs.  The agent may create jobs with more than 
 one Event Collection per job if optimization works out that way.  The job 
 creation tool creates jobs in a site-independent fashion, knowing only about 
 site-independent dataset parameters, input event collections, etc 
@@ -461,108 +449,236 @@ data to some other final location.
 \item The output data is published into the DBS.
 \end{itemize}
 
+
+
+
+\subsection{Introducing Dataset Pathnames}
+
+  The Dataset Bookkeeping System will support an API that hides the details of the 
+schema objects from the user.  The objects exposed to the user include Primary Dataset, 
+the Data Tier, the Event Collection, and the Analysis Dataset.  
+The first three of these objects represent dimensions that identify the data 
+according to physics kind, processing history, and sub-unit 
+(ie- "run number" or "lumi section") respectively.  The forth object represents an 
+aggregation of Event Collections into system defined or user defined sets.  
+
+  The object of immediate interest to the physicist is however the Analysis Dataset.
+Except for bookkeeping purposes, the physicist is uninterested in the substructure
+of individual Event Collections.  Therefore the API should support this abstraction.
+However, it is still natural for the physicist to request the data in terms of 
+kind and processing history.  This suggests that the thing a physicist carries 
+around to identify his/her data has three components: the Primary Dataset Name, the 
+Data Tier Name, and the Analysis Dataset Name.  
+\begin{equation}
+     \mbox{Data Identifying PathName} = /PD/DT/AD
+\end{equation}
+where $PD$ is the Primary Dataset, $DT$ is the Data Tier, and $AD$ is the Analysis 
+Dataset.
+
+  This pathname can be mapped easily onto the tables as defined so far.
+The API should hide the details about Event Collections 
+unless needed specifically to build or dump the contents of an Analysis Dataset.
+The API should also hide the details about the parentage relationships among 
+Event Collections and Analysis Datasets.  For example, if $AD_1$ is fully processed 
+into $AD_2$, then the pathname to $AD_2$ is just $/PD/DT/AD_2$ and not 
+$/PD/DT/AD_1/AD_2$.
+
+  The API methods needed to manipulate Analysis Datasets may include: 
+\begin{itemize}
+\item addEventCollection( basePathName, ECInfo ) 
+       where basePathName is the $/PD/DT$ part of a pathname, and ECInfo 
+       is a structure containing required and extra parameters for describing 
+       the Event Collection, including the luminosity estimate, run number, 
+       number of events, and list of files.  (Possibly also lumi segment 
+       information, see below.) 
+
+\item pathName = buildDataset ( basePathName, $AD$, list<EventCollections> )
+       where basePathName is as above, $AD$ is the desired name of the new
+       dataset,  and list<EventCollections> is a list of Event Collections in 
+       terms of some yet-to-be-named identifier.  (The point is to have an API 
+       that builds directly from a list.)  If $AD$ is already a name used 
+       somewhere else, this will generate an exception.   (We can introduce 
+       namespaces later to help avoid conflicts.  On success, the pathName should 
+       be returned as the basePathName + / + $AD$.) 
+
+\item  pathName = buildDataset ( initialPathName, $AD$, predicate )
+       If initialPathName is a basePathName as above, then $AD$ and pathname 
+       are also as above, and the list of Event Collections is generated by a
+       query from among all the Event Collections in /PriDName/ProDName matching 
+       the given predicate.  If initialPathName is itself an Analysis Dataset, 
+       then the predicate is evaluated against only the Event Collections in the
+       Analysis Dataset.  The returned pathname will drop the basename of the 
+       initial path and replace it with the new $AD$ so the the returned path 
+       still has a depth of three.  
+
+\item  list<EventCollections> = displayDatasetContents ( pathName ) 
+       This provides a list of event collections in an Analysis Dataset 
+
+\item  list<EventCollections> = displayDatasetContents ( initialPathName, predicate ) 
+       This provides a list of event collections satisfying a predicate as in 
+       buildDataset above.  (This method is intended as a helper for 
+       buildDataset.) 
+
+\item  pathName = buildDataset ( basePathName, $AD$ )
+\item  closeDataset() 
+       It is intended that Analysis Datasets are normally "snapshots" of the 
+       available data at a particular time.  Therefore the API methods defined so 
+       far will create and close Analysis Datasets while recording information 
+       internally about the API call that created them, including the timestamp,
+       the initial query if present and the parentage if created from another 
+       Dataset.  Workload management needs to be able to create open datasets
+       and add Event Collections to them as they become available.  Therefore  
+       buildDataset with only two arguments will create an empty open Analysis 
+       Dataset, and a special close call is provided to go along with it.
+       These methods are only intended for local scope DBS. 
+
+\item  addToDataset ( pathName, list<EventCollection> )
+       This adds Event Collections to the already existing dataset given in 
+       pathName.  These will be checked for consistency with the existing 
+       Event Collections already there.  This method only works for 
+       open Datasets in local scope DBS.
+   
+\item  globalPathName = publishDataset ( pathName )
+      This method publishes an Analysis Dataset from a local scope DBS to the 
+      global scope DBS.  The pathName is the full name of an Analysis Dataset in 
+      local scope, and if it is also unique in the global namespace, then the 
+      returned globalPathName is the same as pathName.  If the pathName is not 
+      globally unique, then it is modified by the global scope DBS to make it 
+      unique (ie- like appending an ordinal number to the end.) The local scope 
+      DBS will make a note of this global name.  This method obviously must have
+      concurrency controls at the point of contact with global DBS.
+
+\item  deleteDataset ( pathName, deepFlag ) 
+      This method removes an Analysis Dataset from the local scope DBS.  It will 
+      be disabled at global scope.  If deepFlag is set, then the included Event 
+      Collections that do not also belong to another Analysis Dataset at local 
+      scope are also deleted.  Otherwise, all EventCollections are left in place.
+\end{itemize}
+
+Several helper API methods are needed to support the above.  
+
+\begin{itemize}
+\item  createPrimaryDataset ( /PriDName, PriDatasetInfo )
+\item  createProcessedDataset ( /PriDName/ProDName, ProDatasetInfo )
+      These create Primary and data tiers with appropriate data structures.
+      For example, Primary Dataset needs to have some generator information in the 
+      case of Monte Carlo and Trigger Path information in the case of real data.
+      Data Tier needs to have Application information and parameters. 
+
+\item  showDatasetInfo ( outputSelector )
+      This method shows the metadata associated with an Analysis Dataset in desired
+      detail by outputSelector.  It will include the query and timestamp as will as 
+      contents.  In the case that the Analysis Dataset was built from an existing 
+      Analysis Dataset, then the parent will be shown.  (Note: absolute parentage 
+      in the sense of processing is kept at the Event Collection level.  This 
+      parentage is purely logical and is only an artifact of possibly having built
+      an Analysis Dataset from another in the buildDataset API method().)  It should 
+      also show accumulated data like number of events and luminosity sum.
+\end{itemize}
+
+The relationship between Data Tier and Analysis Dataset can be made ORCA-like. 
+For example, the special path $/PD/DT/DT$ can be taken to stand for 
+all of the Event Collections in the Data Tier.  This will help hide further
+the schema details from the user.   This special dataset will also have the special 
+property that it can be open even at the global scope DBS.  This is to enable streaming.
+As online publishes Event Collections into the global scope DBS, and we want to make 
+them immediately available despite the fact that more are coming.
+
+The Data Tier may properly contain duplicate Event Collections from the 
+results of different processing paths that are not quite different enough 
+to escape from the same Data Tier. In lieu of the final Data Tier specification
+above, one can specify the exact Processed Dataset or Version, $/PD/DT/XV$ (where $XV$ 
+stands for exact version) or just $/PD/DT/\mbox{Latest}$ for the latest and greatest version.
+
+\subsection{Data import}
+
+Data will be imported into the system in terms of the 
+Event Collection entity.  
+
+Even though data will be produced one file at a time, its import  
+into the data management system is best done in terms of the 
+more abstract Event Collection entity, because there will 
+never be a case where files are useful outside of their event collection. 
+We imagine the following scenario to put  a Event Collection 
+into the system in such a way that supports streaming.
+
+\begin{itemize}
+\item An agent is in possession of a file or files associated with an Event Collection
+containing real data.
+\item The agent utilizes an API method addToDataset(*evCollInfo).  The evCollInfo structure 
+will contain information like 
+\begin{itemize}
+\item Logical Filenames associated with the import
+\item Attributes associated with the production of the Event Collection, 
+including the latest processing step and the input Event Collection(s). 
+\end{itemize}
+\item The method searches for the best block to which to add the Event Collection.  
+The ``block'' is a special Analysis Dataset envisioned for this purpose.  
+\footnote{Blocks will have attributes of interest to a data transfer and storage 
+system, like maximum size and location information. These are of system interest only.}
+It should reconcile the processing history with existing processing paths and 
+open a new Processed Dataset if necessary.
+\begin{itemize}
+\item If there is an open block, the Event Collection is added to the open block.
+\item If there is no open block, a new open block is created and the Event Collection is added to that one.
+\item If the new block size is greater than the maximum block size, then the block is closed.  
+\end{itemize}
+\end{itemize}
+
+This is one simple algorithm that is ignoring local versus global scope DBS.  
+There are many possible algorithms.  (FIXME)
+
+
+\subsection{ Event Collections and Luminosity Estimates}
+
+  There are two points to consider with regards to luminosity.  First of all, the 
+standard index according to which "like" data is aggregated may be the index of
+luminosity segments instead of run number.  There may be several luminosity segments 
+per Event Collection, and summing them may be the mechanism by which luminosity
+is assigned to the Event Collections in the DBS.   Secondly, the DBS should support 
+dataset discovery in terms of luminosity.  Luminosity should be carried forward 
+through subsequent processing steps of Event Collections, even in cases of skims and 
+complicated N to N parentage relationships.  (This is possible with the existing 
+schema.)  By carrying this information forward, it is possible to make this part 
+of the API.  
+
+  Consider the use case where the physicist is not interested in processing an 
+absolute number of events, but rather is interested in processing some number of
+inverse picobarns of data.
+\begin{itemize}
+\item  list<EventCollections>, foundLumi = partialDataset( pathName, lumiDesired )
+       This returns a list of the first N event collections such that the sum 
+       of their luminosity is the minimum luminosity above lumiDesired.  Also 
+       returned is the found luminosity.  If there is not enough luminosity in 
+       the given Analysis Dataset, then all Event Collections are returned.  The 
+       user can check for this by checking foundLumi < lumiDesired.
+\end{itemize}
+
+Note that this can be combined with buildDataset() to create a luminosity "snapshot" 
+within an Analysis Dataset.  In the case alluded to above, creating a snapshot of an 
+"open dataset" is a way of providing a stable point of reference for analysis when 
+data is being streamed into the corresponding Data Tier. For example: 
+\begin{equation}
+   /PD/DT/AD = \mbox{buildDataset} ( /PD/DT/DT, AD, \mbox{partialDataset} ( /PD/DT/DT, lumiDesired )[0] )
+\end{equation}
+could create a "snapshot" of interesting that doesn't change as more Event Collections
+are being added to the special $/PD/DT/DT$ Data Tier.
+
+
 \section{The Entities and Relationships}
 \label{sec:details}
 
-The schema proposed here has a progressive view of abstraction 
-with implementation specific objects at one end, and primary datasets at the 
-other end, and 
-intermediate abstractions between them.  The user is presented with the most
-abstract concepts first, and consciously has to drill 
-down to get to the progressively less and less abstract objects like 
-logical file names if he/she desires.  Mostly these objects will be covered by 
-the API.  The detailed ER diagram is given in Figure \ref{fig:detailed}. We 
-would like to first go over the core entities introduced earlier and
-shown in Figure \ref{fig:highlevel}.
-
-\subsection{Basic Entities}
-
-At the base is the Primary Dataset.  
-Following the definition in section \ref{sec:intro},  
-attributes that define the kind of data contained in the 
-primary dataset, such as generation parameters for Monte Carlo or 
-trigger bit information for real data, are included here or in a 
-Primary Dataset support table.  
-
-The Processed Dataset is obtained by 
-selecting out of the Primary Dataset a particular subset of the data that has been 
-processed by a given sequence of application steps.  The sequence is stored 
-in the supporting entity Processing Paths.  For example,
-if a chunk of raw data were processed first by a filter program P1 followed 
-by a reconstruction program P2, then the processing path is /P1/P2, up to how we
-store information about the symbols in the path, of course.  Each component 
-of the path may contain a reference to a distinct record of the 
-invocation parameters and the corresponding application and version that did 
-the processing\footnote{This is a fine grained example of what is sometimes called
-``Data Tier''.  The Data Tier typically contains only information about kind
-of application was run.  This has been generalized to contain much more information 
-about the processing path.}. 
-
-The Event Collection is a well defined result set of data obtained by processing a 
-well defined input chunk of data through a given Processing Path.  (See figure \ref{fig:forest}).
-It is also the smallest abstract entity that can be mapped to a specific set of files.
-
-The figure shows that a Event Collection can refer to other Event Collections.  
-This supports directly the following two cases: 
-\begin{itemize}
-\item The Event Collection contains a reference to its parent. 
-\item The Event Collection may contain references to more than one 
-Event Collection in the same processing tree.\footnote{Please see the definition of
-Compound Event Collection in the appendix.}
-\end{itemize}
-The former case can be implemented directly by including the 
-full processing path in the unique key of the Event Collection as well as the 
-ID of the Primary Event Collection.  The second case requires an adjunct 
-mapping table. 
-If the user wants to create an Analysis Dataset consisting of both Hits and 
-Digis data in CMS, then the latter construct would be useful.  
-
-The Analysis Dataset is an aggregation of Event Collections.  Unlike the 
-Processed Dataset which must contain all of the Event Collections at a 
-particular Processing Path, the Analysis Dataset flexibly contains any subset
-thereof.  Please see the appendix for a precise formulation.
-
-Although the CMS framework makes no distinction between Analysis Dataset and Event Collection, 
-it is wise in a relational database to make such a distinction.  The former is just normal aggregation
-of objects into sets while the latter is specifically needed to track the implicit
-OO relationships that are possible in the data itself
-but not in an RDBMS. These relationships are tracked by including the processing path in the 
-Event Collection in the sense that each application is concerned with specific objects in the 
-event tree.  
-
-The Analysis Dataset refers to itself to support
-the use case of one user adding to the Analysis Dataset of another user.  Again, this
-may be implemented by a simple mapping table.
-
-The Processed Dataset has a special relationship to Event Collection (non-Compound) 
-in that the primary key attributes 
-of Event Collection flow through the Processed Dataset.  This does not occur 
-with Analysis Dataset in general, and hence it is called out in the diagram.
-Furthermore it should be possible to characterize and
-create a Processed Dataset before adding a Event Collection to it.  
-
-The File enitity is in a many to 
-many relationship with representations.  It is intended that special files 
-like the CARF ``META'' files can belong to more than one Event Collection.
-The META files are a contemporary implementation detail of the EDM, 
-and the DBS will not track them differently from other files.  
-As the EDM improves in this 
-respect, the DBS will not have to adjust.
-
-The progressive relationship of the entities allows queries 
-premised upon physics attributes on the Primary Dataset side 
-to be naturally drilled down by the system into queries about 
-files without specific user involvement.
-The structure also provides a natural heirarchy of categories within which to organize the 
-attributes according to their abstraction.  
+The schema can be logically divided into three sections.  First, the core entities 
+shown in figure~\ref{fig:highlevel} support the core bookkeeping use cases of the 
+DBS.   Second, the application and parameter related tables shown in figure~\ref{fig:appl}
+represent a second distinct subsystem supporting different use cases. Finally, there 
+are many support, auxilliary, and subtype 
+tables that keep track of enumerations, descriptive data, and special dataset constrainst 
+respectively.
+These are described in thsi section and should be considered the most fluid and easily 
+changeable class of schema elements.
 
 \subsection{Adding More Detail -- Relations and Constraints}
-
-%The schema above captures the basic idea of what the DBS is trying to achieve.  
-%One can build upon this to obtain a more detailed picture that includes
-%external linkages and some basic method of blocking the data 
-%together into manageable pieces for transfer and storage.  This leads to the 
-%enhancements found in Figure \ref{fig:detailed}.
 
 The fundamental unit of data import into the system is the Event Collection.  A Event Collection 
 can correspond to a run or any other chunk of data that is considered fundamental and can be 
@@ -577,13 +693,6 @@ an external Monte Carlo request database or run conditions database.
 Analysis Datasets can support different kinds of constraints depending on the 
 subtype.  The block would be a partition on Processed Datasets, and would have a 
 relationship to a site entity.  
-\begin{figure}[hbtp]
-  \begin{center}
-    \resizebox{12cm}{!}{\includegraphics{DatasetBookkeeping-2a.eps}}
-    \caption{A (nearly) complete schema.}
-    \label{fig:detailed}
-  \end{center}
-\end{figure}
 The block will aid in managing physical placement and storage of data.  
 Blocks are therefore distinguished by having a one to many relationship to a supporting site 
 entity.  Blocks satisfy the extra constraint that they  
@@ -611,8 +720,6 @@ comprise the result of a query of the DBS.  The query itself is stored in a supp
 the cretion time is recorded.
 The snapshot could be a closed set of Event Collections in a streamed dataset that does 
 not change or grow as the dataset grows.  
-
-\subsection{Even more detail -- tables and attributes}
 
 The file entity contains obvious 
 file attributes, such as logical filename, file size, cardinal times like creation and 
@@ -660,15 +767,13 @@ Each principal entity in the schema should probably have a support table.
 \subsection{Creating an Analysis Dataset from another Analysis Dataset}
 \label{sec:createEvColl}
 
-The input to a user Application is either an Analysis Dataset or an Event Collection.
-We examine a few cases here to illustrate how these processing results can be 
-recorded using the DBS schema.  Practically, the 
-relation between Analysis Dataset and Event Collection 
-(figure \ref{fig:highlevel}) is that the latter has an additional attribute that tells 
-the application how to select out specific corresponding data from the former.  
+We examine a few cases here to illustrate how complex processing results can be 
+recorded using the DBS schema.  
 In general we think of Event Collections being processed into other Event Collections. 
-But the results hold for Analysis Datasets too if we wrap the Input and Output Event Collections
-in an Analysis Dataset where needed.
+But these results hold for Analysis Datasets too if we mentally autobox the Input and Output 
+Event Collections in an Analysis Dataset where needed.
+
+This section will make use of a parentage relation PEC defined on Event Collectionss.
 
 \subsubsection{Processing a Single Event Collection}
 
@@ -676,7 +781,8 @@ A trivial case is where the application input consists of a single Event Collect
 This could be, for example, a single run.  The job processes the Event Collection 
 and produces an output Event Collection, which is associated 
 with newly produced files.  The new files are stored back into the DBS as a child 
-Event Collection of the input.  
+Event Collection of the input.  One entry is made into the PEC
+reflecting the parent/child relationship.
 
 \subsubsection{Processing Multiple Units of Data in Parallel}
 
@@ -687,96 +793,47 @@ processed by a single job\footnote{The processing is one to one input units to o
 units.  The technical condition here is that the processing 
 of an input Event Collection produces a distinct set of files, up to a few common ``metadata'' files.}, then as in the above case of a single Event Collection, the results
 can be piecewise stored back into the system as child Event Collections and then grouped
-together to form an output Analysis Dataset.  
+together to form an output Analysis Dataset.  One entry is made into the PEC
+reflecting the parent/child relationship per job.
 
 \subsubsection{Filtering or Skimming: Multiple Units of Input Data and Single Unit Output}
 
 In this case, the application creates a single output Event Collection that is whole 
-from many inputs. It is not practicable to subdivide the output 
-Analysis Dataset in terms of whatever parameter
-was used to index the input Event Collections.  For example, the input may be 
+from many inputs.  For example, the input may be 
 a list of runs and the output may be a single colletcion consisting of a few 
-events from each run selected according to some physics criterion.  We 
-assume that the output is a set of files for which there is no map
-showing which files contain which events.  Then there are two choices.
-\begin{enumerate}
-\item Store the output back into the system as a single Event Collection with 
-the output Analysis Dataset containing only that Event Collection as a new 
-Primary Event Collection.   Some limited parentage information 
-is kept in the form of a parent Analysis Dataset attribute
-\item For each input Event Collection $i$, store the relation $(i,O)$ where 
-$O$ is the output Event Collection.  In other words, the same set of 
-files appears as the the output result of processing for each $i$.  This
-would preserve all of the relationships and would 
-result in more efficient queries.  
-\end{enumerate}
+events from each run selected according to some physics criterion.  To make it 
+completely general, we assume that there is no way outside of the application 
+to subdivide the output file or files in terms of the input.  In this case, 
+one entry is made into the PEC for each input Event Collection; however each entry 
+contains the same child Event Collection. There would be one such fan-in per filter process.
 
 \subsubsection{Reclustering: Multiple Units of Input Data and Multiple Mixed Outputs}
 
 In this case, the application is accepting many input Event Collections
 and producing split outputs that have no obvious correspondence to the 
-inputs.  For exampe, the input could be 
-an Analysis Dataset comprising Event Collections according to $N$ runs and the 
+inputs.  For exampe, the input could be comprising Event Collections 
+according to $N$ runs in a stream and the 
 output could be an Analysis Dataset comprising outputs 
-according to $M$ luminosity bins.  This is also called reclustering.
-\begin{enumerate}
-\item Store each reclustered Event Collection back into the system as a
-primary Event Collection. 
-\item For each input Event Collection $i$ and for each output Event Collection $j$,
-store the relation $(i,j)$.  If it is at all known which specific inputs correspond to 
-on output Event Collection,  the size of the set of relations can be cut down. 
-In other words, the same set of 
-files appears as the the output result of processing ranging over the input 
-index $i$ holding the output index $j$ constant.  This 
-preserves  all of the relationships and would 
-result in more efficient queries.
-\end{enumerate}
+according to $M$ "datasets" containing multiple (possibly filtered) runs.  
+This could also be any kind of logical reclustering.
+In this case, 
+$N \times M$ entries are made into the PEC, one for each input Event Collection
+and output Event Collection pair.
 
+\subsubsection{Hiding the Local Scope}
+
+It is assumed that the case of complex processing gymnastics (filtering, skimming, splitting, 
+etc) needing N to N relationships of input to output will take place at the local scope DBS.
+In many cases, such complex processing will be followed by a merge.  It will be the case that
+when data is being imported into the global scope DBS, the unimportant details will be collapsed 
+out like Schrodinger's cat leaving only the overall summary information in the global scope DBS 
+only.
 
 
 \section{Architecture}
 
+(To be rewritten by Anzar and Vijay.)
 
-At the top of the application stack is the application database server layer which contains
-the application logic.  This layer abstracts the clients from the schema and is not 
-to be confused with the database server proper such as Oracle which serves SQL requests.
-The database server layer manages the API that user applications will see.  It needs to 
-support basic use cases of queries against the underlying database, such as discovering 
-datasets from metadata or asking for the number of events in a given run range.  It 
-should also support an API to get the information needed to initiate an analysis.  
-
-The dataset bookkeeping system (DBS) proper is kept immediately below the database 
-server layer.  The dataset bookkeeping system was split into the ``canonical'' dataset 
-bookkeeping system (DBS) plus a data loation service (DLS).  This reflects the 
-desire to keep replica locating functionality out of the DBS altogether is possible, 
-and in a separate schema if absolutely necessary.    We agreed that if fine grained 
-site information was included, then access to site information (DLS) should be kept 
-decoupled as possible from the actual core dataset bookkeeping functionality (DBS), 
-hence the two interfaces in the diagram.  
-
-\begin{figure}[hbtp]
-  \begin{center}
-    \resizebox{6cm}{!}{\includegraphics{DatasetBookkeeping-3a.eps}}
-    \caption{}
-    \label{fig:ex3}
-  \end{center}
-\end{figure}
-
-Next, there is a layer specializing in Run and/or Block data transport.  
-This layer can contain primitives and checks that guarantee transport of 
-runs and/or blocks.  Underneath are file and storage infrastructure layers.
-
-\subsection{Distributed Databases}
-
-We did not explore the ramifications of distributing the database on the above schema.  
-We briefly explored what it would mean to transfer a block to a site that was maintaining 
-its own copy of the DBS.  We suspect that the corresponding runs would not have to be 
-re-imported at that time.  Rather, we imagine that the corresponding data would be added 
-to the local database through a lower level interface layer.  Important questions remain:  
-is the block ID unique throughout all instances of a DBS?  What is the exact workflow for 
-replicating a block?   After some discussion, we were nonetheless confident that the 
-proposed schema with the addition of some transfer protocols would be sufficient.  
-(To be expanded.) 
 
 \section{Other Considerations}
 
@@ -834,7 +891,7 @@ in $\Delta_{\emptyset}$.  The unit
 could be a Monte Carlo run, it could be a raw data run, 
 it could be a luminosity bin within a raw data run, 
 individual events, etc.  Let $R(\Delta)$ be the 
-set of all such indices in $\Delta$.
+set of all such indices in $\Delta$.  We assume that the indices do not overlap.
 
 \item An {\bf Event Collection} $\Delta_{\pi}^{\rho}$ is the 
 data in $\Delta$ that corresponds to the result of processing $\Delta_{\emptyset}^{\rho}$ 
@@ -846,6 +903,24 @@ of all Event Collections of data units at some path $\Delta_{\pi}^{\rho}$ is
 \bigcup_{\rho \in R(\Delta)} \Delta_{\pi}^{\rho} = \Delta_{\pi}
 \end{equation}
 which is just another way of writing the Processed Dataset.  
+
+\item Processed Datasets do not overlap.  
+\begin{equation}
+\Delta_{\pi_1} \bigcap \Delta_{\pi_2} \not= \emptyset \Rightarrow \pi_1 = \pi_2
+\end{equation}
+
+\item The Data Tier $DT$ is a collection of Processed Datasets that are considered equivalent
+because they involve only some small change in parameter or minor bug fixes.  Let $\pi_1 \approx \pi_2$ 
+be true when two processing paths are about equal in this sense.  Then let 
+$DT(\Delta) = \Pi(\Delta,\approx)$ be 
+a refactoring of $\Pi(\Delta)$ using the $\approx$ relation to group similar processing
+paths $\pi$ together.  
+\begin{equation}
+\Delta = {\Delta_{DT} | DT \in DT(\Delta)}
+\end{equation}
+shows that Data Tier is just a coarser grained way to partition the Primary Datasets that 
+Processed Dataset.  Note that the Event Collection index $\rho$ is not unique in $DT(\Delta)$ like
+it is in $\Pi(\Delta)$.
 
 \item An Event Collection $\Delta_{\pi}^{\rho}$ can 
 be considered to be a node of data in a processing tree.  
