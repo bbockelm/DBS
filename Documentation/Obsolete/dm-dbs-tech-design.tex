@@ -1,4 +1,4 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.10 2005/08/05 17:10:36 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.11 2005/08/06 18:32:01 elmer Exp $
 
 \documentclass{cmspaper}
 \begin{document}
@@ -16,12 +16,13 @@
 
   \title{The CMS Dataset Bookkeeping System}
 
-  \note{Draft Version \today...}
+%  \note{Draft Version \today...}
+  \note{Draft Version 0.81}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
     Yujun Wu
-       \Instfoot{fnal}{Fermi National Accelerator Laboratory}
+       \Instfoot{fnal}{Fermi National Accelerator Laboratory, Batavia, IL, USA}
     Lassi Tuura
        \Instfoot{ne}{Northeastern University, Boston, MA, USA}
     Peter Elmer
@@ -49,8 +50,9 @@
 \end{titlepage}
 
 \setcounter{page}{2}%JPP
+\tableofcontents
 
-\section{Introduction}
+\section{Overview}
 \label{sec:intro}
 
 The Dataset Bookkeeping System (DBS) is part of the CMS Data Management system
@@ -93,7 +95,12 @@ parallelized into many jobs.
 
 \end{itemize}
 
-\section{Refining the Data Organisation}
+  The note is organized such that initial sections describe the basic
+data organization and its concepts for the general user, while the later
+sections describe the technical implementation. {\bf FIXME: add exact
+section numbers when they crystallize.}
+
+\section{Introduction to the Data Organisation}
   In this section we describe the fundamental concepts used in the CMS
 data management and describe how they will be used by the user. This
 builds on and extends the concepts presented in the Computing TDR~\cite{CTDR}.
@@ -154,11 +161,22 @@ Datasets.
 catalog data by time interval. The run is generally associated with data
 quality parameters and a rough luminosity estimate.
 
-\item {\bf File} - The file reflects the physical container for the data. It is
-an implementation detail which will be hidden from the user.  In principle,
-An N to N file mapping with Event Collections is allowed, and a file is 
-allowed to span multiple Event Collections in order to support legacy 
-cases. In the future, constraints may be applied to the data model here.
+\item {\bf File} - The file reflects the physical container for the data. We 
+define two types of filenames:
+    \begin{itemize}
+    \item Logical File Name (LFN) - a site-independent, CMS-wide name for
+          a file
+    \item Physical File Name (PFN) - a site-specific name which can be used
+          (e.g. with TFile::Open() in ROOT) to actually open and read data
+          from a specific replica of the file
+    \end{itemize}
+The DBS will track only LFN's. Local File Catalogs will be used to determine
+the appropriate PFN from an LFN~\cite{CTDR}.
+Although an N to N file mapping with Event Collections is allowed (and a file 
+is allowed to span multiple Event Collections in order to support legacy old
+EDM cases), we expect that in the new EDM an Event Collection will have a 1 to
+N relationship with files (and in general prefer that the relationship be
+1 to 1). 
 
 \item {\bf File Blocks} - A ``file block'' is simply a set of files
 likely to be accessed together (i.e. they will in general correspond to
@@ -198,13 +216,13 @@ the files from the relevant collections belong. This means that the result
 obtained from having specified the full four-elements of a ``dataset'' would 
 for example be something like:
 \begin{flushleft}
-\mbox{File-Block-1} \{ \mbox{EC1}, \mbox{EC2}, ..., EC256 \}
+\mbox{File-Block-1} = \{ \mbox{EC1}, \mbox{EC2}, ..., EC256 \}
 \end{flushleft}
 \begin{flushleft}
-\mbox{File-Block-2} \{ \mbox{EC257}, \mbox{EC258}, ..., \mbox{EC552} \}
+\mbox{File-Block-2} = \{ \mbox{EC257}, \mbox{EC258}, ..., \mbox{EC552} \}
 \end{flushleft}
 \begin{flushleft}
-\mbox{File-Block-3} \{ \mbox{EC553}, \mbox{EC554}, ..., \mbox{EC784} \}
+\mbox{File-Block-3} = \{ \mbox{EC553}, \mbox{EC554}, ..., \mbox{EC784} \}
 \end{flushleft}
 This is the minimal information needed by the workload management systems to 
 do job splitting as described in the Computing TDR~\cite{CTDR}. (Additional
@@ -253,7 +271,7 @@ from which other event collections how they were created.
   We begin with a concrete example. Consider an event collection:
 
 \begin{center}
-ECXXX (from /HighPtMuon/RECO/PR12)
+ECXXX ~~~~~~~ (from /HighPtMuon/RECO/PR12)
 \end{center}
 
 which was produced by some application, running with a particular set 
@@ -261,13 +279,12 @@ of algorithm parameters which was configured with one or more input event
 collections such as:
  
 \begin{center}
-ECYYY (from /HighPtMuon/RAW/Offline)
+ECYYY ~~~~~~~ (from /HighPtMuon/RAW/Offline)
 \end{center}
 
 (where we have made up a special processed dataset ``Offline'' for the
 special case of the RAW data). When ECXXX is added to the DBS it will
 have to specify:
-
 \begin{itemize}
 \item The name of the application used to produce it
 \item The software release from which the application was taken
@@ -276,17 +293,19 @@ a separate note. For the purposes of the DBS we consider for the moment
 that the parameter set can be described by a single ID.}
 \item That it was created from (all or part of) collection ECYYY
 \end{itemize}
+Collectively these define what we will call a ``Processing Step'' which has
+been applied to the input data.
 
   Note that the provenance relationship between the event collections also
 implies some sort of provenance relationship between:
 
 \begin{center}
-/HighPtMuon/RECO/PR12 and /HighPtMuon/RAW/Offline
+/HighPtMuon/RECO/PR12 ~~~~ and ~~~~ /HighPtMuon/RAW/Offline
 \end{center}
    
-Unlike the usual case for event collections, there is no guarantee that 
+Unlike the normal case for event collections, there is no guarantee that 
 the entire input dataset will be processed into collections in the output
-dataset, we do not explicitly introduce provenance relationships between
+dataset, hence we do not explicitly introduce provenance relationships between
 datasets except insofar as they can be calculated from the provenance of
 their constituent event collections.
 
@@ -312,6 +331,23 @@ their constituent event collections.
 %$AD_1$ is fully processed into $AD_2$, then the pathname to $AD_2$ is 
 %just $/PD/DT/AD_2$ and not $/PD/DT/AD_1/AD_2$.
 
+\subsection{More Dataset Selections}
+\label{sec:moredataset}
+
+\subsection{Analysis Dataset Creation}
+\label{sec:ADcreation}
+
+\subsection{Processed Dataset Creation and File Blocks}
+\label{sec:ProcDcreation}
+
+\subsection{Global and Local Scope DBS}
+\label{sec:DBSscopes}
+  This section will give a general description of the global and local scope
+DBS and their use
+
+\subsection{Luminosity}
+\label{sec:Luminosity}
+
 \section{The DBS API}
 
   The Dataset Bookkeeping System will support an API that hides the details of 
@@ -324,7 +360,11 @@ according to physics kind, processing history, and sub-unit (i.e. ``run
 number'' or ``lumi section'') respectively.  The fourth object represents an 
 aggregation of Event Collections into system defined or user defined sets.  
 
+  {\bf FIXME: in addition to the API, command line utilities will be provided
+which wrap them and allow them to be printed to the screen for easy browsing
+and debugging.}
 
+\subsection{The API itself}
   The API methods needed to manipulate Analysis Datasets may include: 
 \begin{itemize}
 \item addEventCollection( basePathName, ECInfo ) 
@@ -334,7 +374,7 @@ aggregation of Event Collections into system defined or user defined sets.
        number of events, and list of files.  (Possibly also lumi segment 
        information, see below.) 
 
-\item pathName = buildDataset ( basePathName, $AD$, list<EventCollections> )
+\item pathName = buildDataset ( basePathName, $AD$, list$<$EventCollections$>$ )
        where basePathName is as above, $AD$ is the desired name of the new
        dataset,  and list<EventCollections> is a list of Event Collections in 
        terms of some yet-to-be-named identifier.  (The point is to have an API 
@@ -353,10 +393,10 @@ aggregation of Event Collections into system defined or user defined sets.
        the basename of the initial path and replace it with the new $AD$ so 
        the returned path still has a depth of three.  
 
-\item  list<EventCollections> = displayDatasetContents ( pathName ) 
+\item  list$<$EventCollections$>$ = displayDatasetContents ( pathName ) 
        This provides a list of event collections in an Analysis Dataset 
 
-\item  list<EventCollections> = displayDatasetContents ( initialPathName, predicate ) 
+\item  list$<$EventCollections$>$ = displayDatasetContents ( initialPathName, predicate ) 
        This provides a list of event collections satisfying a predicate as in 
        buildDataset above.  (This method is intended as a helper for 
        buildDataset.) 
@@ -376,7 +416,7 @@ aggregation of Event Collections into system defined or user defined sets.
        to go along with it.  These methods are only intended for local
        scope DBS.
 
-\item  addToDataset ( pathName, list<EventCollection> )
+\item  addToDataset ( pathName, list$<$EventCollection$>$ )
        This adds Event Collections to the already existing dataset given in 
        pathName.  These will be checked for consistency with the existing 
        Event Collections already there.  This method only works for 
@@ -442,7 +482,7 @@ Tier specification above, one can specify the exact Processed Dataset
 or Version, $/PD/DT/XV$ (where $XV$ stands for exact version) or just
 $/PD/DT/\mbox{Latest}$ for the latest and greatest version.
 
-Additional API functions include:
+Additional API functions include ({FIXME: to specify properly as above):
 \begin{itemize}
 \item Get list of application parameters used to produce a particular event
       collection
@@ -455,11 +495,17 @@ Additional API functions include:
 \item Diff of two analysis datasets (outputs a list of things removed plus
       things added, perhaps organized by file block)
 \item Ask for (rough) luminosity for a dataset and/or event collection
+\item Get list of files for an event collection (organized by file block)
+\item Get list of files for a set of file block(s) (organized by file block)
+\item Set flags (data quality, ``lost'', etc.) on event collections and files
+\item {\bf FIXME: Add file block manipulation API}
 \end{itemize}
 
-{\bf Add file block manipulation API}
+\subsection{The associated data structures}
 
 \subsection{Data import}
+
+{\bf FIXME: most of this should be moved elsewhere.}
 
 Data will be imported into the system in terms of the 
 Event Collection entity.  
@@ -514,6 +560,8 @@ There are many possible algorithms.  (FIXME)
 
 \subsection{ Event Collections and Luminosity Estimates}
 
+{\bf FIXME: most of this should be moved elsewhere.}
+
   There are two points to consider with regards to luminosity.  First of
 all, the standard index according to which "like" data is aggregated may
 be the index of luminosity segments instead of run number.  There may be
@@ -541,7 +589,7 @@ number of inverse picobarns of data.
 \end{itemize}
 
 Note that this can be combined with buildDataset() to create a luminosity
-"snapshot" within an Analysis Dataset.  In the case alluded to above,
+``snapshot'' within an Analysis Dataset.  In the case alluded to above,
 creating a snapshot of an "open dataset" is a way of providing a stable
 point of reference for analysis when data is being streamed into the
 corresponding Data Tier. For example:
@@ -602,6 +650,11 @@ Processed Dataset.
 
  
 \section{Scenarios, Use Cases, and Example Queries}
+
+{\bf FIXME: This section needs to be reworked a bit to conform to the
+concepts and API from earlier sections. It should also add the ``Circle
+with No Name'' workflow discussion discussed at the DM workshop in June, 
+2005.}
 
 In this Section, we explore data import
 ({\em putting} data into the system), queries ({\em seeing} what is there),
@@ -982,6 +1035,28 @@ summary information in the global scope DBS only.
 
 (To be rewritten by Anzar and Vijay.)
 
+\section{The DBS and the ``old EDM''}
+
+  This section will explain:
+
+\begin{itemize}
+\item How old EDM concepts of ``dataset'', ``owner'', etc. map to those
+      of the DBS
+\item Specifically how the DBS will support use of the old EDM in the 
+      transition period 
+\end{itemize}
+
+\section{Naming Conventions}
+
+  This section will be written later after the conventions are discussed, but 
+is intended in the long run to be the authorative descriptions of the naming
+conventions to be used.
+\subsection{Primary Datasets}
+\subsection{Processed Datasets}
+\subsection{Analysis Datasets}
+\subsection{File Blocks}
+\subsection{Logical File Names}
+\subsection{Physical File Names}
 
 \section{Other Considerations}
 
