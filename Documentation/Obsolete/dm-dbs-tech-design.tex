@@ -1,4 +1,4 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.11 2005/08/06 18:32:01 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.12 2005/08/07 13:54:55 elmer Exp $
 
 \documentclass{cmspaper}
 \begin{document}
@@ -16,8 +16,8 @@
 
   \title{The CMS Dataset Bookkeeping System}
 
-%  \note{Draft Version \today...}
-  \note{Draft Version 0.81}
+  \note{Draft Version \today...}
+%  \note{Draft Version 0.8xxx}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
@@ -290,7 +290,8 @@ have to specify:
 \item The software release from which the application was taken
 \item A Parameter Set ID\footnote{Parameter sets will be the subject of
 a separate note. For the purposes of the DBS we consider for the moment
-that the parameter set can be described by a single ID.}
+that the application configuration can be described by a single parameter
+set ID.}
 \item That it was created from (all or part of) collection ECYYY
 \end{itemize}
 Collectively these define what we will call a ``Processing Step'' which has
@@ -403,7 +404,7 @@ and debugging.}
 
 \item  pathName = buildDataset ( basePathName, $AD$ )
 \item  closeDataset() 
-       It is intended that Analysis Datasets are normally "snapshots"
+       It is intended that Analysis Datasets are normally ``snapshots''
        of the available data at a particular time.  Therefore the API
        methods defined so far will create and close Analysis Datasets
        while recording information internally about the API call that
@@ -563,7 +564,7 @@ There are many possible algorithms.  (FIXME)
 {\bf FIXME: most of this should be moved elsewhere.}
 
   There are two points to consider with regards to luminosity.  First of
-all, the standard index according to which "like" data is aggregated may
+all, the standard index according to which ``like'' data is aggregated may
 be the index of luminosity segments instead of run number.  There may be
 several luminosity segments per Event Collection, and summing them may be
 the mechanism by which luminosity is assigned to the Event Collections
@@ -590,14 +591,14 @@ number of inverse picobarns of data.
 
 Note that this can be combined with buildDataset() to create a luminosity
 ``snapshot'' within an Analysis Dataset.  In the case alluded to above,
-creating a snapshot of an "open dataset" is a way of providing a stable
+creating a snapshot of an ``open dataset'' is a way of providing a stable
 point of reference for analysis when data is being streamed into the
 corresponding Data Tier. For example:
 
 \begin{equation}
    /PD/DT/AD = \mbox{buildDataset} ( /PD/DT/DT, AD, \mbox{partialDataset} ( /PD/DT/DT, lumiDesired )[0] )
 \end{equation}
-could create a "snapshot" of interesting that doesn't change as more Event 
+could create a ``snapshot'' of interesting that doesn't change as more Event 
 Collections are being added to the special $/PD/DT/DT$ Data Tier.
 
 
@@ -638,14 +639,14 @@ Processed Dataset.
 
 %\item Application Parameters. The DBS will contain parameters that are deemed 
 %interesting for user queries so that the users can find data. The early 
-%identified "important" parameters such as number of events and estimated 
+%identified ``important'' parameters such as number of events and estimated 
 %luminosity will be stored on table with the Event Collections and Analysis 
 %Datasets.  However, we anticipate missing some interesting parameters to 
 %start out with, and we also anticipate users wanting to store parameters 
 %of interest to specific users for later queries and not general interest 
 %parameters.  In the latter cases we envision a generic parameter system that 
 %is somewhat slower to query but much more flexible in what it can store. 
-%These may include parameters marked as "queryable" from the framework, for 
+%These may include parameters marked as ``queryable'' from the framework, for 
 %example.  
 
  
@@ -1015,7 +1016,7 @@ In this case, the application is accepting many input Event Collections
 and producing split outputs that have no obvious correspondence to the
 inputs.  For exampe, the input could be comprising Event Collections
 according to $N$ runs in a stream and the output could be an Analysis
-Dataset comprising outputs according to $M$ "datasets" containing
+Dataset comprising outputs according to $M$ ``datasets'' containing
 multiple (possibly filtered) runs.  This could also be any kind of logical
 reclustering.  In this case, $N \times M$ entries are made into the PEC,
 one for each input Event Collection and output Event Collection pair.
@@ -1106,7 +1107,7 @@ called Event Collections.  Along the axis pointing out of the page, the trees ar
 indexed by the qualitative kind of data, or by Primary Dataset. The collection of all 
 Event Collections at the same Processing Path within a Primary Dataset is known as a
 Processed Dataset. (Exampled of Processed Dataset are unfortunately labeled here 
-as "EC1" and "EC2".)}
+as ``EC1'' and ``EC2''.)}
     \label{fig:forest}
   \end{center}
 \end{figure}
@@ -1307,7 +1308,7 @@ of interesting data''.
 
   \bibitem {NOTE000} {\bf CMS Note 2005/000},
     X.Somebody et al.,
-    {\em "CMS Note Template"}.
+    {\em ``CMS Note Template''}.
 \end{thebibliography}
  
 %------------------------------------------------------------------------------
