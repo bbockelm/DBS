@@ -1,6 +1,10 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.12 2005/08/07 13:54:55 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.13 2005/08/07 14:32:57 elmer Exp $
 
-\documentclass{cmspaper}
+\documentclass[pdftex]{cmspaper}
+\usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks,link
+color=magenta,citecolor=blue,urlcolor=red,plainpages=false,pdfpagelabels]{hyperr
+ef}
+
 \begin{document}
 
 %==============================================================================
@@ -9,7 +13,7 @@
 \begin{titlepage}
 
 % select one of the following and type in the proper number:
-   \cmsnote{2005/TBD}
+%   \cmsnote{2005/TBD}
 %  \internalnote{2005/000}
 %  \conferencereport{2005/000}
    \date{\today}
@@ -52,6 +56,7 @@
 \setcounter{page}{2}%JPP
 \tableofcontents
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Overview}
 \label{sec:intro}
 
@@ -100,6 +105,7 @@ data organization and its concepts for the general user, while the later
 sections describe the technical implementation. {\bf FIXME: add exact
 section numbers when they crystallize.}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Introduction to the Data Organisation}
   In this section we describe the fundamental concepts used in the CMS
 data management and describe how they will be used by the user. This
@@ -332,23 +338,38 @@ their constituent event collections.
 %$AD_1$ is fully processed into $AD_2$, then the pathname to $AD_2$ is 
 %just $/PD/DT/AD_2$ and not $/PD/DT/AD_1/AD_2$.
 
-\subsection{More Dataset Selections}
-\label{sec:moredataset}
-
-\subsection{Analysis Dataset Creation}
-\label{sec:ADcreation}
+%\subsection{More Dataset Selections}
+%\label{sec:moredataset}
 
 \subsection{Processed Dataset Creation and File Blocks}
 \label{sec:ProcDcreation}
 
+  In general it will 
+
+  As described
+
+\subsection{Analysis Dataset Creation}
+\label{sec:ADcreation}
+
 \subsection{Global and Local Scope DBS}
 \label{sec:DBSscopes}
   This section will give a general description of the global and local scope
-DBS and their use
+DBS and their use.
 
 \subsection{Luminosity}
 \label{sec:Luminosity}
 
+  The DBS will provide an estimate of the luminosity corresponding to 
+individual event collections and datasets.
+
+  CDF and D0 had the concept of a subdivision of a run with a specific 
+assigned luminosity, a so-called ``run segment''. This was used to insure
+that individual jobs were run over inputs with a well known luminosity. 
+Version 1.0 of the DBS will not suport ``run segments'', but when this
+concept becomes clearer in CMS this will be reevaluated and, if necessary, 
+implemented in a subsequent version of the DBS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{The DBS API}
 
   The Dataset Bookkeeping System will support an API that hides the details of 
@@ -441,6 +462,13 @@ and debugging.}
       Analysis Dataset at local scope are also deleted.  Otherwise,
       all EventCollections are left in place.
 
+\item  list$<$EventCollections$>$, foundLumi = partialDataset( pathName, lumiDesired )
+       This returns a list of the first N event collections such that the sum 
+       of their luminosity is the minimum luminosity above lumiDesired.  Also 
+       returned is the found luminosity.  If there is not enough luminosity in 
+       the given Analysis Dataset, then all Event Collections are returned.  
+       The user can check for this by checking foundLumi < lumiDesired.
+
 \end{itemize}
 
 Several helper API methods are needed to support the above.  
@@ -504,6 +532,15 @@ Additional API functions include ({FIXME: to specify properly as above):
 
 \subsection{The associated data structures}
 
+  This section should at least define the information content (if not
+the exact format) of any relevant data structures that appear in the API.
+
+\begin{itemize}
+\item define ECInfo
+\item define data structure for accessing information (e.g. event collections
+      organized by file blocks)
+\end{itemize}
+
 \subsection{Data import}
 
 {\bf FIXME: most of this should be moved elsewhere.}
@@ -559,97 +596,8 @@ This is one simple algorithm that is ignoring local versus global scope DBS.
 There are many possible algorithms.  (FIXME)
 
 
-\subsection{ Event Collections and Luminosity Estimates}
 
-{\bf FIXME: most of this should be moved elsewhere.}
-
-  There are two points to consider with regards to luminosity.  First of
-all, the standard index according to which ``like'' data is aggregated may
-be the index of luminosity segments instead of run number.  There may be
-several luminosity segments per Event Collection, and summing them may be
-the mechanism by which luminosity is assigned to the Event Collections
-in the DBS.   Secondly, the DBS should support dataset discovery in
-terms of luminosity.  Luminosity should be carried forward through
-subsequent processing steps of Event Collections, even in cases of
-skims and complicated N to N parentage relationships.  (This is possible
-with the existing schema.)  By carrying this information forward, it is
-possible to make this part of the API.
-
-  Consider the use case where the physicist is not interested in processing 
-an absolute number of events, but rather is interested in processing some
-number of inverse picobarns of data.
-
-\begin{itemize}
-\item  list<EventCollections>, foundLumi = partialDataset( pathName, lumiDesired )
-       This returns a list of the first N event collections such that the sum 
-       of their luminosity is the minimum luminosity above lumiDesired.  Also 
-       returned is the found luminosity.  If there is not enough luminosity in 
-       the given Analysis Dataset, then all Event Collections are returned.  
-       The user can check for this by checking foundLumi < lumiDesired.
-
-\end{itemize}
-
-Note that this can be combined with buildDataset() to create a luminosity
-``snapshot'' within an Analysis Dataset.  In the case alluded to above,
-creating a snapshot of an ``open dataset'' is a way of providing a stable
-point of reference for analysis when data is being streamed into the
-corresponding Data Tier. For example:
-
-\begin{equation}
-   /PD/DT/AD = \mbox{buildDataset} ( /PD/DT/DT, AD, \mbox{partialDataset} ( /PD/DT/DT, lumiDesired )[0] )
-\end{equation}
-could create a ``snapshot'' of interesting that doesn't change as more Event 
-Collections are being added to the special $/PD/DT/DT$ Data Tier.
-
-
-
-
-\section{Implementation Concepts}
-
-The Dataset Bookkeeping System contains the following implementation concepts. 
-They will in general be hidden from the users.  
-
-\begin{itemize}
-\item Files.  Although File is a core concept, it is one that should be 
-in general hidden from the user. The DBS contains names of logical files and 
-not physical files or locations.  It is not yet determined how much file 
-level attributes will be tracked by the DBS, but this could include size and 
-checksum information.
-For the existing EDM, the DBS will treat special files, such as ``META'' 
-files, in exactly the same way as all other logical files. However, the new
-EDM group will make changes in the way data is written in CMS so that the 
-number of such special files tends to zero in the long run.  
-
-
-
-\end{itemize}
-
-\subsection{Application Parameters}
-
-All general purpose parameters in the DBS are kept in String key/value 
-format.  A Parameter Binding entity keeps track of specific key/value pair 
-bindings, while a Queryable Parameter Set groups related bindings together. 
-(The Parameter Binding table can have duplicates to avoid the overhead of 
-an N to N mapping table here, since a key/value pair can obviously belong to 
-more than one parameter set.) An Application is described by a single table 
-containing application name, version, and edxecutable name.  Finally, the 
-mapping table of Application to Parameter Set is the Application 
-Configuration.  It is instances of the mapping which are tracked in the 
-Processed Dataset.
-
-%\item Application Parameters. The DBS will contain parameters that are deemed 
-%interesting for user queries so that the users can find data. The early 
-%identified ``important'' parameters such as number of events and estimated 
-%luminosity will be stored on table with the Event Collections and Analysis 
-%Datasets.  However, we anticipate missing some interesting parameters to 
-%start out with, and we also anticipate users wanting to store parameters 
-%of interest to specific users for later queries and not general interest 
-%parameters.  In the latter cases we envision a generic parameter system that 
-%is somewhat slower to query but much more flexible in what it can store. 
-%These may include parameters marked as ``queryable'' from the framework, for 
-%example.  
-
- 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Scenarios, Use Cases, and Example Queries}
 
 {\bf FIXME: This section needs to be reworked a bit to conform to the
@@ -861,13 +809,16 @@ Event Collections is returned.
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{The Entities and Relationships}
 \label{sec:details}
 
 The schema can be logically divided into three sections.  First,
-the core entities shown in figure~\ref{fig:highlevel} support the
+%the core entities shown in figure~\ref{fig:highlevel} support the
+the core entities shown in figure XXXfig:highlevelXXX support the
 core bookkeeping use cases of the DBS.   Second, the application and
-parameter related tables shown in figure~\ref{fig:appl} represent a second
+%parameter related tables shown in figure~\ref{fig:appl} represent a second
+parameter related tables shown in figure XXXfig:applXXX represent a second
 distinct subsystem supporting different use cases. Finally, there are many
 support, auxilliary, and subtype tables that keep track of enumerations,
 descriptive data, and special dataset constrainst respectively.  These are
@@ -884,7 +835,8 @@ to overlap with those in another Event Collection.  This accommodates
 metadata files, for example.  This aspect can be tightened later as the
 EDM evolves.}.  A special kind of Event Collection is the Primary Event
 Collection.  The Primary Event Collection corresponds to the root node in
-a processing tree of figure \ref{fig:forest}.  This entity will contain
+%a processing tree of figure~\ref{fig:forest}.  This entity will contain
+a processing tree of figure XXXfig:forestXXX.  This entity will contain
 attributes associated with the whole tree, possibly these are keys into
 an external Monte Carlo request database or run conditions database.
 
@@ -1032,10 +984,12 @@ will be collapsed out like Schrodinger's cat leaving only the overall
 summary information in the global scope DBS only.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Architecture}
 
 (To be rewritten by Anzar and Vijay.)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{The DBS and the ``old EDM''}
 
   This section will explain:
@@ -1047,6 +1001,14 @@ summary information in the global scope DBS only.
       transition period 
 \end{itemize}
 
+\begin{itemize}
+\item Files. For the old EDM, the DBS will treat special files, such as 
+``META'' files, in exactly the same way as all other logical files. However, 
+the new EDM group will make changes in the way data is written in CMS so 
+that the number of such special files tends to zero in the long run.  
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Naming Conventions}
 
   This section will be written later after the conventions are discussed, but 
@@ -1059,6 +1021,7 @@ conventions to be used.
 \subsection{Logical File Names}
 \subsection{Physical File Names}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Other Considerations}
 
 Runs have a fill structure.  We do not at this time believe that
@@ -1078,44 +1041,14 @@ Datasets must already comprise data that belongs to a dataset.
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Addendum on Data ``Sets''}\label{appendix}
 
-These are shown in figure~\ref{fig:appl}.
-
-\begin{figure}[hbtp]
-  \begin{center}
-    \resizebox{9cm}{!}{\includegraphics{DatasetBookkeeping-new-2.eps}}
-    \caption{Basic outline of the application and parameter tracking parts of the schema. }
-    \label{fig:appl}
-  \end{center}
-\end{figure}
 
 
 
-
-
-\begin{figure}[hbtp]
-  \begin{center}
-    \resizebox{10cm}{!}{\includegraphics{forest.eps}}
-    \caption{The figure shows a forest of trees.  The root of each tree is a 
-chunk of data indexed by some number monotonically increasing along the time axis, 
-such as run number or luminosity segment.
-The path to a node in the tree from the root represents the result of processing 
-the root node data through a particular sequence of processing steps.  Each node 
-along the way corresponds to an intermediate step.  The individual nodes correspond to objects 
-called Event Collections.  Along the axis pointing out of the page, the trees are 
-indexed by the qualitative kind of data, or by Primary Dataset. The collection of all 
-Event Collections at the same Processing Path within a Primary Dataset is known as a
-Processed Dataset. (Exampled of Processed Dataset are unfortunately labeled here 
-as ``EC1'' and ``EC2''.)}
-    \label{fig:forest}
-  \end{center}
-\end{figure}
-
-
-
-
-We present these entities in Figure~\ref{fig:highlevel}.  
+%We present these entities in Figure~\ref{fig:highlevel}.  
+We present these entities in Figure XXXfig:highlevelXXX.
 The figure expresses the basic unadorned information model
 for the bookkeeping system, not the actual schema we will use.
 The mapping of the information model into a schema is discussed in more
@@ -1123,16 +1056,6 @@ detail in section~\ref{sec:details} after we have listed some primary use
 cases.  A more precise definition of these entities in terms of subsets of
 the data appears in the Appendix~\ref{appendix}.
 
-\begin{figure}[hbtp]
-  \begin{center}
-    \resizebox{9cm}{!}{\includegraphics{DatasetBookkeeping-new-1.eps}}
-    \caption{Basic outline of the core DBS schema including the basic 
-             entities outlined above: Primary Dataset, Processed Dataset, 
-             Data Tier, Event Collection, Analysis Dataset, Run, Stream, and 
-             File.} 
-    \label{fig:highlevel}
-  \end{center}
-\end{figure}
 
 
 In order to clarify the relationships between the given entities given
