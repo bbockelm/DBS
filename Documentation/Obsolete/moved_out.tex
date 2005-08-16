@@ -101,4 +101,29 @@ as ``EC1'' and ``EC2''.)}
   \end{center}
 \end{figure}
 
+\subsection{Data import}
+
+{\bf FIXME: most of this should be moved elsewhere.}
+
+Data will be imported into the system in terms of the 
+Event Collection entity.  
+
+Even though data will be produced one file at a time, its import  
+into the data management system is best done in terms of the 
+more abstract Event Collection entity, because there will 
+never be a case where files are useful outside of their event collection. 
+We imagine the following scenario to put  a Event Collection 
+into the system in such a way that supports streaming.
+
+This is one simple algorithm that is ignoring local versus global scope DBS.  
+There are many possible algorithms.  (FIXME)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The Processed Dataset may properly contain duplicate Event Collections from
+the results of different processing paths that are not quite different
+enough to escape from the same Data Tier. In lieu of the final Data
+Tier specification above, one can specify the exact Processed Dataset
+or Version, $/PD/DT/XV$ (where $XV$ stands for exact version) or just
+$/PD/DT/\mbox{Latest}$ for the latest and greatest version.
 

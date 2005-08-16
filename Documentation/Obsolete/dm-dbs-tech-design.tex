@@ -21,7 +21,7 @@ ef}
   \title{The CMS Dataset Bookkeeping System}
 
   \note{Draft Version \today...}
-%  \note{Draft Version 0.8xxx}
+%  \note{Draft Version 0.82}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
@@ -344,12 +344,14 @@ their constituent event collections.
 \subsection{Processed Dataset Creation and File Blocks}
 \label{sec:ProcDcreation}
 
-  In general it will 
-
-  As described
+  This section will describe at a high level how and when Processed Datasets
+are created, by whom and generically how File Blocks are created.
 
 \subsection{Analysis Dataset Creation}
 \label{sec:ADcreation}
+
+  This section will describe in further detail how Analysis Datasets can
+be created.
 
 \subsection{Global and Local Scope DBS}
 \label{sec:DBSscopes}
@@ -390,11 +392,11 @@ and debugging.}
   The API methods needed to manipulate Analysis Datasets may include: 
 \begin{itemize}
 \item addEventCollection( basePathName, ECInfo ) 
-       where basePathName is the $/PD/DT$ part of a pathname, and ECInfo 
-       is a structure containing required and extra parameters for describing 
-       the Event Collection, including the luminosity estimate, run number, 
-       number of events, and list of files.  (Possibly also lumi segment 
-       information, see below.) 
+       where basePathName is the $/PrimD/DT/ProcD$ part of a pathname, and 
+       ECInfo is a structure containing required and extra parameters for 
+       describing the Event Collection, including the luminosity estimate, 
+       run number, number of events, and list of files.  (Possibly also lumi 
+       segment information, see below.) 
 
 \item pathName = buildDataset ( basePathName, $AD$, list$<$EventCollections$>$ )
        where basePathName is as above, $AD$ is the desired name of the new
@@ -416,7 +418,9 @@ and debugging.}
        the returned path still has a depth of three.  
 
 \item  list$<$EventCollections$>$ = displayDatasetContents ( pathName ) 
-       This provides a list of event collections in an Analysis Dataset 
+       This provides a list of event collections in a Processed or Analysis 
+       Dataset. The list of EventCollections should be organized by File
+       Block.
 
 \item  list$<$EventCollections$>$ = displayDatasetContents ( initialPathName, predicate ) 
        This provides a list of event collections satisfying a predicate as in 
@@ -439,9 +443,9 @@ and debugging.}
        scope DBS.
 
 \item  addToDataset ( pathName, list$<$EventCollection$>$ )
-       This adds Event Collections to the already existing dataset given in 
-       pathName.  These will be checked for consistency with the existing 
-       Event Collections already there.  This method only works for 
+       This adds (existing) Event Collections to the already existing dataset 
+       given in pathName.  These will be checked for consistency with the 
+       existing Event Collections already there.  This method only works for 
        open Datasets in local scope DBS.
    
 \item  globalPathName = publishDataset ( pathName )
@@ -475,7 +479,7 @@ Several helper API methods are needed to support the above.
 
 \begin{itemize}
 \item  createPrimaryDataset ( /PriDName, PriDatasetInfo )
-\item  createProcessedDataset ( /PriDName/ProDName, ProDatasetInfo )
+\item  createProcessedDataset ( /PriDName/DT/ProcDName, ProcDatasetInfo )
       These create Primary and data tiers with appropriate data
       structures.  For example, Primary Dataset needs to have some
       generator information in the case of Monte Carlo and Trigger Path
@@ -496,20 +500,16 @@ Several helper API methods are needed to support the above.
 \end{itemize}
 
 The relationship between Data Tier and Analysis Dataset can be made
-ORCA-like.  For example, the special path $/PD/DT/DT$ can be taken to
-stand for all of the Event Collections in the Data Tier.  This will help
-hide further the schema details from the user.   This special dataset
-will also have the special property that it can be open even at the
+ORCA-like.  For example, the special path $/PrimD/DT/ProcD$ can be taken to
+stand for all of the Event Collections in the Processed Dataset. This special 
+dataset will also have the special property that it can be open even at the
 global scope DBS.  This is to enable streaming.  As online publishes
 Event Collections into the global scope DBS, and we want to make them
 immediately available despite the fact that more are coming.
 
-The Data Tier may properly contain duplicate Event Collections from
+The Processed Dataset may properly contain duplicate Event Collections from
 the results of different processing paths that are not quite different
-enough to escape from the same Data Tier. In lieu of the final Data
-Tier specification above, one can specify the exact Processed Dataset
-or Version, $/PD/DT/XV$ (where $XV$ stands for exact version) or just
-$/PD/DT/\mbox{Latest}$ for the latest and greatest version.
+enough to escape from the same Data Tier. 
 
 Additional API functions include ({FIXME: to specify properly as above):
 \begin{itemize}
@@ -517,8 +517,8 @@ Additional API functions include ({FIXME: to specify properly as above):
       collection
 \item Get list of input collections used as input to produce a given event
       collection
-\item Do 'ls /PrimaryDataset/DataTier'
-\item Do 'ls /PrimaryDataset/DataTier/ProcessedDataset'
+\item List all datasets in /PrimaryDataset/DataTier
+\item List all datasets in /PrimaryDataset/DataTier/ProcessedDataset
 \item Ask who created a 3 or 4 element dataset and when they created it
 \item Ask for text ``description'' of a 3 or 4 element dataset
 \item Diff of two analysis datasets (outputs a list of things removed plus
@@ -534,66 +534,43 @@ Additional API functions include ({FIXME: to specify properly as above):
 
   This section should at least define the information content (if not
 the exact format) of any relevant data structures that appear in the API.
+{\bf FIXME: this section currently contains some cut-and-paste things
+from other sections. It needs to be reworked to be coherent.}
 
 \begin{itemize}
 \item define ECInfo
+\item define evCollInfo(???) - The agent utilizes an API method 
+      addToDataset(*evCollInfo). The evCollInfo structure will contain 
+      information like: 
+
+  \begin{itemize}
+  \item Logical Filenames associated with the import
+
+  \item Attributes associated with the production of the Event Collection, 
+        including the latest processing step and the input Event 
+        Collection(s). 
+  \item The method searches for the best block to which to add the Event 
+        Collection. The ``block'' is a special Analysis Dataset envisioned
+        for this purpose. \footnote{Blocks will have attributes of
+        interest to a data transfer and storage system, like maximum size
+        and location information. These are of system interest only.} It
+        should reconcile the processing history with existing processing
+        paths and open a new Processed Dataset if necessary.
+    \begin{itemize}
+    \item If there is an open block, the Event Collection is added to the open 
+          block.
+
+    \item If there is no open block, a new open block is created and the Event 
+          Collection is added to that one.
+
+    \item If the new block size is greater than the maximum block size, then 
+          the block is closed.  
+    \end{itemize}
+  \end{itemize}
+
 \item define data structure for accessing information (e.g. event collections
       organized by file blocks)
 \end{itemize}
-
-\subsection{Data import}
-
-{\bf FIXME: most of this should be moved elsewhere.}
-
-Data will be imported into the system in terms of the 
-Event Collection entity.  
-
-Even though data will be produced one file at a time, its import  
-into the data management system is best done in terms of the 
-more abstract Event Collection entity, because there will 
-never be a case where files are useful outside of their event collection. 
-We imagine the following scenario to put  a Event Collection 
-into the system in such a way that supports streaming.
-
-\begin{itemize}
-\item An agent is in possession of a file or files associated with an
-Event Collection containing real data.
-
-\item The agent utilizes an API method addToDataset(*evCollInfo). The 
-evCollInfo structure will contain information like: 
-\begin{itemize}
-
-\item Logical Filenames associated with the import
-
-\item Attributes associated with the production of the Event Collection, 
-including the latest processing step and the input Event Collection(s). 
-\end{itemize}
-
-\item The method searches for the best block to which to add the Event 
-      Collection. The ``block'' is a special Analysis Dataset envisioned
-      for this purpose. \footnote{Blocks will have attributes of
-      interest to a data transfer and storage system, like maximum size
-      and location information. These are of system interest only.} It
-      should reconcile the processing history with existing processing
-      paths and open a new Processed Dataset if necessary.
-
-\begin{itemize}
-
-\item If there is an open block, the Event Collection is added to the open 
-      block.
-
-\item If there is no open block, a new open block is created and the Event 
-      Collection is added to that one.
-
-\item If the new block size is greater than the maximum block size, then 
-      the block is closed.  
-
-\end{itemize}
-
-\end{itemize}
-
-This is one simple algorithm that is ignoring local versus global scope DBS.  
-There are many possible algorithms.  (FIXME)
 
 
 
