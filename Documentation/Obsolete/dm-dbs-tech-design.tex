@@ -1,9 +1,11 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.13 2005/08/07 14:32:57 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.15 2005/08/16 09:02:46 elmer Exp $
 
 \documentclass[pdftex]{cmspaper}
 \usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks,link
 color=magenta,citecolor=blue,urlcolor=red,plainpages=false,pdfpagelabels]{hyperr
 ef}
+
+%
 
 \begin{document}
 
@@ -120,7 +122,7 @@ We define following terms for the organisation of CMS data:
 and can be thought of as a collection of the output event data from the CMS
 detector grouped by sets of high-level triggers that roughly ``go together''.
 This plays a minor role in the DBS and is mainly meant to simplify data 
-handling in the HLT. Online streams will be repackaged as Primary Datasets 
+handling in the HLT. Online streams will be split into Primary Datasets 
 in the Tier-0 for subsequent use.
 
 \item {\bf Primary Dataset}. This is the the unit of 
@@ -138,7 +140,7 @@ these). A type for user data such as ``NTUPLE'' will likely be added.
 
 \item {\bf Processed Dataset} - This is a slice of data from a Primary Dataset
 defined by the processing history applied to it.  For example, the 
-reconstructed data processed with application A and version V and 
+reconstructed data processed with application A, release version V and 
 configuration C, and other cardinal parameters is a {\em processed dataset}, 
 namely it is the result of processing the raw data. A processed dataset
 will correspond to a large production of data with a single major software
