@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS Prototype 0
 -- ===
--- ===   $Id:$
+-- ===   $Id: DBS-DB.sql,v 1.3 2005/08/20 14:41:59 elmer Exp $
 -- ======================================================================
 
 CREATE TABLE SchemaRevision 
@@ -9,7 +9,7 @@ CREATE TABLE SchemaRevision
     Revision              varchar(255)
   );
 
-INSERT INTO SchemaRevision VALUES ('$Revision:$');
+INSERT INTO SchemaRevision VALUES ('$Revision: 1.3 $');
 
 CREATE TABLE Person
   (
@@ -30,45 +30,6 @@ CREATE TABLE Person
 
 -- ======================================================================
 
-CREATE TABLE Role
-  (
-    RoleID                int,
-    RoleName              varchar(80)    unique not null,
-    RoleDescription       varchar(255)   not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
-
-    primary key(RoleID),
-
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
-  );
-
--- ======================================================================
-
-CREATE TABLE AssignedRole
-  (
-    AssignedRoleID        int,
-    PersonID              int    not null,
-    RoleID                int    not null,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
-
-    primary key(AssignedRoleID),
-    unique(PersonID,RoleID),
-
-    foreign key(PersonID) references Person(PersonID) on update CASCADE on delete CASCADE,
-    foreign key(RoleID) references Role(RoleID) on update CASCADE on delete CASCADE,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
-  );
-
--- ======================================================================
-
 CREATE TABLE PhysicsGroup
   (
     PhysicsGroupID        int,
@@ -82,69 +43,6 @@ CREATE TABLE PhysicsGroup
     primary key(PhysicsGroupID),
 
     foreign key(PhysicsGroupConvener) references Person(PersonID),
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
-  );
-
--- ======================================================================
-
-CREATE TABLE AnalysisDatasetSubtype
-  (
-    AnalysisDatasetTypeID          int,
-    AnalysisDatasetTypeName        varchar(80)    unique not null,
-    AnalysisDatasetTypeAnnotation  varchar(255)   not null,
-    CreatedBy                      int,
-    CreationDate                   date,
-    LastModifiedBy                 int,
-    LastModificationDate           date,
-
-    primary key(AnalysisDatasetTypeID),
-
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
-  );
-
--- ======================================================================
-
-CREATE TABLE QueryableParameterSet
-  (
-    QueryableParameterSetID  int,
-    QPSName                  varchar(80)    not null,
-    QPSVersion               varchar(80)    not null,
-    QPSAnnotation            varchar(255)   not null,
-    Composite                char(1)        not null,
-    CreationDate             date,
-    CreatedBy                int,
-    LastModificationDate     date,
-    LastModifiedBy           int,
-
-    primary key(QueryableParameterSetID),
-    unique(QPSName,QPSVersion),
-
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(Composite IN ('y', 'n'))
-  );
-
--- ======================================================================
-
-CREATE TABLE ParameterBinding
-  (
-    ParameterBindingID    int,
-    ParameterName         varchar(80)    not null,
-    ParameterValue        varchar(255)   not null,
-    ExternalDataType      varchar(80),
-    GPGID                 int            not null,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
-
-    primary key(ParameterBindingID),
-    unique(ParameterName,GPGID),
-
-    foreign key(GPGID) references QueryableParameterSet(QueryableParameterSetID),
     foreign key(CreatedBy) references Person(PersonID),
     foreign key(LastModifiedBy) references Person(PersonID)
   );
@@ -188,55 +86,16 @@ CREATE TABLE MCDescription
 
 -- ======================================================================
 
-CREATE TABLE CompositeQueryableParameterSet
-  (
-    CompositeQueryableParameterSetID  int,
-    ChildParameterSetID               int,
-
-    primary key(CompositeQueryableParameterSetID,ChildParameterSetID),
-
-    foreign key(CompositeQueryableParameterSetID) references QueryableParameterSet(QueryableParameterSetID) on update CASCADE on delete CASCADE,
-    foreign key(ChildParameterSetID) references QueryableParameterSet(QueryableParameterSetID)
-  );
-
--- ======================================================================
-
 CREATE TABLE AnalysisDataset
   (
     AnalysisDatasetID          int,
     AnalysisDatasetAnnotation  varchar(255)   not null,
-    AnalysisDatasetTypeID      int            not null,
-    CompositeAnalysisDataset   char(1)        not null,
-    AuxilliaryPOOLCatalog      varchar(255),
     CreatedBy                  int,
     CreationDate               date,
     LastModifiedBy             int,
     LastModificationDate       date,
 
     primary key(AnalysisDatasetID),
-
-    foreign key(AnalysisDatasetTypeID) references AnalysisDatasetSubtype(AnalysisDatasetTypeID) on update SET NULL on delete SET NULL,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(CompositeAnalysisDataset IN ('y', 'n'))
-  );
-
--- ======================================================================
-
-CREATE TABLE Stream
-  (
-    StreamID              int            not null,
-    StreamName            varchar(80)    unique not null,
-    StreamAnnotation      varchar(255)   not null,
-    StartDate             date,
-    EndDate               date,
-    CreationDate          date,
-    CreatedBy             int,
-    LastModificationDate  date,
-    LastModifiedBy        int,
-
-    primary key(StreamID),
 
     foreign key(CreatedBy) references Person(PersonID),
     foreign key(LastModifiedBy) references Person(PersonID)
@@ -397,28 +256,6 @@ CREATE TABLE RunQuality
 
 -- ======================================================================
 
-CREATE TABLE Block
-  (
-    BlockID               int,
-    Size                  numeric(10,4),
-    Checksum              numeric(10,4),
-    OpenForWriting        char(1)         not null,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
-
-    primary key(BlockID),
-
-    foreign key(BlockID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(OpenForWriting IN ('y', 'n'))
-  );
-
--- ======================================================================
-
 CREATE TABLE Application
   (
     ApplicationID         int,
@@ -465,7 +302,7 @@ CREATE TABLE AnalysisDatasetParentage
 
 CREATE TABLE PrimaryDatasetDescription
   (
-    AbstractDatasetDescriptionID  int,
+    PrimaryDatasetDescriptionID   int,
     TriggerDescriptionID          int,
     MCChannelDescriptionID        int,
     MCDataset                     char(1)   not null,
@@ -474,7 +311,7 @@ CREATE TABLE PrimaryDatasetDescription
     LastModifiedBy                int,
     LastModificationDate          date,
 
-    primary key(AbstractDatasetDescriptionID),
+    primary key(PrimaryDatasetDescriptionID),
     unique(TriggerDescriptionID,MCChannelDescriptionID),
 
     foreign key(TriggerDescriptionID) references TriggerPathDescription(TriggerPathDescriptionID),
@@ -495,8 +332,6 @@ CREATE TABLE AnalysisDatasetData
     EstimatedLuminosity     varchar(80),
     AnalysisDatasetStatus   int             not null,
     ValidationStatus        int             not null,
-    COBRAAccessorName       varchar(255),
-    OtherQueryableMetadata  int,
     CreationDate            date,
     CreatedBy               int,
     LastModificationDate    date,
@@ -507,7 +342,6 @@ CREATE TABLE AnalysisDatasetData
     foreign key(AnalysisDatasetID) references AnalysisDataset(AnalysisDatasetID) on update CASCADE on delete CASCADE,
     foreign key(AnalysisDatasetStatus) references AnalysisDatasetStatus(AnalysisDatasetStatusID),
     foreign key(ValidationStatus) references ValidationStatus(ValidationStatusID),
-    foreign key(OtherQueryableMetadata) references QueryableParameterSet(QueryableParameterSetID),
     foreign key(CreatedBy) references Person(PersonID),
     foreign key(LastModifiedBy) references Person(PersonID)
   );
@@ -540,30 +374,21 @@ CREATE TABLE File
 CREATE TABLE PrimaryDataset
   (
     PrimaryDatasetID              int,
-    AbstractDatasetName           varchar(80)    unique not null,
-    COBRADatasetName              varchar(255)   unique not null,
-    AbstractDatasetAnnotation     varchar(255)   not null,
-    AbstractDatasetDescriptionID  int            not null,
-    StreamID                      int            not null,
+    PrimaryDatasetName            varchar(80)    unique not null,
+    PrimaryDatasetDescriptionID   int            not null,
     PhysicsGroupID                int            not null,
-    OpenForWriting                char(1)        not null,
-    StartDate                     date,
-    EndDate                       date,
     CreatedBy                     int,
     CreationDate                  date,
     LastModificationDate          date,
     LastModifiedBy                int,
 
     primary key(PrimaryDatasetID),
-    unique(AbstractDatasetName,COBRADatasetName,AbstractDatasetDescriptionID,StreamID,PhysicsGroupID),
+    unique(PrimaryDatasetName,PrimaryDatasetDescriptionID,PhysicsGroupID),
 
-    foreign key(AbstractDatasetDescriptionID) references PrimaryDatasetDescription(AbstractDatasetDescriptionID),
-    foreign key(StreamID) references Stream(StreamID) on update SET NULL on delete SET NULL,
+    foreign key(PrimaryDatasetDescriptionID) references PrimaryDatasetDescription(PrimaryDatasetDescriptionID),
     foreign key(PhysicsGroupID) references PhysicsGroup(PhysicsGroupID),
     foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID),
-
-    CHECK(OpenForWriting IN ('y', 'n'))
+    foreign key(LastModifiedBy) references Person(PersonID)
   );
 
 -- ======================================================================
@@ -573,10 +398,6 @@ CREATE TABLE Run
     RunID                 int,
     RunNumber             smallint   unique not null,
     RunQuality            int        not null,
-    FirstEventNumber      smallint   not null,
-    LastEventNumber       smallint   not null,
-    StartOfRun            date       not null,
-    EndOfRun              date       not null,
     CreatedBy             int,
     CreationDate          date,
     LastModifiedBy        int,
@@ -595,8 +416,6 @@ CREATE TABLE ApplicationConfiguration
   (
     ApplicationConfigurationID  int,
     ApplicationID               int           not null,
-    ParameterSetID              int           not null,
-    CalibrationVersionTag       varchar(80)   not null,
     ConditionsVersionTag        varchar(80)   not null,
     CreatedBy                   int,
     CreationDate                date,
@@ -604,10 +423,9 @@ CREATE TABLE ApplicationConfiguration
     LastModifiedBy              int,
 
     primary key(ApplicationConfigurationID),
-    unique(ApplicationID,ParameterSetID,CalibrationVersionTag,ConditionsVersionTag),
+    unique(ApplicationID,ConditionsVersionTag),
 
     foreign key(ApplicationID) references Application(ApplicationID),
-    foreign key(ParameterSetID) references QueryableParameterSet(QueryableParameterSetID),
     foreign key(CreatedBy) references Person(PersonID),
     foreign key(LastModifiedBy) references Person(PersonID)
   );
@@ -644,7 +462,7 @@ CREATE TABLE ProcessedDataset
     PrimaryDatasetID      int           not null,
     ProcessingPathID      int           not null,
     OpenForWriting        char(1)       not null,
-    COBRAOwnerName        varchar(80)   not null,
+    ProcessedDatasetName  varchar(80)   not null,
     CreatedBy             int,
     CreationDate          date,
     LastModifiedBy        int,
@@ -719,26 +537,6 @@ CREATE TABLE PrimaryEventCollection
 
 -- ======================================================================
 
-CREATE TABLE CompositeEventCollection
-  (
-    CompositeECID         int,
-    MemberECID            int,
-    CreatedBy             int,
-    CreationDate          date,
-    LastModifiedBy        int,
-    LastModificationDate  date,
-
-    primary key(CompositeECID,MemberECID),
-    unique(CompositeECID,MemberECID),
-
-    foreign key(CompositeECID) references EventCollection(EventCollectionID) on update CASCADE on delete CASCADE,
-    foreign key(MemberECID) references EventCollection(EventCollectionID) on update SET NULL on delete SET NULL,
-    foreign key(CreatedBy) references Person(PersonID),
-    foreign key(LastModifiedBy) references Person(PersonID)
-  );
-
--- ======================================================================
-
 CREATE TABLE EventCollectionParentage
   (
     ParentECID            int,
@@ -767,10 +565,7 @@ CREATE TABLE EventCollectionData
     EstimatedLuminosity     varchar(80),
     EventCollectionStatus   int             not null,
     ValidationStatus        int             not null,
-    COBRACollectionName     varchar(255)    not null,
-    FirstEventNumber        smallint,
-    LastEventNumber         smallint,
-    OtherQueryableMetadata  int,
+    CollectionName          varchar(255)    not null,
     CreationDate            date,
     CreatedBy               int,
     LastModificationDate    date,
@@ -781,7 +576,6 @@ CREATE TABLE EventCollectionData
     foreign key(EventCollectionID) references EventCollection(EventCollectionID) on update CASCADE on delete CASCADE,
     foreign key(EventCollectionStatus) references EventCollectionStatus(EventCollectionStatusID),
     foreign key(ValidationStatus) references ValidationStatus(ValidationStatusID),
-    foreign key(OtherQueryableMetadata) references QueryableParameterSet(QueryableParameterSetID),
     foreign key(CreatedBy) references Person(PersonID),
     foreign key(LastModifiedBy) references Person(PersonID)
   );
