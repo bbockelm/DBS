@@ -39,11 +39,14 @@ GEG 25-Apr-2005 : Removed "SQL" style methods from Connection class.
 GEG 27-Apr-2005 : Cleaned up the comments and exceptions.
 """
 
-__revision__ = "$Revision: 1.8 $"
-__version__ = "$Id: ConnectionLayer.py,v 1.8 2005/05/23 20:33:13 ggraham Exp $"
+__revision__ = "$Revision: 1.2 $"
+__version__ = "$Id: ConnectionLayer.py,v 1.2 2005/06/07 06:20:55 ggraham Exp $"
 
 
-import pgdb as databaseDriver
+#
+#import pgdb as databaseDriver
+## import MySQL as default 
+import MySQLdb as databaseDriver
 import genException
 import exceptions
 import os
@@ -51,9 +54,12 @@ import os
 # Module level default connection parameters.
 # Try to read from a file someday.
 # These defaults are for postgres/pgdb module.
-_defaultConnectionParms = {'database':'ggtest', \
-                           'user':'ggraham', \
-                           'host':'cmssrv18'}
+#_defaultConnectionParms = {'database':'testDBS', \
+#                           'user':'fanfani', \
+#                           'host':'cmsboui1'}
+# The default for MySQLdb module are: 
+_defaultConnectionParms = {'db':'DBS_v14', 'user':'dbs','passwd':'dbs'}
+
 # Module debug flag
 _ConnectionLayer_Debug = 0
 
@@ -151,8 +157,10 @@ class ConnectionJacuzzi:
         ConnectionJacuzzi.__singleton = self
 
         # Define the propoerties of connections that we want to track
-        # These propoerties are for the pgdb module for postgres.
-        self._Properties = ['database', 'user', 'host', 'alias'] 
+        # These propoerties are for the pgdb module for postgres. 
+        #self._Properties = ['database', 'user', 'host', 'alias']
+        # The propoerties for the MySQLdb module are
+        self._Properties = ['db', 'user', 'host', 'alias'] 
         self._Connections = {}
         self._MaxSize = maxInJacuzzi
 
@@ -469,7 +477,12 @@ class Connection:
         rows appended.
         """
         self.queryExecute(qString) 
-        return [self._Cursor.description] + self._Cursor.fetchall()        
+        #
+        ## The method fetchall() return different results if used with Postgres or MySQL
+        ## for MySQL it return a tuple that can't be concatenated with self._Cursor.description 
+        ## so just return the self._Cursor.fetchall()  
+        #return [self._Cursor.description] + self._Cursor.fetchall()
+        return self._Cursor.fetchall()
 
 if __name__ == "__main__" : 
 
