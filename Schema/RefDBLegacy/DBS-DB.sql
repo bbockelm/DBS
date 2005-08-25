@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS Prototype 0
 -- ===
--- ===   $Id: DBS-DB.sql,v 1.3 2005/08/20 14:41:59 elmer Exp $
+-- ===   $Id: DBS-DB.sql,v 1.4 2005/08/20 20:22:19 elmer Exp $
 -- ======================================================================
 
 CREATE TABLE SchemaRevision 
@@ -9,7 +9,7 @@ CREATE TABLE SchemaRevision
     Revision              varchar(255)
   );
 
-INSERT INTO SchemaRevision VALUES ('$Revision: 1.3 $');
+INSERT INTO SchemaRevision VALUES ('$Revision: 1.4 $');
 
 CREATE TABLE Person
   (
@@ -32,7 +32,7 @@ CREATE TABLE Person
 
 CREATE TABLE PhysicsGroup
   (
-    PhysicsGroupID        int,
+    PhysicsGroupID        int auto_increment,
     PhysicsGroupName      varchar(80)   unique not null,
     PhysicsGroupConvener  int,
     CreationDate          date,
@@ -68,7 +68,7 @@ CREATE TABLE TriggerPathDescription
 
 CREATE TABLE MCDescription
   (
-    MCDescriptionID       int,
+    MCDescriptionID       int auto_increment,
     MCChannelDescription  varchar(255)   not null,
     MCProduction          varchar(255),
     MCDecayChain          varchar(255),
@@ -78,7 +78,6 @@ CREATE TABLE MCDescription
     LastModificationDate  date,
 
     primary key(MCDescriptionID),
-    unique(MCChannelDescription,MCProduction,MCDecayChain),
 
     foreign key(CreatedBy) references Person(PersonID),
     foreign key(LastModifiedBy) references Person(PersonID)
@@ -109,7 +108,7 @@ CREATE TABLE DataTier
     LastModificationDate  date,
     CreationDate          date,
     CreatedBy             int,
-    DataTierID            int,
+    DataTierID            int auto_increment,
     DataTierName          varchar(255)   unique,
 
     primary key(DataTierID),
@@ -122,7 +121,7 @@ CREATE TABLE DataTier
 
 CREATE TABLE FileStatus
   (
-    FileStatusID          int,
+    FileStatusID          int auto_increment,
     FileStatus            varchar(80)   unique not null,
     CreationDate          date,
     CreatedBy             int,
@@ -139,7 +138,7 @@ CREATE TABLE FileStatus
 
 CREATE TABLE AnalysisDatasetStatus
   (
-    AnalysisDatasetStatusID   int,
+    AnalysisDatasetStatusID   int auto_increment,
     AnalysisCollectionStatus  varchar(80)   unique not null,
     CreationDate              date,
     CreatedBy                 int,
@@ -156,7 +155,7 @@ CREATE TABLE AnalysisDatasetStatus
 
 CREATE TABLE ValidationStatus
   (
-    ValidationStatusID    int,
+    ValidationStatusID    int auto_increment,
     ValidationStatus      varchar(80)   unique,
     CreationDate          date,
     CreatedBy             int,
@@ -173,7 +172,7 @@ CREATE TABLE ValidationStatus
 
 CREATE TABLE FileType
   (
-    FileTypeID            int,
+    FileTypeID            int auto_increment,
     FileType              varchar(80)   unique,
     CreationDate          date,
     CreatedBy             int,
@@ -190,7 +189,7 @@ CREATE TABLE FileType
 
 CREATE TABLE CollectionType
   (
-    CollectionTypeID      int,
+    CollectionTypeID      int auto_increment,
     CollectionType        varchar(80)   unique,
     CreationDate          date,
     CreatedBy             int,
@@ -207,7 +206,7 @@ CREATE TABLE CollectionType
 
 CREATE TABLE ApplicationFamily
   (
-    ApplicationFamilyID    int,
+    ApplicationFamilyID    int auto_increment,
     ApplicationFamilyName  varchar(80)   unique not null,
     CreatedBy              int,
     CreationDate           date,
@@ -224,7 +223,7 @@ CREATE TABLE ApplicationFamily
 
 CREATE TABLE EventCollectionStatus
   (
-    EventCollectionStatusID   int,
+    EventCollectionStatusID   int auto_increment,
     AnalysisCollectionStatus  varchar(80)   unique not null,
     CreationDate              date,
     CreatedBy                 int,
@@ -241,7 +240,7 @@ CREATE TABLE EventCollectionStatus
 
 CREATE TABLE RunQuality
   (
-    RunQualityID          int,
+    RunQualityID          int auto_increment,
     RunQualityName        varchar(80)   unique not null,
     CreationDate          date,
     CreatedBy             int,
@@ -258,7 +257,7 @@ CREATE TABLE RunQuality
 
 CREATE TABLE Application
   (
-    ApplicationID         int,
+    ApplicationID         int auto_increment,
     ExecutableName        varchar(80)   not null,
     ApplicationVersion    varchar(80)   not null,
     ApplicationFamily     int           not null,
@@ -302,7 +301,7 @@ CREATE TABLE AnalysisDatasetParentage
 
 CREATE TABLE PrimaryDatasetDescription
   (
-    PrimaryDatasetDescriptionID   int,
+    PrimaryDatasetDescriptionID   int auto_increment,
     TriggerDescriptionID          int,
     MCChannelDescriptionID        int,
     MCDataset                     char(1)   not null,
@@ -350,7 +349,7 @@ CREATE TABLE AnalysisDatasetData
 
 CREATE TABLE File
   (
-    FileID                int,
+    FileID                int auto_increment,
     LogicalFileName       varchar(255)   unique not null,
     Checksum              varchar(255)   not null,
     Size                  varchar(255)   not null,
@@ -373,7 +372,7 @@ CREATE TABLE File
 
 CREATE TABLE PrimaryDataset
   (
-    PrimaryDatasetID              int,
+    PrimaryDatasetID              int auto_increment,
     PrimaryDatasetName            varchar(80)    unique not null,
     PrimaryDatasetDescriptionID   int            not null,
     PhysicsGroupID                int            not null,
@@ -395,8 +394,8 @@ CREATE TABLE PrimaryDataset
 
 CREATE TABLE Run
   (
-    RunID                 int,
-    RunNumber             smallint   unique not null,
+    RunID                 int auto_increment,
+    RunNumber             int        unique not null,
     RunQuality            int        not null,
     CreatedBy             int,
     CreationDate          date,
@@ -414,7 +413,7 @@ CREATE TABLE Run
 
 CREATE TABLE ApplicationConfiguration
   (
-    ApplicationConfigurationID  int,
+    ApplicationConfigurationID  int auto_increment,
     ApplicationID               int           not null,
     ConditionsVersionTag        varchar(80)   not null,
     CreatedBy                   int,
@@ -434,7 +433,7 @@ CREATE TABLE ApplicationConfiguration
 
 CREATE TABLE ProcessingPath
   (
-    ProcessingPathID            int,
+    ProcessingPathID            int auto_increment,
     ParentProcessingPathID      int,
     ApplicationConfigurationID  int,
     AggregatedPath              varchar(255),
@@ -458,7 +457,7 @@ CREATE TABLE ProcessingPath
 
 CREATE TABLE ProcessedDataset
   (
-    ProcessedDatasetID    int,
+    ProcessedDatasetID    int auto_increment,
     PrimaryDatasetID      int           not null,
     ProcessingPathID      int           not null,
     OpenForWriting        char(1)       not null,
@@ -483,7 +482,7 @@ CREATE TABLE ProcessedDataset
 
 CREATE TABLE EventCollection
   (
-    EventCollectionID       int,
+    EventCollectionID       int auto_increment,
     ProcessedDatasetID      int       not null,
     EventCollectionIndex    int       not null,
     PrimaryEventCollection  char(1)   not null,
@@ -506,7 +505,7 @@ CREATE TABLE EventCollection
 
 CREATE TABLE EventCollectionRun
   (
-    EventCollectionRunID  int,
+    EventCollectionRunID  int auto_increment,
     EventCollectionID     int    not null,
     RunID                 int    not null,
     LastModifiedBy        int,
@@ -559,7 +558,7 @@ CREATE TABLE EventCollectionParentage
 
 CREATE TABLE EventCollectionData
   (
-    EventCollectionDataID   int,
+    EventCollectionDataID   int auto_increment,
     EventCollectionID       int             unique,
     NumberOfEvents          numeric(10,4)   not null,
     EstimatedLuminosity     varchar(80),
@@ -605,7 +604,7 @@ CREATE TABLE EvCollAnData
 
 CREATE TABLE EvCollFile
   (
-    EvCollFileID          int,
+    EvCollFileID          int auto_increment,
     EvCollID              int    not null,
     FileID                int    not null,
     CreationDate          date,
