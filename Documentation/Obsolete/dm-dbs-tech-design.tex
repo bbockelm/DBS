@@ -1,4 +1,4 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.16 2005/08/17 11:04:24 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.17 2005/08/22 17:17:44 elmer Exp $
 
 \documentclass[pdftex]{cmspaper}
 \usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks,link
@@ -23,7 +23,7 @@ ef}
   \title{The CMS Dataset Bookkeeping System}
 
 %  \note{Draft Version \today...}
-  \note{Draft Version 0.83}
+  \note{Draft Version 0.84}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
@@ -109,6 +109,7 @@ section numbers when they crystallize.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Introduction to the Data Organisation}
+\label{sec:dbsconcepts}
   In this section we describe the fundamental concepts used in the CMS
 data management and describe how they will be used by the user. This
 builds on and extends the concepts presented in the Computing TDR~\cite{CTDR}.
@@ -971,20 +972,74 @@ summary information in the global scope DBS only.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{The DBS and the ``old EDM''}
 
-  This section will explain:
+  This section will explain the correspondance between the existing ``old
+EDM'' terms and concepts and those described in section~\ref{sec:dbsconcepts}.
 
 \begin{itemize}
-\item How old EDM concepts of ``dataset'', ``owner'', etc. map to those
-      of the DBS
-\item Specifically how the DBS will support use of the old EDM in the 
-      transition period 
+\item {\bf Dataset (old EDM)} - This maps to Primary Dataset.
+\item {\bf Owner (old EDM)} - This maps to a combination of Data Tier and 
+                        Processed
+                        Dataset. For the DBS naming convention the Data Tier 
+                        is made more explicit
+                        than the current ``owner'' naming convention, which
+                        sometimes has it and sometimes does not. In putting
+                        old EDM data into the DBS, the current owner string
+                        will simply be used as the Processed Dataset name
+                        and the appropriate Data Tier will be set.
+\item {\bf Analysis Dataset (new EDM)} - No such concept exists in the old EDM 
+      (except specifying run ranges). In importing old EDM datasets into the 
+      DBS, we will adopt the convention that an Analysis Dataset will be 
+      created with a name which is identical to the Processed Dataset name 
+      (and hence identical to the old EDM ``owner'').
 \end{itemize}
 
+  These mappings imply that an old EDM:
+\begin{center}
+          $<$owner$>$/$<$dataset$>$
+\end{center}
+corresponds to a DBS ``dataset'' called:
+\begin{center}
+          /$<$dataset$>$/$<$data-tier$>$/$<$owner$>$/$<$owner$>$
+\end{center}
+
+In the overlap period, the user will be able to specify either the old 
+syntax or the new DBS syntax.
+
+  Other important mappings include:
+
 \begin{itemize}
-\item Files. For the old EDM, the DBS will treat special files, such as 
-``META'' files, in exactly the same way as all other logical files. However, 
-the new EDM group will make changes in the way data is written in CMS so 
-that the number of such special files tends to zero in the long run.  
+\item {\bf Event Collection} - An event collection corresponds to a single run
+                         for old EDM data. The collection names for 
+                         configuring the ORCA framework are of the form:
+
+\begin{center}
+   /$<$Dataset$>$/$<$DataTier$>$/$<$Owner$>$/EvC\_Run$<$run-number$>$ 
+\end{center}
+
+and these will be the event collection names entered into the DBS. Jobs
+will be configured with one or more such event collections. (Note that
+this doesn't imply that the same naming convention for event collections
+will be used for event collections in the new Framework/EDM. This is just
+what works currently with ORCA and the old EDM.)
+
+\item {\bf File Blocks} - We will adopt the convention that the files for each 
+                    old 
+                    EDM dataset/owner will map to a single file block. (The
+                    exact naming convention still is to be decided.)
+\item {\bf Provenance} - As described in section~/ref{sec:prov} the DBS
+                    will track provenance at the level of individual event
+                    collections. When old EDM data (which tracks provenance
+                    purely at the level of dataset/owner) is loaded into
+                    the DBS, the dataset/owner provenance relationship will
+                    be propagated and used for the event collection provenance
+                    relationship, run by run.
+\end{itemize}
+
+  Additional notes:
+
+\begin{itemize}
+\item There are currently no plans to track in the DBS the ``META'' files 
+used in the old EDM. Only EVD files will be tracked. 
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
