@@ -421,15 +421,39 @@ and debugging.}
        the basename of the initial path and replace it with the new $AD$ so 
        the returned path still has a depth of three.  
 
+\item  list$<$parentpathName$>$  = displayDatasetParentage( pathName, list$<$DataTier$>$ )
+
+       where pathName is a Processed or Analysis Dataset and list$<$DataTier$>$        is a list of parent's DataTier.
+       This provide a list of DBS datasets corresponding to all the parents
+       data tier of a given DBS dataset. 
+       The provenance relationship at the level of dataset is used by
+       an analysis tool (i.e. CRAB) in the old EDM context, to perform
+       data discovery of all the data tier requested by the user.
+       {\bf FIXME: to be reconsidered in the new EDM}
+
 \item  list$<$EventCollections$>$ = displayDatasetContents ( pathName ) 
        This provides a list of event collections in a Processed or Analysis 
        Dataset. The list of EventCollections should be organized by File
        Block.
 
+       The list of EventCollections is needed by an analysis tool (i.e. CRAB)          to perform site-independent job configuration. The grouping in term
+       of File Blocks is needed by an analysis tool (i.e. CRAB) in order to 
+       perform job splitting and file-block location.
+       Additional information such as number of events per event collection
+       could also be provided.
+
 \item  list$<$EventCollections$>$ = displayDatasetContents ( initialPathName, predicate ) 
        This provides a list of event collections satisfying a predicate as in 
        buildDataset above.  (This method is intended as a helper for 
        buildDataset.) 
+
+\item list$<$FileBlocks$>$ = displayDatasetFileBlocks ( pathName )
+      This provide a list of file-blocks in which a Processed or Analysis
+      Dataset is organized.
+      The file-blocks index is needed to query the DLS for file-block location. 
+      The list of file-blocks could be extracted from the result
+      of the displayDatasetContents API, so no dedicated API is 
+      strictly needed.
 
 \item  pathName = buildDataset ( basePathName, $AD$ )
 \item  closeDataset() 
@@ -1048,12 +1072,13 @@ used in the old EDM. Only EVD files will be tracked.
 \item {\bf get provenance } - CRAB specify as input a DBS "dataset" and the parent's data-tiers that the user wants to access. The DBS should find the parentage relationship, providing as a result the list of DBS datasets corresponding to all the required data.
 The API could be:
 \begin{center}
-   list$<$pathNames$>$  = displayDatasetParentage( pathName, list$<$DataTier$>$ ) 
+   list$<$parentpathName$>$  = displayDatasetParentage( pathName, list$<$DataTier$>$ ) 
+
 \end{center}
 
 For example:
 \begin{center}
-   displayDatasetParentage( /$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$ , ["Hit","Digi"])
+   displayDatasetParentage( /$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$ , ["Hit","Digi","DST"])
 \end{center}
 should give as a result something like:
 
