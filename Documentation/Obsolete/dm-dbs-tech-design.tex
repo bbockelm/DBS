@@ -1,4 +1,4 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.21 2005/08/29 13:08:13 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.24 2005/09/28 18:37:37 afanfani Exp $
 
 \documentclass[pdftex]{cmspaper}
 \usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks,link
@@ -24,7 +24,7 @@ ef}
   \title{The CMS Dataset Bookkeeping System}
 
 %  \note{Draft Version \today...}
-  \note{Draft Version 0.84}
+  \note{Draft Version 0.85}
 
   \begin{Authlist}
     M. Anzar Afaq, Lothar Bauerdick, Greg Graham, Vijay Sekhri, Igor Terekhov, 
@@ -1068,7 +1068,7 @@ used in the old EDM. Only EVD files will be tracked.
 
   CRAB use case:
 \begin{itemize}
-\item {\bf get provenance } - CRAB specify as input a DBS "dataset" and the parent's data-tiers that the user wants to access. The DBS should find the parentage relationship, providing as a result the list of DBS datasets corresponding to all the required data.
+\item {\bf get provenance } - CRAB specify as input a DBS ``dataset'' and the parent's data-tiers that the user wants to access. The DBS should find the parentage relationship, providing as a result the list of DBS datasets corresponding to all the required data.
 The API could be:
 \begin{center}
    list$<$parentpathName$>$  = getDatasetProvenance( pathName, list$<$DataTier$>$ ) 
@@ -1077,7 +1077,7 @@ The API could be:
 
 For example:
 \begin{center}
-   getDatasetProvenance( /$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$ , ["Hit","Digi","DST"])
+   getDatasetProvenance( /$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$ , [``Hit'',``Digi'',``DST''])
 \end{center}
 should give as a result something like:
 
@@ -1098,7 +1098,7 @@ of the old EDM is easier to think in term of dataset provenance
 and it might be worth start with this concept at the beginning (keeping in mind
 to fix that later).
 
-\item {\bf get the list of event collection for a DBS "dataset"} - 
+\item {\bf get the list of event collection for a DBS ``dataset''} - 
  CRAB needs the list of event collections to perfom site-independent 
  job configuration and job splitting. CRAB ask for a DBS dataset, specifying the DBS pathname, 
  and the DBS should provide the list of event collections that correspond 
@@ -1123,15 +1123,15 @@ to fix that later).
 \mbox{File-Block-1} = \{ \{\mbox{EvC\_Run1},250\}, \{\mbox{EvC\_Run2},235\}, \{\mbox{EvC\_Run5},250\}, ... \}
 \end{flushleft}
 \begin{flushleft}
-\mbox{File-Block-2} = \{ \{\mbox{EvC\_Run15},250\}, \{\mbox{EvC\_Run19},250\}, \{\mbox{EvC\_Run120},245\}, \}
+\mbox{File-Block-2} = \{ \{\mbox{EvC\_Run15},250\}, \{\mbox{EvC\_Run19},250\}, \{\mbox{EvC\_Run120},245\}, ... \}
 \end{flushleft}
 
  (The data structure here is merely indicative of the appropriate
   content, and not meant to be implemented in exactly that way.)
 
-\item {\bf get the list of fileblocks for a DBS "dataset"} - 
+\item {\bf get the list of fileblocks for a DBS ``dataset''} - 
  CRAB need the list of file-blocks in order to perform file-block 
- location. The file-block location will be done via the Data n{center}
+ location. The file-block location will be done via the Data 
 Location Service.
  The list of file-blocks could be extracted from the result 
  of the previous API so no dedicated API is strictly needed.
