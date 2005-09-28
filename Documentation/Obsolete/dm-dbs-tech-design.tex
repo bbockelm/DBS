@@ -1,4 +1,4 @@
-%  $Id: dm-dbs-tech-design.tex,v 1.20 2005/08/29 12:49:37 elmer Exp $
+%  $Id: dm-dbs-tech-design.tex,v 1.21 2005/08/29 13:08:13 elmer Exp $
 
 \documentclass[pdftex]{cmspaper}
 \usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks,link
@@ -1042,6 +1042,83 @@ what works currently with ORCA and the old EDM.)
 \item There are currently no plans to track in the DBS the ``META'' files 
 used in the old EDM. Only EVD files will be tracked. 
 \end{itemize}
+
+  CRAB use case:
+\begin{itemize}
+\item {\bf get provenance } - CRAB specify as input a DBS "dataset" and the parent's data-tiers that the user wants to access. The DBS should find the parentage relationship, providing as a result the list of DBS datasets corresponding to all the required data.
+The API could be:
+\begin{center}
+   list$<$pathNames$>$  = displayDatasetParentage( pathName, list$<$DataTier$>$ ) 
+\end{center}
+
+For example:
+\begin{center}
+   displayDatasetParentage( /$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$ , ["Hit","Digi"])
+\end{center}
+should give as a result something like:
+
+\begin{center}
+    \mbox{/$<$dataset$>$/Hit/$<$Hitowner$>$/$<$Hitowner$>$}
+\end{center}
+\begin{center}
+     \mbox{/$<$dataset$>$/Digi/$<$Digiowner$>$/$<$Digiowner$>$}
+\end{center}
+\begin{center}
+     \mbox{/$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$}
+\end{center}
+
+{\bf FIXME:} The DBS should track provenance at the level of the indivual 
+event collections and not at the level of datasets. However the current
+DBS schema allow to track provenance between datasets. In the context 
+of the old EDM is easier to think in term of dataset provenance 
+and it might be worth start with this concept at the beginning (keeping in mind
+to fix that later).
+
+\item {\bf get the list of event collection for a DBS "dataset"} - 
+ CRAB needs the list of event collections to perfom site-independent 
+ job configuration. CRAB ask for a DBS dataset, specifying the DBS pathname, 
+ and the DBS should provide the list of event collections that correspond 
+ to that dataset. 
+ The API could be:
+
+\begin{center}
+  list$<$EventCollections$>$ = displayDatasetContents ( pathName )
+\end{center}
+
+ where the list of event collection will be groupd in term of file-blocks
+ to which the files form the relevant collections belong.
+
+ For example:
+ \begin{center}
+   displayDatasetContents( /$<$dataset$>$/DST/$<$owner$>$/$<$owner$>$)
+ \end{center}
+ should give as a result something like:
+
+\begin{flushleft}
+\mbox{File-Block-1} = \{ \mbox{EvC\_Run1}, \mbox{EvC\_Run2}, \mbox{EvC\_Run5}... \}
+\end{flushleft}
+\begin{flushleft}
+\mbox{File-Block-2} = \{ \mbox{EvC\_Run15}, \mbox{EvC\_Run16}, ... \}
+\end{flushleft}
+
+
+ Additional information such as number of events per event collection
+ could also be provided.
+
+\item {\bf get the list of fileblocks for a DBS "dataset"} - 
+ CRAB need the list of file-blocks in order to perform file-block 
+ location. The file-block location will be done via the Data n{center}
+Location Service.
+ The list of file-blocks could be extracted from the result 
+ of the previous API so no dedicated API is strictly needed.
+ Otherwise the API could be:
+ \begin{center}
+   list$<$FileBlocks$>$ = displayDatasetFileBlocks ( pathName )
+ \end{center}
+
+
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \section{Naming Conventions}
