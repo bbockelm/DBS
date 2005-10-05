@@ -77,7 +77,7 @@ alter table t_app_family
 alter table t_app_family
   add constraint fk_app_family_mod
   foreign key (modified_by) references t_person (id);
-  
+
 --
 alter table t_application
   add constraint pk_application
@@ -107,7 +107,7 @@ alter table t_application
 alter table t_application
   add constraint fk_application_mod
   foreign key (modified_by) references t_person (id);
-  
+
 --
 alter table t_app_config
   add constraint pk_app_config
