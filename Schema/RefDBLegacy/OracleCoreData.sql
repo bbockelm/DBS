@@ -1,26 +1,26 @@
 -- ======================================================================
-create sequence seq_primary_dataset;
 create sequence seq_data_tier;
+create sequence seq_primary_dataset;
 create sequence seq_processing_path;
 create sequence seq_processed_dataset;
 create sequence seq_event_collection;
 create sequence seq_analysis_dataset;
-create sequence seq_analysis_dataset_data;
+create sequence seq_anads_data;
 
 -- ======================================================================
-create table t_primary_dataset
+create table t_data_tier
   (id				integer		not null,
    name				varchar (255)	not null,
-   description			integer		not null,
-   physics_group		integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
    modified_by			integer		not null);
 
-create table t_data_tier
+create table t_primary_dataset
   (id				integer		not null,
    name				varchar (255)	not null,
+   description			integer		not null,
+   physics_group		integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -67,7 +67,7 @@ create table t_analysis_dataset
    modified_at			float		not null,
    modified_by			integer		not null);
 
-create table t_analysis_dataset_data
+create table t_anads_data
   (id				integer		not null,
    analysis_dataset		integer		not null,
    event_collection		integer		not null,
@@ -77,6 +77,24 @@ create table t_analysis_dataset_data
    modified_by			integer		not null);
 
 -- ======================================================================
+alter table t_data_tier
+  add constraint pk_data_tier
+  primary key (id)
+  using index tablespace CMS_DBS_INDX01;
+
+alter table t_data_tier
+  add constraint uq_data_tier_name
+  unique (name);
+
+alter table t_data_tier
+  add constraint fk_data_tier_creat
+  foreign key (created_by) references t_person (id);
+
+alter table t_data_tier
+  add constraint fk_data_tier_mod
+  foreign key (modified_by) references t_person (id);
+
+--
 alter table t_primary_dataset
   add constraint pk_primary_dataset
   primary key (id)
@@ -104,24 +122,6 @@ alter table t_primary_dataset
 
 alter table t_primary_dataset
   add constraint fk_primary_dataset_mod
-  foreign key (modified_by) references t_person (id);
-
---
-alter table t_data_tier
-  add constraint pk_data_tier
-  primary key (id)
-  using index tablespace CMS_DBS_INDX01;
-
-alter table t_data_tier
-  add constraint uq_data_tier_name
-  unique (name);
-
-alter table t_data_tier
-  add constraint fk_data_tier_creat
-  foreign key (created_by) references t_person (id);
-
-alter table t_data_tier
-  add constraint fk_data_tier_mod
   foreign key (modified_by) references t_person (id);
 
 --
@@ -232,30 +232,30 @@ alter table t_analysis_dataset
   foreign key (modified_by) references t_person (id);
 
 --
-alter table t_analysis_dataset_data
-  add constraint pk_analysis_dataset_data
+alter table t_anads_data
+  add constraint pk_anads_data
   primary key (id)
   using index tablespace CMS_DBS_INDX01;
 
-alter table t_analysis_dataset_data
-  add constraint uq_analysis_dataset_data_key
+alter table t_anads_data
+  add constraint uq_anads_data_key
   unique (analysis_dataset, event_collection);
 
-alter table t_analysis_dataset_data
-  add constraint fk_analysis_dataset_data_ds
+alter table t_anads_data
+  add constraint fk_anads_data_ds
   foreign key (analysis_dataset) references t_analysis_dataset (id)
   /* on upfloat cascade */ on delete cascade;
 
-alter table t_analysis_dataset_data
-  add constraint fk_analysis_dataset_data_evc
+alter table t_anads_data
+  add constraint fk_anads_data_evc
   foreign key (event_collection) references t_event_collection (id);
 
-alter table t_analysis_dataset_data
-  add constraint fk_analysis_dataset_data_creat
+alter table t_anads_data
+  add constraint fk_anads_data_creat
   foreign key (created_by) references t_person (id);
 
-alter table t_analysis_dataset_data
-  add constraint fk_analysis_dataset_data_mod
+alter table t_anads_data
+  add constraint fk_anads_data_mod
   foreign key (modified_by) references t_person (id);
 
 -- ======================================================================
@@ -318,11 +318,11 @@ create index ix_analysis_dataset_mod
 
 
 --
-create index ix_analysis_dataset_data_creat
-  on t_analysis_dataset_data (created_by)
+create index ix_anads_data_creat
+  on t_anads_data (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_analysis_dataset_data_mod
-  on t_analysis_dataset_data (modified_by)
+create index ix_anads_data_mod
+  on t_anads_data (modified_by)
   tablespace CMS_DBS_INDX01;
 
