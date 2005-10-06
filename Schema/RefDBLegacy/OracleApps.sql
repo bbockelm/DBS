@@ -7,7 +7,7 @@ create sequence seq_app_config;
 -- ======================================================================
 create table t_collection_type
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -15,7 +15,7 @@ create table t_collection_type
 
 create table t_app_family
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -23,8 +23,8 @@ create table t_app_family
 
 create table t_application
   (id				integer		not null,
-   executable			varchar (80)	not null,
-   app_version			varchar (80)	not null,
+   executable			varchar (1000)	not null,
+   app_version			varchar (1000)	not null,
    app_family			integer		not null,
    input_type			integer		not null,
    output_type			integer		not null,
@@ -36,7 +36,7 @@ create table t_application
 create table t_app_config
   (id				integer		not null,
    application			integer		not null,
-   conditions_version		varchar (80)	not null,
+   conditions_version		varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,

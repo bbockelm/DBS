@@ -10,7 +10,7 @@ create sequence seq_anads_data;
 -- ======================================================================
 create table t_data_tier
   (id				integer		not null,
-   name				varchar (255)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -18,7 +18,7 @@ create table t_data_tier
 
 create table t_primary_dataset
   (id				integer		not null,
-   name				varchar (255)	not null,
+   name				varchar (1000)	not null,
    description			integer		not null,
    physics_group		integer		not null,
    created_at			float		not null,
@@ -30,7 +30,7 @@ create table t_processing_path
   (id				integer		not null,
    parent			integer		/* not null? */,
    app_config			integer		not null,
-   full_path			varchar (255)	not null,
+   full_path			varchar (1000)	not null,
    data_tier			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
@@ -41,7 +41,7 @@ create table t_processed_dataset
   (id				integer		not null,
    primary_dataset		integer		not null,
    processing_path		integer		not null,
-   name				varchar (255)	not null,
+   name				varchar (1000)	not null,
    is_open			char (1)	not null,
    created_at			float		not null,
    created_by			integer		not null,
@@ -61,7 +61,7 @@ create table t_event_collection
 create table t_analysis_dataset
   (id				integer		not null,
    processed_dataset		integer		not null,
-   name				varchar (255)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,

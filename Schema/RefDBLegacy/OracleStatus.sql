@@ -7,7 +7,7 @@ create sequence seq_runq_uality;
 -- ======================================================================
 create table t_validation_status
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -15,7 +15,7 @@ create table t_validation_status
 
 create table t_dataset_status
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -23,7 +23,7 @@ create table t_dataset_status
 
 create table t_evcoll_status
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -31,7 +31,7 @@ create table t_evcoll_status
 
 create table t_run_quality
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,

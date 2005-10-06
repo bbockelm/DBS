@@ -1,4 +1,4 @@
 -- ======================================================================
 create table t_schema_revision
-  (revision			varchar (255)	not null);
+  (revision			varchar (1000)	not null);
 

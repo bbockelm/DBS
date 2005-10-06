@@ -5,9 +5,9 @@ create sequence seq_physics_group;
 -- ======================================================================
 create table t_person
   (id				integer		not null,
-   name				varchar (80)	not null,
-   distinguished_name		varchar (255)	not null,
-   contact_info			varchar (255)	not null,
+   name				varchar (1000)	not null,
+   distinguished_name		varchar (1000)	not null,
+   contact_info			varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -15,7 +15,7 @@ create table t_person
 
 create table t_physics_group
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    convenor			integer		/* not null? */,
    created_at			float		not null,
    created_by			integer		not null,

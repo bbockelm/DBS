@@ -7,7 +7,7 @@ create sequence seq_desc_primary;
 
 create table t_desc_trigger
   (id				integer		not null,
-   description			varchar (255)   not null,
+   description			varchar (1000)  not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -15,9 +15,9 @@ create table t_desc_trigger
 
 create table t_desc_mc
   (id				integer		not null,
-   description			varchar (255)   not null,
-   production			varchar (255),
-   decay_chain			varchar (255),
+   description			varchar (1000)  not null,
+   production			varchar (1000),
+   decay_chain			varchar (1000),
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,

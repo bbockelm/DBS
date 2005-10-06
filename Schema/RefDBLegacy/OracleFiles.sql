@@ -7,7 +7,7 @@ create sequence seq_evcoll_file;
 -- ======================================================================
 create table t_file_status
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -15,7 +15,7 @@ create table t_file_status
 
 create table t_file_type
   (id				integer		not null,
-   name				varchar (80)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
@@ -23,9 +23,9 @@ create table t_file_type
 
 create table t_file
   (id				integer		not null,
-   logical_name			varchar (255)	not null,
-   checksum			varchar (255)	not null,
-   filesize			varchar (255)	not null,
+   logical_name			varchar (1000)	not null,
+   checksum			varchar (1000)	not null,
+   filesize			varchar (1000)	not null,
    status			integer         not null,
    type				integer         not null,
    created_at			float		not null,

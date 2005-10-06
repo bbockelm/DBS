@@ -10,7 +10,7 @@ create sequence seq_event_collection_ana_data;
 create table t_info_anads
   (analysis_dataset		integer		not null,
    events			integer		not null,
-   estimated_luminosity		varchar (80),
+   estimated_luminosity		varchar (1000),
    status			integer		not null,
    validation_status		integer		not null,
    created_at			float		not null,
@@ -21,11 +21,11 @@ create table t_info_anads
 create table t_info_evcoll
   (event_collection		integer		not null,
    events			integer		not null,
-   estimated_luminosity		varchar (80),
+   estimated_luminosity		varchar (1000),
    status			integer		not null,
    validation_status		integer		not null,
    -- parameter_set		integer		not null,
-   name				varchar (255)	not null,
+   name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
    modified_at			float		not null,
