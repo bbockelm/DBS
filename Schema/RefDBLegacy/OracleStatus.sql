@@ -48,11 +48,11 @@ alter table t_validation_status
   unique (name);
 
 alter table t_validation_status
-  add constraint fk_validation_status_creat
+  add constraint fk_validation_status_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_validation_status
-  add constraint fk_validation_status_mod
+  add constraint fk_validation_status_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -66,11 +66,11 @@ alter table t_dataset_status
   unique (name);
 
 alter table t_dataset_status
-  add constraint fk_dataset_status_creat
+  add constraint fk_dataset_status_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_dataset_status
-  add constraint fk_dataset_status_mod
+  add constraint fk_dataset_status_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -84,11 +84,11 @@ alter table t_evcoll_status
   unique (name);
 
 alter table t_evcoll_status
-  add constraint fk_evcoll_status_creat
+  add constraint fk_evcoll_status_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_evcoll_status
-  add constraint fk_evcoll_status_mod
+  add constraint fk_evcoll_status_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -102,45 +102,45 @@ alter table t_run_quality
   unique (name);
 
 alter table t_run_quality
-  add constraint fk_run_quality_creat
+  add constraint fk_run_quality_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_run_quality
-  add constraint fk_run_quality_mod
+  add constraint fk_run_quality_modifby
   foreign key (modified_by) references t_person (id);
 
 -- ======================================================================
-create index ix_validation_status_creat
+create index ix_validation_status_creatby
   on t_validation_status (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_validation_status_mod
+create index ix_validation_status_modifby
   on t_validation_status (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_dataset_status_creat
+create index ix_dataset_status_creatby
   on t_dataset_status (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_dataset_status_mod
+create index ix_dataset_status_modifby
   on t_dataset_status (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_evcoll_status_creat
+create index ix_evcoll_status_creatby
   on t_evcoll_status (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_evcoll_status_mod
+create index ix_evcoll_status_modifby
   on t_evcoll_status (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_run_quality_creat
+create index ix_run_quality_creatby
   on t_run_quality (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_run_quality_mod
+create index ix_run_quality_modifby
   on t_run_quality (modified_by)
   tablespace CMS_DBS_INDX01;

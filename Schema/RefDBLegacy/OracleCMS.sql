@@ -37,11 +37,11 @@ alter table t_person
   unique (distinguished_name);
 
 alter table t_person
-  add constraint fk_person_creat
+  add constraint fk_person_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_person
-  add constraint fk_person_mod
+  add constraint fk_person_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -59,19 +59,19 @@ alter table t_physics_group
   foreign key (convenor) references t_person (id);
 
 alter table t_physics_group
-  add constraint fk_physicsgroup_creat
+  add constraint fk_physicsgroup_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_physics_group
-  add constraint fk_physicsgroup_mod
+  add constraint fk_physicsgroup_modifby
   foreign key (modified_by) references t_person (id);
 
 -- ======================================================================
-create index ix_person_creat
+create index ix_person_creatby
   on t_person (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_person_mod
+create index ix_person_modifby
   on t_person (modified_by)
   tablespace CMS_DBS_INDX01;
 
@@ -80,10 +80,10 @@ create index ix_physicsgroup_convener
   on t_physics_group (convenor)
   tablespace CMS_DBS_INDX01;
 
-create index ix_physicsgroup_creat
+create index ix_physicsgroup_creatby
   on t_physics_group (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_physicsgroup_mod
+create index ix_physicsgroup_modifby
   on t_physics_group (modified_by)
   tablespace CMS_DBS_INDX01;

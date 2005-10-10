@@ -53,11 +53,11 @@ alter table t_collection_type
   unique (name);
 
 alter table t_collection_type
-  add constraint fk_collection_type_creat
+  add constraint fk_collection_type_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_collection_type
-  add constraint fk_collection_type_mod
+  add constraint fk_collection_type_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -71,11 +71,11 @@ alter table t_app_family
   unique (name);
 
 alter table t_app_family
-  add constraint fk_app_family_creat
+  add constraint fk_app_family_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_app_family
-  add constraint fk_app_family_mod
+  add constraint fk_app_family_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -101,11 +101,11 @@ alter table t_application
   foreign key (output_type) references t_collection_type (id);
 
 alter table t_application
-  add constraint fk_application_creat
+  add constraint fk_application_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_application
-  add constraint fk_application_mod
+  add constraint fk_application_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -123,28 +123,28 @@ alter table t_app_config
   foreign key (application) references t_application (id);
 
 alter table t_app_config
-  add constraint fk_app_config_creat
+  add constraint fk_app_config_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_app_config
-  add constraint fk_app_config_mod
+  add constraint fk_app_config_modifby
   foreign key (modified_by) references t_person (id);
 
 -- ======================================================================
-create index ix_collection_type_creat
+create index ix_collection_type_creatby
   on t_collection_type (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_collection_type_mod
+create index ix_collection_type_modifby
   on t_collection_type (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_app_family_creat
+create index ix_app_family_creatby
   on t_app_family (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_app_family_mod
+create index ix_app_family_modifby
   on t_app_family (modified_by)
   tablespace CMS_DBS_INDX01;
 
@@ -157,19 +157,19 @@ create index ix_application_outtype
   on t_application (output_type)
   tablespace CMS_DBS_INDX01;
 
-create index ix_application_creat
+create index ix_application_creatby
   on t_application (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_application_mod
+create index ix_application_modifby
   on t_application (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_app_config_creat
+create index ix_app_config_creatby
   on t_app_config (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_app_config_mod
+create index ix_app_config_modifby
   on t_app_config (modified_by)
   tablespace CMS_DBS_INDX01;

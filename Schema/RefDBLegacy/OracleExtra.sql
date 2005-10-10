@@ -53,7 +53,7 @@ alter table t_info_anads
 alter table t_info_anads
   add constraint fk_info_anads_ds
   foreign key (analysis_dataset) references t_analysis_dataset (id)
-  /* on upfloat cascade */ on delete cascade;
+  /* on update cascade */ on delete cascade;
 
 alter table t_info_anads
   add constraint fk_info_anads_status
@@ -64,11 +64,11 @@ alter table t_info_anads
   foreign key (validation_status) references t_validation_status (id);
 
 alter table t_info_anads
-  add constraint fk_info_anads_creat
+  add constraint fk_info_anads_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_info_anads
-  add constraint fk_info_anads_mod
+  add constraint fk_info_anads_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -80,7 +80,7 @@ alter table t_info_evcoll
 alter table t_info_evcoll
   add constraint fk_info_evcoll_ds
   foreign key (event_collection) references t_event_collection (id)
-  /* on upfloat cascade */ on delete cascade;
+  /* on update cascade */ on delete cascade;
 
 alter table t_info_evcoll
   add constraint fk_info_evcoll_status
@@ -91,11 +91,11 @@ alter table t_info_evcoll
   foreign key (validation_status) references t_validation_status (id);
 
 alter table t_info_evcoll
-  add constraint fk_info_evcoll_creat
+  add constraint fk_info_evcoll_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_info_evcoll
-  add constraint fk_info_evcoll_mod
+  add constraint fk_info_evcoll_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -113,11 +113,11 @@ alter table t_run
   foreign key (run_quality) references t_run_quality (id);
 
 alter table t_run
-  add constraint fk_run_creat
+  add constraint fk_run_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_run
-  add constraint fk_run_mod
+  add constraint fk_run_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -144,11 +144,11 @@ create index ix_info_anads_valid
   on t_info_anads (validation_status)
   tablespace CMS_DBS_INDX01;
 
-create index ix_info_anads_creat
+create index ix_info_anads_creatby
   on t_info_anads (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_info_anads_mod
+create index ix_info_anads_modifby
   on t_info_anads (modified_by)
   tablespace CMS_DBS_INDX01;
 
@@ -161,19 +161,19 @@ create index ix_info_evcoll_valid
   on t_info_evcoll (validation_status)
   tablespace CMS_DBS_INDX01;
 
-create index ix_info_evcoll_creat
+create index ix_info_evcoll_creatby
   on t_info_evcoll (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_info_evcoll_mod
+create index ix_info_evcoll_modifby
   on t_info_evcoll (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_run_creat
+create index ix_run_creatby
   on t_run (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_run_mod
+create index ix_run_modifby
   on t_run (modified_by)
   tablespace CMS_DBS_INDX01;

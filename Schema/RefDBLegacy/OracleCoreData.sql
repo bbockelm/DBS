@@ -87,11 +87,11 @@ alter table t_data_tier
   unique (name);
 
 alter table t_data_tier
-  add constraint fk_data_tier_creat
+  add constraint fk_data_tier_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_data_tier
-  add constraint fk_data_tier_mod
+  add constraint fk_data_tier_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -117,11 +117,11 @@ alter table t_primary_dataset
   foreign key (physics_group) references t_physics_group (id);
 
 alter table t_primary_dataset
-  add constraint fk_primary_dataset_creat
+  add constraint fk_primary_dataset_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_primary_dataset
-  add constraint fk_primary_dataset_mod
+  add constraint fk_primary_dataset_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -147,11 +147,11 @@ alter table t_processing_path
   foreign key (data_tier) references t_data_tier (id);
 
 alter table t_processing_path
-  add constraint fk_processing_path_creat
+  add constraint fk_processing_path_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_processing_path
-  add constraint fk_processing_path_mod
+  add constraint fk_processing_path_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -167,23 +167,23 @@ alter table t_processed_dataset
 alter table t_processed_dataset
   add constraint fk_processed_dataset_primary
   foreign key (primary_dataset) references t_primary_dataset (id)
-  /* on upfloat set null */ on delete set null;
+  /* on update set null */ on delete set null;
 
 alter table t_processed_dataset
   add constraint fk_processed_dataset_path
   foreign key (processing_path) references t_processing_path (id)
-  /* on upfloat set null */ on delete set null;
+  /* on update set null */ on delete set null;
 
 alter table t_processed_dataset
   add constraint ck_processed_dataset_open
   check (is_open in ('y', 'n'));
 
 alter table t_processed_dataset
-  add constraint fk_processed_dataset_creat
+  add constraint fk_processed_dataset_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_processed_dataset
-  add constraint fk_processed_dataset_mod
+  add constraint fk_processed_dataset_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -199,18 +199,18 @@ alter table t_event_collection
 alter table t_event_collection
   add constraint fk_event_collection_dataset
   foreign key (processed_dataset) references t_processed_dataset (id)
-  /* on upfloat set null */ on delete set null;
+  /* on update set null */ on delete set null;
 
 alter table t_event_collection
   add constraint ck_event_collection_primary
   check (is_primary in ('y', 'n'));
 
 alter table t_event_collection
-  add constraint fk_event_collection_creat
+  add constraint fk_event_collection_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_event_collection
-  add constraint fk_event_collection_mod
+  add constraint fk_event_collection_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -224,11 +224,11 @@ alter table t_analysis_dataset
   foreign key (processed_dataset) references t_processed_dataset (id);
 
 alter table t_analysis_dataset
-  add constraint fk_analysis_dataset_creat
+  add constraint fk_analysis_dataset_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_analysis_dataset
-  add constraint fk_analysis_dataset_mod
+  add constraint fk_analysis_dataset_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -244,35 +244,35 @@ alter table t_anads_data
 alter table t_anads_data
   add constraint fk_anads_data_ds
   foreign key (analysis_dataset) references t_analysis_dataset (id)
-  /* on upfloat cascade */ on delete cascade;
+  /* on update cascade */ on delete cascade;
 
 alter table t_anads_data
   add constraint fk_anads_data_evc
   foreign key (event_collection) references t_event_collection (id);
 
 alter table t_anads_data
-  add constraint fk_anads_data_creat
+  add constraint fk_anads_data_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_anads_data
-  add constraint fk_anads_data_mod
+  add constraint fk_anads_data_modifby
   foreign key (modified_by) references t_person (id);
 
 -- ======================================================================
-create index ix_primary_dataset_creat
+create index ix_primary_dataset_creatby
   on t_primary_dataset (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_primary_dataset_mod
+create index ix_primary_dataset_modifby
   on t_primary_dataset (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_data_tier_creat
+create index ix_data_tier_creatby
   on t_data_tier (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_data_tier_mod
+create index ix_data_tier_modifby
   on t_data_tier (modified_by)
   tablespace CMS_DBS_INDX01;
 
@@ -281,48 +281,48 @@ create index ix_processing_path_tier
   on t_processing_path (data_tier)
   tablespace CMS_DBS_INDX01;
 
-create index ix_processing_path_creat
+create index ix_processing_path_creatby
   on t_processing_path (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_processing_path_mod
+create index ix_processing_path_modifby
   on t_processing_path (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_processed_dataset_creat
+create index ix_processed_dataset_creatby
   on t_processed_dataset (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_processed_dataset_mod
+create index ix_processed_dataset_modifby
   on t_processed_dataset (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_event_collection_creat
+create index ix_event_collection_creatby
   on t_event_collection (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_event_collection_mod
+create index ix_event_collection_modifby
   on t_event_collection (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_analysis_dataset_creat
+create index ix_analysis_dataset_creatby
   on t_analysis_dataset (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_analysis_dataset_mod
+create index ix_analysis_dataset_modifby
   on t_analysis_dataset (modified_by)
   tablespace CMS_DBS_INDX01;
 
 
 --
-create index ix_anads_data_creat
+create index ix_anads_data_creatby
   on t_anads_data (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_anads_data_mod
+create index ix_anads_data_modifby
   on t_anads_data (modified_by)
   tablespace CMS_DBS_INDX01;
 

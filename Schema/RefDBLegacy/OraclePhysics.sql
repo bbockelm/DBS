@@ -44,11 +44,11 @@ alter table t_desc_trigger
   unique (description);
 
 alter table t_desc_trigger
-  add constraint fk_desc_trigger_creat
+  add constraint fk_desc_trigger_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_desc_trigger
-  add constraint fk_desc_trigger_mod
+  add constraint fk_desc_trigger_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -57,11 +57,11 @@ alter table t_desc_mc
   primary key (id);
 
 alter table t_desc_mc
-  add constraint fk_desc_mc_creat
+  add constraint fk_desc_mc_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_desc_mc
-  add constraint fk_desc_mc_mod
+  add constraint fk_desc_mc_modifby
   foreign key (modified_by) references t_person (id);
 
 --
@@ -87,35 +87,35 @@ alter table t_desc_primary
   check (is_mc_data in ('y', 'n'))
 
 alter table t_desc_primary
-  add constraint fk_desc_primary_creat
+  add constraint fk_desc_primary_creatby
   foreign key (created_by) references t_person (id);
 
 alter table t_desc_primary
-  add constraint fk_desc_primary_mod
+  add constraint fk_desc_primary_modifby
   foreign key (modified_by) references t_person (id);
 
 -- ======================================================================
-create index ix_desc_trigger_creat
+create index ix_desc_trigger_creatby
   on t_desc_trigger (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_desc_trigger_mod
+create index ix_desc_trigger_modifby
   on t_desc_trigger (modified_by)
   tablespace CMS_DBS_INDX01;
 
 --
-create index ix_desc_mc_creat
+create index ix_desc_mc_creatby
   on t_desc_mc (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_desc_mc_mod
+create index ix_desc_mc_modifby
   on t_desc_mc (modified_by)
   tablespace CMS_DBS_INDX01;
 --
-create index ix_desc_primary_creat
+create index ix_desc_primary_creatby
   on t_desc_primary (created_by)
   tablespace CMS_DBS_INDX01;
 
-create index ix_desc_primary_mod
+create index ix_desc_primary_modifby
   on t_desc_primary (modified_by)
   tablespace CMS_DBS_INDX01;
