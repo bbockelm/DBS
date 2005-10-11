@@ -2,7 +2,7 @@
 create sequence seq_validation_status;
 create sequence seq_dataset_status;
 create sequence seq_evcoll_status;
-create sequence seq_runq_uality;
+create sequence seq_run_quality;
 
 -- ======================================================================
 create table t_validation_status
