@@ -10,32 +10,32 @@ create table t_validation_status
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_dataset_status
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_evcoll_status
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_run_quality
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_validation_status

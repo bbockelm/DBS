@@ -10,8 +10,8 @@ create table t_desc_trigger
    description			varchar (1000)  not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_desc_mc
   (id				integer		not null,
@@ -20,8 +20,8 @@ create table t_desc_mc
    decay_chain			varchar (1000),
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_desc_primary
   (id				integer		not null,
@@ -30,8 +30,8 @@ create table t_desc_primary
    is_mc_data			char (1)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_desc_trigger

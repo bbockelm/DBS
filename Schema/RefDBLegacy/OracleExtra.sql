@@ -15,8 +15,8 @@ create table t_info_anads
    validation_status		integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_info_evcoll
   (event_collection		integer		not null,
@@ -28,8 +28,8 @@ create table t_info_evcoll
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_run
   (id		                integer		not null,
@@ -37,8 +37,8 @@ create table t_run
    run_quality			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_evcoll_run
   (event_collection		integer		not null,

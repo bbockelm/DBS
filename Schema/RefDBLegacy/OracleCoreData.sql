@@ -13,8 +13,8 @@ create table t_data_tier
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_primary_dataset
   (id				integer		not null,
@@ -23,8 +23,8 @@ create table t_primary_dataset
    physics_group		integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_processing_path
   (id				integer		not null,
@@ -34,8 +34,8 @@ create table t_processing_path
    data_tier			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_processed_dataset
   (id				integer		not null,
@@ -45,8 +45,8 @@ create table t_processed_dataset
    is_open			char (1)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_event_collection
   (id				integer		not null,
@@ -55,8 +55,8 @@ create table t_event_collection
    is_primary			char (1)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_analysis_dataset
   (id				integer		not null,
@@ -64,8 +64,8 @@ create table t_analysis_dataset
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_anads_data
   (id				integer		not null,
@@ -73,8 +73,8 @@ create table t_anads_data
    event_collection		integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_data_tier

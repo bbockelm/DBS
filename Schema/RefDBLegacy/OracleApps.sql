@@ -10,16 +10,16 @@ create table t_collection_type
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_app_family
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_application
   (id				integer		not null,
@@ -30,8 +30,8 @@ create table t_application
    output_type			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_app_config
   (id				integer		not null,
@@ -39,8 +39,8 @@ create table t_app_config
    conditions_version		varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_collection_type

@@ -1,11 +1,14 @@
 -- ======================================================================
+create sequence seq_parentage_type;
+
+-- ======================================================================
 create table t_parentage_type
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_evcoll_parentage
   (parent			integer		not null,
@@ -13,8 +16,8 @@ create table t_evcoll_parentage
    type				integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_parentage_type

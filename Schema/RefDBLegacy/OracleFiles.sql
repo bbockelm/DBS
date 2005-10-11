@@ -1,4 +1,5 @@
 -- ======================================================================
+create sequence seq_block_status;
 create sequence seq_block;
 create sequence seq_file_status;
 create sequence seq_file_type;
@@ -11,8 +12,8 @@ create table t_block_status
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_block
   (id				integer		not null,
@@ -22,24 +23,24 @@ create table t_block
    bytes			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_file_status
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_file_type
   (id				integer		not null,
    name				varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_file
   (id				integer		not null,
@@ -52,8 +53,8 @@ create table t_file
    inblock			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_evcoll_file
   (id				integer		not null,
@@ -61,8 +62,8 @@ create table t_evcoll_file
    fileid			integer		not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_block_status

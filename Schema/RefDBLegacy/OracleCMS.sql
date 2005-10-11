@@ -10,8 +10,8 @@ create table t_person
    contact_info			varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 create table t_physics_group
   (id				integer		not null,
@@ -19,8 +19,8 @@ create table t_physics_group
    convenor			integer		/* not null? */,
    created_at			float		not null,
    created_by			integer		not null,
-   modified_at			float		not null,
-   modified_by			integer		not null);
+   modified_at			float,
+   modified_by			integer);
 
 -- ======================================================================
 alter table t_person
