@@ -36,6 +36,7 @@ create table t_application
 create table t_app_config
   (id				integer		not null,
    application			integer		not null,
+   parameter_set		varchar (1000)	not null,  -- FIXME!
    conditions_version		varchar (1000)	not null,
    created_at			float		not null,
    created_by			integer		not null,
@@ -116,7 +117,7 @@ alter table t_app_config
 
 alter table t_app_config
   add constraint uq_app_config
-  unique (application, conditions_version);
+  unique (application, parameter_set, conditions_version);
 
 alter table t_app_config
   add constraint fk_app_config_app
