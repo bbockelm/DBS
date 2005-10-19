@@ -1,5 +1,6 @@
 @OracleRev.sql
 @OracleCMS.sql
+@OracleHistory.sql
 
 @OracleApps.sql
 @OraclePhysics.sql

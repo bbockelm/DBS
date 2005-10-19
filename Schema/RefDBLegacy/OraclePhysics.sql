@@ -4,34 +4,21 @@ create sequence seq_desc_mc;
 create sequence seq_desc_primary;
 
 -- ======================================================================
-
 create table t_desc_trigger
   (id				integer		not null,
-   description			varchar (1000)  not null,
-   created_at			float		not null,
-   created_by			integer		not null,
-   modified_at			float,
-   modified_by			integer);
+   description			varchar (1000)  not null);
 
 create table t_desc_mc
   (id				integer		not null,
    description			varchar (1000)  not null,
    production			varchar (1000),
-   decay_chain			varchar (1000),
-   created_at			float		not null,
-   created_by			integer		not null,
-   modified_at			float,
-   modified_by			integer);
+   decay_chain			varchar (1000));
 
 create table t_desc_primary
   (id				integer		not null,
    trigger_path			integer,
    mc_channel			integer,
-   is_mc_data			char (1)	not null,
-   created_at			float		not null,
-   created_by			integer		not null,
-   modified_at			float,
-   modified_by			integer);
+   is_mc_data			char (1)	not null);
 
 -- ======================================================================
 alter table t_desc_trigger
@@ -43,26 +30,10 @@ alter table t_desc_trigger
   add constraint uq_desc_trigger_desc
   unique (description);
 
-alter table t_desc_trigger
-  add constraint fk_desc_trigger_creatby
-  foreign key (created_by) references t_person (id);
-
-alter table t_desc_trigger
-  add constraint fk_desc_trigger_modifby
-  foreign key (modified_by) references t_person (id);
-
 --
 alter table t_desc_mc
   add constraint pk_desc_mc
   primary key (id);
-
-alter table t_desc_mc
-  add constraint fk_desc_mc_creatby
-  foreign key (created_by) references t_person (id);
-
-alter table t_desc_mc
-  add constraint fk_desc_mc_modifby
-  foreign key (modified_by) references t_person (id);
 
 --
 alter table t_desc_primary
@@ -84,38 +55,4 @@ alter table t_desc_primary
 
 alter table t_desc_primary
   add constraint ck_desc_primary_ismc
-  check (is_mc_data in ('y', 'n'))
-
-alter table t_desc_primary
-  add constraint fk_desc_primary_creatby
-  foreign key (created_by) references t_person (id);
-
-alter table t_desc_primary
-  add constraint fk_desc_primary_modifby
-  foreign key (modified_by) references t_person (id);
-
--- ======================================================================
-create index ix_desc_trigger_creatby
-  on t_desc_trigger (created_by)
-  tablespace CMS_DBS_INDX01;
-
-create index ix_desc_trigger_modifby
-  on t_desc_trigger (modified_by)
-  tablespace CMS_DBS_INDX01;
-
---
-create index ix_desc_mc_creatby
-  on t_desc_mc (created_by)
-  tablespace CMS_DBS_INDX01;
-
-create index ix_desc_mc_modifby
-  on t_desc_mc (modified_by)
-  tablespace CMS_DBS_INDX01;
---
-create index ix_desc_primary_creatby
-  on t_desc_primary (created_by)
-  tablespace CMS_DBS_INDX01;
-
-create index ix_desc_primary_modifby
-  on t_desc_primary (modified_by)
-  tablespace CMS_DBS_INDX01;
+  check (is_mc_data in ('y', 'n'));
