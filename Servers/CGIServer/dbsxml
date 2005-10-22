@@ -1,0 +1,61 @@
+#!/usr/bin/env perl
+
+BEGIN { use strict; use warnings; $^W=1; }
+use CGI 'header', 'param';
+
+# ###############################################
+# Main program
+
+my $dbparams = "/afs/cern.ch/cms/aprom/DBS/DBAccessInfo/DBParam";
+my $tools = "/afs/cern.ch/cms/aprom/phedex/Tools";
+my $xmltools = "/afs/cern.ch/cms/aprom/phedex/PHEDEX";
+
+# Get parameters
+my $api = param('api');
+if (! $api)
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: no API call specified.\n";
+  exit (1);
+}
+if (! grep ($_ eq $api, qw(getDatasetProvenance getDatasetContents)))
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: API not recognised.\n";
+  exit (1);
+}
+
+my $path = param('path');
+if (! $path)
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: no path specified.\n";
+  exit (1);
+}
+if ($path !~ m|^[A-Za-z0-9_./]+$|)
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: unsafe characters in path.\n";
+  exit (1);
+}
+if ($path !~ m|^([^/]+)/([^/]+)/([^/])+$|)
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: expected path of the form DATASET/TIER/OWNER.\n";
+  exit (1);
+}
+
+my $dataset = $1;
+my $tier = $2;
+my $owner = $3;
+
+# Execute the API call as an external command
+my $cmd = "";
+$cmd .= " . $tools/oraenv.sh;";
+$cmd .= " . $tools/perlenv.sh;";
+$cmd .= " $xmltools/Utilities/DBSSXMLDump";
+$cmd .= "  -from DBS -db $dbparams:Production/Reader";
+$cmd .= "  -$api '$path'";
+
+print header('text/plain');
+exit system($cmd);
