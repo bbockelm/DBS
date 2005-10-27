@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsCgiApi.py,v 1.1 2005/10/27 19:47:46 sveseli Exp $
 #
 # CGI implementation of the DBS API class. This version of API
 # relies on cgi scripts providing xml output. 
@@ -47,7 +47,7 @@ class DbsCgiApi(dbsApi.DbsApi):
     Retrieve list of dataset parents for the given dataTiers.
     """
     try:
-      return self._phedexUtility.getDatasetProvenance(
+      return self._cgiUtility.getDatasetProvenance(
 	datasetPathName, dataTierList)
     except dbsCgiUtility.DbsCgiUtilityException, ex:
       raise DbsCgiApiException(exception=ex)
@@ -60,7 +60,7 @@ class DbsCgiApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
-    datasetPath = "bt_DST8713_2x1033PU_g133_CMS/bt03_wtb_2tauj"
+    datasetPath = "bt_DST8713_2x1033PU_g133_CMS/Digi/bt03_wtb_2tauj"
 
     # Construct api object.
     api = DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin")
