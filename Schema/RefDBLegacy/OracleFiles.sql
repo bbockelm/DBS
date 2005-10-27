@@ -30,8 +30,8 @@ create table t_file
   (id				integer		not null,
    guid				varchar (1000)	/* not null */,
    logical_name			varchar (1000)	not null,
-   checksum			varchar (1000)	not null,
-   filesize			integer		not null,
+   checksum			varchar (1000)	/* not null */,
+   filesize			integer		/* not null */,
    status			integer         /* not null */,
    type				integer         not null,
    inblock			integer		not null);
