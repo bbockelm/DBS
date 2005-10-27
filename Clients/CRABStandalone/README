@@ -1,0 +1,18 @@
+
+A basic test script to test in a stand-alone way 
+the CRAB Data Discovery based on DBS, is:
+
+./testDBS_CRAB.py <owner> <dataset> <comma separated list of datatiers>
+
+The others python modules it uses are:
+ o DataDiscovery.py  --> uses DBSInfo
+ o DBSInfo.py --> DBS query using HTTP-CGI for getDatasetContents and DBSXMLDump for getDatasetProvenance
+ o DBSXMLHandler.py --> read DBS XML files
+
+The code uses:
+  - getDatasetContents API from HTTP/CGI
+  - getDatasetProvenance API from  PHEDEX/Utilities/DBSXMLDump
+ 
+so you still need to use and configure PHEDEX environment.
+You need to configure the DBSInfo.py to point at your PHEDEX installation.
+
