@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsApi.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -30,6 +30,13 @@ class DbsApi:
   def getDatasetContents(self, datasetPathName):
     """ Retrieve event collections given the dataset path name string. """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+  def getDatasetProvenance(self, datasetPathName, dataTierList):
+    """
+    Retrieve list of dataset parents for the given dataTiers.
+    """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
 
   # Methods common for all API implementations.
   def getLogManagerInstance(self):

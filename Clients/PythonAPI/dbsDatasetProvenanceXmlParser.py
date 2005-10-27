@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsDatasetProvenanceXmlParser.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # Class which parses dataset provenance xml file.
 #
@@ -32,9 +32,10 @@ class DbsDatasetProvenanceXmlParserException(dbsXmlParser.DbsXmlParserException)
 
 class DbsDatasetProvenanceXmlParser(dbsXmlParser.DbsXmlParser):
 
-  def __init__(self, xmlFile):
+  def __init__(self, xmlString=None, xmlFile=None):
     """ Constructor. """
-    dbsXmlParser.DbsXmlParser.__init__(self, xmlFile)
+    dbsXmlParser.DbsXmlParser.__init__(self, xmlString=xmlString,
+				       xmlFile=xmlFile)
 
   def parseDocument(self):
     """ Implementation of the abstract base class method. """

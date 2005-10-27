@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsPhedexUtility.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # Class which uses PHEDEX utilities to extract info from the db.
 #
@@ -196,7 +196,7 @@ class DbsPhedexUtility:
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
     try:
-      datasetContentsParser = dbsDatasetContentsXmlParser.DbsDatasetContentsXmlParser(xmlOutputFile)
+      datasetContentsParser = dbsDatasetContentsXmlParser.DbsDatasetContentsXmlParser(xmlFile=xmlOutputFile)
       fileBlockList = datasetContentsParser.getFileBlockList()
     except Exception, ex:
       raise InvalidXML(exception=ex)
@@ -251,7 +251,7 @@ class DbsPhedexUtility:
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
     try:
-      datasetProvenanceParser = dbsDatasetProvenanceXmlParser.DbsDatasetProvenanceXmlParser(xmlOutputFile)
+      datasetProvenanceParser = dbsDatasetProvenanceXmlParser.DbsDatasetProvenanceXmlParser(xmlFile=xmlOutputFile)
       datasetParentList = datasetProvenanceParser.getDatasetParentList()
     except Exception, ex:
       raise InvalidXML(exception=ex)
