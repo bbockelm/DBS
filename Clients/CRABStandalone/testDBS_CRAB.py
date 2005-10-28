@@ -30,6 +30,9 @@ if __name__ == '__main__':
         dataset = sys.argv[2]
         dataTiersList = sys.argv[3]
 
+#     owner ='eg_Hit752_g133'
+#     dataset ='eg03_hzz_2e2mu_350'
+
         dataTiers = dataTiersList.split(',')
         
 
@@ -44,17 +47,20 @@ if __name__ == '__main__':
                 sys.exit(1)
 
 
+        print "\nThe information extracted from DBS needed by CRAB are:"
         ## get list of all dataset-owner pairs        
-        print "\n List of all  dataset-owner pairs needed: "
+        print "\n List of all dataset-owner pairs (needed for site-local catalogue discovery) : "
         dsowmap=pubdata.getDatasetOwnerPairs()
         for ow in dsowmap.keys():
-          print "  dataset "+dsowmap[ow]+" owner "+ow
+          print "  -- dataset: "+dsowmap[ow]+" owner: "+ow
 
         ## get max number of events
-        print " number of events for primary fileblocks %i"%pubdata.getMaxEvents()
+
+        print "\n Number of events for primary fileblocks (needed for job splitting) : %i"%pubdata.getMaxEvents()
 
         ## get fileblocks : this is the input for DLS
         fb=pubdata.getFileBlocks()
+        print "\n FileBlock names (needed as input for DLS) : %s"%fb
 
         sys.exit(0)
 
