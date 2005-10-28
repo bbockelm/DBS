@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.2 2005/10/28 16:19:02 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.3 2005/10/28 17:01:23 sveseli Exp $
 #
 # File block class. 
 #
@@ -39,7 +39,7 @@ class DbsFileBlock(UserDict.UserDict):
 
   def getBlockId(self):
     """ Retrieve block id. """
-    return self.get(FILE_BLOCK_NAME_TAG_)
+    return self.get(FILE_BLOCK_ID_TAG_)
 
   def getEventCollectionList(self):
     """ Retrieve event collection list. """
