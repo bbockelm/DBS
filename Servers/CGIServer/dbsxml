@@ -12,7 +12,7 @@ my $xmltools = "/afs/cern.ch/cms/aprom/phedex/PHEDEX";
 
 # Get parameters
 my $api = param('api');
-if (! $api)
+if (! defined $api)
 {
   print header (-type => 'text/plain', -status => '400 Bad request');
   print "ERROR: no API call specified.\n";
@@ -26,7 +26,7 @@ if (! grep ($_ eq $api, qw(getDatasetProvenance getDatasetContents)))
 }
 
 my $path = param('path');
-if (! $path)
+if (! defined $path)
 {
   print header (-type => 'text/plain', -status => '400 Bad request');
   print "ERROR: no path specified.\n";
@@ -49,6 +49,20 @@ my $dataset = $1;
 my $tier = $2;
 my $owner = $3;
 
+my $datatier = param('datatier');
+if (defined $datatier && $api ne 'getDatasetProvenance')
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: datatier accepted only with api=getDatasetProvenance.\n";
+  exit (1);
+}
+if (defined $datatier && $datatier !~ m|^[A-Za-z,]+$|)
+{
+  print header (-type => 'text/plain', -status => '400 Bad request');
+  print "ERROR: unsafe characters in datatier.\n";
+  exit (1);
+}
+
 # Create temporary output file
 chomp (my $outfile = qx(mktemp /tmp/cms-dbs-xmldump.XXXXXXX));
 if (! $outfile || ! -f $outfile)
@@ -64,6 +78,7 @@ $cmd .= " . $tools/oraenv.sh;";
 $cmd .= " . $tools/perlenv.sh;";
 $cmd .= " $xmltools/Utilities/DBSXMLDump";
 $cmd .= "  -from DBS -db $dbparams:Production/Reader";
+$cmd .= "  -datatier '$datatier'" if defined $datatier;
 $cmd .= "  -$api -to $outfile '$owner/$dataset'";
 
 if (my $rc = system("($cmd) >/dev/null 2>&1"))
