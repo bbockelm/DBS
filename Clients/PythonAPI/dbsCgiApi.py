@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.1 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsCgiApi.py,v 1.2 2005/10/27 20:24:53 sveseli Exp $
 #
 # CGI implementation of the DBS API class. This version of API
 # relies on cgi scripts providing xml output. 
@@ -60,7 +60,7 @@ class DbsCgiApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
-    datasetPath = "bt_DST8713_2x1033PU_g133_CMS/Digi/bt03_wtb_2tauj"
+    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
 
     # Construct api object.
     api = DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin")

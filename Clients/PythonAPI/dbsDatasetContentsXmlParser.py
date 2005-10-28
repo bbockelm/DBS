@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetContentsXmlParser.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsDatasetContentsXmlParser.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
 #
 # Class which parses dataset contents xml file.
 #
@@ -11,13 +11,13 @@ import dbsEventCollection
 import dbsLogManager
 import dbsXmlParser
 
-FILE_BLOCK_TAG_ = "FILEBLOCKS"
-FILE_BLOCK_NAME_ATTR_ = "BLOCKNAME"
-FILE_BLOCK_ID_ATTR_ = "ID"
+FILE_BLOCK_TAG_ = "block"
+FILE_BLOCK_NAME_ATTR_ = "name"
+FILE_BLOCK_ID_ATTR_ = "id"
 
-EVENT_COLLECTION_TAG_ = "EVCOLL"
-EVENT_COLLECTION_NAME_ATTR_ = "EVCNAME"
-EVENT_COLLECTION_NUMBER_OF_EVENTS_ATTR_ = "EVCEVTS"
+EVENT_COLLECTION_TAG_ = "event-collection"
+EVENT_COLLECTION_NAME_ATTR_ = "name"
+EVENT_COLLECTION_NUMBER_OF_EVENTS_ATTR_ = "events"
 
 
 ##############################################################################
