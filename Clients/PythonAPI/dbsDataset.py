@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsDataset.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # Dataset class. 
 #
@@ -9,7 +9,8 @@ import UserDict
 
 DATASET_NAME_TAG_ = "DatasetName"
 DATASET_PATH_TAG_ = "DatasetPath"
-DATATIER_TAG_ = "Datatier"
+DATATIER_TAG_ = "DataTier"
+DATATYPE_TAG_ = "DataType"
 
 ##############################################################################
 # DBS dataset class.
@@ -17,12 +18,13 @@ DATATIER_TAG_ = "Datatier"
 class DbsDataset(UserDict.UserDict):
 
   def __init__(self, datasetName=None, datasetPath=None,
-	       dataTier=None):
+	       dataTier=None, dataType=None):
     """ Constructor. """
     UserDict.UserDict.__init__(self)
     self[DATASET_NAME_TAG_] = str(datasetName)
     self[DATASET_PATH_TAG_] = str(datasetPath)
     self[DATATIER_TAG_] = str(dataTier)
+    self[DATATYPE_TAG_] = str(dataType)
 
   def getDatasetName(self):
     """ Retrieve dataset name. """

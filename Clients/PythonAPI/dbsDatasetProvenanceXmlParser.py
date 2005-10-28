@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetProvenanceXmlParser.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsDatasetProvenanceXmlParser.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
 #
 # Class which parses dataset provenance xml file.
 #
@@ -12,10 +12,11 @@ import dbsLogManager
 
 import dbsXmlParser
 
-DATASET_PARENT_TAG_ = "PARENT"
+DATASET_PARENT_TAG_ = "parent"
 DATASET_NAME_ATTR_ = "name"
-DATASET_PATH_ATTR_ = "PATH"
-DATATIER_ATTR_ = "DATATIER"
+DATASET_PATH_ATTR_ = "path"
+DATATIER_ATTR_ = "tier"
+DATATYPE_ATTR_ = "type"
 
 ##############################################################################
 # Exception classes.
@@ -64,9 +65,13 @@ class DbsDatasetProvenanceXmlParser(dbsXmlParser.DbsXmlParser):
 	dataTier = parentNode.getAttribute(DATATIER_ATTR_)
 	dataTier = dataTier.encode(dbsXmlParser.DEFAULT_STRING_ENCODING_)
 
+	dataType = parentNode.getAttribute(DATATYPE_ATTR_)
+	dataType = dataType.encode(dbsXmlParser.DEFAULT_STRING_ENCODING_)
+
 	parent = dbsDataset.DbsDataset(datasetName=parentName,
 				       datasetPath=parentPath,
-				       dataTier=dataTier)
+				       dataTier=dataTier,
+				       dataType=dataType)
 	logManager.log(
 	  what="Found  parent: %s" % parent,
 	  where=funcName,
