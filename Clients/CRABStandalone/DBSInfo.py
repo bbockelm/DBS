@@ -2,7 +2,10 @@
 import sys, os, string, re
 import xml.sax
 import urllib
-import DBSXMLHandler
+ 
+import sys
+sys.path.append('./DBSAPI')
+import dbsCgiApi
 
 class DBSError:
   def __init__(self, owner, dataset):
@@ -23,94 +26,48 @@ class DBSInfo:
           self.owner = owner
           self.dataset = dataset
           self.dataTiers = dataTiers
-          ## DBSXMLDump 
-          self.DBSclient_ = '/phedex/SL/PHEDEX_head/Utilities/DBSXMLDump -from DBS '
-          self.DBSParam_ = '~/.globus/DBS_DBParam:Production/Admin'
-          self.DBSDumpbase_ = self.DBSclient_+" -from DBS -db "+self.DBSParam_
-          ## HTTP/CGI 
-          self.DBSURL_='http://cern.ch/cms-dbs/cgi-bin/dbsxml?api='
+          self.dbspath=dataset+'/datatier/'+owner
+          
+          self.api = dbsCgiApi.DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin") 
 
 # ####################################
      def getDatasetProvenance(self):
          """
           query DBS to get provenance
          """
-         ## DBSXMLDump
-         xmlfile= 'parent.xml'
-         ListdataTiers=string.join(self.dataTiers,',')
-         #print ListdataTiers
-         print "DBSInfo: ---> getDatasetProvenance : "+self.owner+"/"+self.dataset+" with datatier "+ListdataTiers
-         cmd = self.DBSDumpbase_+" -to "+xmlfile+" -datatier "+ListdataTiers+" -getDatasetProvenance \'"+self.owner+"/"+self.dataset+"\'"
-         #print "DBSInfo: executing "+cmd
-         os.system(cmd) 
-         
-         ### parse the XML
-         handler = self.XMLparsing(xmlfile)
-         os.system('rm '+xmlfile) 
+         datasetParentList = self.api.getDatasetProvenance(self.dbspath,self.dataTiers)
+                                                                                                                     
+         parent = {}
+         for aparent in datasetParentList:
+           print "DBSInfo: parent path is "+aparent.getDatasetPath()+" datatier is: "+aparent.getDataTier()
+           parent[aparent.getDatasetPath()]=aparent.getDataTier()
 
-         print "DBSInfo: parents are %s"%handler.parentsList
-
-         for aparent in handler.parent.keys():
-           print "DBSInfo: parent is "+aparent+" type: "+handler.parent[aparent]
-
-         ## return a map with parent path and type : should I return just a list with parent paths?
-         return handler.parent
-
+         return parent
 
 # ####################################
      def getDatasetContents(self):
          """
           query DBS to get event collections
          """
-         print "DBSInfo: ---> getDatasetContents : "+self.dataset+"/"+self.owner
-         try:
-            url=self.DBSURL_+'getDatasetContents&path='+self.dataset+'/datatier/'+self.owner
-            f = urllib.urlopen(url)
-         except:
-           raise DBSInfoError(url)
 
-         data = f.read()
-         xmlfile = "evc.xml"
-         file = open(xmlfile, 'w')
-         file.write(data)
-         file.close()
-                                                                                                                     
-         ### parse the XML
-         handler = self.XMLparsing(xmlfile)
-         os.system('rm '+xmlfile)
+         fileBlockList = self.api.getDatasetContents(self.dbspath)
                                                                                                                      
          ## get the fileblock and event collections
          nevtsbyblock= {}
-         print "DBSInfo: fileblocks are: %s"%handler.fileblocksList
+         for fileBlock in fileBlockList:
+            ## get the event collections for each block
+            #print fileBlock.getBlockName()
+            #print fileBlock.getBlockId()
+            eventCollectionList = fileBlock.getEventCollectionList()
+            nevts=0
+            for eventCollection in eventCollectionList:
+              #print "DBSInfo:  evc: "+eventCollection.getCollectionName()+" nevts: %i"%eventCollection.getNumberOfEvents()
+              nevts=nevts+eventCollection.getNumberOfEvents()
+            print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName())
+            nevtsbyblock[fileBlock.getBlockName()]=nevts
 
-         for block in handler.fileblocksList:
-          print "DBSInfo: --- block: "+block
-          ## get the event collections for each block
-          evcnames=handler.evcbyfileblock[block].keys()
-          evcnames.sort()
-          nevts=0
-          for evcname in evcnames:
-           print "DBSInfo:  evc: "+evcname+" nevts: "+handler.evcbyfileblock[block][evcname]
-           nevts=nevts+int(handler.evcoll[evcname])
-          print "DBSInfo: total nevts %i in block %s "%(nevts,block)
-          nevtsbyblock[block]=nevts
-                                                                                                                     
-         print "DBSInfo: total number of events %i"%handler.totnevts                                                                                                                     
          # returning a map of fileblock-nevts  will be enough for now
          # TODO: in future the EvC collections grouped by fileblock should be returned
-                                                                                                                     
+         
          return nevtsbyblock
-
-
-# ####################################
-     def XMLparsing(self, xmlfile):
-         """
-           parse XML
-         """
-         #print "\n DBSInfo: Parsing XML file "+xmlfile+"\n"
-         parser = xml.sax.make_parser()
-         handler = DBSXMLHandler.Handler()
-         parser.setContentHandler(handler)
-         parser.parse(xmlfile)
-         return handler
 
