@@ -4,15 +4,14 @@ the CRAB Data Discovery based on DBS, is:
 
 ./testDBS_CRAB.py <owner> <dataset> <comma separated list of datatiers>
 
+For example:
+
+./testDBS_CRAB.py bt_2x1033PU761_TkMu_2_g133_OSC bt03_B0sCombBkg Hit
+
+
 The others python modules it uses are:
  o DataDiscovery.py  --> uses DBSInfo
- o DBSInfo.py --> DBS query using HTTP-CGI for getDatasetContents and DBSXMLDump for getDatasetProvenance
- o DBSXMLHandler.py --> read DBS XML files
-
-The code uses:
-  - getDatasetContents API from HTTP/CGI
-  - getDatasetProvenance API from  PHEDEX/Utilities/DBSXMLDump
- 
-so you still need to use and configure PHEDEX environment.
-You need to configure the DBSInfo.py to point at your PHEDEX installation.
+ o DBSInfo.py --> DBS queries are done using the dbsCgiApi
+                  this assumes that the python CGI API files 
+                  are in a sub-directory DBSAPI
 
