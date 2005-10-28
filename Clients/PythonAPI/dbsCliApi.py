@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCliApi.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsCliApi.py,v 1.2 2005/10/28 16:19:02 sveseli Exp $
 #
 # CLI implementation of the DBS API class. This version of API
 # relies on various sql tools to retrieve information out of the db.
@@ -44,7 +44,7 @@ class DbsCliApi(dbsApi.DbsApi):
     except dbsPhedexUtility.DbsPhedexUtilityException, ex:
       raise DbsCliApiException(exception=ex)
 
-  def getDatasetProvenance(self, datasetPathName, dataTierList):
+  def getDatasetProvenance(self, datasetPathName, dataTierList=[]):
     """
     Retrieve list of dataset parents for the given dataTiers. """
     try:
@@ -61,7 +61,7 @@ class DbsCliApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
-    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
+    datasetPath = "bt_Hit245_2_g133/bt03_B0sJPsiX"
 
     # Construct api object.
     api = DbsCliApi(

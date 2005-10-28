@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsPhedexUtility.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsPhedexUtility.py,v 1.3 2005/10/28 16:19:02 sveseli Exp $
 #
 # Class which uses PHEDEX utilities to extract info from the db.
 #
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     logLevel = dbsLogManager.LOG_LEVEL_ALL_
     dbsLogManager.getInstance().setLogLevel(logLevel)
 
-    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
+    datasetPath = "bt_Hit245_2_g133/bt03_B0sJPsiX"
     phedexUtility = DbsPhedexUtility(
       phedexDir="/home/veseli/work/dbs/PHEDEX",
       phedexDbSectionString="Production/Admin",

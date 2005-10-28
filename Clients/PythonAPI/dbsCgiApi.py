@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.2 2005/10/27 20:24:53 sveseli Exp $
+# $Id: dbsCgiApi.py,v 1.3 2005/10/28 15:39:07 sveseli Exp $
 #
 # CGI implementation of the DBS API class. This version of API
 # relies on cgi scripts providing xml output. 
@@ -42,7 +42,7 @@ class DbsCgiApi(dbsApi.DbsApi):
     except dbsCgiUtility.DbsCgiUtilityException, ex:
       raise DbsCgiApiException(exception=ex)
 
-  def getDatasetProvenance(self, datasetPathName, dataTierList):
+  def getDatasetProvenance(self, datasetPathName, dataTierList=[]):
     """
     Retrieve list of dataset parents for the given dataTiers.
     """
