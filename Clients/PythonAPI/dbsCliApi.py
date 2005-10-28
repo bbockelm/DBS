@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsCliApi.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # CLI implementation of the DBS API class. This version of API
 # relies on various sql tools to retrieve information out of the db.
@@ -61,7 +61,7 @@ class DbsCliApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
-    datasetPath = "bt_DST8713_2x1033PU_g133_CMS/bt03_wtb_2tauj"
+    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
 
     # Construct api object.
     api = DbsCliApi(

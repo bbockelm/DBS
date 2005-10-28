@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsCgiUtility.py,v 1.1 2005/10/27 19:47:46 sveseli Exp $
 #
 # Class which uses PHEDEX utilities to extract info from the db.
 #
@@ -107,9 +107,11 @@ class DbsCgiUtility:
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetProvenance()")
     
     # Construct cgi path.
-    cgiUrl = "%s/%s?api=getDatasetContents&path=%s" % (
+    cgiUrl = "%s/%s?api=getDatasetProvenance&path=%s" % (
       self._cgiUrl, CGI_DBS_XML_DUMP_SCRIPT_, datasetPathName)
-
+    if len(dataTierList):
+      cgiUrl = "%s&datatier=%s" % (cgiUrl, string.join(dataTierList, ","))
+    
     # Invoke cgi script.
     try:
       self._logManager.log(
@@ -151,7 +153,7 @@ if __name__ == "__main__":
     logLevel = dbsLogManager.LOG_LEVEL_ALL_
     dbsLogManager.getInstance().setLogLevel(logLevel)
 
-    datasetPath = "mu03c_hzz_4mu_115/Digi/mu_2x1033PU761_TkMu_2_g133_OSC"
+    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
     cgiUtility = DbsCgiUtility(cgiUrl="http://cern.ch/cms-dbs/cgi-bin")
 
     
@@ -165,18 +167,18 @@ if __name__ == "__main__":
       for eventCollection in fileBlock.getEventCollectionList():
 	print "  %s" % eventCollection
 
-    #print ""
-    #dataTierList = [ "Digi", "Hit" ]
-    #print "Getting dataset provenance for: %s (dataTiers: %s)" % (
-    #  datasetPath, dataTierList)
+    print ""
+    dataTierList = [ "Digi", "Hit" ]
+    print "Getting dataset provenance for: %s (dataTiers: %s)" % (
+      datasetPath, dataTierList)
     
-    #datasetParentList = cgiUtility.getDatasetProvenance(
-    #  datasetPath, dataTierList)
-    #print "Dataset provenance for: %s (dataTiers: %s)" % (
-    #  datasetPath, dataTierList)
+    datasetParentList = cgiUtility.getDatasetProvenance(
+      datasetPath, dataTierList)
+    print "Dataset provenance for: %s (dataTiers: %s)" % (
+      datasetPath, dataTierList)
 
-    #for datasetParent in datasetParentList:
-    #  print "%s" % (datasetParent)
+    for datasetParent in datasetParentList:
+      print "%s" % (datasetParent)
 
 
   except dbsException.DbsException, ex:  

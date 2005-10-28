@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDataset.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsDataset.py,v 1.2 2005/10/28 16:00:46 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -38,6 +38,10 @@ class DbsDataset(UserDict.UserDict):
     """ Retrieve datatier. """
     return self.get(DATATIER_TAG_)
 
+  def getDataType(self):
+    """ Retrieve dataype. """
+    return self.get(DATATYPE_TAG_)
+
 
 
 ##############################################################################
@@ -45,6 +49,11 @@ class DbsDataset(UserDict.UserDict):
 
 if __name__ == "__main__":
   dataset = DbsDataset(datasetName="ds1",
-		       datasetPath="/ds1/ds1", dataTier="Digi")
+		       datasetPath="/ds1/ds1",
+		       dataTier="Digi",
+		       dataType="PU")
+  print dataset
+  print "Adding myAttr to the dataset"
+  dataset["myAttr"] = "myValue"
   print dataset
   print "Done"

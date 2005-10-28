@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsFileBlock.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # File block class. 
 #
@@ -61,6 +61,13 @@ if __name__ == "__main__":
   fileBlock = DbsFileBlock(blockId=123, blockName="fb1")
   print fileBlock
   fileBlock.addEventCollection(eventCollection)
-  fileBlock.addEventCollection(11)
   print fileBlock
+  print "Adding myAttr to the dataset"
+  fileBlock["myAttr"] = "myValue"
+  print fileBlock
+  print "Adding 11 as eventCollection"
+  try:
+    fileBlock.addEventCollection(11)
+  except dbsException.DbsException, ex:
+    print "OK, exception caught: %s" % ex
   print "Done"

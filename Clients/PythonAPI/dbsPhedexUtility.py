@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsPhedexUtility.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsPhedexUtility.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
 #
 # Class which uses PHEDEX utilities to extract info from the db.
 #
@@ -224,10 +224,11 @@ class DbsPhedexUtility:
     xmlOutputFile = dbsUtility.DbsCreateTmpFileName("/tmp/tmpFile", "xml")
     
     # Construct and execute the command.
-    cmd = "%s -from DBS -db %s:%s -datatier %s -getDatasetProvenance -to %s '%s'" % (
-      scriptPath, dbConnectFile, dbSectionString,
-      string.join(dataTierList, ","), xmlOutputFile,
-      datasetPathName)
+    cmd = "%s -from DBS -db %s:%s -getDatasetProvenance -to %s" % (
+      scriptPath, dbConnectFile, dbSectionString, xmlOutputFile)
+    if len(dataTierList):
+      cmd = "%s -datatier %s" % (cmd, string.join(dataTierList, ","))
+    cmd = "%s '%s'" % (cmd, datasetPathName) 
     self._logManager.log(
       what="Retrieving dataset provenance. Executing: %s" % cmd,
       where=funcName,
@@ -269,7 +270,7 @@ if __name__ == "__main__":
     logLevel = dbsLogManager.LOG_LEVEL_ALL_
     dbsLogManager.getInstance().setLogLevel(logLevel)
 
-    datasetPath = "bt_DST8713_2x1033PU_g133_CMS/bt03_wtb_2tauj"
+    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
     phedexUtility = DbsPhedexUtility(
       phedexDir="/home/veseli/work/dbs/PHEDEX",
       phedexDbSectionString="Production/Admin",
