@@ -1,7 +1,5 @@
 #!/usr/bin/env python2
 import sys, os, string, re
-import urllib
-import urllib2
 from DBSInfo import *
 
 # ####################################
