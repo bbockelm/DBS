@@ -15,11 +15,11 @@ fi
 echo "Install Dir is : $1"
 
 export DBSDependDir=$1
-#./InstallLog4CXX.sh $1
+./InstallLog4CXX.sh $1
 if [ $? != 0 ]; then
 	exit 1
 fi
-#./InstallUnixODBC.sh $1
+./InstallUnixODBC.sh $1
 if [ $? != 0 ]; then
 	exit 1
 fi
@@ -27,13 +27,13 @@ fi
 export LOG4CXX=$DBSDependDir/log4cxx
 export ODBCHOME=$DBSDependDir/unixODBC
 
-#./InstallOracleODBC.sh $1
+./InstallOracleODBC.sh $1
 if [ $? != 0 ]; then
 	exit 1
 fi
 export ORACLE_ODBC_HOME=$DBSDependDir/oracleodbcinstall
 
-#./InstallSwig.sh $1
+./InstallSwig.sh $1
 if [ $? != 0 ]; then
 	exit 1
 fi
@@ -70,7 +70,7 @@ EOF
 cd ..
 
 echo "Generating example setup_dbs.sh"
-cat > "../setup_dbs.sh" <<EOF
+cat > "setup_dbs.sh" <<EOF
 export LOG4CXX=$DBSDependDir/log4cxx
 export ODBCHOME=$DBSDependDir/unixODBC
 export ORACLE_ODBC_HOME=$DBSDependDir/oracleodbcinstall
@@ -80,7 +80,8 @@ export SWIG_HOME=$SWIG_HOME
 export LD_LIBRARY_PATH=\$ODBCHOME/lib:\$LOG4CXX/lib:\$ORACLE_HOME/lib:\$ORACLE_ODBC_HOME/lib:\$LD_LIBRARY_PATH
 export PYTHONINCLUDE=/usr/include/python2.3/
 export DBSCONFIG=\$DBSHOME/etc/server.conf
-echo "Check Proper swig version (1.3.27 or later) added to path and proper python libraries to PYTHONINCLUDE"
+export PATH=$SWIG_HOME/bin:$PATH
+echo "Check Proper swig version (1.3.27 or later) added to path and proper python include to PYTHONINCLUDE"
 echo "ADD To PYTHONPATH DMS/DBS/prototypes/proto_0/python"
 EOF
 
