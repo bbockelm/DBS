@@ -4,7 +4,7 @@ export CFLAGS=-Wno-deprecated -Wno-implicit
 export INCLUDE=-I$(ODBCHOME)/include/ -I$(LOG4CXX)/include/ -I$(DBSHOME)/include/
 export LDFLAGS=-L$(ODBCHOME)/lib/ -lodbc -L$(LOG4CXX)/lib/ -llog4cxx 
 export PYINCLUDE= -I$(PYTHONINCLUDE)
-export SWIG=swig
+export SWIG=$(SWIG_HOME)/bin/swig
 #export SWIG=/home/sekhri/swig/bin/swig
 
 #dirs := $(DBSHOME)/src/bizlogiclayer $(DBSHOME)/src/clientlayer $(DBSHOME)/src/comlayer \

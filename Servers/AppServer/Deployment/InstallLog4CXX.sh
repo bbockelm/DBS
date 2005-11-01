@@ -20,6 +20,3 @@ cd ..
 rm -rf log4cxx-0.9.7
 echo "log4cxx is installed in $DBSDependDir/log4cxx"
 echo "Please set LOG4CXX=$DBSDependDir/log4cxx in your environment"
-#
-#export LOG4CXX=$DBSDependDir/log4cxx
-

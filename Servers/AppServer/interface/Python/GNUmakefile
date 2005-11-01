@@ -1,5 +1,3 @@
-#SWIG=swig
-SWIG=/home/sekhri/swig/bin/swig
 
 IF=dbsclient.i
 WRAP=$(IF:.i=_wrap.cxx)

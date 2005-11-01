@@ -30,7 +30,7 @@ echo "Doing ./configure --prefix=$DBSDependDir/oracleodbcinstall --enable-trace=
 make 
 make install
 cd ..
-rm -rf oracle_odbc_driver
+rm -rf oracle_odbc_driver oracle_odbc_driver.tgz
 echo "oracle_odbc_driver is installed in $DBSDependDir/oracleodbcinstall"
 echo "Please set ORACLE_ODBC_HOME=$DBSDependDir/oracleodbcinstall in your environment"
 
