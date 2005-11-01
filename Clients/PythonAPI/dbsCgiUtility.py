@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.1 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.2 2005/10/28 16:19:02 sveseli Exp $
 #
 # Class which uses PHEDEX utilities to extract info from the db.
 #
@@ -115,7 +115,7 @@ class DbsCgiUtility:
     # Invoke cgi script.
     try:
       self._logManager.log(
-	what="Retrieving dataset contents.",
+	what="Retrieving dataset provenance.",
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       xmlString = urllib.urlopen(cgiUrl).read() 
@@ -126,7 +126,7 @@ class DbsCgiUtility:
 			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
       raise CgiToolError(exception=ex)
     self._logManager.log(
-      what="Retrieved dataset contents.",
+      what="Retrieved dataset provenance.",
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
 
