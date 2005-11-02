@@ -25,6 +25,7 @@ int CRABECReadManager::read(Message* msgReceived, Message& msgReturned) {
 
 CRABECReadManager::~CRABECReadManager() {
 	delete ecTable;
+        this->cleanup(); 
 }
 
 /*

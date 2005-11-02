@@ -34,5 +34,6 @@ int ECWriteManager::write(Message* msgReceived, Message& msgReturned) {
 ECWriteManager::~ECWriteManager() {
 	cout<<"Destructor of ECWriteManager"<<endl;
 	delete ecTable;
+        this->cleanup(); 
 }
 

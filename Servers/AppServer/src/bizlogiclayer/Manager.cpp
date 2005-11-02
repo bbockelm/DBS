@@ -110,7 +110,8 @@ int Manager::setRowValues(TableInterface* inTable, RowInterface* rowPtr, Message
 	Dictionary* schema = inTable->getSchema();
 	for(Dictionary_iter schemaIterator = schema->begin();
 		schemaIterator != schema->end(); schemaIterator++) {
-		string paramName = util.getTokenAt(schemaIterator->first, 1);
+		//string paramName = util.getTokenAt(schemaIterator->first, 1);
+		string paramName = schemaIterator->first;
                 cout << "NAME OF PAram in setRowValues " << paramName << endl;
 		string value = message->getElementValue(paramName);
 		if ( value == "NOTFOUND" ) {
@@ -129,11 +130,23 @@ int Manager::setRowValues(TableInterface* inTable, RowInterface* rowPtr, Message
 	cout<<"returnning from Manager::setRowValues"<<endl;
 	return 1;
 }
+
+void Manager::cleanup() {
+        cout<<"closing inside Suoerclass Manager"<<endl;
+        this->dbManager->close();
+        cout<<"Deleting dbManager"<<endl;
+        delete this->dbManager;
+        cout<<"Out of manager"<<endl;
+}
  
 Manager::~Manager() {
+        /*
 	cout<<"closing inside Suoerclass Manager"<<endl;
 	this->dbManager->close();
+	cout<<"Deleting dbManager"<<endl;
 	delete this->dbManager;
+	cout<<"Out of manager"<<endl;
+        */
 }
 
 	

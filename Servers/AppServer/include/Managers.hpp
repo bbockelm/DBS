@@ -37,7 +37,9 @@ public:
         string findKeyMakeQuery(Message* msgReceived);
 
 	std::string getElementValue(std::string name, Message*);
-	~Manager();
+	virtual ~Manager();
+	//virtual ~Manager(){};
+        void cleanup();   
 	//virtual void read(Message*, Message&);
 	//virtual void write(Message*, Message&);
   

@@ -30,5 +30,6 @@ int PhysicsGroupManager::write(Message* msgReceived, Message& msgReturned) {
 
 PhysicsGroupManager::~PhysicsGroupManager() {
 	delete physicsgroupTable;
+        this->cleanup(); 
 }
 

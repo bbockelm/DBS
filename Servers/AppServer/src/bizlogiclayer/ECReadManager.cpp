@@ -25,6 +25,7 @@ int ECReadManager::read(Message* msgReceived, Message& msgReturned) {
 
 ECReadManager::~ECReadManager() {
 	delete ecTable;
+        this->cleanup(); 
 }
 
 /*

@@ -23,9 +23,9 @@ def getShort(long):
      
     return short
 
+mapList = []
 def writeNameMap(cppClasses, tbl=1):
-   #import pdb
-   #pdb.set_trace()
+   mapStrList = []
    global_unique_vars = []
    global_unique_counter = 1 
    #mapStr = "#ifndef _namemap_included_"
@@ -62,9 +62,16 @@ def writeNameMap(cppClasses, tbl=1):
               global_unique_counter = global_unique_counter + 1
          global_unique_vars.append(global_var)
          if tbl == 1 :
-            mapStr += '\n        NameMap.insert(Entry("'+table+'.'+param+'", "'+stable+'.'+var+'"));'
+            entry = table+'.'+param  
+            mapStr = '\n        NameMap.insert(Entry("'+table+'.'+param+'", "'+stable+'.'+var+'"));'
+            if entry not in mapList:
+               mapStrList.append(mapStr) 
+               mapList.append(entry)
          else :
-            mapStr += '\n        NameMap.insert(Entry("'+param+'", "'+var+'"));'
+            mapStr = '\n        NameMap.insert(Entry("'+param+'", "'+var+'"));'
+            if param not in mapList:
+               mapList.append(param)
+               mapStrList.append(mapStr) 
            #print param, "   ", param 
    #mapStr += '\n }'    
    #mapStr += '\npublic:'
@@ -72,7 +79,7 @@ def writeNameMap(cppClasses, tbl=1):
    #mapStr += '\n};'    
    #mapStr += "\n#endif"
 
-   return mapStr
+   return mapStrList
 
    #print "Generating  NameMaper.hpp....."
    #filepath = "NameMaper.hpp"
@@ -99,16 +106,11 @@ if __name__== '__main__':
    #print "JUST FOR TESTING........."
    #singleCppGen.writeHppHeaderFile()
 
-   #writeNameMap(singleCppGen.cppClasses)
-
-   mapStr = writeNameMap(singleCppGen.cppClasses, 1)
-
    print "Generating Multi Tables.."  
    multiViewCreator = createMultiTableViewObjects()
    multiViewCreator.initializeAllSchema(sqlProcessor.cppClasses)
    multiViewCreator.buildMultiTableViewObjects()
 
-   singleCppGen.cppClasses.extend(multiViewCreator.multiTableViewObjects)
 
    mapStr = "#ifndef _namemap_included_"
    mapStr += "\n#define _namemap_included_"
@@ -118,7 +120,16 @@ if __name__== '__main__':
    mapStr += '\npublic:'
    mapStr += '\n    NameMaper(){'
 
-   mapStr += writeNameMap(multiViewCreator.multiTableViewObjects, 0)
+   mapStrList = writeNameMap(singleCppGen.cppClasses, 1)
+   for anItem in mapStrList:
+      mapStr += anItem
+
+
+   singleCppGen.cppClasses.extend(multiViewCreator.multiTableViewObjects)
+   #mapStrList=[]
+   mapStrList = writeNameMap(multiViewCreator.multiTableViewObjects, 0)
+   for anItem in mapStrList:
+      mapStr += anItem
 
    mapStr += '\n }'
    mapStr += '\npublic:'

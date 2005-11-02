@@ -70,5 +70,6 @@ int AppConfigManager::write(Message* msgReceived, Message& msgReturned) {
 
 AppConfigManager::~AppConfigManager() {
    	delete appsConfigTable;
+        this->cleanup(); 
 }
 

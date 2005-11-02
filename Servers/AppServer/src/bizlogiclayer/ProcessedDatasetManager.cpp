@@ -73,6 +73,9 @@ int ProcessedDatasetManager::read(Message* msgReceived, Message& msgReturned) {
 
 
 ProcessedDatasetManager::~ProcessedDatasetManager() {
+        
+	cout<<"Destructor of ProcessedDatasetManager()"<<endl;
 	delete processedDatasetTable;
+        this->cleanup(); 
 }
 

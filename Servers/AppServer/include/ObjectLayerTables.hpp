@@ -1023,7 +1023,8 @@ public:
 private:
 
     T_App_Familyrow* T_App_Familyobj;
-    T_Collection_Typerow* T_Collection_Typeobj;
+    T_Collection_Typerow* T_Application_Output_Typeobj;
+    T_Collection_Typerow* T_Application_Input_Typeobj;
     T_Applicationrow* T_Applicationobj;
     T_App_Configrow* T_App_Configobj;
 };
@@ -1184,6 +1185,7 @@ public:
 
 private:
 
+    T_Desc_Triggerrow* T_Desc_Triggerobj;
     T_Desc_Mcrow* T_Desc_Mcobj;
     T_Desc_Primaryrow* T_Desc_Primaryobj;
     T_Physics_Grouprow* T_Physics_Groupobj;
@@ -1217,9 +1219,13 @@ public:
 
 private:
 
+    T_App_Familyrow* T_App_Familyobj;
+    T_Collection_Typerow* T_Application_Output_Typeobj;
+    T_Collection_Typerow* T_Application_Input_Typeobj;
     T_Data_Tierrow* T_Data_Tierobj;
+    T_Applicationrow* T_Applicationobj;
+    T_App_Configrow* T_App_Configobj;
     T_Processing_Pathrow* T_Processing_Pathobj;
-    T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
 };
 

@@ -49,5 +49,6 @@ int AnalysisDatasetManager::write(Message* msgReceived, Message& msgReturned) {
 
 AnalysisDatasetManager::~AnalysisDatasetManager() {
 	delete analysisDatasetTable;
+        this->cleanup(); 
 }
 

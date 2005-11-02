@@ -33,5 +33,6 @@ int PersonManager::write(Message* msgReceived, Message& msgReturned) {
 
 PersonManager::~PersonManager() {
 	delete personTable;
+        this->cleanup(); 
 }
 

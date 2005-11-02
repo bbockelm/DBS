@@ -73,5 +73,6 @@ int PrimaryDatasetManager::read(Message* msgReceived, Message& msgReturned) {
 
 PrimaryDatasetManager::~PrimaryDatasetManager() {
 	delete priDatasetTable;
+        this->cleanup(); 
 }
 

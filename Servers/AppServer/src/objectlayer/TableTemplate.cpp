@@ -398,7 +398,9 @@ void TableTemplate<R>::doSimpleInsert(R* aRow) {
   }
 }
 
-
+/*
+This is very important . This will make sure the rows are emptied so that they do not get deleted from ::insertSingle
+*/
 template <class R>
 void TableTemplate<R>::delRows() {
   cout<<"ERASING rows"<<endl;
@@ -423,7 +425,7 @@ TableFactory tf;
   delete ti;
   
   util.equatePKWithRef(aRow, refrences->begin(), refrences->end() );
-  util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end() );
+  util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
   
 }
 
@@ -534,7 +536,7 @@ void TableTemplate<R>::setTimeInRow(R* aRow) {
 	string tableName = this->util.getTokenAt(schema->begin()->first,0);
 	long value = this->util.getTime();
 	//float value = this->util.getTime();
-	//cout<<"setting "<<tableName<<".created_at to "<<value<<endl;
+	cout<<"setting "<<tableName<<".created_at to "<<value<<endl;
 	aRow->setValue(tableName+".created_at",&value);
 	aRow->setValue(tableName+".modified_at",&value);
 }
@@ -543,6 +545,7 @@ template <class R>
 void TableTemplate<R>::setPersonInRow(R* aRow) {
 	string tableName = this->util.getTokenAt(schema->begin()->first,0);
 	int value = 1;
+	cout<<"setting "<<tableName<<".created_by to "<<value<<endl;
 	aRow->setValue(tableName+".created_by",&value);
 	aRow->setValue(tableName+".modified_by",&value);
 }

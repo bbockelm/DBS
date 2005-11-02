@@ -201,8 +201,9 @@ int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPa
 
         this->mSend.setName("CreateProcessedDataset");
         processingPathInfo.makeMessage(this->mSend);
-
+	cout<<"Calling server"<<endl;
         int success = this->callServer();
+	cout<<"DONE Calling server"<<endl;
         if ( success == 1 ) {
            string value = this->mRecv.getElementValue("id");
            if ( value != "NOTFOUND" ) {

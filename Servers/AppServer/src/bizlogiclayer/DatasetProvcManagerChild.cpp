@@ -24,5 +24,6 @@ int DatasetProvcManagerChild::read(Message* msgReceived, Message& msgReturned) {
 
 DatasetProvcManagerChild::~DatasetProvcManagerChild() {
 	delete dspTable;
+        this->cleanup(); 
 }
 

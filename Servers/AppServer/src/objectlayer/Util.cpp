@@ -394,15 +394,19 @@ void Util::equatePKWithRef(RowInterface* aRow, Dictionary_iter b, Dictionary_ite
 void Util::equatePKWithMultiRef(RowInterface* aRow, Dictionary_iter b, Dictionary_iter e) {//Multi Refrences
 	cout<<"insdie Util::equatePKWithMultiRef"<<endl;
 	for(Dictionary_iter m = b; m != e; ++m) {
-		string dataType = this->getDataType(m->first);
+		string key = m->second + "." + m->first;
+		string dataType = this->getDataType(key);
 		string value;
 		bool toSet = false;
-		if(this->isSet(aRow, m->first, dataType) ) {
-			value = this->getStrValue(aRow, m->first, dataType);
+		cout<<"cheking "<<key<<endl;
+		if(this->isSet(aRow, key, dataType) ) {
+			value = this->getStrValue(aRow, key, dataType);
+			cout<<"Value is "<<value<<endl;
 			toSet = true;
 		} 
 		if(toSet) {
-			this->setValue(aRow, m->second + "." + m->first , dataType, value);
+			cout<<"inside toSet"<<endl;
+			this->setValue(aRow, key , dataType, value);
 		}
 	}
 }

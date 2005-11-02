@@ -56,5 +56,6 @@ int FileManager::read(Message* msgReceived, Message& msgReturned) {
 
 FileManager::~FileManager() {
 	delete fileTable;
+        this->cleanup(); 
 }
 

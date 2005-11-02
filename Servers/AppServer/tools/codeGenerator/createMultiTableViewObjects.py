@@ -52,9 +52,19 @@ class createMultiTableViewObjects :
            self.allSchemas[name.lower()] = singleschemarow
 
     def buildMultiTableViewObjects(self): 
-        #['t_file_type', 't_info_evcoll', 't_dataset_status', 't_run', 't_info_anads', 't_desc_mc', 't_app_family', 't_app_config', 't_evcoll_run', 't_desc_trigger', 't_validation_status', 't_collection_type', 't_processing_path', 't_event_collection', 't_file_status', 't_evcoll_status', 't_anads_data', 't_file', 't_data_tier', 't_application', 't_physics_group', 't_block_status', 't_schema_revision', 't_evcoll_file', 't_evcoll_parentage', 't_parentage_type', 't_run_quality', 't_analysis_dataset', 't_processed_dataset', 't_desc_primary', 't_primary_dataset', 't_person', 't_block']
+
+# WARNNING **** WARNNING **** WARNNING **** WARNNING **** WARNNING **** WARNNING
+
+# NO MATTER WHAT DO NOT INSERT MULTI RELATIONSHIP IN ADDCONDITIONS
+# THIS MEANS THAT IF THERE IS A TBLE IN THE VIEW THAT WOULD EXIST MORE THAN ONE TIMES BEACUSE OF IT FK RELATION, DO NOT ADD IT IN CONDITIONS OR IT WILL YEILDS WRONG RESULTS
+# WARNNING **** WARNNING **** WARNNING **** WARNNING **** WARNNING **** WARNNING
+
+
+
+
 
         # View that descibes Application Configurations
+
         self.InsertApps  = multiRowRepresentation("InsertApps",self.fkExclusionAttributes)
         self.InsertApps.addSchema(self.allSchemas['t_application'])
         self.InsertApps.addSchema(self.allSchemas['t_app_family'])
@@ -64,10 +74,10 @@ class createMultiTableViewObjects :
                                        "t_app_family.id")
         self.InsertApps.addCondition("t_app_config.application = " + \
                                        "t_application.id")
-        self.InsertApps.addCondition("t_application.input_type = " + \
-                                     "t_collection_type.id")
-        self.InsertApps.addCondition("t_application.output_type = " + \
-                                     "t_collection_type.id")
+        #self.InsertApps.addCondition("t_application.input_type = " + \
+        #                             "t_collection_type.id")
+        #self.InsertApps.addCondition("t_application.output_type = " + \
+        #                             "t_collection_type.id")
 
         self.multiTableViewObjects.append(self.InsertApps)
 
@@ -153,31 +163,44 @@ class createMultiTableViewObjects :
 
         # View that describes primary/processed dataset parameters
         self.PrimaryDataset = multiRowRepresentation("PrimaryDataset", self.fkExclusionAttributes)
-        #self.PrimaryDataset.addSchema(self.allSchemas['t_desc_trigger'])
+        self.PrimaryDataset.addSchema(self.allSchemas['t_desc_trigger'])
         self.PrimaryDataset.addSchema(self.allSchemas['t_desc_mc'])
         self.PrimaryDataset.addSchema(self.allSchemas['t_desc_primary'])
         self.PrimaryDataset.addSchema(self.allSchemas['t_primary_dataset'])
         self.PrimaryDataset.addSchema(self.allSchemas['t_physics_group'])
         self.PrimaryDataset.addCondition('t_primary_dataset.physics_group = t_physics_group.id')
         self.PrimaryDataset.addCondition('t_primary_dataset.description = t_desc_primary.id')
-        #self.PrimaryDataset.addCondition('t_desc_primary.trigger_path = t_desc_trigger.id')
+        self.PrimaryDataset.addCondition('t_desc_primary.trigger_path = t_desc_trigger.id')
         self.PrimaryDataset.addCondition('t_desc_primary.mc_channel = t_desc_mc.id')
         self.multiTableViewObjects.append(self.PrimaryDataset)
 
 
         # View that describes processing path - self referencing
         self.ProcessingPath = multiRowRepresentation("ProcessingPath", self.fkExclusionAttributes)
+        self.ProcessingPath.addSchema(self.allSchemas['t_app_family'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_collection_type'], 1)
+        self.ProcessingPath.addSchema(self.allSchemas['t_data_tier'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_application'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_app_config'])
         self.ProcessingPath.addSchema(self.allSchemas['t_processing_path'])
         self.ProcessingPath.addSchema(self.allSchemas['t_processed_dataset'])
-        self.ProcessingPath.addSchema(self.allSchemas['t_primary_dataset'])
-        self.ProcessingPath.addSchema(self.allSchemas['t_data_tier'])
-        #self.ProcessingPath.addSchema(self.allSchemas['t_block'])
-        self.ProcessingPath.addCondition('t_processed_dataset.processing_path = ' + \
+        self.ProcessingPath.addCondition("t_application.app_family = t_app_family.id")
+	self.ProcessingPath.addCondition('t_processed_dataset.processing_path = ' + \
                                          't_processing_path.id')
         self.ProcessingPath.addCondition('t_processing_path.data_tier = t_data_tier.id')
-        self.ProcessingPath.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
+        self.ProcessingPath.addCondition('t_processing_path.app_config = t_app_config.id')
         #self.ProcessingPath.addCondition('t_processing_path.parent = t_processing_path.id')
+        self.ProcessingPath.addCondition("t_app_config.application = " + \
+                                       "t_application.id")
+        #self.ProcessingPath.addCondition("t_application.input_type = " + \
+        #                             "t_collection_type.id")
+        #self.ProcessingPath.addCondition("t_application.output_type = " + \
+        #                             "t_collection_type.id")
+
+
+       
         self.multiTableViewObjects.append(self.ProcessingPath)
+
 
         # View that describes AnalysisDatasets
         self.AnalysisDataset = multiRowRepresentation("AnalysisDataset", self.fkExclusionAttributes)
