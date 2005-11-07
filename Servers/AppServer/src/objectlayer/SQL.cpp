@@ -1,6 +1,7 @@
 #include "SQL.hpp"
 #include "NameMaper.hpp"
 #include "RowNSchemaBinding.hpp"
+#include "ObjectLayerException.hpp"
 
 #include <iostream>
 using namespace std;
@@ -156,8 +157,7 @@ string SQL::makeSelectClause(Dictionary_iter b, Dictionary_iter e) {//Schema
 		//NmIterator ni = nm.NameMap.find(i->first);
 		Dictionary_iter ni = nm.NameMap.find(i->first);
 		if(ni == nm.NameMap.end()) {
-			cout<<"NOT FOUND in NAMEMAPPER "<<i->first<<endl;
-			return("");
+			throw ObjectLayerException("Name Maper could not found key "+i->first);
 		}
 		
 		selectClause = selectClause + util->getTokenAt(i->first,0) + 

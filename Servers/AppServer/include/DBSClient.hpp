@@ -12,6 +12,7 @@
 #include "ClientAPIData.hpp"  
 #include "Util.hpp"
 #include "common.hpp"
+#include <log4cxx/logger.h>
 #include <iostream>
   
 class DBSClient {
@@ -75,6 +76,7 @@ private:
 	bool localServer;
 	//GSS* gSecure;
 	Util util;
+	log4cxx::LoggerPtr logger;
 };
 
 #endif

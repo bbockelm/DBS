@@ -1,18 +1,24 @@
 #include "Managers.hpp"
 #include "Configuration.hpp"
 #include "ObjectLayerException.hpp"
+#include "BizLayerException.hpp"
 #include "Message.hpp"
 #include "TableInterface.hpp"
+#include "Log.hpp"
 
 Manager::Manager(){
   //this->dbManager = new DBManagement("mydsn", "anzar", "");
-	cout<<"Configuration* conf = Configuration::instance()"<<endl;
+	//cout<<"Configuration* conf = Configuration::instance()"<<endl;
+	static Log l("Manager");
+	Manager::logger = l.getLogger();
+
 	Configuration* conf = Configuration::instance();
-	cout<<"this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());"<<endl;
-	cout<<"conf->getDsn() "<<conf->getDsn()<<" conf->getDbUser() "<<conf->getDbUser()<<" conf->getDbPasswd() "<<conf->getDbPasswd()<<endl;
+	//cout<<"this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());"<<endl;
+	LOG4CXX_INFO(logger,"DSN is " + conf->getDsn() + " DB USER is " + conf->getDbUser() + " PASSOWRD is " + conf->getDbPasswd());
+	//cout<<"conf->getDsn() "<<conf->getDsn()<<" conf->getDbUser() "<<conf->getDbUser()<<" conf->getDbPasswd() "<<conf->getDbPasswd()<<endl;
 	this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());
   //this->dbManager = new DBManagement(USERDSN, USERNAME, "");
-	cout<<"this->dbManager->open(); "<<endl;
+	//cout<<"this->dbManager->open(); "<<endl;
   this->dbManager->open();
 }
 
@@ -24,10 +30,12 @@ int Manager::doInsert(TableInterface* inTable, Message& msgReturned) {
 		inTable->insert();
 		dbManager->commit();
 	} catch (ObjectLayerException &e)  {
-		cout<<"Rolling back the whole transection"<<endl;
+		//cout<<"Rolling back the whole transection"<<endl;
+		LOG4CXX_DEBUG(logger,"Rolling back the whole transection");
 		dbManager->rollback();
 		msgReturned.setException(e.report());
-		return 0;  //Error condition
+		throw BizLayerException(e.report());
+		//return 0;  //Error condition
 	}
 	dbManager->endTransection();
 	return 1;  //success
@@ -38,7 +46,7 @@ int Manager::makeMessage(TableInterface* inTable, RowIter b, RowIter e, Message&
 	typedef std::vector<Element*> Data;
 	typedef std::vector<Data*> VecData;
 
-        cout << "Manager::makeMessage" << endl; 
+        //cout << "Manager::makeMessage" << endl; 
 
 	this->schema = inTable->getSchema();
 	try {
@@ -63,7 +71,8 @@ int Manager::makeMessage(TableInterface* inTable, RowIter b, RowIter e, Message&
 
 	} catch (ObjectLayerException &e)  {
 		msgReturned.setException(e.report());
-		return 0;  //Error condition
+		throw BizLayerException(e.report());
+		//return 0;  //Error condition
 	}
 	return 1;  //success
 }
@@ -83,9 +92,9 @@ string Manager::findKeyMakeQuery(Message* msgReceived) {
                     continue;
                 } 
 
-                cout<<"Key is "<<e->getKey()<<endl;
-                cout<<"Value is "<<e->getValue()<<endl;
-                cout<<"Type is "<<e->getType()<<endl;
+                //cout<<"Key is "<<e->getKey()<<endl;
+                //cout<<"Value is "<<e->getValue()<<endl;
+                //cout<<"Type is "<<e->getType()<<endl;
                 /* 
                 if (first != 1) {
                     queryPlus += " AND ";
@@ -100,7 +109,7 @@ string Manager::findKeyMakeQuery(Message* msgReceived) {
 	if(queryPlus.length() > 0) {
 		queryPlus = util.eraseEndChars(queryPlus,5);
 	}
-       cout <<"queryPlus " << queryPlus << endl;
+       //cout <<"queryPlus " << queryPlus << endl;
        return queryPlus;
 }
 
@@ -112,31 +121,33 @@ int Manager::setRowValues(TableInterface* inTable, RowInterface* rowPtr, Message
 		schemaIterator != schema->end(); schemaIterator++) {
 		//string paramName = util.getTokenAt(schemaIterator->first, 1);
 		string paramName = schemaIterator->first;
-                cout << "NAME OF PAram in setRowValues " << paramName << endl;
+                //cout << "NAME OF PAram in setRowValues " << paramName << endl;
 		string value = message->getElementValue(paramName);
 		if ( value == "NOTFOUND" ) {
 			value = message->getElementValue(paramName, listName, index);
-			cout<<paramName <<" 's value NOTFOUND"<<endl;
+			//cout<<paramName <<" 's value NOTFOUND"<<endl;
       			if ( value == "NOTFOUND" ) {
 				continue; 
 			}
 		} else {
-			cout<<"paramName is "<<value<<endl;
+			//cout<<"paramName is "<<value<<endl;
+			LOG4CXX_DEBUG(logger,"paramName is " + value);
 		}
-		cout<<"calling util.setValue"<<endl;
+		//cout<<"calling util.setValue"<<endl;
 		util.setValue(rowPtr, schemaIterator->first, schemaIterator->second, value);
-		cout<<"Done calling util.setValue"<<endl;
+		//cout<<"Done calling util.setValue"<<endl;
    	}
-	cout<<"returnning from Manager::setRowValues"<<endl;
+	//cout<<"returnning from Manager::setRowValues"<<endl;
 	return 1;
 }
 
+
 void Manager::cleanup() {
-        cout<<"closing inside Suoerclass Manager"<<endl;
+        //cout<<"closing inside Superclass Manager"<<endl;
         this->dbManager->close();
-        cout<<"Deleting dbManager"<<endl;
+        //cout<<"Deleting dbManager"<<endl;
         delete this->dbManager;
-        cout<<"Out of manager"<<endl;
+        //cout<<"Out of manager"<<endl;
 }
  
 Manager::~Manager() {

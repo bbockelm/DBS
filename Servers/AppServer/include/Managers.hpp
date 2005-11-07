@@ -18,6 +18,7 @@
 #include "Util.hpp"
 #include <string>
 #include "RowInterface.hpp"
+#include <log4cxx/logger.h>
 
 
 typedef vector<RowInterface*> Rows;
@@ -40,13 +41,14 @@ public:
 	virtual ~Manager();
 	//virtual ~Manager(){};
         void cleanup();   
-	//virtual void read(Message*, Message&);
+	//virtual int read(Message*, Message&){};
 	//virtual void write(Message*, Message&);
   
 protected:
 	DBManagement* dbManager;
 	Util util;
 	Dictionary* schema;
+	log4cxx::LoggerPtr logger;
 };
 
 

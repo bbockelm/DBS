@@ -41,9 +41,9 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 		//cout<<"calling in SingleTableInterface.cpp  ResultSet* rs = this->doSelect("",clause);"<<endl;
 		ResultSet* rs = this->doSelect("",clause);
 		this->reSetColNamesInRS(rs);
-		cout<<"called doSelect done"<<endl;
+		//cout<<"called doSelect done"<<endl;
 		int noOfRows = rs->getNoOfRows();
-		cout<<"noOfRows returned from DB is "<<noOfRows<<endl;
+		//cout<<"noOfRows returned from DB is "<<noOfRows<<endl;
 		LOG4CXX_DEBUG(TableTemplate<R>::logger,"noOfRows returned from DB is ");
 		LOG4CXX_DEBUG(TableTemplate<R>::logger,noOfRows);
 		if( noOfRows > 0 ) {

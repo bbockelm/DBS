@@ -1,11 +1,14 @@
-#include <iostream>
 #include "DBSDispatcher.hpp"
-#include "Managers.hpp"
-#include <string>
+#include "BizLayerException.hpp"
+#include "ObjectLayerException.hpp"
+#include "Log.hpp"
 
 int DBSDispatcher::run(Message* msgReceived, Message& msgReturned) {
+	static Log l("DBSDispatcher");
+	log4cxx::LoggerPtr logger = l.getLogger();
 	string operation = msgReceived->getName();
-	cout << "Client Asked For : " << operation << endl;
+	LOG4CXX_INFO(logger,"Client Asked For : " + operation);
+	//cout << "Client Asked For : " << operation << endl;
 
 	try {
 
@@ -28,7 +31,6 @@ int DBSDispatcher::run(Message* msgReceived, Message& msgReturned) {
 			manager.write(msgReceived, msgReturned);
 		}
 		else if (operation.compare("CreatePrimaryDataset")==0) {	
-			cout<<"calling PrimaryDatasetManager manager"<<endl;
 			PrimaryDatasetManager manager;
 			manager.write(msgReceived, msgReturned);
 		}
@@ -81,14 +83,17 @@ int DBSDispatcher::run(Message* msgReceived, Message& msgReturned) {
                         manager.read(msgReceived, msgReturned);
                 }
 		else {
-			msgReturned.setException("Operation " + operation + "Not Found");  
+			msgReturned.setException("Operation " + operation + " Not Found"); 
+			throw BizLayerException("Operation " + operation + " Not Found");
 		} 
 	} catch (exception &e)  {
-		string msg = "Unknow Exception Occured at DBSDispatcher";
-		msg += e.what(); 
-		msgReturned.setException(msg);
-		return 0;  //Error condition
+		msgReturned.setException(e.what());
+		throw BizLayerException(e.what());
+	} catch (ObjectLayerException &e)  {
+		msgReturned.setException(e.report());
+		throw BizLayerException(e.report());
 	}
+
 
 
 }

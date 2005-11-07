@@ -1,11 +1,16 @@
 #include "DBSClient.hpp"
+#include "Log.hpp"
+#include "BizLayerException.hpp"
 #include <exception>
 
 DBSClient::DBSClient() {
-  cout << "DBSClient() " << endl; 
-  Configuration* conf = Configuration::instance();
-  string serverType = conf->getServerType();  
-  cout << "Server Type: " << serverType << endl;
+  //cout << "DBSClient() " << endl; 
+	static Log l("TableTemplate");
+	DBSClient::logger = l.getLogger();
+	Configuration* conf = Configuration::instance();
+	string serverType = conf->getServerType(); 
+	LOG4CXX_INFO(logger, "Server Type is " + serverType);
+	//cout << "Server Type: " << serverType << endl;
   if ( serverType == "Local" ) {
     localServer = true;
   }
@@ -22,7 +27,7 @@ DBSClient::DBSClient() {
        LOG4CXX_ERROR(logger, e.report());
      }
   */
-   cout << "Go Figure...!" << endl; 
+   //cout << "Go Figure...!" << endl; 
   }
 }  
 
@@ -31,15 +36,14 @@ DBSClient::~DBSClient() {
 }
 
 int DBSClient::callServer(){
-  
-  if (localServer) {
-    cout<<"Calling the DBSDispatcher"<<endl; 
-    cout<<"Invoking Server Operation: " << this->mSend.getName() << endl; 
-    DBSDispatcher dispatcher;
-    dispatcher.run(&this->mSend, this->mRecv);
-    cout<<"Returned From the DBSDispatcher"<<endl;
-  }
-  else { //Remote server
+	try { 
+		if (localServer) {
+    //cout<<"Calling the DBSDispatcher"<<endl; 
+    //cout<<"Invoking Server Operation: " << this->mSend.getName() << endl; 
+			DBSDispatcher dispatcher;
+			dispatcher.run(&this->mSend, this->mRecv);
+    //cout<<"Returned From the DBSDispatcher"<<endl;
+		}else { //Remote server
     /*
     //open server socket connnection and send the message through
     Socket socket(serverHost, serverSoc);
@@ -49,16 +53,19 @@ int DBSClient::callServer(){
     //wait for return message !
     c.recv(this->mRecv);
     */
-   cout << "No Remote Calling...!" << endl;
-  }
-
- string isException = this->mRecv.getException(); 
- if (isException != "" ) {
-    return 0;
- }
- return 1;
-
+   //cout << "No Remote Calling...!" << endl;
+		}
+	} catch (BizLayerException &e)  {
+		return 0;
+	}
+/*string isException = this->mRecv.getException(); 
+if (isException != "" ) {
+	return 0;
+}*/
+	return 1;
 }
+
+
 
 int DBSClient::raiseServerException(void) {
 
@@ -183,9 +190,9 @@ int DBSClient::createPrimaryDataset(string primaryDatasetName,  Primarydataset_C
 	int success = this->callServer();
 
         if ( success == 1 ) {
-	cout<<"trying to get value of primarydatasetid" <<endl;
+	//cout<<"trying to get value of primarydatasetid" <<endl;
            string value = this->mRecv.getElementValue("id");
-	cout<<"value is "<<value<<endl;
+	//cout<<"value is "<<value<<endl;
            if ( value != "NOTFOUND" ) {
 		return util.atoi(value);
            }
@@ -201,9 +208,9 @@ int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPa
 
         this->mSend.setName("CreateProcessedDataset");
         processingPathInfo.makeMessage(this->mSend);
-	cout<<"Calling server"<<endl;
+	//cout<<"Calling server"<<endl;
         int success = this->callServer();
-	cout<<"DONE Calling server"<<endl;
+	//cout<<"DONE Calling server"<<endl;
         if ( success == 1 ) {
            string value = this->mRecv.getElementValue("id");
            if ( value != "NOTFOUND" ) {
@@ -242,7 +249,7 @@ int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) {
 
 	string m;
 	this->mSend.serialize(m);
-	cout<<"Serlized message is "<<m<<endl;
+	//cout<<"Serlized message is "<<m<<endl;
 
 
 	int success = this->callServer();
@@ -287,12 +294,12 @@ int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend,
 
         string message;
         mRecv.serialize(message);
-        cout << "readPrimaryDataset:: WHOLE Message Returned is:-" << message << endl;  
+        //cout << "readPrimaryDataset:: WHOLE Message Returned is:-" << message << endl;  
 
 	MapIter m = this->mRecv.getMapIterBegin();
 	if(m != this->mRecv.getMapIterEnd()) {
 		for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
+                        //cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
 			Primarydataset_ClientAPIData* apiData = new Primarydataset_ClientAPIData();
 			apiData->readInMessage(this->mRecv,"ROWS",i);
 			primaryDatasetInfo.push_back(apiData);
@@ -315,12 +322,12 @@ int DBSClient::readProcessingPath(Processingpath_ClientAPIData apiDataToSend,
 
         string message;
         mRecv.serialize(message);
-        cout << "readProcessingPath:: WHOLE Message Returned is:-" << message << endl;
+        //cout << "readProcessingPath:: WHOLE Message Returned is:-" << message << endl;
 
         MapIter m = this->mRecv.getMapIterBegin();
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "readProcessingPath:: Individual Item being Read:-" << endl;
+                        //cout << "readProcessingPath:: Individual Item being Read:-" << endl;
                         Processingpath_ClientAPIData* apiData = new Processingpath_ClientAPIData();
                         apiData->readInMessage(this->mRecv,"ROWS",i);
                         procPathInfo.push_back(apiData);
@@ -341,12 +348,12 @@ int DBSClient::getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIDat
         int success = this->callServer();
         string message; 
         mRecv.serialize(message);
-        cout << "getDatasetProvenence:: WHOLE Message Returned is:-" << message << endl;
+        //cout << "getDatasetProvenence:: WHOLE Message Returned is:-" << message << endl;
                 
         MapIter m = this->mRecv.getMapIterBegin();
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "getDatasetProvenence:: Individual Item being Read:-" << endl;
+                        //cout << "getDatasetProvenence:: Individual Item being Read:-" << endl;
                         Datasetprovenenceevparent_ClientAPIData* apiData = new Datasetprovenenceevparent_ClientAPIData();
                         apiData->readInMessage(this->mRecv,"ROWS",i);
                         dspInfo.push_back(apiData);
@@ -367,12 +374,12 @@ int DBSClient::getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData 
         int success = this->callServer();
         string message; 
         mRecv.serialize(message);
-        cout << "getDatasetProvenence:: WHOLE Message Returned is:-" << message << endl;
+        //cout << "getDatasetProvenence:: WHOLE Message Returned is:-" << message << endl;
                 
         MapIter m = this->mRecv.getMapIterBegin();
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "getDatasetProvenence:: Individual Item being Read:-" << endl;
+                        //cout << "getDatasetProvenence:: Individual Item being Read:-" << endl;
                         Datasetprovenenceevchild_ClientAPIData* apiData = new Datasetprovenenceevchild_ClientAPIData();
                         apiData->readInMessage(this->mRecv,"ROWS",i);
                         dspInfo.push_back(apiData);
@@ -394,12 +401,12 @@ int DBSClient::readEvColls(Evcollview_ClientAPIData apiDataToSend,
         int success = this->callServer();
         string message;
         mRecv.serialize(message);
-        cout << "readEvColls:: WHOLE Message Returned is:-" << message << endl;
+        //cout << "readEvColls:: WHOLE Message Returned is:-" << message << endl;
 
         MapIter m = this->mRecv.getMapIterBegin();
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
+                        //cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
                         Evcollview_ClientAPIData* apiData = new Evcollview_ClientAPIData();
                         apiData->readInMessage(this->mRecv,"ROWS",i);
                         evCollInfo.push_back(apiData);
@@ -421,12 +428,12 @@ int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
         int success = this->callServer();
         string message;
         mRecv.serialize(message);
-        cout << "readCRABEvColls:: WHOLE Message Returned is:-" << message << endl;
+        //cout << "readCRABEvColls:: WHOLE Message Returned is:-" << message << endl;
 
         MapIter m = this->mRecv.getMapIterBegin();
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
+                        //cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
                         Crabevcollview_ClientAPIData* apiData = new Crabevcollview_ClientAPIData();
                         apiData->readInMessage(this->mRecv,"ROWS",i);
                         evCollInfo.push_back(apiData);
@@ -449,12 +456,12 @@ int DBSClient::readEvCollFiles(Fileview_ClientAPIData apiDataToSend,
         int success = this->callServer();
         string message;
         mRecv.serialize(message);
-        cout << "EvCollFiles:::  WHOLE Message Returned is:-" << message << endl;
+        //cout << "EvCollFiles:::  WHOLE Message Returned is:-" << message << endl;
 
         MapIter m = this->mRecv.getMapIterBegin();
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
-                        cout << "EvCollFiles:: Individual Item being Read:-" << endl;
+                        //cout << "EvCollFiles:: Individual Item being Read:-" << endl;
                         Fileview_ClientAPIData* apiData = new Fileview_ClientAPIData();
                         apiData->readInMessage(this->mRecv,"ROWS",i);
                         fileInfo.push_back(apiData);

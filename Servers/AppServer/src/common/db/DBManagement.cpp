@@ -32,8 +32,8 @@ ResultSet* DBManagement::executeQueryWithResults(string sql) {
 	SQLINTEGER noOfRows = getNoOfRows();
 	SQLSMALLINT noOfCols = getNoOfCols();
 
-	cout<<"executeQueryWithResults::: Number of Columns "<<noOfCols<<endl;
-	cout<<"executeQueryWithResults::: Number of Rows "<<noOfRows<<endl;
+	//cout<<"executeQueryWithResults::: Number of Columns "<<noOfCols<<endl;
+	//cout<<"executeQueryWithResults::: Number of Rows "<<noOfRows<<endl;
 	
 	SQLSMALLINT colNameLen[noOfCols];
 	SQLSMALLINT colType;
@@ -122,7 +122,7 @@ int DBManagement::open() {
 	this->allocateEnvHandle();
 	// 2. allocate connection handle, set timeout
 	this->allocateConHandle();
-	cout<<"trying .... SQLConnect"<<endl;
+	//cout<<"trying .... SQLConnect"<<endl;
 	returnCode = SQLConnect(connHandle, 
 				(SQLCHAR*) dataSourceName.c_str(), 
 				SQL_NTS,
@@ -267,7 +267,7 @@ void DBManagement::allocateEnvHandle() {
 					SQL_NULL_HANDLE,
 					&envHandle);
 	if (!isSuccess()) {
-		cout<<"Error in allocating handle for SQL_HANDLE_ENV: SQLAllocHandle"<<endl;
+		//cout<<"Error in allocating handle for SQL_HANDLE_ENV: SQLAllocHandle"<<endl;
 		throw DBException("Error in allocating handle for SQL_HANDLE_ENV: SQLAllocHandle");
 	}
 	returnCode = SQLSetEnvAttr(envHandle, 
@@ -276,7 +276,7 @@ void DBManagement::allocateEnvHandle() {
 					0); 
 	if (!isSuccess()) {
 		this->freeEnvHandle();
-		cout<<"Error in registering ODBC version: SQLSetEnvAttr"<<endl;
+		//cout<<"Error in registering ODBC version: SQLSetEnvAttr"<<endl;
 		throw DBException("Error in registering ODBC version: SQLSetEnvAttr");
 	}
 	//cout<<"allocate envHandle "<<envHandle<<endl;
@@ -288,7 +288,7 @@ void DBManagement::allocateConHandle() {
 					&connHandle); 
 	if (!isSuccess()) {
 		this->freeEnvHandle();
-		cout<<"Error in allocating handle for SQL_HANDLE_DBC: SQLAllocHandle"<<endl;
+		//cout<<"Error in allocating handle for SQL_HANDLE_DBC: SQLAllocHandle"<<endl;
 		throw DBException("Error in allocating handle for SQL_HANDLE_DBC: SQLAllocHandle");
 	}
 	returnCode = SQLSetConnectAttr(connHandle, 
@@ -296,7 +296,7 @@ void DBManagement::allocateConHandle() {
 				(SQLPOINTER *)5, 
 				0);
 	if (!isSuccess()) {
-		cout<<"Error in setting SQL_LOGIN_TIMEOUT: SQLSetConnectAttr"<<endl;
+		//cout<<"Error in setting SQL_LOGIN_TIMEOUT: SQLSetConnectAttr"<<endl;
 		this->freeEnvConHandle();
 		throw DBException("Error in setting SQL_LOGIN_TIMEOUT: SQLSetConnectAttr");
 	}
@@ -331,11 +331,11 @@ void DBManagement::doDiagnostics() {
 			diagMsg,
 			MAX_ERR_MSG_LEN,
 			&diagMsgLen);
-	if(rc1 != SQL_NO_DATA) {
+	/*if(rc1 != SQL_NO_DATA) {
 		cout<<"rc1 is not equal to SQL_NO_DATA"<<endl;
 	} else {
 		cout<<"rc1 is equal to SQL_NO_DATA"<<endl;
-	}
+	}*/
 
 	int len = strlen((char*) diagMsg);
 	if(len > 0){

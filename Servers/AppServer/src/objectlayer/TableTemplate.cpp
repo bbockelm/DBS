@@ -62,7 +62,7 @@ string* TableTemplate<R>::getTableName(void) {
 
 template <class R>
 Dictionary* TableTemplate<R>::getSchema() {
-  cout<<"RETURNNING SCHEMA..."<<endl;
+  //cout<<"RETURNNING SCHEMA..."<<endl;
   return this->schema;
 }
 
@@ -70,7 +70,7 @@ Dictionary* TableTemplate<R>::getSchema() {
 
 template <class R>
 void TableTemplate<R>::init() {
-  cout<<"initilizing......"<<endl;
+  //cout<<"initilizing......"<<endl;
   static Log l("TableTemplate");
   TableTemplate::logger = l.getLogger();
 	schema = this->schemaNconstraints.schemaNconstraints.getSchema();
@@ -86,9 +86,9 @@ void TableTemplate<R>::init() {
 	schemaOrder = this->schemaNconstraints.schemaNconstraints.getSchemaOrder();
 	util.setSchema(schema);
 	sql = new SQL(&util);
-	cout<<"primary keys "<<endl;
+	//cout<<"primary keys "<<endl;
 	primaryKeysReal = util.getPrimaryKeys(schemaOrder->begin(), schemaOrder->end(), multiRefrences->begin(), multiRefrences->end());
-	cout<<"DONE initilizing......"<<endl;
+	//cout<<"DONE initilizing......"<<endl;
 };
 
 
@@ -128,33 +128,33 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
 			//cout<<"toSetCol returned false for "<<name<<endl;
 		  continue;
 		} 
-		cout<<"trying to fetch value from ResultSet"<<endl;
+		//cout<<"trying to fetch value from ResultSet"<<endl;
 		string value = rs->getElement(rowIndex,colIndex);
 		if(value.length() == 0) { 
 		  continue;
 		}
-		cout<<"value is "<<value<<endl;
+		//cout<<"value is "<<value<<endl;
 		string dataType = util.getDataType(name);
-		cout<<"dataType "<<dataType;
+		//cout<<"dataType "<<dataType;
 		util.setValue(tmpRow, name, dataType, value);
-		cout<<"after setvalue"<<endl;
+		//cout<<"after setvalue"<<endl;
   }
   //cout<<"returnning tmpRow"<<endl;
 }
 
 template <class R>
 string TableTemplate<R>::makeSelectQuery(string userGivenWhereClause="") {
-  //cout<<"inside ::makeSelectQuery"<<endl;
-  string sqlQuery = sql->makeSelectClause(schema->begin(), schema->end()) + 
-    " FROM " +
-    sql->makeTableClause(schemaOrder->begin(), schemaOrder->end());
-  string whereClause = this->makeWhereClause(userGivenWhereClause);
-  if( whereClause.length() > 0 ) {
-    sqlQuery = sqlQuery + "\nWHERE\n" + whereClause;
+	//cout<<"inside ::makeSelectQuery"<<endl;
+	string sqlQuery = sql->makeSelectClause(schema->begin(), schema->end()) +
+		 " FROM " +  
+		sql->makeTableClause(schemaOrder->begin(), schemaOrder->end());
+	string whereClause = this->makeWhereClause(userGivenWhereClause);
+	if( whereClause.length() > 0 ) {
+		sqlQuery = sqlQuery + "\nWHERE\n" + whereClause;
 	}
-  //cout<<"Query is "<<endl<<sqlQuery<<endl;
-  LOG4CXX_INFO(logger,"Query is " + sqlQuery);
-  return (sqlQuery);
+	//cout<<"Query is "<<endl<<sqlQuery<<endl;
+	LOG4CXX_INFO(logger,"Query is " + sqlQuery);
+	return (sqlQuery);
 }
 
 
@@ -212,7 +212,7 @@ void TableTemplate<R>::reSetColNamesInRS(ResultSet * rs) {
 	    }
 	  }
 		if(!found) {
-		  throw ObjectLayerException("Name Mater could not found key "+colName);
+		  throw ObjectLayerException("Name Maper could not found key "+colName);
 		}
 	}
 }
@@ -231,8 +231,9 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
     rs = this->doSelect("",whereClause);
     this->reSetColNamesInRS(rs);
     
-    cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
-    LOG4CXX_DEBUG(TableTemplate::logger,"noOfRows is " + rs->getNoOfRows());
+    //cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
+    LOG4CXX_DEBUG(TableTemplate::logger,"noOfRows is ");
+    LOG4CXX_DEBUG(TableTemplate::logger, rs->getNoOfRows());
     for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
       //cout << "\n\nChecking PK" << endl;
       bool pKEqual = false;
@@ -265,10 +266,10 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 	//cout<<"INSERT BEACUSE it is UNEQUAL"<<endl;
 	LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
 	R* tempRow = new R();
-	cout<<"calling convert into rows"<<endl;
+	//cout<<"calling convert into rows"<<endl;
 	this->convertIntoRow(rs, rowIndex,tempRow);
 	rows.push_back(tempRow);
-	cout<<"line11"<<endl;
+	//cout<<"line11"<<endl;
       }
     }
     //rowIterator = rows.begin();
@@ -305,7 +306,7 @@ vector<string> TableTemplate<R>::makeInsertQuery(R* aRow) {
 		m != multiRefrences->end(); 
 				m++) {
 	      if(*i == util.getTokenAt(m->second,0) ) {
-		cout<<"Multi FOUND" <<endl;
+		//cout<<"Multi FOUND" <<endl;
 		toReturn.push_back( sql->makeInsertQuery(aRow,*i,m->first, schema->begin(), schema->end()) );
 	      }
 	    }
@@ -338,9 +339,13 @@ void TableTemplate<R>::insert() {
 	  R* aRow = (R*)*rowIterator;
 	  try{
 	    //cout<<endl<<"inserting ROW no "<<i<<endl;
+			LOG4CXX_DEBUG(TableTemplate::logger,"");
+			LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"inserting ROW no ");
 			LOG4CXX_DEBUG(TableTemplate::logger,i);
 			this->doSmartInsert(aRow);
+			LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
+			LOG4CXX_DEBUG(TableTemplate::logger,"");
 			//cout<<"out of smart insert"<<endl;
 			//doSimpleInsert(aRow);
 		} catch (ObjectLayerException &e) {
@@ -403,7 +408,7 @@ This is very important . This will make sure the rows are emptied so that they d
 */
 template <class R>
 void TableTemplate<R>::delRows() {
-  cout<<"ERASING rows"<<endl;
+  //cout<<"ERASING rows"<<endl;
   rows.clear();
 }
 
@@ -411,9 +416,10 @@ void TableTemplate<R>::delRows() {
 template <class R>
 void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
   name += "row";
-  cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
+ // cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
+	LOG4CXX_INFO(TableTemplate::logger,"name is "+ name + " fkey is " + fkey);
   RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey);
-	cout<<"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey) "<<endl;	  
+	//cout<<"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey) "<<endl;	  
 TableFactory tf;
   //cout<<"calling tf.getTableObject"<<endl;
   TableInterface* ti = tf.getTableObject(name);
@@ -525,8 +531,9 @@ void TableTemplate<R>::fixPKWithSeq(R* aRow) {
 			continue;
 		}
 		int value = this->getSeqValue(util.getTokenAt(*i, 0), util.getTokenAt(*i, 1));	
-		cout<<"Setting sequencer value of "<<*i<<" "<<value<<endl;
-		//LOG4CXX_DEBUG(TableTemplate::logger,"Setting sequencer value of " + *i + " " + value);
+		//cout<<"Setting sequencer value of "<<*i<<" "<<value<<endl;
+		LOG4CXX_DEBUG(TableTemplate::logger,"Setting sequencer value of " + *i);
+		LOG4CXX_DEBUG(TableTemplate::logger,value);
 		aRow->setValue(*i,&value);
 	}
 }
@@ -536,7 +543,7 @@ void TableTemplate<R>::setTimeInRow(R* aRow) {
 	string tableName = this->util.getTokenAt(schema->begin()->first,0);
 	long value = this->util.getTime();
 	//float value = this->util.getTime();
-	cout<<"setting "<<tableName<<".created_at to "<<value<<endl;
+	//cout<<"setting "<<tableName<<".created_at to "<<value<<endl;
 	aRow->setValue(tableName+".created_at",&value);
 	aRow->setValue(tableName+".modified_at",&value);
 }
@@ -545,7 +552,7 @@ template <class R>
 void TableTemplate<R>::setPersonInRow(R* aRow) {
 	string tableName = this->util.getTokenAt(schema->begin()->first,0);
 	int value = 1;
-	cout<<"setting "<<tableName<<".created_by to "<<value<<endl;
+	//cout<<"setting "<<tableName<<".created_by to "<<value<<endl;
 	aRow->setValue(tableName+".created_by",&value);
 	aRow->setValue(tableName+".modified_by",&value);
 }

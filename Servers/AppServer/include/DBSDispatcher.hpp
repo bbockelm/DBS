@@ -5,7 +5,7 @@
 //#include "Communicate.hpp"
 #include "Message.hpp"
 #include "Managers.hpp"
-#include <string>
+#include <log4cxx/logger.h>
 
 class DBSDispatcher {
 

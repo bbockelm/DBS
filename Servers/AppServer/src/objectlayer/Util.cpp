@@ -206,7 +206,7 @@ string Util::getStrValue(RowInterface* aRow, string name, string dataType) {
 
 
 void Util::setValue(RowInterface* aRow, string name, string dataType, string value) {
-	cout<<"void Util::setValue value is "<<value<<endl;
+	//cout<<"void Util::setValue value is "<<value<<endl;
 	if( dataType == "STRING" ) {
                 //cout << "dies here STRING"<< "dataType:name" << dataType << name << endl;
 		string strValue = (string) value;
@@ -222,7 +222,6 @@ void Util::setValue(RowInterface* aRow, string name, string dataType, string val
 		int intValue  = atoi(value.c_str());
 		cout<<" INTEGER "<<name<<" value is "<<intValue<<endl;
 		aRow->setValue(name,&intValue );
-                cout << "Just after  INTEGERR setValue" << name << intValue << endl;
 	}
         if( dataType == "FLOAT" ) {
                 float floatValue  = this->atof(value);
@@ -267,21 +266,21 @@ bool Util::isInMultiRef(string tabelName, Dictionary_iter b, Dictionary_iter e) 
 
 bool Util::toSetCol(string name, Dictionary_iter b, Dictionary_iter e) {
 	bool toSet = true;
-	cout<<"UTIL name is "<<name<<endl;
+	//cout<<"UTIL name is "<<name<<endl;
 	string tableNameOneFromRs = this->getTokenAt(name ,0);
 	int nameLen = name.length();
 	if( tableNameOneFromRs.length() == nameLen) {
 		return(true);
 	}
 	string nameOneFromRs = tableNameOneFromRs + "." + this->getTokenAt(name , 1);
-	cout<<"nameOneFromRs "<<nameOneFromRs<<" name "<<name<<endl;
+	//cout<<"nameOneFromRs "<<nameOneFromRs<<" name "<<name<<endl;
 	if( nameOneFromRs.length() < nameLen ) {	
 		//cout<<"colNameOneIndex "<<colNameOneIndex<<endl;
 		string nameTwoFromRs = this->getTokenAt(name , 2) + "." + this->getTokenAt(name , 3);
-		cout<<"nameTwoFromRs "<<nameTwoFromRs<<endl;
+		//cout<<"nameTwoFromRs "<<nameTwoFromRs<<endl;
 		for(Dictionary_iter i = b; i != e; ++i) {
 			string nameOneFromSatisfy = i->first;
-			cout<<"nameOneFromSatisfy "<<i->first<<" tableNameOneFromRs "<<tableNameOneFromRs<<endl;
+			//cout<<"nameOneFromSatisfy "<<i->first<<" tableNameOneFromRs "<<tableNameOneFromRs<<endl;
 			if( tableNameOneFromRs == i->first ) {
 				//cout<<"nameTwoFromSatisfy "<<nameTwoFromSatisfy<<"\nnameTwoFromSatisfy.substr(0,nameTwoFromRs.length() "<<i->second.substr(0,nameTwoFromRs.length())<<"\nnameTwoFromRs "<<nameTwoFromRs<<endl;
 				if( nameLen = 63 ) {
@@ -295,7 +294,7 @@ bool Util::toSetCol(string name, Dictionary_iter b, Dictionary_iter e) {
 			}
 		}
 	}
-	cout<<"Before retunning bool Util::toSetCol("<<endl;
+	//cout<<"Before retunning bool Util::toSetCol("<<endl;
 	return(toSet);
 }
 
@@ -368,7 +367,7 @@ bool Util::isInMultiRef(string key, Dictionary_iter b, Dictionary_iter e) {//Pas
 }
 
 void Util::equatePKWithRef(RowInterface* aRow, Dictionary_iter b, Dictionary_iter e) {//Refrences
-	cout<<"insdie Util::equatePKWithRef"<<endl;
+	//cout<<"insdie Util::equatePKWithRef"<<endl;
 	for(Dictionary_iter r = b; r != e; ++r) {
 		//cout<<" r->second "<<r->second<<endl;
 		string dataType = this->getDataType(r->second);//DataType has to be same for both fields in refrences
@@ -392,20 +391,20 @@ void Util::equatePKWithRef(RowInterface* aRow, Dictionary_iter b, Dictionary_ite
 }
 
 void Util::equatePKWithMultiRef(RowInterface* aRow, Dictionary_iter b, Dictionary_iter e) {//Multi Refrences
-	cout<<"insdie Util::equatePKWithMultiRef"<<endl;
+	//cout<<"insdie Util::equatePKWithMultiRef"<<endl;
 	for(Dictionary_iter m = b; m != e; ++m) {
 		string key = m->second + "." + m->first;
 		string dataType = this->getDataType(key);
 		string value;
 		bool toSet = false;
-		cout<<"cheking "<<key<<endl;
+		//cout<<"cheking "<<key<<endl;
 		if(this->isSet(aRow, key, dataType) ) {
 			value = this->getStrValue(aRow, key, dataType);
-			cout<<"Value is "<<value<<endl;
+			//cout<<"Value is "<<value<<endl;
 			toSet = true;
 		} 
 		if(toSet) {
-			cout<<"inside toSet"<<endl;
+			//cout<<"inside toSet"<<endl;
 			this->setValue(aRow, key , dataType, value);
 		}
 	}
