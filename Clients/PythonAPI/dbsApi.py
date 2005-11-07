@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApi.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsApi.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -18,6 +18,22 @@ DBS_LOG_LEVEL_DEBUG_ = dbsLogManager.LOG_LEVEL_DEBUG_       # debugging
 DBS_LOG_LEVEL_WARNING_ = dbsLogManager.LOG_LEVEL_WARNING_   # warnings
 DBS_LOG_LEVEL_ERROR_ = dbsLogManager.LOG_LEVEL_ERROR_       # errors
 DBS_LOG_LEVEL_ALL_ = dbsLogManager.LOG_LEVEL_ALL_           # all messages
+
+##############################################################################
+# DBS API exceptions.
+
+class DbsApiException(dbsException.DbsException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    dbsException.DbsException.__init__(self, **kwargs)
+
+class InvalidDatasetPathName(DbsApiException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsApiException.__init__(self, **kwargs)
+
 
 ##############################################################################
 # DBS API interface class.

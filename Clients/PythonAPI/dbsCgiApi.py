@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.4 2005/10/28 17:01:23 sveseli Exp $
+# $Id: dbsCgiApi.py,v 1.5 2005/10/28 18:29:57 sveseli Exp $
 #
 # CGI implementation of the DBS API class. This version of API
 # relies on cgi scripts providing xml output. 
@@ -23,6 +23,12 @@ class DbsCgiApiException(dbsException.DbsException):
     """ Initialization. """
     dbsException.DbsException.__init__(self, **kwargs)
 
+class InvalidDatasetPathName(DbsCgiApiException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsCgiApiException.__init__(self, **kwargs)
+
 ##############################################################################
 # CLI implementation of the DBS API class.
 
@@ -36,19 +42,31 @@ class DbsCgiApi(dbsApi.DbsApi):
     """
     Retrieve list of file blocks, each containing a set of event collections,
     for a given the dataset path name string.
+
+    Returns: list of DbsFileBlock objects.
+    Exceptions: InvalidDatasetPathName
+                DbsCgiApiException
     """
     try:
       return self._cgiUtility.getDatasetContents(datasetPathName)
+    except dbsCgiUtility.InvalidDatasetPathName, ex:
+      raise InvalidDatasetPathName(exception=ex)
     except dbsCgiUtility.DbsCgiUtilityException, ex:
       raise DbsCgiApiException(exception=ex)
 
   def getDatasetProvenance(self, datasetPathName, dataTierList=[]):
     """
     Retrieve list of dataset parents for the given dataTiers.
+
+    Returns: list of DbsDataset objects.
+    Exceptions: InvalidDatasetPathName
+                DbsCgiApiException
     """
     try:
       return self._cgiUtility.getDatasetProvenance(
 	datasetPathName, dataTierList)
+    except dbsCgiUtility.InvalidDatasetPathName, ex:
+      raise InvalidDatasetPathName(exception=ex)
     except dbsCgiUtility.DbsCgiUtilityException, ex:
       raise DbsCgiApiException(exception=ex)
       

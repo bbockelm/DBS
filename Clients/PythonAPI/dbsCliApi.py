@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCliApi.py,v 1.2 2005/10/28 16:19:02 sveseli Exp $
+# $Id: dbsCliApi.py,v 1.3 2005/10/28 17:01:23 sveseli Exp $
 #
 # CLI implementation of the DBS API class. This version of API
 # relies on various sql tools to retrieve information out of the db.
@@ -38,7 +38,11 @@ class DbsCliApi(dbsApi.DbsApi):
   def getDatasetContents(self, datasetPathName):
     """
     Retrieve list of file blocks, each containing a set of event collections,
-    for a given the dataset path name string. """
+    for a given the dataset path name string.
+
+    Returns: list of DbsFileBlock objects.
+    Exceptions: DbsCliApiException
+    """
     try:
       return self._phedexUtility.getDatasetContents(datasetPathName)
     except dbsPhedexUtility.DbsPhedexUtilityException, ex:
@@ -46,7 +50,11 @@ class DbsCliApi(dbsApi.DbsApi):
 
   def getDatasetProvenance(self, datasetPathName, dataTierList=[]):
     """
-    Retrieve list of dataset parents for the given dataTiers. """
+    Retrieve list of dataset parents for the given dataTiers.
+
+    Returns: list of DbsDataset objects.
+    Exceptions: DbsCliApiException
+    """
     try:
       return self._phedexUtility.getDatasetProvenance(
 	datasetPathName, dataTierList)

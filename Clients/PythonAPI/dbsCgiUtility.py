@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.2 2005/10/28 16:19:02 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.3 2005/11/01 14:34:18 sveseli Exp $
 #
-# Class which uses PHEDEX utilities to extract info from the db.
+# Class which uses CGI utilities to extract info from the db.
 #
 
 import os
 import string
-import urllib
+import urllib2
 
 import dbsException
 import dbsUtility
@@ -46,7 +46,32 @@ class InvalidXML(DbsCgiUtilityException):
     """ Initialization. """
     DbsCgiUtilityException.__init__(self, **kwargs)
 
+class InvalidDatasetPathName(DbsCgiUtilityException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsCgiUtilityException.__init__(self, **kwargs)
+
   
+##############################################################################
+# HTTP exception mapper.
+class StaticMethod:
+  def __init__(self, anycallable):
+    self.__call__ = anycallable
+
+class DbsCgiExceptionMapper:
+
+  __exceptionMap = {
+    400 : "InvalidDatasetPathName",
+    }
+
+  def getExceptionClassName(httpErrorCode):
+    """ Map http error code into an exception. """
+    return DbsCgiExceptionMapper.__exceptionMap.get(
+      httpErrorCode, "CgiToolError")
+
+  getExceptionClassName = StaticMethod(getExceptionClassName)
+
 ##############################################################################
 # CGI utility class.
 
@@ -73,12 +98,23 @@ class DbsCgiUtility:
     # Invoke cgi script.
     try:
       self._logManager.log(
-	what="Retrieving dataset contents.",
+	what="Retrieving dataset contents, cgiUrl: %s." % cgiUrl,
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      xmlString = urllib.urlopen(cgiUrl).read() 
+      urlResult = urllib2.urlopen(cgiUrl)
+      xmlString = urlResult.read() 
+    except urllib2.URLError, ex:
+      # Cgi failed for some reason, determine exception to be raised.
+      cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
+      exec "cgiEx = %s(exception=ex, args='Input argument datasetPathName=\"%s\"')" % (cgiExClassName, datasetPathName)
+      errMsg = "URLError caught: \n%s\nWill raise %s" % (
+	ex, cgiEx.__class__.__name__),
+      self._logManager.log(what=errMsg,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise cgiEx
     except Exception, ex:
-      # Cgi failed for some reason, raise exception.
+      # General exception.
       self._logManager.log(what="Cgi tool failed.\n%s " % ex,
 			   where=funcName,
 			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
@@ -115,12 +151,23 @@ class DbsCgiUtility:
     # Invoke cgi script.
     try:
       self._logManager.log(
-	what="Retrieving dataset provenance.",
+	what="Retrieving dataset provenance, cgiUrl: %s." % cgiUrl,
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      xmlString = urllib.urlopen(cgiUrl).read() 
+      urlResult = urllib2.urlopen(cgiUrl)
+      xmlString = urlResult.read() 
+    except urllib2.URLError, ex:
+      # Cgi failed for some reason, determine exception to be raised.
+      cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
+      exec "cgiEx = %s(exception=ex, args='Input argument datasetPathName=\"%s\"')" % (cgiExClassName, datasetPathName)
+      errMsg = "URLError caught: \n%s\nWill raise %s" % (
+	ex, cgiEx.__class__.__name__),
+      self._logManager.log(what=errMsg,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise cgiEx
     except Exception, ex:
-      # Cgi failed for some reason, raise exception.
+      # General exception.
       self._logManager.log(what="Cgi tool failed.\n%s " % ex,
 			   where=funcName,
 			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
