@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetContentsXmlParser.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsDatasetContentsXmlParser.py,v 1.3 2005/10/28 15:39:09 sveseli Exp $
 #
 # Class which parses dataset contents xml file.
 #
@@ -99,7 +99,7 @@ class DbsDatasetContentsXmlParser(dbsXmlParser.DbsXmlParser):
 
 if __name__ == "__main__":
   try:
-    parser = DbsDatasetContentsXmlParser("tmpFile.10134.1129745508.25.xml")
+    parser = DbsDatasetContentsXmlParser(xmlFile="tmpFile.10134.1129745508.25.xml")
     print parser.getFileBlockList()
   except dbsException.DbsException, ex:  
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())

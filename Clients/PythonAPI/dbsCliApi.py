@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCliApi.py,v 1.3 2005/10/28 17:01:23 sveseli Exp $
+# $Id: dbsCliApi.py,v 1.4 2005/11/07 21:40:02 sveseli Exp $
 #
 # CLI implementation of the DBS API class. This version of API
 # relies on various sql tools to retrieve information out of the db.
@@ -22,6 +22,12 @@ class DbsCliApiException(dbsException.DbsException):
   def __init__ (self, **kwargs):
     """ Initialization. """
     dbsException.DbsException.__init__(self, **kwargs)
+
+class InvalidDatasetPathName(DbsCliApiException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsCliApiException.__init__(self, **kwargs)
 
 ##############################################################################
 # CLI implementation of the DBS API class.
@@ -53,7 +59,8 @@ class DbsCliApi(dbsApi.DbsApi):
     Retrieve list of dataset parents for the given dataTiers.
 
     Returns: list of DbsDataset objects.
-    Exceptions: DbsCliApiException
+    Exceptions: InvalidDatasetPathName
+                DbsCliApiException
     """
     try:
       return self._phedexUtility.getDatasetProvenance(

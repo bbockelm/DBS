@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetProvenanceXmlParser.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsDatasetProvenanceXmlParser.py,v 1.3 2005/10/28 16:00:46 sveseli Exp $
 #
 # Class which parses dataset provenance xml file.
 #
@@ -91,7 +91,7 @@ class DbsDatasetProvenanceXmlParser(dbsXmlParser.DbsXmlParser):
 
 if __name__ == "__main__":
   try:
-    parser = DbsDatasetProvenanceXmlParser("tmpFile.10134.1129745508.26.xml")
+    parser = DbsDatasetProvenanceXmlParser(xmlFile="tmpFile.10134.1129745508.26.xml")
     print parser.getDatasetParentList()
   except dbsException.DbsException, ex:  
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
