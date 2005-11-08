@@ -112,33 +112,41 @@ if __name__== '__main__':
    multiViewCreator.buildMultiTableViewObjects()
 
 
-   mapStr = "#ifndef _namemap_included_"
-   mapStr += "\n#define _namemap_included_"
-   mapStr +=  "\n#include <string>"
-   mapStr += '\n#include "common.hpp"'
-   mapStr += '\nclass NameMaper {'
-   mapStr += '\npublic:'
-   mapStr += '\n    NameMaper(){'
+   #print "Generating  NameMaper.hpp....."
+   #mapStr = "#ifndef _namemap_included_"
+   #mapStr += "\n#define _namemap_included_"
+   #mapStr +=  "\n#include <string>"
+   #mapStr += '\n#include "common.hpp"'
+   #mapStr += '\nclass NameMaper {'
+   #mapStr += '\npublic:'
+   #mapStr += '\n    NameMaper();'
+   #mapStr += '\n    Dictionary NameMap;'
+   #mapStr += '\n};'
+   #mapStr += "\n#endif"
+   #filepath = "NameMaper.hpp"
+   #hppimpl = open(filepath, 'w')
+   #hppimpl.writelines(mapStr)
+   #hppimpl.write('\n')
+   #hppimpl.close()
 
+   mapStr = '#include "NameMaper.hpp"'
+   mapStr += '\nNameMaper::NameMaper(){'
    mapStrList = writeNameMap(singleCppGen.cppClasses, 1)
    for anItem in mapStrList:
       mapStr += anItem
 
-
+   #Add the Multi View Classes too to cpp classes
    singleCppGen.cppClasses.extend(multiViewCreator.multiTableViewObjects)
-   #mapStrList=[]
+
+
    mapStrList = writeNameMap(multiViewCreator.multiTableViewObjects, 0)
    for anItem in mapStrList:
       mapStr += anItem
 
-   mapStr += '\n }'
-   mapStr += '\npublic:'
-   mapStr += '\n    Dictionary NameMap;'
-   mapStr += '\n};'
-   mapStr += "\n#endif"
+   mapStr += '\n}'
 
-   print "Generating  NameMaper.hpp....."
-   filepath = "NameMaper.hpp"
+   print "Generating  NameMaper.cpp....."
+   filepath = "NameMaper.cpp"
    cppimpl = open(filepath, 'w')
    cppimpl.writelines(mapStr)
    cppimpl.write('\n')
