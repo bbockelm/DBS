@@ -7,6 +7,17 @@ class DataDiscoveryError:
     def __init__(self):
         print '\nERROR accessing Data Discovery\n'
         pass
+# ####################################
+class DatasetContentsError:
+    def __init__(self):
+        print '\nERROR accessing Data Discovery : getDatasetContents\n'
+        pass
+
+# ####################################
+class DatasetProvenanceError:
+    def __init__(self):
+        print '\nERROR accessing Data Discovery : getDatasetProvenance\n'
+        pass
 
 # ####################################
 # class to find and extact info from published data
@@ -14,12 +25,11 @@ class DataDiscovery:
     def __init__(self, owner, dataset, dataTiers, cfg_params):
 
 #       Attributes
-        self.owner = owner
-        self.dataset = dataset
+        self.dbsdataset=dataset+'/datatier/'+owner
         self.dataTiers = dataTiers
         self.cfg_params = cfg_params
 
-        self.dataset_owner = {}  # DBS output: map dataset-owner for all data 
+        self.dbspaths= []  # DBS output: list of dbspaths for all data
         self.allblocks = []   # DBS output: list of map fileblocks-totevts for all dataset-owners
         self.blocksinfo = {}     # DBS output: map fileblocks-totevts for the primary block, used internally to this class
 #DBS output: max events computed by method getMaxEvents 
@@ -29,16 +39,16 @@ class DataDiscovery:
         """
         Contact DBS
         """
-        parents = {}
+        parents = []
         parentsblocksinfo = {}
-        self.dataset_owner[self.owner]=self.dataset  # add the map dataset-owner
+        self.dbspaths.append("/"+self.dbsdataset) # add the primary dbspath
+                                                  # it might be replaced if one get from DBSAPI the primary dbspath as well
 
-        dbs=DBSInfo(self.owner,self.dataset,self.dataTiers)
+        dbs=DBSInfo(self.dbsdataset,self.dataTiers)
         try:
           self.blocksinfo=dbs.getDatasetContents()
-        except:
+        except dbs.DBSError:
           raise DataDiscoveryError
-
         try:
           parents=dbs.getDatasetProvenance()
         except:
@@ -46,13 +56,21 @@ class DataDiscovery:
 
         ## for each parent get the corresponding fileblocks
         for aparent in parents:
-           ## fill the map dataset-owner for the parents
-           pdataset=string.split(aparent,'/')[1]
-           powner=string.split(aparent,'/')[3]
-           self.dataset_owner[powner]=pdataset
-           ## get the fileblocks of the parents
-           pdbs=DBSInfo(powner,pdataset,[])
-           parentsblocksinfo=pdbs.getDatasetContents()
+           ## fill a list of dbspaths  
+           parentdbsdataset=aparent.getDatasetPath()
+           self.dbspaths.append(parentdbsdataset)
+           #tmppath=str(parentdbsdataset[1:-1])
+           pdataset=string.split(parentdbsdataset,'/')[1]
+           pdt=string.split(parentdbsdataset,'/')[2] 
+           powner=string.split(parentdbsdataset,'/')[3]
+           tmppath=pdataset+'/'+pdt+'/'+powner
+           ## get the fileblocks of the parents : FIXME for the time being the first / in the path has to be removed
+           pdbs=DBSInfo(tmppath,[])
+           try:
+            parentsblocksinfo=pdbs.getDatasetContents()
+           except:
+            raise DataDiscoveryError
+
            self.allblocks.append(parentsblocksinfo.keys()) # add parent fileblocksinfo
 
         ## all the required blocks
@@ -72,11 +90,11 @@ class DataDiscovery:
         return nevts
 
 # #################################################
-    def getDatasetOwnerPairs(self):
+    def getDBSPaths(self):
         """
-         list all required dataset-owner pairs
+         list the DBSpaths for all required data
         """
-        return self.dataset_owner
+        return self.dbspaths
 
 # #################################################
     def getEVC(self):

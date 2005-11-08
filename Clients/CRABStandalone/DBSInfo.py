@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 import sys, os, string, re
-import xml.sax
-import urllib
- 
-import sys
 sys.path.append('./DBSAPI')
 import dbsCgiApi
+import dbsApi
 
 class DBSError:
-  def __init__(self, owner, dataset):
-    print '\nERROR accessing DBS for Owner/Dataset: '+owner+'/'+dataset+'\n'
+  def __init__(self, dbspath):
+    print '\nERROR accessing DBS for dataset '+dbspath+'\n' 
     pass
 
 class DBSInfoError:
@@ -22,48 +19,44 @@ class DBSInfoError:
 ###############################################################################
 
 class DBSInfo:
-     def __init__(self, owner, dataset, dataTiers):
-          self.owner = owner
-          self.dataset = dataset
+     def __init__(self, dbspath, dataTiers):
+          self.dbspath=dbspath 
           self.dataTiers = dataTiers
-          self.dbspath=dataset+'/datatier/'+owner
           
           self.api = dbsCgiApi.DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin") 
+#          self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
 
 # ####################################
      def getDatasetProvenance(self):
          """
           query DBS to get provenance
          """
-         datasetParentList = self.api.getDatasetProvenance(self.dbspath,self.dataTiers)
-                                                                                                                     
-         parent = {}
-         for aparent in datasetParentList:
-           print "DBSInfo: parent path is "+aparent.getDatasetPath()+" datatier is: "+aparent.getDataTier()
-           parent[aparent.getDatasetPath()]=aparent.getDataTier()
-
-         return parent
-
+         try:
+           datasetParentList = self.api.getDatasetProvenance(self.dbspath,self.dataTiers)
+         except dbsCgiApi.DbsCgiApiException:
+           raise DBSError(self.dbspath) 
+         return datasetParentList                                                                                                            
 # ####################################
      def getDatasetContents(self):
          """
           query DBS to get event collections
          """
-
-         fileBlockList = self.api.getDatasetContents(self.dbspath)
-                                                                                                                     
+         try:
+           fileBlockList = self.api.getDatasetContents(self.dbspath)
+         except dbsCgiApi.DbsCgiApiException:
+           raise DBSError(self.dbspath)                                                                                                           
          ## get the fileblock and event collections
          nevtsbyblock= {}
          for fileBlock in fileBlockList:
             ## get the event collections for each block
-            #print fileBlock.getBlockName()
-            #print fileBlock.getBlockId()
+            print "DBSInfo: --- block: "+fileBlock.getBlockName()
             eventCollectionList = fileBlock.getEventCollectionList()
             nevts=0
             for eventCollection in eventCollectionList:
               #print "DBSInfo:  evc: "+eventCollection.getCollectionName()+" nevts: %i"%eventCollection.getNumberOfEvents()
               nevts=nevts+eventCollection.getNumberOfEvents()
             print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName())
+            #common.logger.debug(6,"DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName()))
             nevtsbyblock[fileBlock.getBlockName()]=nevts
 
          # returning a map of fileblock-nevts  will be enough for now

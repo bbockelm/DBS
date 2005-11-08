@@ -49,10 +49,10 @@ if __name__ == '__main__':
 
         print "\nThe information extracted from DBS needed by CRAB are:"
         ## get list of all dataset-owner pairs        
-        print "\n List of all dataset-owner pairs (needed for site-local catalogue discovery) : "
-        dsowmap=pubdata.getDatasetOwnerPairs()
-        for ow in dsowmap.keys():
-          print "  -- dataset: "+dsowmap[ow]+" owner: "+ow
+        print "\n List of all required data (needed for site-local catalogue discovery) : "
+        DBSPaths=pubdata.getDBSPaths()
+        for path in DBSPaths:
+          print " --> "+path 
 
         ## get max number of events
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
         ## get fileblocks : this is the input for DLS
         fb=pubdata.getFileBlocks()
-        print "\n FileBlock names (needed as input for DLS) : %s"%fb
+        print "\n FileBlock names (needed as input for DLS) : %s \n"%fb
 
         sys.exit(0)
 
