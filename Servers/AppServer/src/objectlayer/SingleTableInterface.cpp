@@ -116,4 +116,5 @@ template SingleTableInterface<T_Info_Anadsrow>;
 template SingleTableInterface<T_Info_Evcollrow>;
 template SingleTableInterface<T_Runrow>;
 template SingleTableInterface<T_Evcoll_Runrow>;
+template SingleTableInterface<T_Object_Historyrow>;
 

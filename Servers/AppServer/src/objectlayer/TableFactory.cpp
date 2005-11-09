@@ -135,6 +135,10 @@ TableInterface* TableFactory::getTableObject(string tableName) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Evcoll_Runrow>;
          return tmpPtr;
       }
+      if ( tableName.compare("t_object_historyrow") == 0 ) {
+         TableInterface* tmpPtr = new SingleTableInterface<T_Object_Historyrow>;
+         return tmpPtr;
+      }
       if ( tableName.compare("insertappsmultirow") == 0 ) {
          TableInterface* tmpPtr = new MultiTableInterface<Insertappsmultirow>;
          return tmpPtr;

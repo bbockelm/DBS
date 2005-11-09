@@ -76,6 +76,7 @@ void TableTemplate<R>::init() {
 	schema = this->schemaNconstraints.schemaNconstraints.getSchema();
 	constraints = this->schemaNconstraints.schemaNconstraints.getConstraints();
 	primaryKeys = this->schemaNconstraints.schemaNconstraints.getPrimaryKeys();
+	//cout<<" Line 1"<<endl;
 	uniqueKeys = this->schemaNconstraints.schemaNconstraints.getUniqueKeys();
 	notNullKeys = this->schemaNconstraints.schemaNconstraints.getNotNullKeys();
 	refrences = this->schemaNconstraints.schemaNconstraints.getReferences();
@@ -110,7 +111,7 @@ Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) 
 template <class R>
 void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
   Dictionary satisfiedRefrences = this->getSatisfiedRefrences(rs,rowIndex);
-  for(int colIndex = 0; colIndex < rs->getNoOfCols(); colIndex++) {
+  for(int colIndex = 0; colIndex < rs->getNoOfCols(); ++colIndex) {
     string name = rs->getColName(colIndex);
 		if( name.length() == 63 ) {
 		  for(Dictionary_iter schemaIterator = schema->begin(); 
@@ -131,6 +132,7 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
 		//cout<<"trying to fetch value from ResultSet"<<endl;
 		string value = rs->getElement(rowIndex,colIndex);
 		if(value.length() == 0) { 
+			cout<<"continuing bacuse value is nothing"<<endl;
 		  continue;
 		}
 		//cout<<"value is "<<value<<endl;
@@ -339,6 +341,7 @@ void TableTemplate<R>::insert() {
 	  R* aRow = (R*)*rowIterator;
 	  try{
 	    //cout<<endl<<"inserting ROW no "<<i<<endl;
+			cout<<"\n\n\n"<<endl;
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"inserting ROW no ");
@@ -346,18 +349,19 @@ void TableTemplate<R>::insert() {
 			this->doSmartInsert(aRow);
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
+			cout<<"\n\n\n"<<endl;
 			//cout<<"out of smart insert"<<endl;
 			//doSimpleInsert(aRow);
 		} catch (ObjectLayerException &e) {
-	    exceptionOccured = true;
-	    exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
-	  } catch (DBException &e) {
 			exceptionOccured = true;
 			exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
-	  } catch (exception &e) {
-	    exceptionOccured = true;
-	    exceptionMessage += "At row "+util.itoa(i)+": "+ e.what() + " \n";
-	  }
+		} catch (DBException &e) {
+			exceptionOccured = true;
+			exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+		} catch (exception &e) {
+			exceptionOccured = true;
+			exceptionMessage += "At row "+util.itoa(i)+": "+ e.what() + " \n";
+		}
 	  
     	}
 	//cout<<"OUT of FOR Loop"<<endl;
@@ -372,7 +376,6 @@ template <class R>
 void TableTemplate<R>::doSimpleInsert(R* aRow) {
   //cout<<"inside doSimpleInsert"<<endl;
   LOG4CXX_DEBUG(TableTemplate::logger,"inside doSimpleInsert");
-  
   //if(!isNotNullKeySet(aRow)) {
   this->fixPKWithSeq(aRow);
   //this->setTimeInRow(aRow);
@@ -426,7 +429,15 @@ TableFactory tf;
   ti->setDBManager(dbmanager);
   //cout<<"Done calling tf.getTableObject"<<endl;
   ti->addRow(subRow);
-  ti->insert();
+	try {
+		ti->insert();
+	} catch (ObjectLayerException &e) {
+		ti->delRows();
+		delete ti;
+		util.equatePKWithRef(aRow, refrences->begin(), refrences->end() );
+		util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
+		throw ObjectLayerException(e.report());
+	}
   ti->delRows();
   delete ti;
   
@@ -447,7 +458,7 @@ void TableTemplate<R>::insertMulti(R* aRow, string name) {
 	  try {
 	    //cout<<"checking name "<<name<<" with util.getTokenAt(m->second,0) "<<util.getTokenAt(m->second,0)<<endl;
 	    if(name == util.getTokenAt(m->second,0) ) {
-	      this->insertSingle(aRow, name, m->first);
+	     this->insertSingle(aRow, name, m->first);
 	    }
 	  } catch (ObjectLayerException &e) {
 			exceptionOccured = true;
@@ -507,6 +518,7 @@ void TableTemplate<R>::update(){
 
 template <class R>
 int TableTemplate<R>::getSeqValue(string tableName, string colName) {
+	return 1;
 	ResultSet* rs = this->doSelect(sql->makeSeqQuery(tableName,colName),"");
 	if(rs->getNoOfRows() == 0) {
 		delete rs;
@@ -521,6 +533,8 @@ int TableTemplate<R>::getSeqValue(string tableName, string colName) {
 template <class R>
 void TableTemplate<R>::fixPKWithSeq(R* aRow) {
 	for(Keys_iter i = primaryKeysReal.begin(); i != primaryKeysReal.end(); ++i) {
+
+		//string dataType = "INTEGER";
 		string dataType = util.getDataType(*i);
 		if( util.isSet(aRow, *i, dataType) ) {
 			continue;
@@ -531,6 +545,7 @@ void TableTemplate<R>::fixPKWithSeq(R* aRow) {
 			continue;
 		}
 		int value = this->getSeqValue(util.getTokenAt(*i, 0), util.getTokenAt(*i, 1));	
+		//int value = 1;	
 		//cout<<"Setting sequencer value of "<<*i<<" "<<value<<endl;
 		LOG4CXX_DEBUG(TableTemplate::logger,"Setting sequencer value of " + *i);
 		LOG4CXX_DEBUG(TableTemplate::logger,value);
@@ -601,5 +616,6 @@ template TableTemplate<Analysisdatasetmultirow>;
 template TableTemplate<Datasetprovenenceevchildmultirow>;
 template TableTemplate<Datasetprovenenceevparentmultirow>;
 template TableTemplate<Crabevcollviewmultirow>;
+template TableTemplate<T_Object_Historyrow>;
 
 

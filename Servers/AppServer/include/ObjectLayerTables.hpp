@@ -83,7 +83,7 @@ public:
 private:
      INTEGER id;
      STRING name;
-     INTEGER convenor;
+     INTEGER convener;
 };
 
 class  T_Physics_Grouprow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -1011,6 +1011,39 @@ class RowSchemaNConstraintsBinding<T_Evcoll_Runrow> {
 
 //##############
 
+class T_Object_Historyrow  : public RowInterface {
+public:
+     T_Object_Historyrow();
+
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+     STRING object_type;
+     INTEGER object_id;
+     STRING operation;
+     FLOAT at;
+     INTEGER person;
+     INTEGER mediator;
+};
+
+class  T_Object_Historyrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      T_Object_Historyrow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<T_Object_Historyrow> {
+   public:
+ T_Object_Historyrow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
 class Insertappsmultirow  : public RowInterface {
 public:
 
@@ -1086,7 +1119,7 @@ public:
 
 private:
 
-    T_Personrow* T_Personobj;
+    T_Personrow* T_Physics_Group_Convenerobj;
     T_Physics_Grouprow* T_Physics_Groupobj;
 };
 
@@ -1419,6 +1452,7 @@ typedef SingleTableInterface<T_Info_Anadsrow>  T_Info_AnadsTable;
 typedef SingleTableInterface<T_Info_Evcollrow>  T_Info_EvcollTable;
 typedef SingleTableInterface<T_Runrow>  T_RunTable;
 typedef SingleTableInterface<T_Evcoll_Runrow>  T_Evcoll_RunTable;
+typedef SingleTableInterface<T_Object_Historyrow>  T_Object_HistoryTable;
 typedef MultiTableInterface<Insertappsmultirow>  InsertappsMultiTable;
 typedef MultiTableInterface<Personmultirow>  PersonMultiTable;
 typedef MultiTableInterface<Physicsgroupmultirow>  PhysicsgroupMultiTable;

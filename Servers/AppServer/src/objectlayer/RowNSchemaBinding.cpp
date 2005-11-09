@@ -67,6 +67,8 @@ RowNSchemaBinding::RowNSchemaBinding() {
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("t_runrow", T_Runrow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* T_Evcoll_Runrow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new T_Evcoll_Runrow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("t_evcoll_runrow", T_Evcoll_Runrow_DB_BINDINGObj));
+      BaseSchemaNConstraintsBinding* T_Object_Historyrow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new T_Object_Historyrow_DB_BINDING();
+      this->RowNSchemaBindingMap.insert(SchemaMapEntry("t_object_historyrow", T_Object_Historyrow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Insertappsmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Insertappsmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("insertappsmultirow", Insertappsmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Personmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Personmultirow_DB_BINDING();

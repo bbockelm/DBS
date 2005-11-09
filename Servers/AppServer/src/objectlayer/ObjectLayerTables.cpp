@@ -123,8 +123,8 @@ void T_Physics_Grouprow::setValue(string key, void* value) {
     if( key.compare("t_physics_group.name") == 0) {
          this->name = *((string*) value) ;
     }
-    if( key.compare("t_physics_group.convenor") == 0) {
-         this->convenor = *((int*) value) ;
+    if( key.compare("t_physics_group.convener") == 0) {
+         this->convener = *((int*) value) ;
     }
 }
 
@@ -135,8 +135,8 @@ void* T_Physics_Grouprow::getValue(string key) {
    if( key.compare("t_physics_group.name") == 0) {
        return (&this->name.getValue());
     }
-   if( key.compare("t_physics_group.convenor") == 0) {
-       return (&this->convenor.getValue());
+   if( key.compare("t_physics_group.convener") == 0) {
+       return (&this->convener.getValue());
     }
 }
 
@@ -145,7 +145,7 @@ T_Physics_Grouprow_DB_BINDING::T_Physics_Grouprow_DB_BINDING() {
 
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
-    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
+    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
     PrimaryKeys.push_back("t_physics_group.id");
 
@@ -339,11 +339,7 @@ T_Applicationrow_DB_BINDING::T_Applicationrow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_application.executable");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_application.app_version");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_application.app_family");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -415,11 +411,7 @@ T_App_Configrow_DB_BINDING::T_App_Configrow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_app_config.application");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_app_config.parameter_set");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_app_config.conditions_version");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -613,8 +605,6 @@ T_Desc_Primaryrow_DB_BINDING::T_Desc_Primaryrow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_desc_primary.trigger_path");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_desc_primary.mc_channel");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -815,8 +805,6 @@ T_Processing_Pathrow_DB_BINDING::T_Processing_Pathrow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_processing_path.parent");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_processing_path.app_config");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -893,8 +881,6 @@ T_Processed_Datasetrow_DB_BINDING::T_Processed_Datasetrow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_processed_dataset.primary_dataset");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_processed_dataset.processing_path");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -958,8 +944,6 @@ T_Event_Collectionrow_DB_BINDING::T_Event_Collectionrow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_event_collection.processed_dataset");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_event_collection.collection_index");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -1081,8 +1065,6 @@ T_Anads_Datarow_DB_BINDING::T_Anads_Datarow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_anads_data.analysis_dataset");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_anads_data.event_collection");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -2084,6 +2066,86 @@ string* T_Evcoll_Runrow_DB_BINDING::getTableName(void) {
 }
 
 
+T_Object_Historyrow::T_Object_Historyrow(){
+    this->rowMap.set("t_object_historyrow", (void*)this);
+    this->constituentObjects.push_back(this->rowMap);
+}
+
+void T_Object_Historyrow::setValue(string key, void* value) {
+    if( key.compare("t_object_history.object_type") == 0) {
+         this->object_type = *((string*) value) ;
+    }
+    if( key.compare("t_object_history.object_id") == 0) {
+         this->object_id = *((int*) value) ;
+    }
+    if( key.compare("t_object_history.operation") == 0) {
+         this->operation = *((string*) value) ;
+    }
+    if( key.compare("t_object_history.at") == 0) {
+         this->at = *((float*) value) ;
+    }
+    if( key.compare("t_object_history.person") == 0) {
+         this->person = *((int*) value) ;
+    }
+    if( key.compare("t_object_history.mediator") == 0) {
+         this->mediator = *((int*) value) ;
+    }
+}
+
+void* T_Object_Historyrow::getValue(string key) {
+   if( key.compare("t_object_history.object_type") == 0) {
+       return (&this->object_type.getValue());
+    }
+   if( key.compare("t_object_history.object_id") == 0) {
+       return (&this->object_id.getValue());
+    }
+   if( key.compare("t_object_history.operation") == 0) {
+       return (&this->operation.getValue());
+    }
+   if( key.compare("t_object_history.at") == 0) {
+       return (&this->at.getValue());
+    }
+   if( key.compare("t_object_history.person") == 0) {
+       return (&this->person.getValue());
+    }
+   if( key.compare("t_object_history.mediator") == 0) {
+       return (&this->mediator.getValue());
+    }
+}
+
+T_Object_Historyrow_DB_BINDING::T_Object_Historyrow_DB_BINDING() {
+    TableName = "t_object_history";
+
+    Schema.insert(Entry("t_object_history.object_type", "STRING"));
+    Schema.insert(Entry("t_object_history.object_id", "INTEGER"));
+    Schema.insert(Entry("t_object_history.operation", "STRING"));
+    Schema.insert(Entry("t_object_history.at", "FLOAT"));
+    Schema.insert(Entry("t_object_history.person", "INTEGER"));
+    Schema.insert(Entry("t_object_history.mediator", "INTEGER"));
+
+
+    ///Unique Keys being written as Set of list
+
+    ///List of Lists in C++
+
+    list<string> tmplist;
+
+    NotNullKeys.push_back("t_object_history.object_type");
+    NotNullKeys.push_back("t_object_history.object_id");
+    NotNullKeys.push_back("t_object_history.operation");
+    NotNullKeys.push_back("t_object_history.at");
+    NotNullKeys.push_back("t_object_history.person");
+    NotNullKeys.push_back("t_object_history.mediator");
+
+
+    SchemaOrder.push_back("t_object_history");
+}
+
+string* T_Object_Historyrow_DB_BINDING::getTableName(void) {
+      return &this->TableName;
+}
+
+
 void Insertappsmultirow::setValue(string key, void* value) {
     if( key.compare("t_app_family.name") == 0) {
          ((T_App_Familyrow*)this->
@@ -2302,17 +2364,17 @@ Insertappsmultirow_DB_BINDING::Insertappsmultirow_DB_BINDING() {
     Schema.insert(Entry("t_collection_type.name.t_application.output_type", "STRING"));
     Schema.insert(Entry("t_app_config.parameter_set", "STRING"));
     Schema.insert(Entry("t_app_config.conditions_version", "STRING"));
-    Schema.insert(Entry("t_collection_type.id.t_application.output_type", "INTEGER"));
+    Schema.insert(Entry("t_application.input_type", "INTEGER"));
     Schema.insert(Entry("t_app_config.id", "INTEGER"));
     Schema.insert(Entry("t_collection_type.id.t_application.input_type", "INTEGER"));
     Schema.insert(Entry("t_application.app_version", "STRING"));
     Schema.insert(Entry("t_app_config.application", "INTEGER"));
     Schema.insert(Entry("t_application.app_family", "INTEGER"));
     Schema.insert(Entry("t_application.id", "INTEGER"));
-    Schema.insert(Entry("t_app_family.id", "INTEGER"));
-    Schema.insert(Entry("t_application.input_type", "INTEGER"));
-    Schema.insert(Entry("t_collection_type.name.t_application.input_type", "STRING"));
     Schema.insert(Entry("t_application.executable", "STRING"));
+    Schema.insert(Entry("t_collection_type.id.t_application.output_type", "INTEGER"));
+    Schema.insert(Entry("t_collection_type.name.t_application.input_type", "STRING"));
+    Schema.insert(Entry("t_app_family.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_app_config.id");
 
@@ -2323,11 +2385,7 @@ Insertappsmultirow_DB_BINDING::Insertappsmultirow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_app_config.application");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_app_config.parameter_set");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_app_config.conditions_version");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -2464,19 +2522,24 @@ string* Personmultirow_DB_BINDING::getTableName(void) {
 
 
 void Physicsgroupmultirow::setValue(string key, void* value) {
-    if( key.compare("t_person.name") == 0) {
+    if( key.compare("t_person.id.t_physics_group.convener") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", ""))->
+          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+           setValue((string)"t_person.id", value);
+    }
+    if( key.compare("t_person.name.t_physics_group.convener") == 0) {
+         ((T_Personrow*)this->
+          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
            setValue((string)"t_person.name", value);
     }
-    if( key.compare("t_person.distinguised_name") == 0) {
+    if( key.compare("t_person.distinguised_name.t_physics_group.convener") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", ""))->
+          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
            setValue((string)"t_person.distinguised_name", value);
     }
-    if( key.compare("t_person.contactinfo") == 0) {
+    if( key.compare("t_person.contactinfo.t_physics_group.convener") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", ""))->
+          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
            setValue((string)"t_person.contactinfo", value);
     }
     if( key.compare("t_physics_group.id") == 0) {
@@ -2489,10 +2552,10 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_physics_grouprow", ""))->
            setValue((string)"t_physics_group.name", value);
     }
-    if( key.compare("t_physics_group.convenor") == 0) {
+    if( key.compare("t_physics_group.convener") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convenor", value);
+           setValue((string)"t_physics_group.convener", value);
          ((T_Personrow*)this->
           getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.id", value);
@@ -2500,7 +2563,7 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
     if( key.compare("t_person.id") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convenor", value);
+           setValue((string)"t_physics_group.convener", value);
          ((T_Personrow*)this->
           getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.id", value);
@@ -2508,24 +2571,24 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
 }
 
 void* Physicsgroupmultirow::getValue(string key) {
-   if( key.compare("t_person.id") == 0) {
-       return  ((T_Personrow*)this->
-          getConstituentRow("t_personrow", ""))->
+   if( key.compare("t_person.id.t_physics_group.convener") == 0) {
+       return   ((T_Personrow*)this->
+          getConstituentRow("t_personrow", "t_physics_group.convener"))->
            getValue((string)"t_person.id");
     }
-   if( key.compare("t_person.name") == 0) {
-       return  ((T_Personrow*)this->
-          getConstituentRow("t_personrow", ""))->
+   if( key.compare("t_person.name.t_physics_group.convener") == 0) {
+       return   ((T_Personrow*)this->
+          getConstituentRow("t_personrow", "t_physics_group.convener"))->
            getValue((string)"t_person.name");
     }
-   if( key.compare("t_person.distinguised_name") == 0) {
-       return  ((T_Personrow*)this->
-          getConstituentRow("t_personrow", ""))->
+   if( key.compare("t_person.distinguised_name.t_physics_group.convener") == 0) {
+       return   ((T_Personrow*)this->
+          getConstituentRow("t_personrow", "t_physics_group.convener"))->
            getValue((string)"t_person.distinguised_name");
     }
-   if( key.compare("t_person.contactinfo") == 0) {
-       return  ((T_Personrow*)this->
-          getConstituentRow("t_personrow", ""))->
+   if( key.compare("t_person.contactinfo.t_physics_group.convener") == 0) {
+       return   ((T_Personrow*)this->
+          getConstituentRow("t_personrow", "t_physics_group.convener"))->
            getValue((string)"t_person.contactinfo");
     }
    if( key.compare("t_physics_group.id") == 0) {
@@ -2538,16 +2601,16 @@ void* Physicsgroupmultirow::getValue(string key) {
           getConstituentRow("t_physics_grouprow", ""))->
            getValue((string)"t_physics_group.name");
     }
-   if( key.compare("t_physics_group.convenor") == 0) {
+   if( key.compare("t_physics_group.convener") == 0) {
        return  ((T_Physics_Grouprow*)this->
           getConstituentRow("t_physics_grouprow", ""))->
-           getValue((string)"t_physics_group.convenor");
+           getValue((string)"t_physics_group.convener");
     }
 }
 
 Physicsgroupmultirow::Physicsgroupmultirow(){
-    this->T_Personobj = new T_Personrow();
-    this->rowMap.set("t_personrow", (void*)this->T_Personobj);
+    this->T_Physics_Group_Convenerobj = new T_Personrow();
+    this->rowMap.set("t_physics_group.convener", (void*)this->T_Physics_Group_Convenerobj);
     this->constituentObjects.push_back(this->rowMap);
     this->T_Physics_Groupobj = new T_Physics_Grouprow();
     this->rowMap.set("t_physics_grouprow", (void*)this->T_Physics_Groupobj);
@@ -2555,25 +2618,25 @@ Physicsgroupmultirow::Physicsgroupmultirow(){
 }
 
 Physicsgroupmultirow::~Physicsgroupmultirow(){
-   delete this->T_Personobj;
+   delete this->T_Physics_Group_Convenerobj;
    delete this->T_Physics_Groupobj;
 }
 
 Physicsgroupmultirow_DB_BINDING::Physicsgroupmultirow_DB_BINDING() {
     TableName = "PhysicsGroup";
 
-    Schema.insert(Entry("t_person.distinguised_name", "STRING"));
-    Schema.insert(Entry("t_person.id", "INTEGER"));
-    Schema.insert(Entry("t_person.contactinfo", "STRING"));
-    Schema.insert(Entry("t_physics_group.name", "STRING"));
-    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
+    Schema.insert(Entry("t_person.id.t_physics_group.convener", "INTEGER"));
+    Schema.insert(Entry("t_person.distinguised_name.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_person.name.t_physics_group.convener", "STRING"));
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
-    Schema.insert(Entry("t_person.name", "STRING"));
+    Schema.insert(Entry("t_person.contactinfo.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_physics_group.name", "STRING"));
+    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
-    PrimaryKeys.push_back("t_person.distinguised_name");
+    PrimaryKeys.push_back("t_person.distinguised_name(t_physics_group.convener)");
     PrimaryKeys.push_back("t_physics_group.id");
 
-    ForeignKeys.push_back("t_physics_group.convenor");
+    ForeignKeys.push_back("t_physics_group.convener");
 
     list<string> tmplist;
     tmplist.push_back("t_physics_group.name");
@@ -2595,17 +2658,17 @@ Physicsgroupmultirow_DB_BINDING::Physicsgroupmultirow_DB_BINDING() {
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
-    NotNullKeys.push_back("t_person.id");
-    NotNullKeys.push_back("t_person.name");
-    NotNullKeys.push_back("t_person.distinguised_name");
-    NotNullKeys.push_back("t_person.contactinfo");
+    NotNullKeys.push_back("t_person.id.t_physics_group.convener");
+    NotNullKeys.push_back("t_person.name.t_physics_group.convener");
+    NotNullKeys.push_back("t_person.distinguised_name.t_physics_group.convener");
+    NotNullKeys.push_back("t_person.contactinfo.t_physics_group.convener");
     NotNullKeys.push_back("t_physics_group.id");
     NotNullKeys.push_back("t_physics_group.name");
 
     SchemaOrder.push_back("t_person");
     SchemaOrder.push_back("t_physics_group");
 
-    References.insert(Entry("t_physics_group.convenor", "t_person.id"));
+    References.insert(Entry("t_physics_group.convener", "t_person.id"));
 
 
 }
@@ -2797,7 +2860,7 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_info_evcoll.validation_status", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.status", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_status.name", "STRING"));
+    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
@@ -2805,7 +2868,7 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_evcoll_status.id", "INTEGER"));
     Schema.insert(Entry("t_validation_status.id", "INTEGER"));
-    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_status.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
 
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
@@ -2942,22 +3005,6 @@ void Fileviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_block_statusrow", ""))->
            setValue((string)"t_block_status.id", value);
     }
-    if( key.compare("t_file.status") == 0) {
-         ((T_Filerow*)this->
-          getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.status", value);
-         ((T_File_Statusrow*)this->
-          getConstituentRow((string)"t_file_statusrow", ""))->
-           setValue((string)"t_file_status.id", value);
-    }
-    if( key.compare("t_file_status.id") == 0) {
-         ((T_Filerow*)this->
-          getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.status", value);
-         ((T_File_Statusrow*)this->
-          getConstituentRow((string)"t_file_statusrow", ""))->
-           setValue((string)"t_file_status.id", value);
-    }
     if( key.compare("t_file.type") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
@@ -2973,6 +3020,22 @@ void Fileviewmultirow::setValue(string key, void* value) {
          ((T_File_Typerow*)this->
           getConstituentRow((string)"t_file_typerow", ""))->
            setValue((string)"t_file_type.id", value);
+    }
+    if( key.compare("t_file.status") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.status", value);
+         ((T_File_Statusrow*)this->
+          getConstituentRow((string)"t_file_statusrow", ""))->
+           setValue((string)"t_file_status.id", value);
+    }
+    if( key.compare("t_file_status.id") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.status", value);
+         ((T_File_Statusrow*)this->
+          getConstituentRow((string)"t_file_statusrow", ""))->
+           setValue((string)"t_file_status.id", value);
     }
     if( key.compare("t_file.inblock") == 0) {
          ((T_Filerow*)this->
@@ -3139,13 +3202,13 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_file.inblock", "INTEGER"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
     Schema.insert(Entry("t_file_status.name", "STRING"));
-    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_file.guid", "STRING"));
     Schema.insert(Entry("t_file_type.name", "STRING"));
     Schema.insert(Entry("t_file_type.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_block_status.id", "INTEGER"));
-    Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_file.id", "INTEGER"));
     Schema.insert(Entry("t_file_status.id", "INTEGER"));
     Schema.insert(Entry("t_block.id", "INTEGER"));
@@ -3158,12 +3221,12 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     PrimaryKeys.push_back("t_evcoll_file.id");
 
     ForeignKeys.push_back("t_evcoll_file.fileid");
-    ForeignKeys.push_back("t_evcoll_file.evcoll");
+    ForeignKeys.push_back("t_file.type");
     ForeignKeys.push_back("t_block.processed_dataset");
     ForeignKeys.push_back("t_file.inblock");
     ForeignKeys.push_back("t_block.status");
+    ForeignKeys.push_back("t_evcoll_file.evcoll");
     ForeignKeys.push_back("t_file.status");
-    ForeignKeys.push_back("t_file.type");
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_file.evcoll");
@@ -3206,12 +3269,12 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
 
     References.insert(Entry("t_evcoll_file.fileid", "t_file.id"));
     References.insert(Entry("t_block.status", "t_block_status.id"));
-    References.insert(Entry("t_file.status", "t_file_status.id"));
     References.insert(Entry("t_file.type", "t_file_type.id"));
+    References.insert(Entry("t_file.status", "t_file_status.id"));
     References.insert(Entry("t_file.inblock", "t_block.id"));
 
 
-    ExternalReferences.insert(Entry("t_file.type", "t_file_type.id"));
+    ExternalReferences.insert(Entry("t_file.status", "t_file_status.id"));
 }
 
 string* Fileviewmultirow_DB_BINDING::getTableName(void) {
@@ -3250,10 +3313,10 @@ void Primarydatasetmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_physics_grouprow", ""))->
            setValue((string)"t_physics_group.name", value);
     }
-    if( key.compare("t_physics_group.convenor") == 0) {
+    if( key.compare("t_physics_group.convener") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convenor", value);
+           setValue((string)"t_physics_group.convener", value);
     }
     if( key.compare("t_primary_dataset.id") == 0) {
          ((T_Primary_Datasetrow*)this->
@@ -3392,10 +3455,10 @@ void* Primarydatasetmultirow::getValue(string key) {
           getConstituentRow("t_physics_grouprow", ""))->
            getValue((string)"t_physics_group.name");
     }
-   if( key.compare("t_physics_group.convenor") == 0) {
+   if( key.compare("t_physics_group.convener") == 0) {
        return  ((T_Physics_Grouprow*)this->
           getConstituentRow("t_physics_grouprow", ""))->
-           getValue((string)"t_physics_group.convenor");
+           getValue((string)"t_physics_group.convener");
     }
    if( key.compare("t_primary_dataset.id") == 0) {
        return  ((T_Primary_Datasetrow*)this->
@@ -3458,21 +3521,21 @@ Primarydatasetmultirow_DB_BINDING::Primarydatasetmultirow_DB_BINDING() {
     Schema.insert(Entry("t_desc_primary.trigger_path", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.description", "STRING"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
-    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.id", "INTEGER"));
     Schema.insert(Entry("t_desc_mc.production", "STRING"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
     Schema.insert(Entry("t_desc_primary.mc_channel", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_desc_primary.is_mc_data", "CHARACTER"));
+    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
     PrimaryKeys.push_back("t_primary_dataset.id");
 
     ForeignKeys.push_back("t_primary_dataset.physics_group");
-    ForeignKeys.push_back("t_physics_group.convenor");
     ForeignKeys.push_back("t_desc_primary.mc_channel");
     ForeignKeys.push_back("t_primary_dataset.description");
     ForeignKeys.push_back("t_desc_primary.trigger_path");
+    ForeignKeys.push_back("t_physics_group.convener");
 
     list<string> tmplist;
     tmplist.push_back("t_primary_dataset.name");
@@ -3513,7 +3576,7 @@ Primarydatasetmultirow_DB_BINDING::Primarydatasetmultirow_DB_BINDING() {
     References.insert(Entry("t_desc_primary.trigger_path", "t_desc_trigger.id"));
 
 
-    ExternalReferences.insert(Entry("t_desc_primary.trigger_path", "t_desc_trigger.id"));
+    ExternalReferences.insert(Entry("t_physics_group.convener", "t_person.id"));
 }
 
 string* Primarydatasetmultirow_DB_BINDING::getTableName(void) {
@@ -3634,21 +3697,21 @@ void Processingpathmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_app_configrow", ""))->
            setValue((string)"t_app_config.id", value);
     }
-    if( key.compare("t_app_config.application") == 0) {
-         ((T_App_Configrow*)this->
-          getConstituentRow((string)"t_app_configrow", ""))->
-           setValue((string)"t_app_config.application", value);
-         ((T_Applicationrow*)this->
-          getConstituentRow((string)"t_applicationrow", ""))->
-           setValue((string)"t_application.id", value);
+    if( key.compare("t_processed_dataset.processing_path") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
     }
-    if( key.compare("t_application.id") == 0) {
-         ((T_App_Configrow*)this->
-          getConstituentRow((string)"t_app_configrow", ""))->
-           setValue((string)"t_app_config.application", value);
-         ((T_Applicationrow*)this->
-          getConstituentRow((string)"t_applicationrow", ""))->
-           setValue((string)"t_application.id", value);
+    if( key.compare("t_processing_path.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
     }
     if( key.compare("t_application.app_family") == 0) {
          ((T_Applicationrow*)this->
@@ -3682,21 +3745,21 @@ void Processingpathmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_data_tierrow", ""))->
            setValue((string)"t_data_tier.id", value);
     }
-    if( key.compare("t_processed_dataset.processing_path") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.processing_path", value);
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.id", value);
+    if( key.compare("t_app_config.application") == 0) {
+         ((T_App_Configrow*)this->
+          getConstituentRow((string)"t_app_configrow", ""))->
+           setValue((string)"t_app_config.application", value);
+         ((T_Applicationrow*)this->
+          getConstituentRow((string)"t_applicationrow", ""))->
+           setValue((string)"t_application.id", value);
     }
-    if( key.compare("t_processing_path.id") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.processing_path", value);
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.id", value);
+    if( key.compare("t_application.id") == 0) {
+         ((T_App_Configrow*)this->
+          getConstituentRow((string)"t_app_configrow", ""))->
+           setValue((string)"t_app_config.application", value);
+         ((T_Applicationrow*)this->
+          getConstituentRow((string)"t_applicationrow", ""))->
+           setValue((string)"t_application.id", value);
     }
 }
 
@@ -3884,50 +3947,48 @@ Processingpathmultirow::~Processingpathmultirow(){
 Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     TableName = "ProcessingPath";
 
-    Schema.insert(Entry("t_app_family.name", "STRING"));
-    Schema.insert(Entry("t_collection_type.name.t_application.output_type", "STRING"));
-    Schema.insert(Entry("t_app_config.parameter_set", "STRING"));
-    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
-    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
-    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
-    Schema.insert(Entry("t_app_config.conditions_version", "STRING"));
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_application.id", "INTEGER"));
-    Schema.insert(Entry("t_collection_type.name.t_application.input_type", "STRING"));
+    Schema.insert(Entry("t_collection_type.name.t_application.output_type", "STRING"));
     Schema.insert(Entry("t_application.app_version", "STRING"));
+    Schema.insert(Entry("t_app_config.conditions_version", "STRING"));
+    Schema.insert(Entry("t_application.id", "INTEGER"));
     Schema.insert(Entry("t_application.output_type", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_app_config.application", "INTEGER"));
-    Schema.insert(Entry("t_collection_type.id.t_application.output_type", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_app_config.id", "INTEGER"));
     Schema.insert(Entry("t_collection_type.id.t_application.input_type", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
     Schema.insert(Entry("t_application.app_family", "INTEGER"));
-    Schema.insert(Entry("t_application.executable", "STRING"));
-    Schema.insert(Entry("t_application.input_type", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_app_family.name", "STRING"));
+    Schema.insert(Entry("t_app_config.parameter_set", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_app_config.application", "INTEGER"));
+    Schema.insert(Entry("t_collection_type.name.t_application.input_type", "STRING"));
+    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_collection_type.id.t_application.output_type", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_app_family.id", "INTEGER"));
+    Schema.insert(Entry("t_application.input_type", "INTEGER"));
+    Schema.insert(Entry("t_application.executable", "STRING"));
 
     PrimaryKeys.push_back("t_processed_dataset.id");
 
     ForeignKeys.push_back("t_processing_path.app_config");
-    ForeignKeys.push_back("t_app_config.application");
     ForeignKeys.push_back("t_application.output_type");
     ForeignKeys.push_back("t_processed_dataset.primary_dataset");
-    ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_app_config.application");
+    ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_application.app_family");
     ForeignKeys.push_back("t_application.input_type");
 
     list<string> tmplist;
     tmplist.push_back("t_processed_dataset.primary_dataset");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_processed_dataset.processing_path");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -3972,10 +4033,10 @@ Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_processed_dataset");
 
     References.insert(Entry("t_processing_path.app_config", "t_app_config.id"));
-    References.insert(Entry("t_app_config.application", "t_application.id"));
+    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_application.app_family", "t_app_family.id"));
     References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
-    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
+    References.insert(Entry("t_app_config.application", "t_application.id"));
 
     MultiReferences.insert(Entry("t_application.output_type", "t_collection_type.id"));
     MultiReferences.insert(Entry("t_application.input_type", "t_collection_type.id"));
@@ -4029,18 +4090,18 @@ void Analysisdatasetmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_info_anadsrow", ""))->
            setValue((string)"t_info_anads.estimated_luminiosity", value);
     }
-    if( key.compare("t_anads_data.analysis_dataset") == 0) {
-         ((T_Anads_Datarow*)this->
-          getConstituentRow((string)"t_anads_datarow", ""))->
-           setValue((string)"t_anads_data.analysis_dataset", value);
+    if( key.compare("t_info_anads.analysis_dataset") == 0) {
+         ((T_Info_Anadsrow*)this->
+          getConstituentRow((string)"t_info_anadsrow", ""))->
+           setValue((string)"t_info_anads.analysis_dataset", value);
          ((T_Analysis_Datasetrow*)this->
           getConstituentRow((string)"t_analysis_datasetrow", ""))->
            setValue((string)"t_analysis_dataset.id", value);
     }
     if( key.compare("t_analysis_dataset.id") == 0) {
-         ((T_Anads_Datarow*)this->
-          getConstituentRow((string)"t_anads_datarow", ""))->
-           setValue((string)"t_anads_data.analysis_dataset", value);
+         ((T_Info_Anadsrow*)this->
+          getConstituentRow((string)"t_info_anadsrow", ""))->
+           setValue((string)"t_info_anads.analysis_dataset", value);
          ((T_Analysis_Datasetrow*)this->
           getConstituentRow((string)"t_analysis_datasetrow", ""))->
            setValue((string)"t_analysis_dataset.id", value);
@@ -4077,18 +4138,18 @@ void Analysisdatasetmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_dataset_statusrow", ""))->
            setValue((string)"t_dataset_status.id", value);
     }
-    if( key.compare("t_info_anads.analysis_dataset") == 0) {
-         ((T_Info_Anadsrow*)this->
-          getConstituentRow((string)"t_info_anadsrow", ""))->
-           setValue((string)"t_info_anads.analysis_dataset", value);
+    if( key.compare("t_anads_data.analysis_dataset") == 0) {
+         ((T_Anads_Datarow*)this->
+          getConstituentRow((string)"t_anads_datarow", ""))->
+           setValue((string)"t_anads_data.analysis_dataset", value);
          ((T_Analysis_Datasetrow*)this->
           getConstituentRow((string)"t_analysis_datasetrow", ""))->
            setValue((string)"t_analysis_dataset.id", value);
     }
     if( key.compare("t_analysis_dataset.id") == 0) {
-         ((T_Info_Anadsrow*)this->
-          getConstituentRow((string)"t_info_anadsrow", ""))->
-           setValue((string)"t_info_anads.analysis_dataset", value);
+         ((T_Anads_Datarow*)this->
+          getConstituentRow((string)"t_anads_datarow", ""))->
+           setValue((string)"t_anads_data.analysis_dataset", value);
          ((T_Analysis_Datasetrow*)this->
           getConstituentRow((string)"t_analysis_datasetrow", ""))->
            setValue((string)"t_analysis_dataset.id", value);
@@ -4220,17 +4281,15 @@ Analysisdatasetmultirow_DB_BINDING::Analysisdatasetmultirow_DB_BINDING() {
 
     PrimaryKeys.push_back("t_anads_data.id");
 
-    ForeignKeys.push_back("t_anads_data.analysis_dataset");
-    ForeignKeys.push_back("t_info_anads.status");
     ForeignKeys.push_back("t_info_anads.analysis_dataset");
     ForeignKeys.push_back("t_anads_data.event_collection");
     ForeignKeys.push_back("t_info_anads.validation_status");
+    ForeignKeys.push_back("t_anads_data.analysis_dataset");
+    ForeignKeys.push_back("t_info_anads.status");
     ForeignKeys.push_back("t_analysis_dataset.processed_dataset");
 
     list<string> tmplist;
     tmplist.push_back("t_anads_data.analysis_dataset");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_anads_data.event_collection");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -4259,10 +4318,10 @@ Analysisdatasetmultirow_DB_BINDING::Analysisdatasetmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_validation_status");
     SchemaOrder.push_back("t_info_anads");
 
-    References.insert(Entry("t_anads_data.analysis_dataset", "t_analysis_dataset.id"));
+    References.insert(Entry("t_info_anads.analysis_dataset", "t_analysis_dataset.id"));
     References.insert(Entry("t_info_anads.validation_status", "t_validation_status.id"));
     References.insert(Entry("t_info_anads.status", "t_dataset_status.id"));
-    References.insert(Entry("t_info_anads.analysis_dataset", "t_analysis_dataset.id"));
+    References.insert(Entry("t_anads_data.analysis_dataset", "t_analysis_dataset.id"));
 
 
     ExternalReferences.insert(Entry("t_analysis_dataset.processed_dataset", "t_processed_dataset.id"));
@@ -4355,6 +4414,22 @@ void Datasetprovenenceevchildmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_processing_pathrow", ""))->
            setValue((string)"t_processing_path.id", value);
     }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
     if( key.compare("t_evcoll_parentage.type") == 0) {
          ((T_Evcoll_Parentagerow*)this->
           getConstituentRow((string)"t_evcoll_parentagerow", ""))->
@@ -4386,22 +4461,6 @@ void Datasetprovenenceevchildmultirow::setValue(string key, void* value) {
          ((T_Primary_Datasetrow*)this->
           getConstituentRow((string)"t_primary_datasetrow", ""))->
            setValue((string)"t_primary_dataset.id", value);
-    }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
     }
     if( key.compare("t_event_collection.processed_dataset") == 0) {
          ((T_Event_Collectionrow*)this->
@@ -4582,43 +4641,43 @@ Datasetprovenenceevchildmultirow_DB_BINDING::Datasetprovenenceevchildmultirow_DB
     TableName = "DatasetProvenenceEvChild";
 
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
-    Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
-    Schema.insert(Entry("t_parentage_type.name", "STRING"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
-    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.type", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
+    Schema.insert(Entry("t_parentage_type.name", "STRING"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
 
     PrimaryKeys.push_back("t_evcoll_parentage.parent");
     PrimaryKeys.push_back("t_evcoll_parentage.child");
 
-    ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_primary_dataset.physics_group");
     ForeignKeys.push_back("t_primary_dataset.description");
-    ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_processed_dataset.primary_dataset");
-    ForeignKeys.push_back("t_processed_dataset.processing_path");
     ForeignKeys.push_back("t_event_collection.processed_dataset");
-    ForeignKeys.push_back("t_evcoll_parentage.child");
     ForeignKeys.push_back("t_evcoll_parentage.type");
+    ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_evcoll_parentage.parent");
+    ForeignKeys.push_back("t_processing_path.data_tier");
+    ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_evcoll_parentage.child");
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_parentage.parent");
@@ -4664,15 +4723,15 @@ Datasetprovenenceevchildmultirow_DB_BINDING::Datasetprovenenceevchildmultirow_DB
     SchemaOrder.push_back("t_parentage_type");
     SchemaOrder.push_back("t_evcoll_parentage");
 
+    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
+    References.insert(Entry("t_evcoll_parentage.type", "t_parentage_type.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
-    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
     References.insert(Entry("t_evcoll_parentage.child", "t_event_collection.id"));
-    References.insert(Entry("t_evcoll_parentage.type", "t_parentage_type.id"));
 
 
-    ExternalReferences.insert(Entry("t_evcoll_parentage.parent", "t_event_collection.id"));
+    ExternalReferences.insert(Entry("t_evcoll_parentage.child", "t_event_collection.id"));
 }
 
 string* Datasetprovenenceevchildmultirow_DB_BINDING::getTableName(void) {
@@ -4762,6 +4821,22 @@ void Datasetprovenenceevparentmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_processing_pathrow", ""))->
            setValue((string)"t_processing_path.id", value);
     }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
     if( key.compare("t_evcoll_parentage.type") == 0) {
          ((T_Evcoll_Parentagerow*)this->
           getConstituentRow((string)"t_evcoll_parentagerow", ""))->
@@ -4793,22 +4868,6 @@ void Datasetprovenenceevparentmultirow::setValue(string key, void* value) {
          ((T_Primary_Datasetrow*)this->
           getConstituentRow((string)"t_primary_datasetrow", ""))->
            setValue((string)"t_primary_dataset.id", value);
-    }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
     }
     if( key.compare("t_event_collection.processed_dataset") == 0) {
          ((T_Event_Collectionrow*)this->
@@ -4989,43 +5048,43 @@ Datasetprovenenceevparentmultirow_DB_BINDING::Datasetprovenenceevparentmultirow_
     TableName = "DatasetProvenenceEvParent";
 
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
-    Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
-    Schema.insert(Entry("t_parentage_type.name", "STRING"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
-    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.type", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
+    Schema.insert(Entry("t_parentage_type.name", "STRING"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
 
     PrimaryKeys.push_back("t_evcoll_parentage.parent");
     PrimaryKeys.push_back("t_evcoll_parentage.child");
 
-    ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_primary_dataset.physics_group");
     ForeignKeys.push_back("t_primary_dataset.description");
-    ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_processed_dataset.primary_dataset");
-    ForeignKeys.push_back("t_processed_dataset.processing_path");
     ForeignKeys.push_back("t_event_collection.processed_dataset");
-    ForeignKeys.push_back("t_evcoll_parentage.child");
     ForeignKeys.push_back("t_evcoll_parentage.type");
+    ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_evcoll_parentage.parent");
+    ForeignKeys.push_back("t_processing_path.data_tier");
+    ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_evcoll_parentage.child");
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_parentage.parent");
@@ -5071,15 +5130,15 @@ Datasetprovenenceevparentmultirow_DB_BINDING::Datasetprovenenceevparentmultirow_
     SchemaOrder.push_back("t_parentage_type");
     SchemaOrder.push_back("t_evcoll_parentage");
 
+    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
+    References.insert(Entry("t_evcoll_parentage.type", "t_parentage_type.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_evcoll_parentage.parent", "t_event_collection.id"));
     References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
-    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
-    References.insert(Entry("t_evcoll_parentage.type", "t_parentage_type.id"));
 
 
-    ExternalReferences.insert(Entry("t_evcoll_parentage.parent", "t_event_collection.id"));
+    ExternalReferences.insert(Entry("t_evcoll_parentage.child", "t_event_collection.id"));
 }
 
 string* Datasetprovenenceevparentmultirow_DB_BINDING::getTableName(void) {
@@ -5183,6 +5242,38 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_info_evcollrow", ""))->
            setValue((string)"t_info_evcoll.status", value);
     }
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
     if( key.compare("t_processed_dataset.processing_path") == 0) {
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
@@ -5231,22 +5322,6 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_primary_datasetrow", ""))->
            setValue((string)"t_primary_dataset.id", value);
     }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
     if( key.compare("t_event_collection.processed_dataset") == 0) {
          ((T_Event_Collectionrow*)this->
           getConstituentRow((string)"t_event_collectionrow", ""))->
@@ -5259,22 +5334,6 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
          ((T_Event_Collectionrow*)this->
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.processed_dataset", value);
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
-    }
-    if( key.compare("t_block.processed_dataset") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
-    }
-    if( key.compare("t_processed_dataset.id") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
            setValue((string)"t_processed_dataset.id", value);
@@ -5473,34 +5532,34 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
 
     Schema.insert(Entry("t_info_evcoll.validation_status", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
     Schema.insert(Entry("t_block.status", "INTEGER"));
-    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
-    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
-    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
-    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
-    Schema.insert(Entry("t_info_evcoll.status", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
     Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.full_path", "STRING"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_info_evcoll.status", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_block.id");
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
@@ -5509,13 +5568,13 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     ForeignKeys.push_back("t_info_evcoll.validation_status");
     ForeignKeys.push_back("t_primary_dataset.description");
     ForeignKeys.push_back("t_block.processed_dataset");
-    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
+    ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_info_evcoll.status");
     ForeignKeys.push_back("t_block.status");
     ForeignKeys.push_back("t_event_collection.processed_dataset");
     ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_info_evcoll.event_collection");
-    ForeignKeys.push_back("t_processing_path.data_tier");
+    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_processed_dataset.processing_path");
 
     list<string> tmplist;
@@ -5565,12 +5624,12 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_block");
     SchemaOrder.push_back("t_info_evcoll");
 
+    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
     References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
-    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
-    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
 
 
     ExternalReferences.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
