@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsUnitTest.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsUnitTest.py,v 1.1 2005/11/08 21:46:54 sveseli Exp $
 #
 # Base class for DBS unit tests.
 #
@@ -8,6 +8,7 @@
 import string
 import unittest
 
+import dbsUtility
 import dbsException
 import dbsLogManager
 
@@ -51,10 +52,10 @@ class DbsUnitTest(unittest.TestCase):
   __logManager = dbsLogManager.getInstance()
   
   # Methods which manipulate static objects.
-  def setApi(self, apiClassName=None,
+  def setApi(apiClassName=None,
 	     apiClassInitArgsString=""):
     """ Set API class instance. """
-    funcName = "%s.%s" % (self.__class__.__name__, "setApi()")
+    funcName = "%s.%s" % ("DbsUnitTest", "setApi()")
     if DbsUnitTest.__api is not None:
       errMsg = "Dbs Api has been initialized already."
       DbsUnitTest.__logManager.log(what=errMsg,
@@ -93,10 +94,12 @@ class DbsUnitTest(unittest.TestCase):
         logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
       raise DbsApiImportError(exception=ex)
 
+  # Static method for setting api.
+  setApi = dbsUtility.StaticMethod(setApi)
 
-  def getApi(self):
+  def getApi():
     """ Get API class instance. """
-    funcName = "%s.%s" % (self.__class__.__name__, "getApi()")
+    funcName = "%s.%s" % ("DbsUnitTest", "getApi()")
     if DbsUnitTest.__api is None:
       errMsg = "Dbs Api has not been initialized."
       DbsUnitTest.__logManager.log(what=errMsg,
@@ -105,9 +108,12 @@ class DbsUnitTest(unittest.TestCase):
       raise DbsApiNotInitialized(args=errMsg)
     return DbsUnitTest.__api
 
-  def getApiModule(self):
+  # Static method for getting api.
+  getApi = dbsUtility.StaticMethod(getApi)
+
+  def getApiModule():
     """ Get API class instance. """
-    funcName = "%s.%s" % (self.__class__.__name__, "getApi()")
+    funcName = "%s.%s" % ("DbsUnitTest", "getApiModule()")
     if DbsUnitTest.__api is None:
       errMsg = "Dbs Api has not been initialized."
       DbsUnitTest.__logManager.log(what=errMsg,
@@ -116,9 +122,15 @@ class DbsUnitTest(unittest.TestCase):
       raise DbsApiNotInitialized(args=errMsg)
     return DbsUnitTest.__apiModule
 
-  def getLogManager(self):
+  # Static method for getting api module.
+  getApiModule = dbsUtility.StaticMethod(getApiModule)
+
+  def getLogManager():
     """ Get log manager instance. """
     return DbsUnitTest.__logManager
+
+  # Static method for getting api module.
+  getLogManager = dbsUtility.StaticMethod(getLogManager)
 
   def __init__(self, *args):
     """ Constructor. """
@@ -135,11 +147,11 @@ class DbsUnitTest(unittest.TestCase):
 if __name__ == "__main__":
   try:
     unitTest = DbsUnitTest()
-    unitTest.setApi(
+    DbsUnitTest.setApi(
       apiClassName="dbsCgiApi.DbsCgiApi",
       apiClassInitArgsString="cgiUrl='http://cern.ch/cms-dbs/cgi-bin'")
-    api = unitTest.getApi()
-    apiModule = unitTest.getApiModule()
+    api = DbsUnitTest.getApi()
+    apiModule = DbsUnitTest.getApiModule()
     print "API module: ", apiModule
     datasetPath = "eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
     print "Getting dataset contents for: %s" % datasetPath

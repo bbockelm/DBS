@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.3 2005/11/01 14:34:18 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.4 2005/11/07 21:40:02 sveseli Exp $
 #
 # Class which uses CGI utilities to extract info from the db.
 #
@@ -55,9 +55,6 @@ class InvalidDatasetPathName(DbsCgiUtilityException):
   
 ##############################################################################
 # HTTP exception mapper.
-class StaticMethod:
-  def __init__(self, anycallable):
-    self.__call__ = anycallable
 
 class DbsCgiExceptionMapper:
 
@@ -70,7 +67,7 @@ class DbsCgiExceptionMapper:
     return DbsCgiExceptionMapper.__exceptionMap.get(
       httpErrorCode, "CgiToolError")
 
-  getExceptionClassName = StaticMethod(getExceptionClassName)
+  getExceptionClassName = dbsUtility.StaticMethod(getExceptionClassName)
 
 ##############################################################################
 # CGI utility class.

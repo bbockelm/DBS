@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsObjectInfo.py,v 1.4 2005/10/28 18:29:57 sveseli Exp $
+# $Id: dbsObjectInfo.py,v 1.1 2005/11/08 21:46:54 sveseli Exp $
 #
 # This class keeps track of the information needed to
 # instantiate a DBS object.
@@ -14,7 +14,7 @@ ARGUMENTS_STRING_TAG_ = "ArgumentsString"
 
 
 ##############################################################################
-# DBS file block class.
+# DBS object info class.
 
 class DbsObjectInfo(UserDict.UserDict):
 
@@ -30,7 +30,7 @@ class DbsObjectInfo(UserDict.UserDict):
     return self.get(CLASS_NAME_TAG_)
 
   def getArgumentsString(self):
-    """ Retrieve block id. """
+    """ Retrieve argument string. """
     return self.get(ARGUMENTS_STRING_TAG_)
 
 
