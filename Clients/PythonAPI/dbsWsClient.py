@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.5 2005/11/09 21:37:59 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -18,7 +18,8 @@ import dbsStaticMethod
 
 import dbsLogManager
 
-SOAPpy.Config.debug=1
+# Uncommenting the following line results in SOAP debugging messages.
+#SOAPpy.Config.debug=1
 
 
 ##############################################################################

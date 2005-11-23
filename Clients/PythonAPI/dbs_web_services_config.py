@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsConfigManager.py,v 1.3 2005/11/07 21:40:02 sveseli Exp $
+# $Id: dbs_web_services_config.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
 #
 # Config manager class. 
 #
@@ -18,7 +18,7 @@ ServerConfigDict_ = {
   "Port" : 27981,
   
   # Setting this to 1 will turn on soap messages.
-  "SoapDebugFlag" : 1,
+  "SoapDebugFlag" : 0,
 
   # Number of servants.
   "NumberOfServants" : 5,
