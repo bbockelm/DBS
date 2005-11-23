@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<definitions name="DbsDatasetService" 
+targetNamespace="http://DBS_WEB_SERVER_ADDRESS/sam_web_services/wsdl/DbsDatasetService.wsdl" 
+xmlns:tns="http://DBS_WEB_SERVER_ADDRESS/sam_web_services/wsdl/DbsDatasetService.wsdl" 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema/" 
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <types>
+    <schema 
+    targetNamespace="http://DBS_WEB_SERVER_ADDRESS/sam_web_services/wsdl/DbsDatasetService.wsdl" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+
+      <complexType name="ArrayOfString">
+	<complexContent>
+	  <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="xsd:string[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
+      <complexType name="DbsEventCollection">
+        <xsd:sequence>
+          <xsd:element name="collectionName" type="xsd:string"/>
+          <xsd:element name="numberOfEvents" type="xsd:int"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="ArrayOfDbsEventCollection">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="tns:DbsEventCollection[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
+      <complexType name="DbsFileBlock">
+        <xsd:sequence>
+          <xsd:element name="blockName" type="xsd:string"/>
+          <xsd:element name="blockId" type="xsd:int"/>
+          <xsd:element name="eventCollectionList" type="tns:ArrayOfDbsEventCollection"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="ArrayOfDbsFileBlock">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="tns:DbsFileBlock[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
+      <complexType name="DbsDataset">
+        <xsd:sequence>
+          <xsd:element name="datasetName" type="xsd:string"/>
+          <xsd:element name="datasetPath" type="xsd:string"/>
+          <xsd:element name="dataType" type="xsd:string"/>
+          <xsd:element name="dataTier" type="xsd:string"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="ArrayOfDbsDataset">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="tns:DbsDataset[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
+    </schema>
+  </types>
+
+  <message name="getDatasetContentsRequest">
+    <part name="datasetPathName" type="xsd:string"/>
+  </message>
+
+  <message name="getDatasetContentsResponse">
+    <part name="fileBlockList" type="tns:ArrayOfDbsFileBlock"/>
+  </message>
+
+  <message name="getDatasetContentsFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
+  <message name="getDatasetProvenanceRequest">
+    <part name="datasetPathName" type="xsd:string"/>
+    <part name="dataTierList" type="tns:ArrayOfString"/>
+  </message>
+
+  <message name="getDatasetProvenanceResponse">
+    <part name="datasetParentList" type="tns:ArrayOfDbsDataset"/>
+  </message>
+
+  <message name="getDatasetProvenanceFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
+  <portType name="DbsDatasetPortType">
+    <operation name="getDatasetContents">
+      <input message="tns:getDatasetContentsRequest" name="getDatasetContentsRequest"/>
+      <output message="tns:getDatasetContentsResponse" name="getDatasetContentsResponse"/>
+      <fault message="tns:getDatasetContentsFault" name="getDatasetContentsFault"/>
+    </operation>
+
+    <operation name="getDatasetProvenance" parameterOrder="datasetPathName dataTierList">
+      <input message="tns:getDatasetProvenanceRequest" name="getDatasetProvenanceRequest"/>
+      <output message="tns:getDatasetProvenanceResponse" name="getDatasetProvenanceResponse"/>
+      <fault message="tns:getDatasetProvenanceFault" name="getDatasetProvenanceFault"/>
+    </operation>
+  </portType>
+
+  <binding name="DbsDatasetBinding" type="tns:DbsDatasetPortType">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getDatasetContents">
+      <soap:operation soapAction="getDatasetContents"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="getDatasetContentsFault">
+        <soap:fault name="getDatasetContentsFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
+    <operation name="getDatasetProvenance">
+      <soap:operation soapAction="getDatasetProvenance"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="getDatasetProvenanceFault">
+        <soap:fault name="getDatasetProvenanceFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
+  </binding>
+
+  <service name="DbsDatasetService">
+    <documentation>DBS Dataset Service provides functionality for retrieving information about datasets.</documentation>
+    <port name="DbsDatasetPort" binding="tns:DbsDatasetBinding">
+      <soap:address location="http://localhost.localdomain:27981"/>
+    </port>
+  </service>
+
+</definitions>
