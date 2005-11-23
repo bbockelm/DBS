@@ -59,6 +59,10 @@
        python processes wsdl at run time, no stubs/skeletons are needed
        for deployment, and one only needs to have the wsdl file accessible
        via http
+   - dbs api infrastructure automatically converts soap objects to api python
+     classes (and vice versa); therefore, the user of dbsCgiApi sees the same
+     object as the user of dbsWsApi, the test suite should work without any
+     changes, etc.
    - in order to run the service container or use dbsWsApi one has to
        source setups.(c)sh file; this sets up python path properly for SOAPpy
    - to start web service container: 
