@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.6 2005/11/07 21:40:02 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.6 2005/11/07 21:40:02 sveseli Exp $
 #
-# CGI implementation of the DBS API class. This version of API
-# relies on cgi scripts providing xml output. 
+# Web service implementation of the DBS API class.
 #
 # Base API class provides some common functionality (e.g., logging
 # configuration). Exception modules are defined in the dbsApi module.
@@ -11,17 +10,18 @@
 
 import dbsException
 import dbsApi
-import dbsCgiUtility
+import dbsWsClient
 
 
 ##############################################################################
-# CLI implementation of the DBS API class.
+# Web service implementation of the DBS API class. Exceptions are defined
+# in dbsApi module.
 
-class DbsCgiApi(dbsApi.DbsApi):
+class DbsWsApi(dbsApi.DbsApi):
 
-  def __init__(self, cgiUrl=None):
+  def __init__(self, wsdlUrl=None):
     """ Constructor. """
-    self._cgiUtility = dbsCgiUtility.DbsCgiUtility(cgiUrl=cgiUrl)
+    self._wsClient = dbsWsClient.DbsWsClient(wsdlUrl=wsdlUrl)
 
   def getDatasetContents(self, datasetPathName):
     """
@@ -30,13 +30,13 @@ class DbsCgiApi(dbsApi.DbsApi):
 
     Returns: list of DbsFileBlock objects.
     Exceptions: InvalidDatasetPathName
-                DbsCgiApiException
+                DbsApiException
     """
     try:
-      return self._cgiUtility.getDatasetContents(datasetPathName)
-    except dbsCgiUtility.InvalidDatasetPathName, ex:
+      return self._wsClient.getDatasetContents(datasetPathName)
+    except dbsWsClient.InvalidDatasetPathName, ex:
       raise dbsApi.InvalidDatasetPathName(exception=ex)
-    except dbsCgiUtility.DbsCgiUtilityException, ex:
+    except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
 
   def getDatasetProvenance(self, datasetPathName, dataTierList=[]):
@@ -45,14 +45,14 @@ class DbsCgiApi(dbsApi.DbsApi):
 
     Returns: list of DbsDataset objects.
     Exceptions: InvalidDatasetPathName
-                DbsCgiApiException
+                DbsApiException
     """
     try:
-      return self._cgiUtility.getDatasetProvenance(
+      return self._wsClient.getDatasetProvenance(
 	datasetPathName, dataTierList)
-    except dbsCgiUtility.InvalidDatasetPathName, ex:
+    except dbsWsClient.InvalidDatasetPathName, ex:
       raise dbsApi.InvalidDatasetPathName(exception=ex)
-    except dbsCgiUtility.DbsCgiUtilityException, ex:
+    except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
       
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     datasetPath = "eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
 
     # Construct api object.
-    api = DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin")
+    api = DbsWsApi(wsdlUrl="./DbsDatasetService.wsdl.xml")
 
     # Configure logging.
     api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
@@ -101,3 +101,4 @@ if __name__ == "__main__":
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   print "Done"
+   

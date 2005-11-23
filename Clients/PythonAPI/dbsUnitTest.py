@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsUnitTest.py,v 1.1 2005/11/08 21:46:54 sveseli Exp $
+# $Id: dbsUnitTest.py,v 1.2 2005/11/09 21:37:59 sveseli Exp $
 #
 # Base class for DBS unit tests.
 #
@@ -8,7 +8,7 @@
 import string
 import unittest
 
-import dbsUtility
+import dbsStaticMethod
 import dbsException
 import dbsLogManager
 
@@ -95,7 +95,7 @@ class DbsUnitTest(unittest.TestCase):
       raise DbsApiImportError(exception=ex)
 
   # Static method for setting api.
-  setApi = dbsUtility.StaticMethod(setApi)
+  setApi = dbsStationMethod.DbsStaticMethod(setApi)
 
   def getApi():
     """ Get API class instance. """
@@ -109,7 +109,7 @@ class DbsUnitTest(unittest.TestCase):
     return DbsUnitTest.__api
 
   # Static method for getting api.
-  getApi = dbsUtility.StaticMethod(getApi)
+  getApi = dbsStationMethod.DbsStaticMethod(getApi)
 
   def getApiModule():
     """ Get API class instance. """
@@ -123,14 +123,14 @@ class DbsUnitTest(unittest.TestCase):
     return DbsUnitTest.__apiModule
 
   # Static method for getting api module.
-  getApiModule = dbsUtility.StaticMethod(getApiModule)
+  getApiModule = dbsStationMethod.DbsStaticMethod(getApiModule)
 
   def getLogManager():
     """ Get log manager instance. """
     return DbsUnitTest.__logManager
 
   # Static method for getting api module.
-  getLogManager = dbsUtility.StaticMethod(getLogManager)
+  getLogManager = dbsStationMethod.DbsStaticMethod(getLogManager)
 
   def __init__(self, *args):
     """ Constructor. """

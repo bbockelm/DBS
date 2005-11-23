@@ -1,38 +1,51 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.3 2005/10/28 17:01:23 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.4 2005/10/28 18:29:57 sveseli Exp $
 #
 # File block class. 
 #
 
-import UserDict
+import dbsObject
 import types
 
 import dbsEventCollection
 import dbsException
 
-FILE_BLOCK_NAME_TAG_ = "FileBlockName"
-FILE_BLOCK_ID_TAG_ = "FileBlockId"
-EVENT_COLLECTION_LIST_TAG_ = "EventCollectionList"
+FILE_BLOCK_DICT_TAG_ = "blockDict"
+FILE_BLOCK_NAME_TAG_ = "blockName"
+FILE_BLOCK_ID_TAG_ = "blockId"
+EVENT_COLLECTION_LIST_TAG_ = "eventCollectionList"
+
+WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 
 
 ##############################################################################
 # DBS file block class.
 
-class DbsFileBlock(UserDict.UserDict):
+class DbsFileBlock(dbsObject.DbsObject):
 
   def __init__(self, blockName=None,
-	       blockId=None, eventCollectionList=[]):
+	       blockId=None, eventCollectionList=[], blockDict={}):
     """ Constructor. """
-    UserDict.UserDict.__init__(self)
-    self[FILE_BLOCK_NAME_TAG_] = str(blockName)
-    self[FILE_BLOCK_ID_TAG_] = int(blockId)
-    self[EVENT_COLLECTION_LIST_TAG_] = []
-    if not type(eventCollectionList) == types.ListType:
-      raise dbsException.InvalidArgument(args="Argument eventCollectionList has to be a list of dbsEventCollection.DbsEventCollection objects.")      
-    for eventCollection in eventCollectionList:
+    dbsObject.DbsObject.__init__(self, blockDict)
+    if not self.has_key(FILE_BLOCK_NAME_TAG_) \
+       or blockName is not None:
+      self[FILE_BLOCK_NAME_TAG_] = str(blockName)
+    if not self.has_key(FILE_BLOCK_ID_TAG_) \
+       or blockId is not None:
+      self[FILE_BLOCK_ID_TAG_] = int(blockId)
+
+    # Make sure that all event collections are of the tpye DbsEventCollection
+    # and that the list os of type DbsEventCollectionList.
+    dictEcList = []
+    if self.has_key(EVENT_COLLECTION_LIST_TAG_):
+      dictEcList = self[EVENT_COLLECTION_LIST_TAG_]
+    self[EVENT_COLLECTION_LIST_TAG_] = dbsEventCollection.DbsEventCollectionList()
+    for eventCollection in eventCollectionList+dictEcList:
       self.addEventCollection(eventCollection)
-      
+
+    self.setNamespace(WSDL_NAMESPACE_)
+
   def getBlockName(self):
     """ Retrieve block name. """
     return self.get(FILE_BLOCK_NAME_TAG_)
@@ -47,10 +60,48 @@ class DbsFileBlock(UserDict.UserDict):
 
   def addEventCollection(self, eventCollection):
     """ Add event collection. """
-    if not isinstance(eventCollection, dbsEventCollection.DbsEventCollection):
-      raise dbsException.InvalidArgument(args="Argument eventCollection needs to be an instance of class dbsEventCollection.DbsEventCollection.")
     self[EVENT_COLLECTION_LIST_TAG_].append(eventCollection)
-    
+        
+class DbsFileBlockList(dbsObject.DbsObjectList):
+
+  def __init__(self, fileBlockList=[]):
+    """ Constructor. """
+    # If needed convert elements to DbsFileBlock. If this cannot
+    # be done, InvalidArgument exception will be thrown.
+    fbList = []
+    for fb in fileBlockList:
+      newFb = self.__createFileBlock(fb)
+      fbList.append(newFb)
+    dbsObject.DbsObjectList.__init__(self, fbList)
+    self.setNamespace(WSDL_NAMESPACE_)
+
+  def __createFileBlock(self, fileBlock):
+    """ Create new fileBlock object. """
+    try:
+      newFb = fileBlock
+      if isinstance(fileBlock, DbsFileBlock):
+	# this is ok
+	pass
+      elif type(fileBlock) == types.DictType:
+	# can convert to DbsFileBlock
+	newFb = DbsFileBlock(blockDict=fileBlock)
+      else:
+	# assume this is soap struct; wild guess, may throw exception
+	blockId = fileBlock.blockId
+	blockName = fileBlock.blockName
+	eventCollectionList = fileBlock.eventCollectionList
+	newFb = DbsFileBlock(blockId=blockId,
+			     blockName=blockName,
+			     eventCollectionList=eventCollectionList)
+      return newFb
+    except Exception, ex:
+      raise dbsException.InvalidArgument(exception=ex)
+
+  def append(self, fileBlock):
+    """ Append new file block object. """
+    newFb = self.__createFileBlock(fileBlock)
+    dbsObject.DbsObjectList.append(self, newFb)
+
 
 ##############################################################################
 # Unit testing.

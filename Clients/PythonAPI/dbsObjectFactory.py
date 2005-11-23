@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsObjectFactory.py,v 1.1 2005/11/08 21:46:54 sveseli Exp $
+# $Id: dbsObjectFactory.py,v 1.1 2005/11/09 21:37:59 sveseli Exp $
 #
 # This class keeps track of the information needed to
 # instantiate a DBS object.
@@ -8,7 +8,7 @@
 
 import string
 import dbsObjectInfo
-import dbsUtility
+import dbsStaticMethod
 import dbsException
 import dbsLogManager
 
@@ -55,7 +55,7 @@ class DbsObjectFactory:
 	logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
       raise DbsObjectFactoryException(exception=ex)
 
-  createObject = dbsUtility.StaticMethod(createObject)
+  createObject = dbsStaticMethod.DbsStaticMethod(createObject)
   
 ##############################################################################
 # Unit testing.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsPhedexUtility.py,v 1.3 2005/10/28 16:19:02 sveseli Exp $
+# $Id: dbsPhedexUtility.py,v 1.4 2005/10/28 17:01:23 sveseli Exp $
 #
 # Class which uses PHEDEX utilities to extract info from the db.
 #
@@ -57,6 +57,13 @@ class InvalidXML(DbsPhedexUtilityException):
   def __init__ (self, **kwargs):
     """ Initialization. """
     DbsPhedexUtilityException.__init__(self, **kwargs)
+
+class InvalidDatasetPathName(DbsPhedexUtilityException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsPhedexUtilityException.__init__(self, **kwargs)
+
 
   
 ##############################################################################

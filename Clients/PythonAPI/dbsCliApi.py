@@ -1,33 +1,18 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCliApi.py,v 1.4 2005/11/07 21:40:02 sveseli Exp $
+# $Id: dbsCliApi.py,v 1.5 2005/11/08 21:46:54 sveseli Exp $
 #
 # CLI implementation of the DBS API class. This version of API
 # relies on various sql tools to retrieve information out of the db.
 #
 # Base API class provides some common functionality (e.g., logging
-# configuration).
+# configuration). Exception modules are defined in the dbsApi module.
 #
 
 import dbsException
 import dbsApi
 import dbsPhedexUtility
 
-
-##############################################################################
-# CLI API exception classes.
-
-class DbsCliApiException(dbsException.DbsException):
-
-  def __init__ (self, **kwargs):
-    """ Initialization. """
-    dbsException.DbsException.__init__(self, **kwargs)
-
-class InvalidDatasetPathName(DbsCliApiException):
-
-  def __init__ (self, **kwargs):
-    """ Initialization. """
-    DbsCliApiException.__init__(self, **kwargs)
 
 ##############################################################################
 # CLI implementation of the DBS API class.
@@ -51,8 +36,10 @@ class DbsCliApi(dbsApi.DbsApi):
     """
     try:
       return self._phedexUtility.getDatasetContents(datasetPathName)
+    except dbsPhedexUtility.InvalidDatasetPathName, ex:
+      raise dbsApi.InvalidDatasetPathName(exception=ex)
     except dbsPhedexUtility.DbsPhedexUtilityException, ex:
-      raise DbsCliApiException(exception=ex)
+      raise dbsApi.DbsApiException(exception=ex)
 
   def getDatasetProvenance(self, datasetPathName, dataTierList=[]):
     """
@@ -65,8 +52,10 @@ class DbsCliApi(dbsApi.DbsApi):
     try:
       return self._phedexUtility.getDatasetProvenance(
 	datasetPathName, dataTierList)
+    except dbsPhedexUtility.InvalidDatasetPathName, ex:
+      raise dbsApi.InvalidDatasetPathName(exception=ex)
     except dbsPhedexUtility.DbsPhedexUtilityException, ex:
-      raise DbsCliApiException(exception=ex)
+      raise dbsApi.DbsApiException(exception=ex)
       
 
 

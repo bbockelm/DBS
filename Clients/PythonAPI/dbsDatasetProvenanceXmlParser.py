@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetProvenanceXmlParser.py,v 1.3 2005/10/28 16:00:46 sveseli Exp $
+# $Id: dbsDatasetProvenanceXmlParser.py,v 1.4 2005/11/08 21:46:54 sveseli Exp $
 #
 # Class which parses dataset provenance xml file.
 #
@@ -15,8 +15,8 @@ import dbsXmlParser
 DATASET_PARENT_TAG_ = "parent"
 DATASET_NAME_ATTR_ = "name"
 DATASET_PATH_ATTR_ = "path"
-DATATIER_ATTR_ = "tier"
-DATATYPE_ATTR_ = "type"
+DATA_TIER_ATTR_ = "tier"
+DATA_TYPE_ATTR_ = "type"
 
 ##############################################################################
 # Exception classes.
@@ -62,12 +62,14 @@ class DbsDatasetProvenanceXmlParser(dbsXmlParser.DbsXmlParser):
 	parentPath = parentNode.getAttribute(DATASET_PATH_ATTR_)
 	parentPath = parentPath.encode(dbsXmlParser.DEFAULT_STRING_ENCODING_)
 
-	dataTier = parentNode.getAttribute(DATATIER_ATTR_)
+	dataTier = parentNode.getAttribute(DATA_TIER_ATTR_)
 	dataTier = dataTier.encode(dbsXmlParser.DEFAULT_STRING_ENCODING_)
 
-	dataType = parentNode.getAttribute(DATATYPE_ATTR_)
+	dataType = parentNode.getAttribute(DATA_TYPE_ATTR_)
 	dataType = dataType.encode(dbsXmlParser.DEFAULT_STRING_ENCODING_)
 
+	if len(parentName) == 0:
+	  parentName = string.split(parentPath, '/')[-1]
 	parent = dbsDataset.DbsDataset(datasetName=parentName,
 				       datasetPath=parentPath,
 				       dataTier=dataTier,

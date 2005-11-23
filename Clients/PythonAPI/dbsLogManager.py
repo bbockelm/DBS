@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsLogManager.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # Logging class. Since this class is a singleton, one should
 # access it using something like
@@ -9,12 +9,14 @@
 #  logManager = dbsLogManager.getInstance()
 #
 
-import dbsException
 
 import sys
 import os
 import time
 import threading
+
+import dbsException
+import dbsConfigManager
 
 # These are the log levels used as masks. 
 LOG_LEVEL_QUIET_ = 0     # no output
@@ -71,19 +73,25 @@ class DbsLogManager:
       # Current time.
       self._currentTime = time.time()
 
+      
+      # Check config manager, will return default values if
+      # config file is not defined.
+      configManager = dbsConfigManager.getInstance().getLogConfigManager()
+
       # Logging level.
-      self._logLevel = logLevel
+      self._logLevel = configManager.getLogLevel(logLevel)
         
       # Log directory.
-      self._logDir = logDir
+      self._logDir = configManager.getLogDir(logDir)
             
       # Log file.
       self._log = None
-      self._logFileName = logFileName
-      self._logFileNameSuffixFormat = logFileNameSuffixFormat
+      self._logFileName = configManager.getLogFileName(logFileName)
+      self._logFileNameSuffixFormat = configManager.getLogFileNameSuffixFormat(
+	logFileNameSuffixFormat)
 
       # Write to stdout.
-      self._writeToStdOut = writeToStdOut
+      self._writeToStdOut = configManager.getWriteToStdOut(writeToStdOut)
 
     finally:
       DbsLogManager.__instanceLock.release()
@@ -231,7 +239,7 @@ class DbsLogManager:
 	    fileName = fileName + time.strftime(self._logFileNameSuffixFormat)
 	  if self._logDir is not None and self._logDir != "":
 	    fileName = "%s/%s" % (self._logDir, fileName)
-	  if fileName != self._log.name:
+	  if self._log is None or fileName != self._log.name:
 	    self.openLogFile(fileName)
 	  self._log.write(outputStr)
 	  self._log.flush()
@@ -266,6 +274,7 @@ def getInstance():
 
 if __name__ == "__main__":
   lm = DbsLogManager()
+  print "Log level: %s" % lm.getLogLevel()
   lm.setLogLevel(LOG_LEVEL_DEBUG_|LOG_LEVEL_INFO_)
   lm.log("Here I am", where="main()", logLevel=LOG_LEVEL_DEBUG_)
   time.sleep(1.13)

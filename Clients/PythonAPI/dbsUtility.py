@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsUtility.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsUtility.py,v 1.2 2005/11/09 21:37:59 sveseli Exp $
 #
 # DBS utilities.
 #
@@ -19,14 +19,6 @@ class DbsUtilityException(dbsException.DbsException):
   def __init__ (self, **kwargs):
     """ Initialization. """
     dbsException.DbsException.__init__(self, **kwargs)
-
-##############################################################################
-# Class which allows one to write static methods. 
-
-class StaticMethod:
-  
-  def __init__(self, anycallable):
-    self.__call__ = anycallable
 
 
 ##############################################################################

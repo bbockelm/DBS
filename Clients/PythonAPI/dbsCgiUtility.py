@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.4 2005/11/07 21:40:02 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.5 2005/11/09 21:37:59 sveseli Exp $
 #
 # Class which uses CGI utilities to extract info from the db.
 #
@@ -10,7 +10,7 @@ import string
 import urllib2
 
 import dbsException
-import dbsUtility
+import dbsStaticMethod
 import dbsApi
 import dbsDatasetContentsXmlParser
 import dbsDatasetProvenanceXmlParser
@@ -67,7 +67,7 @@ class DbsCgiExceptionMapper:
     return DbsCgiExceptionMapper.__exceptionMap.get(
       httpErrorCode, "CgiToolError")
 
-  getExceptionClassName = dbsUtility.StaticMethod(getExceptionClassName)
+  getExceptionClassName = dbsStaticMethod.DbsStaticMethod(getExceptionClassName)
 
 ##############################################################################
 # CGI utility class.
@@ -105,7 +105,7 @@ class DbsCgiUtility:
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
       exec "cgiEx = %s(exception=ex, args='Input argument datasetPathName=\"%s\"')" % (cgiExClassName, datasetPathName)
       errMsg = "URLError caught: \n%s\nWill raise %s" % (
-	ex, cgiEx.__class__.__name__),
+	ex, cgiEx.__class__.__name__)
       self._logManager.log(what=errMsg,
 			   where=funcName,
 			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
@@ -158,7 +158,7 @@ class DbsCgiUtility:
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
       exec "cgiEx = %s(exception=ex, args='Input argument datasetPathName=\"%s\"')" % (cgiExClassName, datasetPathName)
       errMsg = "URLError caught: \n%s\nWill raise %s" % (
-	ex, cgiEx.__class__.__name__),
+	ex, cgiEx.__class__.__name__)
       self._logManager.log(what=errMsg,
 			   where=funcName,
 			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
