@@ -41,7 +41,7 @@ int DBSClient::callServer(){
     //cout<<"Calling the DBSDispatcher"<<endl; 
     //cout<<"Invoking Server Operation: " << this->mSend.getName() << endl; 
 			DBSDispatcher dispatcher;
-			dispatcher.run(&this->mSend, this->mRecv);
+			return (dispatcher.run(&this->mSend, this->mRecv));
     //cout<<"Returned From the DBSDispatcher"<<endl;
 		}else { //Remote server
     /*
@@ -264,6 +264,28 @@ int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) {
 }
 
 
+int DBSClient::insertFiles(vector<Fileview_ClientAPIData*>& fileInfo) {
+	this->mSend.dispose();
+	this->mSend.setName("WriteFiles");
+
+
+	for(int i=0;i < fileInfo.size(); i++) {
+		Fileview_ClientAPIData* thisParam = fileInfo.at(i);
+		Message tmpMesssage;
+		thisParam->makeMessage(tmpMesssage);
+		this->mSend.appendToVec( tmpMesssage, "fileparams" );
+	}
+	int success = this->callServer();
+	if ( success == 1 ) {
+		string value = this->mRecv.getElementValue("evcoll");
+		if ( value != "NOTFOUND" ) {
+			return util.atoi(value);
+		}
+	}
+	return success;
+}
+
+
 int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) {
 	this->mSend.dispose();
 	this->mSend.setName("WriteEventCollection");
@@ -276,10 +298,10 @@ int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) {
 			return util.atoi(value);
 		}
 	}
-
 	return success;
-	return 1;
+
 }
+
 
 
 int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend, 

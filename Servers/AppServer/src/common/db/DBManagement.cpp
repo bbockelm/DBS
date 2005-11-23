@@ -92,9 +92,13 @@ ResultSet* DBManagement::executeQueryWithResults(string sql) {
                 //cout << "New ROW Added <<<<<<<<<<" << endl;
 
 		for (int i = 0 ; i < noOfCols; i++) {
-			int length = (int)len[i];
+			//cout<<"(char*)buff[i] "<<(char*)buff[i]<<" len is "<<len[i]<<endl;
+			//cout<<"strlen is "<<strlen((char*)buff[i])<<endl;
+			//int length = (int)len[i];
+			int length = (int)strlen((char*)buff[i]);
 			if( length > 0 ) {
                                 //cout << "addElement????? " << (char*)buff[i] << endl;
+                                //cout << "addElemet WITH BUFF" <<endl;
 				rs->addElement((string)((char*)buff[i]));
 			} else {
                                 //cout << "addElemet EMPTY" <<endl;
@@ -102,7 +106,7 @@ ResultSet* DBManagement::executeQueryWithResults(string sql) {
 			}
 		}
 		returnCode = SQLFetch(stmtHandle);  
-		row++;
+		++row;
 	} 
 	freeStmtHandle();
 

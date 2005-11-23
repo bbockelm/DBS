@@ -87,9 +87,9 @@ void TableTemplate<R>::init() {
 	schemaOrder = this->schemaNconstraints.schemaNconstraints.getSchemaOrder();
 	util.setSchema(schema);
 	sql = new SQL(&util);
-	//cout<<"primary keys "<<endl;
+	cout<<"primary keys "<<endl;
 	primaryKeysReal = util.getPrimaryKeys(schemaOrder->begin(), schemaOrder->end(), multiRefrences->begin(), multiRefrences->end());
-	//cout<<"DONE initilizing......"<<endl;
+	cout<<"DONE initilizing......"<<endl;
 };
 
 
@@ -518,13 +518,13 @@ void TableTemplate<R>::update(){
 
 template <class R>
 int TableTemplate<R>::getSeqValue(string tableName, string colName) {
-	return 1;
 	ResultSet* rs = this->doSelect(sql->makeSeqQuery(tableName,colName),"");
 	if(rs->getNoOfRows() == 0) {
 		delete rs;
 		return 0;
 	}
 	int intValue  = atoi(rs->getElement(0,0).c_str());
+	cout<<"intValue is "<<intValue<<endl;
 	delete rs;
 	return ++intValue;
 	

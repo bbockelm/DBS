@@ -69,6 +69,10 @@ int DBSDispatcher::run(Message* msgReceived, Message& msgReturned) {
                         CRABECReadManager manager;
                         manager.read(msgReceived, msgReturned);
                 }
+		else if (operation.compare("WriteFiles")==0) {	
+			FileManager manager;
+			manager.write(msgReceived, msgReturned);
+		}
 
 		else if (operation.compare("WriteEventCollection")==0) {	
 			ECWriteManager manager;

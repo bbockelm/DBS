@@ -53,6 +53,7 @@ public:
 
 	int insertApps(Insertapps_ClientAPIData& appsInfo);
 	int insertEventCollections(Evcollview_ClientAPIData& ecInfo);
+	int insertFiles(std::vector<Fileview_ClientAPIData*>& fileInfo);
 
 	int readPrimaryDataset(Primarydataset_ClientAPIData, std::vector<Primarydataset_ClientAPIData*>& primaryDatasetInfo);
         int readEvColls(Evcollview_ClientAPIData, std::vector<Evcollview_ClientAPIData*>& evCollInfo);

@@ -123,8 +123,8 @@ void T_Physics_Grouprow::setValue(string key, void* value) {
     if( key.compare("t_physics_group.name") == 0) {
          this->name = *((string*) value) ;
     }
-    if( key.compare("t_physics_group.convener") == 0) {
-         this->convener = *((int*) value) ;
+    if( key.compare("t_physics_group.convenor") == 0) {
+         this->convenor = *((int*) value) ;
     }
 }
 
@@ -135,8 +135,8 @@ void* T_Physics_Grouprow::getValue(string key) {
    if( key.compare("t_physics_group.name") == 0) {
        return (&this->name.getValue());
     }
-   if( key.compare("t_physics_group.convener") == 0) {
-       return (&this->convener.getValue());
+   if( key.compare("t_physics_group.convenor") == 0) {
+       return (&this->convenor.getValue());
     }
 }
 
@@ -145,7 +145,7 @@ T_Physics_Grouprow_DB_BINDING::T_Physics_Grouprow_DB_BINDING() {
 
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
-    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
+    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
 
     PrimaryKeys.push_back("t_physics_group.id");
 
@@ -412,14 +412,12 @@ T_App_Configrow_DB_BINDING::T_App_Configrow_DB_BINDING() {
     list<string> tmplist;
     tmplist.push_back("t_app_config.application");
     tmplist.push_back("t_app_config.parameter_set");
-    tmplist.push_back("t_app_config.conditions_version");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
     NotNullKeys.push_back("t_app_config.id");
     NotNullKeys.push_back("t_app_config.application");
     NotNullKeys.push_back("t_app_config.parameter_set");
-    NotNullKeys.push_back("t_app_config.conditions_version");
 
 
     SchemaOrder.push_back("t_app_config");
@@ -804,7 +802,6 @@ T_Processing_Pathrow_DB_BINDING::T_Processing_Pathrow_DB_BINDING() {
     ///List of Lists in C++
 
     list<string> tmplist;
-    tmplist.push_back("t_processing_path.parent");
     tmplist.push_back("t_processing_path.app_config");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -1447,7 +1444,7 @@ void T_Filerow::setValue(string key, void* value) {
          this->logical_name = *((string*) value) ;
     }
     if( key.compare("t_file.filesize") == 0) {
-         this->filesize = *((string*) value) ;
+         this->filesize = *((int*) value) ;
     }
     if( key.compare("t_file.status") == 0) {
          this->status = *((int*) value) ;
@@ -1490,7 +1487,7 @@ T_Filerow_DB_BINDING::T_Filerow_DB_BINDING() {
     Schema.insert(Entry("t_file.id", "INTEGER"));
     Schema.insert(Entry("t_file.guid", "STRING"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
-    Schema.insert(Entry("t_file.filesize", "STRING"));
+    Schema.insert(Entry("t_file.filesize", "INTEGER"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
     Schema.insert(Entry("t_file.type", "INTEGER"));
     Schema.insert(Entry("t_file.inblock", "INTEGER"));
@@ -2386,7 +2383,6 @@ Insertappsmultirow_DB_BINDING::Insertappsmultirow_DB_BINDING() {
     list<string> tmplist;
     tmplist.push_back("t_app_config.application");
     tmplist.push_back("t_app_config.parameter_set");
-    tmplist.push_back("t_app_config.conditions_version");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
     tmplist.push_back("t_app_config.id");
@@ -2408,7 +2404,6 @@ Insertappsmultirow_DB_BINDING::Insertappsmultirow_DB_BINDING() {
     NotNullKeys.push_back("t_app_config.id");
     NotNullKeys.push_back("t_app_config.application");
     NotNullKeys.push_back("t_app_config.parameter_set");
-    NotNullKeys.push_back("t_app_config.conditions_version");
 
     SchemaOrder.push_back("t_app_family");
     SchemaOrder.push_back("t_collection_type");
@@ -2522,24 +2517,19 @@ string* Personmultirow_DB_BINDING::getTableName(void) {
 
 
 void Physicsgroupmultirow::setValue(string key, void* value) {
-    if( key.compare("t_person.id.t_physics_group.convener") == 0) {
+    if( key.compare("t_person.name") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
-           setValue((string)"t_person.id", value);
-    }
-    if( key.compare("t_person.name.t_physics_group.convener") == 0) {
-         ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+          getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.name", value);
     }
-    if( key.compare("t_person.distinguised_name.t_physics_group.convener") == 0) {
+    if( key.compare("t_person.distinguised_name") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+          getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.distinguised_name", value);
     }
-    if( key.compare("t_person.contactinfo.t_physics_group.convener") == 0) {
+    if( key.compare("t_person.contactinfo") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+          getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.contactinfo", value);
     }
     if( key.compare("t_physics_group.id") == 0) {
@@ -2552,10 +2542,10 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_physics_grouprow", ""))->
            setValue((string)"t_physics_group.name", value);
     }
-    if( key.compare("t_physics_group.convener") == 0) {
+    if( key.compare("t_physics_group.convenor") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convener", value);
+           setValue((string)"t_physics_group.convenor", value);
          ((T_Personrow*)this->
           getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.id", value);
@@ -2563,7 +2553,7 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
     if( key.compare("t_person.id") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convener", value);
+           setValue((string)"t_physics_group.convenor", value);
          ((T_Personrow*)this->
           getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.id", value);
@@ -2571,24 +2561,24 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
 }
 
 void* Physicsgroupmultirow::getValue(string key) {
-   if( key.compare("t_person.id.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.id") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.id");
     }
-   if( key.compare("t_person.name.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.name") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.name");
     }
-   if( key.compare("t_person.distinguised_name.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.distinguised_name") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.distinguised_name");
     }
-   if( key.compare("t_person.contactinfo.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.contactinfo") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.contactinfo");
     }
    if( key.compare("t_physics_group.id") == 0) {
@@ -2601,16 +2591,16 @@ void* Physicsgroupmultirow::getValue(string key) {
           getConstituentRow("t_physics_grouprow", ""))->
            getValue((string)"t_physics_group.name");
     }
-   if( key.compare("t_physics_group.convener") == 0) {
+   if( key.compare("t_physics_group.convenor") == 0) {
        return  ((T_Physics_Grouprow*)this->
           getConstituentRow("t_physics_grouprow", ""))->
-           getValue((string)"t_physics_group.convener");
+           getValue((string)"t_physics_group.convenor");
     }
 }
 
 Physicsgroupmultirow::Physicsgroupmultirow(){
-    this->T_Physics_Group_Convenerobj = new T_Personrow();
-    this->rowMap.set("t_physics_group.convener", (void*)this->T_Physics_Group_Convenerobj);
+    this->T_Personobj = new T_Personrow();
+    this->rowMap.set("t_personrow", (void*)this->T_Personobj);
     this->constituentObjects.push_back(this->rowMap);
     this->T_Physics_Groupobj = new T_Physics_Grouprow();
     this->rowMap.set("t_physics_grouprow", (void*)this->T_Physics_Groupobj);
@@ -2618,25 +2608,25 @@ Physicsgroupmultirow::Physicsgroupmultirow(){
 }
 
 Physicsgroupmultirow::~Physicsgroupmultirow(){
-   delete this->T_Physics_Group_Convenerobj;
+   delete this->T_Personobj;
    delete this->T_Physics_Groupobj;
 }
 
 Physicsgroupmultirow_DB_BINDING::Physicsgroupmultirow_DB_BINDING() {
     TableName = "PhysicsGroup";
 
-    Schema.insert(Entry("t_person.id.t_physics_group.convener", "INTEGER"));
-    Schema.insert(Entry("t_person.distinguised_name.t_physics_group.convener", "STRING"));
-    Schema.insert(Entry("t_person.name.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_person.contactinfo", "STRING"));
+    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
-    Schema.insert(Entry("t_person.contactinfo.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_person.name", "STRING"));
+    Schema.insert(Entry("t_person.distinguised_name", "STRING"));
+    Schema.insert(Entry("t_person.id", "INTEGER"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
-    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
-    PrimaryKeys.push_back("t_person.distinguised_name(t_physics_group.convener)");
+    PrimaryKeys.push_back("t_person.distinguised_name");
     PrimaryKeys.push_back("t_physics_group.id");
 
-    ForeignKeys.push_back("t_physics_group.convener");
+    ForeignKeys.push_back("t_physics_group.convenor");
 
     list<string> tmplist;
     tmplist.push_back("t_physics_group.name");
@@ -2658,17 +2648,17 @@ Physicsgroupmultirow_DB_BINDING::Physicsgroupmultirow_DB_BINDING() {
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
-    NotNullKeys.push_back("t_person.id.t_physics_group.convener");
-    NotNullKeys.push_back("t_person.name.t_physics_group.convener");
-    NotNullKeys.push_back("t_person.distinguised_name.t_physics_group.convener");
-    NotNullKeys.push_back("t_person.contactinfo.t_physics_group.convener");
+    NotNullKeys.push_back("t_person.id");
+    NotNullKeys.push_back("t_person.name");
+    NotNullKeys.push_back("t_person.distinguised_name");
+    NotNullKeys.push_back("t_person.contactinfo");
     NotNullKeys.push_back("t_physics_group.id");
     NotNullKeys.push_back("t_physics_group.name");
 
     SchemaOrder.push_back("t_person");
     SchemaOrder.push_back("t_physics_group");
 
-    References.insert(Entry("t_physics_group.convener", "t_person.id"));
+    References.insert(Entry("t_physics_group.convenor", "t_person.id"));
 
 
 }
@@ -3212,7 +3202,7 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_file.id", "INTEGER"));
     Schema.insert(Entry("t_file_status.id", "INTEGER"));
     Schema.insert(Entry("t_block.id", "INTEGER"));
-    Schema.insert(Entry("t_file.filesize", "STRING"));
+    Schema.insert(Entry("t_file.filesize", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
     Schema.insert(Entry("t_block_status.name", "STRING"));
@@ -3313,10 +3303,10 @@ void Primarydatasetmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_physics_grouprow", ""))->
            setValue((string)"t_physics_group.name", value);
     }
-    if( key.compare("t_physics_group.convener") == 0) {
+    if( key.compare("t_physics_group.convenor") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convener", value);
+           setValue((string)"t_physics_group.convenor", value);
     }
     if( key.compare("t_primary_dataset.id") == 0) {
          ((T_Primary_Datasetrow*)this->
@@ -3455,10 +3445,10 @@ void* Primarydatasetmultirow::getValue(string key) {
           getConstituentRow("t_physics_grouprow", ""))->
            getValue((string)"t_physics_group.name");
     }
-   if( key.compare("t_physics_group.convener") == 0) {
+   if( key.compare("t_physics_group.convenor") == 0) {
        return  ((T_Physics_Grouprow*)this->
           getConstituentRow("t_physics_grouprow", ""))->
-           getValue((string)"t_physics_group.convener");
+           getValue((string)"t_physics_group.convenor");
     }
    if( key.compare("t_primary_dataset.id") == 0) {
        return  ((T_Primary_Datasetrow*)this->
@@ -3521,21 +3511,21 @@ Primarydatasetmultirow_DB_BINDING::Primarydatasetmultirow_DB_BINDING() {
     Schema.insert(Entry("t_desc_primary.trigger_path", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.description", "STRING"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
+    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.id", "INTEGER"));
     Schema.insert(Entry("t_desc_mc.production", "STRING"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
     Schema.insert(Entry("t_desc_primary.mc_channel", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_desc_primary.is_mc_data", "CHARACTER"));
-    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
     PrimaryKeys.push_back("t_primary_dataset.id");
 
     ForeignKeys.push_back("t_primary_dataset.physics_group");
+    ForeignKeys.push_back("t_physics_group.convenor");
     ForeignKeys.push_back("t_desc_primary.mc_channel");
     ForeignKeys.push_back("t_primary_dataset.description");
     ForeignKeys.push_back("t_desc_primary.trigger_path");
-    ForeignKeys.push_back("t_physics_group.convener");
 
     list<string> tmplist;
     tmplist.push_back("t_primary_dataset.name");
@@ -3576,7 +3566,7 @@ Primarydatasetmultirow_DB_BINDING::Primarydatasetmultirow_DB_BINDING() {
     References.insert(Entry("t_desc_primary.trigger_path", "t_desc_trigger.id"));
 
 
-    ExternalReferences.insert(Entry("t_physics_group.convener", "t_person.id"));
+    ExternalReferences.insert(Entry("t_desc_primary.trigger_path", "t_desc_trigger.id"));
 }
 
 string* Primarydatasetmultirow_DB_BINDING::getTableName(void) {
@@ -4013,7 +4003,6 @@ Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     NotNullKeys.push_back("t_app_config.id");
     NotNullKeys.push_back("t_app_config.application");
     NotNullKeys.push_back("t_app_config.parameter_set");
-    NotNullKeys.push_back("t_app_config.conditions_version");
     NotNullKeys.push_back("t_processing_path.id");
     NotNullKeys.push_back("t_processing_path.app_config");
     NotNullKeys.push_back("t_processing_path.full_path");

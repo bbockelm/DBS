@@ -33,7 +33,8 @@ int main(int argc,char *argv[]) {
 		//dbm  =  new DBManagement("mydsnvijay", "ggraham", "");
 		
 		dbm->open();
-		testResults1(dbm,"SELECT * from t_event_collection WHERE processed_dataset=1");
+		#testResults1(dbm,"SELECT * from t_event_collection WHERE processed_dataset=1");
+		testResults1(dbm,"SELECT * from t_event_collection");
 		dbm->close();
 		//while(true){
 			//testResults1(dbm,"SELECT count(*) FROM mytable");

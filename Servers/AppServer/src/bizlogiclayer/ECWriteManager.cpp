@@ -12,20 +12,31 @@ int ECWriteManager::write(Message* msgReceived, Message& msgReturned) {
 		return 0;
 	}
 	//Chek for isSetValue first before getValue
-	string name = "t_info_evcoll.event_collection";
+	string name = "t_event_collection.id";
 	string dataType = "INTEGER";
+	if(!util.isSet(aRow, name, dataType ) ) {
+		return 0;//Throw exception here instead of retunnnng 0
+	}
+	string value = util.getStrValue(aRow, name, dataType);
+	Element* e = new Element(util.getTokenAt(name,1), value, dataType);
+	msgReturned.addElement(e);
+	/*msgReceived->addElement(e);
+	
+	name = "t_processed_dataset.id";
 	if(!util.isSet(aRow, name, dataType ) ) {
 		return 0;
 	}
-	string value = util.getStrValue(aRow, name, dataType);
-	Element* e = new Element("id", value, dataType);
+	value = util.getStrValue(aRow, name, dataType);
+	e = new Element("t_block.processed_dataset", value, dataType);
 	msgReceived->addElement(e);
+
 	
-	msgReturned.dispose();  /* ??????????????????????????????? */
+	
+	msgReturned.dispose();  // ??????????????????????????????? 
 	FileManager fileManager;
 	if(!fileManager.write(msgReceived, msgReturned)) {
 		return 0;
-	}
+	}*/
 	return 1;
 	
   

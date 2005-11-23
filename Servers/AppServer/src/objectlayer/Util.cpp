@@ -236,7 +236,7 @@ bool Util::isConsistant(RowInterface* aRowInDB, RowInterface* aRow) {
 	for(Dictionary_iter i = schema->begin(); i != schema->end(); ++i) {
 		if( this->isSet(aRow, i->first, i->second) ) {
 			if( this->isSet(aRowInDB, i->first, i->second) ) {
-				//cout<<"\nComparing "<<i->first<<"\naRow\t"<<this->getStrValue(aRow, i->first, i->second)<<"\naRowInDB\t"<<this->getStrValue(aRowInDB, i->first, i->second)<<endl;
+				cout<<"\nComparing "<<i->first<<"\naRow\t"<<this->getStrValue(aRow, i->first, i->second)<<"\naRowInDB\t"<<this->getStrValue(aRowInDB, i->first, i->second)<<endl;
 				if ( this->getStrValue(aRow, i->first, i->second) != 
 					this->getStrValue(aRowInDB, i->first, i->second) ) {
 					return(false);

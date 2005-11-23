@@ -42,13 +42,13 @@ public:
 };
 class Physicsgroup_ClientAPIData  : public ClientDataStructure {
 public:
-    INTEGER  t_person_id_t_physics_group_convener;
-    STRING  t_person_distinguised_name_t_physics_group_convener;
-    STRING  t_person_name_t_physics_group_convener;
+    STRING  t_person_contactinfo;
+    INTEGER  t_physics_group_convenor;
     INTEGER  t_physics_group_id;
-    STRING  t_person_contactinfo_t_physics_group_convener;
+    STRING  t_person_name;
+    STRING  t_person_distinguised_name;
+    INTEGER  t_person_id;
     STRING  t_physics_group_name;
-    INTEGER  t_physics_group_convener;
 public:
      Physicsgroup_ClientAPIData();
 
@@ -95,7 +95,7 @@ public:
     INTEGER  t_evcoll_file_evcoll;
     STRING  t_file_type_name;
     INTEGER  t_block_id;
-    STRING  t_file_filesize;
+    INTEGER  t_file_filesize;
     STRING  t_block_status_name;
     INTEGER  t_block_bytes;
     INTEGER  t_file_status;
@@ -120,13 +120,13 @@ public:
     INTEGER  t_desc_primary_trigger_path;
     STRING  t_desc_trigger_description;
     INTEGER  t_primary_dataset_physics_group;
+    INTEGER  t_physics_group_convenor;
     INTEGER  t_desc_trigger_id;
     STRING  t_desc_mc_production;
     STRING  t_physics_group_name;
     INTEGER  t_desc_primary_mc_channel;
     INTEGER  t_primary_dataset_id;
     CHARACTER  t_desc_primary_is_mc_data;
-    INTEGER  t_physics_group_convener;
 public:
      Primarydataset_ClientAPIData();
 
