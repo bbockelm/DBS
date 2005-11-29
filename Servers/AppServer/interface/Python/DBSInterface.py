@@ -2,6 +2,7 @@ import dbsclient
 import dbsApi
 import dbsFileBlock
 import dbsEventCollection
+from dbsDataset import * 
 
 class DBSInterface(dbsApi.DbsApi):
    """ A Class that provides Python interface 
@@ -20,6 +21,7 @@ class DBSInterface(dbsApi.DbsApi):
          * For now dumps information on screen.
       """
       # get the names of primary dataset, data tier and processed dataset
+      print "Inside getDatasetContents pathname is ",pathName
       tokens = pathName.split('/')
       primaryDSName = tokens[1]
       dataTier = tokens[2]
@@ -101,32 +103,36 @@ class DBSInterface(dbsApi.DbsApi):
           currProvInfo = provInfoRet[i]
           processed_dataset_name = dbsclient.stringp_value(currProvInfo.t_processed_dataset_name.getValue())
           print "    t_processed_dataset_name: " ,processed_dataset_name
-          print "    t_processing_path_data_tier: ", dbsclient.intp_value(currProvInfo.t_processing_path_data_tier.getValue())
-          print "    t_processing_path_id: ", dbsclient.intp_value(currProvInfo.t_processing_path_id.getValue())
+          #print "    t_processing_path_data_tier: ", dbsclient.intp_value(currProvInfo.t_processing_path_data_tier.getValue())
+          #print "    t_processing_path_id: ", dbsclient.intp_value(currProvInfo.t_processing_path_id.getValue())
           data_tier_name = dbsclient.stringp_value(currProvInfo.t_parentage_type_name.getValue())  
           print "    t_parentage_type_name: " ,data_tier_name
           primaryDsId = dbsclient.intp_value(currProvInfo.t_primary_dataset_id.getValue())
           print "    t_primary_dataset_id: " , primaryDsId
-          print "    t_processing_path_full_path: " ,dbsclient.stringp_value(currProvInfo.t_processing_path_full_path.getValue())
-          print "    t_primary_dataset_name: ",dbsclient.stringp_value(currProvInfo.t_primary_dataset_name.getValue())
-          print "    t_evcoll_parentage_parent: ", dbsclient.intp_value(currProvInfo.t_evcoll_parentage_parent.getValue())
+          #print "    t_processing_path_full_path: " ,dbsclient.stringp_value(currProvInfo.t_processing_path_full_path.getValue())
+          #print "    t_primary_dataset_name: ",dbsclient.stringp_value(currProvInfo.t_primary_dataset_name.getValue())
+          #print "    t_evcoll_parentage_parent: ", dbsclient.intp_value(currProvInfo.t_evcoll_parentage_parent.getValue())
           procDSId = dbsclient.intp_value(currProvInfo.t_processed_dataset_id.getValue())
           print "    t_processed_dataset_id: ", procDSId
           dTier=dbsclient.stringp_value(currProvInfo.t_data_tier_name.getValue())
           print "  t_data_tier.name: ", dTier
           
-          print "    t_evcoll_parentage_child: ", dbsclient.intp_value(currProvInfo.t_evcoll_parentage_child.getValue())
+          #print "    t_evcoll_parentage_child: ", dbsclient.intp_value(currProvInfo.t_evcoll_parentage_child.getValue())
 
           if not dt_procDS_map.has_key(data_tier_name):
              dt_procDS_map[data_tier_name]=processed_dataset_name
 
       parentPathList = []
+      dsList = DbsDatasetList()
       print "dt_procDS_map: ", dt_procDS_map    
       for aAskedTier in parentDataTiers:
-         parentPathList = "/"+primaryDSName+"/"+aAskedTier+"/"+dt_procDS_map[aAskedTier]
-         parentList.append(parentPath)
+         parentPath = "/"+primaryDSName+"/"+aAskedTier+"/"+dt_procDS_map[aAskedTier]
+         dsList.append(DbsDataset(primaryDSName, parentPath, aAskedTier, 'PU'))
+         parentPathList.append(parentPath)
          print parentPath
-      return parentPathList
+      #return parentPathList
+      return dsList
+
 
    def readProvInfoParent(self, provInfo):
       provInfoRet = dbsclient.DSProvParentVector()
@@ -232,13 +238,15 @@ class DBSInterface(dbsApi.DbsApi):
 
 if __name__ == "__main__" :
    
-   mycrab = DBSInterface()
-   #mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
+   while(1) :
+     mycrab = DBSInterface()
+     mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
    #mycrab.getDatasetContents("/hg03_H2mu_ma300_tb30/Hit/hg_Hit752_g133") 
 
-   mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133") 
+   #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133")
+   #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133") 
    #mycrab.getDatasetProvenance("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS", \
    #                           ["Hit", "Digi", "PU"])
    #mycrab.getDatasetProvenance("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133", \
-   mycrab.getDatasetProvenance("/bt_2x1033PU761_TkMu_2_g133_OSC/Hit/bt03_B0sCombBkg",["Hit"])
+   #mycrab.getDatasetProvenance("/bt_2x1033PU761_TkMu_2_g133_OSC/Hit/bt03_B0sCombBkg",["Hit"])
    

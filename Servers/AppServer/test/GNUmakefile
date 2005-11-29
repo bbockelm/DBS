@@ -20,19 +20,22 @@ MAIN_BIZ=manTest.cpp
 MAIN_DB=dbTest.cpp
 MAIN_OB=objTest.cpp
 MAIN_MSG=msgTest.cpp
+MAIN_CRAB=CrabClient.cpp
 
 EXE_BIZ=$(MAIN_BIZ:.cpp=)
 EXE_DB=$(MAIN_DB:.cpp=)
 EXE_OB=$(MAIN_OB:.cpp=)
 EXE_MSG=$(MAIN_MSG:.cpp=)
+EXE_CRAB=$(MAIN_CRAB:.cpp=)
 EXE_CLIENT=$(MAIN_CLIENT:.cpp=)
 
-all: biz db ob 
+all: biz db ob crab
 #all: biz db ob msg client
 biz: $(EXE_BIZ)
 db: $(EXE_DB)
 ob: $(EXE_OB)
 msg: $(EXE_MSG)
+crab: $(EXE_CRAB)
 client: $(EXE_CLIENT)
 	
 $(EXE_BIZ):
@@ -43,6 +46,9 @@ $(EXE_OB):
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(ALL_OBJECTS) -o $@ $(MAIN_OB) 
 $(EXE_MSG):
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(COMOBJECTS) $(ALL_OBJECTS)  -o $@ $(MAIN_MSG)
+$(EXE_CRAB):
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(ALL_OBJECTS)  -o $@ $(MAIN_CRAB)
+
 $(EXE_CLIENT):
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SOCKETOBJECTS) $(DBOBJECTS) $(LOGOBJECTS) $(ALL_OBJECTS) -o $@ $(MAIN_CLIENT)
 

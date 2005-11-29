@@ -305,7 +305,7 @@ int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) {
 
 
 int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend, 
-                                           vector<Primarydataset_ClientAPIData*>& primaryDatasetInfo) {
+                                           vector<Primarydataset_ClientAPIData>& primaryDatasetInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -322,8 +322,8 @@ int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend,
 	if(m != this->mRecv.getMapIterEnd()) {
 		for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
-			Primarydataset_ClientAPIData* apiData = new Primarydataset_ClientAPIData();
-			apiData->readInMessage(this->mRecv,"ROWS",i);
+			Primarydataset_ClientAPIData apiData;
+			apiData.readInMessage(this->mRecv,"ROWS",i);
 			primaryDatasetInfo.push_back(apiData);
 		}
 	}
@@ -333,7 +333,7 @@ int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend,
 
 
 int DBSClient::readProcessingPath(Processingpath_ClientAPIData apiDataToSend, 
-                                  vector<Processingpath_ClientAPIData*>& procPathInfo) {
+                                  vector<Processingpath_ClientAPIData>& procPathInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -350,8 +350,8 @@ int DBSClient::readProcessingPath(Processingpath_ClientAPIData apiDataToSend,
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "readProcessingPath:: Individual Item being Read:-" << endl;
-                        Processingpath_ClientAPIData* apiData = new Processingpath_ClientAPIData();
-                        apiData->readInMessage(this->mRecv,"ROWS",i);
+                        Processingpath_ClientAPIData apiData;
+                        apiData.readInMessage(this->mRecv,"ROWS",i);
                         procPathInfo.push_back(apiData);
                 }
         }
@@ -360,7 +360,7 @@ int DBSClient::readProcessingPath(Processingpath_ClientAPIData apiDataToSend,
 }
 
 int DBSClient::getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIData apiDataToSend, 
-                                       vector<Datasetprovenenceevparent_ClientAPIData*>& dspInfo) {
+                                       vector<Datasetprovenenceevparent_ClientAPIData>& dspInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -376,8 +376,8 @@ int DBSClient::getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIDat
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "getDatasetProvenence:: Individual Item being Read:-" << endl;
-                        Datasetprovenenceevparent_ClientAPIData* apiData = new Datasetprovenenceevparent_ClientAPIData();
-                        apiData->readInMessage(this->mRecv,"ROWS",i);
+                        Datasetprovenenceevparent_ClientAPIData apiData;
+                        apiData.readInMessage(this->mRecv,"ROWS",i);
                         dspInfo.push_back(apiData);
                 }
         }
@@ -386,7 +386,7 @@ int DBSClient::getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIDat
 }
 
 int DBSClient::getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData apiDataToSend,
-                                       vector<Datasetprovenenceevchild_ClientAPIData*>& dspInfo) {
+                                       vector<Datasetprovenenceevchild_ClientAPIData>& dspInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -402,8 +402,8 @@ int DBSClient::getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData 
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "getDatasetProvenence:: Individual Item being Read:-" << endl;
-                        Datasetprovenenceevchild_ClientAPIData* apiData = new Datasetprovenenceevchild_ClientAPIData();
-                        apiData->readInMessage(this->mRecv,"ROWS",i);
+                        Datasetprovenenceevchild_ClientAPIData apiData;
+                        apiData.readInMessage(this->mRecv,"ROWS",i);
                         dspInfo.push_back(apiData);
                 }
         }
@@ -413,7 +413,7 @@ int DBSClient::getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData 
 
 
 int DBSClient::readEvColls(Evcollview_ClientAPIData apiDataToSend, 
-                                              vector<Evcollview_ClientAPIData*>& evCollInfo) {
+                                              vector<Evcollview_ClientAPIData>& evCollInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -429,8 +429,8 @@ int DBSClient::readEvColls(Evcollview_ClientAPIData apiDataToSend,
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
-                        Evcollview_ClientAPIData* apiData = new Evcollview_ClientAPIData();
-                        apiData->readInMessage(this->mRecv,"ROWS",i);
+                        Evcollview_ClientAPIData apiData;
+                        apiData.readInMessage(this->mRecv,"ROWS",i);
                         evCollInfo.push_back(apiData);
                 }
         }
@@ -440,7 +440,7 @@ int DBSClient::readEvColls(Evcollview_ClientAPIData apiDataToSend,
 
 
 int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
-                                              vector<Crabevcollview_ClientAPIData*>& evCollInfo) {
+                                              vector<Crabevcollview_ClientAPIData>& evCollInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -456,8 +456,8 @@ int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "readPrimaryDataset:: Individual Item being Read:-" << endl;
-                        Crabevcollview_ClientAPIData* apiData = new Crabevcollview_ClientAPIData();
-                        apiData->readInMessage(this->mRecv,"ROWS",i);
+                        Crabevcollview_ClientAPIData apiData;
+                        apiData.readInMessage(this->mRecv,"ROWS",i);
                         evCollInfo.push_back(apiData);
                 }
         }
@@ -466,9 +466,8 @@ int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
 }
 
 
-
 int DBSClient::readEvCollFiles(Fileview_ClientAPIData apiDataToSend, 
-                                              vector<Fileview_ClientAPIData*>& fileInfo) {
+                                              vector<Fileview_ClientAPIData>& fileInfo) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -484,8 +483,8 @@ int DBSClient::readEvCollFiles(Fileview_ClientAPIData apiDataToSend,
         if(m != this->mRecv.getMapIterEnd()) {
                 for(int i = 0; i != ((VecData*)(m->second))->size(); ++i ) {
                         //cout << "EvCollFiles:: Individual Item being Read:-" << endl;
-                        Fileview_ClientAPIData* apiData = new Fileview_ClientAPIData();
-                        apiData->readInMessage(this->mRecv,"ROWS",i);
+                        Fileview_ClientAPIData apiData;
+                        apiData.readInMessage(this->mRecv,"ROWS",i);
                         fileInfo.push_back(apiData);
                 }
         }

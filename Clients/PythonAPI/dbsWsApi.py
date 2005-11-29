@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.2 2005/11/23 21:57:47 sekhri Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -76,17 +76,17 @@ if __name__ == "__main__":
     print "Getting dataset contents for: %s" % datasetPath
     
 
-    #fileBlockList = api.getDatasetContents(datasetPath)
-    #print "Dataset contents for: %s" % datasetPath
-    #for fileBlock in fileBlockList:
-    #  print ""
-    #  print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
-#					   fileBlock.getBlockId())
-#      for eventCollection in fileBlock.getEventCollectionList():
-#	print "  %s" % eventCollection
+    fileBlockList = api.getDatasetContents(datasetPath)
+    print "Dataset contents for: %s" % datasetPath
+    for fileBlock in fileBlockList:
+      print ""
+      print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
+					   fileBlock.getBlockId())
+      for eventCollection in fileBlock.getEventCollectionList():
+	print "  %s" % eventCollection
 
     # Get dataset provenance. It returns list of dataset parents.
-#    print ""
+    print ""
     #dataTierList = [ "Digi", "Hit" ]
     dataTierList = [ "Hit" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (

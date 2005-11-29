@@ -29,13 +29,13 @@
 	%pointer_functions(int, intp);
 	%pointer_functions(string, stringp);
 
-	%template(EVCollVector) std::vector<Evcollview_ClientAPIData*>;
-	%template(EVCollFileVector) std::vector<Fileview_ClientAPIData*>;
-	%template(PriDSVector) std::vector<Primarydataset_ClientAPIData*>;
-	%template(ProPathVector) std::vector<Processingpath_ClientAPIData*>;
-        %template(DSProvParentVector) std::vector<Datasetprovenenceevparent_ClientAPIData*>;
-        %template(DSProvChildVector) std::vector<Datasetprovenenceevchild_ClientAPIData*>;     
-        %template(CrabEvcollVector) std::vector<Crabevcollview_ClientAPIData*>;
+	%template(EVCollVector) std::vector<Evcollview_ClientAPIData>;
+	%template(EVCollFileVector) std::vector<Fileview_ClientAPIData>;
+	%template(PriDSVector) std::vector<Primarydataset_ClientAPIData>;
+	%template(ProPathVector) std::vector<Processingpath_ClientAPIData>;
+        %template(DSProvParentVector) std::vector<Datasetprovenenceevparent_ClientAPIData>;
+        %template(DSProvChildVector) std::vector<Datasetprovenenceevchild_ClientAPIData>;     
+        %template(CrabEvcollVector) std::vector<Crabevcollview_ClientAPIData>;
 
 
 	%extend DBSClient {

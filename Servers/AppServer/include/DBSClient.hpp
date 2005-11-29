@@ -55,16 +55,17 @@ public:
 	int insertEventCollections(Evcollview_ClientAPIData& ecInfo);
 	int insertFiles(std::vector<Fileview_ClientAPIData*>& fileInfo);
 
-	int readPrimaryDataset(Primarydataset_ClientAPIData, std::vector<Primarydataset_ClientAPIData*>& primaryDatasetInfo);
-        int readEvColls(Evcollview_ClientAPIData, std::vector<Evcollview_ClientAPIData*>& evCollInfo);
-        int readProcessingPath(Processingpath_ClientAPIData, vector<Processingpath_ClientAPIData*>& procPathInfo);
-        int readEvCollFiles(Fileview_ClientAPIData, vector<Fileview_ClientAPIData*>& fileInfo);
+	int readPrimaryDataset(Primarydataset_ClientAPIData, std::vector<Primarydataset_ClientAPIData>& primaryDatasetInfo);
+        int readEvColls(Evcollview_ClientAPIData, std::vector<Evcollview_ClientAPIData>& evCollInfo);
+        int readProcessingPath(Processingpath_ClientAPIData, vector<Processingpath_ClientAPIData>& procPathInfo);
+        int readEvCollFiles(Fileview_ClientAPIData, vector<Fileview_ClientAPIData>& fileInfo);
         int getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIData, 
-                                   vector<Datasetprovenenceevparent_ClientAPIData*>& dspInfo);
+                                   vector<Datasetprovenenceevparent_ClientAPIData>& dspInfo);
         int getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData, 
-                                   vector<Datasetprovenenceevchild_ClientAPIData*>& dspInfo);
-        int readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
-                                              vector<Crabevcollview_ClientAPIData*>& evCollInfo);
+                                   vector<Datasetprovenenceevchild_ClientAPIData>& dspInfo);
+	int readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
+                                              vector<Crabevcollview_ClientAPIData>& evCollInfo);
+
 	//createProcessedDataset(/primary/DT/processedDatasetName, processedDatasetInfo);
 	//showDatasetInfo(outputSelector);
 

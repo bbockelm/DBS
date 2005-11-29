@@ -87,7 +87,7 @@ void TableTemplate<R>::init() {
 	schemaOrder = this->schemaNconstraints.schemaNconstraints.getSchemaOrder();
 	util.setSchema(schema);
 	sql = new SQL(&util);
-	cout<<"primary keys "<<endl;
+	//cout<<"primary keys "<<endl;
 	primaryKeysReal = util.getPrimaryKeys(schemaOrder->begin(), schemaOrder->end(), multiRefrences->begin(), multiRefrences->end());
 	cout<<"DONE initilizing......"<<endl;
 };
@@ -132,7 +132,7 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
 		//cout<<"trying to fetch value from ResultSet"<<endl;
 		string value = rs->getElement(rowIndex,colIndex);
 		if(value.length() == 0) { 
-			cout<<"continuing bacuse value is nothing"<<endl;
+			//cout<<"continuing bacuse value is nothing"<<endl;
 		  continue;
 		}
 		//cout<<"value is "<<value<<endl;
@@ -220,82 +220,78 @@ void TableTemplate<R>::reSetColNamesInRS(ResultSet * rs) {
 }
 
 template <class R>
-//vector<R*>::iterator& TableTemplate<R>::select(string whereClause=""){
 vector<R*>& TableTemplate<R>::select(string whereClause=""){
-  //vector<RowInterface*>& TableTemplate<R>::select(string whereClause=""){
-//TableInterface TableTemplate<R>::select(string whereClause=""){
-  bool exceptionOccured = false;
-  string exceptionMessage = "\n";
+	bool exceptionOccured = false;
+	string exceptionMessage = "\n";
   
-  //ResultSet * rs = this->doSelect("",whereClause);
-  ResultSet * rs;
-  try {
-    rs = this->doSelect("",whereClause);
-    this->reSetColNamesInRS(rs);
+	//ResultSet * rs = this->doSelect("",whereClause);
+	ResultSet * rs;
+	try {
+		rs = this->doSelect("",whereClause);
+		this->reSetColNamesInRS(rs);
     
-    //cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
-    LOG4CXX_DEBUG(TableTemplate::logger,"noOfRows is ");
-    LOG4CXX_DEBUG(TableTemplate::logger, rs->getNoOfRows());
-    for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
-      //cout << "\n\nChecking PK" << endl;
-      bool pKEqual = false;
-      for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
-      //cout << "\n\nChecking Next Row..." << endl;
-	R* aRow = (R*)*rowIterator;
-	pKEqual = false;
-	for(Keys_iter i = primaryKeys->begin(); i!= primaryKeys->end(); ++i) {
-         
-          string dataType = util.getDataType(*i) ;
-          if (util.isSet(aRow, *i ,dataType) ) {
-	    if( (string) rs->getElement(rowIndex, rs->getColIndex(*i)) != 
-	       util.getStrValue(aRow, *i , dataType) ) {
-	        pKEqual = false;
-	        break;
+		//cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
+		LOG4CXX_DEBUG(TableTemplate::logger,"noOfRows is ");
+		LOG4CXX_DEBUG(TableTemplate::logger, rs->getNoOfRows());
+		for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
+			//cout << "\n\nChecking PK" << endl;
+			bool pKEqual = false;
+			for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
+				R* aRow = (R*)*rowIterator;
+				pKEqual = false;
+				for(Keys_iter i = primaryKeys->begin(); i!= primaryKeys->end(); ++i) {
+         					string dataType = util.getDataType(*i) ;
+						if (util.isSet(aRow, *i ,dataType) ) {
+							if( (string) rs->getElement(rowIndex, rs->getColIndex(*i)) != 
+								util.getStrValue(aRow, *i , dataType) ) {
+								pKEqual = false;
+								break;
           
-	    } else {
-	       pKEqual = true;
-	   }
-	 }
+							} else {
+								pKEqual = true;
+							}
+						}
+				}
+				if(pKEqual) {
+					 //cout<<"ITSEQUAL "<<endl;
+					LOG4CXX_DEBUG(TableTemplate::logger,"ITSEQUAL");
+					this->convertIntoRow(rs,rowIndex,aRow);
+					break;
+				}
+			}
+			if(!pKEqual) {
+				//cout<<"INSERT BEACUSE it is UNEQUAL"<<endl;
+				LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
+				R* tempRow = new R();
+				//cout<<"calling convert into rows"<<endl;
+				this->convertIntoRow(rs, rowIndex,tempRow);
+				rows.push_back(tempRow);
+				//cout<<"line11"<<endl;
+			}
+		}
+		delete rs;
+		//rowIterator = rows.begin();
+	} catch (ObjectLayerException &e) {
+		exceptionOccured = true;
+		exceptionMessage = e.report();
+		delete rs;
+	} catch (DBException &e) {
+		exceptionOccured = true;
+		exceptionMessage = e.report();
+	} catch (exception &e) {
+		exceptionOccured = true;
+		exceptionMessage = e.what();
+		delete rs;
 	}
-	if(pKEqual) {
-	  //cout<<"ITSEQUAL "<<endl;
-	  LOG4CXX_DEBUG(TableTemplate::logger,"ITSEQUAL");
-	  this->convertIntoRow(rs,rowIndex,aRow);
-	  break;
+  
+	//return this->rowIterator;
+	if(exceptionOccured) {
+		LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
+		throw ObjectLayerException(exceptionMessage);
 	}
-      }
-      if(!pKEqual) {
-	//cout<<"INSERT BEACUSE it is UNEQUAL"<<endl;
-	LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
-	R* tempRow = new R();
-	//cout<<"calling convert into rows"<<endl;
-	this->convertIntoRow(rs, rowIndex,tempRow);
-	rows.push_back(tempRow);
-	//cout<<"line11"<<endl;
-      }
-    }
-    //rowIterator = rows.begin();
-  } catch (ObjectLayerException &e) {
-    exceptionOccured = true;
-    exceptionMessage = e.report();
-    delete rs;
-  } catch (DBException &e) {
-    exceptionOccured = true;
-    exceptionMessage = e.report();
-  } catch (exception &e) {
-    exceptionOccured = true;
-    exceptionMessage = e.what();
-    delete rs;
-  }
   
-  //return this->rowIterator;
-  if(exceptionOccured) {
-    LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
-    throw ObjectLayerException(exceptionMessage);
-  }
-  
-  return rows;
-  //return *this;
+	return rows;
+	//return *this;
 }
 
 template <class R>
@@ -341,7 +337,7 @@ void TableTemplate<R>::insert() {
 	  R* aRow = (R*)*rowIterator;
 	  try{
 	    //cout<<endl<<"inserting ROW no "<<i<<endl;
-			cout<<"\n\n\n"<<endl;
+			//cout<<"\n\n\n"<<endl;
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"inserting ROW no ");
@@ -349,7 +345,7 @@ void TableTemplate<R>::insert() {
 			this->doSmartInsert(aRow);
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
-			cout<<"\n\n\n"<<endl;
+			//cout<<"\n\n\n"<<endl;
 			//cout<<"out of smart insert"<<endl;
 			//doSimpleInsert(aRow);
 		} catch (ObjectLayerException &e) {
@@ -524,7 +520,7 @@ int TableTemplate<R>::getSeqValue(string tableName, string colName) {
 		return 0;
 	}
 	int intValue  = atoi(rs->getElement(0,0).c_str());
-	cout<<"intValue is "<<intValue<<endl;
+	//cout<<"intValue is "<<intValue<<endl;
 	delete rs;
 	return ++intValue;
 	

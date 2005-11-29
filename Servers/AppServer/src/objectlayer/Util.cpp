@@ -210,22 +210,22 @@ void Util::setValue(RowInterface* aRow, string name, string dataType, string val
 	if( dataType == "STRING" ) {
                 //cout << "dies here STRING"<< "dataType:name" << dataType << name << endl;
 		string strValue = (string) value;
-		cout<<" STRING "<<name<<" value is "<<strValue<<endl;
+		//cout<<" STRING "<<name<<" value is "<<strValue<<endl;
 		aRow->setValue(name,&strValue);
 	} 
 	if( dataType == "CHARACTER" ) {
 		char charValue = *(value.c_str());
-		cout<<" CHARACTER "<<name<<" value is "<<charValue<<endl;
+		//cout<<" CHARACTER "<<name<<" value is "<<charValue<<endl;
 		aRow->setValue(name,&charValue );
 	}
 	if( dataType == "INTEGER" ) {
 		int intValue  = atoi(value.c_str());
-		cout<<" INTEGER "<<name<<" value is "<<intValue<<endl;
+		//cout<<" INTEGER "<<name<<" value is "<<intValue<<endl;
 		aRow->setValue(name,&intValue );
 	}
         if( dataType == "FLOAT" ) {
                 float floatValue  = this->atof(value);
-                cout<<" FLOAT "<<name<<" value is "<<floatValue<<endl;
+                //cout<<" FLOAT "<<name<<" value is "<<floatValue<<endl;
                 aRow->setValue(name,&floatValue );
         }
 
@@ -236,7 +236,7 @@ bool Util::isConsistant(RowInterface* aRowInDB, RowInterface* aRow) {
 	for(Dictionary_iter i = schema->begin(); i != schema->end(); ++i) {
 		if( this->isSet(aRow, i->first, i->second) ) {
 			if( this->isSet(aRowInDB, i->first, i->second) ) {
-				cout<<"\nComparing "<<i->first<<"\naRow\t"<<this->getStrValue(aRow, i->first, i->second)<<"\naRowInDB\t"<<this->getStrValue(aRowInDB, i->first, i->second)<<endl;
+				//cout<<"\nComparing "<<i->first<<"\naRow\t"<<this->getStrValue(aRow, i->first, i->second)<<"\naRowInDB\t"<<this->getStrValue(aRowInDB, i->first, i->second)<<endl;
 				if ( this->getStrValue(aRow, i->first, i->second) != 
 					this->getStrValue(aRowInDB, i->first, i->second) ) {
 					return(false);

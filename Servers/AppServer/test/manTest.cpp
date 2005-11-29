@@ -160,7 +160,9 @@ int main(int argc, char* argv[]) {
                 //test_evcoll_mview(dbManager);
                 //test_evcoll_manager(dbManager);
                 //test_dsProv_mview(dbManager);
-                test_crabevcoll_manager(dbManager); 
+		while(true) {
+	                test_crabevcoll_manager(dbManager); 
+		}
                 
                 cout << "All tests done by the manager" << endl;
 

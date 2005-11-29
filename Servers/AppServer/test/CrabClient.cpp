@@ -16,7 +16,7 @@ CrabClient() {
 
 ~CrabClient() {
 }
-
+/*
 int getDatasetContents(string basePathName) {
 
    cout << "CrabClient: getDatasetContents " << endl;
@@ -52,7 +52,7 @@ int getDatasetContents(string basePathName) {
         }
 
 }
-/*
+
 int getDatasetProvenance(string basePathName, vector<string> parent_data_tier) {
 
    vector<string> tokens;
@@ -97,18 +97,21 @@ int getDatasetProvenance(string basePathName, vector<string> parent_data_tier) {
 }
 */
 
-private:
+//private:
 
 int getPrimaryDatasetID(string prdsName) {
 
         
         dbsclient = new DBSClient(); 
+	Primarydataset_ClientAPIData apiData;
+	apiData.t_primary_dataset_name = prdsName;
         typedef vector<Primarydataset_ClientAPIData*> PrimaryDatasetVec;
         typedef vector<Primarydataset_ClientAPIData*>::iterator PrimaryDatasetVecIter;
         PrimaryDatasetVec primaryDatasetInfo;
         
         try {   
-                dbsclient->readPrimaryDataset(prdsName, primaryDatasetInfo);
+                //dbsclient->readPrimaryDataset(prdsName, primaryDatasetInfo);
+                dbsclient->readPrimaryDataset(apiData, primaryDatasetInfo);
         } catch (exception &ex) {
                 cout << ex.what() << endl;  
         }
@@ -136,7 +139,7 @@ int getPrimaryDatasetID(string prdsName) {
        delete dbsclient;
        return primaryDsId;
 }
-
+/*
 vector<int> getProcDSIDs(int priDsId, string dataTier, string procDS) {
  
         vector<int> ppidVec;
@@ -221,6 +224,39 @@ int getEvCollFiles(int evcoll_id) {
         delete dbsclient;
         return 1;
 }
+*/
+
+int getEVColl(string dataTier, string primaryDSName, string processedDSName) {
+
+        
+        dbsclient = new DBSClient(); 
+	Crabevcollview_ClientAPIData apiData;
+	apiData.t_data_tier_name = dataTier;
+	apiData.t_primary_dataset_name = primaryDSName;
+	apiData.t_processed_dataset_name = processedDSName;
+
+        typedef vector<Crabevcollview_ClientAPIData> CrabEvcollVector;
+        typedef CrabEvcollVector::iterator CrabEvcollVecIter;
+        CrabEvcollVector crabInfo;
+        
+        try {   
+                //dbsclient->readPrimaryDataset(prdsName, primaryDatasetInfo);
+                dbsclient->readCRABEvColls(apiData, crabInfo);
+        } catch (exception &ex) {
+                cout << ex.what() << endl;  
+        }
+        cout<<"Total number of primaryDatasetInfo structs returned "<<crabInfo.size()<<endl;
+
+       for(CrabEvcollVecIter i = crabInfo.begin(); i != crabInfo.end(); ++i) {
+		cout<<"ProcessedDataset name "<<(*i).t_processed_dataset_name.getValue()<<endl;
+		cout<<"t_data_tier_name "<<(*i).t_data_tier_name.getValue()<<endl;
+		cout<<"t_info_evcoll_events "<<(*i).t_info_evcoll_events.getValue()<<endl;
+		cout<<"t_event_collection_collection_index "<<(*i).t_event_collection_collection_index.getValue()<<endl;
+          //delete *i;
+       }
+       delete dbsclient;
+       return 1;
+}
 
   DBSClient* dbsclient;
   Util util;
@@ -237,13 +273,18 @@ int main() {
 
         cout << "basePathName: " << basePathName << endl;
 
-        crabbing.getDatasetContents(basePathName); 
+        //crabbing.getDatasetContents(basePathName); 
+					
+        //crabbing.getPrimaryDatasetID("bt03_gg_bbh200_2taujmu"); 
+	//crabbing.getPrimaryDatasetID("mu05_SingleMuMinus_pT100"); 
+	while(true)
+	crabbing.getEVColl("DST","bt03_gg_bbh200_2taujmu", "bt_DST8713_2x1033PU_g133_CMS"); 
 
-        vector<string> parent_data_tier;
+        /*vector<string> parent_data_tier;
         
         parent_data_tier.push_back("Hit");
         parent_data_tier.push_back("Digi");
-        parent_data_tier.push_back("DST");
+        parent_data_tier.push_back("DST");*/
 
         //crabbing.getDatasetProvenance(basePathName, parent_data_tier);
 }
