@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDataset.py,v 1.4 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsPrimaryDataset.py,v 1.1 2005/12/07 17:21:11 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -35,25 +35,22 @@ class DbsPrimaryDataset(dbsDataset.DbsDataset):
     """ Constructor. """
     dbsDataset.DbsDataset.__init__(self, datasetName=datasetName,
 				   datasetDict=datasetDict)
-    if not self.has_key(DATASET_DESCRIPTION_TAG_) \
-       or datasetDescription is not None:
+    if datasetDescription is not None:
       self[DATASET_DESCRIPTION_TAG_] = str(datasetDescription)
 
-    if not self.has_key(TRIGGER_DESCRIPTION_TAG_) \
-       or triggerDescription is not None:
+    if triggerDescription is not None:
       self[TRIGGER_DESCRIPTION_TAG_] = str(triggerDescription)
 
-    if not self.has_key(MONTE_CARLO_DESCRIPTION_TAG_) \
-       or monteCarloDescription is not None:
+    if monteCarloDescription is not None:
       self[MONTE_CARLO_DESCRIPTION_TAG_] = monteCarloDescription
 
-    if not self.has_key(PHYSICS_GROUP_NAME_TAG_) \
-       or physicsGroupName is not None:
+    if physicsGroupName is not None:
       self[PHYSICS_GROUP_NAME_TAG_] = str(physicsGroupName)
 
     # Correct mc description if needed.
     mcDescription = self.get(MONTE_CARLO_DESCRIPTION_TAG_)
-    if mcDescription != None:
+    if mcDescription != None and not isinstance(
+      mcDescription, dbsMonteCarloDescription.DbsMonteCarloDescription):
       try:
 	self[MONTE_CARLO_DESCRIPTION_TAG_] = dbsMonteCarloDescription.DbsMonteCarloDescription(mcDescriptionDict=mcDescription)
       except Exception, ex:

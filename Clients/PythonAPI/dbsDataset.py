@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDataset.py,v 1.4 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsDataset.py,v 1.5 2005/12/07 17:21:11 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -54,17 +54,13 @@ class DbsDataset(dbsObject.DbsObject):
 	       dataTier=None, dataType=None, datasetDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, datasetDict)
-    if not self.has_key(DATASET_NAME_TAG_) \
-       or datasetName is not None:
+    if datasetName is not None:
       self[DATASET_NAME_TAG_] = str(datasetName)
-    if not self.has_key(DATASET_PATH_TAG_) \
-       or datasetPath is not None:
+    if datasetPath is not None:
       self[DATASET_PATH_TAG_] = str(datasetPath)
-    if not self.has_key(DATA_TIER_TAG_) \
-       or dataTier is not None:
+    if dataTier is not None:
       self[DATA_TIER_TAG_] = str(dataTier)
-    if not self.has_key(DATA_TYPE_TAG_) \
-       or dataType is not None:
+    if dataType is not None:
       self[DATA_TYPE_TAG_] = str(dataType)
 
     self.setNamespace(WSDL_NAMESPACE_)

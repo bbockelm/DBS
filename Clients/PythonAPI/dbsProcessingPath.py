@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+#
+# $Id: dbsProcessingPath.py,v 1.5 2005/11/23 18:30:31 sveseli Exp $
+#
+# Processing path class. 
+#
+
+import dbsObject
+import types
+
+import dbsApplication
+import dbsException
+
+FULL_PATH_TAG_ = "fullPath"
+DATA_TIER_TAG_ = "dataTier"
+PARENT_PATH_TAG_ = "parentPath"
+APPLICATION_TAG_ = "application"
+
+WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
+
+
+##############################################################################
+# DBS application class.
+
+class DbsProcessingPath(dbsObject.DbsObject):
+
+  def __init__(self, fullPath=None, dataTier=None, parentPath=None,
+	       application=None,
+	       processingPathDict={}):
+    """ Constructor. """
+    dbsObject.DbsObject.__init__(self, processingPathDict)
+    if fullPath is not None:
+      self[FULL_PATH_TAG_] = str(fullPath)
+
+    if dataTier is not None:
+      self[DATA_TIER_TAG_] = str(dataTier)
+
+    if parentPath is not None:
+      self[PARENT_PATH_TAG_] = parentPath
+
+    if application is not None:
+      self[APPLICATION_TAG_] = application
+
+    # Correct parent path if needed.
+    parentPath = self.get(PARENT_PATH_TAG_)
+    if parentPath != None and not isinstance(parentPath, DbsProcessingPath):
+      try:
+	self[PARENT_PATH_TAG_] = DbsProcessingPath(processingPathDict=parentPath)
+      except Exception, ex:
+	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsProcessingPath.DbsProcessingPath object." % parentPath)
+
+    # Correct application if needed.
+    application = self.get(APPLICATION_TAG_)
+    if application != None and not isinstance(application,
+					      dbsApplication.DbsApplication):
+      try:
+	self[APPLICATION_TAG_] = dbsApplication.DbsApplication(applicationDict=application)
+      except Exception, ex:
+	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsApplication.DbsApplication object." % application)
+
+    self.setNamespace(WSDL_NAMESPACE_)
+
+  def getFullPath(self):
+    """ Retrieve full path. """
+    return self.get(FULL_PATH_TAG_)
+
+  def getDataTier(self):
+    """ Retrieve data tier. """
+    return self.get(DATA_TIER_TAG_)
+
+  def getParentPath(self):
+    """ Retrieve parent path. """
+    return self.get(PARENT_PATH_TAG_)
+
+  def getApplication(self):
+    """ Retrieve application. """
+    return self.get(APPLICATION_TAG_)
+
+
+##############################################################################
+# Unit testing.
+
+if __name__ == "__main__":
+  
+  app = dbsApplication.DbsApplication(family="reco", executable="dummy", version="p1")
+  pp1 = DbsProcessingPath(fullPath="/x/y/z", dataTier="hit", application=app)
+  print pp1
+  pp2 = DbsProcessingPath(fullPath="/x22/y22/z22", dataTier="Digi",
+			  parentPath=pp1)
+  print pp2
+
+  print "Done"

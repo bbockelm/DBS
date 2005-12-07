@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsDatasetService.py,v 1.2 2005/12/07 17:21:11 sveseli Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -16,6 +16,7 @@ import dbsEventCollection
 import dbsFileBlock
 import dbsDataset
 import dbsPrimaryDataset
+import dbsProcessedDataset
 import dbsWebServiceException
 import dbsWebService
 import dbsLogManager
@@ -23,10 +24,12 @@ import dbsLogManager
 DATASET_PATH_NAME_PAR_ = "datasetPathName"
 DATA_TIER_LIST_PAR_ = "dataTierList"
 PRIMARY_DATASET_PAR_ = "primaryDataset"
+PROCESSED_DATASET_PAR_ = "processedDataset"
 
 FILE_BLOCK_LIST_KWD_ = "fileBlockList"
 DATASET_PARENT_LIST_KWD_ = "datasetParentList"
 PRIMARY_DATASET_ID_KWD_ = "primaryDatasetId"
+PROCESSED_DATASET_ID_KWD_ = "processedDatasetId"
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 
@@ -68,6 +71,12 @@ class GetDatasetProvenanceFault(DbsDatasetServiceFault):
     DbsDatasetServiceFault.__init__(self, **kwargs)
 
 class CreatePrimaryDatasetFault(DbsDatasetServiceFault):
+
+  def __init__(self, **kwargs):
+    """ Initialization. """
+    DbsDatasetServiceFault.__init__(self, **kwargs)
+
+class CreateProcessedDatasetFault(DbsDatasetServiceFault):
 
   def __init__(self, **kwargs):
     """ Initialization. """
@@ -229,6 +238,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
     finally:
       self.releaseServant(servantId)
 
+
   def createPrimaryDataset(self, primaryDataset=None,
 			   *args, **kwargs):
     """
@@ -281,6 +291,63 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	raise CreatePrimaryDatasetFault(exception=ex)
 
       return { PRIMARY_DATASET_ID_KWD_ : primaryDatasetId }
+    finally:
+      self.releaseServant(servantId)
+
+
+
+  def createProcessedDataset(self, processedDataset=None,
+			   *args, **kwargs):
+    """
+    Create processed dataset.
+
+    Returns: processed dataset id.
+    Faults: CreateProcessedDatasetFault
+    """
+
+    # Check arguments.
+    funcName = "%s.%s" % (self.__class__.__name__, "createProcessedDataset()")
+    try:
+      processedDatasetDict = self.getParameter(
+        PROCESSED_DATASET_PAR_, processedDataset, **kwargs)
+      processedDataset = dbsProcessedDataset.DbsProcessedDataset(datasetDict=processedDatasetDict)
+    except dbsWebServiceException.MissingParameterFault, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise CreateProcessedDatasetFault(exception=ex)
+
+
+    # Acquire servant.
+    try:
+      servantId = self.acquireServant(funcName)
+    except DbsWebServiceException, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise CreateProcessedDatasetFault(exception=ex)
+
+    # Do the work.
+    try:
+      try:
+        msg = "Creating processed dataset %s" % (processedDataset)
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+	############################
+	# Here comes the api call...
+	processedDatasetId = 2222
+	############################
+        msg = "Created processed dataset with id %s: " % (processedDatasetId)
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+      except Exception, ex:
+	self._logManager.log(what="%s" % ex,
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+	raise CreateProcessedDatasetFault(exception=ex)
+
+      return { PROCESSED_DATASET_ID_KWD_ : processedDatasetId }
     finally:
       self.releaseServant(servantId)
 

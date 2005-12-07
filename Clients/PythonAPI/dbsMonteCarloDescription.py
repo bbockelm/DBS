@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsMonteCarloDescription.py,v 1.4 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsMonteCarloDescription.py,v 1.1 2005/12/07 17:21:11 sveseli Exp $
 #
 # MC Description class. 
 #
@@ -39,17 +39,13 @@ class DbsMonteCarloDescription(dbsObject.DbsObject):
 	       isMcData=None, decayChain=None, mcDescriptionDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, mcDescriptionDict)
-    if not self.has_key(MC_DESCRIPTION_TAG_) \
-       or description is not None:
+    if description is not None:
       self[MC_DESCRIPTION_TAG_] = str(description)
-    if not self.has_key(MC_PRODUCTION_TAG_) \
-       or production is not None:
+    if production is not None:
       self[MC_PRODUCTION_TAG_] = str(production)
-    if not self.has_key(IS_MC_DATA_TAG_) \
-       or isMcData is not None:
+    if isMcData is not None:
       self[IS_MC_DATA_TAG_] = isMcData
-    if not self.has_key(MC_DECAY_CHAIN_TAG_) \
-       or decayChain is not None:
+    if decayChain is not None:
       self[MC_DECAY_CHAIN_TAG_] = isMcData
 
     self.setNamespace(WSDL_NAMESPACE_)

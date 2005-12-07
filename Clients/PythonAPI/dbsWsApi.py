@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.3 2005/11/29 17:37:35 sekhri Exp $
+# $Id: dbsWsApi.py,v 1.4 2005/12/07 17:21:11 sveseli Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -14,6 +14,9 @@ import dbsWsClient
 
 import dbsMonteCarloDescription
 import dbsPrimaryDataset
+import dbsProcessedDataset
+import dbsProcessingPath
+import dbsApplication
 
 ##############################################################################
 # Web service implementation of the DBS API class. Exceptions are defined
@@ -68,6 +71,18 @@ class DbsWsApi(dbsApi.DbsApi):
       return self._wsClient.createPrimaryDataset(primaryDataset)
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
+
+  def createProcessedDataset(self, processedDataset):
+    """
+    Create processed dataset.
+
+    Returns: processed dataset id.
+    Exceptions: DbsApiException
+    """
+    try:
+      return self._wsClient.createProcessedDataset(processedDataset)
+    except dbsWsClient.DbsWsClientException, ex:
+      raise dbsApi.DbsApiException(exception=ex)
       
 
 
@@ -115,7 +130,6 @@ if __name__ == "__main__":
      ## print "%s" % (datasetParent)
 
     # Test for create primary dataset.
-    
     mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
       description="MyMonteCarloDescription",
       production="production",
@@ -129,7 +143,22 @@ if __name__ == "__main__":
 
     print "Creating primary dataset: %s" % dataset.getDatasetName()
     primaryDatasetId = api.createPrimaryDataset(dataset)
-    print "Got id: %s" % primaryDatasetId
+    print "Got primary dataset id: %s" % primaryDatasetId
+
+    # Test for create processed dataset.
+    application = dbsApplication.DbsApplication(
+      family="reco", executable="dummy", version="p1")
+    processingPath = dbsProcessingPath.DbsProcessingPath(
+      fullPath="/x/y/z", dataTier="hit", application=application)
+    processingPath2 = dbsProcessingPath.DbsProcessingPath(
+      fullPath="/x22/y22/z22", dataTier="Digi", parentPath=processingPath)
+
+    dataset = dbsProcessedDataset.DbsProcessedDataset(
+      datasetName="processedDataset", processingPath=processingPath2)
+
+    print "Creating processed dataset: %s" % dataset.getDatasetName()
+    processedDatasetId = api.createProcessedDataset(dataset)
+    print "Got processed dataset id: %s" % processedDatasetId    
     
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())

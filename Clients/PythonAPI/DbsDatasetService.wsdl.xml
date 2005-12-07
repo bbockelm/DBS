@@ -90,6 +90,35 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         </xsd:sequence>
       </complexType>
 
+      <complexType name="DbsApplication">
+        <xsd:sequence>
+          <xsd:element name="version" type="xsd:string"/>
+          <xsd:element name="family" type="xsd:string"/>
+          <xsd:element name="executable" type="xsd:string"/>
+          <xsd:element name="configConditionsVersion" type="xsd:string"/>
+          <xsd:element name="parameterSet" type="xsd:string"/>
+          <xsd:element name="inputTypeName" type="xsd:string"/>
+          <xsd:element name="outputTypeName" type="xsd:string"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="DbsProcessingPath">
+        <xsd:sequence>
+          <xsd:element name="dataTier" type="xsd:string"/>
+          <xsd:element name="fullPath" type="xsd:string"/>
+          <xsd:element name="application" type="tns:DbsApplication"/>
+          <xsd:element name="parentPath" type="tns:DbsProcessingPath"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="DbsProcessedDataset">
+        <xsd:sequence>
+          <xsd:element name="primaryDatasetName" type="xsd:string"/>
+          <xsd:element name="isDatasetOpen" type="xsd:string"/>
+          <xsd:element name="processingPath" type="tns:DbsProcessingPath"/>
+        </xsd:sequence>
+      </complexType>
+
     </schema>
   </types>
 
@@ -131,6 +160,18 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     <part name="faultstring" type="xsd:string"/>
   </message>
 
+  <message name="createProcessedDatasetRequest">
+    <part name="processedDataset" type="tns:DbsProcessedDataset"/>
+  </message>
+
+  <message name="createProcessedDatasetResponse">
+    <part name="processedDatasetId" type="xsd:int"/>
+  </message>
+
+  <message name="createProcessedDatasetFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
   <portType name="DbsDatasetPortType">
     <operation name="getDatasetContents">
       <input message="tns:getDatasetContentsRequest" name="getDatasetContentsRequest"/>
@@ -149,6 +190,12 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       <input message="tns:createPrimaryDatasetRequest" name="createPrimaryDatasetRequest"/>
       <output message="tns:createPrimaryDatasetResponse" name="createPrimaryDatasetResponse"/>
       <fault message="tns:createPrimaryDatasetFault" name="createPrimaryDatasetFault"/>
+    </operation>
+
+    <operation name="createProcessedDataset">
+      <input message="tns:createProcessedDatasetRequest" name="createProcessedDatasetRequest"/>
+      <output message="tns:createProcessedDatasetResponse" name="createProcessedDatasetResponse"/>
+      <fault message="tns:createProcessedDatasetFault" name="createProcessedDatasetFault"/>
     </operation>
 
 
@@ -202,6 +249,23 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       </output>
       <fault name="createPrimaryDatasetFault">
         <soap:fault name="createPrimaryDatasetFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
+    <operation name="createProcessedDataset">
+      <soap:operation soapAction="createProcessedDataset"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="createProcessedDatasetFault">
+        <soap:fault name="createProcessedDatasetFault" use="encoded" 
         namespace="DbsDatasetService" 
         encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
       </fault>

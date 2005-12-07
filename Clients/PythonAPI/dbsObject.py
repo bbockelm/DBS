@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsObject.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsObject.py,v 1.2 2005/12/07 17:21:11 sveseli Exp $
 #
 # Base dbs object class. 
 #
@@ -25,8 +25,11 @@ class DbsObjectBase(UserDict.UserDict):
     
   def __init__(self, dict={}):
     """ Constructor. """
-    UserDict.UserDict.__init__(self, dict)
-
+    if isinstance(dict, UserDict.UserDict):
+      UserDict.UserDict.__init__(self, dict.data)
+    else:
+      UserDict.UserDict.__init__(self, dict)
+      
     self._typename = self.__class__.__name__
     self._ns = None
     

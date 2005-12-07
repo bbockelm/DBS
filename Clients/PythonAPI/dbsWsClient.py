@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.2 2005/11/23 18:51:11 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.3 2005/12/07 17:21:11 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -18,6 +18,7 @@ import dbsStaticMethod
 
 import dbsLogManager
 import dbsPrimaryDataset
+import dbsProcessedDataset
 
 # Uncommenting the following line results in SOAP debugging messages.
 #SOAPpy.Config.debug=1
@@ -194,6 +195,48 @@ class DbsWsClient:
       logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
     
     return primaryDatasetId
+
+
+  def createProcessedDataset(self, processedDataset):
+    """ Create processed dataset. """
+
+    funcName = "%s.%s" % (self.__class__.__name__, "createProcessedDataset()")
+
+    # Invoke web service call.
+    try:
+      self._logManager.log(
+	what="Creating processed dataset, wsdlUrl: %s." % self._wsdlUrl,
+	where=funcName,
+	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      processedDatasetId = self._wsdlProxy.createProcessedDataset(
+	processedDataset=processedDataset.getWsRep())[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]
+      self._logManager.log(
+	what="Got processed dataset id: %s." % processedDatasetId,
+	where=funcName,
+	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+    except SOAPpy.faultType, ex:
+      wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
+      exec "wsEx = %s(args='%s')" % (wsExClassName, ex.faultstring)
+      errMsg = "%s caught: %s (Will raise: %s)" % (
+	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
+      self._logManager.log(what=errMsg,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise wsEx
+      
+    except Exception, ex:
+      # General exception.
+      self._logManager.log(what="Web service client failed.\n%s " % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise DbsWsClientException(exception=ex)
+    self._logManager.log(
+      what="Created processed dataset with id %d." % processedDatasetId,
+      where=funcName,
+      logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
+    
+    return processedDatasetId
 
 ##############################################################################
 # Unit testing.
