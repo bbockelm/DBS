@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDataset.py,v 1.3 2005/10/28 16:19:02 sveseli Exp $
+# $Id: dbsDataset.py,v 1.4 2005/11/23 18:30:31 sveseli Exp $
 #
 # Dataset class. 
 #
 
 import types
+import re
+import string
+
 import dbsObject
 import dbsException
+
+import dbsStaticMethod
 
 DATASET_NAME_TAG_ = "datasetName"
 DATASET_PATH_TAG_ = "datasetPath"
@@ -15,7 +20,30 @@ DATA_TIER_TAG_ = "dataTier"
 DATA_TYPE_TAG_ = "dataType"
 DATASET_DICT_TAG_ = "datasetDict"
 
+ALLOWED_NAME_CHARS_ = "[a-zA-Z0-9_\a\.-]"
+ALLOWED_DATASET_REGEX_ = [
+  re.compile("/%s+/%s+" % (ALLOWED_NAME_CHARS_, ALLOWED_NAME_CHARS_)), 
+  re.compile("/%s+/%s+/%s+" % (ALLOWED_NAME_CHARS_, ALLOWED_NAME_CHARS_,
+		    ALLOWED_NAME_CHARS_))
+  ]
+
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
+
+##############################################################################
+# DBS Dataset class exceptions.
+
+class DbsDatasetException(dbsException.DbsException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    dbsException.DbsException.__init__(self, **kwargs)
+    
+class InvalidDatasetPathName(DbsDatasetException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsDatasetException.__init__(self, **kwargs)
+
 
 ##############################################################################
 # DBS dataset class.
@@ -56,6 +84,15 @@ class DbsDataset(dbsObject.DbsObject):
   def getDataType(self):
     """ Retrieve dataype. """
     return self.get(DATA_TYPE_TAG_)
+
+  def verifyDatasetPathName(datasetPathName):
+    """ Verify the validity of the given name. """
+    for regex in ALLOWED_DATASET_REGEX_:
+      if regex.match(datasetPathName):
+	return
+    raise InvalidDatasetPathName(args="Invalid dataset path name: %s" % datasetPathName) 
+
+  verifyDatasetPathName = dbsStaticMethod.DbsStaticMethod(verifyDatasetPathName)
 
 
 class DbsDatasetList(dbsObject.DbsObjectList):
@@ -113,4 +150,19 @@ if __name__ == "__main__":
   print "Adding myAttr to the dataset"
   dataset["myAttr"] = "myValue"
   print dataset
+
+  # Use all loaded datasets to verify that pathname verification method works.
+  #dsPathList = string.split(open("dataset_names.txt", "r").read())
+  #nDatasets = len(dsPathList)
+  #for dsPath in dsPathList:
+  #  try:
+  #    DbsDataset.verifyDatasetPathName(dsPath)
+  #    print "%s   [Passed]" % dsPath
+  #  except InvalidDatasetPathName, ex:
+  #    print "%s   [Failed]" % dsPath
+
+
+
   print "Done"
+
+

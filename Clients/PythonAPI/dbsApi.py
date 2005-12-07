@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApi.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsApi.py,v 1.3 2005/11/07 21:40:02 sveseli Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -50,6 +50,12 @@ class DbsApi:
   def getDatasetProvenance(self, datasetPathName, dataTierList):
     """
     Retrieve list of dataset parents for the given dataTiers.
+    """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+  def createPrimaryDataset(self, primaryDataset):
+    """
+    Create primary dataset.
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 

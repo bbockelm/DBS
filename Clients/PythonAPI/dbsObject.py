@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 #
-# $Id: dbsObject.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsObject.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
 #
 # Base dbs object class. 
 #
 
 import UserDict
 import UserList
+import types
+
 try:
   import SOAPpy
   __imported_SOAPpy = True
@@ -14,6 +16,7 @@ except:
   __imported_SOAPpy = False
 
 DATA_KEY_ = "_data"
+DEFAULT_STRING_ENCODING_ = "ascii"
 
 ##############################################################################
 # Define base object class, and redefine it in case we have soappy (web services).
@@ -87,9 +90,20 @@ if __imported_SOAPpy:
     
     def __init__(self, dict={}):
       """ Constructor. """
-      DbsObjectBase.__init__(self, dict)
+      if isinstance(dict, types.DictType) \
+	     or isinstance(dict, UserDict.UserDict):
+	DbsObjectBase.__init__(self, dict)
+      elif isinstance(dict, SOAPpy.structType):
+	# Convert all relevant keys. Since the base class has no knowledge
+	# of what types are values belonging to different keys, the
+	# derived class has to fix complex structs.
+	DbsObjectBase.__init__(self)
+	for key in dict._keyord:
+	  self[key.encode(DEFAULT_STRING_ENCODING_)] = dict[key]
       SOAPpy.structType.__init__(self, self.data)
- 
+	
+	
+	
     def getWsRep(self):
       """ Representation for web services. """
       dict = {}
@@ -136,9 +150,9 @@ else:
 
   class DbsObject(DbsObjectBase):
     
-    def __init__(self):
+    def __init__(self, dict={}):
       """ Constructor. """
-      DbsObjectBase.__init__(self)
+      DbsObjectBase.__init__(self, dict)
 
   class DbsObjectList(DbsObjectListBase):
     

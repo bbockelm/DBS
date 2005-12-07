@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.3 2005/11/07 21:40:02 sveseli Exp $
+# $Id: dbsDatasetService.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -15,15 +15,18 @@ import dbsApi
 import dbsEventCollection
 import dbsFileBlock
 import dbsDataset
+import dbsPrimaryDataset
 import dbsWebServiceException
 import dbsWebService
 import dbsLogManager
 
 DATASET_PATH_NAME_PAR_ = "datasetPathName"
 DATA_TIER_LIST_PAR_ = "dataTierList"
+PRIMARY_DATASET_PAR_ = "primaryDataset"
 
 FILE_BLOCK_LIST_KWD_ = "fileBlockList"
 DATASET_PARENT_LIST_KWD_ = "datasetParentList"
+PRIMARY_DATASET_ID_KWD_ = "primaryDatasetId"
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 
@@ -59,6 +62,12 @@ class GetDatasetContentsFault(DbsDatasetServiceFault):
     DbsDatasetServiceFault.__init__(self, **kwargs)
 
 class GetDatasetProvenanceFault(DbsDatasetServiceFault):
+
+  def __init__(self, **kwargs):
+    """ Initialization. """
+    DbsDatasetServiceFault.__init__(self, **kwargs)
+
+class CreatePrimaryDatasetFault(DbsDatasetServiceFault):
 
   def __init__(self, **kwargs):
     """ Initialization. """
@@ -217,6 +226,61 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	raise GetDatasetProvenanceFault(exception=ex)
 
       return { DATASET_PARENT_LIST_KWD_ : datasetList.getWsRep() }
+    finally:
+      self.releaseServant(servantId)
+
+  def createPrimaryDataset(self, primaryDataset=None,
+			   *args, **kwargs):
+    """
+    Create primary dataset.
+
+    Returns: primary dataset id.
+    Faults: CreatePrimaryDatasetFault
+    """
+
+    # Check arguments.
+    funcName = "%s.%s" % (self.__class__.__name__, "createPrimaryDataset()")
+    try:
+      primaryDatasetDict = self.getParameter(
+        PRIMARY_DATASET_PAR_, primaryDataset, **kwargs)
+      primaryDataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetDict=primaryDatasetDict)
+    except dbsWebServiceException.MissingParameterFault, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise CreatePrimaryDatasetFault(exception=ex)
+
+
+    # Acquire servant.
+    try:
+      servantId = self.acquireServant(funcName)
+    except DbsWebServiceException, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise CreatePrimaryDatasetFault(exception=ex)
+
+    # Do the work.
+    try:
+      try:
+        msg = "Creating primary dataset %s" % (primaryDataset)
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+	############################
+	# Here comes the api call...
+	primaryDatasetId = 1111
+	############################
+        msg = "Created primary dataset with id %s: " % (primaryDatasetId)
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+      except Exception, ex:
+	self._logManager.log(what="%s" % ex,
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+	raise CreatePrimaryDatasetFault(exception=ex)
+
+      return { PRIMARY_DATASET_ID_KWD_ : primaryDatasetId }
     finally:
       self.releaseServant(servantId)
 

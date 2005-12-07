@@ -71,6 +71,25 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         </complexContent>
       </complexType>
 
+
+      <complexType name="DbsMonteCarloDescription">
+        <xsd:sequence>
+          <xsd:element name="description" type="xsd:string"/>
+          <xsd:element name="production" type="xsd:string"/>
+          <xsd:element name="isMcData" type="xsd:string"/>
+          <xsd:element name="decayChain" type="xsd:string"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="DbsPrimaryDataset">
+        <xsd:sequence>
+          <xsd:element name="datasetDescription" type="xsd:string"/>
+          <xsd:element name="triggerDescription" type="xsd:string"/>
+          <xsd:element name="physicsGroupName" type="xsd:string"/>
+          <xsd:element name="monteCarloDescription" type="tns:DbsMonteCarloDescription"/>
+        </xsd:sequence>
+      </complexType>
+
     </schema>
   </types>
 
@@ -99,6 +118,19 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     <part name="faultstring" type="xsd:string"/>
   </message>
 
+
+  <message name="createPrimaryDatasetRequest">
+    <part name="primaryDataset" type="tns:DbsPrimaryDataset"/>
+  </message>
+
+  <message name="createPrimaryDatasetResponse">
+    <part name="primaryDatasetId" type="xsd:int"/>
+  </message>
+
+  <message name="createPrimaryDatasetFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
   <portType name="DbsDatasetPortType">
     <operation name="getDatasetContents">
       <input message="tns:getDatasetContentsRequest" name="getDatasetContentsRequest"/>
@@ -111,6 +143,15 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       <output message="tns:getDatasetProvenanceResponse" name="getDatasetProvenanceResponse"/>
       <fault message="tns:getDatasetProvenanceFault" name="getDatasetProvenanceFault"/>
     </operation>
+
+
+    <operation name="createPrimaryDataset">
+      <input message="tns:createPrimaryDatasetRequest" name="createPrimaryDatasetRequest"/>
+      <output message="tns:createPrimaryDatasetResponse" name="createPrimaryDatasetResponse"/>
+      <fault message="tns:createPrimaryDatasetFault" name="createPrimaryDatasetFault"/>
+    </operation>
+
+
   </portType>
 
   <binding name="DbsDatasetBinding" type="tns:DbsDatasetPortType">
@@ -149,10 +190,27 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       </fault>
     </operation>
 
+    <operation name="createPrimaryDataset">
+      <soap:operation soapAction="createPrimaryDataset"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="createPrimaryDatasetFault">
+        <soap:fault name="createPrimaryDatasetFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
   </binding>
 
   <service name="DbsDatasetService">
-    <documentation>DBS Dataset Service provides functionality for retrieving information about datasets.</documentation>
+    <documentation>DBS Dataset Service provides functionality for retrieving and manipulating dataset information.</documentation>
     <port name="DbsDatasetPort" binding="tns:DbsDatasetBinding">
       <soap:address location="http://localhost.localdomain:27981"/>
     </port>

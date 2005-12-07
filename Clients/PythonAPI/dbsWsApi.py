@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.2 2005/11/23 21:57:47 sekhri Exp $
+# $Id: dbsWsApi.py,v 1.3 2005/11/29 17:37:35 sekhri Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -12,6 +12,8 @@ import dbsException
 import dbsApi
 import dbsWsClient
 
+import dbsMonteCarloDescription
+import dbsPrimaryDataset
 
 ##############################################################################
 # Web service implementation of the DBS API class. Exceptions are defined
@@ -54,6 +56,18 @@ class DbsWsApi(dbsApi.DbsApi):
       raise dbsApi.InvalidDatasetPathName(exception=ex)
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
+
+  def createPrimaryDataset(self, primaryDataset):
+    """
+    Create primary dataset.
+
+    Returns: primary dataset id.
+    Exceptions: DbsApiException
+    """
+    try:
+      return self._wsClient.createPrimaryDataset(primaryDataset)
+    except dbsWsClient.DbsWsClientException, ex:
+      raise dbsApi.DbsApiException(exception=ex)
       
 
 
@@ -63,7 +77,7 @@ class DbsWsApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
-    datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
+    datasetPath = "eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
 
     # Construct api object.
     api = DbsWsApi(wsdlUrl="./DbsDatasetService.wsdl.xml")
@@ -73,34 +87,50 @@ if __name__ == "__main__":
     
     # Get dataset contents. It returns list of file blocks, each
     # file block containing a set of event collections.
-    print "Getting dataset contents for: %s" % datasetPath
+    ##print "Getting dataset contents for: %s" % datasetPath
     
 
-    fileBlockList = api.getDatasetContents(datasetPath)
-    print "Dataset contents for: %s" % datasetPath
-    for fileBlock in fileBlockList:
-      print ""
-      print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
-					   fileBlock.getBlockId())
-      for eventCollection in fileBlock.getEventCollectionList():
-	print "  %s" % eventCollection
+    ##fileBlockList = api.getDatasetContents(datasetPath)
+    ##print "Dataset contents for: %s" % datasetPath
+    ##for fileBlock in fileBlockList:
+     ## print ""
+     ## print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
+	##				   fileBlock.getBlockId())
+     ## for eventCollection in fileBlock.getEventCollectionList():
+	##print "  %s" % eventCollection
 
     # Get dataset provenance. It returns list of dataset parents.
-    print ""
+    ##print ""
     #dataTierList = [ "Digi", "Hit" ]
-    dataTierList = [ "Hit" ]
-    print "Getting dataset provenance for: %s (dataTiers: %s)" % (
-      datasetPath, dataTierList)
+    ##dataTierList = [ "Hit" ]
+    ##print "Getting dataset provenance for: %s (dataTiers: %s)" % (
+     ## datasetPath, dataTierList)
     
-    datasetParentList = api.getDatasetProvenance(
-      datasetPath, dataTierList)
-    print "Dataset provenance for: %s (dataTiers: %s)" % (
-      datasetPath, dataTierList)
+    ##datasetParentList = api.getDatasetProvenance(
+     ## datasetPath, dataTierList)
+   ## print "Dataset provenance for: %s (dataTiers: %s)" % (
+    ##  datasetPath, dataTierList)
 
-    for datasetParent in datasetParentList:
-      print "%s" % (datasetParent)
+    ##for datasetParent in datasetParentList:
+     ## print "%s" % (datasetParent)
 
+    # Test for create primary dataset.
+    
+    mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
+      description="MyMonteCarloDescription",
+      production="production",
+      decayChain="decayChain",
+      isMcData="true")
 
+    dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ds1",
+				datasetDescription="my dataset desc",
+				physicsGroupName="top",
+				monteCarloDescription=mc)
+
+    print "Creating primary dataset: %s" % dataset.getDatasetName()
+    primaryDatasetId = api.createPrimaryDataset(dataset)
+    print "Got id: %s" % primaryDatasetId
+    
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   print "Done"
