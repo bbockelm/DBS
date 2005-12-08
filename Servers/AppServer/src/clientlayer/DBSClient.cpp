@@ -35,7 +35,8 @@ DBSClient::~DBSClient() {
   
 }
 
-int DBSClient::callServer(){
+//int DBSClient::callServer() throw (BizLayerException, ObjectLayerException) {
+int DBSClient::callServer()  {
 	try { 
 		if (localServer) {
     //cout<<"Calling the DBSDispatcher"<<endl; 
@@ -56,6 +57,7 @@ int DBSClient::callServer(){
    //cout << "No Remote Calling...!" << endl;
 		}
 	} catch (BizLayerException &e)  {
+		throw e.report().c_str();
 		return 0;
 	}
 /*string isException = this->mRecv.getException(); 
@@ -104,7 +106,7 @@ int DBSClient::buildDataset(string basepathName, string analysisDataset) {
 
 
 
-int DBSClient::addPerson(Person_ClientAPIData& personInfo) {
+int DBSClient::addPerson(Person_ClientAPIData& personInfo) throw (const char*){
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -161,7 +163,7 @@ int DBSClient::assignRole(Administrative_ClientAPIData& adminInfo) {
         return success;
 }
 */
-int DBSClient::assignPhysicsGroup(Physicsgroup_ClientAPIData& phgrpInfo) {
+int DBSClient::assignPhysicsGroup(Physicsgroup_ClientAPIData& phgrpInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -181,7 +183,8 @@ int DBSClient::assignPhysicsGroup(Physicsgroup_ClientAPIData& phgrpInfo) {
 
 }
 
-int DBSClient::createPrimaryDataset(string primaryDatasetName,  Primarydataset_ClientAPIData& primaryDatasetInfo) {
+//int DBSClient::createPrimaryDataset(string primaryDatasetName,  Primarydataset_ClientAPIData& primaryDatasetInfo) throw (const char*) {
+int DBSClient::createPrimaryDataset(Primarydataset_ClientAPIData& primaryDatasetInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -201,7 +204,7 @@ int DBSClient::createPrimaryDataset(string primaryDatasetName,  Primarydataset_C
 	return success;
 }
 
-int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) {
+int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -221,7 +224,7 @@ int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPa
         return success;
 }
 
-int DBSClient::createAnalysisDataset(Analysisdataset_ClientAPIData& analysisDatasetInfo) {
+int DBSClient::createAnalysisDataset(Analysisdataset_ClientAPIData& analysisDatasetInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -240,7 +243,7 @@ int DBSClient::createAnalysisDataset(Analysisdataset_ClientAPIData& analysisData
 }
 
 
-int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) {
+int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -264,7 +267,7 @@ int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) {
 }
 
 
-int DBSClient::insertFiles(vector<Fileview_ClientAPIData*>& fileInfo) {
+int DBSClient::insertFiles(vector<Fileview_ClientAPIData*>& fileInfo) throw (const char*) {
 	this->mSend.dispose();
 	this->mSend.setName("WriteFiles");
 
@@ -286,7 +289,7 @@ int DBSClient::insertFiles(vector<Fileview_ClientAPIData*>& fileInfo) {
 }
 
 
-int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) {
+int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) throw (const char*) {
 	this->mSend.dispose();
 	this->mSend.setName("WriteEventCollection");
 	ecInfo.makeMessage(this->mSend);
@@ -305,7 +308,7 @@ int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) {
 
 
 int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend, 
-                                           vector<Primarydataset_ClientAPIData>& primaryDatasetInfo) {
+                                           vector<Primarydataset_ClientAPIData>& primaryDatasetInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -333,7 +336,7 @@ int DBSClient::readPrimaryDataset(Primarydataset_ClientAPIData apiDataToSend,
 
 
 int DBSClient::readProcessingPath(Processingpath_ClientAPIData apiDataToSend, 
-                                  vector<Processingpath_ClientAPIData>& procPathInfo) {
+                                  vector<Processingpath_ClientAPIData>& procPathInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -360,7 +363,7 @@ int DBSClient::readProcessingPath(Processingpath_ClientAPIData apiDataToSend,
 }
 
 int DBSClient::getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIData apiDataToSend, 
-                                       vector<Datasetprovenenceevparent_ClientAPIData>& dspInfo) {
+                                       vector<Datasetprovenenceevparent_ClientAPIData>& dspInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -386,7 +389,7 @@ int DBSClient::getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIDat
 }
 
 int DBSClient::getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData apiDataToSend,
-                                       vector<Datasetprovenenceevchild_ClientAPIData>& dspInfo) {
+                                       vector<Datasetprovenenceevchild_ClientAPIData>& dspInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -413,7 +416,7 @@ int DBSClient::getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData 
 
 
 int DBSClient::readEvColls(Evcollview_ClientAPIData apiDataToSend, 
-                                              vector<Evcollview_ClientAPIData>& evCollInfo) {
+                                              vector<Evcollview_ClientAPIData>& evCollInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -440,7 +443,7 @@ int DBSClient::readEvColls(Evcollview_ClientAPIData apiDataToSend,
 
 
 int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
-                                              vector<Crabevcollview_ClientAPIData>& evCollInfo) {
+                                              vector<Crabevcollview_ClientAPIData>& evCollInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -448,8 +451,8 @@ int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
         apiDataToSend.makeMessage(mSend);
 
         int success = this->callServer();
-        string message;
-        mRecv.serialize(message);
+        //string message;
+        //mRecv.serialize(message);
         //cout << "readCRABEvColls:: WHOLE Message Returned is:-" << message << endl;
 
         MapIter m = this->mRecv.getMapIterBegin();
@@ -467,7 +470,7 @@ int DBSClient::readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
 
 
 int DBSClient::readEvCollFiles(Fileview_ClientAPIData apiDataToSend, 
-                                              vector<Fileview_ClientAPIData>& fileInfo) {
+                                              vector<Fileview_ClientAPIData>& fileInfo) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 

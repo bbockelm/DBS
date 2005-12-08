@@ -2,24 +2,26 @@
 #include "Configuration.hpp"
 #include "ObjectLayerException.hpp"
 #include "BizLayerException.hpp"
+#include "DBException.hpp"
 #include "Message.hpp"
 #include "TableInterface.hpp"
 #include "Log.hpp"
 
 Manager::Manager(){
   //this->dbManager = new DBManagement("mydsn", "anzar", "");
-	//cout<<"Configuration* conf = Configuration::instance()"<<endl;
-	static Log l("Manager");
-	Manager::logger = l.getLogger();
+	try {
+		static Log l("Manager");
+		Manager::logger = l.getLogger();
+		Configuration* conf = Configuration::instance();
+		//cout<<"this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());"<<endl;
+		LOG4CXX_INFO(logger,"DSN is " + conf->getDsn() + " DB USER is " + conf->getDbUser() + " PASSOWRD is " + conf->getDbPasswd());
+		this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());
+		this->dbManager->open();
+	} catch (DBException &e)  {
+		LOG4CXX_DEBUG(logger,e.report());
+		throw BizLayerException(e.report());
+	}
 
-	Configuration* conf = Configuration::instance();
-	//cout<<"this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());"<<endl;
-	LOG4CXX_INFO(logger,"DSN is " + conf->getDsn() + " DB USER is " + conf->getDbUser() + " PASSOWRD is " + conf->getDbPasswd());
-	//cout<<"conf->getDsn() "<<conf->getDsn()<<" conf->getDbUser() "<<conf->getDbUser()<<" conf->getDbPasswd() "<<conf->getDbPasswd()<<endl;
-	this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());
-  //this->dbManager = new DBManagement(USERDSN, USERNAME, "");
-	//cout<<"this->dbManager->open(); "<<endl;
-  this->dbManager->open();
 }
 
 

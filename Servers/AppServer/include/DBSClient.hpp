@@ -42,29 +42,29 @@ public:
   
 	std::list<EventColllections>, foundLumi = partialDataset(pathName, lumiDesired); */
 
-        int addPerson(Person_ClientAPIData& personInfo);
+        int addPerson(Person_ClientAPIData& personInfo) throw (const char*);
         //int addRole(Role_ClientAPIData& roleInfo);
         //int assignRole(Administrative_ClientAPIData& adminInfo);
-        int assignPhysicsGroup(Physicsgroup_ClientAPIData& phgrpInfo);
-        int createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo);
-        int createAnalysisDataset(Analysisdataset_ClientAPIData& analysisDatasetInfo);
+        int assignPhysicsGroup(Physicsgroup_ClientAPIData& phgrpInfo) throw (const char*);
+        int createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) throw (const char*);
+        int createAnalysisDataset(Analysisdataset_ClientAPIData& analysisDatasetInfo) throw (const char*);
 
-	int createPrimaryDataset(std::string primaryDatasetName, Primarydataset_ClientAPIData& primaryDatasetInfo);
+	int createPrimaryDataset(Primarydataset_ClientAPIData& primaryDatasetInfo) throw (const char*);
 
-	int insertApps(Insertapps_ClientAPIData& appsInfo);
-	int insertEventCollections(Evcollview_ClientAPIData& ecInfo);
-	int insertFiles(std::vector<Fileview_ClientAPIData*>& fileInfo);
+	int insertApps(Insertapps_ClientAPIData& appsInfo) throw (const char*);
+	int insertEventCollections(Evcollview_ClientAPIData& ecInfo) throw (const char*);
+	int insertFiles(std::vector<Fileview_ClientAPIData*>& fileInfo) throw (const char*);
 
-	int readPrimaryDataset(Primarydataset_ClientAPIData, std::vector<Primarydataset_ClientAPIData>& primaryDatasetInfo);
-        int readEvColls(Evcollview_ClientAPIData, std::vector<Evcollview_ClientAPIData>& evCollInfo);
-        int readProcessingPath(Processingpath_ClientAPIData, vector<Processingpath_ClientAPIData>& procPathInfo);
-        int readEvCollFiles(Fileview_ClientAPIData, vector<Fileview_ClientAPIData>& fileInfo);
+	int readPrimaryDataset(Primarydataset_ClientAPIData, std::vector<Primarydataset_ClientAPIData>& primaryDatasetInfo) throw (const char*);
+        int readEvColls(Evcollview_ClientAPIData, std::vector<Evcollview_ClientAPIData>& evCollInfo) throw (const char*);
+        int readProcessingPath(Processingpath_ClientAPIData, vector<Processingpath_ClientAPIData>& procPathInfo) throw (const char*);
+        int readEvCollFiles(Fileview_ClientAPIData, vector<Fileview_ClientAPIData>& fileInfo) throw (const char*);
         int getDatasetProvenenceParent(Datasetprovenenceevparent_ClientAPIData, 
-                                   vector<Datasetprovenenceevparent_ClientAPIData>& dspInfo);
+                                   vector<Datasetprovenenceevparent_ClientAPIData>& dspInfo) throw (const char*);
         int getDatasetProvenenceChild(Datasetprovenenceevchild_ClientAPIData, 
-                                   vector<Datasetprovenenceevchild_ClientAPIData>& dspInfo);
+                                   vector<Datasetprovenenceevchild_ClientAPIData>& dspInfo) throw (const char*);
 	int readCRABEvColls(Crabevcollview_ClientAPIData apiDataToSend,
-                                              vector<Crabevcollview_ClientAPIData>& evCollInfo);
+                                              vector<Crabevcollview_ClientAPIData>& evCollInfo) throw (const char*);
 
 	//createProcessedDataset(/primary/DT/processedDatasetName, processedDatasetInfo);
 	//showDatasetInfo(outputSelector);

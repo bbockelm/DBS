@@ -12,5 +12,5 @@ export LD_LIBRARY_PATH=$ODBCHOME/lib:$LOG4CXX/lib:$ORACLE_HOME/lib:$ORACLE_ODBC_
 export PYTHONINCLUDE=/usr/include/python2.3/
 export DBSCONFIG=$DBSHOME/etc/server.conf
 export PATH=$SWIG_HOME/bin:$PATH
-export PYTHONPATH=$DBSHOME/interface/Python:$PYTHONPATH
+export PYTHONPATH=$DBSHOME/interface/Python:$DBSHOME/../prototypes/proto_0/python:$PYTHONPATH
 

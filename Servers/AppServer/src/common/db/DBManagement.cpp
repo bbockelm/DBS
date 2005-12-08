@@ -138,7 +138,7 @@ int DBManagement::open() {
 	if (!isSuccess()) {
 		doDiagnostics();
 		freeEnvConHandle();
-		throw errMessage;
+		throw DBException(errMessage);
 	}
 	return 0;
 }

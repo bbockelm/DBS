@@ -1,7 +1,9 @@
 import dbsclient
 import dbsApi
+import dbsPrimaryDataset
 import dbsFileBlock
 import dbsEventCollection
+import dbsMonteCarloDescription
 from dbsDataset import * 
 
 class DBSInterface(dbsApi.DbsApi):
@@ -12,6 +14,48 @@ class DBSInterface(dbsApi.DbsApi):
    def __init__(self):
       """Constructor"""
       self.client = dbsclient.DBSClient()
+
+
+   def createPrimaryDataset(self, primaryDataset):
+      try:
+        apidata = dbsclient.Primarydataset_ClientAPIData()
+        apidata.t_desc_mc_description = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getDescription())
+        apidata.t_primary_dataset_name = dbsclient.ASTR(primaryDataset['datasetName'])
+        apidata.t_desc_mc_decay_chain = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getDecayChain())
+        apidata.t_desc_mc_production = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getProduction())
+        apidata.t_physics_group_name = dbsclient.ASTR(primaryDataset.getPhysicsGroupName())
+        apidata.t_desc_primary_is_mc_data = dbsclient.ACHR(primaryDataset.getMonteCarloDescription().isMcData())
+        apidata.t_desc_trigger_description = dbsclient.ASTR(primaryDataset.getTriggerDescription())
+        primaryDatasetID = self.client.createPrimaryDataset(apidata)
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      print "Primary Dataset ID ",primaryDatasetID
+      return primaryDatasetID
+
+   def createProcessedDataset(self, processedDataset, primaryDatasetID):
+      try:
+        apidata = dbsclient.Processingpath_ClientAPIData()
+        apidata.t_processed_dataset_name = dbsclient.ASTR(processedDataset['datasetName'])
+        apidata.t_application_app_version = dbsclient.ASTR(processedDataset.getApplication().getAppVersion())
+        apidata.t_app_config_conditions_version = dbsclient.ASTR(processedDataset.getApplication().getConditionVersion())
+        apidata.t_collection_type_name_t_application_output_type = dbsclient.ASTR(processedDataset.getApplication().getOutputType())
+        apidata.t_collection_type_name_t_application_input_type = dbsclient.ASTR(processedDataset.getApplication().getInputType())
+        apidata.t_processing_path_parent = dbsclient.AINT(int(processedDataset.getParent()))
+        apidata.t_data_tier_name = dbsclient.ASTR(processedDataset.getTier())
+        apidata.t_app_family_name = dbsclient.ASTR(processedDataset.getApplication().getFamily())
+        apidata.t_app_config_parameter_set = dbsclient.ASTR(processedDataset.getApplication().getParameterSet())
+        apidata.t_processed_dataset_is_open = dbsclient.ACHR(processedDataset.isOpen())
+        apidata.t_application_executable = dbsclient.ASTR(processedDataset.getApplication().getExecuatble())
+        apidata.t_processing_path_full_path = dbsclient.ASTR(processedDataset.getFullPath())
+        apidata.t_processed_dataset_primary_dataset = dbsclient.AINT(primaryDatasetID)
+        processedDatasetID = self.client.createProcessedDataset(apidata)
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      print "Processed Dataset ID ",processedDatasetID
+      return processedDatasetID
+
 
    def getDatasetContents(self, pathName):
       """public api method, that return details regarding EvColls
@@ -27,12 +71,16 @@ class DBSInterface(dbsApi.DbsApi):
       dataTier = tokens[2]
       processedDSName = tokens[3]
 
-      evcollInfo = dbsclient.Crabevcollview_ClientAPIData()
-      evcollInfo.t_data_tier_name = dbsclient.ASTR(dataTier)
-      evcollInfo.t_primary_dataset_name = dbsclient.ASTR(primaryDSName)
-      evcollInfo.t_processed_dataset_name = dbsclient.ASTR(processedDSName)
-      evcollInfoRet = dbsclient.CrabEvcollVector()
-      self.client.readCRABEvColls(evcollInfo, evcollInfoRet)
+      try :
+         evcollInfo = dbsclient.Crabevcollview_ClientAPIData()
+         evcollInfo.t_data_tier_name = dbsclient.ASTR(dataTier)
+         evcollInfo.t_primary_dataset_name = dbsclient.ASTR(primaryDSName)
+         evcollInfo.t_processed_dataset_name = dbsclient.ASTR(processedDSName)
+         evcollInfoRet = dbsclient.CrabEvcollVector()
+         self.client.readCRABEvColls(evcollInfo, evcollInfoRet)
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
       blockECMap = {}
       for i in range( evcollInfoRet.size() ) :
           print "************************************************************************************************"
@@ -238,9 +286,21 @@ class DBSInterface(dbsApi.DbsApi):
 
 if __name__ == "__main__" :
    
-   while(1) :
+   #while(1) :
      mycrab = DBSInterface()
-     mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
+     #mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
+     mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
+      description="MyMonteCarloDescription",
+      production="production",
+      decayChain="decayChain",
+      isMcData='y')
+
+     dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ds1",
+                                datasetDescription="my dataset desc",
+                                physicsGroupName="top",
+                                monteCarloDescription=mc)
+     primaryDatasetId = mycrab.createPrimaryDataset(dataset)
+
    #mycrab.getDatasetContents("/hg03_H2mu_ma300_tb30/Hit/hg_Hit752_g133") 
 
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133")

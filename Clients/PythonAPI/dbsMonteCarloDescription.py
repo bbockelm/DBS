@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsMonteCarloDescription.py,v 1.1 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsMonteCarloDescription.py,v 1.2 2005/12/07 21:18:41 sveseli Exp $
 #
 # MC Description class. 
 #
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     description="MyMonteCarloDescription",
     production="production",
     decayChain="decayChain",
-    isMcData="true")
+    isMcData='y')
   print mc
   print "Is MC Data: ", mc.isMcData()
   

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.4 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.5 2005/12/07 21:18:41 sveseli Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -92,7 +92,7 @@ class DbsWsApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
-    datasetPath = "eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
+    datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
 
     # Construct api object.
     api = DbsWsApi(wsdlUrl="./DbsDatasetService.wsdl.xml")
@@ -102,17 +102,17 @@ if __name__ == "__main__":
     
     # Get dataset contents. It returns list of file blocks, each
     # file block containing a set of event collections.
-    ##print "Getting dataset contents for: %s" % datasetPath
+    #print "Getting dataset contents for: %s" % datasetPath
     
 
-    ##fileBlockList = api.getDatasetContents(datasetPath)
-    ##print "Dataset contents for: %s" % datasetPath
-    ##for fileBlock in fileBlockList:
-     ## print ""
-     ## print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
-	##				   fileBlock.getBlockId())
-     ## for eventCollection in fileBlock.getEventCollectionList():
-	##print "  %s" % eventCollection
+    #fileBlockList = api.getDatasetContents(datasetPath)
+    #print "Dataset contents for: %s" % datasetPath
+    #for fileBlock in fileBlockList:
+    #  print ""
+    #  print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
+#					   fileBlock.getBlockId())
+#      for eventCollection in fileBlock.getEventCollectionList():
+#	print "  %s" % eventCollection
 
     # Get dataset provenance. It returns list of dataset parents.
     ##print ""

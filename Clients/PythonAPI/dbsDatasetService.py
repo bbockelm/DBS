@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.2 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsDatasetService.py,v 1.3 2005/12/07 21:18:41 sveseli Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -278,7 +278,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 	############################
 	# Here comes the api call...
-	primaryDatasetId = 1111
+	primaryDatasetId = self.getApi().createPrimaryDataset(primaryDataset)
 	############################
         msg = "Created primary dataset with id %s: " % (primaryDatasetId)
 	self._logManager.log(what=msg, where=funcName,

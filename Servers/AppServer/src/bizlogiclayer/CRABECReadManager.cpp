@@ -1,11 +1,12 @@
 #include "Managers.hpp"
+#include "BizLayerException.hpp"
 
 CRABECReadManager::CRABECReadManager() {
 	this->ecTable = new CrabevcollviewMultiTable(dbManager);
 }
 
 int CRABECReadManager::read(Message* msgReceived, Message& msgReturned) {
-
+	//throw BizLayerException("teting the excpetion");
         typedef vector<Crabevcollviewmultirow*> MyRows;
         typedef MyRows::iterator MyRowIter;
 
