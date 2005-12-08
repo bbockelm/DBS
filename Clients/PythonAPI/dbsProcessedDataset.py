@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessedDataset.py,v 1.1 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsProcessedDataset.py,v 1.1 2005/12/07 21:18:41 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -58,7 +58,7 @@ class DbsProcessedDataset(dbsDataset.DbsDataset):
     """ Retrieve primary dataset name. """
     return self.get(PRIMARY_DATASET_NAME_TAG_)
 
-  def isDatasetOpen(self):
+  def getIsDatasetOpen(self):
     """ Retrieve is open flag. """
     return self.get(IS_DATASET_OPEN_TAG_)
 

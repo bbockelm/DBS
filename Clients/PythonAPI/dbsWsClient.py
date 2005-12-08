@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.3 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.4 2005/12/07 21:18:41 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -95,7 +95,7 @@ class DbsWsClient:
 
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
-      exec "wsEx = %s(args='%s')" % (wsExClassName, ex.faultstring)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
       errMsg = "%s caught: %s (Will raise: %s)" % (
 	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
       self._logManager.log(what=errMsg,
@@ -134,7 +134,7 @@ class DbsWsClient:
 
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
-      exec "wsEx = %s(args='%s')" % (wsExClassName, ex.faultstring)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
       errMsg = "%s caught: %s (Will raise: %s)" % (
 	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
       self._logManager.log(what=errMsg,
@@ -175,7 +175,7 @@ class DbsWsClient:
 
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
-      exec "wsEx = %s(args='%s')" % (wsExClassName, ex.faultstring)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
       errMsg = "%s caught: %s (Will raise: %s)" % (
 	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
       self._logManager.log(what=errMsg,
@@ -217,7 +217,7 @@ class DbsWsClient:
 
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
-      exec "wsEx = %s(args='%s')" % (wsExClassName, ex.faultstring)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
       errMsg = "%s caught: %s (Will raise: %s)" % (
 	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
       self._logManager.log(what=errMsg,

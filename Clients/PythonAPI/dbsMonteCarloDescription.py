@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsMonteCarloDescription.py,v 1.2 2005/12/07 21:18:41 sveseli Exp $
+# $Id: dbsMonteCarloDescription.py,v 1.3 2005/12/08 16:40:25 sekhri Exp $
 #
 # MC Description class. 
 #
@@ -62,7 +62,7 @@ class DbsMonteCarloDescription(dbsObject.DbsObject):
     """ Retrieve decay chain. """
     return self.get(MC_DECAY_CHAIN_TAG_)
 
-  def isMcData(self):
+  def getIsMcData(self):
     """ Retrieve mc data flag. """
     return self.get(IS_MC_DATA_TAG_)
 
