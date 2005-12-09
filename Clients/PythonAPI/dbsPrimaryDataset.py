@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsPrimaryDataset.py,v 1.1 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsPrimaryDataset.py,v 1.2 2005/12/07 21:18:41 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -61,19 +61,31 @@ class DbsPrimaryDataset(dbsDataset.DbsDataset):
 
   def getDatasetDescription(self):
     """ Retrieve dataset description. """
-    return self.get(DATASET_DESCRIPTION_TAG_)
+    result = self.get(DATASET_DESCRIPTION_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATASET_DESCRIPTION_TAG_)
+    return result
 
   def getPhysicsGroupName(self):
     """ Retrieve physics group name. """
-    return self.get(PHYSICS_GROUP_NAME_TAG_)
+    result = self.get(PHYSICS_GROUP_NAME_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PHYSICS_GROUP_NAME_TAG_)
+    return result
 
   def getTriggerDescription(self):
     """ Retrieve trigger description. """
-    return self.get(TRIGGER_DESCRIPTION_TAG_)
+    result = self.get(TRIGGER_DESCRIPTION_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % TRIGGER_DESCRIPTION_TAG_)
+    return result
 
   def getMonteCarloDescription(self):
     """ Retrieve mc description. """
-    return self.get(MONTE_CARLO_DESCRIPTION_TAG_)
+    result = self.get(MONTE_CARLO_DESCRIPTION_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % MONTE_CARLO_DESCRIPTION_TAG_)
+    return result
 
 
 ##############################################################################
@@ -96,7 +108,14 @@ if __name__ == "__main__":
   dataset["myAttr"] = "myValue"
   print dataset
   
-
+  dataset2 = DbsPrimaryDataset(datasetName="ds2",
+			      physicsGroupName="top",
+			      monteCarloDescription=mc)
+  print dataset2
+  try:
+    dataset2.getDatasetDescription()
+  except dbsException.DbsException, ex:
+    print "caught: %s" % ex
   print "Done"
 
 

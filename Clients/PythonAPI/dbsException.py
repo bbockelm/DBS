@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id$
+# $Id: dbsException.py,v 1.1 2005/10/21 22:50:51 lat Exp $
 #
 # Contains base DBS exception class, as well as other common exceptions.
 #
@@ -53,6 +53,11 @@ class MethodNotImplemented(DbsException):
     """ Initialization. """
     DbsException.__init__(self, **kwargs)
 
+class DataNotInitialized(DbsException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsException.__init__(self, **kwargs)
 
 class InvalidArgument(DbsException):
 
