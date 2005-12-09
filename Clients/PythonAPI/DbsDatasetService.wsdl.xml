@@ -15,6 +15,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
 
+
       <complexType name="ArrayOfString">
 	<complexContent>
 	  <restriction base="soapenc:Array">
@@ -23,10 +24,35 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         </complexContent>
       </complexType>
 
+      <complexType name="DbsFile">
+        <xsd:sequence>
+          <xsd:element name="logicalFileName" type="xsd:string"/>
+          <xsd:element name="guid" type="xsd:string"/>
+          <xsd:element name="checkSum" type="xsd:string"/>
+          <xsd:element name="fileType" type="xsd:string"/>
+          <xsd:element name="fileStatus" type="xsd:string"/>
+          <xsd:element name="fileBlockName" type="xsd:string"/>
+          <xsd:element name="eventCollectionName" type="xsd:string"/>
+        </xsd:sequence>
+      </complexType>
+
+      <complexType name="ArrayOfDbsFile">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="tns:DbsFile[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
       <complexType name="DbsEventCollection">
         <xsd:sequence>
           <xsd:element name="collectionName" type="xsd:string"/>
           <xsd:element name="numberOfEvents" type="xsd:int"/>
+          <xsd:element name="collectionIndex" type="xsd:int"/>
+          <xsd:element name="runNumber" type="xsd:int"/>
+          <xsd:element name="isPrimary" type="xsd:string"/>
+          <xsd:element name="parentEventCollection" type="tns:DbsEventCollection"/>
+          <xsd:element name="fileList" type="tns:ArrayOfDbsFile"/>
         </xsd:sequence>
       </complexType>
 

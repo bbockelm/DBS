@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.4 2005/12/07 21:18:41 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.5 2005/12/08 19:56:59 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -21,7 +21,7 @@ import dbsPrimaryDataset
 import dbsProcessedDataset
 
 # Uncommenting the following line results in SOAP debugging messages.
-#SOAPpy.Config.debug=1
+SOAPpy.Config.debug=1
 
 
 ##############################################################################

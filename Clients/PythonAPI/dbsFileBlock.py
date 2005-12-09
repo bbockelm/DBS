@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.4 2005/10/28 18:29:57 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.5 2005/11/23 18:30:31 sveseli Exp $
 #
 # File block class. 
 #
@@ -28,11 +28,10 @@ class DbsFileBlock(dbsObject.DbsObject):
 	       blockId=None, eventCollectionList=[], blockDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, blockDict)
-    if not self.has_key(FILE_BLOCK_NAME_TAG_) \
-       or blockName is not None:
+    if blockName is not None:
       self[FILE_BLOCK_NAME_TAG_] = str(blockName)
-    if not self.has_key(FILE_BLOCK_ID_TAG_) \
-       or blockId is not None:
+
+    if blockId is not None:
       self[FILE_BLOCK_ID_TAG_] = int(blockId)
 
     # Make sure that all event collections are of the tpye DbsEventCollection
@@ -48,11 +47,17 @@ class DbsFileBlock(dbsObject.DbsObject):
 
   def getBlockName(self):
     """ Retrieve block name. """
-    return self.get(FILE_BLOCK_NAME_TAG_)
+    result = self.get(FILE_BLOCK_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_NAME_TAG_)
+    return result
 
   def getBlockId(self):
     """ Retrieve block id. """
-    return self.get(FILE_BLOCK_ID_TAG_)
+    result = self.get(FILE_BLOCK_ID_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
+    return result
 
   def getEventCollectionList(self):
     """ Retrieve event collection list. """

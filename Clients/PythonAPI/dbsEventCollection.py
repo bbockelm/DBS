@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.1 2005/10/21 22:50:51 lat Exp $
+# $Id: dbsEventCollection.py,v 1.2 2005/11/23 18:30:31 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -9,10 +9,17 @@ import types
 
 import dbsObject
 import dbsException
+import dbsFile
 
 EVENT_COLLECTION_DICT_TAG_ = "collectionDict"
 EVENT_COLLECTION_NAME_TAG_ = "collectionName"
+EVENT_COLLECTION_INDEX_TAG_ = "collectionIndex"
 EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_ = "numberOfEvents"
+PARENT_EVENT_COLLECTION_TAG_ = "parentEventCollection"
+FILE_LIST_TAG_ = "fileList"
+RUN_NUMBER_TAG_ = "runNumber"
+IS_PRIMARY_TAG_ = "isPrimary"
+
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 
@@ -22,24 +29,98 @@ WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 class DbsEventCollection(dbsObject.DbsObject):
 
   def __init__(self, collectionName=None,
-	       numberOfEvents=None, collectionDict={}):
+	       numberOfEvents=None, collectionIndex=None,
+	       runNumber=None, isPrimary=None, parentEventCollection=None,
+	       fileList=[],
+	       collectionDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, collectionDict)
-    if not self.has_key(EVENT_COLLECTION_NAME_TAG_) \
-       or collectionName is not None:
+    if collectionName is not None:
       self[EVENT_COLLECTION_NAME_TAG_] = str(collectionName)
-    if not self.has_key(EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_) \
-       or numberOfEvents is not None:
+
+    if collectionIndex is not None:
+      self[EVENT_COLLECTION_INDEX_TAG_] = int(collectionIndex)
+
+    if numberOfEvents is not None:
       self[EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_] = int(numberOfEvents)
+
+    if runNumber is not None:
+      self[RUN_NUMBER_TAG_] = int(runNumber)
+
+    if isPrimary is not None:
+      self[IS_PRIMARY_TAG_] = str(isPrimary)
+
+    if parentEventCollection is not None:
+      self[PARENT_EVENT_COLLECTION_TAG_] = parentEventCollection
+
+    # Correct parent event collection if needed.
+    parentEventCollection = self.get(PARENT_EVENT_COLLECTION_TAG_)
+    if parentEventCollection != None and \
+	   not isinstance(parentEventCollection, DbsEventCollection):
+      try:
+	self[PARENT_EVENT_COLLECTION_TAG_] = DbsEventCollection(collectionDict=parentEventCollection)
+      except Exception, ex:
+	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsEventCollection.DbsEventCollection object." % parentEventCollection)
+      
+    # Make sure we have file list initialized.
+    if not self.has_key(FILE_LIST_TAG_):
+      self[FILE_LIST_TAG_] = []
+      
+    # Add file objects if they were supplied.
+    if len(fileList):
+      for f in fileList:
+	newFile = f
+	if not isinstance(f, dbsFile.DbsFile):
+	  newFile = dbsFile.DbsFile(fileDict=newFile)
+	self[FILE_LIST_TAG_].append(newFile)
+
     self.setNamespace(WSDL_NAMESPACE_)
     
   def getCollectionName(self):
     """ Retrieve collection name. """
-    return self.get(EVENT_COLLECTION_NAME_TAG_)
+    result = self.get(EVENT_COLLECTION_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NAME_TAG_)
+    return result
+
+  def getCollectionIndex(self):
+    """ Retrieve collection index. """
+    result = self.get(EVENT_COLLECTION_INDEX_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_INDEX_TAG_)
+    return result  
 
   def getNumberOfEvents(self):
     """ Retrieve number of events. """
-    return self.get(EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_)
+    result = self.get(EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_)
+    return result
+
+  def getRunNumber(self):
+    """ Retrieve run number. """
+    result = self.get(RUN_NUMBER_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % RUN_NUMBER_TAG_)
+    return result
+
+  def getIsPrimary(self):
+    """ Retrieve isPrimary flag. """
+    result = self.get(IS_PRIMARY_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_PRIMARY_TAG_)
+    return result  
+
+  def getParentEventCollection(self):
+    """ Retrieve parent event collection. """
+    result = self.get(PARENT_EVENT_COLLECTION_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PARENT_EVENT_COLLECTION_TAG_)
+    return result  
+
+  def getFileList(self):
+    """ Retrieve file list. """
+    return self.get(FILE_LIST_TAG_) 
 
 class DbsEventCollectionList(dbsObject.DbsObjectList):
 
