@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApplication.py,v 1.5 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsApplication.py,v 1.1 2005/12/07 21:18:41 sveseli Exp $
 #
 # Application class. 
 #
@@ -58,32 +58,52 @@ class DbsApplication(dbsObject.DbsObject):
 
   def getVersion(self):
     """ Retrieve version. """
-    return self.get(VERSION_TAG_)
+    result = self.get(VERSION_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % VERSION_TAG_)
+    return result
 
   def getFamily(self):
     """ Retrieve family. """
-    return self.get(FAMILY_TAG_)
+    result = self.get(FAMILY_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FAMILY_TAG_)
+    return result
 
   def getExecutable(self):
     """ Retrieve executable. """
-    return self.get(EXECUTABLE_TAG_)
+    result = self.get(EXECUTABLE_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EXECUTABLE_TAG_)
+    return result
 
   def getConfigConditionsVersion(self):
     """ Retrieve config conditions version. """
-    return self.get(CONFIG_CONDITIONS_VERSION_TAG_)
+    result = self.get(CONFIG_CONDITIONS_VERSION_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % CONFIG_CONDITIONS_VERSION_TAG_)
+    return result
 
   def getParameterSet(self):
     """ Retrieve parameter set. """
-    return self.get(PARAMETER_SET_TAG_)
+    result = self.get(PARAMETER_SET_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PARAMETER_SET_TAG_)
+    return result
 
   def getInputTypeName(self):
     """ Retrieve input type name. """
-    return self.get(INPUT_TYPE_NAME_TAG_)
+    result = self.get(INPUT_TYPE_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % INPUT_TYPE_NAME_TAG_)
+    return result
 
   def getOutputTypeName(self):
     """ Retrieve output type name. """
-    return self.get(OUTPUT_TYPE_NAME_TAG_)
-
+    result = self.get(OUTPUT_TYPE_NAME_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % OUTPUT_TYPE_NAME_TAG_)
+    return result
 
 ##############################################################################
 # Unit testing.

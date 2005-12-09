@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsObjectInfo.py,v 1.1 2005/11/08 21:46:54 sveseli Exp $
+# $Id: dbsObjectInfo.py,v 1.2 2005/11/09 21:37:59 sveseli Exp $
 #
 # This class keeps track of the information needed to
 # instantiate a DBS object.
@@ -8,6 +8,7 @@
 
 import UserDict
 import types
+import dbsException
 
 CLASS_NAME_TAG_ = "ClassName"
 ARGUMENTS_STRING_TAG_ = "ArgumentsString"
@@ -27,11 +28,17 @@ class DbsObjectInfo(UserDict.UserDict):
       
   def getClassName(self):
     """ Retrieve class name. """
-    return self.get(CLASS_NAME_TAG_)
+    result = self.get(CLASS_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % CLASS_NAME_TAG_)
+    return result
 
   def getArgumentsString(self):
     """ Retrieve argument string. """
-    return self.get(ARGUMENTS_STRING_TAG_)
+    result = self.get(ARGUMENTS_STRING_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % ARGUMENTS_STRING_TAG_)
+    return result
 
 
 ##############################################################################

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDataset.py,v 1.5 2005/12/07 17:21:11 sveseli Exp $
+# $Id: dbsDataset.py,v 1.6 2005/12/07 21:18:41 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -67,19 +67,31 @@ class DbsDataset(dbsObject.DbsObject):
 
   def getDatasetName(self):
     """ Retrieve dataset name. """
-    return self.get(DATASET_NAME_TAG_)
+    result = self.get(DATASET_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATASET_NAME_TAG_)
+    return result
 
   def getDatasetPath(self):
     """ Retrieve dataset path. """
-    return self.get(DATASET_PATH_TAG_)
+    result = self.get(DATASET_PATH_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATASET_PATH_TAG_)
+    return result
 
   def getDataTier(self):
     """ Retrieve datatier. """
-    return self.get(DATA_TIER_TAG_)
+    result = self.get(DATA_TIER_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATA_TIER_TAG_)
+    return result
 
   def getDataType(self):
     """ Retrieve dataype. """
-    return self.get(DATA_TYPE_TAG_)
+    result = self.get(DATA_TYPE_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATA_TYPE_TAG_)
+    return result
 
   def verifyDatasetPathName(datasetPathName):
     """ Verify the validity of the given name. """

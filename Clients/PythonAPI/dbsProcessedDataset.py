@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessedDataset.py,v 1.1 2005/12/07 21:18:41 sveseli Exp $
+# $Id: dbsProcessedDataset.py,v 1.2 2005/12/08 19:56:59 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -56,15 +56,24 @@ class DbsProcessedDataset(dbsDataset.DbsDataset):
 
   def getPrimaryDatasetName(self):
     """ Retrieve primary dataset name. """
-    return self.get(PRIMARY_DATASET_NAME_TAG_)
+    result = self.get(PRIMARY_DATASET_NAME_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PRIMARY_DATASET_NAME_TAG_)
+    return result
 
   def getIsDatasetOpen(self):
     """ Retrieve is open flag. """
-    return self.get(IS_DATASET_OPEN_TAG_)
+    result = self.get(IS_DATASET_OPEN_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_DATASET_OPEN_TAG_)
+    return result
 
   def getProcessingPath(self):
     """ Retrieve processing path. """
-    return self.get(PROCESSING_PATH_TAG_)
+    result = self.get(PROCESSING_PATH_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSING_PATH_TAG_)
+    return result
 
 
 ##############################################################################

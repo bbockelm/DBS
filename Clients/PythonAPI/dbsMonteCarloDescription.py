@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsMonteCarloDescription.py,v 1.3 2005/12/08 16:40:25 sekhri Exp $
+# $Id: dbsMonteCarloDescription.py,v 1.4 2005/12/08 19:56:59 sveseli Exp $
 #
 # MC Description class. 
 #
@@ -52,19 +52,31 @@ class DbsMonteCarloDescription(dbsObject.DbsObject):
 
   def getDescription(self):
     """ Retrieve mc description. """
-    return self.get(MC_DESCRIPTION_TAG_)
+    result = self.get(MC_DESCRIPTION_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % MC_DESCRIPTION_TAG_)
+    return result
 
   def getProduction(self):
     """ Retrieve mc production. """
-    return self.get(MC_PRODUCTION_TAG_)
+    result = self.get(MC_PRODUCTION_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % MC_PRODUCTION_TAG_)
+    return result
 
   def getDecayChain(self):
     """ Retrieve decay chain. """
-    return self.get(MC_DECAY_CHAIN_TAG_)
+    result = self.get(MC_DECAY_CHAIN_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % MC_DECAY_CHAIN_TAG_)
+    return result
 
   def getIsMcData(self):
     """ Retrieve mc data flag. """
-    return self.get(IS_MC_DATA_TAG_)
+    result = self.get(IS_MC_DATA_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_MC_DATA_TAG_)
+    return result
 
 
 ##############################################################################
@@ -77,7 +89,7 @@ if __name__ == "__main__":
     decayChain="decayChain",
     isMcData='y')
   print mc
-  print "Is MC Data: ", mc.isMcData()
+  print "Is MC Data: ", mc.getIsMcData()
   
   print "Done"
 

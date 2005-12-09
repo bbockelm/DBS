@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessingPath.py,v 1.5 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsProcessingPath.py,v 1.1 2005/12/07 21:18:41 sveseli Exp $
 #
 # Processing path class. 
 #
@@ -62,19 +62,31 @@ class DbsProcessingPath(dbsObject.DbsObject):
 
   def getFullPath(self):
     """ Retrieve full path. """
-    return self.get(FULL_PATH_TAG_)
+    result = self.get(FULL_PATH_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FULL_PATH_TAG_)
+    return result
 
   def getDataTier(self):
     """ Retrieve data tier. """
-    return self.get(DATA_TIER_TAG_)
-
+    result = self.get(DATA_TIER_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATA_TIER_TAG_)
+    return result
+  
   def getParentPath(self):
     """ Retrieve parent path. """
-    return self.get(PARENT_PATH_TAG_)
-
+    result = self.get(PARENT_PATH_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PARENT_PATH_TAG_)
+    return result
+  
   def getApplication(self):
     """ Retrieve application. """
-    return self.get(APPLICATION_TAG_)
+    result = self.get(APPLICATION_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % APPLICATION_TAG_)
+    return result
 
 
 ##############################################################################
