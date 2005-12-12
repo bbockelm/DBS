@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.4 2005/12/12 16:24:03 sveseli Exp $
+# $Id: dbsEventCollection.py,v 1.5 2005/12/12 17:45:41 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -12,6 +12,7 @@ import dbsException
 import dbsFile
 
 EVENT_COLLECTION_DICT_TAG_ = "collectionDict"
+EVENT_COLLECTION_ID_TAG_ = "collectionId"
 EVENT_COLLECTION_NAME_TAG_ = "collectionName"
 EVENT_COLLECTION_INDEX_TAG_ = "collectionIndex"
 EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_ = "numberOfEvents"
@@ -31,10 +32,14 @@ class DbsEventCollection(dbsObject.DbsObject):
   def __init__(self, collectionName=None,
 	       numberOfEvents=None, collectionIndex=None,
 	       runNumber=None, isPrimary=None, parentEventCollection=None,
+	       collectionId=None,
 	       fileList=[],
 	       collectionDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, collectionDict)
+    if collectionId is not None:
+      self[EVENT_COLLECTION_ID_TAG_] = int(collectionId)
+
     if collectionName is not None:
       self[EVENT_COLLECTION_NAME_TAG_] = str(collectionName)
 
@@ -75,6 +80,13 @@ class DbsEventCollection(dbsObject.DbsObject):
 
     self.setNamespace(WSDL_NAMESPACE_)
     
+  def getCollectionId(self):
+    """ Retrieve collection id. """
+    result = self.get(EVENT_COLLECTION_ID_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_ID_TAG_)
+    return result
+
   def getCollectionName(self):
     """ Retrieve collection name. """
     result = self.get(EVENT_COLLECTION_NAME_TAG_) 
@@ -161,14 +173,16 @@ class DbsEventCollectionList(dbsObject.DbsObjectList):
 # Unit testing.
 
 if __name__ == "__main__":
-  ec = DbsEventCollection(collectionName="ec1", numberOfEvents=123)
+  ec = DbsEventCollection(collectionName="ec1", collectionId=56,
+			  numberOfEvents=123)
   print "Event collection: \n", ec
+  print "Event collection id: ", ec.getCollectionId()
   ec["myKey"] = "myValue"
   print "Event collection after adding 'myKey': \n", ec
 
   ecList = DbsEventCollectionList([ec])
   print "Event collection list: \n", ecList
-  ecList.append(DbsEventCollection(collectionName="ec2", numberOfEvents=228))
+  ecList.append(DbsEventCollection(collectionName="ec2", numberOfEvents=228, collectionId=72345))
   print "Event collection list after append: \n", ecList
 
   ecList2 = DbsEventCollectionList()  
