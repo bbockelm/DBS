@@ -198,6 +198,18 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     <part name="faultstring" type="xsd:string"/>
   </message>
 
+  <message name="insertEventCollectionsRequest">
+    <part name="processedDataset" type="tns:DbsProcessedDataset"/>
+    <part name="eventCollectionList" type="tns:ArrayOfDbsEventCollection"/>
+  </message>
+
+  <message name="insertEventCollectionsResponse">
+  </message>
+
+  <message name="insertEventCollectionsFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
   <portType name="DbsDatasetPortType">
     <operation name="getDatasetContents">
       <input message="tns:getDatasetContentsRequest" name="getDatasetContentsRequest"/>
@@ -222,6 +234,13 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       <input message="tns:createProcessedDatasetRequest" name="createProcessedDatasetRequest"/>
       <output message="tns:createProcessedDatasetResponse" name="createProcessedDatasetResponse"/>
       <fault message="tns:createProcessedDatasetFault" name="createProcessedDatasetFault"/>
+    </operation>
+
+
+    <operation name="insertEventCollections">
+      <input message="tns:insertEventCollectionsRequest" name="insertEventCollectionsRequest"/>
+      <output message="tns:insertEventCollectionsResponse" name="insertEventCollectionsResponse"/>
+      <fault message="tns:insertEventCollectionsFault" name="insertEventCollectionsFault"/>
     </operation>
 
 
@@ -292,6 +311,23 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       </output>
       <fault name="createProcessedDatasetFault">
         <soap:fault name="createProcessedDatasetFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
+    <operation name="insertEventCollections">
+      <soap:operation soapAction="insertEventCollections"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="insertEventCollectionsFault">
+        <soap:fault name="insertEventCollectionsFault" use="encoded" 
         namespace="DbsDatasetService" 
         encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
       </fault>

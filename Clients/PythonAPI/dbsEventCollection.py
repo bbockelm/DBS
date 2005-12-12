@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.3 2005/12/09 20:50:15 sveseli Exp $
+# $Id: dbsEventCollection.py,v 1.4 2005/12/12 16:24:03 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -67,6 +67,7 @@ class DbsEventCollection(dbsObject.DbsObject):
       fileList = fileList + self[FILE_LIST_TAG_]
     self[FILE_LIST_TAG_] = dbsFile.DbsFileList()
     for f in fileList:
+      
       newFile = f
       if not isinstance(f, dbsFile.DbsFile):
 	newFile = dbsFile.DbsFile(fileDict=newFile)
@@ -145,10 +146,7 @@ class DbsEventCollectionList(dbsObject.DbsObjectList):
 	newEc = DbsEventCollection(collectionDict=eventCollection)
       else:
 	# assume soap struct; wild guess, may throw exception
-	collectionName = eventCollection.collectionName
-	numberOfEvents = eventCollection.numberOfEvents
-	newEc = DbsEventCollection(collectionName=collectionName,
-				   numberOfEvents=numberOfEvents)
+	newEc = DbsEventCollection(collectionDict=eventCollection)
       return newEc
     except Exception, ex:
       raise dbsException.InvalidArgument(exception=ex)

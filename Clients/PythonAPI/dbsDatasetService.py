@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.4 2005/12/08 16:40:25 sekhri Exp $
+# $Id: dbsDatasetService.py,v 1.5 2005/12/08 19:56:59 sveseli Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -25,6 +25,7 @@ DATASET_PATH_NAME_PAR_ = "datasetPathName"
 DATA_TIER_LIST_PAR_ = "dataTierList"
 PRIMARY_DATASET_PAR_ = "primaryDataset"
 PROCESSED_DATASET_PAR_ = "processedDataset"
+EVENT_COLLECTION_LIST_PAR_ = "eventCollectionList"
 
 FILE_BLOCK_LIST_KWD_ = "fileBlockList"
 DATASET_PARENT_LIST_KWD_ = "datasetParentList"
@@ -77,6 +78,13 @@ class CreatePrimaryDatasetFault(DbsDatasetServiceFault):
     DbsDatasetServiceFault.__init__(self, **kwargs)
 
 class CreateProcessedDatasetFault(DbsDatasetServiceFault):
+
+  def __init__(self, **kwargs):
+    """ Initialization. """
+    DbsDatasetServiceFault.__init__(self, **kwargs)
+
+
+class InsertEventCollectionsFault(DbsDatasetServiceFault):
 
   def __init__(self, **kwargs):
     """ Initialization. """
@@ -276,10 +284,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
         msg = "Creating primary dataset %s" % (primaryDataset)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-	############################
-	# Here comes the api call...
 	primaryDatasetId = self.getApi().createPrimaryDataset(primaryDataset)
-	############################
         msg = "Created primary dataset with id %s: " % (primaryDatasetId)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
@@ -333,10 +338,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
         msg = "Creating processed dataset %s" % (processedDataset)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-	############################
-	# Here comes the api call...
 	processedDatasetId = self.getApi().createProcessedDataset(processedDataset)
-	############################
         msg = "Created processed dataset with id %s: " % (processedDatasetId)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
@@ -348,6 +350,68 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	raise CreateProcessedDatasetFault(exception=ex)
 
       return { PROCESSED_DATASET_ID_KWD_ : processedDatasetId }
+    finally:
+      self.releaseServant(servantId)
+
+
+  def insertEventCollections(self, processedDataset=None,
+			     eventCollectionList=None,
+			     *args, **kwargs):
+    """
+    Insert event collections for a given processed dataset.
+
+    Returns: processed dataset id.
+    Faults: InsertEventCollectionsFault
+    """
+
+    # Check arguments.
+    funcName = "%s.%s" % (self.__class__.__name__, "insertEventCollections()")
+    try:
+      processedDatasetDict = self.getParameter(
+        PROCESSED_DATASET_PAR_, processedDataset, **kwargs)
+      processedDataset = dbsProcessedDataset.DbsProcessedDataset(datasetDict=processedDatasetDict)
+      eventCollections = self.getParameter(
+        EVENT_COLLECTION_LIST_PAR_, eventCollectionList, **kwargs)
+      eventCollectionList = dbsEventCollection.DbsEventCollectionList(eventCollections)
+    except dbsWebServiceException.MissingParameterFault, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise InsertEventCollectionsFault(exception=ex)
+
+
+    # Acquire servant.
+    try:
+      servantId = self.acquireServant(funcName)
+    except DbsWebServiceException, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise InsertEventCollectionsFault(exception=ex)
+
+    # Do the work.
+    try:
+      try:
+        msg = "Inserting %s event collections for dataset %s" % (
+	  len(eventCollectionList), processedDataset.getDatasetName())
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+	#################
+	## Here comes API call.
+	# self.getApi().insertEventCollections(processedDataset, eventCollectionList)
+	#################
+        msg = "Inserted %s event collections for dataset %s" % (
+	  len(eventCollectionList), processedDataset.getDatasetName())
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+      except Exception, ex:
+	self._logManager.log(what="%s" % ex,
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+	raise InsertEventCollectionsFault(exception=ex)
+
+      return {}
     finally:
       self.releaseServant(servantId)
 

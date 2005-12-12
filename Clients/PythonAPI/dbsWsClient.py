@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.5 2005/12/08 19:56:59 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.6 2005/12/09 20:50:15 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -238,6 +238,47 @@ class DbsWsClient:
     
     return processedDatasetId
 
+  def insertEventCollections(self, processedDataset, eventCollectionList):
+    """ Insert event collections for a given processed dataset. """
+
+    funcName = "%s.%s" % (self.__class__.__name__, "insertEventCollections()")
+
+    # Invoke web service call.
+    try:
+      self._logManager.log(
+	what="Inserting %s event collections for processed dataset: %s." % (
+	len(eventCollectionList), processedDataset.getDatasetName()),
+	where=funcName,
+	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      self._wsdlProxy.insertEventCollections(
+	processedDataset=processedDataset.getWsRep(),
+	eventCollectionList=eventCollectionList.getWsRep())
+
+    except SOAPpy.faultType, ex:
+      wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
+      errMsg = "%s caught: %s (Will raise: %s)" % (
+	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
+      self._logManager.log(what=errMsg,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise wsEx
+      
+    except Exception, ex:
+      # General exception.
+      self._logManager.log(what="Web service client failed.\n%s " % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise DbsWsClientException(exception=ex)
+    
+    self._logManager.log(
+      what="Successfully inserted %s event collections for processed dataset: %s." % (
+      len(eventCollectionList), processedDataset.getDatasetName()),
+      where=funcName,
+      logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+    return
+	
 ##############################################################################
 # Unit testing.
 
