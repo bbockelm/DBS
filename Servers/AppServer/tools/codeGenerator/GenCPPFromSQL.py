@@ -95,7 +95,9 @@ if __name__== '__main__':
    print "Processing SQL.."
    #sqlFilename = 'DBS-DB.sql'
    #sqlFilename = 'OracleCMS.sql'
-   sqlFilename = 'DBSOracle.sql' 
+   #sqlFilename = 'DBSOracle.sql' 
+   sqlFilename = 'DBSOracleHistory.sql'
+   print "Processing SQL File: ", sqlFilename
    sqlProcessor= processSQL(sqlFilename)
    sqlProcessor.run()
    
