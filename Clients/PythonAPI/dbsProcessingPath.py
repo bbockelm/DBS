@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessingPath.py,v 1.1 2005/12/07 21:18:41 sveseli Exp $
+# $Id: dbsProcessingPath.py,v 1.2 2005/12/09 16:49:41 sveseli Exp $
 #
 # Processing path class. 
 #
@@ -11,6 +11,7 @@ import types
 import dbsApplication
 import dbsException
 
+PATH_ID_TAG_ = "pathId"
 FULL_PATH_TAG_ = "fullPath"
 DATA_TIER_TAG_ = "dataTier"
 PARENT_PATH_TAG_ = "parentPath"
@@ -25,7 +26,7 @@ WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 class DbsProcessingPath(dbsObject.DbsObject):
 
   def __init__(self, fullPath=None, dataTier=None, parentPath=None,
-	       application=None,
+	       application=None, pathId=None,
 	       processingPathDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, processingPathDict)
@@ -40,6 +41,9 @@ class DbsProcessingPath(dbsObject.DbsObject):
 
     if application is not None:
       self[APPLICATION_TAG_] = application
+
+    if pathId is not None:
+      self[PATH_ID_TAG_] = int(pathId)
 
     # Correct parent path if needed.
     parentPath = self.get(PARENT_PATH_TAG_)
@@ -88,6 +92,12 @@ class DbsProcessingPath(dbsObject.DbsObject):
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % APPLICATION_TAG_)
     return result
 
+  def getPathId(self):
+    """ Retrieve path od. """
+    result = self.get(PATH_ID_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PATH_ID_TAG_)
+    return result
 
 ##############################################################################
 # Unit testing.
@@ -98,7 +108,8 @@ if __name__ == "__main__":
   pp1 = DbsProcessingPath(fullPath="/x/y/z", dataTier="hit", application=app)
   print pp1
   pp2 = DbsProcessingPath(fullPath="/x22/y22/z22", dataTier="Digi",
-			  parentPath=pp1)
+			  parentPath=pp1, pathId=77)
   print pp2
+  print pp2.getPathId()
 
   print "Done"
