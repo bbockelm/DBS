@@ -46,11 +46,13 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
 
       <complexType name="DbsEventCollection">
         <xsd:sequence>
+          <xsd:element name="collectionId" type="xsd:int"/>
           <xsd:element name="collectionName" type="xsd:string"/>
           <xsd:element name="numberOfEvents" type="xsd:int"/>
           <xsd:element name="collectionIndex" type="xsd:int"/>
           <xsd:element name="runNumber" type="xsd:int"/>
           <xsd:element name="isPrimary" type="xsd:string"/>
+          <xsd:element name="processedDatasetName" type="xsd:string"/>
           <xsd:element name="parentEventCollection" type="tns:DbsEventCollection"/>
           <xsd:element name="fileList" type="tns:ArrayOfDbsFile"/>
         </xsd:sequence>
@@ -68,6 +70,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         <xsd:sequence>
           <xsd:element name="blockName" type="xsd:string"/>
           <xsd:element name="blockId" type="xsd:int"/>
+          <xsd:element name="processedDatasetName" type="xsd:string"/>
           <xsd:element name="eventCollectionList" type="tns:ArrayOfDbsEventCollection"/>
         </xsd:sequence>
       </complexType>
@@ -130,6 +133,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
 
       <complexType name="DbsProcessingPath">
         <xsd:sequence>
+          <xsd:element name="pathId" type="xsd:int"/>
           <xsd:element name="dataTier" type="xsd:string"/>
           <xsd:element name="fullPath" type="xsd:string"/>
           <xsd:element name="application" type="tns:DbsApplication"/>
@@ -199,7 +203,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="insertEventCollectionsRequest">
-    <part name="processedDataset" type="tns:DbsProcessedDataset"/>
+    <part name="processedDatasetName" type="tns:string"/>
     <part name="eventCollectionList" type="tns:ArrayOfDbsEventCollection"/>
   </message>
 
@@ -207,6 +211,18 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="insertEventCollectionsFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
+  <message name="createFileBlockRequest">
+    <part name="fileBlock" type="tns:DbsFileBlock"/>
+  </message>
+
+  <message name="createFileBlockResponse">
+    <part name="fileBlockId" type="xsd:int"/>
+  </message>
+
+  <message name="createFileBlockFault">
     <part name="faultstring" type="xsd:string"/>
   </message>
 
@@ -241,6 +257,12 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       <input message="tns:insertEventCollectionsRequest" name="insertEventCollectionsRequest"/>
       <output message="tns:insertEventCollectionsResponse" name="insertEventCollectionsResponse"/>
       <fault message="tns:insertEventCollectionsFault" name="insertEventCollectionsFault"/>
+    </operation>
+
+    <operation name="createFileBlock">
+      <input message="tns:createFileBlockRequest" name="createFileBlockRequest"/>
+      <output message="tns:createFileBlockResponse" name="createFileBlockResponse"/>
+      <fault message="tns:createFileBlockFault" name="createFileBlockFault"/>
     </operation>
 
 
@@ -328,6 +350,23 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       </output>
       <fault name="insertEventCollectionsFault">
         <soap:fault name="insertEventCollectionsFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
+    <operation name="createFileBlock">
+      <soap:operation soapAction="createFileBlock"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="createFileBlockFault">
+        <soap:fault name="createFileBlockFault" use="encoded" 
         namespace="DbsDatasetService" 
         encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
       </fault>

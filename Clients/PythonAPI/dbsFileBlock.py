@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.6 2005/12/09 20:50:15 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.7 2005/12/12 16:24:03 sveseli Exp $
 #
 # File block class. 
 #
@@ -14,6 +14,7 @@ import dbsException
 FILE_BLOCK_DICT_TAG_ = "blockDict"
 FILE_BLOCK_NAME_TAG_ = "blockName"
 FILE_BLOCK_ID_TAG_ = "blockId"
+PROCESSED_DATASET_NAME_TAG_ = "processedDatasetName"
 EVENT_COLLECTION_LIST_TAG_ = "eventCollectionList"
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
@@ -25,11 +26,15 @@ WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 class DbsFileBlock(dbsObject.DbsObject):
 
   def __init__(self, blockName=None,
-	       blockId=None, eventCollectionList=[], blockDict={}):
+	       blockId=None, processedDatasetName=None,
+	       eventCollectionList=[], blockDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, blockDict)
     if blockName is not None:
       self[FILE_BLOCK_NAME_TAG_] = str(blockName)
+
+    if processedDatasetName is not None:
+      self[PROCESSED_DATASET_NAME_TAG_] = str(processedDatasetName)
 
     if blockId is not None:
       self[FILE_BLOCK_ID_TAG_] = int(blockId)
@@ -57,6 +62,13 @@ class DbsFileBlock(dbsObject.DbsObject):
     result = self.get(FILE_BLOCK_ID_TAG_) 
     if result == None:
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
+    return result
+
+  def getProcessedDatasetName(self):
+    """ Retrieve processed dataset name. """
+    result = self.get(PROCESSED_DATASET_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
     return result
 
   def getEventCollectionList(self):

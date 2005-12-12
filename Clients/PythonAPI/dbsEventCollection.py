@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.5 2005/12/12 17:45:41 sveseli Exp $
+# $Id: dbsEventCollection.py,v 1.6 2005/12/12 19:09:12 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -20,6 +20,7 @@ PARENT_EVENT_COLLECTION_TAG_ = "parentEventCollection"
 FILE_LIST_TAG_ = "fileList"
 RUN_NUMBER_TAG_ = "runNumber"
 IS_PRIMARY_TAG_ = "isPrimary"
+PROCESSED_DATASET_NAME_TAG_ = "processedDatasetName"
 
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
@@ -32,7 +33,7 @@ class DbsEventCollection(dbsObject.DbsObject):
   def __init__(self, collectionName=None,
 	       numberOfEvents=None, collectionIndex=None,
 	       runNumber=None, isPrimary=None, parentEventCollection=None,
-	       collectionId=None,
+	       collectionId=None, processedDatasetName=None,
 	       fileList=[],
 	       collectionDict={}):
     """ Constructor. """
@@ -54,6 +55,9 @@ class DbsEventCollection(dbsObject.DbsObject):
 
     if isPrimary is not None:
       self[IS_PRIMARY_TAG_] = str(isPrimary)
+
+    if processedDatasetName is not None:
+      self[PROCESSED_DATASET_NAME_TAG_] = str(processedDatasetName)
 
     if parentEventCollection is not None:
       self[PARENT_EVENT_COLLECTION_TAG_] = parentEventCollection
@@ -121,6 +125,13 @@ class DbsEventCollection(dbsObject.DbsObject):
     if result == None:
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_PRIMARY_TAG_)
     return result  
+
+  def getProcessedDatasetName(self):
+    """ Retrieve processed dataset name. """
+    result = self.get(PROCESSED_DATASET_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
+    return result
 
   def getParentEventCollection(self):
     """ Retrieve parent event collection. """
