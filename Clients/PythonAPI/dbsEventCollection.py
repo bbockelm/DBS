@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.2 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsEventCollection.py,v 1.3 2005/12/09 20:50:15 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -61,18 +61,16 @@ class DbsEventCollection(dbsObject.DbsObject):
 	self[PARENT_EVENT_COLLECTION_TAG_] = DbsEventCollection(collectionDict=parentEventCollection)
       except Exception, ex:
 	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsEventCollection.DbsEventCollection object." % parentEventCollection)
-      
+
     # Make sure we have file list initialized.
-    if not self.has_key(FILE_LIST_TAG_):
-      self[FILE_LIST_TAG_] = []
-      
-    # Add file objects if they were supplied.
-    if len(fileList):
-      for f in fileList:
-	newFile = f
-	if not isinstance(f, dbsFile.DbsFile):
-	  newFile = dbsFile.DbsFile(fileDict=newFile)
-	self[FILE_LIST_TAG_].append(newFile)
+    if self.has_key(FILE_LIST_TAG_):
+      fileList = fileList + self[FILE_LIST_TAG_]
+    self[FILE_LIST_TAG_] = dbsFile.DbsFileList()
+    for f in fileList:
+      newFile = f
+      if not isinstance(f, dbsFile.DbsFile):
+	newFile = dbsFile.DbsFile(fileDict=newFile)
+      self[FILE_LIST_TAG_].append(newFile)
 
     self.setNamespace(WSDL_NAMESPACE_)
     

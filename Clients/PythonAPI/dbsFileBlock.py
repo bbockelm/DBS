@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.5 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.6 2005/12/09 20:50:15 sveseli Exp $
 #
 # File block class. 
 #
@@ -34,7 +34,7 @@ class DbsFileBlock(dbsObject.DbsObject):
     if blockId is not None:
       self[FILE_BLOCK_ID_TAG_] = int(blockId)
 
-    # Make sure that all event collections are of the tpye DbsEventCollection
+    # Make sure that all event collections are of the type DbsEventCollection
     # and that the list os of type DbsEventCollectionList.
     dictEcList = []
     if self.has_key(EVENT_COLLECTION_LIST_TAG_):
