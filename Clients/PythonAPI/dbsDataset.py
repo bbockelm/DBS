@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDataset.py,v 1.6 2005/12/07 21:18:41 sveseli Exp $
+# $Id: dbsDataset.py,v 1.7 2005/12/09 16:49:41 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -98,7 +98,7 @@ class DbsDataset(dbsObject.DbsObject):
     for regex in ALLOWED_DATASET_REGEX_:
       if regex.match(datasetPathName):
 	return
-    raise InvalidDatasetPathName(args="Invalid dataset path name: %s" % datasetPathName) 
+    raise InvalidDatasetPathName(args="Invalid dataset path name '%s'" % datasetPathName) 
 
   verifyDatasetPathName = dbsStaticMethod.DbsStaticMethod(verifyDatasetPathName)
 

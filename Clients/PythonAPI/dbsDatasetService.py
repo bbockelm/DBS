@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.7 2005/12/13 14:44:20 sveseli Exp $
+# $Id: dbsDatasetService.py,v 1.8 2005/12/13 17:55:27 sveseli Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -402,6 +402,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	  len(eventCollectionList), processedDatasetName)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+	print "SVDBG: ", processedDataset
 	#################
 	## Here comes API call.
 	# self.getApi().insertEventCollections(processedDataset, eventCollectionList)

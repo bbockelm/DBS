@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.8 2005/12/13 14:44:20 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.9 2005/12/13 17:55:27 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -82,6 +82,12 @@ class DbsWsClient:
     """ Retrieve event collections given the dataset path name string. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContents()")
+
+    # Check path.
+    try:
+      dbsDataset.DbsDataset.verifyDatasetPathName(datasetPathName)
+    except dbsDataset.InvalidDatasetPathName, ex:
+      raise InvalidDatasetPathName(args="%s" % ex)
         
     # Invoke web service call.
     try:
@@ -121,6 +127,12 @@ class DbsWsClient:
     """ Retrieve dataset parents given the dataset path name string. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetProvenance()")
+
+    # Check path.
+    try:
+      dbsDataset.DbsDataset.verifyDatasetPathName(datasetPathName)
+    except dbsDataset.InvalidDatasetPathName, ex:
+      raise InvalidDatasetPathName(args="%s" % ex)
 
     # Invoke web service call.
     try:

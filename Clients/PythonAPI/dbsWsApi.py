@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.9 2005/12/13 14:44:20 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.10 2005/12/13 17:55:27 sveseli Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -181,6 +181,7 @@ if __name__ == "__main__":
     processingPath2 = dbsProcessingPath.DbsProcessingPath(
       fullPath="/x22/y22/z22", dataTier="Digi", parentPath=processingPath)
 
+    
     dataset = dbsProcessedDataset.DbsProcessedDataset(
       datasetName="processedDataset", processingPath=processingPath2)
 

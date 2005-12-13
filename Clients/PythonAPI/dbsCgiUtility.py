@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.5 2005/11/09 21:37:59 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.6 2005/11/23 18:30:31 sveseli Exp $
 #
 # Class which uses CGI utilities to extract info from the db.
 #
@@ -15,6 +15,7 @@ import dbsApi
 import dbsDatasetContentsXmlParser
 import dbsDatasetProvenanceXmlParser
 import dbsLogManager
+import dbsDataset
 
 CGI_DBS_XML_DUMP_SCRIPT_ = "dbsxml"
 
@@ -87,7 +88,13 @@ class DbsCgiUtility:
     """ Retrieve event collections given the dataset path name string. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContents()")
-        
+
+    # Check path.
+    try:
+      dbsDataset.DbsDataset.verifyDatasetPathName(datasetPathName)
+    except dbsDataset.InvalidDatasetPathName, ex:
+      raise InvalidDatasetPathName(args="%s" % ex)
+    
     # Construct cgi path.
     cgiUrl = "%s/%s?api=getDatasetContents&path=%s" % (
       self._cgiUrl, CGI_DBS_XML_DUMP_SCRIPT_, datasetPathName)
@@ -103,7 +110,7 @@ class DbsCgiUtility:
     except urllib2.URLError, ex:
       # Cgi failed for some reason, determine exception to be raised.
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
-      exec "cgiEx = %s(exception=ex, args='Input argument datasetPathName=\"%s\"')" % (cgiExClassName, datasetPathName)
+      exec "cgiEx = %s(exception=ex, args=\"\"\"%s (Input argument datasetPathName=\"%s\")\"\"\")" % (cgiExClassName, ex.read(), datasetPathName)
       errMsg = "URLError caught: \n%s\nWill raise %s" % (
 	ex, cgiEx.__class__.__name__)
       self._logManager.log(what=errMsg,
@@ -138,6 +145,12 @@ class DbsCgiUtility:
     """ Retrieve dataset parents given the dataset path name string. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetProvenance()")
+
+    # Check path.
+    try:
+      dbsDataset.DbsDataset.verifyDatasetPathName(datasetPathName)
+    except dbsDataset.InvalidDatasetPathName, ex:
+      raise InvalidDatasetPathName(args="%s" % ex)
     
     # Construct cgi path.
     cgiUrl = "%s/%s?api=getDatasetProvenance&path=%s" % (
@@ -156,7 +169,7 @@ class DbsCgiUtility:
     except urllib2.URLError, ex:
       # Cgi failed for some reason, determine exception to be raised.
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
-      exec "cgiEx = %s(exception=ex, args='Input argument datasetPathName=\"%s\"')" % (cgiExClassName, datasetPathName)
+      exec "cgiEx = %s(exception=ex, args=\"\"\"%s (Input argument datasetPathName=\"%s\")\"\"\")" % (cgiExClassName, ex.read(), datasetPathName)
       errMsg = "URLError caught: \n%s\nWill raise %s" % (
 	ex, cgiEx.__class__.__name__)
       self._logManager.log(what=errMsg,
