@@ -174,20 +174,26 @@ if __name__ == "__main__":
     ##print "Got primary dataset id: %s" % primaryDatasetId
 
     # Test for create processed dataset.
-    application = dbsApplication.DbsApplication(
-      family="reco", executable="dummy", version="p1")
+    app = dbsApplication.DbsApplication(
+      family="reco", executable="dummy", version="p1", configConditionsVersion ="abcd",
+      parameterSet="psetdummy",
+      outputTypeName="odummy",
+      inputTypeName="idummy")
     processingPath = dbsProcessingPath.DbsProcessingPath(
-      fullPath="/x/y/z", dataTier="hit", application=application)
+      fullPath="/x/y/z", dataTier="hit", application=app)
     processingPath2 = dbsProcessingPath.DbsProcessingPath(
-      fullPath="/x22/y22/z22", dataTier="Digi", parentPath=processingPath)
+      pathId="1",
+      fullPath="/x22/y22/z22", dataTier="Digi", parentPath=processingPath, 
+      application=app)
 
-    
     dataset = dbsProcessedDataset.DbsProcessedDataset(
+      primaryDatasetName="ds2",
+      isDatasetOpen="y",
       datasetName="processedDataset", processingPath=processingPath2)
 
-    ##print "Creating processed dataset: %s" % dataset.getDatasetName()
-    ##processedDatasetId = api.createProcessedDataset(dataset)
-    ##print "Got processed dataset id: %s" % processedDatasetId    
+    print "Creating processed dataset: %s" % dataset.getDatasetName()
+    processedDatasetId = api.createProcessedDataset(dataset)
+    print "Got processed dataset id: %s" % processedDatasetId    
 
     # Test for inserting event collections.
     f1 = dbsFile.DbsFile(logicalFileName="myFile1")
@@ -201,10 +207,10 @@ if __name__ == "__main__":
     api.insertEventCollections(dataset, ecList)
 
     #Test for creating file blocks.
-    fb1 = dbsFileBlock.DbsFileBlock(blockId=765, blockName="myFirstBlock", processedDatasetName="ds1")
-    print "Creating file block: %s" % fb1
-    fbId = api.createFileBlock(dataset, fb1)
-    print "Got file block id: %s" % fbId
+    #fb1 = dbsFileBlock.DbsFileBlock(blockId=765, blockName="myFirstBlock", processedDatasetName="ds1")
+    #print "Creating file block: %s" % fb1
+    #fbId = api.createFileBlock(dataset, fb1)
+    #print "Got file block id: %s" % fbId
     
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())

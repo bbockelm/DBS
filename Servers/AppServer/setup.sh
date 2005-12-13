@@ -13,4 +13,8 @@ export PYTHONINCLUDE=/usr/include/python2.3/
 export DBSCONFIG=$DBSHOME/etc/server.conf
 export PATH=$SWIG_HOME/bin:$PATH
 export PYTHONPATH=$DBSHOME/interface/Python:$DBSHOME/../prototypes/proto_0/python:$PYTHONPATH
+cd $DBSHOME/../prototypes/proto_0/python
+source setups.sh
+cd -
+
 

@@ -52,9 +52,24 @@ int ProcessedDatasetManager::read(Message* msgReceived, Message& msgReturned) {
         typedef vector<Processingpathmultirow*> MyRows;
         typedef MyRows::iterator MyRowIter;
 
-        string addQuery = findKeyMakeQuery(msgReceived);
+	Processingpathmultirow* aRow = new Processingpathmultirow();
+	int retval = setRowValues(processedDatasetTable, aRow, msgReceived,"",0);
+	Dictionary* schema = this->processedDatasetTable->getSchema();
+	util.setSchema(schema);
+	SQL* sql = new SQL(&util);
+	Keys tempKeys;
+	for(Dictionary_iter schemaIterator = schema->begin(); schemaIterator != schema->end(); ++schemaIterator) {
+		tempKeys.push_back(schemaIterator->first);
+	}
+	Dictionary* multiRefrences = this->processedDatasetTable->getMultiRefrence();
+	string clause = sql->makeClause(aRow,tempKeys.begin(),tempKeys.end(), multiRefrences->begin(), multiRefrences->end());
+	delete sql;
+	delete aRow;
+	//DO this delet in try catch block
 
-        MyRows myRows = this->processedDatasetTable->select(addQuery);
+        //string addQuery = findKeyMakeQuery(msgReceived);
+        //MyRows myRows = this->processedDatasetTable->select(addQuery);
+        MyRows myRows = this->processedDatasetTable->select(clause);
         
         cout << "ProcessedDatasetManager::read Retrun from select()" << endl;
         cout << "ProcessedDatasetManager::read Rows Read " << myRows.size() << endl;

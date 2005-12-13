@@ -42,13 +42,13 @@ public:
 };
 class Physicsgroup_ClientAPIData  : public ClientDataStructure {
 public:
-    STRING  t_person_contactinfo;
-    INTEGER  t_physics_group_convenor;
+    INTEGER  t_person_id_t_physics_group_convener;
+    STRING  t_person_distinguised_name_t_physics_group_convener;
+    STRING  t_person_name_t_physics_group_convener;
     INTEGER  t_physics_group_id;
-    STRING  t_person_name;
-    STRING  t_person_distinguised_name;
-    INTEGER  t_person_id;
+    STRING  t_person_contactinfo_t_physics_group_convener;
     STRING  t_physics_group_name;
+    INTEGER  t_physics_group_convener;
 public:
      Physicsgroup_ClientAPIData();
 
@@ -64,10 +64,11 @@ public:
     STRING  t_evcoll_status_name;
     INTEGER  t_info_evcoll_events;
     INTEGER  t_event_collection_id;
-    INTEGER  t_info_evcoll_event_collection;
+    CHARACTER  t_event_collection_is_primary;
     STRING  t_validation_status_name;
     INTEGER  t_event_collection_processed_dataset;
     INTEGER  t_evcoll_status_id;
+    INTEGER  t_info_evcoll_event_collection;
     INTEGER  t_validation_status_id;
     INTEGER  t_event_collection_collection_index;
     STRING  t_info_evcoll_estimated_luminosity;
@@ -95,7 +96,7 @@ public:
     INTEGER  t_evcoll_file_evcoll;
     STRING  t_file_type_name;
     INTEGER  t_block_id;
-    INTEGER  t_file_filesize;
+    STRING  t_file_filesize;
     STRING  t_block_status_name;
     INTEGER  t_block_bytes;
     INTEGER  t_file_status;
@@ -120,13 +121,13 @@ public:
     INTEGER  t_desc_primary_trigger_path;
     STRING  t_desc_trigger_description;
     INTEGER  t_primary_dataset_physics_group;
-    INTEGER  t_physics_group_convenor;
     INTEGER  t_desc_trigger_id;
     STRING  t_desc_mc_production;
     STRING  t_physics_group_name;
     INTEGER  t_desc_primary_mc_channel;
     INTEGER  t_primary_dataset_id;
     CHARACTER  t_desc_primary_is_mc_data;
+    INTEGER  t_physics_group_convener;
 public:
      Primarydataset_ClientAPIData();
 
@@ -142,6 +143,7 @@ public:
     STRING  t_app_config_conditions_version;
     INTEGER  t_application_id;
     INTEGER  t_application_output_type;
+    INTEGER  t_primary_dataset_description;
     INTEGER  t_data_tier_id;
     INTEGER  t_processing_path_parent;
     INTEGER  t_app_config_id;
@@ -149,6 +151,7 @@ public:
     INTEGER  t_processed_dataset_processing_path;
     INTEGER  t_processing_path_data_tier;
     INTEGER  t_application_app_family;
+    INTEGER  t_primary_dataset_id;
     STRING  t_data_tier_name;
     STRING  t_app_family_name;
     STRING  t_app_config_parameter_set;
@@ -157,9 +160,11 @@ public:
     INTEGER  t_app_config_application;
     STRING  t_application_executable;
     STRING  t_collection_type_name_t_application_input_type;
+    INTEGER  t_primary_dataset_physics_group;
     STRING  t_processing_path_full_path;
     INTEGER  t_processing_path_id;
     INTEGER  t_application_input_type;
+    STRING  t_primary_dataset_name;
     INTEGER  t_processed_dataset_primary_dataset;
     INTEGER  t_processed_dataset_id;
     INTEGER  t_collection_type_id_t_application_output_type;
@@ -176,6 +181,7 @@ public:
     STRING  t_dataset_status_name;
     INTEGER  t_info_anads_analysis_dataset;
     STRING  t_validation_status_name;
+    CHARACTER  t_anads_data_is_primary;
     INTEGER  t_anads_data_event_collection;
     STRING  t_info_anads_estimated_luminiosity;
     STRING  t_analysis_dataset_name;
@@ -200,6 +206,7 @@ public:
     STRING  t_processed_dataset_name;
     INTEGER  t_event_collection_id;
     INTEGER  t_processing_path_id;
+    CHARACTER  t_event_collection_is_primary;
     INTEGER  t_event_collection_processed_dataset;
     INTEGER  t_primary_dataset_description;
     INTEGER  t_data_tier_id;
@@ -233,6 +240,7 @@ public:
     STRING  t_processed_dataset_name;
     INTEGER  t_event_collection_id;
     INTEGER  t_processing_path_id;
+    CHARACTER  t_event_collection_is_primary;
     INTEGER  t_event_collection_processed_dataset;
     INTEGER  t_primary_dataset_description;
     INTEGER  t_data_tier_id;
@@ -269,7 +277,7 @@ public:
     INTEGER  t_block_status;
     INTEGER  t_primary_dataset_physics_group;
     INTEGER  t_processing_path_id;
-    INTEGER  t_info_evcoll_event_collection;
+    CHARACTER  t_event_collection_is_primary;
     INTEGER  t_event_collection_processed_dataset;
     STRING  t_info_evcoll_estimated_luminosity;
     INTEGER  t_primary_dataset_description;
@@ -292,6 +300,7 @@ public:
     STRING  t_primary_dataset_name;
     INTEGER  t_info_evcoll_status;
     INTEGER  t_processed_dataset_primary_dataset;
+    INTEGER  t_info_evcoll_event_collection;
     INTEGER  t_processed_dataset_id;
 public:
      Crabevcollview_ClientAPIData();

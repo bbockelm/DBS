@@ -184,6 +184,7 @@ class createMultiTableViewObjects :
         self.ProcessingPath.addSchema(self.allSchemas['t_app_config'])
         self.ProcessingPath.addSchema(self.allSchemas['t_processing_path'])
         self.ProcessingPath.addSchema(self.allSchemas['t_processed_dataset'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_primary_dataset'])
         self.ProcessingPath.addCondition("t_application.app_family = t_app_family.id")
 	self.ProcessingPath.addCondition('t_processed_dataset.processing_path = ' + \
                                          't_processing_path.id')
@@ -192,6 +193,7 @@ class createMultiTableViewObjects :
         #self.ProcessingPath.addCondition('t_processing_path.parent = t_processing_path.id')
         self.ProcessingPath.addCondition("t_app_config.application = " + \
                                        "t_application.id")
+        self.ProcessingPath.addCondition("t_processed_dataset.primary_dataset = t_primary_dataset.id")
         #self.ProcessingPath.addCondition("t_application.input_type = " + \
         #                             "t_collection_type.id")
         #self.ProcessingPath.addCondition("t_application.output_type = " + \

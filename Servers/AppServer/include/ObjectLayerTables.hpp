@@ -83,7 +83,7 @@ public:
 private:
      INTEGER id;
      STRING name;
-     INTEGER convenor;
+     INTEGER convener;
 };
 
 class  T_Physics_Grouprow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -451,6 +451,7 @@ private:
      INTEGER id;
      INTEGER processed_dataset;
      INTEGER collection_index;
+     CHARACTER is_primary;
 };
 
 class  T_Event_Collectionrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -511,6 +512,7 @@ private:
      INTEGER id;
      INTEGER analysis_dataset;
      INTEGER event_collection;
+     CHARACTER is_primary;
 };
 
 class  T_Anads_Datarow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -719,7 +721,7 @@ private:
      INTEGER id;
      STRING guid;
      STRING logical_name;
-     INTEGER filesize;
+     STRING filesize;
      INTEGER status;
      INTEGER type;
      INTEGER inblock;
@@ -1119,7 +1121,7 @@ public:
 
 private:
 
-    T_Personrow* T_Personobj;
+    T_Personrow* T_Physics_Group_Convenerobj;
     T_Physics_Grouprow* T_Physics_Groupobj;
 };
 
@@ -1259,6 +1261,7 @@ private:
     T_Applicationrow* T_Applicationobj;
     T_App_Configrow* T_App_Configobj;
     T_Processing_Pathrow* T_Processing_Pathobj;
+    T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
 };
 

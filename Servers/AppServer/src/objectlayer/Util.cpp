@@ -191,6 +191,7 @@ string Util::getStrValue(RowInterface* aRow, string name, string dataType) {
 		return this->itoa(actualValue);
 	}
 	if(dataType == "STRING") {
+                //cout << "getStrValueSTRING :name " << name << endl;
 		string* value = (string*)aRow->getValue(name);
 		string actualValue = *value;
 		return(actualValue);
@@ -356,7 +357,8 @@ bool Util::isInMultiRef(string key, Dictionary_iter b, Dictionary_iter e) {//Pas
 	}
 	for(Dictionary_iter i = b; i != e; ++i) {
 		if (  (i->first == (string)(this->getTokenAt(key,2) + "." + this->getTokenAt(key,3)) ) &&
-			(i->second == (string)(this->getTokenAt(key,0) + "." + this->getTokenAt(key,1)) ) ) {
+			//(i->second == (string)(this->getTokenAt(key,0) + "." + this->getTokenAt(key,1)) ) ) {
+			this->getTokenAt(i->second,0) == (string)(this->getTokenAt(key,0))   ) {
 			return true;
 		}
 		if(key == this->getTokenAt(i->second,0) ) {

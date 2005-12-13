@@ -217,37 +217,37 @@ int Person_ClientAPIData::readInMessage(Message& messageIn, string lisName, int 
 
 Physicsgroup_ClientAPIData::Physicsgroup_ClientAPIData(){
 
-    Schema.insert(Entry("t_person.contactinfo", "STRING"));
-    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
+    Schema.insert(Entry("t_person.id.t_physics_group.convener", "INTEGER"));
+    Schema.insert(Entry("t_person.distinguised_name.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_person.name.t_physics_group.convener", "STRING"));
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
-    Schema.insert(Entry("t_person.name", "STRING"));
-    Schema.insert(Entry("t_person.distinguised_name", "STRING"));
-    Schema.insert(Entry("t_person.id", "INTEGER"));
+    Schema.insert(Entry("t_person.contactinfo.t_physics_group.convener", "STRING"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
+    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
 }
 
 int Physicsgroup_ClientAPIData::makeMessage(Message& messageOut) {
-       if ( (string*)(&(t_person_contactinfo.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_person.contactinfo", (string)t_person_contactinfo.getValue(), (string)"STRING"));
+       if ( (int*)(&(t_person_id_t_physics_group_convener.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_person.id.t_physics_group.convener", (string)(util.itoa(t_person_id_t_physics_group_convener.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_physics_group_convenor.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_physics_group.convenor", (string)(util.itoa(t_physics_group_convenor.getValue())), (string)"INTEGER"));
+       if ( (string*)(&(t_person_distinguised_name_t_physics_group_convener.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_person.distinguised_name.t_physics_group.convener", (string)t_person_distinguised_name_t_physics_group_convener.getValue(), (string)"STRING"));
+      }
+       if ( (string*)(&(t_person_name_t_physics_group_convener.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_person.name.t_physics_group.convener", (string)t_person_name_t_physics_group_convener.getValue(), (string)"STRING"));
       }
        if ( (int*)(&(t_physics_group_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_physics_group.id", (string)(util.itoa(t_physics_group_id.getValue())), (string)"INTEGER"));
       }
-       if ( (string*)(&(t_person_name.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_person.name", (string)t_person_name.getValue(), (string)"STRING"));
-      }
-       if ( (string*)(&(t_person_distinguised_name.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_person.distinguised_name", (string)t_person_distinguised_name.getValue(), (string)"STRING"));
-      }
-       if ( (int*)(&(t_person_id.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_person.id", (string)(util.itoa(t_person_id.getValue())), (string)"INTEGER"));
+       if ( (string*)(&(t_person_contactinfo_t_physics_group_convener.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_person.contactinfo.t_physics_group.convener", (string)t_person_contactinfo_t_physics_group_convener.getValue(), (string)"STRING"));
       }
        if ( (string*)(&(t_physics_group_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_physics_group.name", (string)t_physics_group_name.getValue(), (string)"STRING"));
+      }
+       if ( (int*)(&(t_physics_group_convener.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_physics_group.convener", (string)(util.itoa(t_physics_group_convener.getValue())), (string)"INTEGER"));
       }
 
     return 1;
@@ -257,40 +257,40 @@ int Physicsgroup_ClientAPIData::makeMessage(Message& messageOut) {
 int Physicsgroup_ClientAPIData::readInMessage(Message& messageIn, string lisName, int index) {
 
     string value;
-    value = messageIn.getElementValue("t_person.contactinfo", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        string strValue = (string) value;
-        t_person_contactinfo = strValue;
-    }
-    value = messageIn.getElementValue("t_physics_group.convenor", lisName, index);
+    value = messageIn.getElementValue("t_person.id.t_physics_group.convener", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
-        t_physics_group_convenor =  intValue;
+        t_person_id_t_physics_group_convener =  intValue;
+    }
+    value = messageIn.getElementValue("t_person.distinguised_name.t_physics_group.convener", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        string strValue = (string) value;
+        t_person_distinguised_name_t_physics_group_convener = strValue;
+    }
+    value = messageIn.getElementValue("t_person.name.t_physics_group.convener", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        string strValue = (string) value;
+        t_person_name_t_physics_group_convener = strValue;
     }
     value = messageIn.getElementValue("t_physics_group.id", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_physics_group_id =  intValue;
     }
-    value = messageIn.getElementValue("t_person.name", lisName, index);
+    value = messageIn.getElementValue("t_person.contactinfo.t_physics_group.convener", lisName, index);
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
-        t_person_name = strValue;
-    }
-    value = messageIn.getElementValue("t_person.distinguised_name", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        string strValue = (string) value;
-        t_person_distinguised_name = strValue;
-    }
-    value = messageIn.getElementValue("t_person.id", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_person_id =  intValue;
+        t_person_contactinfo_t_physics_group_convener = strValue;
     }
     value = messageIn.getElementValue("t_physics_group.name", lisName, index);
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
         t_physics_group_name = strValue;
+    }
+    value = messageIn.getElementValue("t_physics_group.convener", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_physics_group_convener =  intValue;
     }
 
 }
@@ -303,10 +303,11 @@ Evcollview_ClientAPIData::Evcollview_ClientAPIData(){
     Schema.insert(Entry("t_evcoll_status.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
-    Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.is_primary", "CHARACTER"));
     Schema.insert(Entry("t_validation_status.name", "STRING"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_evcoll_status.id", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
     Schema.insert(Entry("t_validation_status.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
@@ -332,8 +333,8 @@ int Evcollview_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_event_collection_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_event_collection.id", (string)(util.itoa(t_event_collection_id.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_info_evcoll_event_collection.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_info_evcoll.event_collection", (string)(util.itoa(t_info_evcoll_event_collection.getValue())), (string)"INTEGER"));
+       if ( (char*)(&(t_event_collection_is_primary.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_event_collection.is_primary", (string)(util.ctoa(t_event_collection_is_primary.getValue())), (string)"CHARACTER"));
       }
        if ( (string*)(&(t_validation_status_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_validation_status.name", (string)t_validation_status_name.getValue(), (string)"STRING"));
@@ -343,6 +344,9 @@ int Evcollview_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (int*)(&(t_evcoll_status_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_evcoll_status.id", (string)(util.itoa(t_evcoll_status_id.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_info_evcoll_event_collection.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_info_evcoll.event_collection", (string)(util.itoa(t_info_evcoll_event_collection.getValue())), (string)"INTEGER"));
       }
        if ( (int*)(&(t_validation_status_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_validation_status.id", (string)(util.itoa(t_validation_status_id.getValue())), (string)"INTEGER"));
@@ -391,10 +395,10 @@ int Evcollview_ClientAPIData::readInMessage(Message& messageIn, string lisName, 
         int intValue  = atoi(value.c_str());
         t_event_collection_id =  intValue;
     }
-    value = messageIn.getElementValue("t_info_evcoll.event_collection", lisName, index);
+    value = messageIn.getElementValue("t_event_collection.is_primary", lisName, index);
     if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_info_evcoll_event_collection =  intValue;
+        char charValue = *(value.c_str());
+        t_event_collection_is_primary =  charValue;
     }
     value = messageIn.getElementValue("t_validation_status.name", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -410,6 +414,11 @@ int Evcollview_ClientAPIData::readInMessage(Message& messageIn, string lisName, 
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_evcoll_status_id =  intValue;
+    }
+    value = messageIn.getElementValue("t_info_evcoll.event_collection", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_info_evcoll_event_collection =  intValue;
     }
     value = messageIn.getElementValue("t_validation_status.id", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -446,7 +455,7 @@ Fileview_ClientAPIData::Fileview_ClientAPIData(){
     Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_file_type.name", "STRING"));
     Schema.insert(Entry("t_block.id", "INTEGER"));
-    Schema.insert(Entry("t_file.filesize", "INTEGER"));
+    Schema.insert(Entry("t_file.filesize", "STRING"));
     Schema.insert(Entry("t_block_status.name", "STRING"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
@@ -501,8 +510,8 @@ int Fileview_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_block_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_block.id", (string)(util.itoa(t_block_id.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_file_filesize.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_file.filesize", (string)(util.itoa(t_file_filesize.getValue())), (string)"INTEGER"));
+       if ( (string*)(&(t_file_filesize.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_file.filesize", (string)t_file_filesize.getValue(), (string)"STRING"));
       }
        if ( (string*)(&(t_block_status_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_block_status.name", (string)t_block_status_name.getValue(), (string)"STRING"));
@@ -604,8 +613,8 @@ int Fileview_ClientAPIData::readInMessage(Message& messageIn, string lisName, in
     }
     value = messageIn.getElementValue("t_file.filesize", lisName, index);
     if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_file_filesize =  intValue;
+        string strValue = (string) value;
+        t_file_filesize = strValue;
     }
     value = messageIn.getElementValue("t_block_status.name", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -647,13 +656,13 @@ Primarydataset_ClientAPIData::Primarydataset_ClientAPIData(){
     Schema.insert(Entry("t_desc_primary.trigger_path", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.description", "STRING"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
-    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.id", "INTEGER"));
     Schema.insert(Entry("t_desc_mc.production", "STRING"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
     Schema.insert(Entry("t_desc_primary.mc_channel", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_desc_primary.is_mc_data", "CHARACTER"));
+    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
 }
 
@@ -688,9 +697,6 @@ int Primarydataset_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_primary_dataset_physics_group.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_primary_dataset.physics_group", (string)(util.itoa(t_primary_dataset_physics_group.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_physics_group_convenor.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_physics_group.convenor", (string)(util.itoa(t_physics_group_convenor.getValue())), (string)"INTEGER"));
-      }
        if ( (int*)(&(t_desc_trigger_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_desc_trigger.id", (string)(util.itoa(t_desc_trigger_id.getValue())), (string)"INTEGER"));
       }
@@ -708,6 +714,9 @@ int Primarydataset_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (char*)(&(t_desc_primary_is_mc_data.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_desc_primary.is_mc_data", (string)(util.ctoa(t_desc_primary_is_mc_data.getValue())), (string)"CHARACTER"));
+      }
+       if ( (int*)(&(t_physics_group_convener.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_physics_group.convener", (string)(util.itoa(t_physics_group_convener.getValue())), (string)"INTEGER"));
       }
 
     return 1;
@@ -767,11 +776,6 @@ int Primarydataset_ClientAPIData::readInMessage(Message& messageIn, string lisNa
         int intValue  = atoi(value.c_str());
         t_primary_dataset_physics_group =  intValue;
     }
-    value = messageIn.getElementValue("t_physics_group.convenor", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_physics_group_convenor =  intValue;
-    }
     value = messageIn.getElementValue("t_desc_trigger.id", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
@@ -802,6 +806,11 @@ int Primarydataset_ClientAPIData::readInMessage(Message& messageIn, string lisNa
         char charValue = *(value.c_str());
         t_desc_primary_is_mc_data =  charValue;
     }
+    value = messageIn.getElementValue("t_physics_group.convener", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_physics_group_convener =  intValue;
+    }
 
 }
 
@@ -813,6 +822,7 @@ Processingpath_ClientAPIData::Processingpath_ClientAPIData(){
     Schema.insert(Entry("t_app_config.conditions_version", "STRING"));
     Schema.insert(Entry("t_application.id", "INTEGER"));
     Schema.insert(Entry("t_application.output_type", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
     Schema.insert(Entry("t_app_config.id", "INTEGER"));
@@ -820,6 +830,7 @@ Processingpath_ClientAPIData::Processingpath_ClientAPIData(){
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
     Schema.insert(Entry("t_application.app_family", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
     Schema.insert(Entry("t_app_family.name", "STRING"));
     Schema.insert(Entry("t_app_config.parameter_set", "STRING"));
@@ -828,9 +839,11 @@ Processingpath_ClientAPIData::Processingpath_ClientAPIData(){
     Schema.insert(Entry("t_app_config.application", "INTEGER"));
     Schema.insert(Entry("t_application.executable", "STRING"));
     Schema.insert(Entry("t_collection_type.name.t_application.input_type", "STRING"));
+    Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
     Schema.insert(Entry("t_processing_path.full_path", "STRING"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
     Schema.insert(Entry("t_application.input_type", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
     Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_collection_type.id.t_application.output_type", "INTEGER"));
@@ -857,6 +870,9 @@ int Processingpath_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_application_output_type.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_application.output_type", (string)(util.itoa(t_application_output_type.getValue())), (string)"INTEGER"));
       }
+       if ( (int*)(&(t_primary_dataset_description.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_primary_dataset.description", (string)(util.itoa(t_primary_dataset_description.getValue())), (string)"INTEGER"));
+      }
        if ( (int*)(&(t_data_tier_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_data_tier.id", (string)(util.itoa(t_data_tier_id.getValue())), (string)"INTEGER"));
       }
@@ -877,6 +893,9 @@ int Processingpath_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (int*)(&(t_application_app_family.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_application.app_family", (string)(util.itoa(t_application_app_family.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_primary_dataset_id.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_primary_dataset.id", (string)(util.itoa(t_primary_dataset_id.getValue())), (string)"INTEGER"));
       }
        if ( (string*)(&(t_data_tier_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_data_tier.name", (string)t_data_tier_name.getValue(), (string)"STRING"));
@@ -902,6 +921,9 @@ int Processingpath_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (string*)(&(t_collection_type_name_t_application_input_type.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_collection_type.name.t_application.input_type", (string)t_collection_type_name_t_application_input_type.getValue(), (string)"STRING"));
       }
+       if ( (int*)(&(t_primary_dataset_physics_group.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_primary_dataset.physics_group", (string)(util.itoa(t_primary_dataset_physics_group.getValue())), (string)"INTEGER"));
+      }
        if ( (string*)(&(t_processing_path_full_path.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processing_path.full_path", (string)t_processing_path_full_path.getValue(), (string)"STRING"));
       }
@@ -910,6 +932,9 @@ int Processingpath_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (int*)(&(t_application_input_type.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_application.input_type", (string)(util.itoa(t_application_input_type.getValue())), (string)"INTEGER"));
+      }
+       if ( (string*)(&(t_primary_dataset_name.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_primary_dataset.name", (string)t_primary_dataset_name.getValue(), (string)"STRING"));
       }
        if ( (int*)(&(t_processed_dataset_primary_dataset.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processed_dataset.primary_dataset", (string)(util.itoa(t_processed_dataset_primary_dataset.getValue())), (string)"INTEGER"));
@@ -961,6 +986,11 @@ int Processingpath_ClientAPIData::readInMessage(Message& messageIn, string lisNa
         int intValue  = atoi(value.c_str());
         t_application_output_type =  intValue;
     }
+    value = messageIn.getElementValue("t_primary_dataset.description", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_primary_dataset_description =  intValue;
+    }
     value = messageIn.getElementValue("t_data_tier.id", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
@@ -995,6 +1025,11 @@ int Processingpath_ClientAPIData::readInMessage(Message& messageIn, string lisNa
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_application_app_family =  intValue;
+    }
+    value = messageIn.getElementValue("t_primary_dataset.id", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_primary_dataset_id =  intValue;
     }
     value = messageIn.getElementValue("t_data_tier.name", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -1036,6 +1071,11 @@ int Processingpath_ClientAPIData::readInMessage(Message& messageIn, string lisNa
         string strValue = (string) value;
         t_collection_type_name_t_application_input_type = strValue;
     }
+    value = messageIn.getElementValue("t_primary_dataset.physics_group", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_primary_dataset_physics_group =  intValue;
+    }
     value = messageIn.getElementValue("t_processing_path.full_path", lisName, index);
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
@@ -1050,6 +1090,11 @@ int Processingpath_ClientAPIData::readInMessage(Message& messageIn, string lisNa
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_application_input_type =  intValue;
+    }
+    value = messageIn.getElementValue("t_primary_dataset.name", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        string strValue = (string) value;
+        t_primary_dataset_name = strValue;
     }
     value = messageIn.getElementValue("t_processed_dataset.primary_dataset", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -1079,6 +1124,7 @@ Analysisdataset_ClientAPIData::Analysisdataset_ClientAPIData(){
     Schema.insert(Entry("t_dataset_status.name", "STRING"));
     Schema.insert(Entry("t_info_anads.analysis_dataset", "INTEGER"));
     Schema.insert(Entry("t_validation_status.name", "STRING"));
+    Schema.insert(Entry("t_anads_data.is_primary", "CHARACTER"));
     Schema.insert(Entry("t_anads_data.event_collection", "INTEGER"));
     Schema.insert(Entry("t_info_anads.estimated_luminiosity", "STRING"));
     Schema.insert(Entry("t_analysis_dataset.name", "STRING"));
@@ -1103,6 +1149,9 @@ int Analysisdataset_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (string*)(&(t_validation_status_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_validation_status.name", (string)t_validation_status_name.getValue(), (string)"STRING"));
+      }
+       if ( (char*)(&(t_anads_data_is_primary.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_anads_data.is_primary", (string)(util.ctoa(t_anads_data_is_primary.getValue())), (string)"CHARACTER"));
       }
        if ( (int*)(&(t_anads_data_event_collection.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_anads_data.event_collection", (string)(util.itoa(t_anads_data_event_collection.getValue())), (string)"INTEGER"));
@@ -1162,6 +1211,11 @@ int Analysisdataset_ClientAPIData::readInMessage(Message& messageIn, string lisN
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
         t_validation_status_name = strValue;
+    }
+    value = messageIn.getElementValue("t_anads_data.is_primary", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        char charValue = *(value.c_str());
+        t_anads_data_is_primary =  charValue;
     }
     value = messageIn.getElementValue("t_anads_data.event_collection", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -1231,6 +1285,7 @@ Datasetprovenenceevchild_ClientAPIData::Datasetprovenenceevchild_ClientAPIData()
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.is_primary", "CHARACTER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
@@ -1264,6 +1319,9 @@ int Datasetprovenenceevchild_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (int*)(&(t_processing_path_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processing_path.id", (string)(util.itoa(t_processing_path_id.getValue())), (string)"INTEGER"));
+      }
+       if ( (char*)(&(t_event_collection_is_primary.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_event_collection.is_primary", (string)(util.ctoa(t_event_collection_is_primary.getValue())), (string)"CHARACTER"));
       }
        if ( (int*)(&(t_event_collection_processed_dataset.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_event_collection.processed_dataset", (string)(util.itoa(t_event_collection_processed_dataset.getValue())), (string)"INTEGER"));
@@ -1350,6 +1408,11 @@ int Datasetprovenenceevchild_ClientAPIData::readInMessage(Message& messageIn, st
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_processing_path_id =  intValue;
+    }
+    value = messageIn.getElementValue("t_event_collection.is_primary", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        char charValue = *(value.c_str());
+        t_event_collection_is_primary =  charValue;
     }
     value = messageIn.getElementValue("t_event_collection.processed_dataset", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -1464,6 +1527,7 @@ Datasetprovenenceevparent_ClientAPIData::Datasetprovenenceevparent_ClientAPIData
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.is_primary", "CHARACTER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
@@ -1497,6 +1561,9 @@ int Datasetprovenenceevparent_ClientAPIData::makeMessage(Message& messageOut) {
       }
        if ( (int*)(&(t_processing_path_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processing_path.id", (string)(util.itoa(t_processing_path_id.getValue())), (string)"INTEGER"));
+      }
+       if ( (char*)(&(t_event_collection_is_primary.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_event_collection.is_primary", (string)(util.ctoa(t_event_collection_is_primary.getValue())), (string)"CHARACTER"));
       }
        if ( (int*)(&(t_event_collection_processed_dataset.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_event_collection.processed_dataset", (string)(util.itoa(t_event_collection_processed_dataset.getValue())), (string)"INTEGER"));
@@ -1583,6 +1650,11 @@ int Datasetprovenenceevparent_ClientAPIData::readInMessage(Message& messageIn, s
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_processing_path_id =  intValue;
+    }
+    value = messageIn.getElementValue("t_event_collection.is_primary", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        char charValue = *(value.c_str());
+        t_event_collection_is_primary =  charValue;
     }
     value = messageIn.getElementValue("t_event_collection.processed_dataset", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -1700,7 +1772,7 @@ Crabevcollview_ClientAPIData::Crabevcollview_ClientAPIData(){
     Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
-    Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.is_primary", "CHARACTER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
@@ -1723,6 +1795,7 @@ Crabevcollview_ClientAPIData::Crabevcollview_ClientAPIData(){
     Schema.insert(Entry("t_primary_dataset.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.status", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
 
 }
@@ -1746,8 +1819,8 @@ int Crabevcollview_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_processing_path_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processing_path.id", (string)(util.itoa(t_processing_path_id.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_info_evcoll_event_collection.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_info_evcoll.event_collection", (string)(util.itoa(t_info_evcoll_event_collection.getValue())), (string)"INTEGER"));
+       if ( (char*)(&(t_event_collection_is_primary.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_event_collection.is_primary", (string)(util.ctoa(t_event_collection_is_primary.getValue())), (string)"CHARACTER"));
       }
        if ( (int*)(&(t_event_collection_processed_dataset.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_event_collection.processed_dataset", (string)(util.itoa(t_event_collection_processed_dataset.getValue())), (string)"INTEGER"));
@@ -1815,6 +1888,9 @@ int Crabevcollview_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_processed_dataset_primary_dataset.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processed_dataset.primary_dataset", (string)(util.itoa(t_processed_dataset_primary_dataset.getValue())), (string)"INTEGER"));
       }
+       if ( (int*)(&(t_info_evcoll_event_collection.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_info_evcoll.event_collection", (string)(util.itoa(t_info_evcoll_event_collection.getValue())), (string)"INTEGER"));
+      }
        if ( (int*)(&(t_processed_dataset_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_processed_dataset.id", (string)(util.itoa(t_processed_dataset_id.getValue())), (string)"INTEGER"));
       }
@@ -1856,10 +1932,10 @@ int Crabevcollview_ClientAPIData::readInMessage(Message& messageIn, string lisNa
         int intValue  = atoi(value.c_str());
         t_processing_path_id =  intValue;
     }
-    value = messageIn.getElementValue("t_info_evcoll.event_collection", lisName, index);
+    value = messageIn.getElementValue("t_event_collection.is_primary", lisName, index);
     if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_info_evcoll_event_collection =  intValue;
+        char charValue = *(value.c_str());
+        t_event_collection_is_primary =  charValue;
     }
     value = messageIn.getElementValue("t_event_collection.processed_dataset", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -1970,6 +2046,11 @@ int Crabevcollview_ClientAPIData::readInMessage(Message& messageIn, string lisNa
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_processed_dataset_primary_dataset =  intValue;
+    }
+    value = messageIn.getElementValue("t_info_evcoll.event_collection", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_info_evcoll_event_collection =  intValue;
     }
     value = messageIn.getElementValue("t_processed_dataset.id", lisName, index);
     if ( value != "NOTFOUND" ) {

@@ -66,6 +66,12 @@ Dictionary* TableTemplate<R>::getSchema() {
   return this->schema;
 }
 
+template <class R>
+Dictionary* TableTemplate<R>::getMultiRefrence() {
+  cout<<"RETURNNING multiRefrences SCHEMA..."<<endl;
+  return this->multiRefrences;
+}
+
 
 
 template <class R>
@@ -147,6 +153,7 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
 template <class R>
 string TableTemplate<R>::makeSelectQuery(string userGivenWhereClause="") {
 	//cout<<"inside ::makeSelectQuery"<<endl;
+	cout<<"TableTemplate<R>::makeSelectQuery userGivenWhereClause "<<userGivenWhereClause<<endl;
 	string sqlQuery = sql->makeSelectClause(schema->begin(), schema->end()) +
 		 " FROM " +  
 		sql->makeTableClause(schemaOrder->begin(), schemaOrder->end());

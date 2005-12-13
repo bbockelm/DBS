@@ -98,7 +98,7 @@ int DBSDispatcher::run(Message* msgReceived, Message& msgReturned) {
 		throw BizLayerException(e.report());
 	}
 
-
+	return 1;
 
 }
 

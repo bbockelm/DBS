@@ -38,6 +38,7 @@ public:
 	std::string* getTableName(); 
 	void setDBManager(DBManagement* dbmanager);
 	Dictionary* getSchema();
+	Dictionary* getMultiRefrence();
 
 private:
 	void init();

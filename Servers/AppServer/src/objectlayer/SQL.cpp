@@ -56,35 +56,47 @@ string SQL::makeClause(RowInterface* aRow, Keys_iter bk, Keys_iter ek, Dictionar
 	Keys single;
 	for(Keys_iter i = bk; i != ek; ++i) {
 		if( util->isInMultiRef((*i), bd, ed )) {
+			//cout<<(*i)<<" is in Multi"<<endl;	
 			multi.push_back(*i);
 		} else {
 			single.push_back(*i);
+			//cout<<(*i)<<" is in Single"<<endl;	
 		}
 	}
 	for(Keys_iter i = single.begin(); i != single.end(); ++i) {
+		//cout<<"INS SINGLE "<<*i<<endl;
 		string dataType = util->getDataType(*i);
-		clause += *i +
-			 "=" + 
-			this->formatValue(util->getStrValue(aRow, *i , dataType), dataType) +
-			") AND (";
+		if( util->isSet(aRow, *i , dataType)) {
+			clause += *i +
+				 "=" + 
+				this->formatValue(util->getStrValue(aRow, *i , dataType), dataType) +
+				") AND (";
+		}
 		
 	}
+	//cout<<"clause just before multi"<<clause<<endl<<endl;
+	//I hav eto fix this later WARNNING WARNNING
 	if(multi.size() > 0) {
+		//cout<<"inside MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"<<endl;
 		string lastNameOne = util->getTokenAt(*(multi.begin()),0) + "." + util->getTokenAt(*(multi.begin()),1);
 		string lastTableTwo = util->getTokenAt(*(multi.begin()),2);
 		for(Keys_iter i = multi.begin(); i != multi.end(); ++i) {
 			string tempNameOne = util->getTokenAt(*i,0) + "." + util->getTokenAt(*i,1);
 			string tempTableTwo = util->getTokenAt(*i,2);
 			string dataType = util->getDataType(*i);
-			clause += tempNameOne +
-				 "=" + 
-				this->formatValue(util->getStrValue(aRow, *i , dataType), dataType);
-			if(lastNameOne == tempNameOne &&
-			lastTableTwo == tempTableTwo ) {
-				clause +=  "   OR  ";
-			} else {
-				clause +=  ") AND (";
+			if( util->isSet(aRow, *i , dataType)) {
+				clause += tempNameOne +
+					 "=" + 
+					this->formatValue(util->getStrValue(aRow, *i , dataType), dataType) +
+					"   OR  ";
 			}
+			//cout<<"clause "<<clause<<endl<<endl;
+			/*if(lastNameOne == tempNameOne &&
+			lastTableTwo == tempTableTwo ) {
+				//clause +=  "   OR  ";
+			} else {
+				clause +=  "   OR  ";
+			}*/
 			lastNameOne = tempNameOne;
 			lastTableTwo = tempTableTwo;
 		}
@@ -95,7 +107,7 @@ string SQL::makeClause(RowInterface* aRow, Keys_iter bk, Keys_iter ek, Dictionar
 		} else {
 			 clause = "";
 		}
-	//cout<<"clause "<<clause<<endl;
+	cout<<"clause "<<clause<<endl;
 	return clause;
 }
 
@@ -107,6 +119,7 @@ string SQL::makeRefClause(Dictionary_iter b, Dictionary_iter e) {
 				i->first + " = " + 
 				i->second + " ) AND ";
 	}
+	cout<<"makeRefClause "<<util->eraseEndChars(whereClause,4)<<endl;
 	return util->eraseEndChars(whereClause,4);
 }
 
@@ -136,6 +149,7 @@ string SQL::makeMultiRefClause(Dictionary_iter b, Dictionary_iter e) {
 			 multiWhereClause = "";
 		}
 	}
+	cout<<"makeMultiRefClause "<<multiWhereClause<<endl;
 	return multiWhereClause;
 } 
 /*string SQL::makeSelectClause(Dictionary_iter b, Dictionary_iter e) {//Schema

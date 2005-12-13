@@ -24,37 +24,174 @@ class DBSInterface(dbsApi.DbsApi):
         apidata.t_desc_mc_decay_chain = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getDecayChain())
         apidata.t_desc_mc_production = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getProduction())
         apidata.t_physics_group_name = dbsclient.ASTR(primaryDataset.getPhysicsGroupName())
-        apidata.t_desc_primary_is_mc_data = dbsclient.ACHR(primaryDataset.getMonteCarloDescription().isMcData())
+	print "Here we are 6"
+        type(primaryDataset.getMonteCarloDescription().getIsMcData())
+        apidata.t_desc_primary_is_mc_data = dbsclient.ACHR(primaryDataset.getMonteCarloDescription().getIsMcData())
+	print "Here we are 7"
         apidata.t_desc_trigger_description = dbsclient.ASTR(primaryDataset.getTriggerDescription())
+	print "Here we are 8"
         primaryDatasetID = self.client.createPrimaryDataset(apidata)
       except RuntimeError,e:
+         print "RT Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      except Exception ,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Primary Dataset ID ",primaryDatasetID
       return primaryDatasetID
 
-   def createProcessedDataset(self, processedDataset, primaryDatasetID):
+   def createProcessedDataset(self, processedDataset):
       try:
         apidata = dbsclient.Processingpath_ClientAPIData()
         apidata.t_processed_dataset_name = dbsclient.ASTR(processedDataset['datasetName'])
-        apidata.t_application_app_version = dbsclient.ASTR(processedDataset.getApplication().getAppVersion())
-        apidata.t_app_config_conditions_version = dbsclient.ASTR(processedDataset.getApplication().getConditionVersion())
-        apidata.t_collection_type_name_t_application_output_type = dbsclient.ASTR(processedDataset.getApplication().getOutputType())
-        apidata.t_collection_type_name_t_application_input_type = dbsclient.ASTR(processedDataset.getApplication().getInputType())
-        apidata.t_processing_path_parent = dbsclient.AINT(int(processedDataset.getParent()))
-        apidata.t_data_tier_name = dbsclient.ASTR(processedDataset.getTier())
-        apidata.t_app_family_name = dbsclient.ASTR(processedDataset.getApplication().getFamily())
-        apidata.t_app_config_parameter_set = dbsclient.ASTR(processedDataset.getApplication().getParameterSet())
-        apidata.t_processed_dataset_is_open = dbsclient.ACHR(processedDataset.isOpen())
-        apidata.t_application_executable = dbsclient.ASTR(processedDataset.getApplication().getExecuatble())
-        apidata.t_processing_path_full_path = dbsclient.ASTR(processedDataset.getFullPath())
-        apidata.t_processed_dataset_primary_dataset = dbsclient.AINT(primaryDatasetID)
+        apidata.t_application_app_version = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getVersion())
+        apidata.t_app_config_conditions_version = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getConfigConditionsVersion())
+        apidata.t_collection_type_name_t_application_output_type = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getOutputTypeName())
+        apidata.t_collection_type_name_t_application_input_type = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getInputTypeName())
+        apidata.t_processing_path_parent = dbsclient.AINT(int(processedDataset.getProcessingPath().getPathId()))#parentPath has to return id
+        apidata.t_data_tier_name = dbsclient.ASTR(processedDataset.getProcessingPath().getDataTier())
+        apidata.t_app_family_name = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getFamily())
+        apidata.t_app_config_parameter_set = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getParameterSet())
+        apidata.t_processed_dataset_is_open = dbsclient.ACHR(processedDataset.getIsDatasetOpen())
+        apidata.t_application_executable = dbsclient.ASTR(processedDataset.getProcessingPath().getApplication().getExecutable())
+        apidata.t_processing_path_full_path = dbsclient.ASTR(processedDataset.getProcessingPath().getFullPath())
+        apidata.t_primary_dataset_name = dbsclient.ASTR(processedDataset.getPrimaryDatasetName())
         processedDatasetID = self.client.createProcessedDataset(apidata)
       except RuntimeError,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Processed Dataset ID ",processedDatasetID
       return processedDatasetID
+
+   def getProcessedDatasetID(self, processedDataset):
+      try:
+        print "inside getProcessedDatasetID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+        apidata = dbsclient.Processingpath_ClientAPIData()
+        result = processedDataset['datasetName']
+        if result != None:
+          apidata.t_processed_dataset_name = dbsclient.ASTR(result)
+        app = processedDataset.getProcessingPath().getApplication()
+        if app != None:
+           result = app.getVersion()
+           if result != None:
+             apidata.t_application_app_version = dbsclient.ASTR(result)
+           result = app.getConfigConditionsVersion()
+           if result != None:
+             apidata.t_app_config_conditions_version = dbsclient.ASTR(result)
+           result = app.getOutputTypeName()
+           if result != None:
+             apidata.t_collection_type_name_t_application_output_type = dbsclient.ASTR(result)
+           result = app.getInputTypeName()
+           if result != None:
+             apidata.t_collection_type_name_t_application_input_type = dbsclient.ASTR(result)
+           result = app.getFamily()
+           if result != None:
+             apidata.t_app_family_name = dbsclient.ASTR(result)
+           result = app.getParameterSet()
+           if result != None:
+             apidata.t_app_config_parameter_set = dbsclient.ASTR(result)
+           result = app.getExecutable()
+           if result != None:
+             apidata.t_application_executable = dbsclient.ASTR(result)
+
+        result = processedDataset.getProcessingPath().getPathId()
+        if result != None:
+          apidata.t_processing_path_parent = dbsclient.AINT(int(result))
+        result = processedDataset.getProcessingPath().getDataTier()
+        if result != None:
+          apidata.t_data_tier_name = dbsclient.ASTR(result)
+        result = processedDataset.getIsDatasetOpen()
+        if result != None:
+          apidata.t_processed_dataset_is_open = dbsclient.ACHR(result)
+        result = processedDataset.getProcessingPath().getFullPath()
+        if result != None:
+          apidata.t_processing_path_full_path = dbsclient.ASTR(result)
+        result = processedDataset.getPrimaryDatasetName()
+        if result != None:
+          apidata.t_primary_dataset_name = dbsclient.ASTR(result)
+
+        print "now calling readProcessingPath"
+        proPathVector = dbsclient.ProPathVector()
+        self.client.readProcessingPath(apidata, proPathVector)
+	print "no of Processed Dataset are ",proPathVector.size()
+        if proPathVector.size() != 1:
+	   raise dbsApi.DbsApiException(exception="One Processed Dataset could not be found")
+        proDsId = dbsclient.intp_value(proPathVector[0].t_processed_dataset_id.getValue())
+	print "processed_dataset_id = ",proDsId
+        return proDsId
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      #print "Processed Dataset ID ",processedDatasetID
+      #return processedDatasetID
+
+
+
+
+   def insertFileBlock(self, fileBlock):
+      try:
+         apidata = dbsclient.Evcollview_ClientAPIData()
+         apidata.t_info_evcoll_name = dbsclient.ASTR(eventCollection.getCollectionName())
+         apidata.t_event_collection_collection_index = dbsclient.AINT(int(eventCollection.getCollectionIndex()))
+         apidata.t_info_evcoll_events = dbsclient.AINT(dbsclient.AINT(int(eventCollection.getNumberOfEvents())))
+         #apidata.t_validation_status_name = dbsclient.ASTR(validationStatus)
+         apidata.t_event_collection_processed_dataset = dbsclient.AINT(processedDatasetID)
+         apidata.t_event_collection_is = dbsclient.AINT(processedDatasetID)
+         #apidata.t_evcoll_status_name = dbsclient.ASTR(validationStatus)
+         #apidata.t_info_evcoll_estimated_luminosity = dbsclient.ASTR("test_value_estimatedluminosity")
+         evCollID = self.client.insertEventCollections(apidata)
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      print "Event Collection ID ",processedDatasetID
+      return processedDatasetID
+
+
+   def insertEventCollections(self, processedDataset, eventCollectionList):
+	
+      try:
+        print "*************************************************************************************"
+        processedDatasetID = self.getProcessedDatasetID(processedDataset)
+	for eventCollection in eventCollectionList:
+              apidata = dbsclient.Evcollview_ClientAPIData()
+              apidata.t_info_evcoll_name = dbsclient.ASTR(eventCollection.getCollectionName())
+              apidata.t_event_collection_collection_index = dbsclient.AINT(int(eventCollection.getCollectionIndex()))
+              apidata.t_info_evcoll_events = dbsclient.AINT(dbsclient.AINT(int(eventCollection.getNumberOfEvents())))
+              #apidata.t_validation_status_name = dbsclient.ASTR(validationStatus)
+              apidata.t_event_collection_processed_dataset = dbsclient.AINT(int(processedDatasetID))
+              apidata.t_event_collection_is_primary = dbsclient.AINT(int(eventCollection.getIsPrimary()))
+              #apidata.t_evcoll_status_name = dbsclient.ASTR(validationStatus)
+              #apidata.t_info_evcoll_estimated_luminosity = dbsclient.ASTR("test_value_estimatedluminosity")
+              evCollID = self.client.insertEventCollections(apidata)
+              self.insertFiles(evCollID, blockID, eventCollection.getFileList())
+	
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      print "Event Collection ID ",evCollID
+      return evCollID
+
+   def insertFiles(self, evCollID, blockID, files):
+      try: 
+         fileVector = dbsclient.EVCollFileVector()
+         for afile in files
+            apidata = dbsclient.Fileview_ClientAPIData()
+            apidata.t_file_status_name = dbsclient.ASTR(afile.getFileStatus())
+            apidata.t_file_guid = dbsclient.ASTR(afile.getGuid())#BA7C8A55-DE62-D811-892C-00E081250436
+            apidata.t_file_logical_name = dbsclient.ASTR(afile.getLogicalFileName())
+            apidata.t_file_inblock = dbsclient.AINT(int(blockID))
+            apidata.t_file_type_name = dbsclient.ASTR(afile.getFileType())#EVDZip/ROOT_All
+            apidata.t_file_filesize = dbsclient.AINT(123)#GET IT FROM SOMEWHERE
+            apidata.t_evcoll_file_evcoll = dbsclient.AINT(evCollID);#EventCollectionID
+            fileVector.push_back(apidata)
+         self.client.insertFiles(fileVector)
+
+     except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      print "Event Collection ID ",processedDatasetID
+      return processedDatasetID
+
 
 
    def getDatasetContents(self, pathName):
@@ -298,6 +435,7 @@ if __name__ == "__main__" :
      dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ds1",
                                 datasetDescription="my dataset desc",
                                 physicsGroupName="top",
+                                triggerDescription="lalal",
                                 monteCarloDescription=mc)
      primaryDatasetId = mycrab.createPrimaryDataset(dataset)
 

@@ -36,11 +36,11 @@ class processSQL :
          if (line.find('CHECK') != -1) or (line.find('check') != -1):
             #if line.split()[0].endswith('check') == True: 
             continue   
-         if line.find('is_primary') != -1 : 
-            # well yes this is ahack to avoid 'is_primary variable'
-            continue
+         #if line.find('is_primary') != -1 : 
+         #   # well yes this is ahack to avoid 'is_primary variable'
+         #   continue
                
-         if line.find('primary') != -1:
+         if line.find('primary') != -1 and line.find('is_primary') == -1 :
             if line.split()[0].endswith('primary') == True:
               token1=string.split(line)[1]
               token2=string.split(token1, '(')[1] 

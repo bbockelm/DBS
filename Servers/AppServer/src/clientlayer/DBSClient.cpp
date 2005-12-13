@@ -214,13 +214,16 @@ int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPa
 	//cout<<"Calling server"<<endl;
         int success = this->callServer();
 	//cout<<"DONE Calling server"<<endl;
+	cout<<"inside DBSClient::createProcessedDataset"<<endl;
         if ( success == 1 ) {
            string value = this->mRecv.getElementValue("id");
+		cout<<"The processed daraset Value is "<<value<<endl;
            if ( value != "NOTFOUND" ) {
+		cout<<"returnning "<<value<<endl;
 		return util.atoi(value);
            }
         }
-
+	cout<<"returnning success"<<endl;
         return success;
 }
 

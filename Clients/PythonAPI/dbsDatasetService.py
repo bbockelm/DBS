@@ -402,10 +402,9 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	  len(eventCollectionList), processedDatasetName)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-	print "SVDBG: ", processedDataset
 	#################
 	## Here comes API call.
-	# self.getApi().insertEventCollections(processedDataset, eventCollectionList)
+	self.getApi().insertEventCollections(processedDataset, eventCollectionList)
 	#################
         msg = "Inserted %s event collections for dataset %s" % (
 	  len(eventCollectionList), processedDatasetName)

@@ -27,6 +27,7 @@ public:
         virtual std::string* getTableName(){}; 
         virtual void setDBManager(DBManagement*){};
         virtual Dictionary* getSchema(){cout<<"INSIDE VIRTUAL"<<endl; };
+        virtual Dictionary* getMultiRefrence(){cout<<"INSIDE VIRTUAL"<<endl; };
 protected:
 	//static log4cxx::LoggerPtr logger;
 };
