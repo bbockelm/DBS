@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.7 2005/12/12 17:45:41 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.8 2005/12/13 14:44:20 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -238,20 +238,21 @@ class DbsWsClient:
     
     return processedDatasetId
 
-  def insertEventCollections(self, processedDatasetName, eventCollectionList):
+  def insertEventCollections(self, processedDataset, eventCollectionList):
     """ Insert event collections for a given processed dataset. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "insertEventCollections()")
 
     # Invoke web service call.
     try:
+      processedDatasetName = processedDataset.getDatasetName()
       self._logManager.log(
 	what="Inserting %s event collections for processed dataset: %s." % (
 	len(eventCollectionList), processedDatasetName),
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       self._wsdlProxy.insertEventCollections(
-	processedDatasetName=processedDatasetName,
+	processedDataset=processedDataset.getWsRep(),
 	eventCollectionList=eventCollectionList.getWsRep())
 
     except SOAPpy.faultType, ex:
@@ -279,8 +280,8 @@ class DbsWsClient:
 
     return
 
-  def createFileBlock(self, fileBlock):
-    """ Insert event collections for a given processed dataset. """
+  def createFileBlock(self, processedDataset, fileBlock):
+    """ Create a file block for a given processed dataset. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "createFileBlock()")
 
@@ -291,6 +292,7 @@ class DbsWsClient:
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       fileBlockId = self._wsdlProxy.createFileBlock(
+	processedDataset=processedDataset.getWsRep(),
 	fileBlock=fileBlock.getWsRep())[dbsFileBlock.FILE_BLOCK_ID_TAG_]
 
     except SOAPpy.faultType, ex:

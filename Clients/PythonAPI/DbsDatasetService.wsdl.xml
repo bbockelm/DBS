@@ -70,7 +70,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         <xsd:sequence>
           <xsd:element name="blockName" type="xsd:string"/>
           <xsd:element name="blockId" type="xsd:int"/>
-          <xsd:element name="processedDatasetName" type="xsd:string"/>
+          <xsd:element name="processedDatasetName" type="tns:string"/>
           <xsd:element name="eventCollectionList" type="tns:ArrayOfDbsEventCollection"/>
         </xsd:sequence>
       </complexType>
@@ -203,7 +203,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="insertEventCollectionsRequest">
-    <part name="processedDatasetName" type="tns:string"/>
+    <part name="processedDataset" type="tns:DbsProcessedDataset"/>
     <part name="eventCollectionList" type="tns:ArrayOfDbsEventCollection"/>
   </message>
 
@@ -215,6 +215,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="createFileBlockRequest">
+    <part name="processedDataset" type="tns:DbsProcessedDataset"/>
     <part name="fileBlock" type="tns:DbsFileBlock"/>
   </message>
 

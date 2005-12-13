@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.8 2005/12/12 17:45:41 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.9 2005/12/13 14:44:20 sveseli Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -87,7 +87,7 @@ class DbsWsApi(dbsApi.DbsApi):
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
 
-  def insertEventCollections(self, processedDatasetName, eventCollectionList):
+  def insertEventCollections(self, processedDataset, eventCollectionList):
     """
     Insert event collections for a given processed dataset.
 
@@ -95,12 +95,12 @@ class DbsWsApi(dbsApi.DbsApi):
     Exceptions: DbsApiException
     """
     try:
-      return self._wsClient.insertEventCollections(processedDatasetName,
+      return self._wsClient.insertEventCollections(processedDataset,
 						   eventCollectionList)
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
 
-  def createFileBlock(self, fileBlock):
+  def createFileBlock(self, processedDataset, fileBlock):
     """
     Create new file block.
 
@@ -108,7 +108,7 @@ class DbsWsApi(dbsApi.DbsApi):
     Exceptions: DbsApiException
     """
     try:
-      return self._wsClient.createFileBlock(fileBlock)
+      return self._wsClient.createFileBlock(processedDataset, fileBlock)
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
       
@@ -197,12 +197,12 @@ if __name__ == "__main__":
     ecList.append(dbsEventCollection.DbsEventCollection(collectionName="ec2", numberOfEvents=228, fileList=[f2]))
     print "Event collection list: \n", ecList
     print "Inserting event collections for: %s" % dataset.getDatasetName()
-    api.insertEventCollections(dataset.getDatasetName(), ecList)
+    api.insertEventCollections(dataset, ecList)
 
     #Test for creating file blocks.
     fb1 = dbsFileBlock.DbsFileBlock(blockId=765, blockName="myFirstBlock", processedDatasetName="ds1")
     print "Creating file block: %s" % fb1
-    fbId = api.createFileBlock(fb1)
+    fbId = api.createFileBlock(dataset, fb1)
     print "Got file block id: %s" % fbId
     
   except dbsException.DbsException, ex:
