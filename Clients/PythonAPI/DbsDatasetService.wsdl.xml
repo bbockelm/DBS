@@ -31,7 +31,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
           <xsd:element name="checkSum" type="xsd:string"/>
           <xsd:element name="fileType" type="xsd:string"/>
           <xsd:element name="fileStatus" type="xsd:string"/>
-          <xsd:element name="fileBlockName" type="xsd:string"/>
+          <xsd:element name="fileBlockId" type="xsd:int"/>
           <xsd:element name="eventCollectionName" type="xsd:string"/>
         </xsd:sequence>
       </complexType>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFile.py,v 1.2 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsFile.py,v 1.1 2005/12/12 16:24:03 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -16,7 +16,7 @@ CHECK_SUM_TAG_ = "checkSum"
 FILE_TYPE_TAG_ = "fileType"
 FILE_STATUS_TAG_ = "fileStatus"
 
-FILE_BLOCK_NAME_TAG_ = "fileBlockName"
+FILE_BLOCK_ID_TAG_ = "fileBlockId"
 EVENT_COLLECTION_NAME_TAG_ = "eventCollectionName"
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
@@ -28,7 +28,7 @@ class DbsFile(dbsObject.DbsObject):
 
   def __init__(self, logicalFileName=None,
 	       guid=None, checkSum=None, fileType=None,
-	       fileStatus=None, fileBlockName=None,
+	       fileStatus=None, fileBlockId=None,
 	       eventCollectionName=None,
 	       fileDict={}):
     """ Constructor. """
@@ -49,8 +49,8 @@ class DbsFile(dbsObject.DbsObject):
     if fileStatus is not None:
       self[FILE_STATUS_TAG_] = str(fileStatus)
 
-    if fileBlockName is not None:
-      self[FILE_BLOCK_NAME_TAG_] = str(fileBlockName)
+    if fileBlockId is not None:
+      self[FILE_BLOCK_ID_TAG_] = str(fileBlockId)
 
     if eventCollectionName is not None:
       self[EVENT_COLLECTION_NAME_TAG_] = str(eventCollectionName)
@@ -92,11 +92,11 @@ class DbsFile(dbsObject.DbsObject):
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_STATUS_TAG_)
     return result
 
-  def getFileBlockName(self):
-    """ Retrieve file block name. """
-    result = self.get(FILE_BLOCK_NAME_TAG_) 
+  def getFileBlockId(self):
+    """ Retrieve file block id. """
+    result = self.get(FILE_BLOCK_ID_TAG_) 
     if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_NAME_TAG_)
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
     return result
 
   def getEventCollectionName(self):
