@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.5 2005/12/08 19:56:59 sveseli Exp $
+# $Id: dbsDatasetService.py,v 1.6 2005/12/12 17:45:41 sveseli Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -24,13 +24,12 @@ import dbsLogManager
 DATASET_PATH_NAME_PAR_ = "datasetPathName"
 DATA_TIER_LIST_PAR_ = "dataTierList"
 PRIMARY_DATASET_PAR_ = "primaryDataset"
-PROCESSED_DATASET_PAR_ = "processedDataset"
+PROCESSED_DATASET_NAME_PAR_ = "processedDatasetName"
 EVENT_COLLECTION_LIST_PAR_ = "eventCollectionList"
+FILE_BLOCK_PAR_ = "fileBlock"
 
 FILE_BLOCK_LIST_KWD_ = "fileBlockList"
 DATASET_PARENT_LIST_KWD_ = "datasetParentList"
-PRIMARY_DATASET_ID_KWD_ = "primaryDatasetId"
-PROCESSED_DATASET_ID_KWD_ = "processedDatasetId"
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 
@@ -85,6 +84,12 @@ class CreateProcessedDatasetFault(DbsDatasetServiceFault):
 
 
 class InsertEventCollectionsFault(DbsDatasetServiceFault):
+
+  def __init__(self, **kwargs):
+    """ Initialization. """
+    DbsDatasetServiceFault.__init__(self, **kwargs)
+
+class CreateFileBlockFault(DbsDatasetServiceFault):
 
   def __init__(self, **kwargs):
     """ Initialization. """
@@ -295,7 +300,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
 	raise CreatePrimaryDatasetFault(exception=ex)
 
-      return { PRIMARY_DATASET_ID_KWD_ : primaryDatasetId }
+      return { dbsPrimaryDataset.PRIMARY_DATASET_ID_TAG_ : primaryDatasetId }
     finally:
       self.releaseServant(servantId)
 
@@ -349,12 +354,12 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
 	raise CreateProcessedDatasetFault(exception=ex)
 
-      return { PROCESSED_DATASET_ID_KWD_ : processedDatasetId }
+      return { dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_ : processedDatasetId }
     finally:
       self.releaseServant(servantId)
 
 
-  def insertEventCollections(self, processedDataset=None,
+  def insertEventCollections(self, processedDatasetName=None,
 			     eventCollectionList=None,
 			     *args, **kwargs):
     """
@@ -367,9 +372,8 @@ class DbsDatasetService(dbsWebService.DbsWebService):
     # Check arguments.
     funcName = "%s.%s" % (self.__class__.__name__, "insertEventCollections()")
     try:
-      processedDatasetDict = self.getParameter(
-        PROCESSED_DATASET_PAR_, processedDataset, **kwargs)
-      processedDataset = dbsProcessedDataset.DbsProcessedDataset(datasetDict=processedDatasetDict)
+      processedDatasetName = self.getParameter(
+        PROCESSED_DATASET_NAME_PAR_, processedDatasetName, **kwargs)
       eventCollections = self.getParameter(
         EVENT_COLLECTION_LIST_PAR_, eventCollectionList, **kwargs)
       eventCollectionList = dbsEventCollection.DbsEventCollectionList(eventCollections)
@@ -393,15 +397,15 @@ class DbsDatasetService(dbsWebService.DbsWebService):
     try:
       try:
         msg = "Inserting %s event collections for dataset %s" % (
-	  len(eventCollectionList), processedDataset.getDatasetName())
+	  len(eventCollectionList), processedDatasetName)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 	#################
 	## Here comes API call.
-	# self.getApi().insertEventCollections(processedDataset, eventCollectionList)
+	# self.getApi().insertEventCollections(processedDatasetName, eventCollectionList)
 	#################
         msg = "Inserted %s event collections for dataset %s" % (
-	  len(eventCollectionList), processedDataset.getDatasetName())
+	  len(eventCollectionList), processedDatasetName)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
@@ -412,6 +416,66 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	raise InsertEventCollectionsFault(exception=ex)
 
       return {}
+    finally:
+      self.releaseServant(servantId)
+
+  def createFileBlock(self, fileBlock=None,
+		      *args, **kwargs):
+    """
+    Create new file block.
+
+    Returns: processed dataset id.
+    Faults: InsertEventCollectionsFault
+    """
+
+    # Check arguments.
+    funcName = "%s.%s" % (self.__class__.__name__, "createFileBlock()")
+    try:
+      fileBlockDict = self.getParameter(
+        FILE_BLOCK_PAR_, fileBlock, **kwargs)
+      fileBlock = dbsFileBlock.DbsFileBlock(blockDict=fileBlockDict)
+    except dbsWebServiceException.MissingParameterFault, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise CreateFileBlockFault(exception=ex)
+
+
+    # Acquire servant.
+    try:
+      servantId = self.acquireServant(funcName)
+    except DbsWebServiceException, ex:
+      self._logManager.log(what="%s" % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise CreateFileBlockFault(exception=ex)
+
+    # Do the work.
+    try:
+      try:
+	processedDatasetName = fileBlock.getProcessedDatasetName()
+        msg = "Creating new file block for dataset %s" % (
+	  processedDatasetName)
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+	#################
+	## Here comes API call.
+	# fileBlockId = self.getApi().createFileBlock(fileBlock)
+	fileBlockId = 12345
+	#################
+        msg = "Created file block with id %s dataset %s" % (
+	  fileBlockId, processedDatasetName)
+	self._logManager.log(what=msg, where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+      except Exception, ex:
+	self._logManager.log(what="%s" % ex,
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+	raise CreateFileBlockFault(exception=ex)
+
+      return { dbsFileBlock.FILE_BLOCK_ID_TAG_ : fileBlockId }
+
     finally:
       self.releaseServant(servantId)
 

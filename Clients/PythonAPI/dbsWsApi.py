@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.7 2005/12/09 20:50:15 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.8 2005/12/12 17:45:41 sveseli Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -19,6 +19,7 @@ import dbsProcessingPath
 import dbsEventCollection
 import dbsApplication
 import dbsFile
+import dbsFileBlock
 
 ##############################################################################
 # Web service implementation of the DBS API class. Exceptions are defined
@@ -86,7 +87,7 @@ class DbsWsApi(dbsApi.DbsApi):
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
 
-  def insertEventCollections(self, processedDataset, eventCollectionList):
+  def insertEventCollections(self, processedDatasetName, eventCollectionList):
     """
     Insert event collections for a given processed dataset.
 
@@ -94,8 +95,20 @@ class DbsWsApi(dbsApi.DbsApi):
     Exceptions: DbsApiException
     """
     try:
-      return self._wsClient.insertEventCollections(processedDataset,
+      return self._wsClient.insertEventCollections(processedDatasetName,
 						   eventCollectionList)
+    except dbsWsClient.DbsWsClientException, ex:
+      raise dbsApi.DbsApiException(exception=ex)
+
+  def createFileBlock(self, fileBlock):
+    """
+    Create new file block.
+
+    Returns: file block id.
+    Exceptions: DbsApiException
+    """
+    try:
+      return self._wsClient.createFileBlock(fileBlock)
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
       
@@ -184,7 +197,13 @@ if __name__ == "__main__":
     ecList.append(dbsEventCollection.DbsEventCollection(collectionName="ec2", numberOfEvents=228, fileList=[f2]))
     print "Event collection list: \n", ecList
     print "Inserting event collections for: %s" % dataset.getDatasetName()
-    api.insertEventCollections(dataset, ecList)
+    api.insertEventCollections(dataset.getDatasetName(), ecList)
+
+    #Test for creating file blocks.
+    fb1 = dbsFileBlock.DbsFileBlock(blockId=765, blockName="myFirstBlock", processedDatasetName="ds1")
+    print "Creating file block: %s" % fb1
+    fbId = api.createFileBlock(fb1)
+    print "Got file block id: %s" % fbId
     
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())

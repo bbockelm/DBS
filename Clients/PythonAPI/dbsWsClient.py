@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.6 2005/12/09 20:50:15 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.7 2005/12/12 17:45:41 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -21,7 +21,7 @@ import dbsPrimaryDataset
 import dbsProcessedDataset
 
 # Uncommenting the following line results in SOAP debugging messages.
-SOAPpy.Config.debug=1
+#SOAPpy.Config.debug=1
 
 
 ##############################################################################
@@ -238,7 +238,7 @@ class DbsWsClient:
     
     return processedDatasetId
 
-  def insertEventCollections(self, processedDataset, eventCollectionList):
+  def insertEventCollections(self, processedDatasetName, eventCollectionList):
     """ Insert event collections for a given processed dataset. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "insertEventCollections()")
@@ -247,11 +247,11 @@ class DbsWsClient:
     try:
       self._logManager.log(
 	what="Inserting %s event collections for processed dataset: %s." % (
-	len(eventCollectionList), processedDataset.getDatasetName()),
+	len(eventCollectionList), processedDatasetName),
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       self._wsdlProxy.insertEventCollections(
-	processedDataset=processedDataset.getWsRep(),
+	processedDatasetName=processedDatasetName,
 	eventCollectionList=eventCollectionList.getWsRep())
 
     except SOAPpy.faultType, ex:
@@ -273,11 +273,49 @@ class DbsWsClient:
     
     self._logManager.log(
       what="Successfully inserted %s event collections for processed dataset: %s." % (
-      len(eventCollectionList), processedDataset.getDatasetName()),
+      len(eventCollectionList), processedDatasetName),
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
     return
+
+  def createFileBlock(self, fileBlock):
+    """ Insert event collections for a given processed dataset. """
+
+    funcName = "%s.%s" % (self.__class__.__name__, "createFileBlock()")
+
+    # Invoke web service call.
+    try:
+      self._logManager.log(
+	what="Inserting file block: %s." % (fileBlock),
+	where=funcName,
+	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      fileBlockId = self._wsdlProxy.createFileBlock(
+	fileBlock=fileBlock.getWsRep())[dbsFileBlock.FILE_BLOCK_ID_TAG_]
+
+    except SOAPpy.faultType, ex:
+      wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
+      errMsg = "%s caught: %s (Will raise: %s)" % (
+	ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
+      self._logManager.log(what=errMsg,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise wsEx
+      
+    except Exception, ex:
+      # General exception.
+      self._logManager.log(what="Web service client failed.\n%s " % ex,
+			   where=funcName,
+			   logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise DbsWsClientException(exception=ex)
+    
+    self._logManager.log(
+      what="File block id: %s." % (fileBlockId),
+      where=funcName,
+      logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+    return fileBlockId
 	
 ##############################################################################
 # Unit testing.
