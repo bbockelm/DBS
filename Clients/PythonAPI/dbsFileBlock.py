@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.7 2005/12/12 16:24:03 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.8 2005/12/12 21:35:12 sveseli Exp $
 #
 # File block class. 
 #
@@ -14,6 +14,9 @@ import dbsException
 FILE_BLOCK_DICT_TAG_ = "blockDict"
 FILE_BLOCK_NAME_TAG_ = "blockName"
 FILE_BLOCK_ID_TAG_ = "blockId"
+FILE_BLOCK_STATUS_NAME_TAG_ = "blockStatusName"
+NUMBER_OF_FILES_TAG_ = "numberOfFiles"
+NUMBER_OF_BYTES_TAG_ = "numberOfBytes"
 PROCESSED_DATASET_NAME_TAG_ = "processedDatasetName"
 EVENT_COLLECTION_LIST_TAG_ = "eventCollectionList"
 
@@ -27,6 +30,7 @@ class DbsFileBlock(dbsObject.DbsObject):
 
   def __init__(self, blockName=None,
 	       blockId=None, processedDatasetName=None,
+	       blockStatusName=None, numberOfBytes=None, numberOfFiles=None,
 	       eventCollectionList=[], blockDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, blockDict)
@@ -38,6 +42,15 @@ class DbsFileBlock(dbsObject.DbsObject):
 
     if blockId is not None:
       self[FILE_BLOCK_ID_TAG_] = int(blockId)
+
+    if blockStatusName is not None:
+      self[FILE_BLOCK_STATUS_NAME_TAG_] = str(blockStatusName)
+
+    if numberOfBytes is not None:
+      self[NUMBER_OF_BYTES_TAG_] = long(numberOfBytes)
+
+    if numberOfFiles is not None:
+      self[NUMBER_OF_FILES_TAG_] = long(numberOfFiles)
 
     # Make sure that all event collections are of the type DbsEventCollection
     # and that the list os of type DbsEventCollectionList.
@@ -63,6 +76,27 @@ class DbsFileBlock(dbsObject.DbsObject):
     if result == None:
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
     return result
+
+  def getBlockStatusName(self):
+    """ Retrieve block status. """
+    result = self.get(FILE_BLOCK_STATUS_NAME_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_STATUS_NAME_TAG_)
+    return result
+
+  def getNumberOfBytes(self):
+    """ Retrieve number of bytes. """
+    result = self.get(NUMBER_OF_BYTES_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_BYTES_TAG_)
+    return result
+
+  def getNumberOfFiles(self):
+    """ Retrieve number of files. """
+    result = self.get(NUMBER_OF_FILES_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_FILES_TAG_)
+    return result  
 
   def getProcessedDatasetName(self):
     """ Retrieve processed dataset name. """
@@ -126,10 +160,13 @@ class DbsFileBlockList(dbsObject.DbsObjectList):
 if __name__ == "__main__":
   eventCollection = dbsEventCollection.DbsEventCollection(
     collectionName="ec1", numberOfEvents=111)
-  fileBlock = DbsFileBlock(blockId=123, blockName="fb1")
+  fileBlock = DbsFileBlock(blockId=123, blockName="fb1", blockStatusName="good", numberOfBytes=12123688, numberOfFiles=13)
   print fileBlock
   fileBlock.addEventCollection(eventCollection)
   print fileBlock
+  print fileBlock.getBlockStatusName()
+  print fileBlock.getNumberOfFiles()
+  print fileBlock.getNumberOfBytes()
   print "Adding myAttr to the dataset"
   fileBlock["myAttr"] = "myValue"
   print fileBlock
