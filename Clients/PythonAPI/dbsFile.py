@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFile.py,v 1.1 2005/12/12 16:24:03 sveseli Exp $
+# $Id: dbsFile.py,v 1.2 2005/12/13 17:27:30 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -14,10 +14,10 @@ LOGICAL_FILE_NAME_TAG_ = "logicalFileName"
 GUID_TAG_ = "guid"
 CHECK_SUM_TAG_ = "checkSum"
 FILE_TYPE_TAG_ = "fileType"
+FILE_SIZE_TAG_ = "fileSize"
 FILE_STATUS_TAG_ = "fileStatus"
 
 FILE_BLOCK_ID_TAG_ = "fileBlockId"
-EVENT_COLLECTION_NAME_TAG_ = "eventCollectionName"
 
 WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 
@@ -28,8 +28,7 @@ class DbsFile(dbsObject.DbsObject):
 
   def __init__(self, logicalFileName=None,
 	       guid=None, checkSum=None, fileType=None,
-	       fileStatus=None, fileBlockId=None,
-	       eventCollectionName=None,
+	       fileStatus=None, fileBlockId=None, fileSize=None,
 	       fileDict={}):
     """ Constructor. """
     dbsObject.DbsObject.__init__(self, fileDict)
@@ -46,14 +45,14 @@ class DbsFile(dbsObject.DbsObject):
     if fileType is not None:
       self[FILE_TYPE_TAG_] = str(fileType)
 
+    if fileSize is not None:
+      self[FILE_SIZE_TAG_] = long(fileSize)
+
     if fileStatus is not None:
       self[FILE_STATUS_TAG_] = str(fileStatus)
 
     if fileBlockId is not None:
       self[FILE_BLOCK_ID_TAG_] = str(fileBlockId)
-
-    if eventCollectionName is not None:
-      self[EVENT_COLLECTION_NAME_TAG_] = str(eventCollectionName)
 
     self.setNamespace(WSDL_NAMESPACE_)
     
@@ -85,6 +84,13 @@ class DbsFile(dbsObject.DbsObject):
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_TYPE_TAG_)
     return result
 
+  def getFileSize(self):
+    """ Retrieve file type. """
+    result = self.get(FILE_SIZE_TAG_) 
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_SIZE_TAG_)
+    return result
+
   def getFileStatus(self):
     """ Retrieve file status. """
     result = self.get(FILE_STATUS_TAG_) 
@@ -97,13 +103,6 @@ class DbsFile(dbsObject.DbsObject):
     result = self.get(FILE_BLOCK_ID_TAG_) 
     if result == None:
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
-    return result
-
-  def getEventCollectionName(self):
-    """ Retrieve event collection name. """
-    result = self.get(EVENT_COLLECTION_NAME_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NAME_TAG_)
     return result
 
 class DbsFileList(dbsObject.DbsObjectList):
@@ -147,8 +146,9 @@ class DbsFileList(dbsObject.DbsObjectList):
 # Unit testing.
 
 if __name__ == "__main__":
-  file = DbsFile(logicalFileName="lfn")
+  file = DbsFile(logicalFileName="lfn", fileSize=12345678)
   print file
+  print file.getFileSize()
   print file.getWsRep()
   
   print "Done"
