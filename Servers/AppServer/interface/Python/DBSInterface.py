@@ -24,7 +24,6 @@ class DBSInterface(dbsApi.DbsApi):
         apidata.t_desc_mc_decay_chain = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getDecayChain())
         apidata.t_desc_mc_production = dbsclient.ASTR(primaryDataset.getMonteCarloDescription().getProduction())
         apidata.t_physics_group_name = dbsclient.ASTR(primaryDataset.getPhysicsGroupName())
-        type(primaryDataset.getMonteCarloDescription().getIsMcData())
         apidata.t_desc_primary_is_mc_data = dbsclient.ACHR(primaryDataset.getMonteCarloDescription().getIsMcData())
         apidata.t_desc_trigger_description = dbsclient.ASTR(primaryDataset.getTriggerDescription())
         primaryDatasetID = self.client.createPrimaryDataset(apidata)
