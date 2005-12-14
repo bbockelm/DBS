@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbs_web_services_config.py,v 1.6 2005/12/09 20:50:15 sveseli Exp $
+# $Id: dbs_web_services_config.py,v 1.7 2005/12/13 23:13:41 sekhri Exp $
 #
 # Config manager class. 
 #
@@ -12,7 +12,8 @@
 ServerConfigDict_ = {
 
   # Host.
-  "Host" : "localhost.localdomain",
+  #"Host" : "localhost.localdomain",
+  "Host" : "cmssrv22.fnal.gov",
 
   # Port.
   "Port" : 27981,
@@ -21,7 +22,7 @@ ServerConfigDict_ = {
   "SoapDebugFlag" : 0,
 
   # Number of servants.
-  "NumberOfServants" : 5,
+  "NumberOfServants" : 100,
 
   # API class name.
   #"ApiClassName" : "dbsCgiApi.DbsCgiApi",
