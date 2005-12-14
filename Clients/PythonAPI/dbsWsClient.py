@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.9 2005/12/13 17:55:27 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.10 2005/12/13 19:55:22 sveseli Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -298,6 +298,8 @@ class DbsWsClient:
     funcName = "%s.%s" % (self.__class__.__name__, "createFileBlock()")
 
     # Invoke web service call.
+    what="Retrieving dataset contents, wsdlUrl: %s." % self._wsdlUrl,
+    print what
     try:
       self._logManager.log(
 	what="Inserting file block: %s." % (fileBlock),
