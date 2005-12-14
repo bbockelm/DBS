@@ -285,7 +285,7 @@ bool Util::toSetCol(string name, Dictionary_iter b, Dictionary_iter e) {
 			if( tableNameOneFromRs == i->first ) {
 				//cout<<"nameTwoFromSatisfy "<<nameTwoFromSatisfy<<"\nnameTwoFromSatisfy.substr(0,nameTwoFromRs.length() "<<i->second.substr(0,nameTwoFromRs.length())<<"\nnameTwoFromRs "<<nameTwoFromRs<<endl;
 				if( nameLen = 63 ) {
-					cout<<"len is 63"<<endl;
+					//cout<<"len is 63"<<endl;
 					if( nameTwoFromRs != i->second.substr(0,nameTwoFromRs.length()) ) {
 						return(false);
 					}

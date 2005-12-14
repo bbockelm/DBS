@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.8 2005/12/13 17:55:27 sveseli Exp $
+# $Id: dbsDatasetService.py,v 1.10 2005/12/13 23:13:41 sekhri Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -465,8 +465,8 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 	#################
 	## Here comes API call.
-	# fileBlockId = self.getApi().createFileBlock(processedDataset, fileBlock)
-	fileBlockId = 12345
+	fileBlockId = self.getApi().createFileBlock(processedDataset, fileBlock)
+	#fileBlockId = 12345
 	#################
         msg = "Created file block with id %s dataset %s" % (
 	  fileBlockId, processedDatasetName)

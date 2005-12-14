@@ -71,8 +71,8 @@ int ProcessedDatasetManager::read(Message* msgReceived, Message& msgReturned) {
         //MyRows myRows = this->processedDatasetTable->select(addQuery);
         MyRows myRows = this->processedDatasetTable->select(clause);
         
-        cout << "ProcessedDatasetManager::read Retrun from select()" << endl;
-        cout << "ProcessedDatasetManager::read Rows Read " << myRows.size() << endl;
+        //cout << "ProcessedDatasetManager::read Retrun from select()" << endl;
+        //cout << "ProcessedDatasetManager::read Rows Read " << myRows.size() << endl;
 
         msgReturned.setName("ReadProcessedDataset");
 
@@ -82,14 +82,14 @@ int ProcessedDatasetManager::read(Message* msgReceived, Message& msgReturned) {
         }
 
         int ret = this->makeMessage((TableInterface*)processedDatasetTable, rows.begin(), rows.end(), msgReturned);
-        cout << "ProcessedDatasetManager::read Retrun from makeMessage " << ret << endl;
+        //cout << "ProcessedDatasetManager::read Retrun from makeMessage " << ret << endl;
 
 }
 
 
 ProcessedDatasetManager::~ProcessedDatasetManager() {
         
-	cout<<"Destructor of ProcessedDatasetManager()"<<endl;
+	//cout<<"Destructor of ProcessedDatasetManager()"<<endl;
 	delete processedDatasetTable;
         this->cleanup(); 
 }

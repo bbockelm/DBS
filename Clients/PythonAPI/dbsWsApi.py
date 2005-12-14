@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.10 2005/12/13 17:55:27 sveseli Exp $
+# $Id: dbsWsApi.py,v 1.12 2005/12/13 23:13:41 sekhri Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -191,26 +191,58 @@ if __name__ == "__main__":
       isDatasetOpen="y",
       datasetName="processedDataset", processingPath=processingPath2)
 
-    print "Creating processed dataset: %s" % dataset.getDatasetName()
-    processedDatasetId = api.createProcessedDataset(dataset)
-    print "Got processed dataset id: %s" % processedDatasetId    
+    #print "Creating processed dataset: %s" % dataset.getDatasetName()
+    #processedDatasetId = api.createProcessedDataset(dataset)
+    #print "Got processed dataset id: %s" % processedDatasetId    
 
     # Test for inserting event collections.
-    f1 = dbsFile.DbsFile(logicalFileName="myFile1")
-    f2 = dbsFile.DbsFile(logicalFileName="myFile2")
+    f1 = dbsFile.DbsFile(logicalFileName="myFile1",
+	fileStatus = "file dummy status",
+	guid = "7C8A55-DE62-D811-892C-00E081250436",
+        checkSum="BA7C8A55-DE62-D811-892C-00E081250436", 
+        fileType="EVDZip",
+        fileBlockId=1, 
+        fileSize=100
+        ) 
+    f2 = dbsFile.DbsFile(logicalFileName="myFile2",
+	fileStatus = "file dummy status",
+	guid = "7C8A55-DE62-D811-892C-00E081250436a",
+        checkSum="BA7C8A55-DE62-D811-892C-00E081250a436", 
+        fileType="EVDZip",
+        fileBlockId=1, 
+        fileSize=100
+        )
+    fList=dbsFile.DbsFileList([f1])
+    fList.append(f2)
+
     ec = dbsEventCollection.DbsEventCollection(
-      collectionName="ec1", numberOfEvents=123, fileList=[f1])
+      collectionName="ec1", 
+      numberOfEvents=123, 
+      collectionIndex=100,
+      isPrimary="y",
+      #parentEventCollection=None,
+      #collectionId=None, 
+      #processedDatasetName=None,
+      fileList=fList)
     ecList = dbsEventCollection.DbsEventCollectionList([ec])
-    ecList.append(dbsEventCollection.DbsEventCollection(collectionName="ec2", numberOfEvents=228, fileList=[f2]))
+    #ecList.append(dbsEventCollection.DbsEventCollection(collectionName="ec2", numberOfEvents=228, fileList=[f2]))
     print "Event collection list: \n", ecList
     print "Inserting event collections for: %s" % dataset.getDatasetName()
-    api.insertEventCollections(dataset, ecList)
+    #api.insertEventCollections(dataset, ecList)
 
+
+    block = dbsFileBlock.DbsFileBlock(
+      #blockName=None,
+      blockStatusName="Dummy Block Status", 
+      numberOfBytes=1024, 
+      numberOfFiles=10
+      )
+    fbId = api.createFileBlock(dataset, block)
     #Test for creating file blocks.
     #fb1 = dbsFileBlock.DbsFileBlock(blockId=765, blockName="myFirstBlock", processedDatasetName="ds1")
     #print "Creating file block: %s" % fb1
     #fbId = api.createFileBlock(dataset, fb1)
-    #print "Got file block id: %s" % fbId
+    print "Got file block id: %s" % fbId
     
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())

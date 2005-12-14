@@ -326,11 +326,11 @@ CREATE TABLE t_file
 CREATE TABLE t_evcoll_file
   (
     id      integer   not null,
-    evcoll  integer   unique not null,
-    fileid  integer   unique not null,
+    evcoll  integer   not null,
+    fileid  integer   not null,
 
     primary key(id),
-
+    unique(evcoll,fileid)
     foreign key(evcoll) references t_event_collection(id),
     foreign key(fileid) references t_file(id)
   );

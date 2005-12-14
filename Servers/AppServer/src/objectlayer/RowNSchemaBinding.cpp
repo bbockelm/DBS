@@ -79,6 +79,8 @@ RowNSchemaBinding::RowNSchemaBinding() {
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("evcollviewmultirow", Evcollviewmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Fileviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Fileviewmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("fileviewmultirow", Fileviewmultirow_DB_BINDINGObj));
+      BaseSchemaNConstraintsBinding* Blockviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Blockviewmultirow_DB_BINDING();
+      this->RowNSchemaBindingMap.insert(SchemaMapEntry("blockviewmultirow", Blockviewmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Primarydatasetmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Primarydatasetmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("primarydatasetmultirow", Primarydatasetmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Processingpathmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Processingpathmultirow_DB_BINDING();

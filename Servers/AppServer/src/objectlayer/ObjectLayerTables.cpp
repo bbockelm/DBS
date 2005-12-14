@@ -1462,6 +1462,9 @@ void T_Filerow::setValue(string key, void* value) {
     if( key.compare("t_file.logical_name") == 0) {
          this->logical_name = *((string*) value) ;
     }
+    if( key.compare("t_file.checksum") == 0) {
+         this->checksum = *((string*) value) ;
+    }
     if( key.compare("t_file.filesize") == 0) {
          this->filesize = *((string*) value) ;
     }
@@ -1486,6 +1489,9 @@ void* T_Filerow::getValue(string key) {
    if( key.compare("t_file.logical_name") == 0) {
        return (&this->logical_name.getValue());
     }
+   if( key.compare("t_file.checksum") == 0) {
+       return (&this->checksum.getValue());
+    }
    if( key.compare("t_file.filesize") == 0) {
        return (&this->filesize.getValue());
     }
@@ -1506,6 +1512,7 @@ T_Filerow_DB_BINDING::T_Filerow_DB_BINDING() {
     Schema.insert(Entry("t_file.id", "INTEGER"));
     Schema.insert(Entry("t_file.guid", "STRING"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
+    Schema.insert(Entry("t_file.checksum", "STRING"));
     Schema.insert(Entry("t_file.filesize", "STRING"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
     Schema.insert(Entry("t_file.type", "INTEGER"));
@@ -1524,6 +1531,7 @@ T_Filerow_DB_BINDING::T_Filerow_DB_BINDING() {
 
     NotNullKeys.push_back("t_file.id");
     NotNullKeys.push_back("t_file.logical_name");
+    NotNullKeys.push_back("t_file.checksum");
     NotNullKeys.push_back("t_file.filesize");
     NotNullKeys.push_back("t_file.status");
     NotNullKeys.push_back("t_file.type");
@@ -1582,8 +1590,6 @@ T_Evcoll_Filerow_DB_BINDING::T_Evcoll_Filerow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_file.evcoll");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_evcoll_file.fileid");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -2956,26 +2962,6 @@ void Fileviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_file_statusrow", ""))->
            setValue((string)"t_file_status.name", value);
     }
-    if( key.compare("t_block_status.name") == 0) {
-         ((T_Block_Statusrow*)this->
-          getConstituentRow((string)"t_block_statusrow", ""))->
-           setValue((string)"t_block_status.name", value);
-    }
-    if( key.compare("t_block.processed_dataset") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-    }
-    if( key.compare("t_block.files") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.files", value);
-    }
-    if( key.compare("t_block.bytes") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.bytes", value);
-    }
     if( key.compare("t_file.guid") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
@@ -2986,10 +2972,20 @@ void Fileviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.logical_name", value);
     }
+    if( key.compare("t_file.checksum") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.checksum", value);
+    }
     if( key.compare("t_file.filesize") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.filesize", value);
+    }
+    if( key.compare("t_file.inblock") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.inblock", value);
     }
     if( key.compare("t_evcoll_file.id") == 0) {
          ((T_Evcoll_Filerow*)this->
@@ -3017,38 +3013,6 @@ void Fileviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.id", value);
     }
-    if( key.compare("t_block.status") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.status", value);
-         ((T_Block_Statusrow*)this->
-          getConstituentRow((string)"t_block_statusrow", ""))->
-           setValue((string)"t_block_status.id", value);
-    }
-    if( key.compare("t_block_status.id") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.status", value);
-         ((T_Block_Statusrow*)this->
-          getConstituentRow((string)"t_block_statusrow", ""))->
-           setValue((string)"t_block_status.id", value);
-    }
-    if( key.compare("t_file.type") == 0) {
-         ((T_Filerow*)this->
-          getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.type", value);
-         ((T_File_Typerow*)this->
-          getConstituentRow((string)"t_file_typerow", ""))->
-           setValue((string)"t_file_type.id", value);
-    }
-    if( key.compare("t_file_type.id") == 0) {
-         ((T_Filerow*)this->
-          getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.type", value);
-         ((T_File_Typerow*)this->
-          getConstituentRow((string)"t_file_typerow", ""))->
-           setValue((string)"t_file_type.id", value);
-    }
     if( key.compare("t_file.status") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
@@ -3065,21 +3029,21 @@ void Fileviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_file_statusrow", ""))->
            setValue((string)"t_file_status.id", value);
     }
-    if( key.compare("t_file.inblock") == 0) {
+    if( key.compare("t_file.type") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.inblock", value);
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.id", value);
+           setValue((string)"t_file.type", value);
+         ((T_File_Typerow*)this->
+          getConstituentRow((string)"t_file_typerow", ""))->
+           setValue((string)"t_file_type.id", value);
     }
-    if( key.compare("t_block.id") == 0) {
+    if( key.compare("t_file_type.id") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.inblock", value);
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.id", value);
+           setValue((string)"t_file.type", value);
+         ((T_File_Typerow*)this->
+          getConstituentRow((string)"t_file_typerow", ""))->
+           setValue((string)"t_file_type.id", value);
     }
 }
 
@@ -3104,41 +3068,6 @@ void* Fileviewmultirow::getValue(string key) {
           getConstituentRow("t_file_statusrow", ""))->
            getValue((string)"t_file_status.name");
     }
-   if( key.compare("t_block_status.id") == 0) {
-       return  ((T_Block_Statusrow*)this->
-          getConstituentRow("t_block_statusrow", ""))->
-           getValue((string)"t_block_status.id");
-    }
-   if( key.compare("t_block_status.name") == 0) {
-       return  ((T_Block_Statusrow*)this->
-          getConstituentRow("t_block_statusrow", ""))->
-           getValue((string)"t_block_status.name");
-    }
-   if( key.compare("t_block.id") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.id");
-    }
-   if( key.compare("t_block.processed_dataset") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.processed_dataset");
-    }
-   if( key.compare("t_block.status") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.status");
-    }
-   if( key.compare("t_block.files") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.files");
-    }
-   if( key.compare("t_block.bytes") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.bytes");
-    }
    if( key.compare("t_file.id") == 0) {
        return  ((T_Filerow*)this->
           getConstituentRow("t_filerow", ""))->
@@ -3153,6 +3082,11 @@ void* Fileviewmultirow::getValue(string key) {
        return  ((T_Filerow*)this->
           getConstituentRow("t_filerow", ""))->
            getValue((string)"t_file.logical_name");
+    }
+   if( key.compare("t_file.checksum") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.checksum");
     }
    if( key.compare("t_file.filesize") == 0) {
        return  ((T_Filerow*)this->
@@ -3198,12 +3132,6 @@ Fileviewmultirow::Fileviewmultirow(){
     this->T_File_Statusobj = new T_File_Statusrow();
     this->rowMap.set("t_file_statusrow", (void*)this->T_File_Statusobj);
     this->constituentObjects.push_back(this->rowMap);
-    this->T_Block_Statusobj = new T_Block_Statusrow();
-    this->rowMap.set("t_block_statusrow", (void*)this->T_Block_Statusobj);
-    this->constituentObjects.push_back(this->rowMap);
-    this->T_Blockobj = new T_Blockrow();
-    this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
-    this->constituentObjects.push_back(this->rowMap);
     this->T_Fileobj = new T_Filerow();
     this->rowMap.set("t_filerow", (void*)this->T_Fileobj);
     this->constituentObjects.push_back(this->rowMap);
@@ -3215,8 +3143,6 @@ Fileviewmultirow::Fileviewmultirow(){
 Fileviewmultirow::~Fileviewmultirow(){
    delete this->T_File_Typeobj;
    delete this->T_File_Statusobj;
-   delete this->T_Block_Statusobj;
-   delete this->T_Blockobj;
    delete this->T_Fileobj;
    delete this->T_Evcoll_Fileobj;
 }
@@ -3226,40 +3152,30 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
 
     Schema.insert(Entry("t_evcoll_file.fileid", "INTEGER"));
     Schema.insert(Entry("t_file.type", "INTEGER"));
-    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_file.inblock", "INTEGER"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
     Schema.insert(Entry("t_file_status.name", "STRING"));
-    Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_file.guid", "STRING"));
     Schema.insert(Entry("t_file_type.name", "STRING"));
     Schema.insert(Entry("t_file_type.id", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
-    Schema.insert(Entry("t_block_status.id", "INTEGER"));
-    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_file.checksum", "STRING"));
     Schema.insert(Entry("t_file.id", "INTEGER"));
     Schema.insert(Entry("t_file_status.id", "INTEGER"));
-    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_file.filesize", "STRING"));
-    Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
-    Schema.insert(Entry("t_block_status.name", "STRING"));
     Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_evcoll_file.id");
 
     ForeignKeys.push_back("t_evcoll_file.fileid");
-    ForeignKeys.push_back("t_file.type");
-    ForeignKeys.push_back("t_block.processed_dataset");
-    ForeignKeys.push_back("t_file.inblock");
-    ForeignKeys.push_back("t_block.status");
-    ForeignKeys.push_back("t_evcoll_file.evcoll");
     ForeignKeys.push_back("t_file.status");
+    ForeignKeys.push_back("t_file.type");
+    ForeignKeys.push_back("t_evcoll_file.evcoll");
+    ForeignKeys.push_back("t_file.inblock");
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_file.evcoll");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_evcoll_file.fileid");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
@@ -3271,15 +3187,9 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     NotNullKeys.push_back("t_file_type.name");
     NotNullKeys.push_back("t_file_status.id");
     NotNullKeys.push_back("t_file_status.name");
-    NotNullKeys.push_back("t_block_status.id");
-    NotNullKeys.push_back("t_block_status.name");
-    NotNullKeys.push_back("t_block.id");
-    NotNullKeys.push_back("t_block.processed_dataset");
-    NotNullKeys.push_back("t_block.status");
-    NotNullKeys.push_back("t_block.files");
-    NotNullKeys.push_back("t_block.bytes");
     NotNullKeys.push_back("t_file.id");
     NotNullKeys.push_back("t_file.logical_name");
+    NotNullKeys.push_back("t_file.checksum");
     NotNullKeys.push_back("t_file.filesize");
     NotNullKeys.push_back("t_file.status");
     NotNullKeys.push_back("t_file.type");
@@ -3290,22 +3200,157 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
 
     SchemaOrder.push_back("t_file_type");
     SchemaOrder.push_back("t_file_status");
-    SchemaOrder.push_back("t_block_status");
-    SchemaOrder.push_back("t_block");
     SchemaOrder.push_back("t_file");
     SchemaOrder.push_back("t_evcoll_file");
 
     References.insert(Entry("t_evcoll_file.fileid", "t_file.id"));
-    References.insert(Entry("t_block.status", "t_block_status.id"));
-    References.insert(Entry("t_file.type", "t_file_type.id"));
     References.insert(Entry("t_file.status", "t_file_status.id"));
-    References.insert(Entry("t_file.inblock", "t_block.id"));
+    References.insert(Entry("t_file.type", "t_file_type.id"));
 
 
-    ExternalReferences.insert(Entry("t_file.status", "t_file_status.id"));
+    ExternalReferences.insert(Entry("t_file.inblock", "t_block.id"));
 }
 
 string* Fileviewmultirow_DB_BINDING::getTableName(void) {
+      return &this->TableName;
+}
+
+
+void Blockviewmultirow::setValue(string key, void* value) {
+    if( key.compare("t_block_status.name") == 0) {
+         ((T_Block_Statusrow*)this->
+          getConstituentRow((string)"t_block_statusrow", ""))->
+           setValue((string)"t_block_status.name", value);
+    }
+    if( key.compare("t_block.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.id", value);
+    }
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+    }
+    if( key.compare("t_block.files") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.files", value);
+    }
+    if( key.compare("t_block.bytes") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.bytes", value);
+    }
+    if( key.compare("t_block.status") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.status", value);
+         ((T_Block_Statusrow*)this->
+          getConstituentRow((string)"t_block_statusrow", ""))->
+           setValue((string)"t_block_status.id", value);
+    }
+    if( key.compare("t_block_status.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.status", value);
+         ((T_Block_Statusrow*)this->
+          getConstituentRow((string)"t_block_statusrow", ""))->
+           setValue((string)"t_block_status.id", value);
+    }
+}
+
+void* Blockviewmultirow::getValue(string key) {
+   if( key.compare("t_block_status.id") == 0) {
+       return  ((T_Block_Statusrow*)this->
+          getConstituentRow("t_block_statusrow", ""))->
+           getValue((string)"t_block_status.id");
+    }
+   if( key.compare("t_block_status.name") == 0) {
+       return  ((T_Block_Statusrow*)this->
+          getConstituentRow("t_block_statusrow", ""))->
+           getValue((string)"t_block_status.name");
+    }
+   if( key.compare("t_block.id") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.id");
+    }
+   if( key.compare("t_block.processed_dataset") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.processed_dataset");
+    }
+   if( key.compare("t_block.status") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.status");
+    }
+   if( key.compare("t_block.files") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.files");
+    }
+   if( key.compare("t_block.bytes") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.bytes");
+    }
+}
+
+Blockviewmultirow::Blockviewmultirow(){
+    this->T_Block_Statusobj = new T_Block_Statusrow();
+    this->rowMap.set("t_block_statusrow", (void*)this->T_Block_Statusobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Blockobj = new T_Blockrow();
+    this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
+    this->constituentObjects.push_back(this->rowMap);
+}
+
+Blockviewmultirow::~Blockviewmultirow(){
+   delete this->T_Block_Statusobj;
+   delete this->T_Blockobj;
+}
+
+Blockviewmultirow_DB_BINDING::Blockviewmultirow_DB_BINDING() {
+    TableName = "BlockView";
+
+    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block_status.name", "STRING"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_block.bytes", "INTEGER"));
+    Schema.insert(Entry("t_block_status.id", "INTEGER"));
+
+    PrimaryKeys.push_back("t_block.id");
+
+    ForeignKeys.push_back("t_block.status");
+    ForeignKeys.push_back("t_block.processed_dataset");
+
+    list<string> tmplist;
+    tmplist.push_back("t_block.id");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+
+    NotNullKeys.push_back("t_block_status.id");
+    NotNullKeys.push_back("t_block_status.name");
+    NotNullKeys.push_back("t_block.id");
+    NotNullKeys.push_back("t_block.processed_dataset");
+    NotNullKeys.push_back("t_block.status");
+    NotNullKeys.push_back("t_block.files");
+    NotNullKeys.push_back("t_block.bytes");
+
+    SchemaOrder.push_back("t_block_status");
+    SchemaOrder.push_back("t_block");
+
+    References.insert(Entry("t_block.status", "t_block_status.id"));
+
+
+    ExternalReferences.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
+}
+
+string* Blockviewmultirow_DB_BINDING::getTableName(void) {
       return &this->TableName;
 }
 

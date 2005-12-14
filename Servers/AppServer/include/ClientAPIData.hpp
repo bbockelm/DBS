@@ -84,26 +84,36 @@ public:
     INTEGER  t_evcoll_file_fileid;
     INTEGER  t_file_type;
     INTEGER  t_file_type_id;
-    INTEGER  t_block_processed_dataset;
     INTEGER  t_file_inblock;
     STRING  t_file_status_name;
-    INTEGER  t_block_status;
     STRING  t_file_guid;
     STRING  t_file_logical_name;
-    INTEGER  t_file_status_id;
+    STRING  t_file_checksum;
     INTEGER  t_file_id;
-    INTEGER  t_block_files;
-    INTEGER  t_evcoll_file_evcoll;
     STRING  t_file_type_name;
-    INTEGER  t_block_id;
     STRING  t_file_filesize;
-    STRING  t_block_status_name;
-    INTEGER  t_block_bytes;
+    INTEGER  t_evcoll_file_evcoll;
     INTEGER  t_file_status;
-    INTEGER  t_block_status_id;
     INTEGER  t_evcoll_file_id;
+    INTEGER  t_file_status_id;
 public:
      Fileview_ClientAPIData();
+
+     virtual int makeMessage(Message& messageOut);
+     virtual int readInMessage(Message& messageIn, string lisName, int index);
+
+};
+class Blockview_ClientAPIData  : public ClientDataStructure {
+public:
+    INTEGER  t_block_bytes;
+    INTEGER  t_block_status;
+    INTEGER  t_block_status_id;
+    INTEGER  t_block_files;
+    INTEGER  t_block_id;
+    INTEGER  t_block_processed_dataset;
+    STRING  t_block_status_name;
+public:
+     Blockview_ClientAPIData();
 
      virtual int makeMessage(Message& messageOut);
      virtual int readInMessage(Message& messageIn, string lisName, int index);

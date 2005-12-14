@@ -50,10 +50,11 @@ public:
         int createAnalysisDataset(Analysisdataset_ClientAPIData& analysisDatasetInfo) throw (const char*);
 
 	int createPrimaryDataset(Primarydataset_ClientAPIData& primaryDatasetInfo) throw (const char*);
+	int insertFileBlock(Blockview_ClientAPIData& blockInfo) throw (const char*);
 
 	int insertApps(Insertapps_ClientAPIData& appsInfo) throw (const char*);
 	int insertEventCollections(Evcollview_ClientAPIData& ecInfo) throw (const char*);
-	int insertFiles(std::vector<Fileview_ClientAPIData*>& fileInfo) throw (const char*);
+	int insertFiles(std::vector<Fileview_ClientAPIData>& fileInfo) throw (const char*);
 
 	int readPrimaryDataset(Primarydataset_ClientAPIData, std::vector<Primarydataset_ClientAPIData>& primaryDatasetInfo) throw (const char*);
         int readEvColls(Evcollview_ClientAPIData, std::vector<Evcollview_ClientAPIData>& evCollInfo) throw (const char*);

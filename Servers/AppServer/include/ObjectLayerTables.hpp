@@ -721,6 +721,7 @@ private:
      INTEGER id;
      STRING guid;
      STRING logical_name;
+     STRING checksum;
      STRING filesize;
      INTEGER status;
      INTEGER type;
@@ -1187,8 +1188,6 @@ private:
 
     T_File_Typerow* T_File_Typeobj;
     T_File_Statusrow* T_File_Statusobj;
-    T_Block_Statusrow* T_Block_Statusobj;
-    T_Blockrow* T_Blockobj;
     T_Filerow* T_Fileobj;
     T_Evcoll_Filerow* T_Evcoll_Fileobj;
 };
@@ -1205,6 +1204,37 @@ template<>
 class RowSchemaNConstraintsBinding<Fileviewmultirow> {
    public:
  Fileviewmultirow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
+class Blockviewmultirow  : public RowInterface {
+public:
+
+     Blockviewmultirow();
+     ~Blockviewmultirow();
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+
+    T_Block_Statusrow* T_Block_Statusobj;
+    T_Blockrow* T_Blockobj;
+};
+
+class  Blockviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      Blockviewmultirow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<Blockviewmultirow> {
+   public:
+ Blockviewmultirow_DB_BINDING  schemaNconstraints;
 };
 
 //##############
@@ -1461,6 +1491,7 @@ typedef MultiTableInterface<Personmultirow>  PersonMultiTable;
 typedef MultiTableInterface<Physicsgroupmultirow>  PhysicsgroupMultiTable;
 typedef MultiTableInterface<Evcollviewmultirow>  EvcollviewMultiTable;
 typedef MultiTableInterface<Fileviewmultirow>  FileviewMultiTable;
+typedef MultiTableInterface<Blockviewmultirow>  BlockviewMultiTable;
 typedef MultiTableInterface<Primarydatasetmultirow>  PrimarydatasetMultiTable;
 typedef MultiTableInterface<Processingpathmultirow>  ProcessingpathMultiTable;
 typedef MultiTableInterface<Analysisdatasetmultirow>  AnalysisdatasetMultiTable;

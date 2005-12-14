@@ -33,7 +33,7 @@ class processSQL :
          if line == ');':
             self.cppClasses.append(newCurrentClass)
             continue
-         if (line.find('CHECK') != -1) or (line.find('check') != -1):
+         if (line.find('CHECK') != -1) or (line.find('check') != -1) and (line.find('checksum') == -1):
             #if line.split()[0].endswith('check') == True: 
             continue   
          #if line.find('is_primary') != -1 : 

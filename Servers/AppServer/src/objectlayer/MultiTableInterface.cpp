@@ -59,4 +59,5 @@ template MultiTableInterface<Analysisdatasetmultirow>;
 template MultiTableInterface<Datasetprovenenceevchildmultirow>;
 template MultiTableInterface<Datasetprovenenceevparentmultirow>;
 template MultiTableInterface<Crabevcollviewmultirow>;
+template MultiTableInterface<Blockviewmultirow>;
 

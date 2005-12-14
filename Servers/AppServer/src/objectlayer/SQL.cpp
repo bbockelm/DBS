@@ -107,7 +107,7 @@ string SQL::makeClause(RowInterface* aRow, Keys_iter bk, Keys_iter ek, Dictionar
 		} else {
 			 clause = "";
 		}
-	cout<<"clause "<<clause<<endl;
+	//cout<<"clause "<<clause<<endl;
 	return clause;
 }
 
@@ -119,7 +119,7 @@ string SQL::makeRefClause(Dictionary_iter b, Dictionary_iter e) {
 				i->first + " = " + 
 				i->second + " ) AND ";
 	}
-	cout<<"makeRefClause "<<util->eraseEndChars(whereClause,4)<<endl;
+	//cout<<"makeRefClause "<<util->eraseEndChars(whereClause,4)<<endl;
 	return util->eraseEndChars(whereClause,4);
 }
 
@@ -149,7 +149,7 @@ string SQL::makeMultiRefClause(Dictionary_iter b, Dictionary_iter e) {
 			 multiWhereClause = "";
 		}
 	}
-	cout<<"makeMultiRefClause "<<multiWhereClause<<endl;
+	//cout<<"makeMultiRefClause "<<multiWhereClause<<endl;
 	return multiWhereClause;
 } 
 /*string SQL::makeSelectClause(Dictionary_iter b, Dictionary_iter e) {//Schema

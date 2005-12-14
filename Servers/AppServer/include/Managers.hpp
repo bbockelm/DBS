@@ -220,5 +220,15 @@ private:
 	PhysicsgroupMultiTable* physicsgroupTable;
 };
 
+class BlockManager : public Manager {
+public:
+	BlockManager();
+	int write(Message*, Message&);
+	~BlockManager();  
+
+private:
+	BlockviewMultiTable* blockTable;
+};
+
 
 #endif

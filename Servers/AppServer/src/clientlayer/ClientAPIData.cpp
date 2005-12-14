@@ -443,24 +443,18 @@ Fileview_ClientAPIData::Fileview_ClientAPIData(){
     Schema.insert(Entry("t_evcoll_file.fileid", "INTEGER"));
     Schema.insert(Entry("t_file.type", "INTEGER"));
     Schema.insert(Entry("t_file_type.id", "INTEGER"));
-    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_file.inblock", "INTEGER"));
     Schema.insert(Entry("t_file_status.name", "STRING"));
-    Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_file.guid", "STRING"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
-    Schema.insert(Entry("t_file_status.id", "INTEGER"));
+    Schema.insert(Entry("t_file.checksum", "STRING"));
     Schema.insert(Entry("t_file.id", "INTEGER"));
-    Schema.insert(Entry("t_block.files", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_file_type.name", "STRING"));
-    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_file.filesize", "STRING"));
-    Schema.insert(Entry("t_block_status.name", "STRING"));
-    Schema.insert(Entry("t_block.bytes", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
-    Schema.insert(Entry("t_block_status.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
+    Schema.insert(Entry("t_file_status.id", "INTEGER"));
 
 }
 
@@ -474,17 +468,11 @@ int Fileview_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (int*)(&(t_file_type_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file_type.id", (string)(util.itoa(t_file_type_id.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_block_processed_dataset.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block.processed_dataset", (string)(util.itoa(t_block_processed_dataset.getValue())), (string)"INTEGER"));
-      }
        if ( (int*)(&(t_file_inblock.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file.inblock", (string)(util.itoa(t_file_inblock.getValue())), (string)"INTEGER"));
       }
        if ( (string*)(&(t_file_status_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file_status.name", (string)t_file_status_name.getValue(), (string)"STRING"));
-      }
-       if ( (int*)(&(t_block_status.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block.status", (string)(util.itoa(t_block_status.getValue())), (string)"INTEGER"));
       }
        if ( (string*)(&(t_file_guid.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file.guid", (string)t_file_guid.getValue(), (string)"STRING"));
@@ -492,41 +480,29 @@ int Fileview_ClientAPIData::makeMessage(Message& messageOut) {
        if ( (string*)(&(t_file_logical_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file.logical_name", (string)t_file_logical_name.getValue(), (string)"STRING"));
       }
-       if ( (int*)(&(t_file_status_id.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_file_status.id", (string)(util.itoa(t_file_status_id.getValue())), (string)"INTEGER"));
+       if ( (string*)(&(t_file_checksum.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_file.checksum", (string)t_file_checksum.getValue(), (string)"STRING"));
       }
        if ( (int*)(&(t_file_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file.id", (string)(util.itoa(t_file_id.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_block_files.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block.files", (string)(util.itoa(t_block_files.getValue())), (string)"INTEGER"));
-      }
-       if ( (int*)(&(t_evcoll_file_evcoll.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_evcoll_file.evcoll", (string)(util.itoa(t_evcoll_file_evcoll.getValue())), (string)"INTEGER"));
-      }
        if ( (string*)(&(t_file_type_name.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file_type.name", (string)t_file_type_name.getValue(), (string)"STRING"));
-      }
-       if ( (int*)(&(t_block_id.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block.id", (string)(util.itoa(t_block_id.getValue())), (string)"INTEGER"));
       }
        if ( (string*)(&(t_file_filesize.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file.filesize", (string)t_file_filesize.getValue(), (string)"STRING"));
       }
-       if ( (string*)(&(t_block_status_name.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block_status.name", (string)t_block_status_name.getValue(), (string)"STRING"));
-      }
-       if ( (int*)(&(t_block_bytes.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block.bytes", (string)(util.itoa(t_block_bytes.getValue())), (string)"INTEGER"));
+       if ( (int*)(&(t_evcoll_file_evcoll.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_evcoll_file.evcoll", (string)(util.itoa(t_evcoll_file_evcoll.getValue())), (string)"INTEGER"));
       }
        if ( (int*)(&(t_file_status.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_file.status", (string)(util.itoa(t_file_status.getValue())), (string)"INTEGER"));
       }
-       if ( (int*)(&(t_block_status_id.getValue())) != NULL ) {
-          messageOut.addElement(new Element((string)"t_block_status.id", (string)(util.itoa(t_block_status_id.getValue())), (string)"INTEGER"));
-      }
        if ( (int*)(&(t_evcoll_file_id.getValue())) != NULL ) {
           messageOut.addElement(new Element((string)"t_evcoll_file.id", (string)(util.itoa(t_evcoll_file_id.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_file_status_id.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_file_status.id", (string)(util.itoa(t_file_status_id.getValue())), (string)"INTEGER"));
       }
 
     return 1;
@@ -551,11 +527,6 @@ int Fileview_ClientAPIData::readInMessage(Message& messageIn, string lisName, in
         int intValue  = atoi(value.c_str());
         t_file_type_id =  intValue;
     }
-    value = messageIn.getElementValue("t_block.processed_dataset", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_block_processed_dataset =  intValue;
-    }
     value = messageIn.getElementValue("t_file.inblock", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
@@ -565,11 +536,6 @@ int Fileview_ClientAPIData::readInMessage(Message& messageIn, string lisName, in
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
         t_file_status_name = strValue;
-    }
-    value = messageIn.getElementValue("t_block.status", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_block_status =  intValue;
     }
     value = messageIn.getElementValue("t_file.guid", lisName, index);
     if ( value != "NOTFOUND" ) {
@@ -581,65 +547,125 @@ int Fileview_ClientAPIData::readInMessage(Message& messageIn, string lisName, in
         string strValue = (string) value;
         t_file_logical_name = strValue;
     }
-    value = messageIn.getElementValue("t_file_status.id", lisName, index);
+    value = messageIn.getElementValue("t_file.checksum", lisName, index);
     if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_file_status_id =  intValue;
+        string strValue = (string) value;
+        t_file_checksum = strValue;
     }
     value = messageIn.getElementValue("t_file.id", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_file_id =  intValue;
     }
-    value = messageIn.getElementValue("t_block.files", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_block_files =  intValue;
-    }
-    value = messageIn.getElementValue("t_evcoll_file.evcoll", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_evcoll_file_evcoll =  intValue;
-    }
     value = messageIn.getElementValue("t_file_type.name", lisName, index);
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
         t_file_type_name = strValue;
-    }
-    value = messageIn.getElementValue("t_block.id", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        int intValue  = atoi(value.c_str());
-        t_block_id =  intValue;
     }
     value = messageIn.getElementValue("t_file.filesize", lisName, index);
     if ( value != "NOTFOUND" ) {
         string strValue = (string) value;
         t_file_filesize = strValue;
     }
-    value = messageIn.getElementValue("t_block_status.name", lisName, index);
-    if ( value != "NOTFOUND" ) {
-        string strValue = (string) value;
-        t_block_status_name = strValue;
-    }
-    value = messageIn.getElementValue("t_block.bytes", lisName, index);
+    value = messageIn.getElementValue("t_evcoll_file.evcoll", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
-        t_block_bytes =  intValue;
+        t_evcoll_file_evcoll =  intValue;
     }
     value = messageIn.getElementValue("t_file.status", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_file_status =  intValue;
     }
+    value = messageIn.getElementValue("t_evcoll_file.id", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_evcoll_file_id =  intValue;
+    }
+    value = messageIn.getElementValue("t_file_status.id", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_file_status_id =  intValue;
+    }
+
+}
+
+Blockview_ClientAPIData::Blockview_ClientAPIData(){
+
+    Schema.insert(Entry("t_block.bytes", "INTEGER"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block_status.id", "INTEGER"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_block_status.name", "STRING"));
+
+}
+
+int Blockview_ClientAPIData::makeMessage(Message& messageOut) {
+       if ( (int*)(&(t_block_bytes.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block.bytes", (string)(util.itoa(t_block_bytes.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_block_status.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block.status", (string)(util.itoa(t_block_status.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_block_status_id.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block_status.id", (string)(util.itoa(t_block_status_id.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_block_files.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block.files", (string)(util.itoa(t_block_files.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_block_id.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block.id", (string)(util.itoa(t_block_id.getValue())), (string)"INTEGER"));
+      }
+       if ( (int*)(&(t_block_processed_dataset.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block.processed_dataset", (string)(util.itoa(t_block_processed_dataset.getValue())), (string)"INTEGER"));
+      }
+       if ( (string*)(&(t_block_status_name.getValue())) != NULL ) {
+          messageOut.addElement(new Element((string)"t_block_status.name", (string)t_block_status_name.getValue(), (string)"STRING"));
+      }
+
+    return 1;
+
+}
+
+int Blockview_ClientAPIData::readInMessage(Message& messageIn, string lisName, int index) {
+
+    string value;
+    value = messageIn.getElementValue("t_block.bytes", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_block_bytes =  intValue;
+    }
+    value = messageIn.getElementValue("t_block.status", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_block_status =  intValue;
+    }
     value = messageIn.getElementValue("t_block_status.id", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
         t_block_status_id =  intValue;
     }
-    value = messageIn.getElementValue("t_evcoll_file.id", lisName, index);
+    value = messageIn.getElementValue("t_block.files", lisName, index);
     if ( value != "NOTFOUND" ) {
         int intValue  = atoi(value.c_str());
-        t_evcoll_file_id =  intValue;
+        t_block_files =  intValue;
+    }
+    value = messageIn.getElementValue("t_block.id", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_block_id =  intValue;
+    }
+    value = messageIn.getElementValue("t_block.processed_dataset", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        int intValue  = atoi(value.c_str());
+        t_block_processed_dataset =  intValue;
+    }
+    value = messageIn.getElementValue("t_block_status.name", lisName, index);
+    if ( value != "NOTFOUND" ) {
+        string strValue = (string) value;
+        t_block_status_name = strValue;
     }
 
 }

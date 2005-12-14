@@ -214,12 +214,12 @@ int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPa
 	//cout<<"Calling server"<<endl;
         int success = this->callServer();
 	//cout<<"DONE Calling server"<<endl;
-	cout<<"inside DBSClient::createProcessedDataset"<<endl;
+	//cout<<"inside DBSClient::createProcessedDataset"<<endl;
         if ( success == 1 ) {
            string value = this->mRecv.getElementValue("id");
-		cout<<"The processed daraset Value is "<<value<<endl;
+		//cout<<"The processed daraset Value is "<<value<<endl;
            if ( value != "NOTFOUND" ) {
-		cout<<"returnning "<<value<<endl;
+		//cout<<"returnning "<<value<<endl;
 		return util.atoi(value);
            }
         }
@@ -270,15 +270,15 @@ int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) throw (const char*
 }
 
 
-int DBSClient::insertFiles(vector<Fileview_ClientAPIData*>& fileInfo) throw (const char*) {
+int DBSClient::insertFiles(vector<Fileview_ClientAPIData>& fileInfo) throw (const char*) {
 	this->mSend.dispose();
 	this->mSend.setName("WriteFiles");
 
 
 	for(int i=0;i < fileInfo.size(); i++) {
-		Fileview_ClientAPIData* thisParam = fileInfo.at(i);
+		Fileview_ClientAPIData thisParam = fileInfo.at(i);
 		Message tmpMesssage;
-		thisParam->makeMessage(tmpMesssage);
+		thisParam.makeMessage(tmpMesssage);
 		this->mSend.appendToVec( tmpMesssage, "fileparams" );
 	}
 	int success = this->callServer();
@@ -498,7 +498,24 @@ int DBSClient::readEvCollFiles(Fileview_ClientAPIData apiDataToSend,
         return success;
 }
 
+int DBSClient::insertFileBlock(Blockview_ClientAPIData& blockInfo) throw (const char*){
+        this->mSend.dispose();
+        this->mRecv.dispose();
 
+	this->mSend.setName("InsertFileBlock");
+	blockInfo.makeMessage(this->mSend);
+	int success = this->callServer();
+
+        if ( success == 1 ) {
+           string value = this->mRecv.getElementValue("id");
+		//cout<<"value is "<<value<<endl;
+           if ( value != "NOTFOUND" ) {
+		return util.atoi(value);
+           }
+        }
+
+	return success;
+}
 
 /*
 int DBSClient::createPrimaryDataset(string primaryDatasetName, PrimaryDatasetInfo primaryDatasetInfo) {

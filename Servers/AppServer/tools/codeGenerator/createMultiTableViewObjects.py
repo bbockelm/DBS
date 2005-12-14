@@ -120,17 +120,27 @@ class createMultiTableViewObjects :
         self.Fileview.addSchema(self.allSchemas['t_file_type'])
         self.Fileview.addSchema(self.allSchemas['t_file_status'])
         self.Fileview.addSchema(self.allSchemas['t_file'])
-        self.Fileview.addSchema(self.allSchemas['t_block'])
-        self.Fileview.addSchema(self.allSchemas['t_block_status']) 
+        #self.Fileview.addSchema(self.allSchemas['t_block'])
+        #self.Fileview.addSchema(self.allSchemas['t_block_status']) 
         self.Fileview.addSchema(self.allSchemas['t_evcoll_file'])
         self.Fileview.addCondition('t_file.type = t_file_type.id')
         self.Fileview.addCondition('t_file.status = t_file_status.id')
-        self.Fileview.addCondition('t_file.inblock = t_block.id')
-        self.Fileview.addCondition('t_block.status = t_block_status.id')
+        #self.Fileview.addCondition('t_file.inblock = t_block.id')
+        #self.Fileview.addCondition('t_block.status = t_block_status.id')
         #self.Fileview.addCondition('t_evcoll_file.evcollid = ' + \
         #                   't_event_collection.id')         
         self.Fileview.addCondition('t_evcoll_file.fileid = t_file.id')
         self.multiTableViewObjects.append(self.Fileview)
+ 
+
+        # View on Files, Helpful for file insertion in batch.
+        self.Blockview = multiRowRepresentation("BlockView", self.fkExclusionAttributes)
+        self.Blockview.addSchema(self.allSchemas['t_block'])
+        self.Blockview.addSchema(self.allSchemas['t_block_status']) 
+        self.Blockview.addCondition('t_file.inblock = t_block.id')
+        self.Blockview.addCondition('t_block.status = t_block_status.id')
+        self.multiTableViewObjects.append(self.Blockview)
+       
        
         # View that descibes test query for CRAB
         #self.EventCollectionsForCrab  = multiRowRepresentation("EventCollectionsForCrab", self.fkExclusionAttributes)

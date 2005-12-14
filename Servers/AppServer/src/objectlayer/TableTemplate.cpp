@@ -68,7 +68,7 @@ Dictionary* TableTemplate<R>::getSchema() {
 
 template <class R>
 Dictionary* TableTemplate<R>::getMultiRefrence() {
-  cout<<"RETURNNING multiRefrences SCHEMA..."<<endl;
+  //cout<<"RETURNNING multiRefrences SCHEMA..."<<endl;
   return this->multiRefrences;
 }
 
@@ -153,7 +153,7 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
 template <class R>
 string TableTemplate<R>::makeSelectQuery(string userGivenWhereClause="") {
 	//cout<<"inside ::makeSelectQuery"<<endl;
-	cout<<"TableTemplate<R>::makeSelectQuery userGivenWhereClause "<<userGivenWhereClause<<endl;
+	//cout<<"TableTemplate<R>::makeSelectQuery userGivenWhereClause "<<userGivenWhereClause<<endl;
 	string sqlQuery = sql->makeSelectClause(schema->begin(), schema->end()) +
 		 " FROM " +  
 		sql->makeTableClause(schemaOrder->begin(), schemaOrder->end());
@@ -620,5 +620,6 @@ template TableTemplate<Datasetprovenenceevchildmultirow>;
 template TableTemplate<Datasetprovenenceevparentmultirow>;
 template TableTemplate<Crabevcollviewmultirow>;
 template TableTemplate<T_Object_Historyrow>;
+template TableTemplate<Blockviewmultirow>;
 
 

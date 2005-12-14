@@ -78,6 +78,11 @@ int DBSDispatcher::run(Message* msgReceived, Message& msgReturned) {
 			ECWriteManager manager;
 			manager.write(msgReceived, msgReturned);
 		}
+		else if (operation.compare("InsertFileBlock")==0) {	
+			BlockManager manager;
+			manager.write(msgReceived, msgReturned);
+		}
+
                 else if (operation.compare("ReadDatasetProvcParent")==0) {
                         DatasetProvcManagerParent manager;
                         manager.read(msgReceived, msgReturned);

@@ -159,6 +159,10 @@ TableInterface* TableFactory::getTableObject(string tableName) {
          TableInterface* tmpPtr = new MultiTableInterface<Fileviewmultirow>;
          return tmpPtr;
       }
+      if ( tableName.compare("blockviewmultirow") == 0 ) {
+         TableInterface* tmpPtr = new MultiTableInterface<Blockviewmultirow>;
+         return tmpPtr;
+      }
       if ( tableName.compare("primarydatasetmultirow") == 0 ) {
          TableInterface* tmpPtr = new MultiTableInterface<Primarydatasetmultirow>;
          return tmpPtr;
