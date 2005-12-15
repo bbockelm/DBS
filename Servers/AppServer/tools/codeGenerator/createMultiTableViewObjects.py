@@ -99,6 +99,16 @@ class createMultiTableViewObjects :
         self.EvCollView.addSchema(self.allSchemas['t_info_evcoll'])
         self.EvCollView.addSchema(self.allSchemas['t_evcoll_status'])
         self.EvCollView.addSchema(self.allSchemas['t_validation_status'])
+        self.EvCollView.addSchema(self.allSchemas['t_evcoll_parentage'])
+        self.EvCollView.addSchema(self.allSchemas['t_parentage_type'])
+
+        self.EvCollView.addCondition('t_evcoll_parentage.type = t_parentage_type.id')
+        self.EvCollView.addCondition('t_evcoll_parentage.child = t_event_collection.id')
+        self.EvCollView.addCondition('t_evcoll_parentage.parent = t_event_collection.id')
+        self.EvCollView.ExcludeThisMultiRelation({'t_evcoll_parentage.child':'t_event_collection.id'})
+        self.EvCollView.ExcludeThisMultiRelation({'t_evcoll_parentage.parent':'t_event_collection.id'})
+        self.EvCollView.AddThisRelation({'t_evcoll_parentage.child':'t_event_collection.id'})
+
         #self.EvCollView.addSchema(self.allSchemas['t_evcoll_run'])
         #self.EvCollView.addSchema(self.allSchemas['t_run'])
         #self.EvCollView.addSchema(self.allSchemas['t_run_quality'])
@@ -285,7 +295,7 @@ class createMultiTableViewObjects :
         self.CrabEvCollView.addSchema(self.allSchemas['t_data_tier'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_primary_dataset'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_block'])
-        #self.CrabEvCollView.addSchema(self.allSchemas['t_block_status'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_block_status'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_info_evcoll'])
         #self.CrabEvCollView.addSchema(self.allSchemas['t_evcoll_status'])
         #self.CrabEvCollView.addSchema(self.allSchemas['t_validation_status'])
@@ -296,8 +306,9 @@ class createMultiTableViewObjects :
         self.CrabEvCollView.addCondition('t_processed_dataset.processing_path = t_processing_path.id')
         self.CrabEvCollView.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
         self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
-        #self.CrabEvCollView.addCondition('t_block.status = t_block_status.id')
+        self.CrabEvCollView.addCondition('t_block.status = t_block_status.id')
         self.CrabEvCollView.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
+
         #self.CrabEvCollView.addCondition('t_info_evcoll.validation_status = ' + \
         #        't_validation_status.id')
         #self.CrabEvCollView.addCondition('t_info_evcoll.status = ' + \

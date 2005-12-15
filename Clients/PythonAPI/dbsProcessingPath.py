@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessingPath.py,v 1.2 2005/12/09 16:49:41 sveseli Exp $
+# $Id: dbsProcessingPath.py,v 1.3 2005/12/12 19:04:50 sveseli Exp $
 #
 # Processing path class. 
 #
@@ -95,8 +95,8 @@ class DbsProcessingPath(dbsObject.DbsObject):
   def getPathId(self):
     """ Retrieve path od. """
     result = self.get(PATH_ID_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PATH_ID_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PATH_ID_TAG_)
     return result
 
 ##############################################################################

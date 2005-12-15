@@ -7,7 +7,7 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_person.contactinfo", "tp.contactinfo"));
         NameMap.insert(Entry("t_physics_group.id", "tpg.id"));
         NameMap.insert(Entry("t_physics_group.name", "tpg.name"));
-        NameMap.insert(Entry("t_physics_group.convener", "tpg.convener"));
+        NameMap.insert(Entry("t_physics_group.convenor", "tpg.convenor"));
         NameMap.insert(Entry("t_collection_type.id", "tct.id"));
         NameMap.insert(Entry("t_collection_type.name", "tct.name"));
         NameMap.insert(Entry("t_app_family.id", "taf.id"));
@@ -61,6 +61,7 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_anads_data.is_primary", "tad.ip"));
         NameMap.insert(Entry("t_parentage_type.id", "tpt.id"));
         NameMap.insert(Entry("t_parentage_type.name", "tpt.name"));
+        NameMap.insert(Entry("t_evcoll_parentage.id", "tep.id"));
         NameMap.insert(Entry("t_evcoll_parentage.parent", "tep.parent"));
         NameMap.insert(Entry("t_evcoll_parentage.child", "tep.child"));
         NameMap.insert(Entry("t_evcoll_parentage.type", "tep.type"));
@@ -120,8 +121,4 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_collection_type.id.t_application.input_type", "tctat2"));
         NameMap.insert(Entry("t_collection_type.id.t_application.output_type", "tctat6"));
         NameMap.insert(Entry("t_collection_type.name.t_application.input_type", "tctat7"));
-        NameMap.insert(Entry("t_person.id.t_physics_group.convener", "tppg"));
-        NameMap.insert(Entry("t_person.distinguised_name.t_physics_group.convener", "tpnpg"));
-        NameMap.insert(Entry("t_person.name.t_physics_group.convener", "tppg29"));
-        NameMap.insert(Entry("t_person.contactinfo.t_physics_group.convener", "tppg30"));
 }

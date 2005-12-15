@@ -123,8 +123,8 @@ void T_Physics_Grouprow::setValue(string key, void* value) {
     if( key.compare("t_physics_group.name") == 0) {
          this->name = *((string*) value) ;
     }
-    if( key.compare("t_physics_group.convener") == 0) {
-         this->convener = *((int*) value) ;
+    if( key.compare("t_physics_group.convenor") == 0) {
+         this->convenor = *((int*) value) ;
     }
 }
 
@@ -135,8 +135,8 @@ void* T_Physics_Grouprow::getValue(string key) {
    if( key.compare("t_physics_group.name") == 0) {
        return (&this->name.getValue());
     }
-   if( key.compare("t_physics_group.convener") == 0) {
-       return (&this->convener.getValue());
+   if( key.compare("t_physics_group.convenor") == 0) {
+       return (&this->convenor.getValue());
     }
 }
 
@@ -145,7 +145,7 @@ T_Physics_Grouprow_DB_BINDING::T_Physics_Grouprow_DB_BINDING() {
 
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
-    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
+    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
 
     PrimaryKeys.push_back("t_physics_group.id");
 
@@ -1157,6 +1157,9 @@ T_Evcoll_Parentagerow::T_Evcoll_Parentagerow(){
 }
 
 void T_Evcoll_Parentagerow::setValue(string key, void* value) {
+    if( key.compare("t_evcoll_parentage.id") == 0) {
+         this->id = *((int*) value) ;
+    }
     if( key.compare("t_evcoll_parentage.parent") == 0) {
          this->parent = *((int*) value) ;
     }
@@ -1169,6 +1172,9 @@ void T_Evcoll_Parentagerow::setValue(string key, void* value) {
 }
 
 void* T_Evcoll_Parentagerow::getValue(string key) {
+   if( key.compare("t_evcoll_parentage.id") == 0) {
+       return (&this->id.getValue());
+    }
    if( key.compare("t_evcoll_parentage.parent") == 0) {
        return (&this->parent.getValue());
     }
@@ -1183,12 +1189,12 @@ void* T_Evcoll_Parentagerow::getValue(string key) {
 T_Evcoll_Parentagerow_DB_BINDING::T_Evcoll_Parentagerow_DB_BINDING() {
     TableName = "t_evcoll_parentage";
 
+    Schema.insert(Entry("t_evcoll_parentage.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.type", "INTEGER"));
 
-    PrimaryKeys.push_back("t_evcoll_parentage.parent");
-    PrimaryKeys.push_back("t_evcoll_parentage.child");
+    PrimaryKeys.push_back("t_evcoll_parentage.id");
 
     ///Unique Keys being written as Set of list
 
@@ -1196,12 +1202,11 @@ T_Evcoll_Parentagerow_DB_BINDING::T_Evcoll_Parentagerow_DB_BINDING() {
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_parentage.parent");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_evcoll_parentage.child");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
+    NotNullKeys.push_back("t_evcoll_parentage.id");
     NotNullKeys.push_back("t_evcoll_parentage.parent");
     NotNullKeys.push_back("t_evcoll_parentage.child");
     NotNullKeys.push_back("t_evcoll_parentage.type");
@@ -2544,24 +2549,19 @@ string* Personmultirow_DB_BINDING::getTableName(void) {
 
 
 void Physicsgroupmultirow::setValue(string key, void* value) {
-    if( key.compare("t_person.id.t_physics_group.convener") == 0) {
+    if( key.compare("t_person.name") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
-           setValue((string)"t_person.id", value);
-    }
-    if( key.compare("t_person.name.t_physics_group.convener") == 0) {
-         ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+          getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.name", value);
     }
-    if( key.compare("t_person.distinguised_name.t_physics_group.convener") == 0) {
+    if( key.compare("t_person.distinguised_name") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+          getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.distinguised_name", value);
     }
-    if( key.compare("t_person.contactinfo.t_physics_group.convener") == 0) {
+    if( key.compare("t_person.contactinfo") == 0) {
          ((T_Personrow*)this->
-          getConstituentRow((string)"t_personrow", "t_physics_group.convener"))->
+          getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.contactinfo", value);
     }
     if( key.compare("t_physics_group.id") == 0) {
@@ -2574,10 +2574,10 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_physics_grouprow", ""))->
            setValue((string)"t_physics_group.name", value);
     }
-    if( key.compare("t_physics_group.convener") == 0) {
+    if( key.compare("t_physics_group.convenor") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convener", value);
+           setValue((string)"t_physics_group.convenor", value);
          ((T_Personrow*)this->
           getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.id", value);
@@ -2585,7 +2585,7 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
     if( key.compare("t_person.id") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convener", value);
+           setValue((string)"t_physics_group.convenor", value);
          ((T_Personrow*)this->
           getConstituentRow((string)"t_personrow", ""))->
            setValue((string)"t_person.id", value);
@@ -2593,24 +2593,24 @@ void Physicsgroupmultirow::setValue(string key, void* value) {
 }
 
 void* Physicsgroupmultirow::getValue(string key) {
-   if( key.compare("t_person.id.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.id") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.id");
     }
-   if( key.compare("t_person.name.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.name") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.name");
     }
-   if( key.compare("t_person.distinguised_name.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.distinguised_name") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.distinguised_name");
     }
-   if( key.compare("t_person.contactinfo.t_physics_group.convener") == 0) {
-       return   ((T_Personrow*)this->
-          getConstituentRow("t_personrow", "t_physics_group.convener"))->
+   if( key.compare("t_person.contactinfo") == 0) {
+       return  ((T_Personrow*)this->
+          getConstituentRow("t_personrow", ""))->
            getValue((string)"t_person.contactinfo");
     }
    if( key.compare("t_physics_group.id") == 0) {
@@ -2623,16 +2623,16 @@ void* Physicsgroupmultirow::getValue(string key) {
           getConstituentRow("t_physics_grouprow", ""))->
            getValue((string)"t_physics_group.name");
     }
-   if( key.compare("t_physics_group.convener") == 0) {
+   if( key.compare("t_physics_group.convenor") == 0) {
        return  ((T_Physics_Grouprow*)this->
           getConstituentRow("t_physics_grouprow", ""))->
-           getValue((string)"t_physics_group.convener");
+           getValue((string)"t_physics_group.convenor");
     }
 }
 
 Physicsgroupmultirow::Physicsgroupmultirow(){
-    this->T_Physics_Group_Convenerobj = new T_Personrow();
-    this->rowMap.set("t_physics_group.convener", (void*)this->T_Physics_Group_Convenerobj);
+    this->T_Personobj = new T_Personrow();
+    this->rowMap.set("t_personrow", (void*)this->T_Personobj);
     this->constituentObjects.push_back(this->rowMap);
     this->T_Physics_Groupobj = new T_Physics_Grouprow();
     this->rowMap.set("t_physics_grouprow", (void*)this->T_Physics_Groupobj);
@@ -2640,25 +2640,25 @@ Physicsgroupmultirow::Physicsgroupmultirow(){
 }
 
 Physicsgroupmultirow::~Physicsgroupmultirow(){
-   delete this->T_Physics_Group_Convenerobj;
+   delete this->T_Personobj;
    delete this->T_Physics_Groupobj;
 }
 
 Physicsgroupmultirow_DB_BINDING::Physicsgroupmultirow_DB_BINDING() {
     TableName = "PhysicsGroup";
 
-    Schema.insert(Entry("t_person.id.t_physics_group.convener", "INTEGER"));
-    Schema.insert(Entry("t_person.distinguised_name.t_physics_group.convener", "STRING"));
-    Schema.insert(Entry("t_person.name.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_person.contactinfo", "STRING"));
+    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
     Schema.insert(Entry("t_physics_group.id", "INTEGER"));
-    Schema.insert(Entry("t_person.contactinfo.t_physics_group.convener", "STRING"));
+    Schema.insert(Entry("t_person.name", "STRING"));
+    Schema.insert(Entry("t_person.distinguised_name", "STRING"));
+    Schema.insert(Entry("t_person.id", "INTEGER"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
-    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
-    PrimaryKeys.push_back("t_person.distinguised_name(t_physics_group.convener)");
+    PrimaryKeys.push_back("t_person.distinguised_name");
     PrimaryKeys.push_back("t_physics_group.id");
 
-    ForeignKeys.push_back("t_physics_group.convener");
+    ForeignKeys.push_back("t_physics_group.convenor");
 
     list<string> tmplist;
     tmplist.push_back("t_physics_group.name");
@@ -2680,17 +2680,17 @@ Physicsgroupmultirow_DB_BINDING::Physicsgroupmultirow_DB_BINDING() {
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
-    NotNullKeys.push_back("t_person.id.t_physics_group.convener");
-    NotNullKeys.push_back("t_person.name.t_physics_group.convener");
-    NotNullKeys.push_back("t_person.distinguised_name.t_physics_group.convener");
-    NotNullKeys.push_back("t_person.contactinfo.t_physics_group.convener");
+    NotNullKeys.push_back("t_person.id");
+    NotNullKeys.push_back("t_person.name");
+    NotNullKeys.push_back("t_person.distinguised_name");
+    NotNullKeys.push_back("t_person.contactinfo");
     NotNullKeys.push_back("t_physics_group.id");
     NotNullKeys.push_back("t_physics_group.name");
 
     SchemaOrder.push_back("t_person");
     SchemaOrder.push_back("t_physics_group");
 
-    References.insert(Entry("t_physics_group.convener", "t_person.id"));
+    References.insert(Entry("t_physics_group.convenor", "t_person.id"));
 
 
 }
@@ -2741,6 +2741,26 @@ void Evcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_info_evcollrow", ""))->
            setValue((string)"t_info_evcoll.name", value);
     }
+    if( key.compare("t_parentage_type.name") == 0) {
+         ((T_Parentage_Typerow*)this->
+          getConstituentRow((string)"t_parentage_typerow", ""))->
+           setValue((string)"t_parentage_type.name", value);
+    }
+    if( key.compare("t_evcoll_parentage.id") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.id", value);
+    }
+    if( key.compare("t_evcoll_parentage.parent") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.parent", value);
+    }
+    if( key.compare("t_evcoll_parentage.child") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.child", value);
+    }
     if( key.compare("t_info_evcoll.validation_status") == 0) {
          ((T_Info_Evcollrow*)this->
           getConstituentRow((string)"t_info_evcollrow", ""))->
@@ -2772,6 +2792,22 @@ void Evcollviewmultirow::setValue(string key, void* value) {
          ((T_Event_Collectionrow*)this->
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.id", value);
+    }
+    if( key.compare("t_evcoll_parentage.type") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.type", value);
+         ((T_Parentage_Typerow*)this->
+          getConstituentRow((string)"t_parentage_typerow", ""))->
+           setValue((string)"t_parentage_type.id", value);
+    }
+    if( key.compare("t_parentage_type.id") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.type", value);
+         ((T_Parentage_Typerow*)this->
+          getConstituentRow((string)"t_parentage_typerow", ""))->
+           setValue((string)"t_parentage_type.id", value);
     }
     if( key.compare("t_info_evcoll.status") == 0) {
          ((T_Info_Evcollrow*)this->
@@ -2862,6 +2898,36 @@ void* Evcollviewmultirow::getValue(string key) {
           getConstituentRow("t_info_evcollrow", ""))->
            getValue((string)"t_info_evcoll.status");
     }
+   if( key.compare("t_parentage_type.id") == 0) {
+       return  ((T_Parentage_Typerow*)this->
+          getConstituentRow("t_parentage_typerow", ""))->
+           getValue((string)"t_parentage_type.id");
+    }
+   if( key.compare("t_parentage_type.name") == 0) {
+       return  ((T_Parentage_Typerow*)this->
+          getConstituentRow("t_parentage_typerow", ""))->
+           getValue((string)"t_parentage_type.name");
+    }
+   if( key.compare("t_evcoll_parentage.id") == 0) {
+       return  ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow("t_evcoll_parentagerow", ""))->
+           getValue((string)"t_evcoll_parentage.id");
+    }
+   if( key.compare("t_evcoll_parentage.parent") == 0) {
+       return  ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow("t_evcoll_parentagerow", ""))->
+           getValue((string)"t_evcoll_parentage.parent");
+    }
+   if( key.compare("t_evcoll_parentage.child") == 0) {
+       return  ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow("t_evcoll_parentagerow", ""))->
+           getValue((string)"t_evcoll_parentage.child");
+    }
+   if( key.compare("t_evcoll_parentage.type") == 0) {
+       return  ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow("t_evcoll_parentagerow", ""))->
+           getValue((string)"t_evcoll_parentage.type");
+    }
 }
 
 Evcollviewmultirow::Evcollviewmultirow(){
@@ -2877,6 +2943,12 @@ Evcollviewmultirow::Evcollviewmultirow(){
     this->T_Info_Evcollobj = new T_Info_Evcollrow();
     this->rowMap.set("t_info_evcollrow", (void*)this->T_Info_Evcollobj);
     this->constituentObjects.push_back(this->rowMap);
+    this->T_Parentage_Typeobj = new T_Parentage_Typerow();
+    this->rowMap.set("t_parentage_typerow", (void*)this->T_Parentage_Typeobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Evcoll_Parentageobj = new T_Evcoll_Parentagerow();
+    this->rowMap.set("t_evcoll_parentagerow", (void*)this->T_Evcoll_Parentageobj);
+    this->constituentObjects.push_back(this->rowMap);
 }
 
 Evcollviewmultirow::~Evcollviewmultirow(){
@@ -2884,18 +2956,26 @@ Evcollviewmultirow::~Evcollviewmultirow(){
    delete this->T_Evcoll_Statusobj;
    delete this->T_Validation_Statusobj;
    delete this->T_Info_Evcollobj;
+   delete this->T_Parentage_Typeobj;
+   delete this->T_Evcoll_Parentageobj;
 }
 
 Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     TableName = "EvCollView";
 
     Schema.insert(Entry("t_info_evcoll.validation_status", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.status", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
+    Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.type", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
+    Schema.insert(Entry("t_parentage_type.name", "STRING"));
     Schema.insert(Entry("t_event_collection.is_primary", "CHARACTER"));
+    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
     Schema.insert(Entry("t_validation_status.name", "STRING"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
     Schema.insert(Entry("t_evcoll_status.id", "INTEGER"));
@@ -2905,17 +2985,33 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
 
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
+    PrimaryKeys.push_back("t_evcoll_parentage.id");
 
     ForeignKeys.push_back("t_info_evcoll.validation_status");
-    ForeignKeys.push_back("t_event_collection.processed_dataset");
-    ForeignKeys.push_back("t_info_evcoll.event_collection");
     ForeignKeys.push_back("t_info_evcoll.status");
+    ForeignKeys.push_back("t_evcoll_parentage.type");
+    ForeignKeys.push_back("t_evcoll_parentage.parent");
+    ForeignKeys.push_back("t_info_evcoll.event_collection");
+    ForeignKeys.push_back("t_event_collection.processed_dataset");
+    ForeignKeys.push_back("t_evcoll_parentage.child");
 
     list<string> tmplist;
     tmplist.push_back("t_info_evcoll.event_collection");
+    tmplist.push_back("t_evcoll_parentage.parent");
+    tmplist.push_back("t_evcoll_parentage.child");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
     tmplist.push_back("t_info_evcoll.event_collection");
+    tmplist.push_back("t_evcoll_parentage.id");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+    tmplist.push_back("t_info_evcoll.event_collection");
+    tmplist.push_back("t_evcoll_parentage.parent");
+    tmplist.push_back("t_evcoll_parentage.child");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+    tmplist.push_back("t_info_evcoll.event_collection");
+    tmplist.push_back("t_evcoll_parentage.id");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
@@ -2932,18 +3028,28 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     NotNullKeys.push_back("t_info_evcoll.validation_status");
     NotNullKeys.push_back("t_info_evcoll.name");
     NotNullKeys.push_back("t_info_evcoll.status");
+    NotNullKeys.push_back("t_parentage_type.id");
+    NotNullKeys.push_back("t_parentage_type.name");
+    NotNullKeys.push_back("t_evcoll_parentage.id");
+    NotNullKeys.push_back("t_evcoll_parentage.parent");
+    NotNullKeys.push_back("t_evcoll_parentage.child");
+    NotNullKeys.push_back("t_evcoll_parentage.type");
 
     SchemaOrder.push_back("t_event_collection");
     SchemaOrder.push_back("t_evcoll_status");
     SchemaOrder.push_back("t_validation_status");
     SchemaOrder.push_back("t_info_evcoll");
+    SchemaOrder.push_back("t_parentage_type");
+    SchemaOrder.push_back("t_evcoll_parentage");
 
+    References.insert(Entry("t_evcoll_parentage.child", "t_event_collection.id"));
     References.insert(Entry("t_info_evcoll.validation_status", "t_validation_status.id"));
     References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
+    References.insert(Entry("t_evcoll_parentage.type", "t_parentage_type.id"));
     References.insert(Entry("t_info_evcoll.status", "t_evcoll_status.id"));
 
 
-    ExternalReferences.insert(Entry("t_info_evcoll.status", "t_evcoll_status.id"));
+    ExternalReferences.insert(Entry("t_evcoll_parentage.child", "t_event_collection.id"));
 }
 
 string* Evcollviewmultirow_DB_BINDING::getTableName(void) {
@@ -3386,10 +3492,10 @@ void Primarydatasetmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_physics_grouprow", ""))->
            setValue((string)"t_physics_group.name", value);
     }
-    if( key.compare("t_physics_group.convener") == 0) {
+    if( key.compare("t_physics_group.convenor") == 0) {
          ((T_Physics_Grouprow*)this->
           getConstituentRow((string)"t_physics_grouprow", ""))->
-           setValue((string)"t_physics_group.convener", value);
+           setValue((string)"t_physics_group.convenor", value);
     }
     if( key.compare("t_primary_dataset.id") == 0) {
          ((T_Primary_Datasetrow*)this->
@@ -3528,10 +3634,10 @@ void* Primarydatasetmultirow::getValue(string key) {
           getConstituentRow("t_physics_grouprow", ""))->
            getValue((string)"t_physics_group.name");
     }
-   if( key.compare("t_physics_group.convener") == 0) {
+   if( key.compare("t_physics_group.convenor") == 0) {
        return  ((T_Physics_Grouprow*)this->
           getConstituentRow("t_physics_grouprow", ""))->
-           getValue((string)"t_physics_group.convener");
+           getValue((string)"t_physics_group.convenor");
     }
    if( key.compare("t_primary_dataset.id") == 0) {
        return  ((T_Primary_Datasetrow*)this->
@@ -3594,21 +3700,21 @@ Primarydatasetmultirow_DB_BINDING::Primarydatasetmultirow_DB_BINDING() {
     Schema.insert(Entry("t_desc_primary.trigger_path", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.description", "STRING"));
     Schema.insert(Entry("t_primary_dataset.physics_group", "INTEGER"));
+    Schema.insert(Entry("t_physics_group.convenor", "INTEGER"));
     Schema.insert(Entry("t_desc_trigger.id", "INTEGER"));
     Schema.insert(Entry("t_desc_mc.production", "STRING"));
     Schema.insert(Entry("t_physics_group.name", "STRING"));
     Schema.insert(Entry("t_desc_primary.mc_channel", "INTEGER"));
     Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_desc_primary.is_mc_data", "CHARACTER"));
-    Schema.insert(Entry("t_physics_group.convener", "INTEGER"));
 
     PrimaryKeys.push_back("t_primary_dataset.id");
 
     ForeignKeys.push_back("t_primary_dataset.physics_group");
+    ForeignKeys.push_back("t_physics_group.convenor");
     ForeignKeys.push_back("t_desc_primary.mc_channel");
     ForeignKeys.push_back("t_primary_dataset.description");
     ForeignKeys.push_back("t_desc_primary.trigger_path");
-    ForeignKeys.push_back("t_physics_group.convener");
 
     list<string> tmplist;
     tmplist.push_back("t_primary_dataset.name");
@@ -3649,7 +3755,7 @@ Primarydatasetmultirow_DB_BINDING::Primarydatasetmultirow_DB_BINDING() {
     References.insert(Entry("t_desc_primary.trigger_path", "t_desc_trigger.id"));
 
 
-    ExternalReferences.insert(Entry("t_physics_group.convener", "t_person.id"));
+    ExternalReferences.insert(Entry("t_desc_primary.trigger_path", "t_desc_trigger.id"));
 }
 
 string* Primarydatasetmultirow_DB_BINDING::getTableName(void) {
@@ -4540,6 +4646,11 @@ void Datasetprovenenceevchildmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_parentage_typerow", ""))->
            setValue((string)"t_parentage_type.name", value);
     }
+    if( key.compare("t_evcoll_parentage.id") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.id", value);
+    }
     if( key.compare("t_evcoll_parentage.parent") == 0) {
          ((T_Evcoll_Parentagerow*)this->
           getConstituentRow((string)"t_evcoll_parentagerow", ""))->
@@ -4743,6 +4854,11 @@ void* Datasetprovenenceevchildmultirow::getValue(string key) {
           getConstituentRow("t_parentage_typerow", ""))->
            getValue((string)"t_parentage_type.name");
     }
+   if( key.compare("t_evcoll_parentage.id") == 0) {
+       return  ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow("t_evcoll_parentagerow", ""))->
+           getValue((string)"t_evcoll_parentage.id");
+    }
    if( key.compare("t_evcoll_parentage.parent") == 0) {
        return  ((T_Evcoll_Parentagerow*)this->
           getConstituentRow("t_evcoll_parentagerow", ""))->
@@ -4812,6 +4928,7 @@ Datasetprovenenceevchildmultirow_DB_BINDING::Datasetprovenenceevchildmultirow_DB
     Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_evcoll_parentage.id", "INTEGER"));
     Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
@@ -4823,8 +4940,7 @@ Datasetprovenenceevchildmultirow_DB_BINDING::Datasetprovenenceevchildmultirow_DB
     Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
 
-    PrimaryKeys.push_back("t_evcoll_parentage.parent");
-    PrimaryKeys.push_back("t_evcoll_parentage.child");
+    PrimaryKeys.push_back("t_evcoll_parentage.id");
 
     ForeignKeys.push_back("t_primary_dataset.physics_group");
     ForeignKeys.push_back("t_primary_dataset.description");
@@ -4839,13 +4955,10 @@ Datasetprovenenceevchildmultirow_DB_BINDING::Datasetprovenenceevchildmultirow_DB
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_parentage.parent");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_evcoll_parentage.child");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
-    tmplist.push_back("t_evcoll_parentage.parent");
-    tmplist.push_back("t_evcoll_parentage.child");
+    tmplist.push_back("t_evcoll_parentage.id");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
@@ -4870,6 +4983,7 @@ Datasetprovenenceevchildmultirow_DB_BINDING::Datasetprovenenceevchildmultirow_DB
     NotNullKeys.push_back("t_event_collection.is_primary");
     NotNullKeys.push_back("t_parentage_type.id");
     NotNullKeys.push_back("t_parentage_type.name");
+    NotNullKeys.push_back("t_evcoll_parentage.id");
     NotNullKeys.push_back("t_evcoll_parentage.parent");
     NotNullKeys.push_back("t_evcoll_parentage.child");
     NotNullKeys.push_back("t_evcoll_parentage.type");
@@ -4958,6 +5072,11 @@ void Datasetprovenenceevparentmultirow::setValue(string key, void* value) {
          ((T_Parentage_Typerow*)this->
           getConstituentRow((string)"t_parentage_typerow", ""))->
            setValue((string)"t_parentage_type.name", value);
+    }
+    if( key.compare("t_evcoll_parentage.id") == 0) {
+         ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow((string)"t_evcoll_parentagerow", ""))->
+           setValue((string)"t_evcoll_parentage.id", value);
     }
     if( key.compare("t_evcoll_parentage.parent") == 0) {
          ((T_Evcoll_Parentagerow*)this->
@@ -5162,6 +5281,11 @@ void* Datasetprovenenceevparentmultirow::getValue(string key) {
           getConstituentRow("t_parentage_typerow", ""))->
            getValue((string)"t_parentage_type.name");
     }
+   if( key.compare("t_evcoll_parentage.id") == 0) {
+       return  ((T_Evcoll_Parentagerow*)this->
+          getConstituentRow("t_evcoll_parentagerow", ""))->
+           getValue((string)"t_evcoll_parentage.id");
+    }
    if( key.compare("t_evcoll_parentage.parent") == 0) {
        return  ((T_Evcoll_Parentagerow*)this->
           getConstituentRow("t_evcoll_parentagerow", ""))->
@@ -5231,6 +5355,7 @@ Datasetprovenenceevparentmultirow_DB_BINDING::Datasetprovenenceevparentmultirow_
     Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_evcoll_parentage.id", "INTEGER"));
     Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
@@ -5242,8 +5367,7 @@ Datasetprovenenceevparentmultirow_DB_BINDING::Datasetprovenenceevparentmultirow_
     Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
 
-    PrimaryKeys.push_back("t_evcoll_parentage.parent");
-    PrimaryKeys.push_back("t_evcoll_parentage.child");
+    PrimaryKeys.push_back("t_evcoll_parentage.id");
 
     ForeignKeys.push_back("t_primary_dataset.physics_group");
     ForeignKeys.push_back("t_primary_dataset.description");
@@ -5258,13 +5382,10 @@ Datasetprovenenceevparentmultirow_DB_BINDING::Datasetprovenenceevparentmultirow_
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_parentage.parent");
-    UniqueKeys.push_back(tmplist);
-    tmplist.clear();
     tmplist.push_back("t_evcoll_parentage.child");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
-    tmplist.push_back("t_evcoll_parentage.parent");
-    tmplist.push_back("t_evcoll_parentage.child");
+    tmplist.push_back("t_evcoll_parentage.id");
     UniqueKeys.push_back(tmplist);
     tmplist.clear();
 
@@ -5289,6 +5410,7 @@ Datasetprovenenceevparentmultirow_DB_BINDING::Datasetprovenenceevparentmultirow_
     NotNullKeys.push_back("t_event_collection.is_primary");
     NotNullKeys.push_back("t_parentage_type.id");
     NotNullKeys.push_back("t_parentage_type.name");
+    NotNullKeys.push_back("t_evcoll_parentage.id");
     NotNullKeys.push_back("t_evcoll_parentage.parent");
     NotNullKeys.push_back("t_evcoll_parentage.child");
     NotNullKeys.push_back("t_evcoll_parentage.type");
@@ -5373,15 +5495,15 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.is_primary", value);
     }
+    if( key.compare("t_block_status.name") == 0) {
+         ((T_Block_Statusrow*)this->
+          getConstituentRow((string)"t_block_statusrow", ""))->
+           setValue((string)"t_block_status.name", value);
+    }
     if( key.compare("t_block.id") == 0) {
          ((T_Blockrow*)this->
           getConstituentRow((string)"t_blockrow", ""))->
            setValue((string)"t_block.id", value);
-    }
-    if( key.compare("t_block.status") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.status", value);
     }
     if( key.compare("t_block.files") == 0) {
          ((T_Blockrow*)this->
@@ -5449,6 +5571,22 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
          ((T_Data_Tierrow*)this->
           getConstituentRow((string)"t_data_tierrow", ""))->
            setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_block.status") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.status", value);
+         ((T_Block_Statusrow*)this->
+          getConstituentRow((string)"t_block_statusrow", ""))->
+           setValue((string)"t_block_status.id", value);
+    }
+    if( key.compare("t_block_status.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.status", value);
+         ((T_Block_Statusrow*)this->
+          getConstituentRow((string)"t_block_statusrow", ""))->
+           setValue((string)"t_block_status.id", value);
     }
     if( key.compare("t_processed_dataset.processing_path") == 0) {
          ((T_Processed_Datasetrow*)this->
@@ -5617,6 +5755,16 @@ void* Crabevcollviewmultirow::getValue(string key) {
           getConstituentRow("t_event_collectionrow", ""))->
            getValue((string)"t_event_collection.is_primary");
     }
+   if( key.compare("t_block_status.id") == 0) {
+       return  ((T_Block_Statusrow*)this->
+          getConstituentRow("t_block_statusrow", ""))->
+           getValue((string)"t_block_status.id");
+    }
+   if( key.compare("t_block_status.name") == 0) {
+       return  ((T_Block_Statusrow*)this->
+          getConstituentRow("t_block_statusrow", ""))->
+           getValue((string)"t_block_status.name");
+    }
    if( key.compare("t_block.id") == 0) {
        return  ((T_Blockrow*)this->
           getConstituentRow("t_blockrow", ""))->
@@ -5690,6 +5838,9 @@ Crabevcollviewmultirow::Crabevcollviewmultirow(){
     this->T_Event_Collectionobj = new T_Event_Collectionrow();
     this->rowMap.set("t_event_collectionrow", (void*)this->T_Event_Collectionobj);
     this->constituentObjects.push_back(this->rowMap);
+    this->T_Block_Statusobj = new T_Block_Statusrow();
+    this->rowMap.set("t_block_statusrow", (void*)this->T_Block_Statusobj);
+    this->constituentObjects.push_back(this->rowMap);
     this->T_Blockobj = new T_Blockrow();
     this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
     this->constituentObjects.push_back(this->rowMap);
@@ -5704,6 +5855,7 @@ Crabevcollviewmultirow::~Crabevcollviewmultirow(){
    delete this->T_Primary_Datasetobj;
    delete this->T_Processed_Datasetobj;
    delete this->T_Event_Collectionobj;
+   delete this->T_Block_Statusobj;
    delete this->T_Blockobj;
    delete this->T_Info_Evcollobj;
 }
@@ -5719,11 +5871,12 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.is_primary", "CHARACTER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
+    Schema.insert(Entry("t_block_status.name", "STRING"));
     Schema.insert(Entry("t_primary_dataset.description", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.estimated_luminosity", "STRING"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
     Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
@@ -5735,6 +5888,7 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
     Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_block_status.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.full_path", "STRING"));
     Schema.insert(Entry("t_primary_dataset.name", "STRING"));
@@ -5788,6 +5942,8 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     NotNullKeys.push_back("t_event_collection.processed_dataset");
     NotNullKeys.push_back("t_event_collection.collection_index");
     NotNullKeys.push_back("t_event_collection.is_primary");
+    NotNullKeys.push_back("t_block_status.id");
+    NotNullKeys.push_back("t_block_status.name");
     NotNullKeys.push_back("t_block.id");
     NotNullKeys.push_back("t_block.processed_dataset");
     NotNullKeys.push_back("t_block.status");
@@ -5804,11 +5960,13 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_primary_dataset");
     SchemaOrder.push_back("t_processed_dataset");
     SchemaOrder.push_back("t_event_collection");
+    SchemaOrder.push_back("t_block_status");
     SchemaOrder.push_back("t_block");
     SchemaOrder.push_back("t_info_evcoll");
 
     References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
     References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
+    References.insert(Entry("t_block.status", "t_block_status.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
     References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));

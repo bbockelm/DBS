@@ -42,13 +42,13 @@ public:
 };
 class Physicsgroup_ClientAPIData  : public ClientDataStructure {
 public:
-    INTEGER  t_person_id_t_physics_group_convener;
-    STRING  t_person_distinguised_name_t_physics_group_convener;
-    STRING  t_person_name_t_physics_group_convener;
+    STRING  t_person_contactinfo;
+    INTEGER  t_physics_group_convenor;
     INTEGER  t_physics_group_id;
-    STRING  t_person_contactinfo_t_physics_group_convener;
+    STRING  t_person_name;
+    STRING  t_person_distinguised_name;
+    INTEGER  t_person_id;
     STRING  t_physics_group_name;
-    INTEGER  t_physics_group_convener;
 public:
      Physicsgroup_ClientAPIData();
 
@@ -59,11 +59,16 @@ public:
 class Evcollview_ClientAPIData  : public ClientDataStructure {
 public:
     INTEGER  t_info_evcoll_validation_status;
+    INTEGER  t_evcoll_parentage_id;
     STRING  t_info_evcoll_name;
     INTEGER  t_info_evcoll_status;
-    STRING  t_evcoll_status_name;
+    INTEGER  t_evcoll_parentage_child;
     INTEGER  t_info_evcoll_events;
+    INTEGER  t_parentage_type_id;
+    INTEGER  t_evcoll_parentage_type;
     INTEGER  t_event_collection_id;
+    STRING  t_evcoll_status_name;
+    INTEGER  t_evcoll_parentage_parent;
     CHARACTER  t_event_collection_is_primary;
     STRING  t_validation_status_name;
     INTEGER  t_event_collection_processed_dataset;
@@ -72,6 +77,7 @@ public:
     INTEGER  t_validation_status_id;
     INTEGER  t_event_collection_collection_index;
     STRING  t_info_evcoll_estimated_luminosity;
+    STRING  t_parentage_type_name;
 public:
      Evcollview_ClientAPIData();
 
@@ -131,13 +137,13 @@ public:
     INTEGER  t_desc_primary_trigger_path;
     STRING  t_desc_trigger_description;
     INTEGER  t_primary_dataset_physics_group;
+    INTEGER  t_physics_group_convenor;
     INTEGER  t_desc_trigger_id;
     STRING  t_desc_mc_production;
     STRING  t_physics_group_name;
     INTEGER  t_desc_primary_mc_channel;
     INTEGER  t_primary_dataset_id;
     CHARACTER  t_desc_primary_is_mc_data;
-    INTEGER  t_physics_group_convener;
 public:
      Primarydataset_ClientAPIData();
 
@@ -228,6 +234,7 @@ public:
     INTEGER  t_primary_dataset_id;
     INTEGER  t_event_collection_collection_index;
     STRING  t_data_tier_name;
+    INTEGER  t_evcoll_parentage_id;
     INTEGER  t_parentage_type_id;
     CHARACTER  t_processed_dataset_is_open;
     INTEGER  t_processing_path_app_config;
@@ -262,6 +269,7 @@ public:
     INTEGER  t_primary_dataset_id;
     INTEGER  t_event_collection_collection_index;
     STRING  t_data_tier_name;
+    INTEGER  t_evcoll_parentage_id;
     INTEGER  t_parentage_type_id;
     CHARACTER  t_processed_dataset_is_open;
     INTEGER  t_processing_path_app_config;
@@ -294,6 +302,7 @@ public:
     INTEGER  t_block_bytes;
     INTEGER  t_data_tier_id;
     INTEGER  t_processing_path_parent;
+    STRING  t_block_status_name;
     INTEGER  t_processed_dataset_processing_path;
     INTEGER  t_block_files;
     INTEGER  t_processing_path_data_tier;
@@ -305,6 +314,7 @@ public:
     CHARACTER  t_processed_dataset_is_open;
     INTEGER  t_processing_path_app_config;
     INTEGER  t_block_id;
+    INTEGER  t_block_status_id;
     INTEGER  t_event_collection_id;
     STRING  t_processing_path_full_path;
     STRING  t_primary_dataset_name;

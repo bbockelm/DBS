@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.6 2005/12/12 19:09:12 sveseli Exp $
+# $Id: dbsEventCollection.py,v 1.7 2005/12/12 21:35:12 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -136,8 +136,8 @@ class DbsEventCollection(dbsObject.DbsObject):
   def getParentEventCollection(self):
     """ Retrieve parent event collection. """
     result = self.get(PARENT_EVENT_COLLECTION_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PARENT_EVENT_COLLECTION_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PARENT_EVENT_COLLECTION_TAG_)
     return result  
 
   def getFileList(self):

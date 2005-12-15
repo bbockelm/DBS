@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWebServices.py,v 1.3 2005/11/07 21:40:02 sveseli Exp $
+# $Id: dbsWebServices.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
 #
 # DBS Web Services server class. 
 #
@@ -24,7 +24,7 @@ import dbsDatasetService
 
 ###############################################################################
 # Constants.
-DEFAULT_SERVICE_PORT_ = 27981
+DEFAULT_SERVICE_PORT_ = 27982
 DEFAULT_SERVICE_HOST_ = "localhost"
 
 DEFAULT_SOAP_DEBUG_FLAG_ = False

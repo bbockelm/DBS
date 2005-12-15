@@ -83,7 +83,7 @@ public:
 private:
      INTEGER id;
      STRING name;
-     INTEGER convener;
+     INTEGER convenor;
 };
 
 class  T_Physics_Grouprow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -569,6 +569,7 @@ public:
      virtual void setValue(string key, void* value);
 
 private:
+     INTEGER id;
      INTEGER parent;
      INTEGER child;
      INTEGER type;
@@ -1122,7 +1123,7 @@ public:
 
 private:
 
-    T_Personrow* T_Physics_Group_Convenerobj;
+    T_Personrow* T_Personobj;
     T_Physics_Grouprow* T_Physics_Groupobj;
 };
 
@@ -1157,6 +1158,8 @@ private:
     T_Evcoll_Statusrow* T_Evcoll_Statusobj;
     T_Validation_Statusrow* T_Validation_Statusobj;
     T_Info_Evcollrow* T_Info_Evcollobj;
+    T_Parentage_Typerow* T_Parentage_Typeobj;
+    T_Evcoll_Parentagerow* T_Evcoll_Parentageobj;
 };
 
 class  Evcollviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -1433,6 +1436,7 @@ private:
     T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
+    T_Block_Statusrow* T_Block_Statusobj;
     T_Blockrow* T_Blockobj;
     T_Info_Evcollrow* T_Info_Evcollobj;
 };

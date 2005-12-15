@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.13 2005/12/14 20:13:25 sekhri Exp $
+# $Id: dbsWsApi.py,v 1.14 2005/12/14 23:01:40 sekhri Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -143,8 +143,8 @@ if __name__ == "__main__":
       triggerDescription="Dummy triggerDescription",
       monteCarloDescription=mc)
 
-    primaryDatasetId = api.createPrimaryDataset(dataset)
-    print "Got primary dataset id: %s" % primaryDatasetId
+    #primaryDatasetId = api.createPrimaryDataset(dataset)
+    #print "Got primary dataset id: %s" % primaryDatasetId
 
     # Test for create processed dataset.
     datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     processingPath = dbsProcessingPath.DbsProcessingPath(
       fullPath=datasetPath, 
-      dataTier="Hit", 
+      dataTier="Digi", 
       application=app)
     processingPath2 = dbsProcessingPath.DbsProcessingPath(
       pathId="2",
@@ -174,8 +174,8 @@ if __name__ == "__main__":
       datasetName="eg_2x1033PU761_TkMu_2_g133_OSC", 
       processingPath=processingPath2)
 
-    processedDatasetId = api.createProcessedDataset(dataset)
-    print "Got processed dataset id: %s" % processedDatasetId    
+    #processedDatasetId = api.createProcessedDataset(dataset)
+    #print "Got processed dataset id: %s" % processedDatasetId    
 
     block = dbsFileBlock.DbsFileBlock(
       #blockName=None,
@@ -183,8 +183,8 @@ if __name__ == "__main__":
       numberOfBytes=1024, 
       numberOfFiles=10
       )
-    fbId = api.createFileBlock(dataset, block)
-    print "Got file block id: %s" % fbId
+    #fbId = api.createFileBlock(dataset, block)
+    #print "Got file block id: %s" % fbId
 
     # Test for inserting event collections.
     f1 = dbsFile.DbsFile(logicalFileName="myFile3",
@@ -213,15 +213,15 @@ if __name__ == "__main__":
       isPrimary="y",
       fileList=fList)
     ecList = dbsEventCollection.DbsEventCollectionList([ec])
-    print "Inserting event collections for: %s" % dataset.getDatasetName()
-    api.insertEventCollections(dataset, ecList)
+    #print "Inserting event collections for: %s" % dataset.getDatasetName()
+    #api.insertEventCollections(dataset, ecList)
 
 
        
 
     print "Getting dataset contents for: %s" % datasetPath
     
-
+    
     fileBlockList = api.getDatasetContents(datasetPath)
     for fileBlock in fileBlockList:
       print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
@@ -229,7 +229,7 @@ if __name__ == "__main__":
 	print "  %s" % eventCollection
 
     # Get dataset provenance. It returns list of dataset parents.
-    dataTierList = [ "Hit" ]
+    dataTierList = [ "Digi" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (datasetPath, dataTierList)
     
     datasetParentList = api.getDatasetProvenance(datasetPath, dataTierList)
@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
     for datasetParent in datasetParentList:
       print "%s" % (datasetParent)
-
+    
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   print "Done"

@@ -27,11 +27,11 @@ CREATE TABLE t_physics_group
   (
     id        integer   not null,
     name      varchar   unique not null,
-    convener  integer,
+    convenor  integer,
 
     primary key(id),
 
-    foreign key(convener) references t_person(id)
+    foreign key(convenor) references t_person(id)
   );
 
 -- ======================================================================
@@ -244,11 +244,13 @@ CREATE TABLE t_parentage_type
 
 CREATE TABLE t_evcoll_parentage
   (
-    parent  integer   unique not null,
-    child   integer   unique not null,
+    id      integer   not null,
+    parent  integer   not null,
+    child   integer   not null,
     type    integer   not null,
+    primary key(id)
 
-    primary key(parent,child),
+    unique(parent,child),
 
     foreign key(parent) references t_event_collection(id) on delete CASCADE,
     foreign key(child) references t_event_collection(id) on delete SET NULL,
