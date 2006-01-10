@@ -40,35 +40,40 @@ class DBSInterface(dbsApi.DbsApi):
       return primaryDatasetID
 
    def createProcessedDataset(self, processedDataset):
+      #return 23,24
       try:
-        pp = processedDataset.getProcessingPath().getParentPath();
-        app = pp.getApplication()
+        processingPathID = processedDataset.getProcessingPath().getPathId()
+        if processingPathID == None:
+          processingPathID = 0
+          pp = processedDataset.getProcessingPath().getParentPath();
+          if pp != None:
+             app = pp.getApplication()
+             if app != None:
+                tempApplication = dbsApplication.DbsApplication(
+                  family=app.getFamily(),
+                  executable=app.getExecutable(),
+                  version=app.getVersion(),
+                  configConditionsVersion =app.getConfigConditionsVersion(),
+                  parameterSet=app.getParameterSet(),
+                  outputTypeName=app.getOutputTypeName(),
+                  inputTypeName=app.getInputTypeName())
+  
+                tempProcessingPath = dbsProcessingPath.DbsProcessingPath(
+                  fullPath=pp.getFullPath(),
+                  dataTier=pp.getDataTier(),
+                  application=tempApplication)
 
-        tempApplication = dbsApplication.DbsApplication(
-          family=app.getFamily(),
-          executable=app.getExecutable(),
-          version=app.getVersion(),
-          configConditionsVersion =app.getConfigConditionsVersion(),
-          parameterSet=app.getParameterSet(),
-          outputTypeName=app.getOutputTypeName(),
-          inputTypeName=app.getInputTypeName())
+                dataset = dbsProcessedDataset.DbsProcessedDataset(
+                  primaryDatasetName=processedDataset.getPrimaryDatasetName(),
+                  processingPath=tempProcessingPath)
 
-        tempProcessingPath = dbsProcessingPath.DbsProcessingPath(
-          fullPath=pp.getFullPath(),
-          dataTier=pp.getDataTier(),
-          application=tempApplication)
-
-        dataset = dbsProcessedDataset.DbsProcessedDataset(
-          primaryDatasetName=processedDataset.getPrimaryDatasetName(),
-          processingPath=tempProcessingPath)
-
-        processingPathID = self.getProcessingPathID(dataset)
-	print "processingPathID is ",processingPathID
+             processingPathID = self.getProcessingPathID(dataset)
+	     print "processingPathID is ",processingPathID
 
         apidata = dbsclient.Processingpath_ClientAPIData()
         pp = processedDataset.getProcessingPath()
         app = pp.getApplication()
-        apidata.t_processed_dataset_name = dbsclient.ASTR(processedDataset['datasetName'])
+        apidata.t_processed_dataset_name = dbsclient.ASTR(processedDataset.getDatasetName())
         apidata.t_application_app_version = dbsclient.ASTR(app.getVersion())
         apidata.t_app_config_conditions_version = dbsclient.ASTR(app.getConfigConditionsVersion())
         apidata.t_collection_type_name_t_application_output_type = dbsclient.ASTR(app.getOutputTypeName())
@@ -82,12 +87,26 @@ class DBSInterface(dbsApi.DbsApi):
         apidata.t_application_executable = dbsclient.ASTR(app.getExecutable())
         apidata.t_processing_path_full_path = dbsclient.ASTR(pp.getFullPath())
         apidata.t_primary_dataset_name = dbsclient.ASTR(processedDataset.getPrimaryDatasetName())
-        processedDatasetID = self.client.createProcessedDataset(apidata)
+        #print "************************length*****************",len(pp.getFullPath().split('/'))
+        #print "pp.getFullPath().split('/') ",pp.getFullPath().split('/')
+        if(len(pp.getFullPath().split('/')) < 4 ):
+             raise dbsApi.DbsApiException(args="Fullpath in t_processing_path is incorrect")
+        #processedDatasetID = self.client.createProcessedDataset(apidata)
+        #processedDatasetID = dbsclient.intp()
+        print dir(dbsclient)
+        processedDatasetIDPtr =  dbsclient.new_intp()
+        processinPathIDPtr =  dbsclient.new_intp()
+        ID = self.client.createProcessedDataset(apidata, processedDatasetIDPtr, processinPathIDPtr)
+        #DELETE THESE POINTERS............................
+        processedDatasetID = dbsclient.intp_value(processedDatasetIDPtr)
+        processinPathID = dbsclient.intp_value(processinPathIDPtr)
+        print "processedDatasetID " ,processedDatasetID
+        print "processingPathID " ,processinPathID
       except RuntimeError,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Processed Dataset ID ",processedDatasetID
-      return processedDatasetID
+      return processedDatasetID,processinPathID
 
    def getProcessedDatasetID(self, processedDataset):
         proPathVector = self.getProcessedDataset(processedDataset)
@@ -126,7 +145,7 @@ class DBSInterface(dbsApi.DbsApi):
         print "inside getProcessedDatasetID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         apidata = dbsclient.Processingpath_ClientAPIData()
         #result = processedDataset['datasetName']
-        result = processedDataset.getProcessedDatasetName()
+        result = processedDataset.getDatasetName()
         if result != None:
           apidata.t_processed_dataset_name = dbsclient.ASTR(result)
         app = processedDataset.getProcessingPath().getApplication()
@@ -194,7 +213,9 @@ class DBSInterface(dbsApi.DbsApi):
    def createFileBlock(self, processedDataset, fileBlock):
 	
       try:
-        processedDatasetID = self.getProcessedDatasetID(processedDataset)
+        processedDatasetID = processedDataset.getProcessedDatasetID()
+        if processedDatasetID == None:
+           processedDatasetID = self.getProcessedDatasetID(processedDataset)
         print "processedDatasetID ",processedDatasetID
         apidata = dbsclient.Blockview_ClientAPIData()
         apidata.t_block_bytes = dbsclient.AINT(int(fileBlock.getNumberOfBytes()))
@@ -216,11 +237,24 @@ class DBSInterface(dbsApi.DbsApi):
    def insertEventCollections(self, processedDataset, eventCollectionList):
 	
       try:
-        processedDatasetID = self.getProcessedDatasetID(processedDataset)
+        processedDatasetID = processedDataset.getProcessedDatasetID()
+        if processedDatasetID == None:
+           processedDatasetID = self.getProcessedDatasetID(processedDataset)
         print "processedDatasetID ",processedDatasetID
-        tokens = processedDataset.getProcessingPath().getFullPath().split('/')
-        parentageType = tokens[2]
-        self.recInsertEC(eventCollectionList[0],processedDatasetID,parentageType)
+        #collectionDict = eventCollectionList[0].collectionDict
+        #parentageType = None
+        #if collectionDict != None:
+        #    parentageType = collectionDict['parantageType']
+        #else:
+
+        #tokens = processedDataset.getProcessingPath().getFullPath().split('/')
+        #print "tokens", tokens
+        #if len(tokens) < 4 :
+        #     raise dbsApi.DbsApiException(args="Fullpath in t_processing_path is incorrect")
+        #parentageType = tokens[2]
+        if len(eventCollectionList) > 0:
+           #return self.recInsertEC(eventCollectionList[0],processedDatasetID,parentageType)
+           return self.recInsertEC(eventCollectionList[0],processedDatasetID)
         """
         evCollID = 0
 	for eventCollection in eventCollectionList:
@@ -248,21 +282,44 @@ class DBSInterface(dbsApi.DbsApi):
          raise dbsApi.DbsApiException(exception=e)
       print "Event Collections inserted succesfully  ",len(eventCollectionList)
 
-   def recInsertEC(self, eventCollection,processedDatasetID,parentageType):
+   #def recInsertEC(self, eventCollection, processedDatasetID, parentageType):
+   def recInsertEC(self, eventCollection, processedDatasetID):
       evCollID = 0
       if eventCollection.getParentEventCollection() != None:
-         evCollID = recInsertEC(eventCollection.getParentEventCollection(),processedDatasetID,parentageType)
-
+         #evCollID = recInsertEC(eventCollection.getParentEventCollection(),processedDatasetID,parentageType)
+         evCollID = self.recInsertEC(eventCollection.getParentEventCollection(),processedDatasetID)
+      
       apidata = dbsclient.Evcollview_ClientAPIData()
-      apidata.t_info_evcoll_name = dbsclient.ASTR(eventCollection.getCollectionName())
-      apidata.t_event_collection_collection_index = dbsclient.AINT(int(eventCollection.getCollectionIndex()))
+      result = eventCollection.getCollectionId()
+      if result != None:
+         print "This is a haack..............."
+         return result
+         #apidata.t_event_collection_id = dbsclient.AINT(int(result))
+      result = eventCollection.getCollectionName()
+      if result != None:
+         apidata.t_info_evcoll_name = dbsclient.ASTR(result)
+      result = eventCollection.getCollectionIndex()
+      if result != None:
+         apidata.t_event_collection_collection_index = dbsclient.AINT(int(result))
+      result = eventCollection.getNumberOfEvents()
+      if result != None:
+         apidata.t_info_evcoll_events = dbsclient.AINT(int(result))
+      result = eventCollection.getParentageType()
+      if result != None:
+         print "eventCollection.getParentageType................. ",result
+         apidata.t_parentage_type_name = dbsclient.ASTR(result)
+      else:
+        print "NONE parantageType ...................."
+      result = processedDatasetID
+      if result != None:
+         apidata.t_event_collection_processed_dataset = dbsclient.AINT(int(result))
+      result = eventCollection.getIsPrimary()
+      if result != None:
+         apidata.t_event_collection_is_primary = dbsclient.ACHR(result)
+
       apidata.t_evcoll_parentage_parent = dbsclient.AINT(int(evCollID))
-      apidata.t_info_evcoll_events = dbsclient.AINT(int(eventCollection.getNumberOfEvents()))
-      apidata.t_validation_status_name = dbsclient.ASTR("Dummy Validation status ")
-      apidata.t_parentage_type_name = dbsclient.ASTR(parentageType)
-      apidata.t_event_collection_processed_dataset = dbsclient.AINT(int(processedDatasetID))
-      apidata.t_event_collection_is_primary = dbsclient.ACHR(eventCollection.getIsPrimary())
       apidata.t_evcoll_status_name = dbsclient.ASTR("Dummy Status")
+      apidata.t_validation_status_name = dbsclient.ASTR("Dummy Validation status ")
       #apidata.t_info_evcoll_estimated_luminosity = dbsclient.ASTR("test_value_estimatedluminosity")
       toReturnEvCollID = self.client.insertEventCollections(apidata)
       print "*********************************************************************"
@@ -383,7 +440,7 @@ class DBSInterface(dbsApi.DbsApi):
       #provInfo.t_evcoll_parentage_child = dbsclient.AINT(224)
       provInfo.t_evcoll_parentage_child = dbsclient.AINT(childIds[0])
       provInfoRet = self.readProvInfoParent(provInfo)
-
+      print "After self.readProvInfoParent provInfoRet is ",provInfoRet
       dt_procDS_map = {}
 
       for i in range( provInfoRet.size() ) :
@@ -393,8 +450,8 @@ class DBSInterface(dbsApi.DbsApi):
           print "    t_processed_dataset_name: " ,processed_dataset_name
           #print "    t_processing_path_data_tier: ", dbsclient.intp_value(currProvInfo.t_processing_path_data_tier.getValue())
           #print "    t_processing_path_id: ", dbsclient.intp_value(currProvInfo.t_processing_path_id.getValue())
-          data_tier_name = dbsclient.stringp_value(currProvInfo.t_parentage_type_name.getValue())  
-          print "    t_parentage_type_name: " ,data_tier_name
+          parentage_type_name = dbsclient.stringp_value(currProvInfo.t_parentage_type_name.getValue())  
+          print "    t_parentage_type_name: " ,parentage_type_name
           primaryDsId = dbsclient.intp_value(currProvInfo.t_primary_dataset_id.getValue())
           print "    t_primary_dataset_id: " , primaryDsId
           #print "    t_processing_path_full_path: " ,dbsclient.stringp_value(currProvInfo.t_processing_path_full_path.getValue())
@@ -406,27 +463,35 @@ class DBSInterface(dbsApi.DbsApi):
           print "  t_data_tier.name: ", dTier
           
           #print "    t_evcoll_parentage_child: ", dbsclient.intp_value(currProvInfo.t_evcoll_parentage_child.getValue())
+          
+          if not dt_procDS_map.has_key(dTier):
+             dt_procDS_map[dTier]=processed_dataset_name, parentage_type_name
 
-          if not dt_procDS_map.has_key(data_tier_name):
-             dt_procDS_map[data_tier_name]=processed_dataset_name
-
+          #if not dt_procDS_map.has_key(data_tier_name):
+          #   dt_procDS_map[data_tier_name]=processed_dataset_name
+          
       parentPathList = []
       dsList = DbsDatasetList()
       print "dt_procDS_map: ", dt_procDS_map    
+      if len(dt_procDS_map) < 1:
+          raise dbsApi.DbsApiException(args="No parent path found")   
       for aAskedTier in parentDataTiers:
-         parentPath = "/"+primaryDSName+"/"+aAskedTier+"/"+dt_procDS_map[aAskedTier]
-         dsList.append(DbsDataset(primaryDSName, parentPath, aAskedTier, 'PU'))
+         l_processed_dataset_name, l_parentage_type_name = dt_procDS_map[aAskedTier]
+         #parentPath = "/"+primaryDSName+"/"+aAskedTier+"/"+dt_procDS_map[aAskedTier]
+         parentPath = "/"+primaryDSName+"/"+aAskedTier+"/"+l_processed_dataset_name
+         dsList.append(DbsDataset(primaryDSName, parentPath, aAskedTier, l_parentage_type_name))
          parentPathList.append(parentPath)
          print parentPath
       #return parentPathList
       return dsList
-
+     
+      #print "Ziyada sey ziyada CRASHHHHHHHHHHHHHHHHHHhhhhhhhhhh" 
 
    def readProvInfoParent(self, provInfo):
       provInfoRet = dbsclient.DSProvParentVector()
  
       self.client.getDatasetProvenenceParent(provInfo, provInfoRet)
-      print "No of Prov Info records returned ", provInfoRet.size()
+      print "No of Prov Info records returned for Parent ", provInfoRet.size()
 
       return provInfoRet
 
@@ -435,7 +500,7 @@ class DBSInterface(dbsApi.DbsApi):
       provInfoRet = dbsclient.DSProvChildVector()
  
       self.client.getDatasetProvenenceChild(provInfo, provInfoRet)
-      print "No of Prov Info records returned ", provInfoRet.size()
+      print "No of Prov Info records returned for Child", provInfoRet.size()
 
       return provInfoRet
 

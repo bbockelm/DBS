@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.10 2005/12/13 19:55:22 sveseli Exp $
+# $Id: dbsWsClient.py,v 1.11 2005/12/14 23:01:40 sekhri Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -15,6 +15,7 @@ import dbsUtility
 import dbsFileBlock
 import dbsDataset
 import dbsStaticMethod
+import dbsPPIds
 
 import dbsLogManager
 import dbsPrimaryDataset
@@ -140,10 +141,14 @@ class DbsWsClient:
 	what="Retrieving dataset contents, wsdlUrl: %s." % self._wsdlUrl,
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      print "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
       result = self._wsdlProxy.getDatasetProvenance(
 	datasetPathName=datasetPathName, dataTierList=dataTierList)
+      print "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      print "RESULT ",result
+      print "result.datasetParentList.data ",result.datasetParentList.data
       datasetParentList = dbsDataset.DbsDatasetList(result.datasetParentList.data)
-
+      print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
       exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
@@ -220,8 +225,19 @@ class DbsWsClient:
 	what="Creating processed dataset, wsdlUrl: %s." % self._wsdlUrl,
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      processedDatasetId = self._wsdlProxy.createProcessedDataset(
-	processedDataset=processedDataset.getWsRep())[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]
+      #processedDatasetId = self._wsdlProxy.createProcessedDataset(
+      pobject = self._wsdlProxy.createProcessedDataset(	processedDataset=processedDataset.getWsRep())['data']
+      print "pobject ",pobject
+
+      #processedDatasetId = pobject[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]   
+      processedDatasetId = pobject[dbsPPIds.PROCESSED_DATASET_ID_TAG_]   
+      print "processedDatasetId: ", processedDatasetId 
+      #print "processingPathId anzar: ", pobject['processingPathId'] 
+      processingPathId = pobject[dbsPPIds.PROCESSING_PATH_ID_TAG_]   
+      #processingPathId = pobject[dbsProcessedDataset.PROCESSING_PATH_ID_TAG_]   
+      print "processingPathId: ", processingPathId
+      
+      #processedDataset=processedDataset.getWsRep())[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]
       self._logManager.log(
 	what="Got processed dataset id: %s." % processedDatasetId,
 	where=funcName,
@@ -248,7 +264,7 @@ class DbsWsClient:
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
     
-    return processedDatasetId
+    return processedDatasetId, processingPathId
 
   def insertEventCollections(self, processedDataset, eventCollectionList):
     """ Insert event collections for a given processed dataset. """
@@ -263,7 +279,7 @@ class DbsWsClient:
 	len(eventCollectionList), processedDatasetName),
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      self._wsdlProxy.insertEventCollections(
+      collectionId = self._wsdlProxy.insertEventCollections(
 	processedDataset=processedDataset.getWsRep(),
 	eventCollectionList=eventCollectionList.getWsRep())
 
@@ -290,7 +306,7 @@ class DbsWsClient:
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
-    return
+    return collectionId
 
   def createFileBlock(self, processedDataset, fileBlock):
     """ Create a file block for a given processed dataset. """

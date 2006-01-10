@@ -41,9 +41,18 @@ int ProcessedDatasetManager::write(Message* msgReceived, Message& msgReturned) {
 		return 0;
 	}
 	string value = util.getStrValue(aRow, name, dataType);
-	Element* e = new Element(util.getTokenAt(name,1), value, dataType);
+	//Element* e = new Element(util.getTokenAt(name,1), value, dataType);
+	Element* e = new Element(name, value, dataType);
+
+	name = "t_processing_path.id";
+
 	msgReturned.addElement(e);
-	
+	if(!util.isSet(aRow, name, dataType ) ) {
+		return 0;
+	}
+	value = util.getStrValue(aRow, name, dataType);
+	Element* e1 = new Element(name, value, dataType);
+	msgReturned.addElement(e1);
 	return 1;
 
 }

@@ -18,6 +18,7 @@ int ECWriteManager::write(Message* msgReceived, Message& msgReturned) {
 		return 0;//Throw exception here instead of retunnnng 0
 	}
 	string value = util.getStrValue(aRow, name, dataType);
+        cout<<"**********************VALUE***********************\n************************* "<<value<<"****************\n";
 	Element* e = new Element(util.getTokenAt(name,1), value, dataType);
 	msgReturned.addElement(e);
 	/*msgReceived->addElement(e);

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.7 2005/12/12 21:35:12 sveseli Exp $
+# $Id: dbsEventCollection.py,v 1.8 2005/12/15 22:52:40 sekhri Exp $
 #
 # Event collection class. 
 #
@@ -14,6 +14,7 @@ import dbsFile
 EVENT_COLLECTION_DICT_TAG_ = "collectionDict"
 EVENT_COLLECTION_ID_TAG_ = "collectionId"
 EVENT_COLLECTION_NAME_TAG_ = "collectionName"
+PARENTAGE_TYPE_NAME_TAG_ = "parentageType"
 EVENT_COLLECTION_INDEX_TAG_ = "collectionIndex"
 EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_ = "numberOfEvents"
 PARENT_EVENT_COLLECTION_TAG_ = "parentEventCollection"
@@ -31,6 +32,7 @@ WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 class DbsEventCollection(dbsObject.DbsObject):
 
   def __init__(self, collectionName=None,
+               parentageType=None,
 	       numberOfEvents=None, collectionIndex=None,
 	       runNumber=None, isPrimary=None, parentEventCollection=None,
 	       collectionId=None, processedDatasetName=None,
@@ -43,6 +45,9 @@ class DbsEventCollection(dbsObject.DbsObject):
 
     if collectionName is not None:
       self[EVENT_COLLECTION_NAME_TAG_] = str(collectionName)
+
+    if parentageType is not None:
+      self[PARENTAGE_TYPE_NAME_TAG_] = str(parentageType)
 
     if collectionIndex is not None:
       self[EVENT_COLLECTION_INDEX_TAG_] = int(collectionIndex)
@@ -87,50 +92,58 @@ class DbsEventCollection(dbsObject.DbsObject):
   def getCollectionId(self):
     """ Retrieve collection id. """
     result = self.get(EVENT_COLLECTION_ID_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_ID_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_ID_TAG_)
     return result
 
   def getCollectionName(self):
     """ Retrieve collection name. """
     result = self.get(EVENT_COLLECTION_NAME_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NAME_TAG_)
     return result
+
+  def getParentageType(self):
+    """ Retrieve collection name. """
+    result = self.get(PARENTAGE_TYPE_NAME_TAG_) 
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PARENTAGE_TYPE_NAME_TAG_)
+    return result
+
 
   def getCollectionIndex(self):
     """ Retrieve collection index. """
     result = self.get(EVENT_COLLECTION_INDEX_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_INDEX_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_INDEX_TAG_)
     return result  
 
   def getNumberOfEvents(self):
     """ Retrieve number of events. """
     result = self.get(EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_)
     return result
 
   def getRunNumber(self):
     """ Retrieve run number. """
     result = self.get(RUN_NUMBER_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % RUN_NUMBER_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % RUN_NUMBER_TAG_)
     return result
 
   def getIsPrimary(self):
     """ Retrieve isPrimary flag. """
     result = self.get(IS_PRIMARY_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_PRIMARY_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_PRIMARY_TAG_)
     return result  
 
   def getProcessedDatasetName(self):
     """ Retrieve processed dataset name. """
     result = self.get(PROCESSED_DATASET_NAME_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
     return result
 
   def getParentEventCollection(self):

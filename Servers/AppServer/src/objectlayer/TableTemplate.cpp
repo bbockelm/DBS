@@ -336,8 +336,9 @@ vector<string> TableTemplate<R>::makeInsertQuery(R* aRow) {
 
 template <class R>
 void TableTemplate<R>::insert() {
-  bool exceptionOccured = false;
-  string exceptionMessage = "\n";
+	//cout<<"inside insert of TableTemplate"<<endl;
+	bool exceptionOccured = false;
+	string exceptionMessage = "\n";
 	int i = -1;
 	for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
 	  ++i;
@@ -372,6 +373,7 @@ void TableTemplate<R>::insert() {
 	  LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
 	  throw ObjectLayerException(exceptionMessage);
 	}
+	cout<<"returnning from insert in TableTamplate"<<endl;
 }
 
 

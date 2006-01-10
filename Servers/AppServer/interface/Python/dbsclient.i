@@ -37,7 +37,6 @@
         %template(DSProvChildVector) std::vector<Datasetprovenenceevchild_ClientAPIData>;     
         %template(CrabEvcollVector) std::vector<Crabevcollview_ClientAPIData>;
 
-
 	%extend DBSClient {
 		static std::string str(char* s){
 			std::string mystr(s);

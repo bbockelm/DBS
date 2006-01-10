@@ -29,6 +29,7 @@ int Manager::doInsert(TableInterface* inTable, Message& msgReturned) {
 	// This function actuallly performs the insert operation for the child managers.
 	dbManager->beginTransection();
 	try {
+		cout<<"calling insert for inTable ion Manager"<<endl;
 		inTable->insert();
 		dbManager->commit();
 	} catch (ObjectLayerException &e)  {

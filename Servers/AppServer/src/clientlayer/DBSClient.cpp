@@ -204,7 +204,8 @@ int DBSClient::createPrimaryDataset(Primarydataset_ClientAPIData& primaryDataset
 	return success;
 }
 
-int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) throw (const char*) {
+//int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) throw (const char*) {
+int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo, int & processedDatasetId, int & processingPathId ) throw (const char*) {
         this->mSend.dispose();
         this->mRecv.dispose();
 
@@ -216,12 +217,19 @@ int DBSClient::createProcessedDataset(Processingpath_ClientAPIData& processingPa
 	//cout<<"DONE Calling server"<<endl;
 	//cout<<"inside DBSClient::createProcessedDataset"<<endl;
         if ( success == 1 ) {
-           string value = this->mRecv.getElementValue("id");
+           //string value = this->mRecv.getElementValue("id");
+           string value = this->mRecv.getElementValue("t_processed_dataset.id");
 		//cout<<"The processed daraset Value is "<<value<<endl;
            if ( value != "NOTFOUND" ) {
 		//cout<<"returnning "<<value<<endl;
-		return util.atoi(value);
+		//return util.atoi(value);
+		processedDatasetId = util.atoi(value);
            }
+           value = this->mRecv.getElementValue("t_processing_path.id");
+           if ( value != "NOTFOUND" ) {
+		processingPathId = util.atoi(value);
+           }
+
         }
 	cout<<"returnning success"<<endl;
         return success;
@@ -271,7 +279,12 @@ int DBSClient::insertApps(Insertapps_ClientAPIData& appsInfo) throw (const char*
 
 
 int DBSClient::insertFiles(vector<Fileview_ClientAPIData>& fileInfo) throw (const char*) {
+	if (fileInfo.size() < 1) {
+                cout<<"Empty Vector Passed"<<endl;
+		return -1;
+	}
 	this->mSend.dispose();
+        this->mRecv.dispose();
 	this->mSend.setName("WriteFiles");
 
 
@@ -294,12 +307,14 @@ int DBSClient::insertFiles(vector<Fileview_ClientAPIData>& fileInfo) throw (cons
 
 int DBSClient::insertEventCollections(Evcollview_ClientAPIData& ecInfo) throw (const char*) {
 	this->mSend.dispose();
+        this->mRecv.dispose();
 	this->mSend.setName("WriteEventCollection");
 	ecInfo.makeMessage(this->mSend);
          
 	int success = this->callServer();
 	if ( success == 1 ) {
 		string value = this->mRecv.getElementValue("id");
+		cout<<"EVENT COLLECTION ID is "<<value<<endl;
 		if ( value != "NOTFOUND" ) {
 			return util.atoi(value);
 		}

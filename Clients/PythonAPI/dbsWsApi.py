@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.14 2005/12/14 23:01:40 sekhri Exp $
+# $Id: dbsWsApi.py,v 1.15 2005/12/15 22:52:40 sekhri Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -137,7 +137,8 @@ if __name__ == "__main__":
       decayChain="decayChain",
       isMcData="y")
 
-    dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="eg03_jets_1e_pt2550",
+    #dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="eg03_jets_1e_pt2550",
+    dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="My_Primary_eg03_jets_1e_pt2550",
       datasetDescription="my dataset desc",
       physicsGroupName="top",
       triggerDescription="Dummy triggerDescription",
@@ -147,15 +148,19 @@ if __name__ == "__main__":
     #print "Got primary dataset id: %s" % primaryDatasetId
 
     # Test for create processed dataset.
-    datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
+    datasetPath = "/sw04_Anzar/DST/sw_DST813_2_g133_OSC"
+    #datasetPath = "/sw04_Anzar/Digi/sw_2x1033PU761_TkMu_2_g133_OSC"
+    #datasetPath = "/sw04_Anzar/Hit/sw_Hit245_2_g133"
+    #datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
+    #datasetPath1 = "/eg03_jets_1e_pt2550/Hit/eg_2x1033PU761_TkMu_2_g133_OSC1"
     app = dbsApplication.DbsApplication(
-      family="reco", 
-      executable="dummy", 
-      version="p1", 
-      configConditionsVersion ="abcd",
-      parameterSet="psetdummy",
-      outputTypeName="odummy",
-      inputTypeName="idummy")
+      family="reco1", 
+      executable="dummy1", 
+      version="p11", 
+      configConditionsVersion ="abcd1",
+      parameterSet="psetdummy1",
+      outputTypeName="odummy1",
+      inputTypeName="idummy1")
 
     processingPath = dbsProcessingPath.DbsProcessingPath(
       fullPath=datasetPath, 
@@ -169,13 +174,14 @@ if __name__ == "__main__":
       application=app)
 
     dataset = dbsProcessedDataset.DbsProcessedDataset(
-      primaryDatasetName="eg03_jets_1e_pt2550",
+      primaryDatasetName="My_Primary_eg03_jets_1e_pt2550",
       isDatasetOpen="y",
-      datasetName="eg_2x1033PU761_TkMu_2_g133_OSC", 
+      datasetName="My_Processed_eg_2x1033PU761_TkMu_2_g133_OSC", 
       processingPath=processingPath2)
 
-    #processedDatasetId = api.createProcessedDataset(dataset)
+    #processedDatasetId,ppathId = api.createProcessedDataset(dataset)
     #print "Got processed dataset id: %s" % processedDatasetId    
+    #print "Got processing path  id: %s" % ppathId    
 
     block = dbsFileBlock.DbsFileBlock(
       #blockName=None,
@@ -203,6 +209,17 @@ if __name__ == "__main__":
         fileBlockId=9, 
         fileSize=100
         )
+    f3 = dbsFile.DbsFile(logicalFileName="myFile5",
+	fileStatus = "file dummy status",
+	guid = "7C8A55-DE62-D811-892C-00E081250436a",
+        checkSum="BA7C8A55-DE62-D811-892C-00E081250a436", 
+        fileType="EVDZip",
+        fileBlockId=9, 
+        fileSize=100
+        )
+    fList=dbsFile.DbsFileList([f1])
+    fList1=dbsFile.DbsFileList([f3])
+
     fList=dbsFile.DbsFileList([f1])
     fList.append(f2)
 
@@ -211,25 +228,54 @@ if __name__ == "__main__":
       numberOfEvents=123, 
       collectionIndex=100,
       isPrimary="y",
+      parentageType="DST",
       fileList=fList)
+    ec1 = dbsEventCollection.DbsEventCollection(
+      collectionName="ec2", 
+      numberOfEvents=123, 
+      collectionIndex=100,
+      isPrimary="y",
+      parentEventCollection=ec,
+      fileList=fList1)
+    ectestp = dbsEventCollection.DbsEventCollection(
+      collectionId=12,
+      fileList=[]
+    )
+    ectest = dbsEventCollection.DbsEventCollection(
+      numberOfEvents=0,
+      collectionName="collectionName",
+      collectionIndex=160800002,
+      parentEventCollection=ectestp,
+      parentageType="Digi",
+      fileList=[],
+      isPrimary='n'
+    )
+
+
+
+#ecList  [{'numberOfEvents': 0, 'collectionName': 'EvC_Run160800002', 'collectionIndex': 160800002, 'parentEventCollection': {'fileList': [], 'collectionId': 12}, 'parentageType': 'Digi', 'fileList': [], 'isPrimary': 'n'}]
     ecList = dbsEventCollection.DbsEventCollectionList([ec])
+    #ecList = dbsEventCollection.DbsEventCollectionList([ectest])
+    #ecList.append(ec1)
     #print "Inserting event collections for: %s" % dataset.getDatasetName()
-    #api.insertEventCollections(dataset, ecList)
+    #ecid = api.insertEventCollections(dataset, ecList)
+    #print "ecid %s"%ecid['collectionId']
 
 
        
 
     print "Getting dataset contents for: %s" % datasetPath
     
-    
+    """
     fileBlockList = api.getDatasetContents(datasetPath)
     for fileBlock in fileBlockList:
       print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
       for eventCollection in fileBlock.getEventCollectionList():
 	print "  %s" % eventCollection
-
+    """
     # Get dataset provenance. It returns list of dataset parents.
-    dataTierList = [ "Digi" ]
+    
+    dataTierList = [ "Hit","Digi" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (datasetPath, dataTierList)
     
     datasetParentList = api.getDatasetProvenance(datasetPath, dataTierList)

@@ -30,13 +30,9 @@ int PrimaryDatasetManager::write(Message* msgReceived, Message& msgReturned) {
           physicsGroupName
             A physics group name
 	******************************/
-	cout<<"line1"<<endl;
 	Primarydatasetmultirow* aRow = new Primarydatasetmultirow();
-	cout<<"line2"<<endl;
         int retval = setRowValues(priDatasetTable, aRow, msgReceived, "",0);
-	cout<<"line3"<<endl;
 	priDatasetTable->addRow(aRow);
-	cout<<"calling do insert "<<endl;
 	if (!this->doInsert((TableInterface*)priDatasetTable, msgReturned) ) { 
 		return 0;
 	}

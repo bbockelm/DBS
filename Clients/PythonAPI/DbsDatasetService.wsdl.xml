@@ -144,6 +144,14 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         </xsd:sequence>
       </complexType>
 
+      <complexType name="DbsPPIds">
+        <xsd:sequence>
+          <xsd:element name="processedDatasetId" type="xsd:int"/>
+          <xsd:element name="processingPathId" type="xsd:int"/>
+        </xsd:sequence>
+      </complexType>
+
+
       <complexType name="DbsProcessedDataset">
         <xsd:sequence>
           <xsd:element name="primaryDatasetName" type="xsd:string"/>
@@ -198,7 +206,8 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="createProcessedDatasetResponse">
-    <part name="processedDatasetId" type="xsd:int"/>
+    <!--part name="processedDatasetId" type="xsd:int"/-->
+    <part name="processedDatasetId" type="tns:DbsPPIds"/>
   </message>
 
   <message name="createProcessedDatasetFault">
@@ -211,6 +220,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="insertEventCollectionsResponse">
+    <part name="eventCollectionId" type="xsd:int"/>
   </message>
 
   <message name="insertEventCollectionsFault">
@@ -382,7 +392,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     <documentation>DBS Dataset Service provides functionality for retrieving and manipulating dataset information.</documentation>
     <port name="DbsDatasetPort" binding="tns:DbsDatasetBinding">
       <!--soap:address location="http://cmssrv22.fnal.gov:27981"/-->
-      <soap:address location="http://venom.fnal.gov:27982"/>
+      <soap:address location="http://venom.fnal.gov:27983"/>
     </port>
   </service>
 

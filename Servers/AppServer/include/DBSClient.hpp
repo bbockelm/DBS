@@ -46,7 +46,8 @@ public:
         //int addRole(Role_ClientAPIData& roleInfo);
         //int assignRole(Administrative_ClientAPIData& adminInfo);
         int assignPhysicsGroup(Physicsgroup_ClientAPIData& phgrpInfo) throw (const char*);
-        int createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) throw (const char*);
+        //int createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo) throw (const char*);
+        int createProcessedDataset(Processingpath_ClientAPIData& processingPathInfo, int & processedDatasetId, int & processingPathId ) throw (const char*);
         int createAnalysisDataset(Analysisdataset_ClientAPIData& analysisDatasetInfo) throw (const char*);
 
 	int createPrimaryDataset(Primarydataset_ClientAPIData& primaryDatasetInfo) throw (const char*);

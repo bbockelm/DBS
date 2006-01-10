@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessedDataset.py,v 1.3 2005/12/09 16:49:41 sveseli Exp $
+# $Id: dbsProcessedDataset.py,v 1.4 2005/12/15 22:52:40 sekhri Exp $
 #
 # Dataset class. 
 #
@@ -30,7 +30,7 @@ WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
 class DbsProcessedDataset(dbsDataset.DbsDataset):
 
   def __init__(self, datasetName=None, primaryDatasetName=None,
-	       isDatasetOpen=None, processingPath=None,
+	       isDatasetOpen=None, processingPath=None, processedDatasetId = None,
 	       datasetDict={}):
     """ Constructor. """
     dbsDataset.DbsDataset.__init__(self, datasetName=datasetName,
@@ -40,6 +40,10 @@ class DbsProcessedDataset(dbsDataset.DbsDataset):
 
     if isDatasetOpen is not None:
       self[IS_DATASET_OPEN_TAG_] = str(isDatasetOpen)
+
+    if processedDatasetId is not None:
+      self[PROCESSED_DATASET_ID_TAG_] = processedDatasetId
+
 
     if processingPath is not None:
       self[PROCESSING_PATH_TAG_] = processingPath
@@ -58,11 +62,11 @@ class DbsProcessedDataset(dbsDataset.DbsDataset):
   def getPrimaryDatasetName(self):
     """ Retrieve primary dataset name. """
     result = self.get(PRIMARY_DATASET_NAME_TAG_)
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PRIMARY_DATASET_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PRIMARY_DATASET_NAME_TAG_)
     return result
 
-  def getProcessedDatasetName(self):
+  def getDatasetName(self):
     """ Retrieve pricessed dataset name. """
     result = self.get(PROCESSED_DATASET_NAME_TAG_)
     #if result == None:
@@ -77,11 +81,19 @@ class DbsProcessedDataset(dbsDataset.DbsDataset):
     #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_DATASET_OPEN_TAG_)
     return result
 
+  def getProcessedDatasetID(self):
+    """ aaa. """
+    result = self.get(PROCESSED_DATASET_ID_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_DATASET_OPEN_TAG_)
+    return result
+
+
   def getProcessingPath(self):
     """ Retrieve processing path. """
     result = self.get(PROCESSING_PATH_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSING_PATH_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSING_PATH_TAG_)
     return result
 
 

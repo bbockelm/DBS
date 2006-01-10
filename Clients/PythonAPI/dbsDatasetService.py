@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsDatasetService.py,v 1.10 2005/12/13 23:13:41 sekhri Exp $
+# $Id: dbsDatasetService.py,v 1.11 2005/12/14 20:13:25 sekhri Exp $
 #
 # DBS Dataset Web Service class. 
 #
@@ -12,6 +12,7 @@ import threading
 import SOAPpy
 
 import dbsApi
+import dbsPPIds
 import dbsEventCollection
 import dbsFileBlock
 import dbsDataset
@@ -343,8 +344,12 @@ class DbsDatasetService(dbsWebService.DbsWebService):
         msg = "Creating processed dataset %s" % (processedDataset)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-	processedDatasetId = self.getApi().createProcessedDataset(processedDataset)
+	#processedDatasetId = self.getApi().createProcessedDataset(processedDataset)
+	#ppIds = self.getApi().createProcessedDataset(processedDataset)
+	processedDatasetId, processingPathId = self.getApi().createProcessedDataset(processedDataset)
+        #msg = "Created processed dataset with id %s: " % (ppIds.processedDatasetId)
         msg = "Created processed dataset with id %s: " % (processedDatasetId)
+        msg += "\nCreated processing path with id %s: " % (processingPathId)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
@@ -353,8 +358,9 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
 	raise CreateProcessedDatasetFault(exception=ex)
-
-      return { dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_ : processedDatasetId }
+      pobject = dbsPPIds.DbsPPIds(processedDatasetId,processingPathId)
+      #return { dbsPPIds.PROCESSED_DATASET_ID_TAG_ : processedDatasetId, dbsPPids.PROCESSING_PATH_ID_TAG_ : processingPathId }
+      return pobject
     finally:
       self.releaseServant(servantId)
 
@@ -404,7 +410,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 	#################
 	## Here comes API call.
-	self.getApi().insertEventCollections(processedDataset, eventCollectionList)
+	collectionId = self.getApi().insertEventCollections(processedDataset, eventCollectionList)
 	#################
         msg = "Inserted %s event collections for dataset %s" % (
 	  len(eventCollectionList), processedDatasetName)
@@ -416,8 +422,8 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
 	raise InsertEventCollectionsFault(exception=ex)
-
-      return {}
+      return { dbsEventCollection.EVENT_COLLECTION_ID_TAG_ : collectionId }
+     # return {}
     finally:
       self.releaseServant(servantId)
 
