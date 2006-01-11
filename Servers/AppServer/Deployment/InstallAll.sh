@@ -14,6 +14,8 @@ fi
 
 echo "Install Dir is : $1"
 
+mkdir -p $DBSDependDir
+
 export DBSDependDir=$1
 ./InstallLog4CXX.sh $1
 if [ $? != 0 ]; then
@@ -68,8 +70,9 @@ PASSWORD        = xxxxxxxxxxxxx
 EOF
 
 cd ..
-
-echo "Generating example setup_dbs.sh"
+echo
+echo "Generating example setup_dbs.shn in $PWD"
+echo
 cat > "setup_dbs.sh" <<EOF
 export LOG4CXX=$DBSDependDir/log4cxx
 export ODBCHOME=$DBSDependDir/unixODBC
@@ -80,8 +83,12 @@ export SWIG_HOME=$SWIG_HOME
 export LD_LIBRARY_PATH=\$ODBCHOME/lib:\$LOG4CXX/lib:\$ORACLE_HOME/lib:\$ORACLE_ODBC_HOME/lib:\$LD_LIBRARY_PATH
 export PYTHONINCLUDE=/usr/include/python2.3/
 export DBSCONFIG=\$DBSHOME/etc/server.conf
-export PATH=$SWIG_HOME/bin:$PATH
+export PATH=\$SWIG_HOME/bin:\$PATH
+DBSBASE=`echo \$DBSHOME| awk -FServer '{print $1}'`
+PYTHONPATH=\$DBSHOME/interface/Python:\$DBSBASE/prototypes/proto_0/python:\$DBSBASE/prototypes/proto_0/python/lib:\$PYTHONPATH
 echo "Check Proper swig version (1.3.27 or later) added to path and proper python include to PYTHONINCLUDE"
-echo "ADD To PYTHONPATH DMS/DBS/prototypes/proto_0/python"
 EOF
+echo
+echo "Have a look at CONFIGURE file for Configuration instructions"
+echo
 
