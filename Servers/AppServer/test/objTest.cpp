@@ -9,7 +9,7 @@
 #include "TableFactory.hpp"
 #include "TableInterface.hpp"
 
-int main() {
+int main1() {
 
   try {
         cout << " >> Main Started << " << endl;
@@ -47,7 +47,7 @@ int main() {
 
 }
 
-int maina() {
+int main() {
 
   try {
         cout << " >> Main Started << " << endl;
@@ -59,10 +59,11 @@ int maina() {
         dbManager->open();
 	while(true){
 		PrimarydatasetMultiTable * aMultiTable;
+		Primarydatasetmultirow * aRow;
 		try{
 	        cout << " >> Creating a Multi Object << " << endl;
         	aMultiTable = new PrimarydatasetMultiTable(dbManager);
-		Primarydatasetmultirow * aRow = new Primarydatasetmultirow();
+		aRow = new Primarydatasetmultirow();
 		string name = "sw04_Anzar";
 		aRow->setValue("t_primary_dataset.name", &name);
 		aMultiTable->addRow(aRow);
@@ -73,8 +74,10 @@ int maina() {
         //aMultiTable->select( (string)"t_primary_dataset.name='bt03_gg_bbh200_2taujmu'");
 
         	cout << " >> Deleting Multi Object << " << endl;
+		delete aRow;
 	        delete aMultiTable;
 		}catch(ObjectLayerException &e) {
+			delete aRow;
 			delete aMultiTable;
 			cout<<"Eception is "<<e.report()<<endl;;
 		}

@@ -16,14 +16,21 @@ TableTemplate<R>::TableTemplate(){
   this->init();
 };
 
+template <class R>
+void TableTemplate<R>::dispose(){
+	for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
+		delete *rowIterator;
+	}
+}
+
 
 template <class R>
 TableTemplate<R>::~TableTemplate(){
-  for(rowIterator = rows.begin(); 
+/*  for(rowIterator = rows.begin(); 
       rowIterator != rows.end(); 
       ++rowIterator )	{
     delete *rowIterator;
-  }
+  }*/
 	delete sql;
 	/*for(tivIterator = tiv.begin(); 
 	  tivIterator != tiv.end(); 
@@ -72,7 +79,24 @@ Dictionary* TableTemplate<R>::getMultiRefrence() {
   return this->multiRefrences;
 }
 
+template <class R>
+vector<R*>& TableTemplate<R>::getRows() {
+	return this->rows;
+}
 
+template <class R>
+int TableTemplate<R>::getNoOfRows() {
+	return this->rows.size();
+}
+
+template <class R>
+string TableTemplate<R>::getStrValue(int index, string name) {
+	if(rows.size() < index) {
+		return "";
+	}
+	string dataType = util.getDataType(name);
+	return util.getStrValue((RowInterface*)rows.at(index), name, dataType);
+}
 
 template <class R>
 void TableTemplate<R>::init() {

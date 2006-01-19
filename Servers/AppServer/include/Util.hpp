@@ -15,7 +15,7 @@ public:
 	bool isSet(RowInterface*, std::string, std::string);
 	bool isKeySet(RowInterface*, Keys_iter, Keys_iter);
 	bool isListOfKeySet(RowInterface*, ListOfLists_iter, ListOfLists_iter);
-	bool isConsistant(RowInterface*, RowInterface*);
+	bool isConsistant(RowInterface*, RowInterface*, std::string& message);
 	bool isInMultiRef(std::string, Dictionary_iter, Dictionary_iter);
 	bool toSetCol(std::string, Dictionary_iter, Dictionary_iter);
 	ListOfLists_iter getListOfKey(RowInterface*, ListOfLists_iter, ListOfLists_iter);
@@ -26,6 +26,8 @@ public:
 	//Keys_iter getKey(RowInterface*, Keys_iter, Keys_iter);
 	void equatePKWithRef(RowInterface* aRow, Dictionary_iter b, Dictionary_iter e);
 	void equatePKWithMultiRef(RowInterface* aRow, Dictionary_iter b, Dictionary_iter e);
+	void copyRow(RowInterface* aRowTo, RowInterface* aRowFrom);
+	void display(RowInterface* aRow);
 	Keys getKey(RowInterface*, Keys_iter, Keys_iter);
 	Keys_iter getNullKey(RowInterface*, Keys_iter, Keys_iter);
 	Keys getPrimaryKeys(Keys_iter, Keys_iter, Dictionary_iter, Dictionary_iter);

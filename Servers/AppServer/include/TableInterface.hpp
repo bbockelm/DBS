@@ -23,8 +23,10 @@ public:
 	virtual void addRow(RowInterface* aRow){};
 	virtual void insert(){};
 	virtual void update(){};
+	virtual int getNoOfRows(){};
 	//virtual std::vector<RowInterface*>& select(std::string whereClause){cout<<"INSIDE VIRTUAL SELECT"<<endl; };
         virtual std::string* getTableName(){}; 
+	virtual std::string getStrValue(int index, string name){};
         virtual void setDBManager(DBManagement*){};
         virtual Dictionary* getSchema(){cout<<"INSIDE VIRTUAL"<<endl; };
         virtual Dictionary* getMultiRefrence(){cout<<"INSIDE VIRTUAL"<<endl; };

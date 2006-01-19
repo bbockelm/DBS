@@ -297,6 +297,10 @@ class createMultiTableViewObjects :
         self.CrabEvCollView.addSchema(self.allSchemas['t_block'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_block_status'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_info_evcoll'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_evcoll_file'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_file'])
+        ##self.CrabEvCollView.addSchema(self.allSchemas['t_file_status'])
+        ##self.CrabEvCollView.addSchema(self.allSchemas['t_file_type'])
         #self.CrabEvCollView.addSchema(self.allSchemas['t_evcoll_status'])
         #self.CrabEvCollView.addSchema(self.allSchemas['t_validation_status'])
 
@@ -308,6 +312,11 @@ class createMultiTableViewObjects :
         self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
         self.CrabEvCollView.addCondition('t_block.status = t_block_status.id')
         self.CrabEvCollView.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
+
+        self.CrabEvCollView.addCondition('t_evcoll_file.evcoll = t_event_collection.id')
+        self.CrabEvCollView.addCondition('t_evcoll_file.fileid = t_file.id')
+        self.CrabEvCollView.addCondition('t_file.inblock = t_block.id')  
+        
 
         #self.CrabEvCollView.addCondition('t_info_evcoll.validation_status = ' + \
         #        't_validation_status.id')

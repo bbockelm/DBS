@@ -25,6 +25,7 @@ public:
 	//Default constructor
 	TableTemplate();
 	~TableTemplate();
+	void dispose();
 	TableTemplate(DBManagement* dbmanager);
         void addRow(RowInterface* aRow);
 	void addRow(R* aRow);
@@ -39,6 +40,9 @@ public:
 	void setDBManager(DBManagement* dbmanager);
 	Dictionary* getSchema();
 	Dictionary* getMultiRefrence();
+	std::vector<R*>& getRows();
+	int getNoOfRows();
+	std::string getStrValue(int index, string name);
 
 private:
 	void init();

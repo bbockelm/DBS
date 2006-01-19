@@ -13,14 +13,14 @@ cd $DBSDependDir
 echo "oracle_odbc_driver can ONLY be installed "
 echo "if you have done unixODBC and ORACLE Client installations first"
 
-export CVSROOT=:pserver:anonymous@cdcvs.fnal.gov:/cvs/cd_read_only
-export CVS_RSH=ssh
-cvs -d `echo $CVSROOT | awk -F@ '{print $1":anoncvs\@"$2}'` login
-cvs -Q co oracle_odbc_driver
+#export CVSROOT=:pserver:anonymous@cdcvs.fnal.gov:/cvs/cd_read_only
+#export CVS_RSH=ssh
+#cvs -d `echo $CVSROOT | awk -F@ '{print $1":anoncvs\@"$2}'` login
+#cvs -Q co oracle_odbc_driver
 
 # Following is temporary hack, once code in CVS is updated, will use lines above
-#wget http://home.fnal.gov/~anzar/oracle_odbc_driver.tgz
-#tar zxf oracle_odbc_driver.tgz
+wget http://home.fnal.gov/~anzar/oracle_odbc_driver.tgz
+tar zxf oracle_odbc_driver.tgz
 
 
 cd oracle_odbc_driver

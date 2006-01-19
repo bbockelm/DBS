@@ -1439,6 +1439,8 @@ private:
     T_Block_Statusrow* T_Block_Statusobj;
     T_Blockrow* T_Blockobj;
     T_Info_Evcollrow* T_Info_Evcollobj;
+    T_Filerow* T_Fileobj;
+    T_Evcoll_Filerow* T_Evcoll_Fileobj;
 };
 
 class  Crabevcollviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {

@@ -143,10 +143,10 @@ if __name__ == "__main__":
       physicsGroupName="top",
       triggerDescription="Dummy triggerDescription",
       monteCarloDescription=mc)
-
-    #primaryDatasetId = api.createPrimaryDataset(dataset)
-    #print "Got primary dataset id: %s" % primaryDatasetId
-
+    """
+    primaryDatasetId = api.createPrimaryDataset(dataset)
+    print "Got primary dataset id: %s" % primaryDatasetId
+    """
     # Test for create processed dataset.
     datasetPath = "/sw04_Anzar/DST/sw_DST813_2_g133_OSC"
     #datasetPath = "/sw04_Anzar/Digi/sw_2x1033PU761_TkMu_2_g133_OSC"
@@ -182,7 +182,7 @@ if __name__ == "__main__":
     #processedDatasetId,ppathId = api.createProcessedDataset(dataset)
     #print "Got processed dataset id: %s" % processedDatasetId    
     #print "Got processing path  id: %s" % ppathId    
-
+    
     block = dbsFileBlock.DbsFileBlock(
       #blockName=None,
       blockStatusName="Dummy Block Status", 
@@ -191,22 +191,22 @@ if __name__ == "__main__":
       )
     #fbId = api.createFileBlock(dataset, block)
     #print "Got file block id: %s" % fbId
-
+    
     # Test for inserting event collections.
-    f1 = dbsFile.DbsFile(logicalFileName="myFile3",
+    f1 = dbsFile.DbsFile(logicalFileName="myFile8",
 	fileStatus = "file dummy status",
 	guid = "7C8A55-DE62-D811-892C-00E081250436",
         checkSum="BA7C8A55-DE62-D811-892C-00E081250436", 
         fileType="EVDZip",
-        fileBlockId=9, 
+        fileBlockId=273, 
         fileSize=100
         ) 
-    f2 = dbsFile.DbsFile(logicalFileName="myFile4",
+    f2 = dbsFile.DbsFile(logicalFileName="myFile9",
 	fileStatus = "file dummy status",
 	guid = "7C8A55-DE62-D811-892C-00E081250436a",
         checkSum="BA7C8A55-DE62-D811-892C-00E081250a436", 
         fileType="EVDZip",
-        fileBlockId=9, 
+        fileBlockId=274, 
         fileSize=100
         )
     f3 = dbsFile.DbsFile(logicalFileName="myFile5",
@@ -218,10 +218,10 @@ if __name__ == "__main__":
         fileSize=100
         )
     fList=dbsFile.DbsFileList([f1])
-    fList1=dbsFile.DbsFileList([f3])
+    fList1=dbsFile.DbsFileList([f2])
 
-    fList=dbsFile.DbsFileList([f1])
-    fList.append(f2)
+    #fList=dbsFile.DbsFileList([f1])
+    #fList.append(f2)
 
     ec = dbsEventCollection.DbsEventCollection(
       collectionName="ec1", 
@@ -233,10 +233,12 @@ if __name__ == "__main__":
     ec1 = dbsEventCollection.DbsEventCollection(
       collectionName="ec2", 
       numberOfEvents=123, 
-      collectionIndex=100,
+      collectionIndex=106,
       isPrimary="y",
+      parentageType="OSCAR",
       parentEventCollection=ec,
       fileList=fList1)
+    """
     ectestp = dbsEventCollection.DbsEventCollection(
       collectionId=12,
       fileList=[]
@@ -250,29 +252,30 @@ if __name__ == "__main__":
       fileList=[],
       isPrimary='n'
     )
-
+    """
 
 
 #ecList  [{'numberOfEvents': 0, 'collectionName': 'EvC_Run160800002', 'collectionIndex': 160800002, 'parentEventCollection': {'fileList': [], 'collectionId': 12}, 'parentageType': 'Digi', 'fileList': [], 'isPrimary': 'n'}]
-    ecList = dbsEventCollection.DbsEventCollectionList([ec])
+    #ecList = dbsEventCollection.DbsEventCollectionList([ec])
+    ecList = dbsEventCollection.DbsEventCollectionList([ec1])
     #ecList = dbsEventCollection.DbsEventCollectionList([ectest])
     #ecList.append(ec1)
-    #print "Inserting event collections for: %s" % dataset.getDatasetName()
-    #ecid = api.insertEventCollections(dataset, ecList)
-    #print "ecid %s"%ecid['collectionId']
+    print "Inserting event collections for: %s" % dataset.getDatasetName()
+    ecid = api.insertEventCollections(dataset, ecList)
+    print "ecid %s"%ecid['collectionId']
 
-
+    """
        
 
     print "Getting dataset contents for: %s" % datasetPath
     
-    """
+    
     fileBlockList = api.getDatasetContents(datasetPath)
     for fileBlock in fileBlockList:
       print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
       for eventCollection in fileBlock.getEventCollectionList():
 	print "  %s" % eventCollection
-    """
+    
     # Get dataset provenance. It returns list of dataset parents.
     
     dataTierList = [ "Hit","Digi" ]
@@ -283,7 +286,7 @@ if __name__ == "__main__":
 
     for datasetParent in datasetParentList:
       print "%s" % (datasetParent)
-    
+    """ 
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   print "Done"

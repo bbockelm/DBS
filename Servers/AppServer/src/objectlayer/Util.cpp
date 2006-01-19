@@ -145,6 +145,28 @@ bool Util::isListOfKeySet(RowInterface* aRow, ListOfLists_iter b, ListOfLists_it
 }
 
 
+void Util::copyRow(RowInterface* aRowTo, RowInterface* aRowFrom) {
+	for(Dictionary_iter i = schema->begin(); i != schema->end(); ++i) {
+		if( this->isSet(aRowFrom, i->first, i->second) ) {
+			string value = this->getStrValue(aRowFrom, i->first, i->second);
+			this->setValue(aRowTo, i->first, i->second, value );	
+		}
+	}
+}
+
+
+void Util::display(RowInterface* aRow) {
+	for(Dictionary_iter i = schema->begin(); i != schema->end(); ++i) {
+		if( this->isSet(aRow, i->first, i->second) ) {
+			string value = this->getStrValue(aRow, i->first, i->second);
+			cout<<i->first<<":"<<i->second<<":"<<value<<endl;
+		}
+	}
+	cout<<"Out of display"<<endl;
+
+}
+
+
  bool Util::isSet(RowInterface* aRow, string name, string dataType) {
 	//cout<<"inside isSet name "<<name<<" dataType "<<dataType<<endl;
 	if(dataType.length() == 0) {
@@ -233,17 +255,20 @@ void Util::setValue(RowInterface* aRow, string name, string dataType, string val
 }
 
 
-bool Util::isConsistant(RowInterface* aRowInDB, RowInterface* aRow) {
+bool Util::isConsistant(RowInterface* aRowInDB, RowInterface* aRow, string& message) {
 	for(Dictionary_iter i = schema->begin(); i != schema->end(); ++i) {
 		if( this->isSet(aRow, i->first, i->second) ) {
 			if( this->isSet(aRowInDB, i->first, i->second) ) {
 				//cout<<"\nComparing "<<i->first<<"\naRow\t"<<this->getStrValue(aRow, i->first, i->second)<<"\naRowInDB\t"<<this->getStrValue(aRowInDB, i->first, i->second)<<endl;
-				if ( this->getStrValue(aRow, i->first, i->second) != 
-					this->getStrValue(aRowInDB, i->first, i->second) ) {
+				string valInDb = this->getStrValue(aRowInDB, i->first, i->second);
+				string valInRow = this->getStrValue(aRow, i->first, i->second);
+				if ( valInRow != valInDb ) {
+					message = "In database " + i->first + " is " + valInDb + " and provided is " + valInRow;
 					return(false);
 				}
 			} else {
-				cout<<"Data is  present in DB but coloumn "<<i->first<<" is NULL "<<endl;
+				//cout<<"Data is  present in DB but coloumn "<<i->first<<" is NULL "<<endl;
+				message = "Data is  present in DB but coloumn " + i->first + " is NULL ";
 				return(false);
 			}
 		} else if(this->isSet(aRowInDB, i->first, i->second) ) {

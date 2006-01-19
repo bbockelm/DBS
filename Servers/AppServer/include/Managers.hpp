@@ -5,15 +5,9 @@
 /// creates DBManager 
 
 
-#define USERDSN "mydsnvijay"
-//#define USERDSN "thinservertest"
-#define USERNAME "ggraham"
-//#define USERNAME "anzar"
-
 #include "DBManagement.hpp"
 #include "TableInterface.hpp"
 #include "ObjectLayerTables.hpp"
-#include "Message.hpp"
 #include "TableInterface.hpp"
 #include "Util.hpp"
 #include <string>
@@ -31,18 +25,12 @@ public:
 	Manager();
 	Manager(std::string, std::string);
 
-	int doInsert(TableInterface* inTable, Message& msgReturned);
-	//int doSelect(TableInterface* inTable, std::string whereClause, Message& msgReturned);
-	int makeMessage(TableInterface* inTable, RowIter b, RowIter e, Message& msgReturned);
-	int setRowValues(TableInterface* inTable, RowInterface* rowPtr, Message* message, std::string listName, int index);
-        string findKeyMakeQuery(Message* msgReceived);
-
-	std::string getElementValue(std::string name, Message*);
+	int doInsert(TableInterface* inTable);
+	int doWrite(TableInterface* inTable, std::string name);
+	int doWrite(TableInterface* inTable, RowInterface* aRow, std::string name);
+	std::string makeClause(TableInterface* inTable, RowInterface* aRow);
 	virtual ~Manager();
-	//virtual ~Manager(){};
         void cleanup();   
-	//virtual int read(Message*, Message&){};
-	//virtual void write(Message*, Message&);
   
 protected:
 	DBManagement* dbManager;
@@ -52,183 +40,70 @@ protected:
 };
 
 
-
-class DatasetProvcManagerParent: public Manager {
-public:
-        DatasetProvcManagerParent();
-        int read(Message*, Message&);
-        ~DatasetProvcManagerParent();
-
-private:
-        DatasetprovenenceevparentMultiTable* dspTable;
-};
-
-
-
-class DatasetProvcManagerChild: public Manager {
-public:
-        DatasetProvcManagerChild();
-        int read(Message*, Message&);
-        ~DatasetProvcManagerChild();
-
-private:
-        DatasetprovenenceevchildMultiTable* dspTable;
-};
-
-
-class ECReadManager : public Manager {
-public:
-	ECReadManager();
-	int read(Message*, Message&);
-	~ECReadManager();
-
-private:
-        EvcollviewMultiTable* ecTable;
-};
-
-
-class CRABECReadManager : public Manager {
-public: 
-        CRABECReadManager();
-        int read(Message*, Message&);
-        ~CRABECReadManager();
-
-private:
-        CrabevcollviewMultiTable* ecTable;
-};
-
-
 class PrimaryDatasetManager : public Manager {
 public:
 	PrimaryDatasetManager();
-	int write(Message*, Message&);
-	int read(Message*, Message&);
+	int write(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table);
+	int read(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table);
 	~PrimaryDatasetManager();
 
-private:
-	PrimarydatasetMultiTable* priDatasetTable;
 };
-
-
 
 class ProcessedDatasetManager : public Manager {
 public:
 	ProcessedDatasetManager();
-	int write(Message*, Message&);
-        int read(Message* , Message& );
+	int write(Processingpathmultirow* aRow, ProcessingpathMultiTable* table);
+	int read(Processingpathmultirow* aRow, ProcessingpathMultiTable* table);
 	~ProcessedDatasetManager();  
-
-private:
-	ProcessingpathMultiTable* processedDatasetTable;
 };
 
-/*
-class GenParamManager : public Manager {
+class ECManager : public Manager {
 public:
-	GenParamManager();
-	int write(Message*, Message&);
-	~GenParamManager();  
-
-private:
-	GenparametersetsMultiTable* genparametersetsTable;
+	ECManager();
+	int write(Evcollviewmultirow* aRow, EvcollviewMultiTable* table);
+	int read(Evcollviewmultirow* aRow, EvcollviewMultiTable* table);
+	~ECManager();  
 };
-*/
-
-class AppConfigManager : public Manager {
-public:
-	AppConfigManager();
-	int write(Message*, Message&);
-	~AppConfigManager();  
-
-private:
-	InsertappsMultiTable* appsConfigTable;
-};
-
 
 class FileManager : public Manager {
 public:
 	FileManager();
-	int write(Message*, Message&);
-        int read(Message*, Message&);
+	int write(std::vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table);
+	int read(Fileviewmultirow* aRow, FileviewMultiTable* table);
 	~FileManager();  
-
-private:
-	FileviewMultiTable* fileTable;
-};
-
-
-class ECWriteManager : public Manager {
-public:
-	ECWriteManager();
-	int write(Message*, Message&);
-	~ECWriteManager();  
-
-private:
-	EvcollviewMultiTable* ecTable;
-};
-
-/*
-class AssignRoleManager : public Manager {
-public:
-	AssignRoleManager();
-	int write(Message*, Message&);
-	~AssignRoleManager();  
-
-private:
-	AdministrativeMultiTable* assignRoleTable;
-};
-
-*/
-class PersonManager : public Manager {
-public:
-	PersonManager();
-	int write(Message*, Message&);
-	~PersonManager();  
-
-private:
-	PersonMultiTable* personTable;
-};
-/*
-class RoleManager : public Manager {
-public:
-	RoleManager();
-	int write(Message*, Message&);
-	~RoleManager();  
-
-private:
-	RoleMultiTable* roleTable;
-};
-*/
-
-class AnalysisDatasetManager : public Manager {
-public:
-	AnalysisDatasetManager();
-	int write(Message*, Message&);
-	~AnalysisDatasetManager();  
-
-private:
-	AnalysisdatasetMultiTable* analysisDatasetTable;
-};
-
-class PhysicsGroupManager : public Manager {
-public:
-	PhysicsGroupManager();
-	int write(Message*, Message&);
-	~PhysicsGroupManager();  
-
-private:
-	PhysicsgroupMultiTable* physicsgroupTable;
 };
 
 class BlockManager : public Manager {
 public:
 	BlockManager();
-	int write(Message*, Message&);
+	int write(Blockviewmultirow* aRow, BlockviewMultiTable* table);
+	int read(Blockviewmultirow* aRow, BlockviewMultiTable* table);
 	~BlockManager();  
-
-private:
-	BlockviewMultiTable* blockTable;
 };
 
+
+class DatasetProvcChildManager : public Manager {
+public:
+	DatasetProvcChildManager();
+	int write(Datasetprovenenceevchildmultirow* aRow, DatasetprovenenceevchildMultiTable* table);
+	int read(Datasetprovenenceevchildmultirow* aRow, DatasetprovenenceevchildMultiTable* table);
+	~DatasetProvcChildManager();  
+};
+
+class DatasetProvcParentManager : public Manager {
+public:
+	DatasetProvcParentManager();
+	int write(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table);
+	int read(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table);
+	~DatasetProvcParentManager();  
+};
+
+class CrabECManager : public Manager {
+public:
+	CrabECManager();
+	int write(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table);
+	int read(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table);
+	~CrabECManager();  
+};
 
 #endif

@@ -1,41 +1,23 @@
 #include "Managers.hpp"
-#include <string>
+#include "Util.hpp"
 
 BlockManager::BlockManager() {
-	blockTable = new BlockviewMultiTable(dbManager);
 }
 
+int BlockManager::write(Blockviewmultirow* aRow, BlockviewMultiTable* table) {
+	table->addRow(aRow);
+	return this->doWrite((TableInterface*)table, (string)"t_block.id");
+}
 
-int BlockManager::write(Message* msgReceived, Message& msgReturned) {
-
-  /*****************************
-   ******************************/
-
-	Blockviewmultirow* aRow = new Blockviewmultirow();
-	int retval = setRowValues(blockTable, aRow, msgReceived,"",0);
-	blockTable->addRow(aRow);
-
-	if (!this->doInsert((TableInterface*)blockTable, msgReturned) ) { 
-		return 0;
-	}
-	msgReturned.setName("BlockInsert");
-	string name = "t_block.id";
-	string dataType = "INTEGER";
-	if(!util.isSet(aRow, name, dataType ) ) {
-		return 0;
-	}
-	string value = util.getStrValue(aRow, name, dataType);
-	Element* e = new Element(util.getTokenAt(name,1), value, dataType);
-	msgReturned.addElement(e);
-	
+int BlockManager::read(Blockviewmultirow* aRow, BlockviewMultiTable* table) {
+	table->setDBManager(dbManager);
+	string clause = this->makeClause(table, aRow);
+ 	table->select(clause);
 	return 1;
-
 }
+
 
 BlockManager::~BlockManager() {
-        
-	//cout<<"Destructor of BlockManager()"<<endl;
-	delete blockTable;
         this->cleanup(); 
 }
 

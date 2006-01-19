@@ -3,7 +3,6 @@
 #include "ObjectLayerException.hpp"
 #include "BizLayerException.hpp"
 #include "DBException.hpp"
-#include "Message.hpp"
 #include "TableInterface.hpp"
 #include "Log.hpp"
 
@@ -24,8 +23,17 @@ Manager::Manager(){
 
 }
 
+int Manager::doWrite(TableInterface* inTable, string name) {
+	inTable->setDBManager(dbManager);
+	this->doInsert(inTable);
+	if(inTable->getNoOfRows() > 0) {
+		string value = inTable->getStrValue(0, name);
+		return util.atoi(value);
+	}
+	return 0;
+}
 
-int Manager::doInsert(TableInterface* inTable, Message& msgReturned) {
+int Manager::doInsert(TableInterface* inTable) {
 	// This function actuallly performs the insert operation for the child managers.
 	dbManager->beginTransection();
 	try {
@@ -36,131 +44,34 @@ int Manager::doInsert(TableInterface* inTable, Message& msgReturned) {
 		//cout<<"Rolling back the whole transection"<<endl;
 		LOG4CXX_DEBUG(logger,"Rolling back the whole transection");
 		dbManager->rollback();
-		msgReturned.setException(e.report());
 		throw BizLayerException(e.report());
-		//return 0;  //Error condition
 	}
 	dbManager->endTransection();
 	return 1;  //success
 }
 
-int Manager::makeMessage(TableInterface* inTable, RowIter b, RowIter e, Message& msgReturned) {
-	// This function actuallly performs the select operation for the child managers.
-	typedef std::vector<Element*> Data;
-	typedef std::vector<Data*> VecData;
-
-        //cout << "Manager::makeMessage" << endl; 
-
-	this->schema = inTable->getSchema();
-	try {
-		VecData* vd = new VecData();
-		for(RowIter i = b; i != e; ++i) {
-			Data* d = new Data();
-			for(Dictionary_iter j = this->schema->begin(); j != this->schema->end(); ++j) {
-                                //cout << "Manager::makeMessage Doing isSet" << j->first << endl;
-				if(this->util.isSet(*i, j->first, j->second ) ) {
-                                        //cout << "Manager::makeMessage Doing getStrValue" << endl;
-					//Element* e = new Element(this->util.getTokenAt(j->first,1), 
-					Element* e = new Element(j->first, 
-							this->util.getStrValue(*i, j->first, j->second) , 
-							j->second);
-                                        //cout << "Manager::makeMessage Done getStrValue" << endl; 
-					d->push_back(e);
-				}
-			}
-			vd->push_back(d);
-		}
-		msgReturned.addVecOfVecOfElement(vd,"ROWS");
-
-	} catch (ObjectLayerException &e)  {
-		msgReturned.setException(e.report());
-		throw BizLayerException(e.report());
-		//return 0;  //Error condition
-	}
-	return 1;  //success
-}
 
 
-string Manager::findKeyMakeQuery(Message* msgReceived) {
-
-      string queryPlus = "";
-      int first = 1;
-       for(int i = 0 ; i < msgReceived->getNoOfElements(); ++i) {
-                Element* e = msgReceived->getElement(i);
-                string key = e->getKey();
-                string value = e->getValue();
-                string type = e->getType();
-
-                if ( value == "NOTFOUND" ) {
-                    continue;
-                } 
-
-                //cout<<"Key is "<<e->getKey()<<endl;
-                //cout<<"Value is "<<e->getValue()<<endl;
-                //cout<<"Type is "<<e->getType()<<endl;
-                /* 
-                if (first != 1) {
-                    queryPlus += " AND ";
-                }*/
-                if ( type == "STRING") {
-                   queryPlus += key+"='"+value+"' AND ";
-                }  else {
-                   queryPlus += key+"="+value+" AND ";  
-                } 
-		
-       }  
-	if(queryPlus.length() > 0) {
-		queryPlus = util.eraseEndChars(queryPlus,5);
-	}
-       //cout <<"queryPlus " << queryPlus << endl;
-       return queryPlus;
-}
-
-
-//int Manager::setRowValues(TableInterface* inTable, RowInterface* rowPtr, Message* message) {
-int Manager::setRowValues(TableInterface* inTable, RowInterface* rowPtr, Message* message, string listName, int index) {
+string Manager::makeClause(TableInterface* inTable, RowInterface* aRow) {
 	Dictionary* schema = inTable->getSchema();
-	for(Dictionary_iter schemaIterator = schema->begin();
-		schemaIterator != schema->end(); schemaIterator++) {
-		//string paramName = util.getTokenAt(schemaIterator->first, 1);
-		string paramName = schemaIterator->first;
-                //cout << "NAME OF PAram in setRowValues " << paramName << endl;
-		string value = message->getElementValue(paramName);
-		if ( value == "NOTFOUND" ) {
-			value = message->getElementValue(paramName, listName, index);
-			//cout<<paramName <<" 's value NOTFOUND"<<endl;
-      			if ( value == "NOTFOUND" ) {
-				continue; 
-			}
-		} else {
-			//cout<<"paramName is "<<value<<endl;
-			LOG4CXX_DEBUG(logger,"paramName is " + value);
-		}
-		//cout<<"calling util.setValue"<<endl;
-		util.setValue(rowPtr, schemaIterator->first, schemaIterator->second, value);
-		//cout<<"Done calling util.setValue"<<endl;
-   	}
-	//cout<<"returnning from Manager::setRowValues"<<endl;
-	return 1;
+	Dictionary* multiRefrences = inTable->getMultiRefrence();
+	util.setSchema(schema);
+	SQL* sql = new SQL(&util);
+	Keys tempKeys;
+	for(Dictionary_iter schemaIterator = schema->begin(); schemaIterator != schema->end(); ++schemaIterator) {
+		tempKeys.push_back(schemaIterator->first);
+	}
+	string clause = sql->makeClause(aRow, tempKeys.begin(), tempKeys.end(), multiRefrences->begin(), multiRefrences->end());
+	delete sql;
+	return clause;
 }
-
 
 void Manager::cleanup() {
-        //cout<<"closing inside Superclass Manager"<<endl;
         this->dbManager->close();
-        //cout<<"Deleting dbManager"<<endl;
         delete this->dbManager;
-        //cout<<"Out of manager"<<endl;
 }
  
 Manager::~Manager() {
-        /*
-	cout<<"closing inside Suoerclass Manager"<<endl;
-	this->dbManager->close();
-	cout<<"Deleting dbManager"<<endl;
-	delete this->dbManager;
-	cout<<"Out of manager"<<endl;
-        */
 }
 
 	

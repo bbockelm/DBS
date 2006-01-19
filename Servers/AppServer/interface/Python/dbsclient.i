@@ -3,16 +3,28 @@
 	%{
 		#include "../../include/common.hpp"
 		#include "../../include/DBSClient.hpp"
-		#include "../../include/ClientDataStructure.hpp"
-		#include "../../include/ClientAPIData.hpp"
+		#include "../../include/BaseSchemaNConstratints.hpp"
+		#include "../../include/RowInterface.hpp"
+		#include "../../include/Util.hpp"
+		#include "../../include/RowNSchemaBinding.hpp"
+		#include "../../include/ObjectLayerTables.hpp"
+		#include "../../include/MultiTableInterface.hpp"
+		#include "../../include/TableTemplate.hpp"
+		#include "../../include/TableInterface.hpp"
 	%}
  
  
 // Parse the original header file
 	%include "../../include/common.hpp"
 	%include "../../include/DBSClient.hpp"
-	%include "../../include/ClientDataStructure.hpp"
-	%include "../../include/ClientAPIData.hpp"
+	%include "../../include/ObjectLayerTables.hpp"
+	%include "../../include/BaseSchemaNConstratints.hpp"
+	%include "../../include/RowInterface.hpp"
+	%include "../../include/Util.hpp"
+	%include "../../include/RowNSchemaBinding.hpp"
+	%include "../../include/MultiTableInterface.hpp"
+	%include "../../include/TableTemplate.hpp"
+	%include "../../include/TableInterface.hpp"
 	%include "std_vector.i"
 	%include "std_string.i"
 	%include "cpointer.i"
@@ -29,13 +41,40 @@
 	%pointer_functions(int, intp);
 	%pointer_functions(string, stringp);
 
-	%template(EVCollVector) std::vector<Evcollview_ClientAPIData>;
-	%template(EVCollFileVector) std::vector<Fileview_ClientAPIData>;
-	%template(PriDSVector) std::vector<Primarydataset_ClientAPIData>;
-	%template(ProPathVector) std::vector<Processingpath_ClientAPIData>;
-        %template(DSProvParentVector) std::vector<Datasetprovenenceevparent_ClientAPIData>;
-        %template(DSProvChildVector) std::vector<Datasetprovenenceevchild_ClientAPIData>;     
-        %template(CrabEvcollVector) std::vector<Crabevcollview_ClientAPIData>;
+
+	%template(PrimarydatasetMultiTableTemplate) TableTemplate<Primarydatasetmultirow>;
+        %template(PrimarydatasetMultiTable) MultiTableInterface<Primarydatasetmultirow>;
+	%template(PrimarydatasetVector) std::vector<Primarydatasetmultirow*>;
+
+	%template(ProcessingpathMultiTableTemplate) TableTemplate<Processingpathmultirow>;
+        %template(ProcessingpathMultiTable) MultiTableInterface<Processingpathmultirow>;
+	%template(ProcessingpathVector) std::vector<Processingpathmultirow*>;
+
+	%template(EvcollviewMultiTableTemplate) TableTemplate<Evcollviewmultirow>;
+        %template(EvcollviewMultiTable) MultiTableInterface<Evcollviewmultirow>;
+	%template(EvcollviewVector) std::vector<Evcollviewmultirow*>;
+
+	%template(FileviewMultiTableTemplate) TableTemplate<Fileviewmultirow>;
+        %template(FileviewMultiTable) MultiTableInterface<Fileviewmultirow>;
+	%template(FileVector) std::vector<Fileviewmultirow*>;
+
+	%template(BlockviewMultiTableTemplate) TableTemplate<Blockviewmultirow>;
+        %template(BlockviewMultiTable) MultiTableInterface<Blockviewmultirow>;
+	%template(BlockviewVector) std::vector<Blockviewmultirow*>;
+
+	%template(DatasetprovenenceevparentMultiTableTemplate) TableTemplate<Datasetprovenenceevparentmultirow>;
+        %template(DatasetprovenenceevparentMultiTable) MultiTableInterface<Datasetprovenenceevparentmultirow>;
+	%template(DatasetprovenenceevparentVector) std::vector<Datasetprovenenceevparentmultirow*>;
+
+	%template(DatasetprovenenceevchildMultiTableTemplate) TableTemplate<Datasetprovenenceevchildmultirow>;
+        %template(DatasetprovenenceevchildMultiTable) MultiTableInterface<Datasetprovenenceevchildmultirow>;
+	%template(DatasetprovenenceevchildVector) std::vector<Datasetprovenenceevchildmultirow*>;
+
+	%template(CrabevcollviewMultiTableTemplate) TableTemplate<Crabevcollviewmultirow>;
+        %template(CrabevcollviewMultiTable) MultiTableInterface<Crabevcollviewmultirow>;
+	%template(CrabevcollviewVector) std::vector<Crabevcollviewmultirow*>;
+
+
 
 	%extend DBSClient {
 		static std::string str(char* s){

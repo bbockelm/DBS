@@ -88,7 +88,11 @@ class DbsEventCollection(dbsObject.DbsObject):
       self[FILE_LIST_TAG_].append(newFile)
 
     self.setNamespace(WSDL_NAMESPACE_)
-    
+ 
+  def setCollectionId(self, collectionId):
+    """ Retrieve collection id. """
+    self[EVENT_COLLECTION_ID_TAG_] = int(collectionId)
+   
   def getCollectionId(self):
     """ Retrieve collection id. """
     result = self.get(EVENT_COLLECTION_ID_TAG_) 

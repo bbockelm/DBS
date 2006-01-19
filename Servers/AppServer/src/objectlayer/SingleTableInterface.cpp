@@ -53,14 +53,15 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 			}
 			delete rs;
 			//cout<<"done  convertIntoRow"<<endl;
-			bool isConsistantVal = util.isConsistant(aRowFromDB,aRow);
+			string message;
+			bool isConsistantVal = util.isConsistant(aRowFromDB, aRow, message);
 			delete aRowFromDB;
 			if( isConsistantVal ) {
 				cout<<"The data is consistant and there is no need to do insert"<<endl;
 				return;
 				//throw ObjectLayerException("The data is consistant and there is no need to do insert");
 			} else {
-				throw ObjectLayerException("Data your are trying to insert is inconsistant with data already in DB");
+				throw ObjectLayerException("Data your are trying to insert is inconsistant with data already in DB\n"+message);
 			}
 		} else {
 			delete rs;

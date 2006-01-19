@@ -8,8 +8,7 @@ echo "Staring SWIG Installation in $1"
 DBSDependDir=$1
 mkdir -p $DBSDependDir
 cd $DBSDependDir
-#wget http://cogent.dl.sourceforge.net/sourceforge/swig/swig-1.3.27.tar.gz
-wget http://internap.dl.sourceforge.net/sourceforge/swig/swig-1.3.27.tar.gz
+wget http://cogent.dl.sourceforge.net/sourceforge/swig/swig-1.3.27.tar.gz
 tar -zxf swig-1.3.27.tar.gz
 cd swig-1.3.27
 ./configure --prefix=$DBSDependDir/swig
