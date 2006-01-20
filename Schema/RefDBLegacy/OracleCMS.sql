@@ -12,7 +12,7 @@ create table t_person
 alter table t_person
   add constraint pk_person
   primary key (id)
-  using index tablespace INDX01;
+  using index tablespace CMS_DBS_INDX01;
 
 alter table t_person
   add constraint uq_person_name

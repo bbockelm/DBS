@@ -36,7 +36,7 @@ create table t_event_collection
 alter table t_data_tier
   add constraint pk_data_tier
   primary key (id)
-  using index tablespace INDX01;
+  using index tablespace CMS_DBS_INDX01;
 
 alter table t_data_tier
   add constraint uq_data_tier_name
@@ -46,7 +46,7 @@ alter table t_data_tier
 alter table t_primary_dataset
   add constraint pk_primary_dataset
   primary key (id)
-  using index tablespace INDX01;
+  using index tablespace CMS_DBS_INDX01;
 
 alter table t_primary_dataset
   add constraint uq_primary_dataset_name
@@ -56,7 +56,7 @@ alter table t_primary_dataset
 alter table t_processing_path
   add constraint pk_processing_path
   primary key (id)
-  using index tablespace INDX01;
+  using index tablespace CMS_DBS_INDX01;
 
 alter table t_processing_path
   add constraint uq_processing_path_key
@@ -78,7 +78,7 @@ alter table t_processing_path
 alter table t_processed_dataset
   add constraint pk_processed_dataset
   primary key (id)
-  using index tablespace INDX01;
+  using index tablespace CMS_DBS_INDX01;
 
 alter table t_processed_dataset
   add constraint uq_processed_dataset_key
@@ -102,7 +102,7 @@ alter table t_processed_dataset
 alter table t_event_collection
   add constraint pk_event_collection
   primary key (id)
-  using index tablespace INDX01;
+  using index tablespace CMS_DBS_INDX01;
 
 alter table t_event_collection
   add constraint uq_event_collection_key
@@ -116,4 +116,4 @@ alter table t_event_collection
 -- ======================================================================
 create index ix_processing_path_tier
   on t_processing_path (data_tier)
-  tablespace INDX01;
+  tablespace CMS_DBS_INDX01;
