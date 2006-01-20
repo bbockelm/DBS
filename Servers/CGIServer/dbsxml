@@ -110,6 +110,8 @@ $cmd .= "  -$api -to $outfile '$owner/$dataset'";
 
 my $rc = system("($cmd) > $diagfile 2>&1");
 my $diag = &slurp ($diagfile);
+&reply_failure (301, "Bad data tier", $diag)
+  if ($rc && $rc == 5 << 8);
 &reply_failure (401, "Execution error $rc", $diag)
   if ($rc);
 
