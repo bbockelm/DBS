@@ -20,8 +20,8 @@ alter table t_object_history
 -- ======================================================================
 create index ix_object_history_person
   on t_object_history (person)
-  tablespace CMS_DBS_INDX01;
+  tablespace INDX01;
 
 create index ix_object_history_mediator
   on t_object_history (mediator)
-  tablespace CMS_DBS_INDX01;
+  tablespace INDX01;

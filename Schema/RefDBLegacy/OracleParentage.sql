@@ -17,7 +17,7 @@ create table t_evcoll_parentage
 alter table t_parentage_type
   add constraint pk_parentage_type
   primary key (id)
-  using index tablespace CMS_DBS_INDX01;
+  using index tablespace INDX01;
 
 alter table t_parentage_type
   add constraint uq_parentage_type_name
@@ -27,7 +27,7 @@ alter table t_parentage_type
 alter table t_evcoll_parentage
   add constraint pk_evcoll_parentage
   primary key (id)
-  using index tablespace CMS_DBS_INDX01;
+  using index tablespace INDX01;
 
 alter table t_evcoll_parentage
   add constraint uq_evcoll_parentage
@@ -51,4 +51,4 @@ alter table t_evcoll_parentage
 -- ======================================================================
 create index ix_evcoll_parentage_type
   on t_evcoll_parentage (type)
-  tablespace CMS_DBS_INDX01;
+  tablespace INDX01;
