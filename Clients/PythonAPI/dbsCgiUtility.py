@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.6 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.7 2005/12/13 19:55:22 sveseli Exp $
 #
 # Class which uses CGI utilities to extract info from the db.
 #
@@ -107,6 +107,9 @@ class DbsCgiUtility:
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       urlResult = urllib2.urlopen(cgiUrl)
       xmlString = urlResult.read() 
+      print "DBS Status Code: %s" % urlResult.headers['Dbs-status-code']
+      print "DBS Status Message: %s" % urlResult.headers['Dbs-status-message']
+      print "XML: ", xmlString
     except urllib2.URLError, ex:
       # Cgi failed for some reason, determine exception to be raised.
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
@@ -166,6 +169,7 @@ class DbsCgiUtility:
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       urlResult = urllib2.urlopen(cgiUrl)
       xmlString = urlResult.read() 
+      print "XML: ", xmlString
     except urllib2.URLError, ex:
       # Cgi failed for some reason, determine exception to be raised.
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
