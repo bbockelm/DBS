@@ -4,7 +4,68 @@ import commands
 import string
 from rowRepresentation import rowRepresentation
 
-class writeSingleTablesCpp :
+class writeTablesIntoCpp :
+
+   def __init__(self) :
+      """Constructor"""
+      self.cppClasses=[]
+      self.mapList = []
+
+   def getShort(self, long):
+       short=''
+
+       totay=string.split(long, '_')
+
+       if long.find('_') != -1:
+         for aTota in totay:
+            short+=aTota[0]
+       for i in range(len(long)):
+          if long[i].isupper():
+             short+=long[i]
+
+       return short
+
+   def generateNameMap(self, cppClasses, tbl=1):
+      mapStrList = []
+      global_unique_vars = []
+      global_unique_counter = 1
+      mapStr = ""
+      newTmp = []
+      for eachClass in cppClasses:
+          #print eachClass.tableName()  
+          table = eachClass.tableName()
+          stable = self.getShort(table)
+          schemaDict = eachClass.getSchema()
+          if type(schemaDict) == type({}) :
+             for adict in schemaDict.keys():
+                tmp = {}
+                tmp[adict] = schemaDict[adict]
+                newTmp.append(tmp)
+             schemaDict = newTmp
+          for adict in schemaDict :
+            param = adict.keys()[0]
+            if param.find('_') != -1 :
+              var = self.getShort(adict.keys()[0])
+            else :
+              var = param
+            global_var = stable+'.'+var
+            if global_var in global_unique_vars :
+                 var = "%s%d" % (var, global_unique_counter)
+                 global_unique_counter = global_unique_counter + 1
+            global_unique_vars.append(global_var)
+            if tbl == 1 :
+               entry = table+'.'+param
+               mapStr = '\n        NameMap.insert(Entry("'+table+'.'+param+'", "'+stable+'.'+var+'"));'
+               if entry not in self.mapList:
+                  mapStrList.append(mapStr)
+                  self.mapList.append(entry)
+            else :
+               mapStr = '\n        NameMap.insert(Entry("'+param+'", "'+var+'"));'
+               if param not in self.mapList:
+                  self.mapList.append(param)
+                  mapStrList.append(mapStr)
+
+      return mapStrList
 
    def makeHppHeader(self) :
       """ Returns the Header for c++ .hpp file"""
@@ -71,20 +132,32 @@ class writeSingleTablesCpp :
       cppimpl.write('\n')
       cppimpl.close() 
 
-   def forOtherImpls(self) :
+   def writeTemplateInstances(self,  cppOutPath=os.getcwd(), \
+                cppFile = "TemplateInstances.cpp") :
       """General utility, returns text to be added to Table Template
       and SingleTableInterface.cpp files"""
       
-      output = "\n\n\nADD FOLLOWING TO TableTemplate.cpp file at Bottom\n"
+      #output = "\n\n\nADD FOLLOWING TO TableTemplate.cpp file at Bottom\n"
+      output='#include "TableTemplate.hpp"\n'
+      output+='#include "ObjectLayerTables.hpp"\n'
+      output+='#include "SingleTableInterface.hpp"\n'
+      output+='#include "MultiTableInterface.hpp"\n'
+
       for eachClass in self.cppClasses:
           output += eachClass.forTableTemplate()
 
-
-      output += "\n\n\nADD FOLLOWING TO SingleTableInterface.cpp"
-      output += "\nand MultiTableInterface.cpp Respectively at Bottom\n\n"  
+      #output += "\n\n\nADD FOLLOWING TO SingleTableInterface.cpp"
+      #output += "\nand MultiTableInterface.cpp Respectively at Bottom\n\n"  
+      output += '\n'
       for eachClass in self.cppClasses: 
           output += eachClass.forTableInterface()
-      return output
+      filepath = os.path.join(cppOutPath, cppFile)
+      cppimpl = open(filepath, 'w')
+      cppimpl.writelines(output)
+      cppimpl.write('\n')
+      cppimpl.close()
+
+      return
 
 
    def writeRowNSchemaBindingImpl(self, cppOutPath=os.getcwd(), \
@@ -156,10 +229,26 @@ class writeSingleTablesCpp :
    def foundTables(self):
       return self.cppClasses
          
-   cppClasses=[]
 
    def removeDot(self, key):
       return key.replace('.','_') 
+
+
+   def writeNameMaper(self, mapStrList, cppOutPath=os.getcwd(), \
+                cppFile = "NameMaper.cpp"):
+       """ Function that writes NameMapper.cpp file"""
+
+       mapStr = '#include "NameMaper.hpp"'
+       mapStr += '\nNameMaper::NameMaper(){'
+       for anItem in mapStrList:
+          mapStr += anItem
+       mapStr += '\n}'
+       filepath = os.path.join(cppOutPath, cppFile)
+       cppimpl = open(filepath, 'w')
+       cppimpl.writelines(mapStr)
+       cppimpl.write('\n')
+       cppimpl.close()
+
  
    def writeClientDataStructure(self, cppOutPath=os.getcwd(), \
                 cppFile = "ClientAPIData.cpp", hppOutPath=os.getcwd(),  \
@@ -315,42 +404,4 @@ class writeSingleTablesCpp :
       cppimpl.write('\n')
       cppimpl.close() 
 
-
-def writeNameMap(cppClasses):
-   #import pdb
-   #pdb.set_trace()
-
-   mapStr = "#ifndef _namemap_included_"
-   mapStr += "#define _namemap_included_"
-   mapStr =  "\n#include <string>"
-   mapStr += '\n#include "common.hpp"'
-   mapStr += '\nclass NameMaper {'
-   mapStr += '\npublic:'
-   mapStr += '\n    NameMaper(){'
-
-   for eachClass in cppClasses:
-       #print eachClass.tableName()  
-       table = eachClass.tableName()
-       stable = getShort(table)
-       schemaDict = eachClass.schema
-       for adict in schemaDict :
-         param = adict.keys()[0]
-         if param.find('_') != -1 :
-           mapStr += '\n    NameMap.insert(Entry("'+table+'.'+param+'", '+stable+'.'+getShort(adict.keys()[0])+'));'
-           print param, "   ", getShort(adict.keys()[0])
-         else :
-           mapStr += '\n    NameMap.insert(Entry("'+table+'.'+param+'", '+stable+'.'+param+'));'
-           print param, "   ", param
-   mapStr += '\npublic:'
-   mapStr += '\n    Dictionary NameMap;'
-   mapStr += '\n}'
-   mapStr += "\n#endif"
-
-   filepath = "NameMaper.hpp"
-   cppimpl = open(filepath, 'w')
-   cppimpl.writelines(mapStr)
-   cppimpl.write('\n')
-   cppimpl.close()
-
-   #print mapStr
 
