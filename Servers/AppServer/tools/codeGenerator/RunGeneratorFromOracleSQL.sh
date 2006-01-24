@@ -32,8 +32,9 @@ cp ObjectLayerTables.hpp ../../include/
 cp RowNSchemaBinding.cpp ../../src/objectlayer/
 cp TableFactory.cpp ../../src/objectlayer/
 cp NameMaper.cpp ../../src/objectlayer/
-cp ClientAPIData.hpp ../../include/
-cp ClientAPIData.cpp ../../src/clientlayer/
-#
-echo "Do the Other.impl Manullay"
+#cp ClientAPIData.hpp ../../include/
+#cp ClientAPIData.cpp ../../src/clientlayer/
+cp TemplateInstances.cpp ../../src/objectlayer/
+
+
 #
