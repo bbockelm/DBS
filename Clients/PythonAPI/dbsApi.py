@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApi.py,v 1.7 2005/12/13 14:44:20 sveseli Exp $
+# $Id: dbsApi.py,v 1.8 2005/12/13 17:55:27 sveseli Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -29,6 +29,12 @@ class DbsApiException(dbsException.DbsException):
     dbsException.DbsException.__init__(self, **kwargs)
 
 class InvalidDatasetPathName(DbsApiException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsApiException.__init__(self, **kwargs)
+
+class InvalidDataTier(DbsApiException):
 
   def __init__ (self, **kwargs):
     """ Initialization. """
