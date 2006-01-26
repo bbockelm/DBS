@@ -6,7 +6,8 @@ if [ $# -lt 1 ]; then
    exit 1
 fi
 #  Read Parameters
-SchemaFilesPath=$1
+#SchemaFilesPath=$1
+SchemaFilesPath=/home/anzar/TEST/DMS/DBS/prototypes/proto_0/sql/
 #SchemaFilesPath=$PWD/LatestSQL
 #
 #
@@ -27,14 +28,22 @@ echo "Invoking code generator".
 #
 python2 GenCPPFromSQL.py
 #
+#
+cp ../../src/objectlayer/SingleTableInterface.cpp ../../src/objectlayer/SingleTableInterface.cpp.b4codeGen
+cp ../../src/objectlayer/MultiTableInterface.cpp ../../src/objectlayer/MultiTableInterface.cpp.b4codeGen
+cp ../../src/objectlayer/TableTemplate.cpp ../../src/objectlayer/TableTemplate.cpp.b4codeGen
+
 cp ObjectLayerTables.cpp  ../../src/objectlayer/
 cp ObjectLayerTables.hpp ../../include/
+cp SingleTableInterface.cpp ../../src/objectlayer/
+cp MultiTableInterface.cpp ../../src/objectlayer/
+cp TableTemplate.cpp ../../src/objectlayer/
 cp RowNSchemaBinding.cpp ../../src/objectlayer/
 cp TableFactory.cpp ../../src/objectlayer/
 cp NameMaper.cpp ../../src/objectlayer/
 #cp ClientAPIData.hpp ../../include/
 #cp ClientAPIData.cpp ../../src/clientlayer/
-cp TemplateInstances.cpp ../../src/objectlayer/
+#cp TemplateInstances.cpp ../../src/objectlayer/
 
 
 #

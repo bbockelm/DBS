@@ -41,7 +41,6 @@
 	%pointer_functions(int, intp);
 	%pointer_functions(string, stringp);
 
-
 	%template(PrimarydatasetMultiTableTemplate) TableTemplate<Primarydatasetmultirow>;
         %template(PrimarydatasetMultiTable) MultiTableInterface<Primarydatasetmultirow>;
 	%template(PrimarydatasetVector) std::vector<Primarydatasetmultirow*>;

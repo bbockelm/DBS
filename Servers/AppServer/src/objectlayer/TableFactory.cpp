@@ -3,16 +3,16 @@
 TableFactory::TableFactory() {
 }
 TableInterface* TableFactory::getTableObject(string tableName) {
-      if ( tableName.compare("t_schema_revisionrow") == 0 ) {
-         TableInterface* tmpPtr = new SingleTableInterface<T_Schema_Revisionrow>;
-         return tmpPtr;
-      }
       if ( tableName.compare("t_personrow") == 0 ) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Personrow>;
          return tmpPtr;
       }
       if ( tableName.compare("t_physics_grouprow") == 0 ) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Physics_Grouprow>;
+         return tmpPtr;
+      }
+      if ( tableName.compare("t_object_historyrow") == 0 ) {
+         TableInterface* tmpPtr = new SingleTableInterface<T_Object_Historyrow>;
          return tmpPtr;
       }
       if ( tableName.compare("t_collection_typerow") == 0 ) {
@@ -115,28 +115,12 @@ TableInterface* TableFactory::getTableObject(string tableName) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Evcoll_Statusrow>;
          return tmpPtr;
       }
-      if ( tableName.compare("t_run_qualityrow") == 0 ) {
-         TableInterface* tmpPtr = new SingleTableInterface<T_Run_Qualityrow>;
-         return tmpPtr;
-      }
       if ( tableName.compare("t_info_anadsrow") == 0 ) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Info_Anadsrow>;
          return tmpPtr;
       }
       if ( tableName.compare("t_info_evcollrow") == 0 ) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Info_Evcollrow>;
-         return tmpPtr;
-      }
-      if ( tableName.compare("t_runrow") == 0 ) {
-         TableInterface* tmpPtr = new SingleTableInterface<T_Runrow>;
-         return tmpPtr;
-      }
-      if ( tableName.compare("t_evcoll_runrow") == 0 ) {
-         TableInterface* tmpPtr = new SingleTableInterface<T_Evcoll_Runrow>;
-         return tmpPtr;
-      }
-      if ( tableName.compare("t_object_historyrow") == 0 ) {
-         TableInterface* tmpPtr = new SingleTableInterface<T_Object_Historyrow>;
          return tmpPtr;
       }
       if ( tableName.compare("insertappsmultirow") == 0 ) {

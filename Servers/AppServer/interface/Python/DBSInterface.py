@@ -4,8 +4,9 @@ import dbsProcessedDataset
 import dbsProcessingPath
 import dbsApplication
 import dbsPrimaryDataset
-import dbsFileBlock
 import dbsEventCollection
+import dbsFileBlock
+import dbsFile
 import dbsMonteCarloDescription
 from dbsDataset import * 
 
@@ -56,7 +57,7 @@ class DBSInterface(dbsApi.DbsApi):
         if(index != None and key != None):
                 if(index > -1) :
                         key = self.stringp(key)
-                        value = table.self.getStrValue(index, key)
+                        value = table.getStrValue(index, key)
                         self.delStringp(key)
                         return value
 
@@ -85,7 +86,7 @@ class DBSInterface(dbsApi.DbsApi):
       return primaryDatasetID
 
    def createProcessedDataset(self, processedDataset):
-      #return 23,24
+      #return 23
       try:
         processingPathID = processedDataset.getProcessingPath().getPathId()
         if processingPathID == None:
@@ -115,7 +116,7 @@ class DBSInterface(dbsApi.DbsApi):
              processingPathID = self.getProcessingPathID(dataset)
 	     print "processingPathID is ",processingPathID
 
-        apidata = dbsclient.Processingpath_ClientAPIData()
+        #apidata = dbsclient.Processingpath_ClientAPIData()
         pp = processedDataset.getProcessingPath()
         app = pp.getApplication()
 
@@ -140,28 +141,34 @@ class DBSInterface(dbsApi.DbsApi):
         #print "pp.getFullPath().split('/') ",pp.getFullPath().split('/')
         if(len(pp.getFullPath().split('/')) < 4 ):
              raise dbsApi.DbsApiException(args="Fullpath in t_processing_path is incorrect")
-
-	processedDatasetID = client.createProcessedDataset(aRow, table)
+	processedDatasetID = self.client.createProcessedDataset(aRow, table)
+        #print processedDatasetID
         processinPathID = self.getStrValue(table, "t_processing_path.id", 0)
+        #print processinPathID 
         print "processedDatasetID " ,processedDatasetID
         print "processingPathID " ,processinPathID
       except RuntimeError,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Processed Dataset ID ",processedDatasetID
-      return processedDatasetID,processinPathID
+      #return processedDatasetID,processinPathID
+      return processedDatasetID
 
    def getProcessedDatasetID(self, processedDataset):
         table = self.getProcessedDataset(processedDataset)
         proDsId = 0
-        if table.getNoOfRows() >= 1:
-          proDsId = self.getStrValue(table, "t_processed_dataset.id", 0)
-          if proPathVector.size() > 1:
-              print "More than one Processed Dataset found"
+        if table.getNoOfRows() > 0:
+          if table.getNoOfRows() > 1:
+              table.dispose()
+              raise dbsApi.DbsApiException(args="More than one Processed Dataset found")
+          else: 
+              proDsId = self.getStrValue(table, "t_processed_dataset.id", 0)
         else: 
            print "Processed Dataset not found"
-        table.dispose()
+           table.dispose()
+           raise dbsApi.DbsApiException(args="Processed Dataset not found")   
         
+        table.dispose()
         print "*********************************************************************"
         print "Processed DatasetID = ",proDsId
         print "*********************************************************************"
@@ -170,13 +177,17 @@ class DBSInterface(dbsApi.DbsApi):
    def getProcessingPathID(self, processedDataset):
         table = self.getProcessedDataset(processedDataset)
         proPathId = 0;
-        if table.getNoOfRows() >= 1:
-           proPathId = self.getStrValue(table, "t_processing_path.id", 0)
-           if proPathVector.size() > 1:
-              print "more than one Processed Dataset not found"
+        if table.getNoOfRows() > 0:
+           if table.getNoOfRows() > 1:
+              table.dispose()
+              raise dbsApi.DbsApiException(args="More than one processing path found") 
+           else :
+              proPathId = self.getStrValue(table, "t_processing_path.id", 0)
         else:
-           print "Processed Dataset not found"
+           table.dispose()
+           raise dbsApi.DbsApiException(args="No Processing Path found")
         table.dispose()
+
         print "*********************************************************************"
         print "Processing PathID = ",proPathId
         print "*********************************************************************"
@@ -217,6 +228,59 @@ class DBSInterface(dbsApi.DbsApi):
          raise dbsApi.DbsApiException(exception=e)
 
 
+   def getDatasetFileBlocks(self, processedDataset):
+
+      fileBlockList = []
+
+      #print "RETURNING AN EMPTY FILEBLOCK LIST" 
+      #return fileBlockList
+
+      try:
+        processedDatasetID = processedDataset.getProcessedDatasetID()
+        if processedDatasetID == None:
+           processedDatasetID = self.getProcessedDatasetID(processedDataset)
+        print "processedDatasetID ",processedDatasetID
+ 
+        aRow = dbsclient.Blockviewmultirow()
+        table = dbsclient.BlockviewMultiTable()
+
+        self.setIntValue(aRow, "t_processed_dataset.id",processedDatasetID )
+        self.client.readBlock(aRow, table)
+
+        #print "type(table)", type(table)
+        #print "dir(table)", dir(table)
+        #print "table.getNoOfRows() ", table.getNoOfRows()
+        
+        #print "RETURNING AN EMPTY FILEBLOCK LIST" 
+        #return fileBlockList
+        nrow = table.getNoOfRows() 
+        if nrow >= 1:
+           indx = 0
+           while indx < nrow :
+               blockId = self.getStrValue(table, "t_block.id", indx)
+               blockName = str(blockId)
+               blockStatusName = self.getStrValue(table, "t_block_status.name", indx)
+               numberOfFiles = self.getStrValue(table, "t_block.files", indx)
+               numberOfBytes = self.getStrValue(table, "t_block.bytes", indx)
+               processedDatasetName = self.getStrValue(table, "t_processed_dataset.name", indx) 
+
+               fileBlock = dbsFileBlock.DbsFileBlock(blockId=blockId, \
+                                                     blockName=blockName, \
+                                                     blockStatusName=blockStatusName, \
+                                                     numberOfFiles=numberOfFiles, \
+                                                     numberOfBytes=numberOfBytes ) 
+               fileBlockList.append(fileBlock) 
+               indx += 1
+        else:
+           print "No Blocks found in Processed Dataset"
+        table.dispose()
+
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+
+      return fileBlockList
+
 
    def createFileBlock(self, processedDataset, fileBlock):
 	
@@ -253,6 +317,7 @@ class DBSInterface(dbsApi.DbsApi):
            processedDatasetID = self.getProcessedDatasetID(processedDataset)
         print "processedDatasetID ",processedDatasetID
         if len(eventCollectionList) > 0:
+           print "In the loop!" 
            #return self.recInsertEC(eventCollectionList[0],processedDatasetID,parentageType)
            for ec in eventCollectionList:
            #return self.recInsertEC(eventCollectionList[0],processedDatasetID)
@@ -273,7 +338,22 @@ class DBSInterface(dbsApi.DbsApi):
       #print "\n**************************************************\n"
       #print "\n**************************************************\n"
       evCollID = 0
-      
+
+      #Biz Rule  ##Assert That user must provide FileList
+      if eventCollection.getFileList() in ([], None) :
+         print "You must provide FileList to Insert EventCollection"
+         raise dbsApi.DbsApiException(args="You must provide FileList to Insert EventCollection")    
+         return 
+
+      #Biz Rule test that all Files have same Block ID
+      firstBlockID = eventCollection.getFileList()[0].getFileBlockId()
+      for afile in eventCollection.getFileList():
+         blockId=afile.getFileBlockId()
+         if blockId != firstBlockID :
+            print "All files in same EvColl should have same Block ID"
+            raise dbsApi.DbsApiException(args="All files in same EvColl should have same Block ID")            
+            return
+ 
       if eventCollection.getParentEventCollection() != None:
          parentEC=eventCollection.getParentEventCollection()
          
@@ -322,6 +402,54 @@ class DBSInterface(dbsApi.DbsApi):
       return toReturnEvCollID
 
 
+   def listFilesByBlock(self, evCollID, blockID):
+
+      """ Get the list of files in a FileBlock/EventCollection"""
+      fileList=[]
+      try:
+         aRow = dbsclient.Fileviewmultirow()
+         table = dbsclient.FileviewMultiTable()
+
+         self.setIntValue(aRow, "t_evcoll_file.evcoll", evCollID)
+         self.setIntValue(aRow, "t_file.inblock", blockID)
+         self.client.readFiles(aRow, table)
+  
+         nrow = table.getNoOfRows()
+         print "listFilesByBlock:::::::::table.getNoOfRows()", table.getNoOfRows()
+         if nrow >= 1:
+           indx = 0
+           while indx < nrow :
+                #print "indx", indx
+                fileStatus = self.getStrValue(table, "t_file_status.name", indx)
+                #print "fileStatus", fileStatus
+                guid = self.getStrValue(table, "t_file.guid", indx)
+                #print "guid", guid 
+                #checkSum = self.getStrValue(table, "t_file.checksum", indx)
+                #print "checkSum", checkSum
+                logicalFileName = self.getStrValue(table, "t_file.logical_name", indx)
+                #print "logicalFileName", logicalFileName
+                fileBlockId = self.getStrValue(table, "t_file.inblock", indx)
+                #print "inblock", fileBlockId
+                fileType = self.getStrValue(table, "t_file_type.name", indx)
+                #print "fileType", fileType
+                fileSize = self.getStrValue(table, "t_file.filesize", indx)
+                #print "fileSize", fileSize
+                
+                afile = dbsFile.DbsFile(logicalFileName=logicalFileName, \
+                                guid=guid, \
+                                #checkSum=checkSum, \
+                                fileType=fileType, fileStatus=fileStatus, \
+                                fileBlockId=fileBlockId, fileSize=fileSize)
+                fileList.append(afile)  
+                indx += 1
+         else:
+           print "No File found in the Block/EventCollection"
+         table.dispose()
+ 
+      except RuntimeError,e:
+         print "Exception ", e
+         raise dbsApi.DbsApiException(exception=e)
+      return fileList
 
    def insertFiles(self, evCollID, files):
       try: 
@@ -348,62 +476,90 @@ class DBSInterface(dbsApi.DbsApi):
       print "File inserted succesfully ",len(files)
 
 
-
-   def getDatasetContents(self, pathName):
+   def getDatasetContents(self, pathName, listFiles=False):
       """public api method, that return details regarding EvColls
          contained in Processed Dataset
          Specifically the File Blocks and file there in.
          * Take pathName of form /PriDS/DT/ProcDS as input
          * For now dumps information on screen.
       """
-      # get the names of primary dataset, data tier and processed dataset
-      print "Inside getDatasetContents pathname is ",pathName
-      tokens = pathName.split('/')
-      primaryDSName = tokens[1]
-      dataTier = tokens[2]
-      processedDSName = tokens[3]
 
-      try :
-         evcollInfo = dbsclient.Crabevcollview_ClientAPIData()
-         evcollInfo.t_data_tier_name = dbsclient.ASTR(dataTier)
-         evcollInfo.t_primary_dataset_name = dbsclient.ASTR(primaryDSName)
-         evcollInfo.t_processed_dataset_name = dbsclient.ASTR(processedDSName)
-         evcollInfoRet = dbsclient.CrabEvcollVector()
-         self.client.readCRABEvColls(evcollInfo, evcollInfoRet)
+      fileBlockList = []
+      # get the names of primary dataset, data tier and processed dataset
+      print "Inside getDatasetContents,  PathName is ", pathName
+
+      try: 
+
+        tokens = pathName.split('/')
+        primaryDSName = tokens[1]
+        dataTier = tokens[2]
+        processedDSName = tokens[3]
+
+        table = dbsclient.CrabevcollviewMultiTable()
+        aRow = dbsclient.Crabevcollviewmultirow()
+
+        self.setStrValue(aRow, "t_data_tier.name", dataTier) 
+        self.setStrValue(aRow, "t_primary_dataset.name", primaryDSName)
+        self.setStrValue(aRow, "t_processed_dataset.name", processedDSName)
+        
+        self.client.readCrabEC(aRow, table)
+
+        nrow = table.getNoOfRows()
+        print "nrow:::::", nrow
+
+        if nrow >= 1:
+           blockECMap = {}
+           indx = 0
+           while indx < nrow :
+              print "indx:::", indx
+              blockId = self.getStrValue(table, "t_block.id", indx)
+              print "blockId", blockId
+              evcollName = self.getStrValue(table, "t_info_evcoll.name", indx)
+              print "evcollName", evcollName
+              events = self.getStrValue(table, "t_info_evcoll.events", indx)
+              print "events", events
+              evCollId = self.getStrValue(table, "t_event_collection.id", indx)
+              print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
+
+              if blockECMap.has_key(blockId):
+                 blockECMap[blockId].append((evcollName, events, evCollId))
+              else:
+                 blockECMap[blockId] = [(evcollName, events, evCollId)] 
+              indx += 1
+           for eachBlockId in blockECMap.keys():
+                  fileblockName = pathName+'/#'+str(eachBlockId)
+                  
+                  fileBlock = dbsFileBlock.DbsFileBlock(blockId=eachBlockId, blockName=fileblockName)
+                  # This list makes sure that we get Unique EvColls
+                  evCollList = []
+                  for evcollName, events, evCollId in blockECMap[eachBlockId]: 
+                      #print "CALLING listFilesByBlock"
+                      if listFiles != False :
+                         fileList = self.listFilesByBlock(evCollId, eachBlockId)
+                      else:
+                         fileList = [] 
+                      if evcollName not in evCollList :
+                         eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
+                         fileBlock.addEventCollection(eventCollection)
+                         evCollList.append(evcollName)
+                  print fileBlock
+                  fileBlockList.append(fileBlock)
+        else :
+            print "No file blocks found for the PathName", pathName 
       except RuntimeError,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
-      blockECMap = {}
-      for i in range( evcollInfoRet.size() ) :
-          print "************************************************************************************************"
-          currECInfo = evcollInfoRet[i]
-          blockid = dbsclient.intp_value(currECInfo.t_block_id.getValue())
-          evcollName = dbsclient.stringp_value(currECInfo.t_info_evcoll_name.getValue())
-          events = dbsclient.intp_value(currECInfo.t_info_evcoll_events.getValue())
-          print "blockid, evcollName, events", blockid, evcollName, events
-          if blockECMap.has_key(blockid):
-             blockECMap[blockid].append((evcollName, events)) 
-          else:
-             blockECMap[blockid] = [(evcollName, events)] 
-      #print blockECMap    
-      fileBlockList = []
-      for eachBlockId in blockECMap.keys():
-         fileblockName = pathName+'/#'+str(eachBlockId)
-         fileBlock = dbsFileBlock.DbsFileBlock(blockId=eachBlockId, blockName=fileblockName) 
-         for evcollName, events in blockECMap[eachBlockId]: 
-             eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events)
-             fileBlock.addEventCollection(eventCollection)
-         print fileBlock
-         fileBlockList.append(fileBlock)
 
       return fileBlockList  
-
 
    def getDatasetProvenance(self, pathName, parentDataTiers):
       """ API Call that returns list of DBS 
            Datasets (Processed/Analysis) corresponding 
            to all parent datatiers requested by user
       """ 
+
+      raise dbsApi.DbsApiException(args="getDatasetProvenance() API Call Not Implemented")
+      
       # get the names of primary dataset, data tier and processed dataset
       tokens = pathName.split('/')
       primaryDSName = tokens[1]
@@ -499,7 +655,7 @@ class DBSInterface(dbsApi.DbsApi):
 
       return provInfoRet
 
-
+   """
    def readPrimaryDataset(self, prdsName):
         primaryDSInfo = dbsclient.Primarydataset_ClientAPIData()
         primaryDSInfo.t_primary_dataset_name = dbsclient.ASTR(prdsName)
@@ -534,7 +690,7 @@ class DBSInterface(dbsApi.DbsApi):
 		print "data tiername = ",dbsclient.stringp_value(proPathVector[i].t_data_tier_name.getValue())
 
         return procDSIds 
-
+   """
    def readEvColls(self, proDsId):
         evCollInfoList = []
 	evCollVector = dbsclient.EVCollVector()
@@ -601,6 +757,7 @@ if __name__ == "__main__" :
                                 triggerDescription="lalal",
                                 monteCarloDescription=mc)
      primaryDatasetId = mycrab.createPrimaryDataset(dataset)
+
 
    #mycrab.getDatasetContents("/hg03_H2mu_ma300_tb30/Hit/hg_Hit752_g133") 
 

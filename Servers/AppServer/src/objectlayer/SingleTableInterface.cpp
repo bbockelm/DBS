@@ -84,9 +84,24 @@ void SingleTableInterface<R>::delRows() {
 */
 
 
-template SingleTableInterface<T_Schema_Revisionrow>;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template SingleTableInterface<T_Personrow>;
 template SingleTableInterface<T_Physics_Grouprow>;
+template SingleTableInterface<T_Object_Historyrow>;
 template SingleTableInterface<T_Collection_Typerow>;
 template SingleTableInterface<T_App_Familyrow>;
 template SingleTableInterface<T_Applicationrow>;
@@ -112,10 +127,5 @@ template SingleTableInterface<T_Evcoll_Filerow>;
 template SingleTableInterface<T_Validation_Statusrow>;
 template SingleTableInterface<T_Dataset_Statusrow>;
 template SingleTableInterface<T_Evcoll_Statusrow>;
-template SingleTableInterface<T_Run_Qualityrow>;
 template SingleTableInterface<T_Info_Anadsrow>;
 template SingleTableInterface<T_Info_Evcollrow>;
-template SingleTableInterface<T_Runrow>;
-template SingleTableInterface<T_Evcoll_Runrow>;
-template SingleTableInterface<T_Object_Historyrow>;
-

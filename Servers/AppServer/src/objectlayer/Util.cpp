@@ -245,6 +245,7 @@ void Util::setValue(RowInterface* aRow, string name, string dataType, string val
 		int intValue  = atoi(value.c_str());
 		//cout<<" INTEGER "<<name<<" value is "<<intValue<<endl;
 		aRow->setValue(name,&intValue );
+                //cout << "DONE................AAAAAAA"<<endl; 
 	}
         if( dataType == "FLOAT" ) {
                 float floatValue  = this->atof(value);

@@ -1,13 +1,18 @@
 #include "NameMaper.hpp"
 NameMaper::NameMaper(){
-        NameMap.insert(Entry("t_schema_revision.revision", "tsr.revision"));
         NameMap.insert(Entry("t_person.id", "tp.id"));
         NameMap.insert(Entry("t_person.name", "tp.name"));
-        NameMap.insert(Entry("t_person.distinguised_name", "tp.dn"));
-        NameMap.insert(Entry("t_person.contactinfo", "tp.contactinfo"));
+        NameMap.insert(Entry("t_person.distinguished_name", "tp.dn"));
+        NameMap.insert(Entry("t_person.contact_info", "tp.ci"));
         NameMap.insert(Entry("t_physics_group.id", "tpg.id"));
         NameMap.insert(Entry("t_physics_group.name", "tpg.name"));
         NameMap.insert(Entry("t_physics_group.convenor", "tpg.convenor"));
+        NameMap.insert(Entry("t_object_history.object_type", "toh.ot"));
+        NameMap.insert(Entry("t_object_history.object_id", "toh.oi"));
+        NameMap.insert(Entry("t_object_history.operation", "toh.operation"));
+        NameMap.insert(Entry("t_object_history.at", "toh.at"));
+        NameMap.insert(Entry("t_object_history.person", "toh.person"));
+        NameMap.insert(Entry("t_object_history.mediator", "toh.mediator"));
         NameMap.insert(Entry("t_collection_type.id", "tct.id"));
         NameMap.insert(Entry("t_collection_type.name", "tct.name"));
         NameMap.insert(Entry("t_app_family.id", "taf.id"));
@@ -58,7 +63,6 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_anads_data.id", "tad.id4"));
         NameMap.insert(Entry("t_anads_data.analysis_dataset", "tad.ad"));
         NameMap.insert(Entry("t_anads_data.event_collection", "tad.ec"));
-        NameMap.insert(Entry("t_anads_data.is_primary", "tad.ip"));
         NameMap.insert(Entry("t_parentage_type.id", "tpt.id"));
         NameMap.insert(Entry("t_parentage_type.name", "tpt.name"));
         NameMap.insert(Entry("t_evcoll_parentage.id", "tep.id"));
@@ -79,7 +83,6 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_file.id", "tf.id"));
         NameMap.insert(Entry("t_file.guid", "tf.guid"));
         NameMap.insert(Entry("t_file.logical_name", "tf.ln"));
-        NameMap.insert(Entry("t_file.checksum", "tf.checksum"));
         NameMap.insert(Entry("t_file.filesize", "tf.filesize"));
         NameMap.insert(Entry("t_file.status", "tf.status"));
         NameMap.insert(Entry("t_file.type", "tf.type"));
@@ -93,32 +96,19 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_dataset_status.name", "tds.name"));
         NameMap.insert(Entry("t_evcoll_status.id", "tes.id"));
         NameMap.insert(Entry("t_evcoll_status.name", "tes.name"));
-        NameMap.insert(Entry("t_run_quality.id", "trq.id"));
-        NameMap.insert(Entry("t_run_quality.name", "trq.name"));
         NameMap.insert(Entry("t_info_anads.analysis_dataset", "tia.ad"));
         NameMap.insert(Entry("t_info_anads.events", "tia.events"));
-        NameMap.insert(Entry("t_info_anads.estimated_luminiosity", "tia.el"));
+        NameMap.insert(Entry("t_info_anads.estimated_luminosity", "tia.el"));
         NameMap.insert(Entry("t_info_anads.status", "tia.status"));
         NameMap.insert(Entry("t_info_anads.validation_status", "tia.vs"));
         NameMap.insert(Entry("t_info_evcoll.event_collection", "tie.ec"));
         NameMap.insert(Entry("t_info_evcoll.events", "tie.events"));
         NameMap.insert(Entry("t_info_evcoll.estimated_luminosity", "tie.el"));
+        NameMap.insert(Entry("t_info_evcoll.status", "tie.status"));
         NameMap.insert(Entry("t_info_evcoll.validation_status", "tie.vs"));
         NameMap.insert(Entry("t_info_evcoll.name", "tie.name"));
-        NameMap.insert(Entry("t_info_evcoll.status", "tie.status"));
-        NameMap.insert(Entry("t_run.id", "tr.id"));
-        NameMap.insert(Entry("t_run.run_number", "tr.rn"));
-        NameMap.insert(Entry("t_run.run_quality", "tr.rq"));
-        NameMap.insert(Entry("t_evcoll_run.event_collection", "ter.ec"));
-        NameMap.insert(Entry("t_evcoll_run.run", "ter.run"));
-        NameMap.insert(Entry("t_object_history.object_type", "toh.ot"));
-        NameMap.insert(Entry("t_object_history.object_id", "toh.oi"));
-        NameMap.insert(Entry("t_object_history.operation", "toh.operation"));
-        NameMap.insert(Entry("t_object_history.at", "toh.at"));
-        NameMap.insert(Entry("t_object_history.person", "toh.person"));
-        NameMap.insert(Entry("t_object_history.mediator", "toh.mediator"));
         NameMap.insert(Entry("t_collection_type.name.t_application.output_type", "tctat"));
+        NameMap.insert(Entry("t_collection_type.id.t_application.output_type", "tctat1"));
         NameMap.insert(Entry("t_collection_type.id.t_application.input_type", "tctat2"));
-        NameMap.insert(Entry("t_collection_type.id.t_application.output_type", "tctat6"));
         NameMap.insert(Entry("t_collection_type.name.t_application.input_type", "tctat7"));
 }

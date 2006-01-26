@@ -18,7 +18,7 @@ LOGOBJECTS:=../src/common/log/Log.o
 #MAIN_CLIENT=CrabClient.cpp
 MAIN_BIZ=manTest.cpp
 MAIN_DB=dbTest.cpp
-MAIN_OB=objTest.cpp
+MAIN_OB=objTest2.cpp
 MAIN_MSG=msgTest.cpp
 MAIN_CRAB=CrabClient.cpp
 

@@ -13,34 +13,6 @@
 #include "MultiTableInterface.hpp"
 
 
-class T_Schema_Revisionrow  : public RowInterface {
-public:
-     T_Schema_Revisionrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     STRING revision;
-};
-
-class  T_Schema_Revisionrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Schema_Revisionrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Schema_Revisionrow> {
-   public:
- T_Schema_Revisionrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
 class T_Personrow  : public RowInterface {
 public:
      T_Personrow();
@@ -52,8 +24,8 @@ public:
 private:
      INTEGER id;
      STRING name;
-     STRING distinguised_name;
-     STRING contactinfo;
+     STRING distinguished_name;
+     STRING contact_info;
 };
 
 class  T_Personrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -98,6 +70,39 @@ template<>
 class RowSchemaNConstraintsBinding<T_Physics_Grouprow> {
    public:
  T_Physics_Grouprow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
+class T_Object_Historyrow  : public RowInterface {
+public:
+     T_Object_Historyrow();
+
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+     STRING object_type;
+     INTEGER object_id;
+     STRING operation;
+     FLOAT at;
+     INTEGER person;
+     INTEGER mediator;
+};
+
+class  T_Object_Historyrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      T_Object_Historyrow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<T_Object_Historyrow> {
+   public:
+ T_Object_Historyrow_DB_BINDING  schemaNconstraints;
 };
 
 //##############
@@ -512,7 +517,6 @@ private:
      INTEGER id;
      INTEGER analysis_dataset;
      INTEGER event_collection;
-     CHARACTER is_primary;
 };
 
 class  T_Anads_Datarow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -722,8 +726,7 @@ private:
      INTEGER id;
      STRING guid;
      STRING logical_name;
-     STRING checksum;
-     STRING filesize;
+     INTEGER filesize;
      INTEGER status;
      INTEGER type;
      INTEGER inblock;
@@ -862,35 +865,6 @@ class RowSchemaNConstraintsBinding<T_Evcoll_Statusrow> {
 
 //##############
 
-class T_Run_Qualityrow  : public RowInterface {
-public:
-     T_Run_Qualityrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER id;
-     STRING name;
-};
-
-class  T_Run_Qualityrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Run_Qualityrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Run_Qualityrow> {
-   public:
- T_Run_Qualityrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
 class T_Info_Anadsrow  : public RowInterface {
 public:
      T_Info_Anadsrow();
@@ -902,7 +876,7 @@ public:
 private:
      INTEGER analysis_dataset;
      INTEGER events;
-     STRING estimated_luminiosity;
+     STRING estimated_luminosity;
      INTEGER status;
      INTEGER validation_status;
 };
@@ -935,9 +909,9 @@ private:
      INTEGER event_collection;
      INTEGER events;
      STRING estimated_luminosity;
+     INTEGER status;
      INTEGER validation_status;
      STRING name;
-     INTEGER status;
 };
 
 class  T_Info_Evcollrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -952,98 +926,6 @@ template<>
 class RowSchemaNConstraintsBinding<T_Info_Evcollrow> {
    public:
  T_Info_Evcollrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class T_Runrow  : public RowInterface {
-public:
-     T_Runrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER id;
-     INTEGER run_number;
-     INTEGER run_quality;
-};
-
-class  T_Runrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Runrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Runrow> {
-   public:
- T_Runrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class T_Evcoll_Runrow  : public RowInterface {
-public:
-     T_Evcoll_Runrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER event_collection;
-     INTEGER run;
-};
-
-class  T_Evcoll_Runrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Evcoll_Runrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Evcoll_Runrow> {
-   public:
- T_Evcoll_Runrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class T_Object_Historyrow  : public RowInterface {
-public:
-     T_Object_Historyrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     STRING object_type;
-     INTEGER object_id;
-     STRING operation;
-     FLOAT at;
-     INTEGER person;
-     INTEGER mediator;
-};
-
-class  T_Object_Historyrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Object_Historyrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Object_Historyrow> {
-   public:
- T_Object_Historyrow_DB_BINDING  schemaNconstraints;
 };
 
 //##############
@@ -1224,6 +1106,7 @@ private:
 
     T_Block_Statusrow* T_Block_Statusobj;
     T_Blockrow* T_Blockobj;
+    T_Processed_Datasetrow* T_Processed_Datasetobj;
 };
 
 class  Blockviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -1436,7 +1319,6 @@ private:
     T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
-    T_Block_Statusrow* T_Block_Statusobj;
     T_Blockrow* T_Blockobj;
     T_Info_Evcollrow* T_Info_Evcollobj;
     T_Filerow* T_Fileobj;
@@ -1458,9 +1340,9 @@ class RowSchemaNConstraintsBinding<Crabevcollviewmultirow> {
 };
 
 //##############
-typedef SingleTableInterface<T_Schema_Revisionrow>  T_Schema_RevisionTable;
 typedef SingleTableInterface<T_Personrow>  T_PersonTable;
 typedef SingleTableInterface<T_Physics_Grouprow>  T_Physics_GroupTable;
+typedef SingleTableInterface<T_Object_Historyrow>  T_Object_HistoryTable;
 typedef SingleTableInterface<T_Collection_Typerow>  T_Collection_TypeTable;
 typedef SingleTableInterface<T_App_Familyrow>  T_App_FamilyTable;
 typedef SingleTableInterface<T_Applicationrow>  T_ApplicationTable;
@@ -1486,12 +1368,8 @@ typedef SingleTableInterface<T_Evcoll_Filerow>  T_Evcoll_FileTable;
 typedef SingleTableInterface<T_Validation_Statusrow>  T_Validation_StatusTable;
 typedef SingleTableInterface<T_Dataset_Statusrow>  T_Dataset_StatusTable;
 typedef SingleTableInterface<T_Evcoll_Statusrow>  T_Evcoll_StatusTable;
-typedef SingleTableInterface<T_Run_Qualityrow>  T_Run_QualityTable;
 typedef SingleTableInterface<T_Info_Anadsrow>  T_Info_AnadsTable;
 typedef SingleTableInterface<T_Info_Evcollrow>  T_Info_EvcollTable;
-typedef SingleTableInterface<T_Runrow>  T_RunTable;
-typedef SingleTableInterface<T_Evcoll_Runrow>  T_Evcoll_RunTable;
-typedef SingleTableInterface<T_Object_Historyrow>  T_Object_HistoryTable;
 typedef MultiTableInterface<Insertappsmultirow>  InsertappsMultiTable;
 typedef MultiTableInterface<Personmultirow>  PersonMultiTable;
 typedef MultiTableInterface<Physicsgroupmultirow>  PhysicsgroupMultiTable;

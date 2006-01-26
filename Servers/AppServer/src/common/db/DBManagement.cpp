@@ -98,6 +98,7 @@ ResultSet* DBManagement::executeQueryWithResults(string sql) {
 			int length = (int)strlen((char*)buff[i]);
 			if( length > 0 ) {
                                 //cout << "addElement????? " << (char*)buff[i] << endl;
+                                //cout << "addElement????? (string)" << ((string)(char*)buff[i]) << endl;
                                 //cout << "addElemet WITH BUFF" <<endl;
 				rs->addElement((string)((char*)buff[i]));
 			} else {

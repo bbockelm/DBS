@@ -147,8 +147,10 @@ class createMultiTableViewObjects :
         self.Blockview = multiRowRepresentation("BlockView", self.fkExclusionAttributes)
         self.Blockview.addSchema(self.allSchemas['t_block'])
         self.Blockview.addSchema(self.allSchemas['t_block_status']) 
-        self.Blockview.addCondition('t_file.inblock = t_block.id')
+        self.Blockview.addSchema(self.allSchemas['t_processed_dataset'])
+        #self.Blockview.addCondition('t_file.inblock = t_block.id')
         self.Blockview.addCondition('t_block.status = t_block_status.id')
+        self.Blockview.addCondition('t_block.processed_dataset = t_processed_dataset.id')
         self.multiTableViewObjects.append(self.Blockview)
        
        
@@ -295,27 +297,31 @@ class createMultiTableViewObjects :
         self.CrabEvCollView.addSchema(self.allSchemas['t_data_tier'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_primary_dataset'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_block'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_block_status'])
+        #self.CrabEvCollView.addSchema(self.allSchemas['t_block_status'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_info_evcoll'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_evcoll_file'])
         self.CrabEvCollView.addSchema(self.allSchemas['t_file'])
-        ##self.CrabEvCollView.addSchema(self.allSchemas['t_file_status'])
-        ##self.CrabEvCollView.addSchema(self.allSchemas['t_file_type'])
+        #self.CrabEvCollView.addSchema(self.allSchemas['t_file_status'])
+        #self.CrabEvCollView.addSchema(self.allSchemas['t_file_type'])
         #self.CrabEvCollView.addSchema(self.allSchemas['t_evcoll_status'])
         #self.CrabEvCollView.addSchema(self.allSchemas['t_validation_status'])
 
 
         self.CrabEvCollView.addCondition('t_processing_path.data_tier = t_data_tier.id')
-        self.CrabEvCollView.addCondition('t_event_collection.processed_dataset = t_processed_dataset.id')
         self.CrabEvCollView.addCondition('t_processed_dataset.processing_path = t_processing_path.id')
         self.CrabEvCollView.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
-        self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
-        self.CrabEvCollView.addCondition('t_block.status = t_block_status.id')
+        self.CrabEvCollView.addCondition('t_event_collection.processed_dataset = t_processed_dataset.id')
         self.CrabEvCollView.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
+        self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
+        #self.CrabEvCollView.addCondition('t_block.status = t_block_status.id')
 
         self.CrabEvCollView.addCondition('t_evcoll_file.evcoll = t_event_collection.id')
         self.CrabEvCollView.addCondition('t_evcoll_file.fileid = t_file.id')
         self.CrabEvCollView.addCondition('t_file.inblock = t_block.id')  
+
+        #self.CrabEvCollView.addCondition('t_file.type = t_file_type.id')
+        #self.CrabEvCollView.addCondition('t_file.status = t_file_status.id')
+
         
 
         #self.CrabEvCollView.addCondition('t_info_evcoll.validation_status = ' + \

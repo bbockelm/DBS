@@ -140,6 +140,7 @@ Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) 
 
 template <class R>
 void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
+  cout << "Entering convertIntoRow\n"<<endl;
   Dictionary satisfiedRefrences = this->getSatisfiedRefrences(rs,rowIndex);
   for(int colIndex = 0; colIndex < rs->getNoOfCols(); ++colIndex) {
     string name = rs->getColName(colIndex);
@@ -273,13 +274,30 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 				for(Keys_iter i = primaryKeys->begin(); i!= primaryKeys->end(); ++i) {
          					string dataType = util.getDataType(*i) ;
 						if (util.isSet(aRow, *i ,dataType) ) {
-							if( (string) rs->getElement(rowIndex, rs->getColIndex(*i)) != 
-								util.getStrValue(aRow, *i , dataType) ) {
-								pKEqual = false;
-								break;
-          
+							if(dataType == "INTEGER") {
+								int compareA = util.atoi(rs->getElement(rowIndex, rs->getColIndex(*i)));
+								int compareB =  util.atoi(util.getStrValue(aRow, *i , dataType));
+								if(compareA != compareB) {
+									pKEqual = false;
+									break;
+								} else {
+									pKEqual = true;
+								}
+							
 							} else {
-								pKEqual = true;
+					                     cout<<"\nPK IS"<< *i;
+					                     cout <<"\n(string) rs->getElement(rowIndex, rs->getColIndex(*i))" << (string) rs->getElement(rowIndex, rs->getColIndex(*i));
+					                     cout<<"\nutil.getStrValue(aRow, *i , dataType)" << util.getStrValue(aRow, *i , dataType);
+                                        	             if( ((string) rs->getElement(rowIndex, rs->getColIndex(*i))).compare(util.getStrValue(aRow, *i , dataType) ) != 0){
+                                                        
+							//if( (string) rs->getElement(rowIndex, rs->getColIndex(*i)) != 
+							//	util.getStrValue(aRow, *i , dataType) ) {
+									pKEqual = false;
+									break;
+          
+								} else {
+									pKEqual = true;
+								}
 							}
 						}
 				}
@@ -601,9 +619,25 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 	aRow->setValue(tableName+".modified_by",&value);
 }
 
-template TableTemplate<T_Schema_Revisionrow>;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template TableTemplate<T_Personrow>;
 template TableTemplate<T_Physics_Grouprow>;
+template TableTemplate<T_Object_Historyrow>;
 template TableTemplate<T_Collection_Typerow>;
 template TableTemplate<T_App_Familyrow>;
 template TableTemplate<T_Applicationrow>;
@@ -629,23 +663,17 @@ template TableTemplate<T_Evcoll_Filerow>;
 template TableTemplate<T_Validation_Statusrow>;
 template TableTemplate<T_Dataset_Statusrow>;
 template TableTemplate<T_Evcoll_Statusrow>;
-template TableTemplate<T_Run_Qualityrow>;
 template TableTemplate<T_Info_Anadsrow>;
 template TableTemplate<T_Info_Evcollrow>;
-template TableTemplate<T_Runrow>;
-template TableTemplate<T_Evcoll_Runrow>;
 template TableTemplate<Insertappsmultirow>;
 template TableTemplate<Personmultirow>;
 template TableTemplate<Physicsgroupmultirow>;
 template TableTemplate<Evcollviewmultirow>;
 template TableTemplate<Fileviewmultirow>;
+template TableTemplate<Blockviewmultirow>;
 template TableTemplate<Primarydatasetmultirow>;
 template TableTemplate<Processingpathmultirow>;
 template TableTemplate<Analysisdatasetmultirow>;
 template TableTemplate<Datasetprovenenceevchildmultirow>;
 template TableTemplate<Datasetprovenenceevparentmultirow>;
 template TableTemplate<Crabevcollviewmultirow>;
-template TableTemplate<T_Object_Historyrow>;
-template TableTemplate<Blockviewmultirow>;
-
-

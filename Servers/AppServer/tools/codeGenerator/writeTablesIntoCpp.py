@@ -132,31 +132,75 @@ class writeTablesIntoCpp :
       cppimpl.write('\n')
       cppimpl.close() 
 
+
+   def appendTemplateInstances(self, origFile, newFile, txtToLookFor, txtToWrite) :
+       """A helper function that reads a files, removes 
+          the old Templete Instance statemets and write new ones """
+
+       origFileHandle = open(origFile, 'r')
+       allLines = origFileHandle.readlines()
+       origFileHandle.close()
+
+       newFileHandle = open(newFile, 'w')
+
+       for aLine in allLines:
+          if aLine.startswith(txtToLookFor):
+             continue
+          else:
+             newFileHandle.write(aLine)
+ 
+       newFileHandle.write(txtToWrite)
+       newFileHandle.close()
+
+
    def writeTemplateInstances(self,  cppOutPath=os.getcwd(), \
                 cppFile = "TemplateInstances.cpp") :
       """General utility, returns text to be added to Table Template
-      and SingleTableInterface.cpp files"""
+         and SingleTableInterface.cpp files"""
       
       #output = "\n\n\nADD FOLLOWING TO TableTemplate.cpp file at Bottom\n"
-      output='#include "TableTemplate.hpp"\n'
-      output+='#include "ObjectLayerTables.hpp"\n'
-      output+='#include "SingleTableInterface.hpp"\n'
-      output+='#include "MultiTableInterface.hpp"\n'
+      #output='#include "TableTemplate.hpp"\n'
+      #output+='#include "ObjectLayerTables.hpp"\n'
+      #output+='#include "SingleTableInterface.hpp"\n'
+      #output+='#include "MultiTableInterface.hpp"\n'
+
+      txtForTableTemplate = "\n"
+      txtForSingTableTemplate = "\n"
+      txtForMultiTableTemplate = "\n"
 
       for eachClass in self.cppClasses:
-          output += eachClass.forTableTemplate()
-
+          txtForTableTemplate += eachClass.forTableTemplate()
+       
+      self.appendTemplateInstances('../../src/objectlayer/TableTemplate.cpp', 'TableTemplate.cpp', \
+                                   "template TableTemplate<", txtForTableTemplate)
       #output += "\n\n\nADD FOLLOWING TO SingleTableInterface.cpp"
       #output += "\nand MultiTableInterface.cpp Respectively at Bottom\n\n"  
-      output += '\n'
+  
+      #output += '\n'
+      #import pdb
+      #pdb.set_trace()
       for eachClass in self.cppClasses: 
-          output += eachClass.forTableInterface()
-      filepath = os.path.join(cppOutPath, cppFile)
-      cppimpl = open(filepath, 'w')
-      cppimpl.writelines(output)
-      cppimpl.write('\n')
-      cppimpl.close()
+          if eachClass.className().endswith("multirow") :
+             txtForMultiTableTemplate += eachClass.forTableInterface()
+          else :
+             txtForSingTableTemplate += eachClass.forTableInterface() 
+          #output += eachClass.forTableInterface()
+      #filepath = os.path.join(cppOutPath, cppFile)
+      #cppimpl = open(filepath, 'w')
+      #cppimpl.writelines(output)
+      #cppimpl.write('\n')
+      #cppimpl.close()
+#
 
+      self.appendTemplateInstances('../../src/objectlayer/SingleTableInterface.cpp', \
+                            'SingleTableInterface.cpp', "template SingleTableInterface<", txtForSingTableTemplate)
+
+      self.appendTemplateInstances('../../src/objectlayer/MultiTableInterface.cpp', \
+                            'MultiTableInterface.cpp', "template MultiTableInterface<", txtForMultiTableTemplate)
+
+      #print txtForMultiTableTemplate
+      #print "\n"
+      #print txtForSingTableTemplate 
       return
 
 

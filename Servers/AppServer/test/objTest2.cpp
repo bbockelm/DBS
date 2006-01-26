@@ -18,11 +18,16 @@ int main() {
         DBManagement* dbManager  =  new DBManagement("anzar", "ggraham", "");
         dbManager->open();
 
+        /*
         cout << " >> Creating a Multi Object << " << endl;
         InsertappsMultiTable * aMultiTable = new InsertappsMultiTable(dbManager);
 
         cout << " >> Deleting Multi Object << " << endl;
         delete aMultiTable;
+        */
+
+        Primarydatasetmultirow* pds = new Primarydatasetmultirow();
+        delete pds; 
 
         cout << " >> Disconnecting to DBManager << " << endl;
         dbManager->close();

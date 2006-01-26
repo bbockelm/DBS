@@ -165,7 +165,7 @@ string SQL::makeMultiRefClause(Dictionary_iter b, Dictionary_iter e) {
 }*/
 string SQL::makeSelectClause(Dictionary_iter b, Dictionary_iter e) {//Schema
 	NameMaper nm;
-	string selectClause = "SELECT ";
+	string selectClause = "SELECT UNIQUE ";
 	for(Dictionary_iter i = b; i != e; ++i) {
 		//cout<<selectClause<<"\n"<<endl;
 		//NmIterator ni = nm.NameMap.find(i->first);
