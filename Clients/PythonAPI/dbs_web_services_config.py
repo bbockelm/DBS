@@ -13,10 +13,10 @@ ServerConfigDict_ = {
 
   # Host.
   #"Host" : "localhost.localdomain",
-  "Host" : "venom.fnal.gov",
+  "Host" : "cmssrv22.fnal.gov",
 
   # Port.
-  "Port" : 27983,
+  "Port" : 27982,
   
   # Setting this to 1 will turn on soap messages.
   "SoapDebugFlag" : 0,

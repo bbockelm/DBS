@@ -15,7 +15,6 @@ import dbsUtility
 import dbsFileBlock
 import dbsDataset
 import dbsStaticMethod
-import dbsPPIds
 
 import dbsLogManager
 import dbsPrimaryDataset
@@ -79,7 +78,7 @@ class DbsWsClient:
     else:
       self._wsdlProxy = None
       
-  def getDatasetContents(self, datasetPathName):
+  def getDatasetContents(self, datasetPathName, listFiles=False):
     """ Retrieve event collections given the dataset path name string. """
 
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContents()")
@@ -97,7 +96,7 @@ class DbsWsClient:
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       result = self._wsdlProxy.getDatasetContents(
-	datasetPathName=datasetPathName)
+	datasetPathName=datasetPathName,  listFiles=listFiles)
       fileBlockList = dbsFileBlock.DbsFileBlockList(result.fileBlockList.data)
 
     except SOAPpy.faultType, ex:
@@ -141,14 +140,10 @@ class DbsWsClient:
 	what="Retrieving dataset contents, wsdlUrl: %s." % self._wsdlUrl,
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      print "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
       result = self._wsdlProxy.getDatasetProvenance(
 	datasetPathName=datasetPathName, dataTierList=dataTierList)
-      print "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-      print "RESULT ",result
-      print "result.datasetParentList.data ",result.datasetParentList.data
       datasetParentList = dbsDataset.DbsDatasetList(result.datasetParentList.data)
-      print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
       exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
@@ -225,19 +220,8 @@ class DbsWsClient:
 	what="Creating processed dataset, wsdlUrl: %s." % self._wsdlUrl,
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      #processedDatasetId = self._wsdlProxy.createProcessedDataset(
-      pobject = self._wsdlProxy.createProcessedDataset(	processedDataset=processedDataset.getWsRep())['data']
-      print "pobject ",pobject
-
-      #processedDatasetId = pobject[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]   
-      processedDatasetId = pobject[dbsPPIds.PROCESSED_DATASET_ID_TAG_]   
-      print "processedDatasetId: ", processedDatasetId 
-      #print "processingPathId anzar: ", pobject['processingPathId'] 
-      processingPathId = pobject[dbsPPIds.PROCESSING_PATH_ID_TAG_]   
-      #processingPathId = pobject[dbsProcessedDataset.PROCESSING_PATH_ID_TAG_]   
-      print "processingPathId: ", processingPathId
-      
-      #processedDataset=processedDataset.getWsRep())[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]
+      processedDatasetId = self._wsdlProxy.createProcessedDataset(
+	processedDataset=processedDataset.getWsRep())[dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_]
       self._logManager.log(
 	what="Got processed dataset id: %s." % processedDatasetId,
 	where=funcName,
@@ -264,7 +248,7 @@ class DbsWsClient:
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_DEBUG_)
     
-    return processedDatasetId, processingPathId
+    return processedDatasetId
 
   def insertEventCollections(self, processedDataset, eventCollectionList):
     """ Insert event collections for a given processed dataset. """
@@ -279,7 +263,7 @@ class DbsWsClient:
 	len(eventCollectionList), processedDatasetName),
 	where=funcName,
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      collectionId = self._wsdlProxy.insertEventCollections(
+      self._wsdlProxy.insertEventCollections(
 	processedDataset=processedDataset.getWsRep(),
 	eventCollectionList=eventCollectionList.getWsRep())
 
@@ -306,10 +290,11 @@ class DbsWsClient:
       where=funcName,
       logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
-    return collectionId
+    return
 
   def createFileBlock(self, processedDataset, fileBlock):
     """ Create a file block for a given processed dataset. """
+    print "IT is IN ............................................"
 
     funcName = "%s.%s" % (self.__class__.__name__, "createFileBlock()")
 
@@ -348,6 +333,47 @@ class DbsWsClient:
       logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
     return fileBlockId
+
+
+  def getDatasetFileBlocks(self, processedDataset):
+    """ Retrieves file blocks for a given processed dataset. """
+
+    funcName = "%s.%s" % (self.__class__.__name__, "getDatasetFileBlocks()")
+
+    # Invoke web service call.
+    what="Retrieving dataset contents, wsdlUrl: %s." % self._wsdlUrl,
+    print what
+    try:
+      self._logManager.log(
+        what="retrieving file blocks for processed dataset",
+        where=funcName,
+        logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      fileBlockList = self._wsdlProxy.getDatasetFileBlocks(
+        processedDataset=processedDataset.getWsRep() )
+
+    except SOAPpy.faultType, ex:
+      wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)
+      exec "wsEx = %s(args=\"\"\"%s\"\"\")" % (wsExClassName, ex.faultstring)
+      errMsg = "%s caught: %s (Will raise: %s)" % (
+        ex.faultcode, ex.faultstring, wsEx.__class__.__name__)
+      self._logManager.log(what=errMsg,
+                           where=funcName,
+                           logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise wsEx
+
+    except Exception, ex:
+      # General exception.
+      self._logManager.log(what="Web service client failed.\n%s " % ex,
+                           where=funcName,
+                           logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise DbsWsClientException(exception=ex)
+
+    self._logManager.log(
+      what="File blocks retrieved",
+      where=funcName,
+      logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+
+    return fileBlockList
 	
 ##############################################################################
 # Unit testing.

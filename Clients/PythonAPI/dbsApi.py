@@ -34,12 +34,6 @@ class InvalidDatasetPathName(DbsApiException):
     """ Initialization. """
     DbsApiException.__init__(self, **kwargs)
 
-class InvalidDataTier(DbsApiException):
-
-  def __init__ (self, **kwargs):
-    """ Initialization. """
-    DbsApiException.__init__(self, **kwargs)
-
 
 ##############################################################################
 # DBS API interface class.
@@ -49,7 +43,7 @@ class DbsApi:
   # No constructor.
   
   # Methods which should be implemented in the derived classes.
-  def getDatasetContents(self, datasetPathName):
+  def getDatasetContents(self, datasetPathName, listFiles=False):
     """ Retrieve event collections given the dataset path name string. """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
@@ -83,6 +77,9 @@ class DbsApi:
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
+  def getDatasetFileBlocks(self, processedDataset):
+    """ Retrives list of FileBlocks associated with a Processed Dataset """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")   
 
   # Methods common for all API implementations.
   def getLogManagerInstance(self):

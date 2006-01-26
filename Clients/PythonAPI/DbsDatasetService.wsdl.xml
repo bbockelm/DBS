@@ -144,14 +144,6 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
         </xsd:sequence>
       </complexType>
 
-      <complexType name="DbsPPIds">
-        <xsd:sequence>
-          <xsd:element name="processedDatasetId" type="xsd:int"/>
-          <xsd:element name="processingPathId" type="xsd:int"/>
-        </xsd:sequence>
-      </complexType>
-
-
       <complexType name="DbsProcessedDataset">
         <xsd:sequence>
           <xsd:element name="primaryDatasetName" type="xsd:string"/>
@@ -165,6 +157,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
 
   <message name="getDatasetContentsRequest">
     <part name="datasetPathName" type="xsd:string"/>
+    <part name="listFiles" type="xsd:boolean"/>
   </message>
 
   <message name="getDatasetContentsResponse">
@@ -206,8 +199,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="createProcessedDatasetResponse">
-    <!--part name="processedDatasetId" type="xsd:int"/-->
-    <part name="processedDatasetId" type="tns:DbsPPIds"/>
+    <part name="processedDatasetId" type="xsd:int"/>
   </message>
 
   <message name="createProcessedDatasetFault">
@@ -220,7 +212,6 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   </message>
 
   <message name="insertEventCollectionsResponse">
-    <part name="eventCollectionId" type="xsd:int"/>
   </message>
 
   <message name="insertEventCollectionsFault">
@@ -239,6 +230,21 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
   <message name="createFileBlockFault">
     <part name="faultstring" type="xsd:string"/>
   </message>
+
+
+
+  <message name="getDatasetFileBlocksRequest">
+    <part name="processedDataset" type="tns:DbsProcessedDataset"/>
+  </message>
+
+  <message name="getDatasetFileBlocksResponse">
+    <part name="fileBlockList" type="tns:ArrayOfDbsFileBlock"/>
+  </message>
+
+  <message name="getDatasetFileBlocksFault">
+    <part name="faultstring" type="xsd:string"/>
+  </message>
+
 
   <portType name="DbsDatasetPortType">
     <operation name="getDatasetContents">
@@ -277,6 +283,12 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       <input message="tns:createFileBlockRequest" name="createFileBlockRequest"/>
       <output message="tns:createFileBlockResponse" name="createFileBlockResponse"/>
       <fault message="tns:createFileBlockFault" name="createFileBlockFault"/>
+    </operation>
+
+    <operation name="getDatasetFileBlocks">
+      <input message="tns:getDatasetFileBlocksRequest" name="getDatasetFileBlocksRequest"/>
+      <output message="tns:getDatasetFileBlocksResponse" name="getDatasetFileBlocksResponse"/>
+      <fault message="tns:getDatasetFileBlocksFault" name="getDatasetFileBlocksFault"/>
     </operation>
 
 
@@ -386,13 +398,34 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       </fault>
     </operation>
 
+
+
+    <operation name="getDatasetFileBlocks">
+      <soap:operation soapAction="getDatasetFileBlocks"/>
+      <input>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+      <fault name="getDatasetFileBlocksFault">
+        <soap:fault name="getDatasetFileBlocksFault" use="encoded" 
+        namespace="DbsDatasetService" 
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </fault>
+    </operation>
+
+
   </binding>
 
   <service name="DbsDatasetService">
     <documentation>DBS Dataset Service provides functionality for retrieving and manipulating dataset information.</documentation>
     <port name="DbsDatasetPort" binding="tns:DbsDatasetBinding">
-      <!--soap:address location="http://cmssrv22.fnal.gov:27981"/-->
-      <soap:address location="http://venom.fnal.gov:27983"/>
+      <soap:address location="http://cmssrv22.fnal.gov:27982"/>
+      <!--soap:address location="http://venom.fnal.gov:27982"/-->
+      <!--soap:address location="http://cmslcgco01.cern.ch:27982"/-->
     </port>
   </service>
 

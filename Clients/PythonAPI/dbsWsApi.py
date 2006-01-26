@@ -31,7 +31,7 @@ class DbsWsApi(dbsApi.DbsApi):
     """ Constructor. """
     self._wsClient = dbsWsClient.DbsWsClient(wsdlUrl=wsdlUrl)
 
-  def getDatasetContents(self, datasetPathName):
+  def getDatasetContents(self, datasetPathName, listFiles=False):
     """
     Retrieve list of file blocks, each containing a set of event collections,
     for a given the dataset path name string.
@@ -41,7 +41,7 @@ class DbsWsApi(dbsApi.DbsApi):
                 DbsApiException
     """
     try:
-      return self._wsClient.getDatasetContents(datasetPathName)
+      return self._wsClient.getDatasetContents(datasetPathName, listFiles)
     except dbsWsClient.InvalidDatasetPathName, ex:
       raise dbsApi.InvalidDatasetPathName(exception=ex)
     except dbsWsClient.DbsWsClientException, ex:
@@ -112,6 +112,18 @@ class DbsWsApi(dbsApi.DbsApi):
     except dbsWsClient.DbsWsClientException, ex:
       raise dbsApi.DbsApiException(exception=ex)
       
+  def getDatasetFileBlocks(self, processedDataset):
+    """
+    Retrieves file blocks for a ProcessedDataset.
+
+    Returns: file block list.
+    Exceptions: DbsApiException
+    """
+    try:
+      return self._wsClient.getDatasetFileBlocks(processedDataset)
+    except dbsWsClient.DbsWsClientException, ex:
+      raise dbsApi.DbsApiException(exception=ex)
+
 
 
 ##############################################################################
@@ -131,41 +143,40 @@ if __name__ == "__main__":
     
     # Test for create primary dataset.
 
+    
     mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
       description="MyMonteCarloDescription",
       production="production",
       decayChain="decayChain",
       isMcData="y")
 
-    #dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="eg03_jets_1e_pt2550",
-    dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="My_Primary_eg03_jets_1e_pt2550",
+    dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="eg03_jets_1e_pt2550",
       datasetDescription="my dataset desc",
       physicsGroupName="top",
       triggerDescription="Dummy triggerDescription",
       monteCarloDescription=mc)
-    """
+
     primaryDatasetId = api.createPrimaryDataset(dataset)
     print "Got primary dataset id: %s" % primaryDatasetId
-    """
     # Test for create processed dataset.
-    datasetPath = "/sw04_Anzar/DST/sw_DST813_2_g133_OSC"
-    #datasetPath = "/sw04_Anzar/Digi/sw_2x1033PU761_TkMu_2_g133_OSC"
-    #datasetPath = "/sw04_Anzar/Hit/sw_Hit245_2_g133"
+
     #datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
-    #datasetPath1 = "/eg03_jets_1e_pt2550/Hit/eg_2x1033PU761_TkMu_2_g133_OSC1"
+    datasetPath = "/hg04_gg_bbA_Zh_MA250_tb1/Digi/hg_2x1033PU8713_TkMu_g133_OSC" 
+    #datasetPath = "/AF_PrimDataset11/Digi/AF_DigiProcDataset11"
     app = dbsApplication.DbsApplication(
-      family="reco1", 
-      executable="dummy1", 
-      version="p11", 
-      configConditionsVersion ="abcd1",
-      parameterSet="psetdummy1",
-      outputTypeName="odummy1",
-      inputTypeName="idummy1")
+      family="reco", 
+      executable="dummy", 
+      version="p1", 
+      configConditionsVersion ="abcd",
+      parameterSet="psetdummy",
+      outputTypeName="odummy",
+      inputTypeName="idummy")
 
     processingPath = dbsProcessingPath.DbsProcessingPath(
       fullPath=datasetPath, 
       dataTier="Digi", 
       application=app)
+
     processingPath2 = dbsProcessingPath.DbsProcessingPath(
       pathId="2",
       fullPath=datasetPath, 
@@ -174,14 +185,15 @@ if __name__ == "__main__":
       application=app)
 
     dataset = dbsProcessedDataset.DbsProcessedDataset(
-      primaryDatasetName="My_Primary_eg03_jets_1e_pt2550",
+      primaryDatasetName="eg03_jets_1e_pt2550",
       isDatasetOpen="y",
-      datasetName="My_Processed_eg_2x1033PU761_TkMu_2_g133_OSC", 
-      processingPath=processingPath2)
+      datasetName="eg_2x1033PU761_TkMu_2_g133_OSC", 
+      processingPath=processingPath)
 
-    #processedDatasetId,ppathId = api.createProcessedDataset(dataset)
-    #print "Got processed dataset id: %s" % processedDatasetId    
-    #print "Got processing path  id: %s" % ppathId    
+    processedDatasetId = api.createProcessedDataset(dataset)
+    print "Got processed dataset id: %s" % processedDatasetId    
+
+    #print api.getDatasetFileBlocks(dataset)
     
     block = dbsFileBlock.DbsFileBlock(
       #blockName=None,
@@ -191,25 +203,17 @@ if __name__ == "__main__":
       )
     #fbId = api.createFileBlock(dataset, block)
     #print "Got file block id: %s" % fbId
-    
+
     # Test for inserting event collections.
-    f1 = dbsFile.DbsFile(logicalFileName="myFile8",
+    f1 = dbsFile.DbsFile(logicalFileName="myFile3",
 	fileStatus = "file dummy status",
 	guid = "7C8A55-DE62-D811-892C-00E081250436",
         checkSum="BA7C8A55-DE62-D811-892C-00E081250436", 
         fileType="EVDZip",
-        fileBlockId=273, 
+        fileBlockId=9, 
         fileSize=100
         ) 
-    f2 = dbsFile.DbsFile(logicalFileName="myFile9",
-	fileStatus = "file dummy status",
-	guid = "7C8A55-DE62-D811-892C-00E081250436a",
-        checkSum="BA7C8A55-DE62-D811-892C-00E081250a436", 
-        fileType="EVDZip",
-        fileBlockId=274, 
-        fileSize=100
-        )
-    f3 = dbsFile.DbsFile(logicalFileName="myFile5",
+    f2 = dbsFile.DbsFile(logicalFileName="myFile4",
 	fileStatus = "file dummy status",
 	guid = "7C8A55-DE62-D811-892C-00E081250436a",
         checkSum="BA7C8A55-DE62-D811-892C-00E081250a436", 
@@ -218,67 +222,87 @@ if __name__ == "__main__":
         fileSize=100
         )
     fList=dbsFile.DbsFileList([f1])
-    fList1=dbsFile.DbsFileList([f2])
+    fList.append(f2)
 
-    #fList=dbsFile.DbsFileList([f1])
-    #fList.append(f2)
 
     ec = dbsEventCollection.DbsEventCollection(
-      collectionName="ec1", 
-      numberOfEvents=123, 
+      collectionName="myLFN",
+      numberOfEvents=123,
       collectionIndex=100,
       isPrimary="y",
-      parentageType="DST",
       fileList=fList)
-    ec1 = dbsEventCollection.DbsEventCollection(
-      collectionName="ec2", 
-      numberOfEvents=123, 
-      collectionIndex=106,
-      isPrimary="y",
-      parentageType="OSCAR",
-      parentEventCollection=ec,
-      fileList=fList1)
-    """
-    ectestp = dbsEventCollection.DbsEventCollection(
-      collectionId=12,
-      fileList=[]
-    )
-    ectest = dbsEventCollection.DbsEventCollection(
-      numberOfEvents=0,
-      collectionName="collectionName",
-      collectionIndex=160800002,
-      parentEventCollection=ectestp,
-      parentageType="Digi",
-      fileList=[],
-      isPrimary='n'
-    )
-    """
-
-
-#ecList  [{'numberOfEvents': 0, 'collectionName': 'EvC_Run160800002', 'collectionIndex': 160800002, 'parentEventCollection': {'fileList': [], 'collectionId': 12}, 'parentageType': 'Digi', 'fileList': [], 'isPrimary': 'n'}]
     #ecList = dbsEventCollection.DbsEventCollectionList([ec])
-    ecList = dbsEventCollection.DbsEventCollectionList([ec1])
-    #ecList = dbsEventCollection.DbsEventCollectionList([ectest])
-    #ecList.append(ec1)
-    print "Inserting event collections for: %s" % dataset.getDatasetName()
-    ecid = api.insertEventCollections(dataset, ecList)
-    print "ecid %s"%ecid['collectionId']
+    #print "Inserting event collections for: %s" % dataset.getDatasetName()
+   
+     
+    #TEST If No FileList is provided EventCollection shouldn't be inserted
+    ecNoFileTest = dbsEventCollection.DbsEventCollection(
+      collectionName="myLFN",
+      numberOfEvents=123,
+      collectionIndex=100,
+      isPrimary="y",
+      fileList=[])
+    ecListNoFileTest = dbsEventCollection.DbsEventCollectionList([ecNoFileTest]) 
+    #api.insertEventCollections(dataset, ecListNoFileTest)
+    
+
+    #TEST   All files in same EvColl should have same blockId
+    file1 = dbsFile.DbsFile(logicalFileName="myFile3",
+        fileStatus = "file dummy status",
+        guid = "7C8A55-DE62-D811-892C-00E081250436",
+        checkSum="BA7C8A55-DE62-D811-892C-00E081250436",
+        fileType="EVDZip",
+        fileBlockId=9,
+        fileSize=100
+        )
+    file2 = dbsFile.DbsFile(logicalFileName="myFile4",
+        fileStatus = "file dummy status",
+        guid = "7C8A55-DE62-D811-892C-00E081250436a",
+        checkSum="BA7C8A55-DE62-D811-892C-00E081250a436",
+        fileType="EVDZip",
+        fileBlockId=10,
+        fileSize=100
+        )
+    fileListDifferentBlockIds=dbsFile.DbsFileList([file1, file2])
+
+    ecFileDifferentBlockIds = dbsEventCollection.DbsEventCollection(
+      collectionName="myLFN",
+      numberOfEvents=123456,
+      collectionIndex=1000,
+      isPrimary="y",
+      fileList=fileListDifferentBlockIds)
+
+    ecListFileDifferentBlockIds = dbsEventCollection.DbsEventCollectionList([ecFileDifferentBlockIds])
+    api.insertEventCollections(dataset, ecListFileDifferentBlockIds)
+
 
     """
-       
+    #ec = dbsEventCollection.DbsEventCollection(
+    #  collectionName="ec1", 
+    #  numberOfEvents=123, 
+    #  collectionIndex=100,
+    #  isPrimary="y",
+    #  fileList=fList)
+    #ecList = dbsEventCollection.DbsEventCollectionList([ec])
+    #ecList = dbsEventCollection.DbsEventCollectionList([])
+    print "Inserting event collections for: %s" % dataset.getDatasetName()
+    api.insertEventCollections(dataset, ecList)
+
 
     print "Getting dataset contents for: %s" % datasetPath
     
-    
+    # Non-Default behavious is to List all the files in the dataset
+    # For large datasets, its Slow...and you don't want it. 
+    #fileBlockList = api.getDatasetContents(datasetPath, True)
+     
+    # Default behaviour of getDatasetContents
     fileBlockList = api.getDatasetContents(datasetPath)
     for fileBlock in fileBlockList:
       print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
       for eventCollection in fileBlock.getEventCollectionList():
 	print "  %s" % eventCollection
-    
     # Get dataset provenance. It returns list of dataset parents.
-    
-    dataTierList = [ "Hit","Digi" ]
+    dataTierList = [ "Digi" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (datasetPath, dataTierList)
     
     datasetParentList = api.getDatasetProvenance(datasetPath, dataTierList)
@@ -286,7 +310,7 @@ if __name__ == "__main__":
 
     for datasetParent in datasetParentList:
       print "%s" % (datasetParent)
-    """ 
+    """  
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   print "Done"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCliApi.py,v 1.5 2005/11/08 21:46:54 sveseli Exp $
+# $Id: dbsCliApi.py,v 1.6 2005/11/23 18:30:31 sveseli Exp $
 #
 # CLI implementation of the DBS API class. This version of API
 # relies on various sql tools to retrieve information out of the db.
@@ -26,7 +26,7 @@ class DbsCliApi(dbsApi.DbsApi):
       phedexDir=phedexDir, phedexDbConnectFile=phedexDbConnectFile,
       phedexDbSectionString=phedexDbSectionString)
 
-  def getDatasetContents(self, datasetPathName):
+  def getDatasetContents(self, datasetPathName, listFiles=False):
     """
     Retrieve list of file blocks, each containing a set of event collections,
     for a given the dataset path name string.
@@ -35,7 +35,7 @@ class DbsCliApi(dbsApi.DbsApi):
     Exceptions: DbsCliApiException
     """
     try:
-      return self._phedexUtility.getDatasetContents(datasetPathName)
+      return self._phedexUtility.getDatasetContents(datasetPathName, listFiles)
     except dbsPhedexUtility.InvalidDatasetPathName, ex:
       raise dbsApi.InvalidDatasetPathName(exception=ex)
     except dbsPhedexUtility.DbsPhedexUtilityException, ex:

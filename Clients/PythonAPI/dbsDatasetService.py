@@ -12,7 +12,6 @@ import threading
 import SOAPpy
 
 import dbsApi
-import dbsPPIds
 import dbsEventCollection
 import dbsFileBlock
 import dbsDataset
@@ -96,6 +95,11 @@ class CreateFileBlockFault(DbsDatasetServiceFault):
     """ Initialization. """
     DbsDatasetServiceFault.__init__(self, **kwargs)
 
+class GetDatasetFileBlocksFault(DbsDatasetServiceFault):
+
+  def __init__(self, **kwargs):
+    """ Initialization. """
+    DbsDatasetServiceFault.__init__(self, **kwargs)
 
 ###############################################################################
 # Dataset service singleton class.
@@ -128,7 +132,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
     finally:
       DbsDatasetService.__instanceLock.release()
 
-  def getDatasetContents(self, datasetPathName=None,
+  def getDatasetContents(self, datasetPathName=None, listFiles=False,
 			 *args, **kwargs):
     """
     Retrieve list of file blocks, each containing a set of event collections,
@@ -167,7 +171,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 	fileBlockList = dbsFileBlock.DbsFileBlockList(
-	  self.getApi().getDatasetContents(datasetPathName))
+	  self.getApi().getDatasetContents(datasetPathName, listFiles))
         msg = "Retrieved %s file blocks for datasetPathName : %s" % (
 	  len(fileBlockList), datasetPathName)
 	self._logManager.log(what=msg, where=funcName,
@@ -344,12 +348,8 @@ class DbsDatasetService(dbsWebService.DbsWebService):
         msg = "Creating processed dataset %s" % (processedDataset)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-	#processedDatasetId = self.getApi().createProcessedDataset(processedDataset)
-	#ppIds = self.getApi().createProcessedDataset(processedDataset)
-	processedDatasetId, processingPathId = self.getApi().createProcessedDataset(processedDataset)
-        #msg = "Created processed dataset with id %s: " % (ppIds.processedDatasetId)
+	processedDatasetId = self.getApi().createProcessedDataset(processedDataset)
         msg = "Created processed dataset with id %s: " % (processedDatasetId)
-        msg += "\nCreated processing path with id %s: " % (processingPathId)
 	self._logManager.log(what=msg, where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 
@@ -358,9 +358,8 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
 	raise CreateProcessedDatasetFault(exception=ex)
-      pobject = dbsPPIds.DbsPPIds(processedDatasetId,processingPathId)
-      #return { dbsPPIds.PROCESSED_DATASET_ID_TAG_ : processedDatasetId, dbsPPids.PROCESSING_PATH_ID_TAG_ : processingPathId }
-      return pobject
+
+      return { dbsProcessedDataset.PROCESSED_DATASET_ID_TAG_ : processedDatasetId }
     finally:
       self.releaseServant(servantId)
 
@@ -410,7 +409,7 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
 	#################
 	## Here comes API call.
-	collectionId = self.getApi().insertEventCollections(processedDataset, eventCollectionList)
+	self.getApi().insertEventCollections(processedDataset, eventCollectionList)
 	#################
         msg = "Inserted %s event collections for dataset %s" % (
 	  len(eventCollectionList), processedDatasetName)
@@ -422,10 +421,59 @@ class DbsDatasetService(dbsWebService.DbsWebService):
 			     where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
 	raise InsertEventCollectionsFault(exception=ex)
-      return { dbsEventCollection.EVENT_COLLECTION_ID_TAG_ : collectionId }
-     # return {}
+
+      return {}
     finally:
       self.releaseServant(servantId)
+
+
+  def getDatasetFileBlocks(self, processedDataset, \
+                      *args, **kwargs):
+    """ Retrives the list of fileBlocks in a Processed Dataset """
+    # Check arguments.
+    funcName = "%s.%s" % (self.__class__.__name__, "getDatasetFileBlocks()")
+    try:
+      processedDatasetDict = self.getParameter(
+        PROCESSED_DATASET_PAR_, processedDataset, **kwargs)
+      processedDataset = dbsProcessedDataset.DbsProcessedDataset(datasetDict=processedDatasetDict)
+    except dbsWebServiceException.MissingParameterFault, ex:
+      self._logManager.log(what="%s" % ex,
+                           where=funcName,
+                           logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      print "This fault should change tooo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      raise GetDatasetFileBlocksFault(exception=ex)
+
+    # Acquire servant.
+    try:
+      servantId = self.acquireServant(funcName)
+    except DbsWebServiceException, ex:
+      self._logManager.log(what="%s" % ex,
+                           where=funcName,
+                           logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+      raise GetDatasetFileBlocksFault(exception=ex)
+
+    # Do the work.
+    try:
+      try:
+        #################
+        ## Here comes API call.
+        fileBlockList = dbsFileBlock.DbsFileBlockList(
+                        self.getApi().getDatasetFileBlocks(processedDataset))
+        #################
+
+      except Exception, ex:
+        self._logManager.log(what="%s" % ex,
+                             where=funcName,
+                             logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+        raise GetDatasetFileBlocksFault(exception=ex)
+
+      return { FILE_BLOCK_LIST_KWD_ : fileBlockList.getWsRep() }
+
+    finally:
+      self.releaseServant(servantId)
+
+
+
 
   def createFileBlock(self, processedDataset=None, fileBlock=None,
 		      *args, **kwargs):

@@ -51,7 +51,7 @@ class DbsProcessingPath(dbsObject.DbsObject):
       try:
 	self[PARENT_PATH_TAG_] = DbsProcessingPath(processingPathDict=parentPath)
       except Exception, ex:
-      	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsProcessingPath.DbsProcessingPath object." % parentPath)
+	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsProcessingPath.DbsProcessingPath object." % parentPath)
 
     # Correct application if needed.
     application = self.get(APPLICATION_TAG_)
@@ -67,15 +67,15 @@ class DbsProcessingPath(dbsObject.DbsObject):
   def getFullPath(self):
     """ Retrieve full path. """
     result = self.get(FULL_PATH_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FULL_PATH_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FULL_PATH_TAG_)
     return result
 
   def getDataTier(self):
     """ Retrieve data tier. """
     result = self.get(DATA_TIER_TAG_)
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATA_TIER_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATA_TIER_TAG_)
     return result
   
   def getParentPath(self):
@@ -88,8 +88,8 @@ class DbsProcessingPath(dbsObject.DbsObject):
   def getApplication(self):
     """ Retrieve application. """
     result = self.get(APPLICATION_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % APPLICATION_TAG_)
+    if result == None:
+      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % APPLICATION_TAG_)
     return result
 
   def getPathId(self):

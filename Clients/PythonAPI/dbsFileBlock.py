@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.8 2005/12/12 21:35:12 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.9 2005/12/14 19:49:32 sveseli Exp $
 #
 # File block class. 
 #
@@ -66,8 +66,8 @@ class DbsFileBlock(dbsObject.DbsObject):
   def getBlockName(self):
     """ Retrieve block name. """
     result = self.get(FILE_BLOCK_NAME_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_NAME_TAG_)
     return result
 
   def getBlockId(self):
@@ -98,11 +98,11 @@ class DbsFileBlock(dbsObject.DbsObject):
       raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_FILES_TAG_)
     return result  
 
-  def getProcessedDatasetName(self):
+  def getDatasetName(self):
     """ Retrieve processed dataset name. """
     result = self.get(PROCESSED_DATASET_NAME_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
     return result
 
   def getEventCollectionList(self):
