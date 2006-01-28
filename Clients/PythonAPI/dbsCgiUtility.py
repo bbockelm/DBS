@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.7 2005/12/13 19:55:22 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.9 2006/01/24 18:57:10 sveseli Exp $
 #
 # Class which uses CGI utilities to extract info from the db.
 #
@@ -18,6 +18,15 @@ import dbsLogManager
 import dbsDataset
 
 CGI_DBS_XML_DUMP_SCRIPT_ = "dbsxml"
+
+DBS_STATUS_CODE_TAG_ = "Dbs-status-code"
+DBS_STATUS_MESSAGE_TAG_ = "Dbs-status-message"
+DBS_STATUS_DETAIL_TAG_ = "Dbs-status-detail"
+
+# CGI status codes.
+CGI_SUCCESS_CODE_ = 100
+CGI_INVALID_DATA_TIER_CODE_ = 301
+CGI_GENERIC_FAILURE_CODE_ = 400
 
 ##############################################################################
 # DBS Cgi utility class exceptions.
@@ -53,6 +62,12 @@ class InvalidDatasetPathName(DbsCgiUtilityException):
     """ Initialization. """
     DbsCgiUtilityException.__init__(self, **kwargs)
 
+class InvalidDataTier(DbsCgiUtilityException):
+
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsCgiUtilityException.__init__(self, **kwargs)
+
   
 ##############################################################################
 # HTTP exception mapper.
@@ -60,16 +75,18 @@ class InvalidDatasetPathName(DbsCgiUtilityException):
 class DbsCgiExceptionMapper:
 
   __exceptionMap = {
-    400 : "InvalidDatasetPathName",
+    CGI_INVALID_DATA_TIER_CODE_ : "InvalidDataTier",
+    CGI_GENERIC_FAILURE_CODE_ : "CgiToolError",
     }
 
-  def getExceptionClassName(httpErrorCode):
-    """ Map http error code into an exception. """
+  def getExceptionClassName(errorCode):
+    """ Map error code into an exception class name. """
     return DbsCgiExceptionMapper.__exceptionMap.get(
-      httpErrorCode, "CgiToolError")
+      errorCode, "CgiToolError")
 
   getExceptionClassName = dbsStaticMethod.DbsStaticMethod(getExceptionClassName)
 
+  
 ##############################################################################
 # CGI utility class.
 
@@ -107,6 +124,25 @@ class DbsCgiUtility:
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       urlResult = urllib2.urlopen(cgiUrl)
       xmlString = urlResult.read() 
+      dbsStatusCode = int(urlResult.headers.get(DBS_STATUS_CODE_TAG_))
+      dbsStatusMessage = urlResult.headers.get(DBS_STATUS_MESSAGE_TAG_)
+      dbsStatusDetail = urlResult.headers.get(DBS_STATUS_DETAIL_TAG_)
+      self._logManager.log(
+	what="CGI call completed, status code: %s (status message: '%s', status detail: '%s')." % (dbsStatusCode, dbsStatusMessage, dbsStatusDetail),
+	where=funcName,
+	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      if dbsStatusCode != CGI_SUCCESS_CODE_:
+	# Cgi failed for some reason, determine exception to be raised.
+	cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(dbsStatusCode)
+	cgiExArgs = "Status message: '%s', Status detail: '%s'" % (dbsStatusMessage, dbsStatusDetail)
+	exec "cgiEx = %s(args=\"\"\"%s\"\"\")" % (cgiExClassName, cgiExArgs)
+	errMsg = "CGI Error caught, will raise %s" % (cgiEx.__class__.__name__)
+	self._logManager.log(what=errMsg,
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+	raise cgiEx
+    except DbsCgiUtilityException, ex:
+      raise
     except urllib2.URLError, ex:
       # Cgi failed for some reason, determine exception to be raised.
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)
@@ -166,6 +202,25 @@ class DbsCgiUtility:
 	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
       urlResult = urllib2.urlopen(cgiUrl)
       xmlString = urlResult.read() 
+      dbsStatusCode = int(urlResult.headers.get(DBS_STATUS_CODE_TAG_))
+      dbsStatusMessage = urlResult.headers.get(DBS_STATUS_MESSAGE_TAG_)
+      dbsStatusDetail = urlResult.headers.get(DBS_STATUS_DETAIL_TAG_)
+      self._logManager.log(
+	what="CGI call completed, status code: %s (status message: '%s', status detail: '%s')." % (dbsStatusCode, dbsStatusMessage, dbsStatusDetail),
+	where=funcName,
+	logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+      if dbsStatusCode != CGI_SUCCESS_CODE_:
+	# Cgi failed for some reason, determine exception to be raised.
+	cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(dbsStatusCode)
+	cgiExArgs = "Status message: '%s', Status detail: '%s'" % (dbsStatusMessage, dbsStatusDetail)
+	exec "cgiEx = %s(args=\"\"\"%s\"\"\")" % (cgiExClassName, cgiExArgs)
+	errMsg = "CGI Error caught, will raise %s" % (cgiEx.__class__.__name__)
+	self._logManager.log(what=errMsg,
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_ERROR_)
+	raise cgiEx
+    except DbsCgiUtilityException, ex:
+      raise
     except urllib2.URLError, ex:
       # Cgi failed for some reason, determine exception to be raised.
       cgiExClassName = DbsCgiExceptionMapper.getExceptionClassName(ex.code)

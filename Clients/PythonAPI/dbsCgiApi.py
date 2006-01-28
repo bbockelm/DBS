@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.8 2005/12/13 17:27:30 sveseli Exp $
+# $Id: dbsCgiApi.py,v 1.9 2006/01/24 18:57:10 sveseli Exp $
 #
 # CGI implementation of the DBS API class. This version of API
 # relies on cgi scripts providing xml output. 
@@ -45,6 +45,7 @@ class DbsCgiApi(dbsApi.DbsApi):
 
     Returns: list of DbsDataset objects.
     Exceptions: InvalidDatasetPathName
+                InvalidDataTier
                 DbsCgiApiException
     """
     try:
@@ -52,6 +53,8 @@ class DbsCgiApi(dbsApi.DbsApi):
 	datasetPathName, dataTierList)
     except dbsCgiUtility.InvalidDatasetPathName, ex:
       raise dbsApi.InvalidDatasetPathName(exception=ex)
+    except dbsCgiUtility.InvalidDataTier, ex:
+      raise dbsApi.InvalidDataTier(exception=ex)
     except dbsCgiUtility.DbsCgiUtilityException, ex:
       raise dbsApi.DbsApiException(exception=ex)
       
@@ -64,6 +67,7 @@ if __name__ == "__main__":
   try:
     # Dataset we need.
     datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
+    #datasetPath = "/eg03_jets_1e_pt2550/Digi/MissingDataset"
 
     # Construct api object.
     api = DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin")
@@ -73,19 +77,19 @@ if __name__ == "__main__":
     
     # Get dataset contents. It returns list of file blocks, each
     # file block containing a set of event collections.
-    print "Getting dataset contents for: %s" % datasetPath
-    fileBlockList = api.getDatasetContents(datasetPath)
-    print "Dataset contents for: %s" % datasetPath
-    for fileBlock in fileBlockList:
-      print ""
-      print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
-					   fileBlock.getBlockId())
-      for eventCollection in fileBlock.getEventCollectionList():
-	print "  %s" % eventCollection
+    #print "Getting dataset contents for: %s" % datasetPath
+    #fileBlockList = api.getDatasetContents(datasetPath)
+    #print "Dataset contents for: %s" % datasetPath
+    #for fileBlock in fileBlockList:
+    #  print ""
+    #  print "File block name/id: %s/%s" % (fileBlock.getBlockName(),
+	#				   fileBlock.getBlockId())
+      #for eventCollection in fileBlock.getEventCollectionList():
+	#print "  %s" % eventCollection
 
     # Get dataset provenance. It returns list of dataset parents.
     print ""
-    dataTierList = [ "Digi", "Hit" ]
+    dataTierList = [ "Blah" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (
       datasetPath, dataTierList)
     
@@ -98,6 +102,10 @@ if __name__ == "__main__":
       print "%s" % (datasetParent)
 
 
+  except dbsApi.InvalidDataTier, ex:
+    print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
+  except dbsApi.DbsApiException, ex:
+    print "Caught API exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
   print "Done"
