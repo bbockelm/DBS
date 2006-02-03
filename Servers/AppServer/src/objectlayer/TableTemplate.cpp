@@ -140,7 +140,7 @@ Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) 
 
 template <class R>
 void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
-  cout << "Entering convertIntoRow\n"<<endl;
+  //cout << "Entering convertIntoRow\n"<<endl;
   Dictionary satisfiedRefrences = this->getSatisfiedRefrences(rs,rowIndex);
   for(int colIndex = 0; colIndex < rs->getNoOfCols(); ++colIndex) {
     string name = rs->getColName(colIndex);
@@ -310,7 +310,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 			}
 			if(!pKEqual) {
 				//cout<<"INSERT BEACUSE it is UNEQUAL"<<endl;
-				LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
+				//LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
 				R* tempRow = new R();
 				//cout<<"calling convert into rows"<<endl;
 				this->convertIntoRow(rs, rowIndex,tempRow);

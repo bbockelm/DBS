@@ -208,7 +208,7 @@ alter table t_desc_mc
   primary key (id);
 
 alter table t_desc_mc
-  add constraint uq_desc_desc_mc
+  add constraint uq_desc_mc
   unique (description);
 --
 alter table t_desc_primary
@@ -527,6 +527,10 @@ alter table t_block
 alter table t_block
   add constraint fk_block_status
   foreign key (status) references t_block_status (id);
+
+alter table t_block
+  add constraint fk_processed_dataset
+  foreign key (processed_dataset) references t_processed_dataset (id);
 
 --
 alter table t_file_status

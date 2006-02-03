@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.19 2006/01/26 23:10:01 afaq Exp $
+# $Id: dbsWsApi.py,v 1.20 2006/02/03 03:45:32 afaq Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     #processedDatasetId = api.createProcessedDataset(dataset)
     #print "Got processed dataset id: %s" % processedDatasetId    
 
-    #print api.getDatasetFileBlocks(dataset)
+    api.getDatasetFileBlocks(dataset)
     
     block = dbsFileBlock.DbsFileBlock(
       #blockName=None,
@@ -273,9 +273,9 @@ if __name__ == "__main__":
       collectionIndex=1000,
       isPrimary="y",
       fileList=fileListDifferentBlockIds)
-
-    ecListFileDifferentBlockIds = dbsEventCollection.DbsEventCollectionList([ecFileDifferentBlockIds])
-    api.insertEventCollections(dataset, ecListFileDifferentBlockIds)
+#
+#    ecListFileDifferentBlockIds = dbsEventCollection.DbsEventCollectionList([ecFileDifferentBlockIds])
+ #   api.insertEventCollections(dataset, ecListFileDifferentBlockIds)
 
 
     """
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     #fileBlockList = api.getDatasetContents(datasetPath, True)
      
     # Default behaviour of getDatasetContents
-    #fileBlockList = api.getDatasetContents(datasetPath)
+    fileBlockList = api.getDatasetContents(datasetPath)
     #for fileBlock in fileBlockList:
     # print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
     #  for eventCollection in fileBlock.getEventCollectionList():

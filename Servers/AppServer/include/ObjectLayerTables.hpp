@@ -1103,8 +1103,8 @@ public:
 private:
 
     T_Block_Statusrow* T_Block_Statusobj;
-    T_Blockrow* T_Blockobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
+    T_Blockrow* T_Blockobj;
 };
 
 class  Blockviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {

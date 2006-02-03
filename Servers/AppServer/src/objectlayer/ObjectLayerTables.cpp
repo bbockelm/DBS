@@ -2928,31 +2928,6 @@ void Blockviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_block_statusrow", ""))->
            setValue((string)"t_block_status.name", value);
     }
-    if( key.compare("t_block.id") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.id", value);
-    }
-    if( key.compare("t_block.processed_dataset") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-    }
-    if( key.compare("t_block.files") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.files", value);
-    }
-    if( key.compare("t_block.bytes") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.bytes", value);
-    }
-    if( key.compare("t_processed_dataset.id") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
-    }
     if( key.compare("t_processed_dataset.primary_dataset") == 0) {
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
@@ -2973,6 +2948,21 @@ void Blockviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_processed_datasetrow", ""))->
            setValue((string)"t_processed_dataset.is_open", value);
     }
+    if( key.compare("t_block.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.id", value);
+    }
+    if( key.compare("t_block.files") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.files", value);
+    }
+    if( key.compare("t_block.bytes") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.bytes", value);
+    }
     if( key.compare("t_block.status") == 0) {
          ((T_Blockrow*)this->
           getConstituentRow((string)"t_blockrow", ""))->
@@ -2989,6 +2979,22 @@ void Blockviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_block_statusrow", ""))->
            setValue((string)"t_block_status.id", value);
     }
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
 }
 
 void* Blockviewmultirow::getValue(string key) {
@@ -3001,31 +3007,6 @@ void* Blockviewmultirow::getValue(string key) {
        return  ((T_Block_Statusrow*)this->
           getConstituentRow("t_block_statusrow", ""))->
            getValue((string)"t_block_status.name");
-    }
-   if( key.compare("t_block.id") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.id");
-    }
-   if( key.compare("t_block.processed_dataset") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.processed_dataset");
-    }
-   if( key.compare("t_block.status") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.status");
-    }
-   if( key.compare("t_block.files") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.files");
-    }
-   if( key.compare("t_block.bytes") == 0) {
-       return  ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", ""))->
-           getValue((string)"t_block.bytes");
     }
    if( key.compare("t_processed_dataset.id") == 0) {
        return  ((T_Processed_Datasetrow*)this->
@@ -3052,24 +3033,49 @@ void* Blockviewmultirow::getValue(string key) {
           getConstituentRow("t_processed_datasetrow", ""))->
            getValue((string)"t_processed_dataset.is_open");
     }
+   if( key.compare("t_block.id") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.id");
+    }
+   if( key.compare("t_block.processed_dataset") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.processed_dataset");
+    }
+   if( key.compare("t_block.status") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.status");
+    }
+   if( key.compare("t_block.files") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.files");
+    }
+   if( key.compare("t_block.bytes") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.bytes");
+    }
 }
 
 Blockviewmultirow::Blockviewmultirow(){
     this->T_Block_Statusobj = new T_Block_Statusrow();
     this->rowMap.set("t_block_statusrow", (void*)this->T_Block_Statusobj);
     this->constituentObjects.push_back(this->rowMap);
-    this->T_Blockobj = new T_Blockrow();
-    this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
-    this->constituentObjects.push_back(this->rowMap);
     this->T_Processed_Datasetobj = new T_Processed_Datasetrow();
     this->rowMap.set("t_processed_datasetrow", (void*)this->T_Processed_Datasetobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Blockobj = new T_Blockrow();
+    this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
     this->constituentObjects.push_back(this->rowMap);
 }
 
 Blockviewmultirow::~Blockviewmultirow(){
    delete this->T_Block_Statusobj;
-   delete this->T_Blockobj;
    delete this->T_Processed_Datasetobj;
+   delete this->T_Blockobj;
 }
 
 Blockviewmultirow_DB_BINDING::Blockviewmultirow_DB_BINDING() {
@@ -3092,6 +3098,7 @@ Blockviewmultirow_DB_BINDING::Blockviewmultirow_DB_BINDING() {
 
     ForeignKeys.push_back("t_block.status");
     ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_block.processed_dataset");
     ForeignKeys.push_back("t_processed_dataset.primary_dataset");
 
     list<string> tmplist;
@@ -3100,21 +3107,22 @@ Blockviewmultirow_DB_BINDING::Blockviewmultirow_DB_BINDING() {
     tmplist.clear();
 
     NotNullKeys.push_back("t_block_status.id");
+    NotNullKeys.push_back("t_processed_dataset.id");
+    NotNullKeys.push_back("t_processed_dataset.primary_dataset");
+    NotNullKeys.push_back("t_processed_dataset.processing_path");
+    NotNullKeys.push_back("t_processed_dataset.name");
     NotNullKeys.push_back("t_block.id");
     NotNullKeys.push_back("t_block.processed_dataset");
     NotNullKeys.push_back("t_block.status");
     NotNullKeys.push_back("t_block.files");
     NotNullKeys.push_back("t_block.bytes");
-    NotNullKeys.push_back("t_processed_dataset.id");
-    NotNullKeys.push_back("t_processed_dataset.primary_dataset");
-    NotNullKeys.push_back("t_processed_dataset.processing_path");
-    NotNullKeys.push_back("t_processed_dataset.name");
 
     SchemaOrder.push_back("t_block_status");
-    SchemaOrder.push_back("t_block");
     SchemaOrder.push_back("t_processed_dataset");
+    SchemaOrder.push_back("t_block");
 
     References.insert(Entry("t_block.status", "t_block_status.id"));
+    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
 
 
     ExternalReferences.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
@@ -5134,11 +5142,6 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.is_primary", value);
     }
-    if( key.compare("t_block.processed_dataset") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-    }
     if( key.compare("t_block.status") == 0) {
          ((T_Blockrow*)this->
           getConstituentRow((string)"t_blockrow", ""))->
@@ -5225,21 +5228,37 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.id", value);
     }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
     }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.primary_dataset") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
+    }
+    if( key.compare("t_primary_dataset.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
     }
     if( key.compare("t_processed_dataset.processing_path") == 0) {
          ((T_Processed_Datasetrow*)this->
@@ -5289,21 +5308,21 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.id", value);
     }
-    if( key.compare("t_processed_dataset.primary_dataset") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.primary_dataset", value);
-         ((T_Primary_Datasetrow*)this->
-          getConstituentRow((string)"t_primary_datasetrow", ""))->
-           setValue((string)"t_primary_dataset.id", value);
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
     }
-    if( key.compare("t_primary_dataset.id") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.primary_dataset", value);
-         ((T_Primary_Datasetrow*)this->
-          getConstituentRow((string)"t_primary_datasetrow", ""))->
-           setValue((string)"t_primary_dataset.id", value);
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
     }
     if( key.compare("t_event_collection.processed_dataset") == 0) {
          ((T_Event_Collectionrow*)this->
@@ -5641,6 +5660,7 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     ForeignKeys.push_back("t_primary_dataset.physics_group");
     ForeignKeys.push_back("t_info_evcoll.validation_status");
     ForeignKeys.push_back("t_primary_dataset.description");
+    ForeignKeys.push_back("t_block.processed_dataset");
     ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_info_evcoll.status");
     ForeignKeys.push_back("t_block.status");
@@ -5713,11 +5733,12 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_evcoll_file");
 
     References.insert(Entry("t_evcoll_file.fileid", "t_file.id"));
-    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
+    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_evcoll_file.evcoll", "t_event_collection.id"));
     References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
-    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
     References.insert(Entry("t_file.inblock", "t_block.id"));
 
