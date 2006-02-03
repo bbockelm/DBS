@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.15 2005/12/15 22:52:40 sekhri Exp $
+# $Id: dbsWsApi.py,v 1.19 2006/01/26 23:10:01 afaq Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -156,8 +156,8 @@ if __name__ == "__main__":
       triggerDescription="Dummy triggerDescription",
       monteCarloDescription=mc)
 
-    primaryDatasetId = api.createPrimaryDataset(dataset)
-    print "Got primary dataset id: %s" % primaryDatasetId
+    #primaryDatasetId = api.createPrimaryDataset(dataset)
+    #print "Got primary dataset id: %s" % primaryDatasetId
     # Test for create processed dataset.
 
     #datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
@@ -190,8 +190,8 @@ if __name__ == "__main__":
       datasetName="eg_2x1033PU761_TkMu_2_g133_OSC", 
       processingPath=processingPath)
 
-    processedDatasetId = api.createProcessedDataset(dataset)
-    print "Got processed dataset id: %s" % processedDatasetId    
+    #processedDatasetId = api.createProcessedDataset(dataset)
+    #print "Got processed dataset id: %s" % processedDatasetId    
 
     #print api.getDatasetFileBlocks(dataset)
     
@@ -201,6 +201,7 @@ if __name__ == "__main__":
       numberOfBytes=1024, 
       numberOfFiles=10
       )
+    print "Trying to create fileBlock"
     #fbId = api.createFileBlock(dataset, block)
     #print "Got file block id: %s" % fbId
 
@@ -231,9 +232,10 @@ if __name__ == "__main__":
       collectionIndex=100,
       isPrimary="y",
       fileList=fList)
-    #ecList = dbsEventCollection.DbsEventCollectionList([ec])
+    ecList = dbsEventCollection.DbsEventCollectionList([ec])
     #print "Inserting event collections for: %s" % dataset.getDatasetName()
    
+    #api.insertEventCollections(dataset, ecList)
      
     #TEST If No FileList is provided EventCollection shouldn't be inserted
     ecNoFileTest = dbsEventCollection.DbsEventCollection(
@@ -242,9 +244,9 @@ if __name__ == "__main__":
       collectionIndex=100,
       isPrimary="y",
       fileList=[])
-    ecListNoFileTest = dbsEventCollection.DbsEventCollectionList([ecNoFileTest]) 
-    #api.insertEventCollections(dataset, ecListNoFileTest)
+    #ecListNoFileTest = dbsEventCollection.DbsEventCollectionList([ecNoFileTest]) 
     
+    #api.insertEventCollections(dataset, ecListNoFileTest)
 
     #TEST   All files in same EvColl should have same blockId
     file1 = dbsFile.DbsFile(logicalFileName="myFile3",
@@ -252,7 +254,7 @@ if __name__ == "__main__":
         guid = "7C8A55-DE62-D811-892C-00E081250436",
         checkSum="BA7C8A55-DE62-D811-892C-00E081250436",
         fileType="EVDZip",
-        fileBlockId=9,
+        fileBlockId=10,
         fileSize=100
         )
     file2 = dbsFile.DbsFile(logicalFileName="myFile4",
@@ -285,8 +287,8 @@ if __name__ == "__main__":
     #  fileList=fList)
     #ecList = dbsEventCollection.DbsEventCollectionList([ec])
     #ecList = dbsEventCollection.DbsEventCollectionList([])
-    print "Inserting event collections for: %s" % dataset.getDatasetName()
-    api.insertEventCollections(dataset, ecList)
+    #print "Inserting event collections for: %s" % dataset.getDatasetName()
+    #api.insertEventCollections(dataset, ecList)
 
 
     print "Getting dataset contents for: %s" % datasetPath
@@ -296,11 +298,11 @@ if __name__ == "__main__":
     #fileBlockList = api.getDatasetContents(datasetPath, True)
      
     # Default behaviour of getDatasetContents
-    fileBlockList = api.getDatasetContents(datasetPath)
-    for fileBlock in fileBlockList:
-      print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
-      for eventCollection in fileBlock.getEventCollectionList():
-	print "  %s" % eventCollection
+    #fileBlockList = api.getDatasetContents(datasetPath)
+    #for fileBlock in fileBlockList:
+    # print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
+    #  for eventCollection in fileBlock.getEventCollectionList():
+	#print "  %s" % eventCollection
     # Get dataset provenance. It returns list of dataset parents.
     dataTierList = [ "Digi" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (datasetPath, dataTierList)

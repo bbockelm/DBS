@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.9 2005/12/14 19:49:32 sveseli Exp $
+# $Id: dbsFileBlock.py,v 1.10 2006/01/26 23:10:01 afaq Exp $
 #
 # File block class. 
 #
@@ -73,29 +73,29 @@ class DbsFileBlock(dbsObject.DbsObject):
   def getBlockId(self):
     """ Retrieve block id. """
     result = self.get(FILE_BLOCK_ID_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
     return result
 
   def getBlockStatusName(self):
     """ Retrieve block status. """
     result = self.get(FILE_BLOCK_STATUS_NAME_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_STATUS_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_STATUS_NAME_TAG_)
     return result
 
   def getNumberOfBytes(self):
     """ Retrieve number of bytes. """
     result = self.get(NUMBER_OF_BYTES_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_BYTES_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_BYTES_TAG_)
     return result
 
   def getNumberOfFiles(self):
     """ Retrieve number of files. """
     result = self.get(NUMBER_OF_FILES_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_FILES_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_FILES_TAG_)
     return result  
 
   def getDatasetName(self):

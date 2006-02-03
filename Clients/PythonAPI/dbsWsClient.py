@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.11 2005/12/14 23:01:40 sekhri Exp $
+# $Id: dbsWsClient.py,v 1.15 2006/01/26 23:10:01 afaq Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -294,7 +294,6 @@ class DbsWsClient:
 
   def createFileBlock(self, processedDataset, fileBlock):
     """ Create a file block for a given processed dataset. """
-    print "IT is IN ............................................"
 
     funcName = "%s.%s" % (self.__class__.__name__, "createFileBlock()")
 

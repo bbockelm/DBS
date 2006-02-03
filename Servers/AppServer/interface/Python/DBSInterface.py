@@ -200,7 +200,7 @@ class DBSInterface(dbsApi.DbsApi):
         print "inside getProcessedDatasetID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         aRow = dbsclient.Processingpathmultirow()
         table = dbsclient.ProcessingpathMultiTable()
-
+        print "t_processed_dataset.name", processedDataset.getDatasetName()
 	self.setStrValue(aRow, "t_processed_dataset.name", processedDataset.getDatasetName())
         app = processedDataset.getProcessingPath().getApplication()
         if app != None:
@@ -283,11 +283,25 @@ class DBSInterface(dbsApi.DbsApi):
 
 
    def createFileBlock(self, processedDataset, fileBlock):
-	
+      """ API Call to add a File Block """	
       try:
         processedDatasetID = processedDataset.getProcessedDatasetID()
         if processedDatasetID == None:
-           processedDatasetID = self.getProcessedDatasetID(processedDataset)
+           table = self.getProcessedDataset(processedDataset)
+           if table.getNoOfRows() > 0:
+              if table.getNoOfRows() > 1:
+                 table.dispose()
+                 raise dbsApi.DbsApiException(args="More than one Processed Dataset found")
+              else:
+                 processedDatasetID = self.getStrValue(table, "t_processed_dataset.id", 0)
+                 primaryDatasetID = self.getStrValue(table, "t_processed_dataset.primary_dataset", 0)
+                 processPath = self.getStrValue(table, "t_processed_dataset.processing_path", 0)
+           else:
+              print "Processed Dataset not found"
+              table.dispose()
+              raise dbsApi.DbsApiException(args="Processed Dataset not found")
+
+           table.dispose()
         print "processedDatasetID ",processedDatasetID
         aRow = dbsclient.Blockviewmultirow()
         table = dbsclient.BlockviewMultiTable()
@@ -295,6 +309,8 @@ class DBSInterface(dbsApi.DbsApi):
         self.setIntValue(aRow, "t_block.bytes", fileBlock.getNumberOfBytes())
         self.setIntValue(aRow, "t_block.files", fileBlock.getNumberOfFiles())	  	
         self.setIntValue(aRow, "t_block.processed_dataset",processedDatasetID )	  	
+        self.setIntValue(aRow, "t_processed_dataset.primary_dataset",primaryDatasetID)	
+        self.setIntValue(aRow, "t_processed_dataset.processing_path", processPath)
         self.setStrValue(aRow, "t_block_status.name", fileBlock.getBlockStatusName())	  	
 	
         blockID = self.client.createBlock(aRow, table)
@@ -378,7 +394,7 @@ class DBSInterface(dbsApi.DbsApi):
       self.setStrValue(aRow, "t_info_evcoll.name", eventCollection.getCollectionName())
       self.setIntValue(aRow, "t_event_collection.collection_index", eventCollection.getCollectionIndex()) 
       self.setIntValue(aRow, "t_info_evcoll.events", eventCollection.getNumberOfEvents())
-      self.setStrValue(aRow, "t_parentage_type.name", eventCollection.getParentageType())
+      #self.setStrValue(aRow, "t_parentage_type.name", eventCollection.getParentageType())
       self.setIntValue(aRow, "t_event_collection.processed_dataset", processedDatasetID)
       self.setChrValue(aRow, "t_event_collection.is_primary", eventCollection.getIsPrimary())
       self.setIntValue(aRow, "t_evcoll_parentage.parent", evCollID)
@@ -457,7 +473,9 @@ class DBSInterface(dbsApi.DbsApi):
          table = dbsclient.FileviewMultiTable()
          for afile in files:
             aRow = dbsclient.Fileviewmultirow()
-
+            print "LLLLLLLLLLLLLLLLLLLLLLLLLL"
+            print afile
+            print "LLLLLLLLLLLLLLLLLLLLLLLLLL"
             self.setStrValue(aRow, "t_file_status.name", afile.getFileStatus())
             self.setStrValue(aRow, "t_file.guid", afile.getGuid())
             self.setStrValue(aRow, "t_file.checksum", afile.getCheckSum())#BA7C8A55-DE62-D811-892C-00E081250436

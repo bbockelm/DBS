@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsPrimaryDataset.py,v 1.2 2005/12/07 21:18:41 sveseli Exp $
+# $Id: dbsPrimaryDataset.py,v 1.3 2005/12/09 16:22:03 sveseli Exp $
 #
 # Dataset class. 
 #
@@ -62,29 +62,29 @@ class DbsPrimaryDataset(dbsDataset.DbsDataset):
   def getDatasetDescription(self):
     """ Retrieve dataset description. """
     result = self.get(DATASET_DESCRIPTION_TAG_)
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATASET_DESCRIPTION_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % DATASET_DESCRIPTION_TAG_)
     return result
 
   def getPhysicsGroupName(self):
     """ Retrieve physics group name. """
     result = self.get(PHYSICS_GROUP_NAME_TAG_)
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PHYSICS_GROUP_NAME_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PHYSICS_GROUP_NAME_TAG_)
     return result
 
   def getTriggerDescription(self):
     """ Retrieve trigger description. """
     result = self.get(TRIGGER_DESCRIPTION_TAG_)
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % TRIGGER_DESCRIPTION_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % TRIGGER_DESCRIPTION_TAG_)
     return result
 
   def getMonteCarloDescription(self):
     """ Retrieve mc description. """
     result = self.get(MONTE_CARLO_DESCRIPTION_TAG_)
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % MONTE_CARLO_DESCRIPTION_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % MONTE_CARLO_DESCRIPTION_TAG_)
     return result
 
 

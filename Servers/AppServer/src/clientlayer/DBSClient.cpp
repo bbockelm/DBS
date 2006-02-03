@@ -109,6 +109,7 @@ int DBSClient::readBlock(Blockviewmultirow* aRow, BlockviewMultiTable* table) th
 int DBSClient::insertFiles(vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table) throw (const char*) {
 	try {
 		FileManager manager;
+                cout<<"FileManager Instantiated"<<endl; 
 		return manager.write(rowVector, table);
 	} catch (BizLayerException &e)  {
 		throw e.report().c_str();

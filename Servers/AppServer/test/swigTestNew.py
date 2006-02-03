@@ -40,6 +40,23 @@ def getStrValue(table, key, index) :
 			value = table.getStrValue(index, key)
 			delStringp(key)
 			return value
+def writeFile():
+
+            table = dbsclient.FileviewMultiTable()
+            aRow = dbsclient.Fileviewmultirow()
+            fileVector = dbsclient.FileVector()
+
+            setStrValue(aRow, "t_file_status.name", "afile")
+            setStrValue(aRow, "t_file.guid", "Test-1234-Guid")
+            setStrValue(aRow, "t_file.checksum", "1234")
+            setStrValue(aRow, "t_file.logical_name", "afilexgetLogicalFileNamex")
+            setIntValue(aRow, "t_file.inblock", 10)
+            setStrValue(aRow, "t_file_type.name", "ROOT_All")
+            setStrValue(aRow, "t_file.filesize", "sucks")
+            setIntValue(aRow, "t_evcoll_file.evcoll", 1840)
+            fileVector.push_back(aRow)
+            client.insertFiles(fileVector, table)
+
 
 
 def writePrimary() :
@@ -128,8 +145,9 @@ def readCrabEC() :
 
 #while(1):
 for i in range(1) :
-	readPrimary()
+	#readPrimary()
 	#writePrimary()
 	#writeProcessed()
 	#readProcessed()
 	#readCrabEC()
+        writeFile()

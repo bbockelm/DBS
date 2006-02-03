@@ -469,6 +469,7 @@ void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
  // cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
 	LOG4CXX_INFO(TableTemplate::logger,"name is "+ name + " fkey is " + fkey);
   RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey);
+	LOG4CXX_INFO(TableTemplate::logger,"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey)");
 	//cout<<"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey) "<<endl;	  
 TableFactory tf;
   //cout<<"calling tf.getTableObject"<<endl;
@@ -490,6 +491,7 @@ TableFactory tf;
   
   util.equatePKWithRef(aRow, refrences->begin(), refrences->end() );
   util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
+  LOG4CXX_INFO(TableTemplate::logger,"Out from insertSingle");
   
 }
 

@@ -1040,8 +1040,6 @@ private:
     T_Evcoll_Statusrow* T_Evcoll_Statusobj;
     T_Validation_Statusrow* T_Validation_Statusobj;
     T_Info_Evcollrow* T_Info_Evcollobj;
-    T_Parentage_Typerow* T_Parentage_Typeobj;
-    T_Evcoll_Parentagerow* T_Evcoll_Parentageobj;
 };
 
 class  Evcollviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
