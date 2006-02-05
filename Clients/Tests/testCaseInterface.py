@@ -7,7 +7,7 @@ class testCaseInterface:
      def __init__(self):
         """ Constructor calls the run method """
         # Construct api object.
-        self.api = dbsWsApi.DbsWsApi(wsdlUrl="../DbsDatasetService.wsdl.xml")
+        self.api = dbsWsApi.DbsWsApi(wsdlUrl="../python/DbsDatasetService.wsdl.xml")
         # Configure logging.
         self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
         

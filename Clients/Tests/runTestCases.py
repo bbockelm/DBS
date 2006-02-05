@@ -6,9 +6,9 @@ import testCreateBlock
 
 if __name__ == "__main__":
 
-   #testObj = testCreatePrimaryDS.testCreatePrimaryDS()
-   #testObj.run()
-   #testObj = testCreateProcessedDS.testCreateProcessedDS()
-   #testObj.run()
+   testObj = testCreatePrimaryDS.testCreatePrimaryDS()
+   testObj.run()
+   testObj = testCreateProcessedDS.testCreateProcessedDS()
+   testObj.run()
    testObj = testCreateBlock.testCreateBlock()
    testObj.run()
