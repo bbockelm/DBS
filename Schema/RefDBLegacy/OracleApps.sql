@@ -23,7 +23,7 @@ create table t_app_config
 alter table t_app_family
   add constraint pk_app_family
   primary key (id)
-  using index tablespace CMS_DBS_INDX01;
+  using index tablespace INDX01;
 
 alter table t_app_family
   add constraint uq_app_family_name
@@ -33,7 +33,7 @@ alter table t_app_family
 alter table t_application
   add constraint pk_application
   primary key (id)
-  using index tablespace CMS_DBS_INDX01;
+  using index tablespace INDX01;
 
 alter table t_application
   add constraint uq_application_key
@@ -47,7 +47,7 @@ alter table t_application
 alter table t_app_config
   add constraint pk_app_config
   primary key (id)
-  using index tablespace CMS_DBS_INDX01;
+  using index tablespace INDX01;
 
 alter table t_app_config
   add constraint uq_app_config

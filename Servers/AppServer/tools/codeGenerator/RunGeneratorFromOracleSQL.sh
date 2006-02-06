@@ -7,7 +7,7 @@ if [ $# -lt 1 ]; then
 fi
 #  Read Parameters
 #SchemaFilesPath=$1
-SchemaFilesPath=/home/anzar/TEST/DMS/DBS/prototypes/proto_0/sql/
+SchemaFilesPath=/home/anzar/devDBS/DMS/DBS/prototypes/proto_0/sql/
 #SchemaFilesPath=$PWD/LatestSQL
 #
 #

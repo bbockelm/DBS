@@ -82,6 +82,15 @@ public:
 };
 
 
+class PdblockManager : public Manager {
+public:
+	PdblockManager();
+	int write(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table);
+	int read(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table);
+	~PdblockManager();  
+};
+
+/*
 class DatasetProvcChildManager : public Manager {
 public:
 	DatasetProvcChildManager();
@@ -97,6 +106,7 @@ public:
 	int read(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table);
 	~DatasetProvcParentManager();  
 };
+*/
 
 class CrabECManager : public Manager {
 public:

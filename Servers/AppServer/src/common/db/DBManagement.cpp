@@ -203,7 +203,7 @@ void DBManagement::runGenericQuery(string sql) {
 	//	<<"\n***********************************************\n"<<endl;
 	returnCode = SQLExecDirect(stmtHandle,(SQLCHAR*)sql.c_str(),SQL_NTS);
 	if (!isSuccess()) {
-		errMessage = "Error in executing the SQL query: SQLExecDirect";
+		errMessage = "Error in executing the SQL query: SQLExecDirect\n" + sql;
 		doDiagnostics();
 		freeStmtHandle();
 		throw DBException(errMessage);

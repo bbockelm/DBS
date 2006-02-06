@@ -36,7 +36,8 @@ string SQL::makeInsertQuery(RowInterface* aRow, string tableName, string refrenc
 	valueClause.erase(len,1);
 	valueClause = valueClause + ")";
 	string strQuery = intoClause + " " + valueClause;
-	//cout<<strQuery<<"\n"<<endl;
+        
+	cout<<"\n"<<strQuery<<"\n"<<endl;
 	return(strQuery);
 }
 

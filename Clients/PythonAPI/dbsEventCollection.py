@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsEventCollection.py,v 1.12 2006/01/26 23:10:01 afaq Exp $
+# $Id: dbsEventCollection.py,v 1.13 2006/02/03 03:45:32 afaq Exp $
 #
 # Event collection class. 
 #
@@ -15,6 +15,7 @@ EVENT_COLLECTION_DICT_TAG_ = "collectionDict"
 EVENT_COLLECTION_ID_TAG_ = "collectionId"
 EVENT_COLLECTION_NAME_TAG_ = "collectionName"
 EVENT_COLLECTION_INDEX_TAG_ = "collectionIndex"
+EVENT_COLLECTION_PARENTAGE_TYPE_TAG_ = "parentageType"
 EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_ = "numberOfEvents"
 PARENT_EVENT_COLLECTION_TAG_ = "parentEventCollection"
 FILE_LIST_TAG_ = "fileList"
@@ -33,7 +34,7 @@ class DbsEventCollection(dbsObject.DbsObject):
   def __init__(self, collectionName=None,
 	       numberOfEvents=None, collectionIndex=None,
 	       runNumber=None, isPrimary=None, parentEventCollection=None,
-	       collectionId=None, processedDatasetName=None,
+	       collectionId=None, processedDatasetName=None, parentageType=None,
 	       fileList=[],
 	       collectionDict={}):
     """ Constructor. """
@@ -46,6 +47,9 @@ class DbsEventCollection(dbsObject.DbsObject):
 
     if collectionIndex is not None:
       self[EVENT_COLLECTION_INDEX_TAG_] = int(collectionIndex)
+
+    if parentageType is not None:
+      self[EVENT_COLLECTION_PARENTAGE_TYPE_TAG_] = str(parentageType)
 
     if numberOfEvents is not None:
       self[EVENT_COLLECTION_NUMBER_OF_EVENTS_TAG_] = int(numberOfEvents)
@@ -101,6 +105,13 @@ class DbsEventCollection(dbsObject.DbsObject):
   def getCollectionIndex(self):
     """ Retrieve collection index. """
     result = self.get(EVENT_COLLECTION_INDEX_TAG_) 
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_INDEX_TAG_)
+    return result  
+
+  def getParentageType(self):
+    """ Retrieve collection index. """
+    result = self.get(EVENT_COLLECTION_PARENTAGE_TYPE_TAG_)
     #if result == None:
     #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % EVENT_COLLECTION_INDEX_TAG_)
     return result  

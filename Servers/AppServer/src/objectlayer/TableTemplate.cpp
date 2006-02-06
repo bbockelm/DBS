@@ -225,7 +225,7 @@ ResultSet * TableTemplate<R>::doSelect(string query="", string whereClause="") {
 	} else {
     tempQuery = query;
   }
-  //LOG4CXX_INFO(TableTemplate::logger,"Query is " + tempQuery);
+  LOG4CXX_INFO(TableTemplate::logger,"Query is " + tempQuery);
   //cout<<"calling dbmanager->executeQueryWithResults(tempQuery)"<<endl;
   return dbmanager->executeQueryWithResults(tempQuery) ;
 
@@ -392,6 +392,7 @@ void TableTemplate<R>::insert() {
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"inserting ROW no ");
 			LOG4CXX_DEBUG(TableTemplate::logger,i);
+                        cout<<"\n\nCalling doSmartInsert"<<endl;
 			this->doSmartInsert(aRow);
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
@@ -400,13 +401,16 @@ void TableTemplate<R>::insert() {
 			//doSimpleInsert(aRow);
 		} catch (ObjectLayerException &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+			//exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+			exceptionMessage +=  e.report() + " \n";
 		} catch (DBException &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+			//exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+			exceptionMessage +=  e.report() + " \n";
 		} catch (exception &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+util.itoa(i)+": "+ e.what() + " \n";
+			//exceptionMessage += "At row "+util.itoa(i)+": "+ e.what() + " \n";
+			exceptionMessage +=  (string)e.what() + (string)" \n";
 		}
 	  
     	}
@@ -436,7 +440,7 @@ void TableTemplate<R>::doSimpleInsert(R* aRow) {
   //this->fixPKWithSeq(aRow);
   //if(isPrimaryKeySet(aRow)) {
   //if( util.isKeySet(aRow, primaryKeys->begin(), primaryKeys->end()) ) {
-  if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ) {
+  if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end())) {
     vector<string> strQuery = this->makeInsertQuery(aRow);
     typedef vector<string>::iterator QueryIter;
 		for(QueryIter qi = strQuery.begin(); qi != strQuery.end(); ++qi ) {
@@ -468,7 +472,9 @@ void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
   name += "row";
  // cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
 	LOG4CXX_INFO(TableTemplate::logger,"name is "+ name + " fkey is " + fkey);
+        cout<<"PRE RowInterface* subRow"<<endl;
   RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey);
+        cout<<"POST RowInterface* subRow"<<endl;
 	LOG4CXX_INFO(TableTemplate::logger,"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey)");
 	//cout<<"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey) "<<endl;	  
 TableFactory tf;
@@ -511,13 +517,13 @@ void TableTemplate<R>::insertMulti(R* aRow, string name) {
 	    }
 	  } catch (ObjectLayerException &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+name+": "+ e.report() + " \n";
+			exceptionMessage += name+": "+ e.report() + " \n";
 	  } catch (DBException &e) {
 	    exceptionOccured = true;
-	    exceptionMessage += "At row "+name+": "+ e.report() + " \n";
+	    exceptionMessage += name+": "+ e.report() + " \n";
 	  } catch (exception &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+name+": "+ e.what() + " \n";
+			exceptionMessage += name+": "+ e.what() + " \n";
 	  }
 	  
 	}
@@ -637,23 +643,34 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template TableTemplate<T_Personrow>;
-template TableTemplate<T_Physics_Grouprow>;
 template TableTemplate<T_Object_Historyrow>;
-template TableTemplate<T_Collection_Typerow>;
 template TableTemplate<T_App_Familyrow>;
 template TableTemplate<T_Applicationrow>;
 template TableTemplate<T_App_Configrow>;
-template TableTemplate<T_Desc_Triggerrow>;
-template TableTemplate<T_Desc_Mcrow>;
-template TableTemplate<T_Desc_Primaryrow>;
 template TableTemplate<T_Data_Tierrow>;
 template TableTemplate<T_Primary_Datasetrow>;
 template TableTemplate<T_Processing_Pathrow>;
 template TableTemplate<T_Processed_Datasetrow>;
 template TableTemplate<T_Event_Collectionrow>;
-template TableTemplate<T_Analysis_Datasetrow>;
-template TableTemplate<T_Anads_Datarow>;
 template TableTemplate<T_Parentage_Typerow>;
 template TableTemplate<T_Evcoll_Parentagerow>;
 template TableTemplate<T_Block_Statusrow>;
@@ -662,20 +679,11 @@ template TableTemplate<T_File_Statusrow>;
 template TableTemplate<T_File_Typerow>;
 template TableTemplate<T_Filerow>;
 template TableTemplate<T_Evcoll_Filerow>;
-template TableTemplate<T_Validation_Statusrow>;
-template TableTemplate<T_Dataset_Statusrow>;
-template TableTemplate<T_Evcoll_Statusrow>;
-template TableTemplate<T_Info_Anadsrow>;
 template TableTemplate<T_Info_Evcollrow>;
-template TableTemplate<Insertappsmultirow>;
-template TableTemplate<Personmultirow>;
-template TableTemplate<Physicsgroupmultirow>;
 template TableTemplate<Evcollviewmultirow>;
 template TableTemplate<Fileviewmultirow>;
+template TableTemplate<Pdblockviewmultirow>;
 template TableTemplate<Blockviewmultirow>;
 template TableTemplate<Primarydatasetmultirow>;
 template TableTemplate<Processingpathmultirow>;
-template TableTemplate<Analysisdatasetmultirow>;
-template TableTemplate<Datasetprovenenceevchildmultirow>;
-template TableTemplate<Datasetprovenenceevparentmultirow>;
 template TableTemplate<Crabevcollviewmultirow>;

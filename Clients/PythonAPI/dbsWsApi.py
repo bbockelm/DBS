@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.20 2006/02/03 03:45:32 afaq Exp $
+# $Id: dbsWsApi.py,v 1.21 2006/02/03 04:46:31 afaq Exp $
 #
 # Web service implementation of the DBS API class.
 #
@@ -190,9 +190,10 @@ if __name__ == "__main__":
       datasetName="eg_2x1033PU761_TkMu_2_g133_OSC", 
       processingPath=processingPath)
 
-    #processedDatasetId = api.createProcessedDataset(dataset)
-    #print "Got processed dataset id: %s" % processedDatasetId    
+    processedDatasetId = api.createProcessedDataset(dataset)
+    print "Got processed dataset id: %s" % processedDatasetId    
 
+    """
     api.getDatasetFileBlocks(dataset)
     
     block = dbsFileBlock.DbsFileBlock(
@@ -273,6 +274,7 @@ if __name__ == "__main__":
       collectionIndex=1000,
       isPrimary="y",
       fileList=fileListDifferentBlockIds)
+    """
 #
 #    ecListFileDifferentBlockIds = dbsEventCollection.DbsEventCollectionList([ecFileDifferentBlockIds])
  #   api.insertEventCollections(dataset, ecListFileDifferentBlockIds)

@@ -25,8 +25,9 @@ public:
 	int readFiles(Fileviewmultirow* aRow, FileviewMultiTable* table) throw (const char*);
 	int createBlock(Blockviewmultirow* aRow, BlockviewMultiTable* table) throw (const char*);
 	int readBlock(Blockviewmultirow* aRow, BlockviewMultiTable* table) throw (const char*);
-	int readDatasetProvenenceParent(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table) throw (const char*);
-	int readDatasetProvenenceChild(Datasetprovenenceevchildmultirow* aRow, DatasetprovenenceevchildMultiTable* table) throw (const char*);
+	int readPdblock(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table) throw (const char*);
+	//int readDatasetProvenenceParent(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table) throw (const char*);
+	//int readDatasetProvenenceChild(Datasetprovenenceevchildmultirow* aRow, DatasetprovenenceevchildMultiTable* table) throw (const char*);
 	int readCrabEC(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table) throw (const char*);
 
 private:

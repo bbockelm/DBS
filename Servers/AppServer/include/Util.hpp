@@ -14,7 +14,9 @@ public:
 	std::string eraseEndChars(std::string, int);
 	bool isSet(RowInterface*, std::string, std::string);
 	bool isKeySet(RowInterface*, Keys_iter, Keys_iter);
-	bool isListOfKeySet(RowInterface*, ListOfLists_iter, ListOfLists_iter);
+	bool isKeySetCheckNull(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Keys* notNullKeys );
+	//bool isListOfKeySet(RowInterface*, ListOfLists_iter, ListOfLists_iter);
+	bool isListOfKeySet(RowInterface*, ListOfLists_iter, ListOfLists_iter, Keys* notNullKeys);
 	bool isConsistant(RowInterface*, RowInterface*, std::string& message);
 	bool isInMultiRef(std::string, Dictionary_iter, Dictionary_iter);
 	bool toSetCol(std::string, Dictionary_iter, Dictionary_iter);

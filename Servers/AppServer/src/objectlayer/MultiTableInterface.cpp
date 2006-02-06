@@ -18,7 +18,7 @@ MultiTableInterface<R>::MultiTableInterface(DBManagement* dbmanager) {
 
 template <class R>
 void MultiTableInterface<R>::doSmartInsert(R* aRow) {
-	//cout<<"inside doSmartInsert for MultiTableInterface"<<endl;
+	cout<<"inside doSmartInsert for MultiTableInterface"<<endl;
 	LOG4CXX_DEBUG(MultiTableInterface::logger,"inside doSmartInsert for MultiTableInterface");
 	bool exceptionOccured = false;
 	string exceptionMessage = "\n";
@@ -32,13 +32,16 @@ void MultiTableInterface<R>::doSmartInsert(R* aRow) {
 			}	
 		} catch (ObjectLayerException &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+*i+": "+ e.report() + " \n";
+			//exceptionMessage += "At row "+*i+": "+ e.report() + " \n";
+			exceptionMessage +=  e.report() + " \n";
 		} catch (DBException &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+*i+": "+ e.report() + " \n";
+			//exceptionMessage += "At row "+*i+": "+ e.report() + " \n";
+			exceptionMessage +=  e.report() + " \n";
 		} catch (exception &e) {
 			exceptionOccured = true;
-			exceptionMessage += "At row "+*i+": "+ e.what() + " \n";
+			//exceptionMessage += "At row "+*i+": "+ e.what() + " \n";
+			exceptionMessage += (string) e.what() + " \n";
 		}
 
 
@@ -63,15 +66,28 @@ void MultiTableInterface<R>::doSmartInsert(R* aRow) {
 
 
 
-template MultiTableInterface<Insertappsmultirow>;
-template MultiTableInterface<Personmultirow>;
-template MultiTableInterface<Physicsgroupmultirow>;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template MultiTableInterface<Evcollviewmultirow>;
 template MultiTableInterface<Fileviewmultirow>;
+template MultiTableInterface<Pdblockviewmultirow>;
 template MultiTableInterface<Blockviewmultirow>;
 template MultiTableInterface<Primarydatasetmultirow>;
 template MultiTableInterface<Processingpathmultirow>;
-template MultiTableInterface<Analysisdatasetmultirow>;
-template MultiTableInterface<Datasetprovenenceevchildmultirow>;
-template MultiTableInterface<Datasetprovenenceevparentmultirow>;
 template MultiTableInterface<Crabevcollviewmultirow>;

@@ -1,5 +1,4 @@
 import dbsException
-import dbsProcessedDataset
 import dbsApplication
 import dbsProcessingPath
 import dbsProcessedDataset
@@ -58,6 +57,50 @@ class testCreateProcessedDS(testCaseInterface.testCaseInterface) :
       dataTier="Digi",
       parentPath=processingPath,
       application=app)
+
+  def createProcessedDSBadReInsertion(self):
+    funcName = "%s.%s" % (self.__class__.__name__, "createProcessedDS")
+    print "Now executing ", funcName
+
+    try:
+       datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+       app = dbsApplication.DbsApplication(
+         family="CMSAppFam",
+         executable="cmsRun2",
+         version="CMSSW_XYZ",
+         parameterSet="pSetDummy")
+
+       processingPath = dbsProcessingPath.DbsProcessingPath(
+         dataTier="Digi",
+         application=app)
+
+       dataset = dbsProcessedDataset.DbsProcessedDataset(
+         primaryDatasetName="ThisIsATestDataset",
+         isDatasetOpen="y",
+         datasetName="ThisIsATestProcDataset",
+         processingPath=processingPath)
+
+       processedDatasetId = self.api.createProcessedDataset(dataset)
+       print "Got processed dataset id: %s" % processedDatasetId
+
+    except dbsException.DbsException, ex:
+       return 1
+
+    return 0
+
+    processingPath = dbsProcessingPath.DbsProcessingPath(
+      fullPath=datasetPath,
+      dataTier="Digi",
+      application=app)
+
+    processingPath2 = dbsProcessingPath.DbsProcessingPath(
+      pathId="2",
+      fullPath=datasetPath,
+      dataTier="Digi",
+      parentPath=processingPath,
+      application=app)
+
+
 
 
   def createProcessedDSWithParent(self):

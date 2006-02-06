@@ -11,7 +11,7 @@ create table t_info_evcoll
 alter table t_info_evcoll
   add constraint pk_info_evcoll
   primary key (event_collection)
-  using index tablespace CMS_DBS_INDX01;
+  using index tablespace INDX01;
 
 alter table t_info_evcoll
   add constraint fk_info_evcoll_ds

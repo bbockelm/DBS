@@ -61,13 +61,17 @@
         %template(BlockviewMultiTable) MultiTableInterface<Blockviewmultirow>;
 	%template(BlockviewVector) std::vector<Blockviewmultirow*>;
 
-	%template(DatasetprovenenceevparentMultiTableTemplate) TableTemplate<Datasetprovenenceevparentmultirow>;
-        %template(DatasetprovenenceevparentMultiTable) MultiTableInterface<Datasetprovenenceevparentmultirow>;
-	%template(DatasetprovenenceevparentVector) std::vector<Datasetprovenenceevparentmultirow*>;
+	%template(PdblockviewMultiTableTemplate) TableTemplate<Pdblockviewmultirow>;
+        %template(PdblockviewMultiTable) MultiTableInterface<Pdblockviewmultirow>;
+	%template(PdblockviewVector) std::vector<Pdblockviewmultirow*>;
 
-	%template(DatasetprovenenceevchildMultiTableTemplate) TableTemplate<Datasetprovenenceevchildmultirow>;
-        %template(DatasetprovenenceevchildMultiTable) MultiTableInterface<Datasetprovenenceevchildmultirow>;
-	%template(DatasetprovenenceevchildVector) std::vector<Datasetprovenenceevchildmultirow*>;
+	//%template(DatasetprovenenceevparentMultiTableTemplate) TableTemplate<Datasetprovenenceevparentmultirow>;
+        //%template(DatasetprovenenceevparentMultiTable) MultiTableInterface<Datasetprovenenceevparentmultirow>;
+	//%template(DatasetprovenenceevparentVector) std::vector<Datasetprovenenceevparentmultirow*>;
+
+	//%template(DatasetprovenenceevchildMultiTableTemplate) TableTemplate<Datasetprovenenceevchildmultirow>;
+        //%template(DatasetprovenenceevchildMultiTable) MultiTableInterface<Datasetprovenenceevchildmultirow>;
+	//%template(DatasetprovenenceevchildVector) std::vector<Datasetprovenenceevchildmultirow*>;
 
 	%template(CrabevcollviewMultiTableTemplate) TableTemplate<Crabevcollviewmultirow>;
         %template(CrabevcollviewMultiTable) MultiTableInterface<Crabevcollviewmultirow>;

@@ -61,7 +61,6 @@ private:
   	
 
 	Keys* primaryKeys;
-	Keys* notNullKeys;
 	Keys* foreignKeys;
 
 	std::string *tableName;
@@ -90,6 +89,7 @@ protected :
 	SQL* sql;
 	DBManagement* dbmanager;
 	Keys* schemaOrder;
+	Keys* notNullKeys;
   	
 };
 

@@ -105,6 +105,15 @@ int DBSClient::readBlock(Blockviewmultirow* aRow, BlockviewMultiTable* table) th
 	}
 }
 
+int DBSClient::readPdblock(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table) throw (const char*) {
+	try {
+		PdblockManager manager;
+		return manager.read(aRow, table);
+	} catch (BizLayerException &e)  {
+		throw e.report().c_str();
+	}
+}
+
 
 int DBSClient::insertFiles(vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table) throw (const char*) {
 	try {
@@ -125,6 +134,7 @@ int DBSClient::readFiles(Fileviewmultirow* aRow, FileviewMultiTable* table) thro
 	}
 }
 
+/*
 int DBSClient::readDatasetProvenenceParent(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table) throw (const char*) {
 	try {
 		DatasetProvcParentManager manager;
@@ -142,7 +152,7 @@ int DBSClient::readDatasetProvenenceChild(Datasetprovenenceevchildmultirow* aRow
 		throw e.report().c_str();
 	}
 }
-
+*/
 int DBSClient::readCrabEC(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table) throw (const char*) {
 	try {
 		CrabECManager manager;

@@ -16,23 +16,22 @@ SingleTableInterface<R>::SingleTableInterface(DBManagement* dbmanager) {
 
 template <class R>
 void SingleTableInterface<R>::doSmartInsert(R* aRow) {
+        cout<<"\n\nCalling doSmartInsert"<<endl;
 	bool checkInDB = false;
 	string clause="";
 	//cout<<"inside doSmartInsert of SingleTable"<<endl;
 	LOG4CXX_DEBUG(TableTemplate<R>::logger,"inside doSmartInsert for SingleTable");
 	//if( util.isKeySet(aRow, primaryKeys->begin(), primaryKeys->end()) ) {
-	if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ) {
+	if( util.isKeySetCheckNull(aRow, primaryKeysReal.begin(), primaryKeysReal.end(), notNullKeys )) {
+	cout<<"I GOT PRIMARY KEY"<<endl;
+	//if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ) {
 		
-		//Keys primaryKeysTmp = util.getKey(aRow, primaryKeys->begin(), primaryKeys->end()) ;
 		Keys primaryKeysTmp = util.getKey(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ;
-		/*for(Keys_iter i = primaryKeysTmp.begin(); i != primaryKeysTmp.end(); ++i) {
-			cout<<"key is "<<*i<<endl;
-		}*/
 		clause = sql->makeClause(aRow, primaryKeysTmp.begin(), primaryKeysTmp.end(), multiRefrences->begin(), multiRefrences->end());
 		checkInDB = true;	
 
-	//} else if( isUniqueKeySet(aRow) ) {
-	} else if( util.isListOfKeySet(aRow, uniqueKeys->begin(), uniqueKeys->end()) ) {
+	} else if( util.isListOfKeySet(aRow, uniqueKeys->begin(), uniqueKeys->end() , notNullKeys )) {
+	cout<<"I GOT UNIQUE KEY"<<endl;
 		Keys uniqueKeysTmp = *util.getListOfKey(aRow,uniqueKeys->begin(), uniqueKeys->end()) ;
 		clause = sql->makeClause(aRow, uniqueKeysTmp.begin() , uniqueKeysTmp.end(), multiRefrences->begin(), multiRefrences->end());
 		checkInDB = true;
@@ -99,23 +98,34 @@ void SingleTableInterface<R>::delRows() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template SingleTableInterface<T_Personrow>;
-template SingleTableInterface<T_Physics_Grouprow>;
 template SingleTableInterface<T_Object_Historyrow>;
-template SingleTableInterface<T_Collection_Typerow>;
 template SingleTableInterface<T_App_Familyrow>;
 template SingleTableInterface<T_Applicationrow>;
 template SingleTableInterface<T_App_Configrow>;
-template SingleTableInterface<T_Desc_Triggerrow>;
-template SingleTableInterface<T_Desc_Mcrow>;
-template SingleTableInterface<T_Desc_Primaryrow>;
 template SingleTableInterface<T_Data_Tierrow>;
 template SingleTableInterface<T_Primary_Datasetrow>;
 template SingleTableInterface<T_Processing_Pathrow>;
 template SingleTableInterface<T_Processed_Datasetrow>;
 template SingleTableInterface<T_Event_Collectionrow>;
-template SingleTableInterface<T_Analysis_Datasetrow>;
-template SingleTableInterface<T_Anads_Datarow>;
 template SingleTableInterface<T_Parentage_Typerow>;
 template SingleTableInterface<T_Evcoll_Parentagerow>;
 template SingleTableInterface<T_Block_Statusrow>;
@@ -124,8 +134,4 @@ template SingleTableInterface<T_File_Statusrow>;
 template SingleTableInterface<T_File_Typerow>;
 template SingleTableInterface<T_Filerow>;
 template SingleTableInterface<T_Evcoll_Filerow>;
-template SingleTableInterface<T_Validation_Statusrow>;
-template SingleTableInterface<T_Dataset_Statusrow>;
-template SingleTableInterface<T_Evcoll_Statusrow>;
-template SingleTableInterface<T_Info_Anadsrow>;
 template SingleTableInterface<T_Info_Evcollrow>;

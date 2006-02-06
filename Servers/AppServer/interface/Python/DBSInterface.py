@@ -67,12 +67,6 @@ class DBSInterface(dbsApi.DbsApi):
 
         aRow = dbsclient.Primarydatasetmultirow()
         table = dbsclient.PrimarydatasetMultiTable()
-        self.setStrValue(aRow, "t_desc_mc.description", primaryDataset.getMonteCarloDescription().getDescription())
-        self.setStrValue(aRow, "t_desc_trigger.description", primaryDataset.getTriggerDescription())
-        self.setStrValue(aRow, "t_desc_mc.decay_chain", primaryDataset.getMonteCarloDescription().getDecayChain())
-        self.setStrValue(aRow, "t_desc_mc.production", primaryDataset.getMonteCarloDescription().getProduction())
-        self.setStrValue(aRow, "t_physics_group.name", primaryDataset.getPhysicsGroupName())
-        self.setChrValue(aRow, "t_desc_primary.is_mc_data", primaryDataset.getMonteCarloDescription().getIsMcData())
         self.setStrValue(aRow, "t_primary_dataset.name", primaryDataset['datasetName'])
 	
         primaryDatasetID = self.client.createPrimaryDataset(aRow, table)
@@ -130,17 +124,11 @@ class DBSInterface(dbsApi.DbsApi):
         self.setStrValue(aRow, "t_app_config.parameter_set", app.getParameterSet())
         self.setChrValue(aRow, "t_processed_dataset.is_open", processedDataset.getIsDatasetOpen())
         self.setStrValue(aRow, "t_application.app_version", app.getVersion())
-        self.setStrValue(aRow, "t_app_config.conditions_version", app.getConfigConditionsVersion())
         self.setStrValue(aRow, "t_processing_path.full_path", pp.getFullPath())
         self.setStrValue(aRow, "t_primary_dataset.name", processedDataset.getPrimaryDatasetName())
-        self.setStrValue(aRow, "t_collection_type.name.t_application.output_type", app.getOutputTypeName())
-        self.setStrValue(aRow, "t_collection_type.name.t_application.input_type", app.getInputTypeName())
-        self.setIntValue(aRow, "t_processing_path.parent", processingPathID)
+        if processingPathID != 0:
+           self.setIntValue(aRow, "t_processing_path.parent", processingPathID)
 	
-        #print "************************length*****************",len(pp.getFullPath().split('/'))
-        #print "pp.getFullPath().split('/') ",pp.getFullPath().split('/')
-        if(len(pp.getFullPath().split('/')) < 4 ):
-             raise dbsApi.DbsApiException(args="Fullpath in t_processing_path is incorrect")
 	processedDatasetID = self.client.createProcessedDataset(aRow, table)
         #print processedDatasetID
         processinPathID = self.getStrValue(table, "t_processing_path.id", 0)
@@ -205,9 +193,6 @@ class DBSInterface(dbsApi.DbsApi):
         app = processedDataset.getProcessingPath().getApplication()
         if app != None:
            self.setStrValue(aRow, "t_application.app_version", app.getVersion())
-           self.setStrValue(aRow, "t_app_config.conditions_version", app.getConfigConditionsVersion())
-           self.setStrValue(aRow, "t_collection_type.name.t_application.output_type",  app.getOutputTypeName())
-           self.setStrValue(aRow, "t_collection_type.name.t_application.input_type", app.getInputTypeName())
            self.setStrValue(aRow, "t_app_family.name", app.getFamily()) 
            self.setStrValue(aRow, "t_app_config.parameter_set", app.getParameterSet())  
            self.setStrValue(aRow, "t_application.executable", app.getExecutable())
@@ -241,11 +226,11 @@ class DBSInterface(dbsApi.DbsApi):
            processedDatasetID = self.getProcessedDatasetID(processedDataset)
         print "processedDatasetID ",processedDatasetID
  
-        aRow = dbsclient.Blockviewmultirow()
-        table = dbsclient.BlockviewMultiTable()
+        aRow = dbsclient.Pdblockviewmultirow()
+        table = dbsclient.PdblockviewMultiTable()
 
         self.setIntValue(aRow, "t_processed_dataset.id",processedDatasetID )
-        self.client.readBlock(aRow, table)
+        self.client.readPdblock(aRow, table)
 
         #print "type(table)", type(table)
         #print "dir(table)", dir(table)
@@ -287,32 +272,18 @@ class DBSInterface(dbsApi.DbsApi):
       try:
         processedDatasetID = processedDataset.getProcessedDatasetID()
         if processedDatasetID == None:
-           table = self.getProcessedDataset(processedDataset)
-           if table.getNoOfRows() > 0:
-              if table.getNoOfRows() > 1:
-                 table.dispose()
-                 raise dbsApi.DbsApiException(args="More than one Processed Dataset found")
-              else:
-                 processedDatasetID = self.getStrValue(table, "t_processed_dataset.id", 0)
-                 primaryDatasetID = self.getStrValue(table, "t_processed_dataset.primary_dataset", 0)
-                 processPath = self.getStrValue(table, "t_processed_dataset.processing_path", 0)
-           else:
-              print "Processed Dataset not found"
-              table.dispose()
-              raise dbsApi.DbsApiException(args="Processed Dataset not found")
-
-           table.dispose()
+           processedDatasetID = self.getProcessedDatasetID(processedDataset)
         print "processedDatasetID ",processedDatasetID
+
         aRow = dbsclient.Blockviewmultirow()
         table = dbsclient.BlockviewMultiTable()
 
         self.setIntValue(aRow, "t_block.bytes", fileBlock.getNumberOfBytes())
         self.setIntValue(aRow, "t_block.files", fileBlock.getNumberOfFiles())	  	
         self.setIntValue(aRow, "t_block.processed_dataset",processedDatasetID )	  	
-        self.setIntValue(aRow, "t_processed_dataset.primary_dataset",primaryDatasetID)	
-        self.setIntValue(aRow, "t_processed_dataset.processing_path", processPath)
-        self.setStrValue(aRow, "t_block_status.name", fileBlock.getBlockStatusName())	  	
-	
+        self.setIntValue(aRow, "t_processed_dataset.id",processedDatasetID)	
+        self.setStrValue(aRow, "t_block_status.name",fileBlock.getBlockStatusName())	
+
         blockID = self.client.createBlock(aRow, table)
         print "*********************************************************************"
         print "Block ID ",blockID
@@ -323,7 +294,6 @@ class DBSInterface(dbsApi.DbsApi):
          raise dbsApi.DbsApiException(exception=e)
       print "Block inserted succesfully  ",blockID
       return blockID
-
 
    def insertEventCollections(self, processedDataset, eventCollectionList):
 	
@@ -338,6 +308,7 @@ class DBSInterface(dbsApi.DbsApi):
            for ec in eventCollectionList:
            #return self.recInsertEC(eventCollectionList[0],processedDatasetID)
               #print "calling loop ec ",ec 
+      	      #self.insertFiles(1, ec.getFileList())
               id = self.recInsertEC(ec,processedDatasetID)
         return id
       except RuntimeError,e:
@@ -394,12 +365,18 @@ class DBSInterface(dbsApi.DbsApi):
       self.setStrValue(aRow, "t_info_evcoll.name", eventCollection.getCollectionName())
       self.setIntValue(aRow, "t_event_collection.collection_index", eventCollection.getCollectionIndex()) 
       self.setIntValue(aRow, "t_info_evcoll.events", eventCollection.getNumberOfEvents())
-      #self.setStrValue(aRow, "t_parentage_type.name", eventCollection.getParentageType())
+      #if evCollID != 0:
+      ## foloowing line is HACK Caused by Schema Issues....
+      ## dbsEventCollection doesn't provide Parentage Type so we have no way
+      ## of settng it here, But schema needs it....
+      ## We need to set it here.
+      parentageType = eventCollection.getParentageType()
+      if parentageType == None:
+         parentageType = "DUMMY"
+      self.setStrValue(aRow, "t_parentage_type.name", parentageType)
+      if evCollID != 0 : 
+         self.setIntValue(aRow, "t_evcoll_parentage.parent", evCollID)
       self.setIntValue(aRow, "t_event_collection.processed_dataset", processedDatasetID)
-      self.setChrValue(aRow, "t_event_collection.is_primary", eventCollection.getIsPrimary())
-      self.setIntValue(aRow, "t_evcoll_parentage.parent", evCollID)
-      self.setStrValue(aRow, "t_evcoll_status.name", "dummy status")
-      self.setStrValue(aRow, "t_validation_status.name", "Dummy Validation status ")
        
       toReturnEvCollID = self.client.createEventCollection(aRow, table)
       #toReturnEvCollID = self.x
@@ -471,21 +448,22 @@ class DBSInterface(dbsApi.DbsApi):
       try: 
          fileVector = dbsclient.FileVector()
          table = dbsclient.FileviewMultiTable()
+         rows = []
          for afile in files:
             aRow = dbsclient.Fileviewmultirow()
-            print "LLLLLLLLLLLLLLLLLLLLLLLLLL"
             print afile
-            print "LLLLLLLLLLLLLLLLLLLLLLLLLL"
             self.setStrValue(aRow, "t_file_status.name", afile.getFileStatus())
             self.setStrValue(aRow, "t_file.guid", afile.getGuid())
-            self.setStrValue(aRow, "t_file.checksum", afile.getCheckSum())#BA7C8A55-DE62-D811-892C-00E081250436
             self.setStrValue(aRow, "t_file.logical_name", afile.getLogicalFileName())
             self.setIntValue(aRow, "t_file.inblock", afile.getFileBlockId())
             self.setStrValue(aRow, "t_file_type.name", afile.getFileType())#EVDZip/ROOT_All
             self.setStrValue(aRow, "t_file.filesize", str(afile.getFileSize()))
             self.setIntValue(aRow, "t_evcoll_file.evcoll", evCollID)
-	     
-            fileVector.push_back(aRow)
+            rows.append(aRow)
+
+         for aSingleRow in rows:
+           fileVector.push_back(aSingleRow)
+
          self.client.insertFiles(fileVector, table)
 
       except RuntimeError,e:

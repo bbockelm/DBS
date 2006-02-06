@@ -55,6 +55,18 @@ def writeFile():
             setStrValue(aRow, "t_file.filesize", "sucks")
             setIntValue(aRow, "t_evcoll_file.evcoll", 1840)
             fileVector.push_back(aRow)
+
+            aRow1 = dbsclient.Fileviewmultirow()
+            setStrValue(aRow1, "t_file_status.name", "afile")
+            setStrValue(aRow1, "t_file.guid", "Test-1234-Guid")
+            setStrValue(aRow1, "t_file.checksum", "1234")
+            setStrValue(aRow1, "t_file.logical_name", "afilexgetLogicalFileNamexy")
+            setIntValue(aRow1, "t_file.inblock", 10)
+            setStrValue(aRow1, "t_file_type.name", "ROOT_All")
+            setStrValue(aRow1, "t_file.filesize", "sucks")
+            setIntValue(aRow1, "t_evcoll_file.evcoll", 1840)
+            fileVector.push_back(aRow1)
+
             client.insertFiles(fileVector, table)
 
 
@@ -145,9 +157,12 @@ def readCrabEC() :
 
 #while(1):
 for i in range(1) :
-	#readPrimary()
-	#writePrimary()
-	#writeProcessed()
-	#readProcessed()
-	#readCrabEC()
-        writeFile()
+	try:
+		#readPrimary()
+		#writePrimary()
+		#writeProcessed()
+		#readProcessed()
+		#readCrabEC()
+        	writeFile()
+	except Exception ,e:
+		print "Exception ", e
