@@ -12,7 +12,8 @@
 		#include "../../include/TableTemplate.hpp"
 		#include "../../include/TableInterface.hpp"
 	%}
- 
+
+        %import ../../include/ 
  
 // Parse the original header file
 	%include "../../include/common.hpp"

@@ -155,7 +155,8 @@ bool Util::isKeySetCheckNull(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Ke
 bool Util::isListOfKeySet(RowInterface* aRow, ListOfLists_iter b, ListOfLists_iter e,  Keys* notNullKeys) {
 	 cout<<"\n\n INSIDE isListOfKeySet"<<endl;
 	for(ListOfLists_iter i = b; i != e; ++i) {
-		if( this->isKeySet(aRow, (*i).begin(), (*i).end()) , notNullKeys) {
+		if( this->isKeySetCheckNull(aRow, (*i).begin(), (*i).end() , notNullKeys)) {
+		//if( this->isKeySet(aRow, (*i).begin(), (*i).end()) , notNullKeys) {
 			//cout<<"returnning true from isUniqueKeySet"<<endl;
 			return(true);
 		}

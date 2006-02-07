@@ -11,7 +11,7 @@ ALLOBJS := $(foreach dir,$(dirs),$(wildcard $(dir)/*.o))
 
 all: swig wrap shared
 swig: 
-	$(SWIG) -python -c++ $(IF)
+	$(SWIG) -python -c++ -w401,317 $(IF)
 wrap: 
 	$(CC) $(CFLAG) $(CFLAGS) $(PYINCLUDE) $(INCLUDE) $(WRAP) -o $(WRAPOBJECT)
 shared: 
