@@ -119,7 +119,7 @@ void TableTemplate<R>::init() {
 	sql = new SQL(&util);
 	//cout<<"primary keys "<<endl;
 	primaryKeysReal = util.getPrimaryKeys(schemaOrder->begin(), schemaOrder->end(), multiRefrences->begin(), multiRefrences->end());
-	cout<<"DONE initilizing......"<<endl;
+	//cout<<"DONE initilizing......"<<endl;
 };
 
 
@@ -225,7 +225,7 @@ ResultSet * TableTemplate<R>::doSelect(string query="", string whereClause="") {
 	} else {
     tempQuery = query;
   }
-  LOG4CXX_INFO(TableTemplate::logger,"Query is " + tempQuery);
+  //LOG4CXX_INFO(TableTemplate::logger,"Query is " + tempQuery);
   //cout<<"calling dbmanager->executeQueryWithResults(tempQuery)"<<endl;
   return dbmanager->executeQueryWithResults(tempQuery) ;
 
@@ -263,8 +263,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 		this->reSetColNamesInRS(rs);
     
 		//cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
-		LOG4CXX_DEBUG(TableTemplate::logger,"noOfRows is ");
-		LOG4CXX_DEBUG(TableTemplate::logger, rs->getNoOfRows());
+		LOG4CXX_DEBUG(TableTemplate::logger,"Number of Rows returned from DB is "+util.itoa(rs->getNoOfRows()));
 		for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
 			//cout << "\n\nChecking PK" << endl;
 			bool pKEqual = false;
@@ -285,10 +284,10 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 								}
 							
 							} else {
-					                     cout<<"\nPK IS"<< *i;
-					                     cout <<"\n(string) rs->getElement(rowIndex, rs->getColIndex(*i))" << (string) rs->getElement(rowIndex, rs->getColIndex(*i));
-					                     cout<<"\nutil.getStrValue(aRow, *i , dataType)" << util.getStrValue(aRow, *i , dataType);
-                                        	             if( ((string) rs->getElement(rowIndex, rs->getColIndex(*i))).compare(util.getStrValue(aRow, *i , dataType) ) != 0){
+								//cout<<"\nPK IS"<< *i;
+								//cout <<"\n(string) rs->getElement(rowIndex, rs->getColIndex(*i))" << (string) rs->getElement(rowIndex, rs->getColIndex(*i));
+								//cout<<"\nutil.getStrValue(aRow, *i , dataType)" << util.getStrValue(aRow, *i , dataType);
+								if( ((string) rs->getElement(rowIndex, rs->getColIndex(*i))).compare(util.getStrValue(aRow, *i , dataType) ) != 0){
                                                         
 							//if( (string) rs->getElement(rowIndex, rs->getColIndex(*i)) != 
 							//	util.getStrValue(aRow, *i , dataType) ) {
@@ -322,14 +321,14 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 		//rowIterator = rows.begin();
 	} catch (ObjectLayerException &e) {
 		exceptionOccured = true;
-		exceptionMessage = e.report();
+		exceptionMessage += e.report() + "\n";
 		delete rs;
 	} catch (DBException &e) {
 		exceptionOccured = true;
-		exceptionMessage = e.report();
+		exceptionMessage += e.report() + "\n";
 	} catch (exception &e) {
 		exceptionOccured = true;
-		exceptionMessage = e.what();
+		exceptionMessage += e.what();
 		delete rs;
 	}
   
@@ -390,9 +389,7 @@ void TableTemplate<R>::insert() {
 			//cout<<"\n\n\n"<<endl;
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
-			LOG4CXX_DEBUG(TableTemplate::logger,"inserting ROW no ");
-			LOG4CXX_DEBUG(TableTemplate::logger,i);
-                        cout<<"\n\nCalling doSmartInsert"<<endl;
+			LOG4CXX_DEBUG(TableTemplate::logger,"Inserting Row Number " + util.itoa(i));
 			this->doSmartInsert(aRow);
 			LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
 			LOG4CXX_DEBUG(TableTemplate::logger,"");
@@ -419,14 +416,14 @@ void TableTemplate<R>::insert() {
 	  LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
 	  throw ObjectLayerException(exceptionMessage);
 	}
-	cout<<"returnning from insert in TableTamplate"<<endl;
+	//cout<<"returnning from insert in TableTamplate"<<endl;
 }
 
 
 template <class R>
 void TableTemplate<R>::doSimpleInsert(R* aRow) {
   //cout<<"inside doSimpleInsert"<<endl;
-  LOG4CXX_DEBUG(TableTemplate::logger,"inside doSimpleInsert");
+  LOG4CXX_DEBUG(TableTemplate::logger,"TableTemplate::doSimpleInsert");
   //if(!isNotNullKeySet(aRow)) {
   this->fixPKWithSeq(aRow);
   //this->setTimeInRow(aRow);
@@ -471,11 +468,13 @@ template <class R>
 void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
   name += "row";
  // cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
-	LOG4CXX_INFO(TableTemplate::logger,"name is "+ name + " fkey is " + fkey);
-        cout<<"PRE RowInterface* subRow"<<endl;
-  RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey);
-        cout<<"POST RowInterface* subRow"<<endl;
-	LOG4CXX_INFO(TableTemplate::logger,"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey)");
+	LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
+	LOG4CXX_INFO(TableTemplate::logger,"Table Name is "+ name + " fkey is " + fkey);
+	LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
+        //cout<<"PRE RowInterface* subRow"<<endl;
+	RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey);
+        //cout<<"POST RowInterface* subRow"<<endl;
+	//LOG4CXX_INFO(TableTemplate::logger,"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey)");
 	//cout<<"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey) "<<endl;	  
 TableFactory tf;
   //cout<<"calling tf.getTableObject"<<endl;
@@ -497,7 +496,7 @@ TableFactory tf;
   
   util.equatePKWithRef(aRow, refrences->begin(), refrences->end() );
   util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
-  LOG4CXX_INFO(TableTemplate::logger,"Out from insertSingle");
+  //LOG4CXX_INFO(TableTemplate::logger,"Out from insertSingle");
   
 }
 
@@ -531,40 +530,6 @@ void TableTemplate<R>::insertMulti(R* aRow, string name) {
 		throw ObjectLayerException(exceptionMessage);
 	}
 }
-
-/*
-template <class R>
-void TableTemplate<R>::doSmartInsert(R* aRow) {
-	//cout<<"inside doSmartInsert for TableTemplate"<<endl;
-	LOG4CXX_DEBUG(TableTemplate::logger,"inside doSmartInsert for TableTemplate");
-	bool exceptionOccured = false;
-	string exceptionMessage = "\n";
-
-	for(Keys_iter i = schemaOrder->begin(); i != schemaOrder->end(); ++i) {
-		try{
-			if( util.isInMultiRef(*i, multiRefrences->begin(), multiRefrences->end()) ) {
-				this->insertMulti(aRow,*i);
-			} else {
-				this->insertSingle(aRow, *i,"");
-			}	
-		} catch (ObjectLayerException &e) {
-			exceptionOccured = true;
-			exceptionMessage += "At row "+*i+": "+ e.report() + " \n";
-		} catch (DBException &e) {
-			exceptionOccured = true;
-			exceptionMessage += "At row "+*i+": "+ e.report() + " \n";
-		} catch (exception &e) {
-			exceptionOccured = true;
-			exceptionMessage += "At row "+*i+": "+ e.what() + " \n";
-		}
-
-
-	}
-	if(exceptionOccured) {
-		throw ObjectLayerException(exceptionMessage);
-	}
-}
-*/
 
 template <class R>
 void TableTemplate<R>::update(){
@@ -626,6 +591,8 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 	aRow->setValue(tableName+".created_by",&value);
 	aRow->setValue(tableName+".modified_by",&value);
 }
+
+
 
 
 

@@ -425,7 +425,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     <documentation>DBS Dataset Service provides functionality for retrieving and manipulating dataset information.</documentation>
     <port name="DbsDatasetPort" binding="tns:DbsDatasetBinding">
       <!--soap:address location="http://cmslcgco01.cern.ch:27983"/-->
-      <soap:address location="http://cmssrv22.fnal.gov:27985"/>
+      <soap:address location="http://venom.fnal.gov:27985"/>
       <!--soap:address location="http://cmslcgco01.cern.ch:27982"/-->
     </port>
   </service>

@@ -943,14 +943,11 @@ string* T_File_Statusrow_DB_BINDING::getTableName(void) {
 
 
 T_File_Typerow::T_File_Typerow(){
-     
-     
     this->rowMap.set("t_file_typerow", (void*)this);
     this->constituentObjects.push_back(this->rowMap);
 }
 
 void T_File_Typerow::setValue(string key, void* value) {
-    cout<<"|||||||||||||||||| Inside T_File_Typerow::setValue() "<<endl;
     if( key.compare("t_file_type.id") == 0) {
          this->id = *((int*) value) ;
     }
@@ -960,7 +957,6 @@ void T_File_Typerow::setValue(string key, void* value) {
 }
 
 void* T_File_Typerow::getValue(string key) {
-    cout<<"|||||||||||||||||| Inside T_File_Typerow::getValue() "<<endl;
    if( key.compare("t_file_type.id") == 0) {
        return (&this->id.getValue());
     }
@@ -1371,7 +1367,7 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_evcoll_parentage.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
     Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
-    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.type", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
@@ -1379,7 +1375,7 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_parentage_type.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
 
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
     PrimaryKeys.push_back("t_evcoll_parentage.id");
@@ -1432,16 +1428,10 @@ string* Evcollviewmultirow_DB_BINDING::getTableName(void) {
 
 
 void Fileviewmultirow::setValue(string key, void* value) {
-    cout<<"\n\nFileviewmultirow::setValue()"<<endl;
     if( key.compare("t_file_type.name") == 0) {
          ((T_File_Typerow*)this->
           getConstituentRow((string)"t_file_typerow", ""))->
            setValue((string)"t_file_type.name", value);
-    }
-    if( key.compare("t_file_status.id") == 0) {
-         ((T_File_Statusrow*)this->
-          getConstituentRow((string)"t_file_statusrow", ""))->
-           setValue((string)"t_file_status.id", value);
     }
     if( key.compare("t_file_status.name") == 0) {
          ((T_File_Statusrow*)this->
@@ -1462,11 +1452,6 @@ void Fileviewmultirow::setValue(string key, void* value) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.filesize", value);
-    }
-    if( key.compare("t_file.status") == 0) {
-         ((T_Filerow*)this->
-          getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.status", value);
     }
     if( key.compare("t_file.inblock") == 0) {
          ((T_Filerow*)this->
@@ -1499,6 +1484,22 @@ void Fileviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.id", value);
     }
+    if( key.compare("t_file.status") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.status", value);
+         ((T_File_Statusrow*)this->
+          getConstituentRow((string)"t_file_statusrow", ""))->
+           setValue((string)"t_file_status.id", value);
+    }
+    if( key.compare("t_file_status.id") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.status", value);
+         ((T_File_Statusrow*)this->
+          getConstituentRow((string)"t_file_statusrow", ""))->
+           setValue((string)"t_file_status.id", value);
+    }
     if( key.compare("t_file.type") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
@@ -1518,7 +1519,6 @@ void Fileviewmultirow::setValue(string key, void* value) {
 }
 
 void* Fileviewmultirow::getValue(string key) {
-    cout<<"\n\nFileviewmultirow::getValue()"<<endl;
    if( key.compare("t_file_type.id") == 0) {
        return  ((T_File_Typerow*)this->
           getConstituentRow("t_file_typerow", ""))->
@@ -1618,16 +1618,16 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
 
     Schema.insert(Entry("t_evcoll_file.fileid", "INTEGER"));
     Schema.insert(Entry("t_file.type", "INTEGER"));
-    Schema.insert(Entry("t_file_type.id", "INTEGER"));
     Schema.insert(Entry("t_file.inblock", "INTEGER"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
-    Schema.insert(Entry("t_file_status.id", "INTEGER"));
-    Schema.insert(Entry("t_file_type.name", "STRING"));
     Schema.insert(Entry("t_file_status.name", "STRING"));
+    Schema.insert(Entry("t_file.guid", "STRING"));
+    Schema.insert(Entry("t_file_type.name", "STRING"));
+    Schema.insert(Entry("t_file_type.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_file.id", "INTEGER"));
+    Schema.insert(Entry("t_file_status.id", "INTEGER"));
     Schema.insert(Entry("t_file.filesize", "INTEGER"));
-    Schema.insert(Entry("t_file.guid", "STRING"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
 
@@ -1637,6 +1637,7 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     ForeignKeys.push_back("t_file.status");
     ForeignKeys.push_back("t_file.type");
     ForeignKeys.push_back("t_evcoll_file.evcoll");
+    ForeignKeys.push_back("t_file.inblock");
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_file.evcoll");
@@ -1665,10 +1666,11 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_evcoll_file");
 
     References.insert(Entry("t_evcoll_file.fileid", "t_file.id"));
+    References.insert(Entry("t_file.status", "t_file_status.id"));
     References.insert(Entry("t_file.type", "t_file_type.id"));
 
 
-    ExternalReferences.insert(Entry("t_evcoll_file.evcoll", "t_event_collection.id"));
+    ExternalReferences.insert(Entry("t_file.inblock", "t_block.id"));
 }
 
 string* Fileviewmultirow_DB_BINDING::getTableName(void) {
@@ -1837,11 +1839,11 @@ Pdblockviewmultirow_DB_BINDING::Pdblockviewmultirow_DB_BINDING() {
 
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
     Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_block_status.name", "STRING"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
@@ -1988,13 +1990,13 @@ Blockviewmultirow::~Blockviewmultirow(){
 Blockviewmultirow_DB_BINDING::Blockviewmultirow_DB_BINDING() {
     TableName = "BlockView";
 
-    Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block_status.name", "STRING"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_block_status.id", "INTEGER"));
-    Schema.insert(Entry("t_block_status.name", "STRING"));
 
     PrimaryKeys.push_back("t_block.id");
 
@@ -2146,6 +2148,38 @@ void Processingpathmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_processed_datasetrow", ""))->
            setValue((string)"t_processed_dataset.is_open", value);
     }
+    if( key.compare("t_processed_dataset.processing_path") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
     if( key.compare("t_processing_path.app_config") == 0) {
          ((T_Processing_Pathrow*)this->
           getConstituentRow((string)"t_processing_pathrow", ""))->
@@ -2178,22 +2212,6 @@ void Processingpathmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_applicationrow", ""))->
            setValue((string)"t_application.id", value);
     }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
     if( key.compare("t_processed_dataset.primary_dataset") == 0) {
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
@@ -2225,22 +2243,6 @@ void Processingpathmultirow::setValue(string key, void* value) {
          ((T_App_Familyrow*)this->
           getConstituentRow((string)"t_app_familyrow", ""))->
            setValue((string)"t_app_family.id", value);
-    }
-    if( key.compare("t_processed_dataset.processing_path") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.processing_path", value);
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.id", value);
-    }
-    if( key.compare("t_processing_path.id") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.processing_path", value);
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.id", value);
     }
 }
 
@@ -2394,36 +2396,36 @@ Processingpathmultirow::~Processingpathmultirow(){
 Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     TableName = "ProcessingPath";
 
+    Schema.insert(Entry("t_processed_dataset.name", "STRING"));
+    Schema.insert(Entry("t_application.app_version", "STRING"));
+    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_application.id", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
+    Schema.insert(Entry("t_app_config.id", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
+    Schema.insert(Entry("t_application.app_family", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.name", "STRING"));
     Schema.insert(Entry("t_app_family.name", "STRING"));
     Schema.insert(Entry("t_app_config.parameter_set", "STRING"));
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
     Schema.insert(Entry("t_app_config.application", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_application.id", "INTEGER"));
-    Schema.insert(Entry("t_application.app_version", "STRING"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
-    Schema.insert(Entry("t_data_tier.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
-    Schema.insert(Entry("t_app_family.id", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
-    Schema.insert(Entry("t_app_config.id", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_application.app_family", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
-    Schema.insert(Entry("t_data_tier.name", "STRING"));
     Schema.insert(Entry("t_application.executable", "STRING"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_app_family.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_processed_dataset.id");
 
     ForeignKeys.push_back("t_processing_path.app_config");
-    ForeignKeys.push_back("t_app_config.application");
     ForeignKeys.push_back("t_processing_path.data_tier");
-    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_app_config.application");
+    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_application.app_family");
 
     list<string> tmplist;
@@ -2465,12 +2467,12 @@ Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_primary_dataset");
     SchemaOrder.push_back("t_processed_dataset");
 
+    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processing_path.app_config", "t_app_config.id"));
     References.insert(Entry("t_app_config.application", "t_application.id"));
-    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_application.app_family", "t_app_family.id"));
-    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
 
 
 }
@@ -2516,29 +2518,19 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.collection_index", value);
     }
-    if( key.compare("t_block.id.t_file.status") == 0) {
+    if( key.compare("t_block.status") == 0) {
          ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", "t_file.status"))->
-           setValue((string)"t_block.id", value);
-    }
-    if( key.compare("t_block.processed_dataset.t_file.status") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", "t_file.status"))->
-           setValue((string)"t_block.processed_dataset", value);
-    }
-    if( key.compare("t_block.status.t_file.status") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", "t_file.status"))->
+          getConstituentRow((string)"t_blockrow", ""))->
            setValue((string)"t_block.status", value);
     }
-    if( key.compare("t_block.files.t_file.status") == 0) {
+    if( key.compare("t_block.files") == 0) {
          ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", "t_file.status"))->
+          getConstituentRow((string)"t_blockrow", ""))->
            setValue((string)"t_block.files", value);
     }
-    if( key.compare("t_block.bytes.t_file.status") == 0) {
+    if( key.compare("t_block.bytes") == 0) {
          ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", "t_file.status"))->
+          getConstituentRow((string)"t_blockrow", ""))->
            setValue((string)"t_block.bytes", value);
     }
     if( key.compare("t_info_evcoll.events") == 0) {
@@ -2566,15 +2558,15 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.filesize", value);
     }
+    if( key.compare("t_file.status") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.status", value);
+    }
     if( key.compare("t_file.type") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.type", value);
-    }
-    if( key.compare("t_file.inblock") == 0) {
-         ((T_Filerow*)this->
-          getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.inblock", value);
     }
     if( key.compare("t_evcoll_file.id") == 0) {
          ((T_Evcoll_Filerow*)this->
@@ -2596,6 +2588,38 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
            setValue((string)"t_file.id", value);
+    }
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.primary_dataset") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
+    }
+    if( key.compare("t_primary_dataset.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
     }
     if( key.compare("t_processed_dataset.processing_path") == 0) {
          ((T_Processed_Datasetrow*)this->
@@ -2629,21 +2653,21 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.id", value);
     }
-    if( key.compare("t_block.processed_dataset") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
+    if( key.compare("t_info_evcoll.event_collection") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.event_collection", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
     }
-    if( key.compare("t_processed_dataset.id") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
+    if( key.compare("t_event_collection.id") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.event_collection", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
     }
     if( key.compare("t_processing_path.data_tier") == 0) {
          ((T_Processing_Pathrow*)this->
@@ -2661,22 +2685,6 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_data_tierrow", ""))->
            setValue((string)"t_data_tier.id", value);
     }
-    if( key.compare("t_processed_dataset.primary_dataset") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.primary_dataset", value);
-         ((T_Primary_Datasetrow*)this->
-          getConstituentRow((string)"t_primary_datasetrow", ""))->
-           setValue((string)"t_primary_dataset.id", value);
-    }
-    if( key.compare("t_primary_dataset.id") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.primary_dataset", value);
-         ((T_Primary_Datasetrow*)this->
-          getConstituentRow((string)"t_primary_datasetrow", ""))->
-           setValue((string)"t_primary_dataset.id", value);
-    }
     if( key.compare("t_event_collection.processed_dataset") == 0) {
          ((T_Event_Collectionrow*)this->
           getConstituentRow((string)"t_event_collectionrow", ""))->
@@ -2693,26 +2701,10 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_processed_datasetrow", ""))->
            setValue((string)"t_processed_dataset.id", value);
     }
-    if( key.compare("t_info_evcoll.event_collection") == 0) {
-         ((T_Info_Evcollrow*)this->
-          getConstituentRow((string)"t_info_evcollrow", ""))->
-           setValue((string)"t_info_evcoll.event_collection", value);
-         ((T_Event_Collectionrow*)this->
-          getConstituentRow((string)"t_event_collectionrow", ""))->
-           setValue((string)"t_event_collection.id", value);
-    }
-    if( key.compare("t_event_collection.id") == 0) {
-         ((T_Info_Evcollrow*)this->
-          getConstituentRow((string)"t_info_evcollrow", ""))->
-           setValue((string)"t_info_evcoll.event_collection", value);
-         ((T_Event_Collectionrow*)this->
-          getConstituentRow((string)"t_event_collectionrow", ""))->
-           setValue((string)"t_event_collection.id", value);
-    }
-    if( key.compare("t_file.status") == 0) {
+    if( key.compare("t_file.inblock") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.status", value);
+           setValue((string)"t_file.inblock", value);
          ((T_Blockrow*)this->
           getConstituentRow((string)"t_blockrow", ""))->
            setValue((string)"t_block.id", value);
@@ -2720,7 +2712,7 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
     if( key.compare("t_block.id") == 0) {
          ((T_Filerow*)this->
           getConstituentRow((string)"t_filerow", ""))->
-           setValue((string)"t_file.status", value);
+           setValue((string)"t_file.inblock", value);
          ((T_Blockrow*)this->
           getConstituentRow((string)"t_blockrow", ""))->
            setValue((string)"t_block.id", value);
@@ -2808,29 +2800,29 @@ void* Crabevcollviewmultirow::getValue(string key) {
           getConstituentRow("t_event_collectionrow", ""))->
            getValue((string)"t_event_collection.collection_index");
     }
-   if( key.compare("t_block.id.t_file.status") == 0) {
-       return   ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", "t_file.status"))->
+   if( key.compare("t_block.id") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
            getValue((string)"t_block.id");
     }
-   if( key.compare("t_block.processed_dataset.t_file.status") == 0) {
-       return   ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", "t_file.status"))->
+   if( key.compare("t_block.processed_dataset") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
            getValue((string)"t_block.processed_dataset");
     }
-   if( key.compare("t_block.status.t_file.status") == 0) {
-       return   ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", "t_file.status"))->
+   if( key.compare("t_block.status") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
            getValue((string)"t_block.status");
     }
-   if( key.compare("t_block.files.t_file.status") == 0) {
-       return   ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", "t_file.status"))->
+   if( key.compare("t_block.files") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
            getValue((string)"t_block.files");
     }
-   if( key.compare("t_block.bytes.t_file.status") == 0) {
-       return   ((T_Blockrow*)this->
-          getConstituentRow("t_blockrow", "t_file.status"))->
+   if( key.compare("t_block.bytes") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
            getValue((string)"t_block.bytes");
     }
    if( key.compare("t_info_evcoll.event_collection") == 0) {
@@ -2916,8 +2908,8 @@ Crabevcollviewmultirow::Crabevcollviewmultirow(){
     this->T_Event_Collectionobj = new T_Event_Collectionrow();
     this->rowMap.set("t_event_collectionrow", (void*)this->T_Event_Collectionobj);
     this->constituentObjects.push_back(this->rowMap);
-    this->T_File_Statusobj = new T_Blockrow();
-    this->rowMap.set("t_file.status", (void*)this->T_File_Statusobj);
+    this->T_Blockobj = new T_Blockrow();
+    this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
     this->constituentObjects.push_back(this->rowMap);
     this->T_Info_Evcollobj = new T_Info_Evcollrow();
     this->rowMap.set("t_info_evcollrow", (void*)this->T_Info_Evcollobj);
@@ -2936,7 +2928,7 @@ Crabevcollviewmultirow::~Crabevcollviewmultirow(){
    delete this->T_Primary_Datasetobj;
    delete this->T_Processed_Datasetobj;
    delete this->T_Event_Collectionobj;
-   delete this->T_File_Statusobj;
+   delete this->T_Blockobj;
    delete this->T_Info_Evcollobj;
    delete this->T_Fileobj;
    delete this->T_Evcoll_Fileobj;
@@ -2946,39 +2938,39 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     TableName = "CrabEvCollView";
 
     Schema.insert(Entry("t_evcoll_file.fileid", "INTEGER"));
-    Schema.insert(Entry("t_file.type", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
-    Schema.insert(Entry("t_file.logical_name", "STRING"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_file.guid", "STRING"));
-    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
-    Schema.insert(Entry("t_block.processed_dataset.t_file.status", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
-    Schema.insert(Entry("t_file.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
-    Schema.insert(Entry("t_file.inblock", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_file.status", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
-    Schema.insert(Entry("t_block.files.t_file.status", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
-    Schema.insert(Entry("t_block.bytes.t_file.status", "INTEGER"));
+    Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
-    Schema.insert(Entry("t_block.id.t_file.status", "INTEGER"));
-    Schema.insert(Entry("t_block.status.t_file.status", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_file.filesize", "INTEGER"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_file.type", "INTEGER"));
+    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_file.logical_name", "STRING"));
+    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_file.id", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_file.status", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
+    Schema.insert(Entry("t_file.inblock", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_file.filesize", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
     PrimaryKeys.push_back("t_evcoll_file.id");
@@ -2987,14 +2979,15 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     ForeignKeys.push_back("t_processed_dataset.processing_path");
     ForeignKeys.push_back("t_file.type");
     ForeignKeys.push_back("t_block.processed_dataset");
-    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
+    ForeignKeys.push_back("t_processing_path.data_tier");
     ForeignKeys.push_back("t_block.status");
     ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_evcoll_file.evcoll");
     ForeignKeys.push_back("t_info_evcoll.event_collection");
-    ForeignKeys.push_back("t_processing_path.data_tier");
+    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_event_collection.processed_dataset");
     ForeignKeys.push_back("t_file.status");
+    ForeignKeys.push_back("t_file.inblock");
 
     list<string> tmplist;
     tmplist.push_back("t_evcoll_file.evcoll");
@@ -3022,11 +3015,11 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     NotNullKeys.push_back("t_event_collection.id");
     NotNullKeys.push_back("t_event_collection.processed_dataset");
     NotNullKeys.push_back("t_event_collection.collection_index");
-    NotNullKeys.push_back("t_block.id.t_file.status");
-    NotNullKeys.push_back("t_block.processed_dataset.t_file.status");
-    NotNullKeys.push_back("t_block.status.t_file.status");
-    NotNullKeys.push_back("t_block.files.t_file.status");
-    NotNullKeys.push_back("t_block.bytes.t_file.status");
+    NotNullKeys.push_back("t_block.id");
+    NotNullKeys.push_back("t_block.processed_dataset");
+    NotNullKeys.push_back("t_block.status");
+    NotNullKeys.push_back("t_block.files");
+    NotNullKeys.push_back("t_block.bytes");
     NotNullKeys.push_back("t_info_evcoll.event_collection");
     NotNullKeys.push_back("t_info_evcoll.events");
     NotNullKeys.push_back("t_info_evcoll.name");
@@ -3049,17 +3042,17 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_evcoll_file");
 
     References.insert(Entry("t_evcoll_file.fileid", "t_file.id"));
+    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_evcoll_file.evcoll", "t_event_collection.id"));
-    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
-    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
-    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
-    References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
     References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
-    References.insert(Entry("t_file.status", "t_block.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
+    References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_file.inblock", "t_block.id"));
 
 
-    ExternalReferences.insert(Entry("t_file.status", "t_block.id"));
+    ExternalReferences.insert(Entry("t_file.inblock", "t_block.id"));
 }
 
 string* Crabevcollviewmultirow_DB_BINDING::getTableName(void) {

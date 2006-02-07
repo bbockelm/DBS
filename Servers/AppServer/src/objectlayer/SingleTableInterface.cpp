@@ -16,14 +16,15 @@ SingleTableInterface<R>::SingleTableInterface(DBManagement* dbmanager) {
 
 template <class R>
 void SingleTableInterface<R>::doSmartInsert(R* aRow) {
-        cout<<"\n\nCalling doSmartInsert"<<endl;
+        //cout<<"\n\nCalling doSmartInsert"<<endl;
 	bool checkInDB = false;
 	string clause="";
 	//cout<<"inside doSmartInsert of SingleTable"<<endl;
-	LOG4CXX_DEBUG(TableTemplate<R>::logger,"inside doSmartInsert for SingleTable");
+	LOG4CXX_DEBUG(TableTemplate<R>::logger,"SingleTableInterface::doSmartInsert");
 	//if( util.isKeySet(aRow, primaryKeys->begin(), primaryKeys->end()) ) {
+	//cout<<"calling util.isKeySetCheckNull(aRow, primaryKeysReal.begin(), primaryKeysReal.end(), notNullKeys )"<<endl;
 	if( util.isKeySetCheckNull(aRow, primaryKeysReal.begin(), primaryKeysReal.end(), notNullKeys )) {
-	cout<<"I GOT PRIMARY KEY"<<endl;
+		//cout<<"I GOT PRIMARY KEY"<<endl;
 	//if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ) {
 		
 		Keys primaryKeysTmp = util.getKey(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ;
@@ -31,8 +32,8 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 		checkInDB = true;	
 
 	} else if( util.isListOfKeySet(aRow, uniqueKeys->begin(), uniqueKeys->end() , notNullKeys )) {
-	cout<<"I GOT UNIQUE KEY"<<endl;
-		Keys uniqueKeysTmp = *util.getListOfKey(aRow,uniqueKeys->begin(), uniqueKeys->end()) ;
+		//cout<<"I GOT UNIQUE KEY"<<endl;
+		Keys uniqueKeysTmp = *util.getListOfKey(aRow,uniqueKeys->begin(), uniqueKeys->end() , notNullKeys) ;
 		clause = sql->makeClause(aRow, uniqueKeysTmp.begin() , uniqueKeysTmp.end(), multiRefrences->begin(), multiRefrences->end());
 		checkInDB = true;
 	}
@@ -43,8 +44,7 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 		//cout<<"called doSelect done"<<endl;
 		int noOfRows = rs->getNoOfRows();
 		//cout<<"noOfRows returned from DB is "<<noOfRows<<endl;
-		LOG4CXX_DEBUG(TableTemplate<R>::logger,"noOfRows returned from DB is ");
-		LOG4CXX_DEBUG(TableTemplate<R>::logger,noOfRows);
+		LOG4CXX_DEBUG(TableTemplate<R>::logger,"Number of Rows returned from DB is "+util.itoa(noOfRows));
 		if( noOfRows > 0 ) {
 			R* aRowFromDB = new R();
 			for(int j = 0; j < noOfRows; j++ ) {
@@ -53,12 +53,12 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 			delete rs;
 			//cout<<"done  convertIntoRow"<<endl;
 			string message;
+			LOG4CXX_DEBUG(TableTemplate<R>::logger,"Checking consistancy between data provided and data fetched from DB");
 			bool isConsistantVal = util.isConsistant(aRowFromDB, aRow, message);
 			delete aRowFromDB;
 			if( isConsistantVal ) {
-				cout<<"The data is consistant and there is no need to do insert"<<endl;
+				LOG4CXX_DEBUG(TableTemplate<R>::logger,"The data is CONSISTANT and there is no need to do insert");
 				return;
-				//throw ObjectLayerException("The data is consistant and there is no need to do insert");
 			} else {
 				throw ObjectLayerException("Data your are trying to insert is inconsistant with data already in DB\n"+message);
 			}
@@ -81,6 +81,8 @@ void SingleTableInterface<R>::delRows() {
 	delRow();
 }
 */
+
+
 
 
 

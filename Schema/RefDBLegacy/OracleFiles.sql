@@ -105,7 +105,7 @@ alter table t_file
 
 alter table t_file
   add constraint fk_file_inblock
-  foreign key (status) references t_block (id);
+  foreign key (inblock) references t_block (id);
 
 --
 alter table t_evcoll_file

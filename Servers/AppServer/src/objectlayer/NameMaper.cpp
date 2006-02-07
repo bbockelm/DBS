@@ -65,9 +65,4 @@ NameMaper::NameMaper(){
         NameMap.insert(Entry("t_info_evcoll.event_collection", "tie.ec"));
         NameMap.insert(Entry("t_info_evcoll.events", "tie.events"));
         NameMap.insert(Entry("t_info_evcoll.name", "tie.name"));
-        NameMap.insert(Entry("t_block.processed_dataset.t_file.status", "tbdf"));
-        NameMap.insert(Entry("t_block.files.t_file.status", "tbf"));
-        NameMap.insert(Entry("t_block.bytes.t_file.status", "tbf195"));
-        NameMap.insert(Entry("t_block.id.t_file.status", "tbf199"));
-        NameMap.insert(Entry("t_block.status.t_file.status", "tbf200"));
 }

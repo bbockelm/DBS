@@ -111,9 +111,14 @@ Keys_iter Util::getNullKey(RowInterface* aRow, Keys_iter bk, Keys_iter ek) {
 	return(ek);
 }
 
-ListOfLists_iter Util::getListOfKey(RowInterface* aRow, ListOfLists_iter b, ListOfLists_iter e) {
+
+ListOfLists_iter Util::getListOfKey(RowInterface* aRow, ListOfLists_iter b, ListOfLists_iter e,  Keys* notNullKeys) {
+//ListOfLists_iter Util::getListOfKey(RowInterface* aRow, ListOfLists_iter b, ListOfLists_iter e) {
+	//cout<<"INSIDE ListOfLists_iter Util::getListOfKey"<<endl;
  	for(ListOfLists_iter i = b; i != e; ++i) {
-		if( this->isKeySet(aRow, (*i).begin(), (*i).end()) ) {
+		//if( this->isKeySet(aRow, (*i).begin(), (*i).end()) ) {
+		if( this->isKeySetCheckNull(aRow, (*i).begin(), (*i).end() , notNullKeys ) ) {
+			//cout<<"Returnning "<<endl;
 			return(i);
 		}
 	}
@@ -122,38 +127,38 @@ ListOfLists_iter Util::getListOfKey(RowInterface* aRow, ListOfLists_iter b, List
 
 
 bool Util::isKeySet(RowInterface* aRow, Keys_iter bk, Keys_iter ek) {
-	cout<<"Inside isKeySet"<<endl;
+	//cout<<"Inside isKeySet"<<endl;
 	for(Keys_iter i = bk; i != ek; ++i) {
-		cout<<"checking isKeySet "<<*i<<endl;
+		//cout<<"checking isKeySet "<<*i<<endl;
 		if(!this->isSet(aRow, *i, this->getDataType(*i) ) ) {
-			cout<<"retuning..................... false"<<endl;
+			//cout<<"retuning..................... false"<<endl;
 			return(false);
 		}
 	}
-	cout<<"retuning.................. true"<<endl;
+	//cout<<"retuning.................. true"<<endl;
 	return(true);
 }
 
 bool Util::isKeySetCheckNull(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Keys* notNullKeys ) {
-        cout<<"\n\n\nUtil::isKeySet IN"<< endl;
+        //cout<<"\n\n\nUtil::isKeySet IN"<< endl;
 
 	for(Keys_iter i = bk; i != ek; ++i) {
-                cout<<"\n\n\nUtil::isKeySet *i "<<*i<<endl;
+                //cout<<"\n\n\nUtil::isKeySet *i "<<*i<<endl;
 		if( find(notNullKeys->begin(), notNullKeys->end(), *i) != notNullKeys->end() ) {
-                       cout<<"\n\n\nUtil::isKeySet find()" << endl;
+                       //cout<<"\n\n\nUtil::isKeySet find()" << endl;
 			if(!this->isSet(aRow, *i, this->getDataType(*i) ) ) {
-                                 cout<<"\n\n\nUtil::isKeySet return(false)"<<endl;
+                                 //cout<<"\n\n\nUtil::isKeySet return(false)"<<endl;
 				return(false);
 			}
 		}
 	}
-        cout<<"\n\n\nUtil::isKeySet return(true)"<<endl;
+        //cout<<"\n\n\nUtil::isKeySet return(true)"<<endl;
 	return(true);
 }
 
 
 bool Util::isListOfKeySet(RowInterface* aRow, ListOfLists_iter b, ListOfLists_iter e,  Keys* notNullKeys) {
-	 cout<<"\n\n INSIDE isListOfKeySet"<<endl;
+	 //cout<<"\n\n INSIDE isListOfKeySet"<<endl;
 	for(ListOfLists_iter i = b; i != e; ++i) {
 		if( this->isKeySetCheckNull(aRow, (*i).begin(), (*i).end() , notNullKeys)) {
 		//if( this->isKeySet(aRow, (*i).begin(), (*i).end()) , notNullKeys) {
@@ -161,7 +166,7 @@ bool Util::isListOfKeySet(RowInterface* aRow, ListOfLists_iter b, ListOfLists_it
 			return(true);
 		}
 	}
-	cout<<"returnning false from isUniqueKeySet"<<endl;
+	//cout<<"returnning false from isUniqueKeySet"<<endl;
 	return(false);
 }
 
@@ -189,7 +194,7 @@ void Util::display(RowInterface* aRow) {
 
 
  bool Util::isSet(RowInterface* aRow, string name, string dataType) {
-	cout<<"inside isSet name "<<name<<" dataType "<<dataType<<endl;
+	//cout<<"inside isSet name "<<name<<" dataType "<<dataType<<endl;
 	if(dataType.length() == 0) {
 		return(false);
 	}
@@ -201,7 +206,7 @@ void Util::display(RowInterface* aRow) {
      value = (char*)aRow->getValue(name);
    }
    if(dataType == "INTEGER") {
-	cout<<"INSIDE Util::isSet for INTEGER"<<endl;
+	//cout<<"INSIDE Util::isSet for INTEGER"<<endl;
      value = (int*)aRow->getValue(name);
    }
    if(dataType == "FLOAT") {

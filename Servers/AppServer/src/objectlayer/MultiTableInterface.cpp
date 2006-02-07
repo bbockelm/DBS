@@ -18,8 +18,8 @@ MultiTableInterface<R>::MultiTableInterface(DBManagement* dbmanager) {
 
 template <class R>
 void MultiTableInterface<R>::doSmartInsert(R* aRow) {
-	cout<<"inside doSmartInsert for MultiTableInterface"<<endl;
-	LOG4CXX_DEBUG(MultiTableInterface::logger,"inside doSmartInsert for MultiTableInterface");
+	//cout<<"inside doSmartInsert for MultiTableInterface"<<endl;
+	LOG4CXX_DEBUG(MultiTableInterface::logger,"MultiTableInterface::doSmartInsert");
 	bool exceptionOccured = false;
 	string exceptionMessage = "\n";
 
@@ -50,6 +50,8 @@ void MultiTableInterface<R>::doSmartInsert(R* aRow) {
 		throw ObjectLayerException(exceptionMessage);
 	}
 }
+
+
 
 
 

@@ -802,7 +802,7 @@ private:
     T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
-    T_Blockrow* T_File_Statusobj;
+    T_Blockrow* T_Blockobj;
     T_Info_Evcollrow* T_Info_Evcollobj;
     T_Filerow* T_Fileobj;
     T_Evcoll_Filerow* T_Evcoll_Fileobj;

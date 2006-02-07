@@ -71,10 +71,10 @@ class DBSInterface(dbsApi.DbsApi):
 	
         primaryDatasetID = self.client.createPrimaryDataset(aRow, table)
       except RuntimeError,e:
-         print "RT Exception ", e
+         #print "RT Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       except Exception ,e:
-         print "Exception ", e
+         #print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Primary Dataset ID ",primaryDatasetID
       return primaryDatasetID
@@ -136,7 +136,7 @@ class DBSInterface(dbsApi.DbsApi):
         print "processedDatasetID " ,processedDatasetID
         print "processingPathID " ,processinPathID
       except RuntimeError,e:
-         print "Exception ", e
+         #print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Processed Dataset ID ",processedDatasetID
       #return processedDatasetID,processinPathID
@@ -152,7 +152,6 @@ class DBSInterface(dbsApi.DbsApi):
           else: 
               proDsId = self.getStrValue(table, "t_processed_dataset.id", 0)
         else: 
-           print "Processed Dataset not found"
            table.dispose()
            raise dbsApi.DbsApiException(args="Processed Dataset not found")   
         
@@ -185,10 +184,8 @@ class DBSInterface(dbsApi.DbsApi):
 
    def getProcessedDataset(self, processedDataset):
       try:
-        print "inside getProcessedDatasetID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         aRow = dbsclient.Processingpathmultirow()
         table = dbsclient.ProcessingpathMultiTable()
-        print "t_processed_dataset.name", processedDataset.getDatasetName()
 	self.setStrValue(aRow, "t_processed_dataset.name", processedDataset.getDatasetName())
         app = processedDataset.getProcessingPath().getApplication()
         if app != None:
@@ -203,7 +200,6 @@ class DBSInterface(dbsApi.DbsApi):
         self.setStrValue(aRow, "t_processing_path.full_path", processedDataset.getProcessingPath().getFullPath())
         self.setStrValue(aRow, "t_primary_dataset.name", processedDataset.getPrimaryDatasetName())
 
-        print "now calling readProcessingPath"
         self.client.readProcessedDataset(aRow, table)
 	print "no of Processed Dataset are ", table.getNoOfRows()
         return table
@@ -257,11 +253,11 @@ class DBSInterface(dbsApi.DbsApi):
                fileBlockList.append(fileBlock) 
                indx += 1
         else:
-           print "No Blocks found in Processed Dataset"
+           raise dbsApi.DbsApiException(args="No Blocks found in Processed Dataset")
         table.dispose()
 
       except RuntimeError,e:
-         print "Exception ", e
+         #print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
 
       return fileBlockList
@@ -290,7 +286,7 @@ class DBSInterface(dbsApi.DbsApi):
         print "*********************************************************************"
 	
       except RuntimeError,e:
-         print "Exception ", e
+         #print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Block inserted succesfully  ",blockID
       return blockID
@@ -301,9 +297,9 @@ class DBSInterface(dbsApi.DbsApi):
         processedDatasetID = processedDataset.getProcessedDatasetID()
         if processedDatasetID == None:
            processedDatasetID = self.getProcessedDatasetID(processedDataset)
-        print "processedDatasetID ",processedDatasetID
+        #print "processedDatasetID ",processedDatasetID
         if len(eventCollectionList) > 0:
-           print "In the loop!" 
+           #print "In the loop!" 
            #return self.recInsertEC(eventCollectionList[0],processedDatasetID,parentageType)
            for ec in eventCollectionList:
            #return self.recInsertEC(eventCollectionList[0],processedDatasetID)
@@ -312,23 +308,18 @@ class DBSInterface(dbsApi.DbsApi):
               id = self.recInsertEC(ec,processedDatasetID)
         return id
       except RuntimeError,e:
-         print "Exception ", e
+         #print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Event Collections inserted succesfully  ",len(eventCollectionList)
 
    
    #def recInsertEC(self, eventCollection, processedDatasetID, parentageType):
    def recInsertEC(self, eventCollection, processedDatasetID):
-      #print "\n**************************************************\n"
-      #print "\n**************************************************\n"
-      #print "entring recInsertEC"
-      #print "\n**************************************************\n"
-      #print "\n**************************************************\n"
       evCollID = 0
 
       #Biz Rule  ##Assert That user must provide FileList
       if eventCollection.getFileList() in ([], None) :
-         print "You must provide FileList to Insert EventCollection"
+         #print "You must provide FileList to Insert EventCollection"
          raise dbsApi.DbsApiException(args="You must provide FileList to Insert EventCollection")    
          return 
 
@@ -337,7 +328,7 @@ class DBSInterface(dbsApi.DbsApi):
       for afile in eventCollection.getFileList():
          blockId=afile.getFileBlockId()
          if blockId != firstBlockID :
-            print "All files in same EvColl should have same Block ID"
+            #print "All files in same EvColl should have same Block ID"
             raise dbsApi.DbsApiException(args="All files in same EvColl should have same Block ID")            
             return
  
@@ -345,21 +336,21 @@ class DBSInterface(dbsApi.DbsApi):
          parentEC=eventCollection.getParentEventCollection()
          
          #evCollID = recInsertEC(eventCollection.getParentEventCollection(),processedDatasetID,parentageType)
-         print "\n\n\n\n PARENT FOUND \n\n\n\n\n"
+         #print "\n\n\n\n PARENT FOUND \n\n\n\n\n"
          evCollID = self.recInsertEC(parentEC,processedDatasetID)
          #print "setting id ..........................",evCollID
          #parentEC.setCollectionId(evCollID) 
          #print "getting id ", parentEC.getCollectionId()
          #print "parentEC is ", parentEC
-      else:
-         print "\n\n\n\n CHILD FOUND \n\n\n\n\n"
+      #else:
+         #print "\n\n\n\n CHILD FOUND \n\n\n\n\n"
          #print "eventCollection.getParentEventCollection() ", eventCollection.getParentEventCollection()
          #print "eventCollection " , eventCollection
       
       aRow = dbsclient.Evcollviewmultirow()
       table = dbsclient.EvcollviewMultiTable()
       if eventCollection.getCollectionId() != None:
-         print "This is a haack..............."
+         #print "This is a haack..............."
          return eventCollection.getCollectionId()
       
       self.setStrValue(aRow, "t_info_evcoll.name", eventCollection.getCollectionName())
@@ -382,16 +373,11 @@ class DBSInterface(dbsApi.DbsApi):
       #toReturnEvCollID = self.x
       #self.x += 1
       #eventCollection.setCollectionId(toReturnEvCollID)
-      print "eventCollection ",eventCollection
+      #print "eventCollection ",eventCollection
       print "*********************************************************************"
       print "Event Collection ID ",toReturnEvCollID
       print "*********************************************************************"
       self.insertFiles(toReturnEvCollID, eventCollection.getFileList())
-      print "\n**************************************************\n"
-      print "\n**************************************************\n"
-      print "exiting recInsertEC"
-      print "\n**************************************************\n"
-      print "\n**************************************************\n"
       return toReturnEvCollID
 
 
@@ -408,7 +394,6 @@ class DBSInterface(dbsApi.DbsApi):
          self.client.readFiles(aRow, table)
   
          nrow = table.getNoOfRows()
-         print "listFilesByBlock:::::::::table.getNoOfRows()", table.getNoOfRows()
          if nrow >= 1:
            indx = 0
            while indx < nrow :
@@ -457,7 +442,7 @@ class DBSInterface(dbsApi.DbsApi):
             self.setStrValue(aRow, "t_file.logical_name", afile.getLogicalFileName())
             self.setIntValue(aRow, "t_file.inblock", afile.getFileBlockId())
             self.setStrValue(aRow, "t_file_type.name", afile.getFileType())#EVDZip/ROOT_All
-            self.setStrValue(aRow, "t_file.filesize", str(afile.getFileSize()))
+            self.setIntValue(aRow, "t_file.filesize", int(afile.getFileSize()))
             self.setIntValue(aRow, "t_evcoll_file.evcoll", evCollID)
             rows.append(aRow)
 
@@ -469,7 +454,7 @@ class DBSInterface(dbsApi.DbsApi):
       except RuntimeError,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
-      print "File inserted succesfully ",len(files)
+      print "Files inserted succesfully ",len(files)
 
 
    def getDatasetContents(self, pathName, listFiles=False):
@@ -482,7 +467,7 @@ class DBSInterface(dbsApi.DbsApi):
 
       fileBlockList = []
       # get the names of primary dataset, data tier and processed dataset
-      print "Inside getDatasetContents,  PathName is ", pathName
+      #print "Inside getDatasetContents,  PathName is ", pathName
 
       try: 
 
@@ -501,21 +486,21 @@ class DBSInterface(dbsApi.DbsApi):
         self.client.readCrabEC(aRow, table)
 
         nrow = table.getNoOfRows()
-        print "nrow:::::", nrow
+        #print "nrow:::::", nrow
 
         if nrow >= 1:
            blockECMap = {}
            indx = 0
            while indx < nrow :
-              print "indx:::", indx
+              #print "indx:::", indx
               blockId = self.getStrValue(table, "t_block.id", indx)
-              print "blockId", blockId
+              #print "blockId", blockId
               evcollName = self.getStrValue(table, "t_info_evcoll.name", indx)
-              print "evcollName", evcollName
+              #print "evcollName", evcollName
               events = self.getStrValue(table, "t_info_evcoll.events", indx)
-              print "events", events
+              #print "events", events
               evCollId = self.getStrValue(table, "t_event_collection.id", indx)
-              print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
+              #print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
 
               if blockECMap.has_key(blockId):
                  blockECMap[blockId].append((evcollName, events, evCollId))
@@ -529,7 +514,7 @@ class DBSInterface(dbsApi.DbsApi):
                   # This list makes sure that we get Unique EvColls
                   evCollList = []
                   for evcollName, events, evCollId in blockECMap[eachBlockId]: 
-                      #print "CALLING listFilesByBlock"
+                      ##print "CALLING listFilesByBlock"
                       if listFiles != False :
                          fileList = self.listFilesByBlock(evCollId, eachBlockId)
                       else:
@@ -538,10 +523,11 @@ class DBSInterface(dbsApi.DbsApi):
                          eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
                          fileBlock.addEventCollection(eventCollection)
                          evCollList.append(evcollName)
-                  print fileBlock
+                  #print fileBlock
                   fileBlockList.append(fileBlock)
         else :
-            print "No file blocks found for the PathName", pathName 
+            errorMessage = "No file blocks found for the PathName " + pathName 
+            raise dbsApi.DbsApiException(args=errorMessage)
       except RuntimeError,e:
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
@@ -576,12 +562,11 @@ class DBSInterface(dbsApi.DbsApi):
          if childId not in childIds:
             childIds.append(childId)  
 
-      print "CHILD IDs ", childIds
+      #print "CHILD IDs ", childIds
 
       if len(childIds) == 0  :
-         print "No Parents found for this Dataset"
-         print pathName
-         return pathName 
+         errorMessage = "No Parents found for this Dataset " + pathName
+         raise dbsApi.DbsApiException(args=errorMessage)
 
       provInfo = dbsclient.Datasetprovenenceevparent_ClientAPIData()
       #provInfo.t_evcoll_parentage_child = dbsclient.AINT(224)

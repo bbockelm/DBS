@@ -8,8 +8,8 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     funcName = "%s.%s" % (self.__class__.__name__, "__init__()")
     print "Now executing ", funcName
     testCaseInterface.testCaseInterface.__init__(self)
-    self.addTestCase(self.testGetDatasetContents)
-    self.addTestCase(self.testGetDatasetContentsWithFiles)
+    self.addTestCase(self.getDatasetContents)
+    self.addTestCase(self.getDatasetContentsWithFiles)
 
     self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
 
@@ -20,7 +20,7 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     try:
 
        # Default behaviour of getDatasetContents
-       fileBlockList = api.getDatasetContents(self.datasetPath)
+       fileBlockList = self.api.getDatasetContents(self.datasetPath)
        for fileBlock in fileBlockList:
           print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
           for eventCollection in fileBlock.getEventCollectionList():
@@ -38,7 +38,7 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     try:
 
        # Non-Default behaviour of getDatasetContents
-       fileBlockList = api.getDatasetContents(self.datasetPath, True)
+       fileBlockList = self.api.getDatasetContents(self.datasetPath, True)
        for fileBlock in fileBlockList:
           print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
           for eventCollection in fileBlock.getEventCollectionList():
