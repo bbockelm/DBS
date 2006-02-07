@@ -5,8 +5,6 @@ import testCaseInterface
 class testGetDatasetContents(testCaseInterface.testCaseInterface) : 
 
   def __init__(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "__init__()")
-    print "Now executing ", funcName
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.getDatasetContents)
     self.addTestCase(self.getDatasetContentsWithFiles)

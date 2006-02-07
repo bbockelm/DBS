@@ -27,6 +27,5 @@ if __name__ == "__main__":
     
    testObj = testGetDatasetContents.testGetDatasetContents()
    testObj.run() 
-
    #sys.exit(0) 
 

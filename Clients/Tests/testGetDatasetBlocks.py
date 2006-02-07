@@ -5,12 +5,9 @@ import dbsProcessedDataset
 import testCaseInterface
 # Unit testing.
 
-
 class testGetDatasetBlocks(testCaseInterface.testCaseInterface) : 
 
   def __init__(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "__init__()")
-    print "Now executing ", funcName
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.getDatasetBlocks)
     #self.addTestCase(self.printYahoo)
@@ -33,7 +30,7 @@ class testGetDatasetBlocks(testCaseInterface.testCaseInterface) :
        processingPath=processingPath)
 
   def getDatasetBlocks(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "createPrimaryDS")
+    funcName = "%s.%s" % (self.__class__.__name__, "getDatasetBlocks : Get a list of File Blocks in a Dataset")
     print "Now executing ", funcName
 
     try:

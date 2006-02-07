@@ -11,14 +11,12 @@ import testCaseInterface
 class testCreateBlock(testCaseInterface.testCaseInterface) : 
 
   def __init__(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "__init__()")
-    print "Now executing ", funcName
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.createBlock)
     #self.addTestCase(self.printYahoo)
 
   def createBlock(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "createBlock")
+    funcName = "%s.%s" % (self.__class__.__name__, "CreateBlock: Creates a File Block")
     print "Now executing ", funcName
 
     try:
@@ -45,7 +43,7 @@ class testCreateBlock(testCaseInterface.testCaseInterface) :
          numberOfBytes=1024,
          numberOfFiles=10)
 
-       print "Trying to create fileBlock"
+       #print "Trying to create fileBlock"
        fbId = self.api.createFileBlock(dataset, block)
        print "Got file block id: %s" % fbId
 

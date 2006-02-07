@@ -16,7 +16,7 @@ class testCaseInterface:
      def run(self):
         """ Calls upon child Test Cases """
         callAbleFunc = None
-        print "Looping over available Test Cases"
+        #print "Looping over available Test Cases"
         for aTestCase in self.RegisteredTestCases :
             #sys.stdout.flush() 
             print "\n\n**************** S T A R T **************************\n"
