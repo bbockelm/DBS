@@ -327,6 +327,7 @@ class DBSInterface(dbsApi.DbsApi):
       firstBlockID = eventCollection.getFileList()[0].getFileBlockId()
       for afile in eventCollection.getFileList():
          blockId=afile.getFileBlockId()
+         #print "This is being tested", blockId
          if blockId != firstBlockID :
             #print "All files in same EvColl should have same Block ID"
             raise dbsApi.DbsApiException(args="All files in same EvColl should have same Block ID")            
