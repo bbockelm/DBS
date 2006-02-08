@@ -8,6 +8,7 @@ import dbsEventCollection
 import dbsFileBlock
 import dbsFile
 import dbsMonteCarloDescription
+
 from dbsDataset import * 
 
 class DBSInterface(dbsApi.DbsApi):
@@ -143,8 +144,9 @@ class DBSInterface(dbsApi.DbsApi):
       return processedDatasetID
 
    def getProcessedDatasetID(self, processedDataset):
-       try: 
-        table = self.getProcessedDataset(processedDataset)
+       try:  
+        table = dbsclient.ProcessingpathMultiTable()
+        self.getProcessedDataset(processedDataset, table)
         proDsId = 0
         if table.getNoOfRows() > 0:
           if table.getNoOfRows() > 1:
@@ -165,7 +167,8 @@ class DBSInterface(dbsApi.DbsApi):
 
    def getProcessingPathID(self, processedDataset):
        try:
-        table = self.getProcessedDataset(processedDataset)
+        table = dbsclient.ProcessingpathMultiTable()
+        self.getProcessedDataset(processedDataset, table)
         proPathId = 0;
         if table.getNoOfRows() > 0:
            if table.getNoOfRows() > 1:
@@ -185,11 +188,10 @@ class DBSInterface(dbsApi.DbsApi):
         return proPathId
 
 
-   def getProcessedDataset(self, processedDataset):
-     try:
+   def getProcessedDataset(self, processedDataset, table):
       try:
         aRow = dbsclient.Processingpathmultirow()
-        table = dbsclient.ProcessingpathMultiTable()
+        #table = dbsclient.ProcessingpathMultiTable()
 	self.setStrValue(aRow, "t_processed_dataset.name", processedDataset.getDatasetName())
         app = processedDataset.getProcessingPath().getApplication()
         if app != None:
@@ -206,14 +208,11 @@ class DBSInterface(dbsApi.DbsApi):
 
         self.client.readProcessedDataset(aRow, table)
 	print "no of Processed Dataset are ", table.getNoOfRows()
-        return table
       except RuntimeError,e:
          #table.dispose()
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
-     finally:
-       table.dispose()
-
+    
    def getDatasetFileBlocks(self, processedDataset):
 
      fileBlockList = []
@@ -260,7 +259,7 @@ class DBSInterface(dbsApi.DbsApi):
         else:
            #table.dispose()
            raise dbsApi.DbsApiException(args="No Blocks found in Processed Dataset")
-        table.dispose()
+        #table.dispose()
 
       except RuntimeError,e:
          #print "Exception ", e
@@ -314,12 +313,12 @@ class DBSInterface(dbsApi.DbsApi):
               #print "calling loop ec ",ec 
       	      #self.insertFiles(1, ec.getFileList())
               id = self.recInsertEC(ec,processedDatasetID)
-        return id
       except RuntimeError,e:
          #print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
       print "Event Collections inserted succesfully  ",len(eventCollectionList)
 
+      return id
    
    #def recInsertEC(self, eventCollection, processedDatasetID, parentageType):
    def recInsertEC(self, eventCollection, processedDatasetID):
@@ -747,24 +746,65 @@ class DBSInterface(dbsApi.DbsApi):
 
 if __name__ == "__main__" :
    
-   #while(1) :
-     mycrab = DBSInterface()
-     #mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
-     """
-      mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
-      description="MyMonteCarloDescription",
-      production="production",
-      decayChain="decayChain",
-      isMcData='y')
+   while(1) :
+       mycrab = DBSInterface()
+       #mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
+ 
+       dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ThisIsATestDataset")
+       primaryDatasetId = mycrab.createPrimaryDataset(dataset)
+       print "Got primary dataset id: %s" % primaryDatasetId
 
-     dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ds1",
-                                datasetDescription="my dataset desc",
-                                physicsGroupName="top",
-                                triggerDescription="lalal",
-                                monteCarloDescription=mc)
-     primaryDatasetId = mycrab.createPrimaryDataset(dataset)
-     """
-     mycrab.getDatasetContents("/ThisIsATestDataset/Digi/ThisIsATestProcDataset", True) 
+
+       datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+       app = dbsApplication.DbsApplication(
+         family="CMSAppFam",
+         executable="cmsRun",
+         version="CMSSW_XYZ",
+         parameterSet="pSetDummy")
+
+       processingPath = dbsProcessingPath.DbsProcessingPath(
+         dataTier="Digi",
+         application=app)
+
+       dataset = dbsProcessedDataset.DbsProcessedDataset(
+         primaryDatasetName="ThisIsATestDataset",
+         isDatasetOpen="y",
+         datasetName="ThisIsATestProcDataset",
+         processingPath=processingPath)
+
+       processedDatasetId = mycrab.createProcessedDataset(dataset)
+       print "processedDatasetId", processedDatasetId
+
+       # Test for inserting event collections.
+       f1 = dbsFile.DbsFile(logicalFileName="myFileF10",
+           fileStatus = "file dummy status",
+           guid = "7C8A55-DE62-D811-892C-00E081250436",
+           fileType="EVDZip",
+           fileBlockId=1,
+           fileSize=100
+           )
+       f2 = dbsFile.DbsFile(logicalFileName="myFileF12",
+           fileStatus = "file dummy status",
+           guid = "7C8A55DE62-D811-892C-00E081250436",
+           fileType="EVDZip",
+           fileBlockId=1,
+           fileSize=100
+           )
+       fList=dbsFile.DbsFileList([f1, f2])
+       #fList.append(f2)
+
+       ec = dbsEventCollection.DbsEventCollection(
+         collectionName="myLFN",
+         numberOfEvents=123,
+         collectionIndex=100,
+         isPrimary="y",
+         fileList=fList)
+       ecList = dbsEventCollection.DbsEventCollectionList([ec])
+       print "Inserting event collections for: %s" % dataset.getDatasetName()
+       mycrab.insertEventCollections(dataset, ecList)
+
+
+       mycrab.getDatasetContents("/ThisIsATestDataset/Digi/ThisIsATestProcDataset", True)
 
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133")
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133") 

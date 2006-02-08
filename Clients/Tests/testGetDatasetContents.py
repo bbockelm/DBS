@@ -12,7 +12,7 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
 
   def getDatasetContents(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "createPrimaryDS")
+    funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContents")
     print "Now executing ", funcName
 
     try:
@@ -30,7 +30,7 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     return 0
 
   def getDatasetContentsWithFiles(self):
-    funcName = "%s.%s" % (self.__class__.__name__, "createPrimaryDS")
+    funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContentsWithFiles")
     print "Now executing ", funcName
 
     try:
