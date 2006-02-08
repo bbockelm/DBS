@@ -39,14 +39,14 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
 
     try:
        # Test for inserting event collections.
-       f1 = dbsFile.DbsFile(logicalFileName="myFileF1",
+       f1 = dbsFile.DbsFile(logicalFileName="myFileF10",
            fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=1,
            fileSize=100
            )
-       f2 = dbsFile.DbsFile(logicalFileName="myFileF2",
+       f2 = dbsFile.DbsFile(logicalFileName="myFileF12",
            fileStatus = "file dummy status",
            guid = "7C8A55DE62-D811-892C-00E081250436",
            fileType="EVDZip",

@@ -69,6 +69,33 @@ def writeFile():
 
             client.insertFiles(fileVector, table)
 
+def readFilesByBlock():
+
+	aRow = dbsclient.Fileviewmultirow()
+	table = dbsclient.FileviewMultiTable()
+
+	setIntValue(aRow, "t_evcoll_file.evcoll", 1)
+	setIntValue(aRow, "t_file.inblock", 1)
+
+	client.readFiles(aRow, table)
+
+	noOfRows = table.getNoOfRows()
+	print "no of Rows ",noOfRows
+	for j in range(noOfRows) :
+		fileStatus = getStrValue(table, "t_file_status.name", j)
+		print "fileStatus", fileStatus
+		guid = getStrValue(table, "t_file.guid", j)
+		print "guid", guid 
+		logicalFileName = getStrValue(table, "t_file.logical_name", j)
+		print "logicalFileName", logicalFileName
+		fileBlockId = getStrValue(table, "t_file.inblock", j)
+		print "inblock", fileBlockId
+		fileType = getStrValue(table, "t_file_type.name", j)
+		print "fileType", fileType
+		fileSize = getStrValue(table, "t_file.filesize", j)
+		print "fileSize", fileSize
+
+	table.dispose()
 
 
 def writePrimary() :
@@ -79,7 +106,7 @@ def writePrimary() :
 	setStrValue(aRow, "t_desc_trigger.description", "t_desc_trigger.descriptiondummy_value")
 	setStrValue(aRow, "t_desc_mc.decay_chain", "dummyt_desc_mc.decay_chain")
 	setStrValue(aRow, "t_desc_mc.production", "dummyt_desc_mc.production")
-	setStrValue(aRow, "t_physics_group.name", "t_physics_group.namedummy_value")
+	setStrValue(aRow, "t_primary_dataset.name", "DUMMYNAME")
 	setChrValue(aRow, "t_desc_primary.is_mc_data", "y")
 
 	a = client.createPrimaryDataset(aRow, table)
@@ -91,13 +118,13 @@ def writePrimary() :
 def readPrimary() :
 	aRow = dbsclient.Primarydatasetmultirow() 
 	table = dbsclient.PrimarydatasetMultiTable()
-	setStrValue(aRow, "t_desc_mc.description", "dummy_value")
+	setStrValue(aRow, "t_primary_dataset.name", "DUMMYNAME")
 
 	client.readPrimaryDataset(aRow, table)
 	noOfRows = table.getNoOfRows()
 	print "no of Rows ",noOfRows
 	for j in range(noOfRows) :
-		print "table.getStrValue", getStrValue(table, "t_desc_mc.description", j)
+		print "table.getStrValue", getStrValue(table, "t_primary_dataset.name", j)
 	table.dispose()
 
 
@@ -145,24 +172,39 @@ def writeEC() :
 def readCrabEC() :
 	aRow = dbsclient.Crabevcollviewmultirow() 
 	table = dbsclient.CrabevcollviewMultiTable()
-
-	setIntValue(aRow, "t_block.id", 270)
+	setStrValue(aRow, "t_data_tier.name", "Digi") 
+	setStrValue(aRow, "t_primary_dataset.name", "ThisIsATestDataset")
+	setStrValue(aRow, "t_processed_dataset.name", "ThisIsATestProcDataset")
+ 
 
 	client.readCrabEC(aRow, table)
 	noOfRows = table.getNoOfRows()
 	print "no of Rows ",noOfRows
 	for j in range(noOfRows) :
+		print "***************************************************************"
 		print "table.getStrValue", getStrValue(table, "t_info_evcoll.name", j)
+		blockId = getStrValue(table, "t_block.id", j)
+		print "blockId", blockId
+		evcollName = getStrValue(table, "t_info_evcoll.name", j)
+		print "evcollName", evcollName
+		events = getStrValue(table, "t_info_evcoll.events", j)
+		print "events", events
+		evCollId = getStrValue(table, "t_event_collection.id", j)
+		print "t_event_collection", evCollId
+		print "***************************************************************"
+
 	table.dispose()
 
-#while(1):
-for i in range(1) :
+
+while(1):
+#for i in range(1) :
 	try:
 		#readPrimary()
 		#writePrimary()
 		#writeProcessed()
 		#readProcessed()
 		#readCrabEC()
-        	writeFile()
+        	#writeFile()
+		readFilesByBlock()
 	except Exception ,e:
 		print "Exception ", e

@@ -143,36 +143,40 @@ class DBSInterface(dbsApi.DbsApi):
       return processedDatasetID
 
    def getProcessedDatasetID(self, processedDataset):
+       try: 
         table = self.getProcessedDataset(processedDataset)
         proDsId = 0
         if table.getNoOfRows() > 0:
           if table.getNoOfRows() > 1:
-              table.dispose()
+              #:table.dispose()
               raise dbsApi.DbsApiException(args="More than one Processed Dataset found")
           else: 
               proDsId = self.getStrValue(table, "t_processed_dataset.id", 0)
         else: 
-           table.dispose()
+           #table.dispose()
            raise dbsApi.DbsApiException(args="Processed Dataset not found")   
-        
+       finally: 
         table.dispose()
-        print "*********************************************************************"
-        print "Processed DatasetID = ",proDsId
-        print "*********************************************************************"
-        return proDsId
+
+       print "*********************************************************************"
+       print "Processed DatasetID = ",proDsId
+       print "*********************************************************************"
+       return proDsId
 
    def getProcessingPathID(self, processedDataset):
+       try:
         table = self.getProcessedDataset(processedDataset)
         proPathId = 0;
         if table.getNoOfRows() > 0:
            if table.getNoOfRows() > 1:
-              table.dispose()
+              #table.dispose()
               raise dbsApi.DbsApiException(args="More than one processing path found") 
            else :
               proPathId = self.getStrValue(table, "t_processing_path.id", 0)
         else:
-           table.dispose()
+           #table.dispose()
            raise dbsApi.DbsApiException(args="No Processing Path found")
+       finally:
         table.dispose()
 
         print "*********************************************************************"
@@ -181,8 +185,8 @@ class DBSInterface(dbsApi.DbsApi):
         return proPathId
 
 
-
    def getProcessedDataset(self, processedDataset):
+     try:
       try:
         aRow = dbsclient.Processingpathmultirow()
         table = dbsclient.ProcessingpathMultiTable()
@@ -204,18 +208,19 @@ class DBSInterface(dbsApi.DbsApi):
 	print "no of Processed Dataset are ", table.getNoOfRows()
         return table
       except RuntimeError,e:
-         table.dispose()
+         #table.dispose()
          print "Exception ", e
          raise dbsApi.DbsApiException(exception=e)
-
+     finally:
+       table.dispose()
 
    def getDatasetFileBlocks(self, processedDataset):
 
-      fileBlockList = []
+     fileBlockList = []
 
       #print "RETURNING AN EMPTY FILEBLOCK LIST" 
       #return fileBlockList
-
+     try:
       try:
         processedDatasetID = processedDataset.getProcessedDatasetID()
         if processedDatasetID == None:
@@ -253,14 +258,17 @@ class DBSInterface(dbsApi.DbsApi):
                fileBlockList.append(fileBlock) 
                indx += 1
         else:
+           #table.dispose()
            raise dbsApi.DbsApiException(args="No Blocks found in Processed Dataset")
         table.dispose()
 
       except RuntimeError,e:
          #print "Exception ", e
+         #table.dispose()
          raise dbsApi.DbsApiException(exception=e)
-
-      return fileBlockList
+     finally:
+       table.dispose() 
+     return fileBlockList
 
 
    def createFileBlock(self, processedDataset, fileBlock):
@@ -384,8 +392,10 @@ class DBSInterface(dbsApi.DbsApi):
 
    def listFilesByBlock(self, evCollID, blockID):
 
-      """ Get the list of files in a FileBlock/EventCollection"""
-      fileList=[]
+     """ Get the list of files in a FileBlock/EventCollection"""
+
+     fileList=[]
+     try:
       try:
          aRow = dbsclient.Fileviewmultirow()
          table = dbsclient.FileviewMultiTable()
@@ -422,13 +432,16 @@ class DBSInterface(dbsApi.DbsApi):
                 fileList.append(afile)  
                 indx += 1
          else:
-           print "No File found in the Block/EventCollection"
-         table.dispose()
+           #table.dispose()
+           #raise dbsApi.DbsApiException(args="No File found in the Block/EventCollection") 
+           return fileList
  
       except RuntimeError,e:
-         print "Exception ", e
+         #table.dispose() 
          raise dbsApi.DbsApiException(exception=e)
-      return fileList
+     finally: 
+       table.dispose()
+     return fileList
 
    def insertFiles(self, evCollID, files):
       try: 
@@ -487,22 +500,23 @@ class DBSInterface(dbsApi.DbsApi):
         self.client.readCrabEC(aRow, table)
 
         nrow = table.getNoOfRows()
+     
         #print "nrow:::::", nrow
-
+        
         if nrow >= 1:
            blockECMap = {}
            indx = 0
            while indx < nrow :
               #print "indx:::", indx
               blockId = self.getStrValue(table, "t_block.id", indx)
-              #print "blockId", blockId
+              print "blockId", blockId
               evcollName = self.getStrValue(table, "t_info_evcoll.name", indx)
-              #print "evcollName", evcollName
+              print "evcollName", evcollName
               events = self.getStrValue(table, "t_info_evcoll.events", indx)
-              #print "events", events
+              print "events", events
               evCollId = self.getStrValue(table, "t_event_collection.id", indx)
-              #print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
-
+              print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
+         
               if blockECMap.has_key(blockId):
                  blockECMap[blockId].append((evcollName, events, evCollId))
               else:
@@ -518,6 +532,8 @@ class DBSInterface(dbsApi.DbsApi):
                       ##print "CALLING listFilesByBlock"
                       if listFiles != False :
                          fileList = self.listFilesByBlock(evCollId, eachBlockId)
+                         fileList=[]
+                         print "" 
                       else:
                          fileList = [] 
                       if evcollName not in evCollList :
@@ -527,12 +543,19 @@ class DBSInterface(dbsApi.DbsApi):
                   #print fileBlock
                   fileBlockList.append(fileBlock)
         else :
+            #table.dispose()
             errorMessage = "No file blocks found for the PathName " + pathName 
             raise dbsApi.DbsApiException(args=errorMessage)
-      except RuntimeError,e:
-         print "Exception ", e
-         raise dbsApi.DbsApiException(exception=e)
+       
+      #except RuntimeError,e:
+      #   #table.dispose()
+      #   print "Exception ", e
+      #   raise dbsApi.DbsApiException(exception=e)
 
+      finally:
+         table.dispose()
+
+      #table.dispose()
       return fileBlockList  
 
    def getDatasetProvenance(self, pathName, parentDataTiers):
@@ -727,7 +750,8 @@ if __name__ == "__main__" :
    #while(1) :
      mycrab = DBSInterface()
      #mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
-     mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
+     """
+      mc = dbsMonteCarloDescription.DbsMonteCarloDescription(
       description="MyMonteCarloDescription",
       production="production",
       decayChain="decayChain",
@@ -739,9 +763,8 @@ if __name__ == "__main__" :
                                 triggerDescription="lalal",
                                 monteCarloDescription=mc)
      primaryDatasetId = mycrab.createPrimaryDataset(dataset)
-
-
-   #mycrab.getDatasetContents("/hg03_H2mu_ma300_tb30/Hit/hg_Hit752_g133") 
+     """
+     mycrab.getDatasetContents("/ThisIsATestDataset/Digi/ThisIsATestProcDataset", True) 
 
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133")
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133") 
