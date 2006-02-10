@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWebServices.py,v 1.1 2005/11/23 18:30:31 sveseli Exp $
+# $Id: dbsWebServices.py,v 1.2 2005/12/15 22:52:40 sekhri Exp $
 #
 # DBS Web Services server class. 
 #
@@ -105,6 +105,13 @@ class DbsWebServices:
 # Unit testing.
 
 if __name__ == "__main__":
-  ws = DbsWebServices()
-  ws.listen()
+  if os.path.exists(".dbsProcessIDFile") :
+     print "DBS SERVER ALREADY RUNNING, USE ./shutdown.sh OR REMOVE .dbsProcessIDFile"
+  else:  
+     pidfile = open(".dbsProcessIDFile", "w")
+     pidfile.write(str(os.getpid()))
+     pidfile.close() 
+  
+     ws = DbsWebServices()
+     ws.listen()
 

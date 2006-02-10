@@ -89,15 +89,16 @@ class DBSInterface(dbsApi.DbsApi):
         if processingPathID == None:
           processingPathID = 0
           ppParent = processedDataset.getProcessingPath().getParentPath();
-          appParent = ppParent.getApplication()
           if ppParent != None:
-	     if appParent.getFamily() == app.getFamily() and \
-                appParent.getExecutable() == app.getExecutable() and \
-                appParent.getVersion() == app.getVersion() :
-                 raise dbsApi.DbsApiException(args="Application for parent and child processing path is same")
-
-
+             appParent = ppParent.getApplication()
              if appParent != None:
+
+  	     	if appParent.getFamily() == app.getFamily() and \
+                	appParent.getExecutable() == app.getExecutable() and \
+                	appParent.getVersion() == app.getVersion() :
+                 	raise dbsApi.DbsApiException(args="Application for parent and child processing path is same")
+
+
                 tempApplication = dbsApplication.DbsApplication(
                   family=appParent.getFamily(),
                   executable=appParent.getExecutable(),
@@ -185,9 +186,9 @@ class DBSInterface(dbsApi.DbsApi):
         if table.getNoOfRows() > 0:
            if table.getNoOfRows() > 1:
               ##table.dispose()
-              print "More than one processing path found"
-              return 1
-              #raise dbsApi.DbsApiException(args="More than one processing path found") 
+              #print "More than one processing path found"
+              #return 1
+              raise dbsApi.DbsApiException(args="More than one processing path found") 
               print "Done Raisong exception"
            else :
               proPathId = self.getStrValue(table, "t_processing_path.id", 0)

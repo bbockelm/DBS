@@ -10,12 +10,12 @@ import testGetDatasetContents
 
 if __name__ == "__main__":
    
-   #testObj = testCreatePrimaryDS.testCreatePrimaryDS()
-   #testObj.run()
+   testObj = testCreatePrimaryDS.testCreatePrimaryDS()
+   testObj.run()
 
    testObj = testCreateProcessedDS.testCreateProcessedDS()
    testObj.run()
-   """
+
    testObj = testCreateBlock.testCreateBlock()
    testObj.run()
 
@@ -24,8 +24,8 @@ if __name__ == "__main__":
    
    testObj = testCreateEventCollection.testCreateEventCollection()
    testObj.run()
-   """ 
-   #testObj = testGetDatasetContents.testGetDatasetContents()
-   #testObj.run() 
+   
+   testObj = testGetDatasetContents.testGetDatasetContents()
+   testObj.run() 
 
    #sys.exit(0) 
