@@ -5,7 +5,9 @@ BlockManager::BlockManager() {
 }
 
 int BlockManager::write(Blockviewmultirow* aRow, BlockviewMultiTable* table) {
-	table->addRow(aRow);
+	Blockviewmultirow* aNewRow = new Blockviewmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
+	//table->addRow(aRow);
 	return this->doWrite((TableInterface*)table, (string)"t_block.id");
 }
 

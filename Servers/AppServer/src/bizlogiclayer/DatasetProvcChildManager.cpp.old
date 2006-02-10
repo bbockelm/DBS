@@ -5,7 +5,10 @@ DatasetProvcChildManager::DatasetProvcChildManager() {
 }
 
 int DatasetProvcChildManager::write(Datasetprovenenceevchildmultirow* aRow, DatasetprovenenceevchildMultiTable* table) {
-	table->addRow(aRow);
+	Datasetprovenenceevchildmultirow* aNewRow = new Datasetprovenenceevchildmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
+
+	//table->addRow(aRow);
 	return this->doWrite((TableInterface*)table, (string)"t_evcoll_parentage.child");
 }
 

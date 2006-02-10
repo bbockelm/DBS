@@ -5,7 +5,9 @@ PdblockManager::PdblockManager() {
 }
 
 int PdblockManager::write(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table) {
-	table->addRow(aRow);
+	Pdblockviewmultirow* aNewRow = new Pdblockviewmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
+	//table->addRow(aRow);
 	return this->doWrite((TableInterface*)table, (string)"t_block.id");
 }
 

@@ -7,7 +7,9 @@ FileManager::FileManager() {
 
 int FileManager::write(vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table) {
 	for(int i = 0 ; i != rowVector.size(); ++i) {
-		table->addRow((Fileviewmultirow*)rowVector.at(i));
+		Fileviewmultirow* aNewRow = new Fileviewmultirow();
+		this->copyAndAddRow(table, rowVector.at(i), aNewRow);
+		//table->addRow((Fileviewmultirow*)rowVector.at(i));
 	}
 	return this->doWrite((TableInterface*)table, (string)"t_evcoll_file.evcoll" );
 	

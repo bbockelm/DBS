@@ -10,7 +10,6 @@ class testGetDatasetBlocks(testCaseInterface.testCaseInterface) :
   def __init__(self):
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.getDatasetBlocks)
-    #self.addTestCase(self.printYahoo)
 
     datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
     app = dbsApplication.DbsApplication(
@@ -36,7 +35,10 @@ class testGetDatasetBlocks(testCaseInterface.testCaseInterface) :
     try:
 
        fileBlockList = self.api.getDatasetFileBlocks(self.dataset)
-       print fileBlockList
+       for fileBlock in fileBlockList:
+          print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
+          for eventCollection in fileBlock.getEventCollectionList():
+             print "  %s" % eventCollection
 
     except dbsException.DbsException, ex:
        return 1

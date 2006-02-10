@@ -6,7 +6,7 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
 
   def __init__(self):
     testCaseInterface.testCaseInterface.__init__(self)
-    self.addTestCase(self.getDatasetContents)
+    #self.addTestCase(self.getDatasetContents)
     self.addTestCase(self.getDatasetContentsWithFiles)
 
     self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"

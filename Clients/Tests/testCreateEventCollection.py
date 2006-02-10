@@ -12,15 +12,16 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
 
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.createEventCollection)
+    self.addTestCase(self.createEvCollWithOneFile)
     self.addTestCase(self.createEvCollFilesShouldHaveSameBlockID)
     self.addTestCase(self.createEvCollNoFileNoInsertion)
 
     datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
     app = dbsApplication.DbsApplication(
-     family="CMSAppFam",
-     executable="cmsRun",
-     version="CMSSW_XYZ",
-     parameterSet="pSetDummy")
+         family="CMSAppFam1",
+         executable="cmsRun1",
+         version="CMSSW_XYZ1",
+         parameterSet="pSetDummy1")
 
     processingPath = dbsProcessingPath.DbsProcessingPath(
       dataTier="Digi",
@@ -82,7 +83,6 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
        file1 = dbsFile.DbsFile(logicalFileName="myFile5",
            fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
-           checkSum="BA7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=11,
            fileSize=100
@@ -90,7 +90,6 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
        file2 = dbsFile.DbsFile(logicalFileName="myFile6",
            fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436a",
-           checkSum="BA7C8A55-DE62-D811-892C-00E081250a436",
            fileType="EVDZip",
            fileBlockId=10,
            fileSize=100
@@ -135,4 +134,35 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
        return 0
 
     return 1
+
+
+  def createEvCollWithOneFile(self):
+    funcName = "%s.%s" % (self.__class__.__name__, "createEvCollWithOneFile ")
+    print "Now executing ", funcName
+
+    try:
+       #TEST   All files in same EvColl should have same blockId
+       file1 = dbsFile.DbsFile(logicalFileName="myFile11",
+           fileStatus = "file dummy status1",
+           guid = "7C8A55-D62-D811-892C-00E0812504361",
+           fileType="EVDZip",
+           fileBlockId=11,
+           fileSize=100
+           )
+       fileList=dbsFile.DbsFileList([file1])
+
+       ecFileBlockId = dbsEventCollection.DbsEventCollection(
+         collectionName="collectionWithOneFile",
+         numberOfEvents=123456,
+         collectionIndex=2121,
+         isPrimary="y",
+         fileList=fileList)
+
+       ecListFileBlockId = dbsEventCollection.DbsEventCollectionList([ecFileBlockId])
+       self.api.insertEventCollections(self.dataset, ecListFileBlockId)
+
+    except dbsException.DbsException, ex:
+       return 1
+
+    return 0
 

@@ -31,6 +31,7 @@ TableTemplate<R>::~TableTemplate(){
       ++rowIterator )	{
     delete *rowIterator;
   }*/
+	this->dispose();
 	delete sql;
 	/*for(tivIterator = tiv.begin(); 
 	  tivIterator != tiv.end(); 

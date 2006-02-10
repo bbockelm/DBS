@@ -5,7 +5,9 @@ CrabECManager::CrabECManager() {
 }
 
 int CrabECManager::write(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table) {
-	table->addRow(aRow);
+	Crabevcollviewmultirow* aNewRow = new Crabevcollviewmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
+	//table->addRow(aRow);
 	return this->doWrite((TableInterface*)table, (string)"t_event_collection.id");
 }
 

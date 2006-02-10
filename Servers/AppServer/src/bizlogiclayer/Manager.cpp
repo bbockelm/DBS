@@ -33,6 +33,13 @@ int Manager::doWrite(TableInterface* inTable, string name) {
 	return 0;
 }
 
+void Manager::copyAndAddRow(TableInterface* table, RowInterface* aRow, RowInterface* aNewRow) {
+	util.setSchema(table->getSchema());
+	util.copyRow(aNewRow, aRow);
+	table->addRow(aNewRow);
+}
+
+
 int Manager::doInsert(TableInterface* inTable) {
 	// This function actuallly performs the insert operation for the child managers.
 	dbManager->beginTransection();
@@ -67,6 +74,7 @@ string Manager::makeClause(TableInterface* inTable, RowInterface* aRow) {
 }
 
 void Manager::cleanup() {
+	cout<<"Manager::cleanup() DELETING dbManager"<<endl;
         this->dbManager->close();
         delete this->dbManager;
 }

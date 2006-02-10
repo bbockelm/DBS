@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsClient.py,v 1.15 2006/01/26 23:10:01 afaq Exp $
+# $Id: dbsWsClient.py,v 1.16 2006/02/03 03:45:32 afaq Exp $
 #
 # Class which uses web services to extract info from the db.
 #
@@ -347,8 +347,16 @@ class DbsWsClient:
         what="retrieving file blocks for processed dataset",
         where=funcName,
         logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-      fileBlockList = self._wsdlProxy.getDatasetFileBlocks(
-        processedDataset=processedDataset.getWsRep() )
+
+      result = self._wsdlProxy.getDatasetFileBlocks(processedDataset=processedDataset.getWsRep())
+      fileBlockList = dbsFileBlock.DbsFileBlockList(result.fileBlockList.data)
+
+
+
+
+
+      #fileBlockList = self._wsdlProxy.getDatasetFileBlocks(
+      #  processedDataset=processedDataset.getWsRep() )
 
     except SOAPpy.faultType, ex:
       wsExClassName = DbsWsFaultMapper.getExceptionClassName(ex)

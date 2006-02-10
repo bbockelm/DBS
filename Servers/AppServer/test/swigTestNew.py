@@ -125,7 +125,7 @@ def readPrimary() :
 	print "no of Rows ",noOfRows
 	for j in range(noOfRows) :
 		print "table.getStrValue", getStrValue(table, "t_primary_dataset.name", j)
-	table.dispose()
+	#table.dispose()
 
 
 def writeProcessed() :
@@ -199,12 +199,12 @@ def readCrabEC() :
 while(1):
 #for i in range(1) :
 	try:
-		#readPrimary()
+		readPrimary()
 		#writePrimary()
 		#writeProcessed()
 		#readProcessed()
 		#readCrabEC()
         	#writeFile()
-		readFilesByBlock()
+		#readFilesByBlock()
 	except Exception ,e:
 		print "Exception ", e

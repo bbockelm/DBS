@@ -37,6 +37,7 @@ protected:
 	Util util;
 	Dictionary* schema;
 	log4cxx::LoggerPtr logger;
+	void copyAndAddRow(TableInterface* table, RowInterface* aRow, RowInterface* aNewRow);
 };
 
 

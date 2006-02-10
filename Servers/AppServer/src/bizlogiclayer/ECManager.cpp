@@ -6,8 +6,8 @@ ECManager::ECManager() {
 }
 
 int ECManager::write(Evcollviewmultirow* aRow, EvcollviewMultiTable* table) {
-	table->addRow(aRow);
-	//return this->doWrite((TableInterface*)table, (RowInterface*)aRow, (string)"t_event_collection.id");
+	Evcollviewmultirow* aNewRow = new Evcollviewmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
 	return this->doWrite((TableInterface*)table, (string)"t_event_collection.id");
 }
 int ECManager::read(Evcollviewmultirow* aRow, EvcollviewMultiTable* table) {

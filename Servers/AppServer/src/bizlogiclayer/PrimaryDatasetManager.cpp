@@ -6,7 +6,8 @@ PrimaryDatasetManager::PrimaryDatasetManager() {
 
 int PrimaryDatasetManager::write(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table) {
 	//return this->doWrite((TableInterface*)table, (RowInterface*)aRow, (string)"t_primary_dataset.id");
-	table->addRow(aRow);
+	Primarydatasetmultirow* aNewRow = new Primarydatasetmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
 	return this->doWrite((TableInterface*)table, (string)"t_primary_dataset.id");
 }
 

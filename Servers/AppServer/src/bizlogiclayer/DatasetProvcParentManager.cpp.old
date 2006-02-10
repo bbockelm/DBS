@@ -5,7 +5,10 @@ DatasetProvcParentManager::DatasetProvcParentManager() {
 }
 
 int DatasetProvcParentManager::write(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table) {
-	table->addRow(aRow);
+	Datasetprovenenceevparentmultirow* aNewRow = new Datasetprovenenceevparentmultirow();
+	this->copyAndAddRow(table, aRow, aNewRow);
+
+	//table->addRow(aRow);
 	return this->doWrite((TableInterface*)table, (string)"t_evcoll_parentage.parent");
 }
 

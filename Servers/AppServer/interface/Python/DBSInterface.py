@@ -83,25 +83,33 @@ class DBSInterface(dbsApi.DbsApi):
    def createProcessedDataset(self, processedDataset):
       #return 23
       try:
+        pp = processedDataset.getProcessingPath()
+        app = pp.getApplication()
         processingPathID = processedDataset.getProcessingPath().getPathId()
         if processingPathID == None:
           processingPathID = 0
-          pp = processedDataset.getProcessingPath().getParentPath();
-          if pp != None:
-             app = pp.getApplication()
-             if app != None:
+          ppParent = processedDataset.getProcessingPath().getParentPath();
+          appParent = ppParent.getApplication()
+          if ppParent != None:
+	     if appParent.getFamily() == app.getFamily() and \
+                appParent.getExecutable() == app.getExecutable() and \
+                appParent.getVersion() == app.getVersion() :
+                 raise dbsApi.DbsApiException(args="Application for parent and child processing path is same")
+
+
+             if appParent != None:
                 tempApplication = dbsApplication.DbsApplication(
-                  family=app.getFamily(),
-                  executable=app.getExecutable(),
-                  version=app.getVersion(),
-                  configConditionsVersion =app.getConfigConditionsVersion(),
-                  parameterSet=app.getParameterSet(),
-                  outputTypeName=app.getOutputTypeName(),
-                  inputTypeName=app.getInputTypeName())
+                  family=appParent.getFamily(),
+                  executable=appParent.getExecutable(),
+                  version=appParent.getVersion(),
+                  configConditionsVersion =appParent.getConfigConditionsVersion(),
+                  parameterSet=appParent.getParameterSet(),
+                  outputTypeName=appParent.getOutputTypeName(),
+                  inputTypeName=appParent.getInputTypeName())
   
                 tempProcessingPath = dbsProcessingPath.DbsProcessingPath(
-                  fullPath=pp.getFullPath(),
-                  dataTier=pp.getDataTier(),
+                  fullPath=ppParent.getFullPath(),
+                  dataTier=ppParent.getDataTier(),
                   application=tempApplication)
 
                 dataset = dbsProcessedDataset.DbsProcessedDataset(
@@ -112,9 +120,8 @@ class DBSInterface(dbsApi.DbsApi):
 	     print "processingPathID is ",processingPathID
 
         #apidata = dbsclient.Processingpath_ClientAPIData()
-        pp = processedDataset.getProcessingPath()
-        app = pp.getApplication()
-
+           
+          
         aRow = dbsclient.Processingpathmultirow()
         table = dbsclient.ProcessingpathMultiTable()
 
@@ -148,8 +155,10 @@ class DBSInterface(dbsApi.DbsApi):
         table = dbsclient.ProcessingpathMultiTable()
         self.getProcessedDataset(processedDataset, table)
         proDsId = 0
+        print "table.getNoOfRows ",table.getNoOfRows
         if table.getNoOfRows() > 0:
           if table.getNoOfRows() > 1:
+              print "More than one Processed Dataset found"
               #:table.dispose()
               raise dbsApi.DbsApiException(args="More than one Processed Dataset found")
           else: 
@@ -158,7 +167,8 @@ class DBSInterface(dbsApi.DbsApi):
            #table.dispose()
            raise dbsApi.DbsApiException(args="Processed Dataset not found")   
        finally: 
-        table.dispose()
+        print ""
+        #table.dispose()
 
        print "*********************************************************************"
        print "Processed DatasetID = ",proDsId
@@ -166,21 +176,27 @@ class DBSInterface(dbsApi.DbsApi):
        return proDsId
 
    def getProcessingPathID(self, processedDataset):
-       try:
+       #try:
+        print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Calling getProcessedDataset"
         table = dbsclient.ProcessingpathMultiTable()
         self.getProcessedDataset(processedDataset, table)
         proPathId = 0;
+        print "table.getNoOfRows ",table.getNoOfRows()
         if table.getNoOfRows() > 0:
            if table.getNoOfRows() > 1:
-              #table.dispose()
-              raise dbsApi.DbsApiException(args="More than one processing path found") 
+              ##table.dispose()
+              print "More than one processing path found"
+              return 1
+              #raise dbsApi.DbsApiException(args="More than one processing path found") 
+              print "Done Raisong exception"
            else :
               proPathId = self.getStrValue(table, "t_processing_path.id", 0)
         else:
            #table.dispose()
            raise dbsApi.DbsApiException(args="No Processing Path found")
-       finally:
-        table.dispose()
+       #finally:
+        print ""
+        #table.dispose()
 
         print "*********************************************************************"
         print "Processing PathID = ",proPathId
@@ -266,7 +282,11 @@ class DBSInterface(dbsApi.DbsApi):
          #table.dispose()
          raise dbsApi.DbsApiException(exception=e)
      finally:
-       table.dispose() 
+       print ""
+       #table.dispose() 
+     print fileBlockList
+     print "len is ",len(fileBlockList)
+
      return fileBlockList
 
 
@@ -304,7 +324,7 @@ class DBSInterface(dbsApi.DbsApi):
         processedDatasetID = processedDataset.getProcessedDatasetID()
         if processedDatasetID == None:
            processedDatasetID = self.getProcessedDatasetID(processedDataset)
-        #print "processedDatasetID ",processedDatasetID
+        #print "rrrrrrrrrrrrrrrrrrrrrrr processedDatasetID ",processedDatasetID
         if len(eventCollectionList) > 0:
            #print "In the loop!" 
            #return self.recInsertEC(eventCollectionList[0],processedDatasetID,parentageType)
@@ -433,14 +453,16 @@ class DBSInterface(dbsApi.DbsApi):
          else:
            #table.dispose()
            #raise dbsApi.DbsApiException(args="No File found in the Block/EventCollection") 
-           return fileList
+           
+           return dbsFile.DbsFileList(fileList)
  
       except RuntimeError,e:
          #table.dispose() 
          raise dbsApi.DbsApiException(exception=e)
-     finally: 
-       table.dispose()
-     return fileList
+     finally:
+       print ""
+       #table.dispose()
+     return dbsFile.DbsFileList(fileList)
 
    def insertFiles(self, evCollID, files):
       try: 
@@ -531,10 +553,10 @@ class DBSInterface(dbsApi.DbsApi):
                       ##print "CALLING listFilesByBlock"
                       if listFiles != False :
                          fileList = self.listFilesByBlock(evCollId, eachBlockId)
-                         fileList=[]
+                         #fileList=[]
                          print "" 
                       else:
-                         fileList = [] 
+                         fileList = dbsFile.DbsFileList([]) 
                       if evcollName not in evCollList :
                          eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
                          fileBlock.addEventCollection(eventCollection)
@@ -552,10 +574,11 @@ class DBSInterface(dbsApi.DbsApi):
       #   raise dbsApi.DbsApiException(exception=e)
 
       finally:
-         table.dispose()
+         print ""
+         #table.dispose()
 
       #table.dispose()
-      return fileBlockList  
+      return dbsFileBlock.DbsFileBlockList(fileBlockList)
 
    def getDatasetProvenance(self, pathName, parentDataTiers):
       """ API Call that returns list of DBS 
