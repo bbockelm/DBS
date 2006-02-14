@@ -78,11 +78,12 @@ class createMultiTableViewObjects :
         # View on Files, Helpful for file insertion in batch.
         self.Fileview = multiRowRepresentation("FileView", self.fkExclusionAttributes)
         self.Fileview.addSchema(self.allSchemas['t_file_type'])
-        self.Fileview.addSchema(self.allSchemas['t_file_status'])
         self.Fileview.addSchema(self.allSchemas['t_file'])
         self.Fileview.addSchema(self.allSchemas['t_evcoll_file'])
         self.Fileview.addCondition('t_file.type = t_file_type.id')
-        self.Fileview.addCondition('t_file.status = t_file_status.id')
+        # Anzar: 02-13-2006 taking out t_file_status, not used for the time being.
+        #self.Fileview.addSchema(self.allSchemas['t_file_status'])
+        #self.Fileview.addCondition('t_file.status = t_file_status.id')
         self.Fileview.addCondition('t_evcoll_file.fileid = t_file.id')
         self.multiTableViewObjects.append(self.Fileview)
 

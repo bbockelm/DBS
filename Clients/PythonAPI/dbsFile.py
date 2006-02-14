@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFile.py,v 1.2 2005/12/13 17:27:30 sveseli Exp $
+# $Id: dbsFile.py,v 1.3 2005/12/14 16:14:53 sveseli Exp $
 #
 # Event collection class. 
 #
@@ -94,8 +94,8 @@ class DbsFile(dbsObject.DbsObject):
   def getFileStatus(self):
     """ Retrieve file status. """
     result = self.get(FILE_STATUS_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_STATUS_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_STATUS_TAG_)
     return result
 
   def getFileBlockId(self):

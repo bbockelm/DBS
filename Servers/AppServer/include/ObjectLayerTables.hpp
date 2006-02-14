@@ -636,7 +636,6 @@ public:
 private:
 
     T_File_Typerow* T_File_Typeobj;
-    T_File_Statusrow* T_File_Statusobj;
     T_Filerow* T_Fileobj;
     T_Evcoll_Filerow* T_Evcoll_Fileobj;
 };

@@ -428,9 +428,7 @@ class DBSInterface(dbsApi.DbsApi):
          if nrow >= 1:
            indx = 0
            while indx < nrow :
-                #print "indx", indx
-                fileStatus = self.getStrValue(table, "t_file_status.name", indx)
-                #print "fileStatus", fileStatus
+                print "indx", indx
                 guid = self.getStrValue(table, "t_file.guid", indx)
                 #print "guid", guid 
                 #checkSum = self.getStrValue(table, "t_file.checksum", indx)
@@ -443,12 +441,20 @@ class DBSInterface(dbsApi.DbsApi):
                 #print "fileType", fileType
                 fileSize = self.getStrValue(table, "t_file.filesize", indx)
                 #print "fileSize", fileSize
-                
+                #Anzar: 02-13-2006, t_file_status is taken out of view, doesn't look
+                #useful to me
+                #fileStatus = self.getStrValue(table, "t_file_status.name", indx)
+                #print "fileStatus", fileStatus 
+                #afile = dbsFile.DbsFile(logicalFileName=logicalFileName, \
+                #                guid=guid, \
+                #                #checkSum=checkSum, \
+                #                fileType=fileType, fileStatus=fileStatus, \
+                #                fileBlockId=fileBlockId, fileSize=fileSize)
                 afile = dbsFile.DbsFile(logicalFileName=logicalFileName, \
                                 guid=guid, \
-                                #checkSum=checkSum, \
-                                fileType=fileType, fileStatus=fileStatus, \
+                                fileType=fileType, \
                                 fileBlockId=fileBlockId, fileSize=fileSize)
+
                 fileList.append(afile)  
                 indx += 1
          else:
@@ -473,7 +479,9 @@ class DBSInterface(dbsApi.DbsApi):
          for afile in files:
             aRow = dbsclient.Fileviewmultirow()
             print afile
-            self.setStrValue(aRow, "t_file_status.name", afile.getFileStatus())
+            # Anzar: 02-13-2006, I don't feel like t_file_status is useful
+            # Its removed from the view as well.
+            #self.setStrValue(aRow, "t_file_status.name", afile.getFileStatus())
             self.setStrValue(aRow, "t_file.guid", afile.getGuid())
             self.setStrValue(aRow, "t_file.logical_name", afile.getLogicalFileName())
             self.setIntValue(aRow, "t_file.inblock", afile.getFileBlockId())
@@ -524,7 +532,7 @@ class DBSInterface(dbsApi.DbsApi):
         nrow = table.getNoOfRows()
      
         #print "nrow:::::", nrow
-        
+        allEvCollIds = [] 
         if nrow >= 1:
            blockECMap = {}
            indx = 0
@@ -540,30 +548,43 @@ class DBSInterface(dbsApi.DbsApi):
               print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
          
               if blockECMap.has_key(blockId):
-                 blockECMap[blockId].append((evcollName, events, evCollId))
+                 if evCollId not in allEvCollIds:
+                    blockECMap[blockId].append((evcollName, events, evCollId))
+                    allEvCollIds.append(evCollId)
               else:
-                 blockECMap[blockId] = [(evcollName, events, evCollId)] 
+                 if evCollId not in allEvCollIds:
+                    blockECMap[blockId] = [(evcollName, events, evCollId)] 
+                    allEvCollIds.append(evCollId)
               indx += 1
+
+           #print "\n\n\nBLOCK LIST FOR THIS DATASET: ", blockECMap.keys()
+           print "\n\n\nblockECMap: ", blockECMap
+
            for eachBlockId in blockECMap.keys():
                   fileblockName = pathName+'/#'+str(eachBlockId)
-                  
+                  print "\n\nfileblockName", fileblockName
                   fileBlock = dbsFileBlock.DbsFileBlock(blockId=eachBlockId, blockName=fileblockName)
+                  TESTLIST = []
                   # This list makes sure that we get Unique EvColls
                   evCollList = []
                   for evcollName, events, evCollId in blockECMap[eachBlockId]: 
-                      ##print "CALLING listFilesByBlock"
                       if listFiles != False :
+                         print "\nCALLING listFilesByBlock for evCollId: eachBlockId", evCollId, eachBlockId
                          fileList = self.listFilesByBlock(evCollId, eachBlockId)
-                         #fileList=[]
-                         print "" 
                       else:
                          fileList = dbsFile.DbsFileList([]) 
                       if evcollName not in evCollList :
                          eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
-                         fileBlock.addEventCollection(eventCollection)
+                         #################fileBlock.addEventCollection(eventCollection)
+                         print "\n\nJUST BEFORE TESTLIST.append"
+                         print "\n\nSIZE of LIST: ", len(TESTLIST)
+                         #####TESTLIST.append(eventCollection)
+                         TESTLIST.extend(fileList)
+                         print "\n\nJUST AFTER TESTLIST.append"
                          evCollList.append(evcollName)
-                  #print fileBlock
+                         print "\nfileBlock after ONE MORE EvColl File Info Added ", fileBlock
                   fileBlockList.append(fileBlock)
+                  print "\nTESTLIST", TESTLIST
         else :
             #table.dispose()
             errorMessage = "No file blocks found for the PathName " + pathName 
@@ -579,6 +600,7 @@ class DBSInterface(dbsApi.DbsApi):
          #table.dispose()
 
       #table.dispose()
+      print "RETURNING SUCCESSFULLY............"
       return dbsFileBlock.DbsFileBlockList(fileBlockList)
 
    def getDatasetProvenance(self, pathName, parentDataTiers):
@@ -801,14 +823,12 @@ if __name__ == "__main__" :
 
        # Test for inserting event collections.
        f1 = dbsFile.DbsFile(logicalFileName="myFileF10",
-           fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=1,
            fileSize=100
            )
        f2 = dbsFile.DbsFile(logicalFileName="myFileF12",
-           fileStatus = "file dummy status",
            guid = "7C8A55DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=1,

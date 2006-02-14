@@ -41,14 +41,12 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
     try:
        # Test for inserting event collections.
        f1 = dbsFile.DbsFile(logicalFileName="myFileF10",
-           fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=1,
            fileSize=100
            )
        f2 = dbsFile.DbsFile(logicalFileName="myFileF12",
-           fileStatus = "file dummy status",
            guid = "7C8A55DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=1,
@@ -81,14 +79,12 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
     try:
        #TEST   All files in same EvColl should have same blockId
        file1 = dbsFile.DbsFile(logicalFileName="myFile5",
-           fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
            fileBlockId=11,
            fileSize=100
            )
        file2 = dbsFile.DbsFile(logicalFileName="myFile6",
-           fileStatus = "file dummy status",
            guid = "7C8A55-DE62-D811-892C-00E081250436a",
            fileType="EVDZip",
            fileBlockId=10,
@@ -143,7 +139,6 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
     try:
        #TEST   All files in same EvColl should have same blockId
        file1 = dbsFile.DbsFile(logicalFileName="myFile11",
-           fileStatus = "file dummy status1",
            guid = "7C8A55-D62-D811-892C-00E0812504361",
            fileType="EVDZip",
            fileBlockId=11,

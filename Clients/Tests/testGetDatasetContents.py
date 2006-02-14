@@ -9,7 +9,8 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     #self.addTestCase(self.getDatasetContents)
     self.addTestCase(self.getDatasetContentsWithFiles)
 
-    self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+    #self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+    self.datasetPath = "/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133"
 
   def getDatasetContents(self):
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContents")

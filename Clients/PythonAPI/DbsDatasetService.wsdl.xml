@@ -427,7 +427,7 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
       <!--soap:address location="http://venom.fnal.gov:27985"/-->
       <!--soap:address location="http://cmslcgco01.cern.ch:27983"/-->
       <!--soap:address location="http://venom.fnal.gov:27985"/-->
-      <soap:address location="http://cmslcgco01.cern.ch:27982"/>
+      <soap:address location="http://cmslcgco01.cern.ch:27985"/>
     </port>
   </service>
 

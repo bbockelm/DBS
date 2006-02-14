@@ -9,7 +9,8 @@ import testCreateEventCollection
 import testGetDatasetContents
 
 if __name__ == "__main__":
-   
+
+   """   
    testObj = testCreatePrimaryDS.testCreatePrimaryDS()
    testObj.run()
 
@@ -25,6 +26,8 @@ if __name__ == "__main__":
    testObj = testCreateEventCollection.testCreateEventCollection()
    testObj.run()
    
+   """
+
    testObj = testGetDatasetContents.testGetDatasetContents()
    testObj.run() 
 
