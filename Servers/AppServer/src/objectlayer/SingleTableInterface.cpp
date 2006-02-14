@@ -45,6 +45,7 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 		int noOfRows = rs->getNoOfRows();
 		//cout<<"noOfRows returned from DB is "<<noOfRows<<endl;
 		LOG4CXX_DEBUG(TableTemplate<R>::logger,"Number of Rows returned from DB is "+util.itoa(noOfRows));
+                cout << "This message is coming from here" << endl; 
 		if( noOfRows > 0 ) {
 			R* aRowFromDB = new R();
 			for(int j = 0; j < noOfRows; j++ ) {
@@ -81,6 +82,10 @@ void SingleTableInterface<R>::delRows() {
 	delRow();
 }
 */
+
+
+
+
 
 
 

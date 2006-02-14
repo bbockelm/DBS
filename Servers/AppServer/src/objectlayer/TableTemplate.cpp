@@ -264,10 +264,11 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 		this->reSetColNamesInRS(rs);
     
 		//cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
+                //cout<<"HERE>>>>>>>>>>>MESSAGE...comes..."<< endl; 
 		LOG4CXX_DEBUG(TableTemplate::logger,"Number of Rows returned from DB is "+util.itoa(rs->getNoOfRows()));
 		for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
-			//cout << "\n\nChecking PK" << endl;
-			bool pKEqual = false;
+			//cout << "\nChecking.... " << endl;
+			/*bool pKEqual = false;
 			for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
 				R* aRow = (R*)*rowIterator;
 				pKEqual = false;
@@ -307,8 +308,8 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 					this->convertIntoRow(rs,rowIndex,aRow);
 					break;
 				}
-			}
-			if(!pKEqual) {
+			}*/
+			//if(!pKEqual) {
 				//cout<<"INSERT BEACUSE it is UNEQUAL"<<endl;
 				//LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
 				R* tempRow = new R();
@@ -316,7 +317,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 				this->convertIntoRow(rs, rowIndex,tempRow);
 				rows.push_back(tempRow);
 				//cout<<"line11"<<endl;
-			}
+			//}
 		}
 		delete rs;
 		//rowIterator = rows.begin();
@@ -592,6 +593,10 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 	aRow->setValue(tableName+".created_by",&value);
 	aRow->setValue(tableName+".modified_by",&value);
 }
+
+
+
+
 
 
 

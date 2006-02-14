@@ -88,6 +88,10 @@ void MultiTableInterface<R>::doSmartInsert(R* aRow) {
 
 
 
+
+
+
+
 template MultiTableInterface<Evcollviewmultirow>;
 template MultiTableInterface<Fileviewmultirow>;
 template MultiTableInterface<Pdblockviewmultirow>;

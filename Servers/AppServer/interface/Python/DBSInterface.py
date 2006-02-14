@@ -539,13 +539,13 @@ class DBSInterface(dbsApi.DbsApi):
            while indx < nrow :
               #print "indx:::", indx
               blockId = self.getStrValue(table, "t_block.id", indx)
-              print "blockId", blockId
+              ##print "blockId", blockId
               evcollName = self.getStrValue(table, "t_info_evcoll.name", indx)
-              print "evcollName", evcollName
+              #print "evcollName", evcollName
               events = self.getStrValue(table, "t_info_evcoll.events", indx)
-              print "events", events
+              #print "events", events
               evCollId = self.getStrValue(table, "t_event_collection.id", indx)
-              print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
+              #print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
          
               if blockECMap.has_key(blockId):
                  if evCollId not in allEvCollIds:
@@ -558,33 +558,33 @@ class DBSInterface(dbsApi.DbsApi):
               indx += 1
 
            #print "\n\n\nBLOCK LIST FOR THIS DATASET: ", blockECMap.keys()
-           print "\n\n\nblockECMap: ", blockECMap
+           #print "\n\n\nblockECMap: ", blockECMap
 
            for eachBlockId in blockECMap.keys():
                   fileblockName = pathName+'/#'+str(eachBlockId)
-                  print "\n\nfileblockName", fileblockName
+                  #print "\n\nfileblockName", fileblockName
                   fileBlock = dbsFileBlock.DbsFileBlock(blockId=eachBlockId, blockName=fileblockName)
                   TESTLIST = []
                   # This list makes sure that we get Unique EvColls
                   evCollList = []
                   for evcollName, events, evCollId in blockECMap[eachBlockId]: 
                       if listFiles != False :
-                         print "\nCALLING listFilesByBlock for evCollId: eachBlockId", evCollId, eachBlockId
+                         #print "\nCALLING listFilesByBlock for evCollId: eachBlockId", evCollId, eachBlockId
                          fileList = self.listFilesByBlock(evCollId, eachBlockId)
                       else:
                          fileList = dbsFile.DbsFileList([]) 
                       if evcollName not in evCollList :
                          eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
                          #################fileBlock.addEventCollection(eventCollection)
-                         print "\n\nJUST BEFORE TESTLIST.append"
-                         print "\n\nSIZE of LIST: ", len(TESTLIST)
+                         #print "\n\nJUST BEFORE TESTLIST.append"
+                         #print "\n\nSIZE of LIST: ", len(TESTLIST)
                          #####TESTLIST.append(eventCollection)
-                         TESTLIST.extend(fileList)
-                         print "\n\nJUST AFTER TESTLIST.append"
+                         #TESTLIST.extend(fileList)
+                         #print "\n\nJUST AFTER TESTLIST.append"
                          evCollList.append(evcollName)
-                         print "\nfileBlock after ONE MORE EvColl File Info Added ", fileBlock
+                         #print "\nfileBlock after ONE MORE EvColl File Info Added ", fileBlock
                   fileBlockList.append(fileBlock)
-                  print "\nTESTLIST", TESTLIST
+                  #print "\nTESTLIST", TESTLIST
         else :
             #table.dispose()
             errorMessage = "No file blocks found for the PathName " + pathName 
