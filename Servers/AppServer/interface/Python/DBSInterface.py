@@ -511,8 +511,9 @@ class DBSInterface(dbsApi.DbsApi):
 
       fileBlockList = []
       # get the names of primary dataset, data tier and processed dataset
-      #print "Inside getDatasetContents,  PathName is ", pathName
-
+      print "Inside getDatasetContents,  PathName is ", pathName
+      print "listFiles=", listFiles     
+      
       try: 
 
         tokens = pathName.split('/')
@@ -530,23 +531,26 @@ class DBSInterface(dbsApi.DbsApi):
         self.client.readCrabEC(aRow, table)
 
         nrow = table.getNoOfRows()
-     
-        #print "nrow:::::", nrow
+        EvFileMap = {} 
+        #print "*******************************\n\n\nnrow:::::", nrow
+ 
         allEvCollIds = [] 
         if nrow >= 1:
            blockECMap = {}
            indx = 0
            while indx < nrow :
-              #print "indx:::", indx
+              #print "\n<<<<<<<<<<<<<<<<<indx:::>>>>>>>>>>>>>>>>>>>", indx
+              guid = self.getStrValue(table, "t_file.guid", indx)
               blockId = self.getStrValue(table, "t_block.id", indx)
-              ##print "blockId", blockId
+              #print "blockId", blockId
               evcollName = self.getStrValue(table, "t_info_evcoll.name", indx)
               #print "evcollName", evcollName
               events = self.getStrValue(table, "t_info_evcoll.events", indx)
               #print "events", events
               evCollId = self.getStrValue(table, "t_event_collection.id", indx)
-              #print "blockId, evcollName, events", blockId, evcollName, events, evCollId  
-         
+              #print "\nblockId, evcollName, events", blockId, evcollName, events, evCollId  
+ 
+
               if blockECMap.has_key(blockId):
                  if evCollId not in allEvCollIds:
                     blockECMap[blockId].append((evcollName, events, evCollId))
@@ -555,8 +559,34 @@ class DBSInterface(dbsApi.DbsApi):
                  if evCollId not in allEvCollIds:
                     blockECMap[blockId] = [(evcollName, events, evCollId)] 
                     allEvCollIds.append(evCollId)
-              indx += 1
 
+              if listFiles  :
+                #print "\n Asked for files" 
+                logicalFileName = self.getStrValue(table, "t_file.logical_name", indx)
+                #fileType = self.getStrValue(table, "t_file_type.name", indx)
+                fileBlockId = self.getStrValue(table, "t_file.inblock", indx)
+                fileSize = "1234" 
+                #fileSize = self.getStrValue(table, "t_file.filesize", indx)
+                #print "logicalFileName, fileBlockId, fileSize", logicalFileName, fileBlockId, fileSize
+                newFile = dbsFile.DbsFile(logicalFileName=logicalFileName, \
+                           guid=guid, \
+                           #fileType=fileType, \
+                           fileBlockId=fileBlockId, fileSize=fileSize)
+                #print "\nNew File Obj Created"
+                if evCollId in EvFileMap.keys():
+                   #print "\nevCollId already in EvFileMap.keys()", evCollId 
+                   evid, tmpFileList = EvFileMap[evCollId]
+                   tmpList = []
+                   for aFile in tmpFileList :
+                       #print "\naFile.getLogicalFileName()", aFile.getLogicalFileName()
+                       tmpList.append(aFile.getLogicalFileName())
+                   if logicalFileName not in tmpList :
+                       tmpFileList.append(newFile)
+                else:
+                   EvFileMap[evCollId] = (evCollId, [newFile])      
+                   #print "\n New entry added to EvFileMap", EvFileMap[evCollId]
+
+              indx += 1
            #print "\n\n\nBLOCK LIST FOR THIS DATASET: ", blockECMap.keys()
            #print "\n\n\nblockECMap: ", blockECMap
 
@@ -564,27 +594,18 @@ class DBSInterface(dbsApi.DbsApi):
                   fileblockName = pathName+'/#'+str(eachBlockId)
                   #print "\n\nfileblockName", fileblockName
                   fileBlock = dbsFileBlock.DbsFileBlock(blockId=eachBlockId, blockName=fileblockName)
-                  TESTLIST = []
                   # This list makes sure that we get Unique EvColls
-                  evCollList = []
                   for evcollName, events, evCollId in blockECMap[eachBlockId]: 
-                      if listFiles != False :
-                         #print "\nCALLING listFilesByBlock for evCollId: eachBlockId", evCollId, eachBlockId
-                         fileList = self.listFilesByBlock(evCollId, eachBlockId)
+                      if listFiles :
+                         id, ecFileList = EvFileMap[evCollId]
+                         #print "\n File list for this evcoll", EvFileMap[evCollId]
+                         fileList= dbsFile.DbsFileList(ecFileList)
+                         #fileList= dbsFile.DbsFileList([])
                       else:
                          fileList = dbsFile.DbsFileList([]) 
-                      if evcollName not in evCollList :
-                         eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
-                         #################fileBlock.addEventCollection(eventCollection)
-                         #print "\n\nJUST BEFORE TESTLIST.append"
-                         #print "\n\nSIZE of LIST: ", len(TESTLIST)
-                         #####TESTLIST.append(eventCollection)
-                         #TESTLIST.extend(fileList)
-                         #print "\n\nJUST AFTER TESTLIST.append"
-                         evCollList.append(evcollName)
-                         #print "\nfileBlock after ONE MORE EvColl File Info Added ", fileBlock
+                      eventCollection = dbsEventCollection.DbsEventCollection(collectionName=evcollName, numberOfEvents=events, fileList=fileList)
+                      fileBlock.addEventCollection(eventCollection)
                   fileBlockList.append(fileBlock)
-                  #print "\nTESTLIST", TESTLIST
         else :
             #table.dispose()
             errorMessage = "No file blocks found for the PathName " + pathName 

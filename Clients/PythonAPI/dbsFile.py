@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFile.py,v 1.3 2005/12/14 16:14:53 sveseli Exp $
+# $Id: dbsFile.py,v 1.4 2006/02/14 19:43:15 afaq Exp $
 #
 # Event collection class. 
 #
@@ -66,29 +66,29 @@ class DbsFile(dbsObject.DbsObject):
   def getGuid(self):
     """ Retrieve file guid. """
     result = self.get(GUID_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % GUID_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % GUID_TAG_)
     return result
 
   def getCheckSum(self):
     """ Retrieve check sum. """
     result = self.get(CHECK_SUM_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % CHECK_SUM_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % CHECK_SUM_TAG_)
     return result
 
   def getFileType(self):
     """ Retrieve file type. """
     result = self.get(FILE_TYPE_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_TYPE_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_TYPE_TAG_)
     return result
 
   def getFileSize(self):
     """ Retrieve file type. """
     result = self.get(FILE_SIZE_TAG_) 
-    if result == None:
-      raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_SIZE_TAG_)
+    #if result == None:
+    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_SIZE_TAG_)
     return result
 
   def getFileStatus(self):
