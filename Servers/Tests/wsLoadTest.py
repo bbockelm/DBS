@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsWsApi.py,v 1.18 2006/01/19 22:56:34 lueking Exp $
+# $Id: wsLoadTest.py,v 1.1 2006/02/14 18:51:43 lueking Exp $
 #
 # Web service test.
 #
@@ -16,23 +16,24 @@ import time
 # import dbs stuff
 #
 try:
- sys.path.append('../python')
- import dbsException
- import dbsApi
- import dbsWsClient
- import dbsWsApi
+  sys.path.append('../python')
+  sys.path.append('../python/lib')
+  import dbsException
+  import dbsApi
+  import dbsWsClient
+  import dbsWsApi
 #
- import dbsMonteCarloDescription
- import dbsPrimaryDataset
- import dbsProcessedDataset
- import dbsProcessingPath
- import dbsEventCollection
- import dbsApplication
- import dbsFile
- import dbsFileBlock
+  import dbsMonteCarloDescription
+  import dbsPrimaryDataset
+  import dbsProcessedDataset
+  import dbsProcessingPath
+  import dbsEventCollection
+  import dbsApplication
+  import dbsFile
+  import dbsFileBlock
 except:
   msg="ERROR no DBS API available"
-  
+  print msg  
 
 ##############################################################################
 
@@ -42,7 +43,8 @@ except:
 def usage():
   clientName = os.path.basename(sys.argv[0])
   print "Usage:"
-  print "  %s --dim=<dimensionsString> --wsdl=<url> --nCalls=<number of calls> [--verbose]" % clientName
+  print "  %s --dspath=<datasetPath> --n-calls=<number of calls> [--verbose]" % clientName
+  print "ex:  wsLoadTest.py --dspath=/sw04_Anzar/DST/sw_DST813_2_g133_OSC --n-calls=1"
 ##############################################################################
 # Web service implementation of the DBS API class. Exceptions are defined
 # in dbsApi module.
@@ -59,8 +61,8 @@ if __name__ == "__main__":
     arg = string.split(a, "=")
     if arg[0] == "--dspath":
       datasetPath = arg[1]
-    #elif arg[0] == "--wsdl":
-    #  wsdl = arg[1]
+    elif arg[0] == "--wsdl":
+      wsdl = arg[1]
     elif arg[0] == "--verbose":
       debug = 1
     elif arg[0] == "--n-calls":
@@ -87,7 +89,7 @@ if __name__ == "__main__":
       # Get dataset contents. It returns list of file blocks, each
       # file block containing a set of event collections.
       if debug: print "Getting dataset contents for: %s" % datasetPath
-      fileBlockList = api.getDatasetContents(datasetPath,True)
+      fileBlockList = api.getDatasetContents(datasetPath,False)
       t2 = time.time()
       deltaT = t2-t1
       if deltaT < minDeltaT:
