@@ -189,11 +189,11 @@ int DBManagement::rollback() {
 
 
 void DBManagement::close() {
-	cout<<"calling DBManagement::close()"<<endl;
+	//cout<<"calling DBManagement::close()"<<endl;
 	SQLDisconnect(connHandle);
-	cout<<"calling between DBManagement::close()"<<endl;
+	//cout<<"calling between DBManagement::close()"<<endl;
 	freeEnvConHandle();
-	cout<<"DONE calling DBManagement::close()"<<endl;
+	//cout<<"DONE calling DBManagement::close()"<<endl;
 }
 
 void DBManagement::runGenericQuery(string sql) {

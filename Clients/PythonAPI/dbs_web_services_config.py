@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbs_web_services_config.py,v 1.20 2006/02/14 19:43:15 afaq Exp $
+# $Id: dbs_web_services_config.py,v 1.21 2006/02/15 05:13:06 afaq Exp $
 #
 # Config manager class. 
 #
@@ -14,8 +14,8 @@ ServerConfigDict_ = {
   # Host.
   #"Host" : "localhost.localdomain",
 
-  "Host" : "cmslcgco01.cern.ch",
-  #"Host" : "venom.fnal.gov",
+  #"Host" : "cmslcgco01.cern.ch",
+  "Host" : "venom.fnal.gov",
   #"Host" : "cmssrv22.fnal.gov",
   # Port.
   "Port" : 27980,

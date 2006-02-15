@@ -426,8 +426,8 @@ xmlns="http://schemas.xmlsoap.org/wsdl/">
     <port name="DbsDatasetPort" binding="tns:DbsDatasetBinding">
       <!--soap:address location="http://venom.fnal.gov:27985"/-->
       <!--soap:address location="http://cmslcgco01.cern.ch:27983"/-->
-      <!--soap:address location="http://venom.fnal.gov:27985"/-->
-      <soap:address location="http://cmslcgco01.cern.ch:27980"/>
+      <soap:address location="http://venom.fnal.gov:27980"/>
+      <!--soap:address location="http://cmslcgco01.cern.ch:27980"/-->
     </port>
   </service>
 

@@ -44,7 +44,7 @@ int Manager::doInsert(TableInterface* inTable) {
 	// This function actuallly performs the insert operation for the child managers.
 	dbManager->beginTransection();
 	try {
-		cout<<"calling insert for inTable on Manager"<<endl;
+		//cout<<"calling insert for inTable on Manager"<<endl;
 		inTable->insert();
 		dbManager->commit();
 	} catch (ObjectLayerException &e)  {
@@ -74,7 +74,7 @@ string Manager::makeClause(TableInterface* inTable, RowInterface* aRow) {
 }
 
 void Manager::cleanup() {
-	cout<<"Manager::cleanup() DELETING dbManager"<<endl;
+	//cout<<"Manager::cleanup() DELETING dbManager"<<endl;
         this->dbManager->close();
         delete this->dbManager;
 }

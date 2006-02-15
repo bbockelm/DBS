@@ -156,7 +156,7 @@ class DBSInterface(dbsApi.DbsApi):
         table = dbsclient.ProcessingpathMultiTable()
         self.getProcessedDataset(processedDataset, table)
         proDsId = 0
-        print "table.getNoOfRows ",table.getNoOfRows
+        print "table.getNoOfRows ",table.getNoOfRows()
         if table.getNoOfRows() > 0:
           if table.getNoOfRows() > 1:
               print "More than one Processed Dataset found"
