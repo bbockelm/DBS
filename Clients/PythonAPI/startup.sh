@@ -1,6 +1,7 @@
 #!/bin/sh
-rm -f SERVER.log
-python dbsWebServices.py --config-file=dbs_web_services_config |tee SERVER.log &
+#rm -f SERVER.log
+#python dbsWebServices.py --config-file=dbs_web_services_config |tee SERVER.log &
+python dbsWebServices.py --config-file=dbs_web_services_config  &
 if [ $? -eq 0 ]; then
    echo "DBS SERVER STARTED"
 else
