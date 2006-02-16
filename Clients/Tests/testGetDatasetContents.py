@@ -6,12 +6,12 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
 
   def __init__(self):
     testCaseInterface.testCaseInterface.__init__(self)
-    #self.addTestCase(self.getDatasetContents)
-    self.addTestCase(self.getDatasetContentsWithFiles)
+    self.addTestCase(self.getDatasetContents)
+    #self.addTestCase(self.getDatasetContentsWithFiles)
 
     #self.datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
-    #self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
-    self.datasetPath = "/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133"
+    self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+    #self.datasetPath = "/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133"
 
   def getDatasetContents(self):
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetContents")
