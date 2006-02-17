@@ -133,6 +133,7 @@ class createMultiTableViewObjects :
         self.multiTableViewObjects.append(self.ProcessingPath)
 
 
+        """
         # View that describes the Parentage Relation of a EvColl.
         self.CrabEvCollView= multiRowRepresentation("CrabEvCollView", self.fkExclusionAttributes)
         self.CrabEvCollView.addSchema(self.allSchemas['t_event_collection'])
@@ -152,7 +153,27 @@ class createMultiTableViewObjects :
         self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
         self.CrabEvCollView.addCondition('t_evcoll_file.evcoll = t_event_collection.id')
         self.CrabEvCollView.addCondition('t_evcoll_file.fileid = t_file.id')
-        self.CrabEvCollView.addCondition('t_file.inblock = t_block.id')  
+        self.CrabEvCollView.addCondition('t_file.inblock = t_block.id')
+        self.multiTableViewObjects.append(self.CrabEvCollView)
+        """
+
+
+
+        # View that describes the Parentage Relation of a EvColl.
+        self.CrabEvCollView= multiRowRepresentation("CrabEvCollView", self.fkExclusionAttributes)
+        self.CrabEvCollView.addSchema(self.allSchemas['t_event_collection'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_processed_dataset'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_processing_path'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_data_tier'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_primary_dataset'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_block'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_info_evcoll'])
+        self.CrabEvCollView.addCondition('t_processing_path.data_tier = t_data_tier.id')
+        self.CrabEvCollView.addCondition('t_processed_dataset.processing_path = t_processing_path.id')
+        self.CrabEvCollView.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
+        self.CrabEvCollView.addCondition('t_event_collection.processed_dataset = t_processed_dataset.id')
+        self.CrabEvCollView.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
+        self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
         self.multiTableViewObjects.append(self.CrabEvCollView)
 
 

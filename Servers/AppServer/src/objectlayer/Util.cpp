@@ -51,20 +51,21 @@ string Util::eraseEndChars(string data, int howMany) {
 }
 
 Dictionary_iter Util::getMappedValue(string key,Dictionary_iter b, Dictionary_iter e) {
+	
 	Dictionary_iter mapIterator;
 	for(mapIterator = b; mapIterator != e; mapIterator++) {
 		//if( toUpper(name) == toUpper(key) ) {
 		if( mapIterator->first == key ) {
 			return(mapIterator);
 		}
-		int nameLen = (mapIterator->first).length();
+		/*int nameLen = (mapIterator->first).length();
 		int keyLen = key.length();
 		if( (keyLen < nameLen) && ( keyLen == 63 ) ) {
 			//if( toUpper(name.substr(0,keyLen)) == toUpper(key) ) {
 			if( (mapIterator->first).substr(0,keyLen) == key ) {
       				return(mapIterator);
 			}
-		}
+		}*/
 	}
 	return(mapIterator);
 }
@@ -72,7 +73,8 @@ Dictionary_iter Util::getMappedValue(string key,Dictionary_iter b, Dictionary_it
 
 //string Util::getDataType(string key, Dictionary_iter bs, Dictionary_iter es) {
 string Util::getDataType(string key) {
-	Dictionary_iter retIterator = this->getMappedValue(key, schema->begin(), schema->end());
+	Dictionary_iter retIterator = schema->find(key);
+	//Dictionary_iter retIterator = this->getMappedValue(key, schema->begin(), schema->end());
 	return  retIterator == schema->end() ? "" : retIterator->second ;
 } 
  

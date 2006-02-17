@@ -8,7 +8,8 @@ import dbsEventCollection
 import dbsFileBlock
 import dbsFile
 import dbsMonteCarloDescription
-
+import datetime
+import time
 from dbsDataset import * 
 
 class DBSInterface(dbsApi.DbsApi):
@@ -508,7 +509,8 @@ class DBSInterface(dbsApi.DbsApi):
          * Take pathName of form /PriDS/DT/ProcDS as input
          * For now dumps information on screen.
       """
-
+      if listFiles:
+         raise dbsApi.DbsApiException(args="Not Implemented to list files")
       fileBlockList = []
       # get the names of primary dataset, data tier and processed dataset
       print "Inside getDatasetContents,  PathName is ", pathName
@@ -529,7 +531,6 @@ class DBSInterface(dbsApi.DbsApi):
         self.setStrValue(aRow, "t_processed_dataset.name", processedDSName)
         
         self.client.readCrabEC(aRow, table)
-
         nrow = table.getNoOfRows()
         EvFileMap = {} 
         #print "*******************************\n\n\nnrow:::::", nrow
@@ -540,7 +541,6 @@ class DBSInterface(dbsApi.DbsApi):
            indx = 0
            while indx < nrow :
               #print "\n<<<<<<<<<<<<<<<<<indx:::>>>>>>>>>>>>>>>>>>>", indx
-              guid = self.getStrValue(table, "t_file.guid", indx)
               blockId = self.getStrValue(table, "t_block.id", indx)
               #print "blockId", blockId
               evcollName = self.getStrValue(table, "t_info_evcoll.name", indx)
@@ -565,6 +565,7 @@ class DBSInterface(dbsApi.DbsApi):
                 logicalFileName = self.getStrValue(table, "t_file.logical_name", indx)
                 #fileType = self.getStrValue(table, "t_file_type.name", indx)
                 fileBlockId = self.getStrValue(table, "t_file.inblock", indx)
+                guid = self.getStrValue(table, "t_file.guid", indx)
                 fileSize = "1234" 
                 #fileSize = self.getStrValue(table, "t_file.filesize", indx)
                 #print "logicalFileName, fileBlockId, fileSize", logicalFileName, fileBlockId, fileSize
@@ -813,10 +814,10 @@ class DBSInterface(dbsApi.DbsApi):
 
 if __name__ == "__main__" :
    
-   while(1) :
+   #while(1) :
        mycrab = DBSInterface()
        #mycrab.getDatasetContents("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS")
- 
+       """
        dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ThisIsATestDataset")
        primaryDatasetId = mycrab.createPrimaryDataset(dataset)
        print "Got primary dataset id: %s" % primaryDatasetId
@@ -867,10 +868,18 @@ if __name__ == "__main__" :
        ecList = dbsEventCollection.DbsEventCollectionList([ec])
        print "Inserting event collections for: %s" % dataset.getDatasetName()
        mycrab.insertEventCollections(dataset, ecList)
+       """
+       startTime = time.mktime(datetime.datetime.now().timetuple())
+       try:
+          #mycrab.getDatasetContents("/ThisIsATestDataset/Digi/ThisIsATestProcDataset", True)
+          mycrab.getDatasetContents("/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC" )
+       except dbsApi.DbsApiException,e:
+          print e
+       endTime = time.mktime(datetime.datetime.now().timetuple())
+       timeDiff = endTime - startTime
+       print "TIME ELAPSED ",timeDiff
 
-
-       mycrab.getDatasetContents("/ThisIsATestDataset/Digi/ThisIsATestProcDataset", True)
-
+      
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133")
    #mycrab.getDatasetContents("/jm03b_qcd_80_120/Hit/jm_Hit245_2_g133") 
    #mycrab.getDatasetProvenance("/bt03_gg_bbh200_2taujmu/DST/bt_DST8713_2x1033PU_g133_CMS", \

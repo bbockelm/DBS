@@ -142,10 +142,13 @@ Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) 
 template <class R>
 void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
   //cout << "Entering convertIntoRow\n"<<endl;
-  Dictionary satisfiedRefrences = this->getSatisfiedRefrences(rs,rowIndex);
-  for(int colIndex = 0; colIndex < rs->getNoOfCols(); ++colIndex) {
-    string name = rs->getColName(colIndex);
-		if( name.length() == 63 ) {
+  //NOTE NOTE NOTE
+  //COMMENTING Satisfied refrences beacus ether are no MultiRefrences in schema.
+  // UNcomment them if you multi refrences come back
+  //Dictionary satisfiedRefrences = this->getSatisfiedRefrences(rs,rowIndex);
+	for(int colIndex = 0; colIndex < rs->getNoOfCols(); ++colIndex) {
+		string name = rs->getColName(colIndex);
+		/*if( name.length() == 63 ) {
 		  for(Dictionary_iter schemaIterator = schema->begin(); 
 		      schemaIterator != schema->end(); schemaIterator++) {
 		    string nameFromSchema = schemaIterator->first;
@@ -155,25 +158,16 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
 				}
 		  }
 		}
-		//if(!toSetCol(name,satisfiedRefrences)) {
-		//cout<<"toSetCol "<<endl;
 		if(!util.toSetCol(name, satisfiedRefrences.begin(), satisfiedRefrences.end())) {
-			//cout<<"toSetCol returned false for "<<name<<endl;
 		  continue;
-		} 
-		//cout<<"trying to fetch value from ResultSet"<<endl;
-		string value = rs->getElement(rowIndex,colIndex);
+		} */
+		string value = rs->getElement(rowIndex, colIndex);
 		if(value.length() == 0) { 
-			//cout<<"continuing bacuse value is nothing"<<endl;
-		  continue;
+			continue;
 		}
-		//cout<<"value is "<<value<<endl;
 		string dataType = util.getDataType(name);
-		//cout<<"dataType "<<dataType;
 		util.setValue(tmpRow, name, dataType, value);
-		//cout<<"after setvalue"<<endl;
-  }
-  //cout<<"returnning tmpRow"<<endl;
+	}
 }
 
 template <class R>
@@ -320,6 +314,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 			//}
 		}
 		delete rs;
+		LOG4CXX_DEBUG(TableTemplate::logger,"ROWS BUILD SUCCESFULLY");
 		//rowIterator = rows.begin();
 	} catch (ObjectLayerException &e) {
 		exceptionOccured = true;
@@ -593,6 +588,8 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 	aRow->setValue(tableName+".created_by",&value);
 	aRow->setValue(tableName+".modified_by",&value);
 }
+
+
 
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbs_web_services_config.py,v 1.21 2006/02/15 05:13:06 afaq Exp $
+# $Id: dbs_web_services_config.py,v 1.22 2006/02/15 17:07:06 sekhri Exp $
 #
 # Config manager class. 
 #
@@ -14,11 +14,11 @@ ServerConfigDict_ = {
   # Host.
   #"Host" : "localhost.localdomain",
 
-  #"Host" : "cmslcgco01.cern.ch",
-  "Host" : "venom.fnal.gov",
+  "Host" : "cmslcgco01.cern.ch",
+  #"Host" : "venom.fnal.gov",
   #"Host" : "cmssrv22.fnal.gov",
   # Port.
-  "Port" : 27980,
+  "Port" : 27985,
   
   # Setting this to 1 will turn on soap messages.
   "SoapDebugFlag" : 0,
