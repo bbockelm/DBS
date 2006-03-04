@@ -378,12 +378,12 @@ sub getDatasetFiles
     foreach my $block (@$blocks)
     {
       $out .= "    <block id='$$block{ID}' name='$pathname#$$block{ID}'";
-      $out .= " files='$$block{FILES}' bytes='$$block{BYTES}'>\n";
-      foreach my $file (@{$$block{FILES}})
+      $out .= " files='$$block{TOTAL_FILES}' bytes='$$block{TOTAL_BYTES}'>\n";
+      foreach my $file (values %{$$block{FILES}})
       {
 	$out .= "      <file id='$$file{ID}' inblock='$$file{INBLOCK}'";
-        $out .= " guid='$$file{GUID}' lfn='$$file{LOGICAL_NAME}";
-        $out .= " checksum='$$file{CHECKSUM}' size='$$file{FILESIZE}";
+        $out .= " guid='$$file{GUID}' lfn='$$file{LOGICAL_NAME}'";
+        $out .= " checksum='$$file{CHECKSUM}' size='$$file{FILESIZE}'";
         $out .= " status='@{[$$file{STATUS} || '']}' type='$$file{TYPE}'/>\n";
       }
       $out .= "    </block>\n";
@@ -438,7 +438,7 @@ sub datasetContents
 {
   my ($dbs, $id) = @_;
   my $blocks = &dbexec ($dbs->{DBH}, qq{
-    select id, status, files, bytes from t_block
+    select id, status, files total_files, bytes total_bytes from t_block
     where processed_dataset = :id}, ":id" => $id)
     ->fetchall_arrayref({});
 
@@ -483,8 +483,8 @@ sub datasetContents
   {
     my $block = $id2block{$$file{INBLOCK}};
     my $evcoll = $id2evcoll{$$file{EVCOLL}};
-    push(@{$$block{FILES}}, $file);
     push(@{$$evcoll{FILES}}, $file);
+    $$block{FILES}{$$file{ID}} = $file;
     $$block{EVCS}{$$file{EVCOLL}} = $evcoll;
   }
 
