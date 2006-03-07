@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+
+# Setup environment for dbsxml at Apache server startup with mod_perl.
+
+# use Apache2 ();   # <-- only for mod_perl 1.99!
+# use ModPerl::MethodLookup ();
+# ModPerl::MethodLookup::preload_all_modules ();
+use ModPerl::Util ();
+use Apache2::RequestRec ();
+use Apache2::RequestIO ();
+use Apache2::RequestUtil ();
+use Apache2::ServerRec ();
+use Apache2::ServerUtil ();
+use Apache2::Connection ();
+use Apache2::Log ();
+use APR::Table ();
+use ModPerl::Registry ();
+use Apache2::Const -compile => ':common';
+use APR::Const -compile => ':common';
+
+BEGIN {
+  use strict; use warnings; $^W=1; use Config;
+  if ($Config{archname} =~ /solaris/) {
+    unshift (@INC, "/afs/cern.ch/cms/aprom/DBS/ToolsForCMSDOC/perl-modules/lib");
+    unshift (@INC, "/afs/cern.ch/cms/aprom/DBS/ToolsForCMSDOC/perl-modules/lib/$Config{archname}");
+  } else {
+    unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/Tools/perl-modules/lib");
+    unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/Tools/perl-modules/lib/$Config{archname}");
+  }
+  unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/PHEDEX/Toolkit/Common");
+}
+
+use CGI ();
+CGI->compile(':all');
+use Apache::DBI ();
+use DBD::Oracle ();
+
+1;

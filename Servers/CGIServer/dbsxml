@@ -37,19 +37,28 @@
 # scripts since they are for bourne shell.  Just hardcode minimal set.
 
 BEGIN {
-  use strict; use warnings; $^W=1;
-  use Config;
-  $ENV{ORACLE_HOME}     = "/afs/cern.ch/cms/aprom/phedex/Tools";
-  $ENV{ORACLE_HOME}     = "/afs/cern.ch/project/oracle/\@sys/10201";
-  $ENV{TNS_ADMIN}       = "$ENV{ORACLE_HOME}/admin";
-  $ENV{TNS_ADMIN}       = "/afs/cern.ch/project/oracle/admin";
-  $ENV{LD_LIBRARY_PATH} = "$ENV{ORACLE_HOME}/lib";
-  unshift(@INC, "$ENV{ORACLE_HOME}/perl-modules/$Config{archname}");
-  unshift(@INC, "$ENV{ORACLE_HOME}/perl-modules");
-  unshift(@INC, "/afs/cern.ch/cms/aprom/phedex/PHEDEX/Toolkit/Common");
+  if (! $ENV{MOD_PERL})
+  {
+    use strict; use warnings; $^W=1; use Config;
+    if (! $ENV{TNS_ADMIN} || ! $ENV{ORACLE_HOME}) {
+      $ENV{TNS_ADMIN} = "/afs/cern.ch/project/oracle/admin";
+      $ENV{ORACLE_HOME} = "/afs/cern.ch/project/oracle/\@sys/9203";
+      $ENV{LD_LIBRARY_PATH} = "/afs/cern.ch/project/oracle/\@sys/9203/lib";
+      exec { $0 } $0, @ARGV or die "cannot reset environment\n";
+    }
+
+    if ($Config{archname} =~ /solaris/) {
+      unshift(@INC, "/afs/cern.ch/cms/aprom/DBS/ToolsForCMSDOC/perl-modules/lib/$Config{archname}");
+      unshift(@INC, "/afs/cern.ch/cms/aprom/DBS/ToolsForCMSDOC/perl-modules/lib");
+    } else {
+      unshift(@INC, "/afs/cern.ch/cms/aprom/phedex/Tools/perl-modules/lib/$Config{archname}");
+      unshift(@INC, "/afs/cern.ch/cms/aprom/phedex/Tools/perl-modules/lib");
+    }
+    unshift(@INC, "/afs/cern.ch/cms/aprom/phedex/PHEDEX/Toolkit/Common");
+  } 
 }
 
-use CGI 'header', 'param';
+use CGI qw(header param);
 use UtilsDBS;
 use UtilsDB;
 
