@@ -43,6 +43,22 @@ echo "Configuration file $DBSDependDir/etc/odbcinst.ini"
 echo "Configuration file $DBSDependDir/etc/odbc.ini"
 
 
+
+./InstallGSOAP.sh $1
+if [ $? != 0 ]; then
+        exit 1
+fi
+
+export GSOAPHOME=$DBSDependDir/gSOAP
+
+
+./InstallWSDL2PY.sh
+if [ $? != 0 ]; then
+        exit 1
+fi
+export WSDL2PYHOME=$DBSDependDir/wsdl2py
+
+
 echo "Generating Example odbcint.ini........"
 cat > "$ODBCHOME/etc/odbcinst.ini.example" <<EOF
 [oracle]
@@ -67,21 +83,7 @@ USER            = cms_dbs_reader
 PASSWORD        = xxxxxxxxxxxxx
 EOF
 
-cd ..
+./GenSetup.sh $1
 
-echo "Generating example setup_dbs.sh"
-cat > "setup_dbs.sh" <<EOF
-export LOG4CXX=$DBSDependDir/log4cxx
-export ODBCHOME=$DBSDependDir/unixODBC
-export ORACLE_ODBC_HOME=$DBSDependDir/oracleodbcinstall
-export DBSHOME=$PWD
-export ORACLE_HOME=$ORACLE_HOME
-export SWIG_HOME=$SWIG_HOME
-export LD_LIBRARY_PATH=\$ODBCHOME/lib:\$LOG4CXX/lib:\$ORACLE_HOME/lib:\$ORACLE_ODBC_HOME/lib:\$LD_LIBRARY_PATH
-export PYTHONINCLUDE=/usr/include/python2.3/
-export DBSCONFIG=\$DBSHOME/etc/server.conf
-export PATH=$SWIG_HOME/bin:$PATH
-echo "Check Proper swig version (1.3.27 or later) added to path and proper python include to PYTHONINCLUDE"
-echo "ADD To PYTHONPATH DMS/DBS/prototypes/proto_0/python"
-EOF
+mv setup_dbs.sh ..
 

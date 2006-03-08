@@ -633,6 +633,12 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 
 
 
+
+
+
+
+
+
 template TableTemplate<T_Personrow>;
 template TableTemplate<T_Object_Historyrow>;
 template TableTemplate<T_App_Familyrow>;

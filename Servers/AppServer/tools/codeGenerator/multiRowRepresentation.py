@@ -4,8 +4,6 @@ import string
 from ViewObjectLayer import MultiSchema 
 from rowRepresentation import rowRepresentation
 
-
-import pdb
 class multiRowRepresentation(MultiSchema, rowRepresentation) :
    
    def __init__(self, multitablename, infkExcl = []) :
@@ -421,6 +419,48 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       output +='\n}'
       return output
 
+   def writeManagerDef(self):
+      """writes the Header file entry for the Manager"""
+      managerName = self.multitablename + 'Manager'
+      output = "\n\n/************** Manager for "+managerName+"*********************/\n"
+      rowName = self.className()
+      tabelName = self.multitablename.title() + 'MultiTable'
+      output += '\nclass '+managerName+' : public Manager {\n' 
+      output += '\npublic:\n'
+      output += '\n        '+managerName+'();'
+      output += '\n        ~'+managerName+'();'
+      output += '\n        int write(std::vector<'+rowName+'*> rowVector, '+tabelName+'* table);'
+      output += '\n        int read('+rowName+'* aRow, '+tabelName+'* table);\n'
+      output += '};\n\n'
+      return output
+
+   def writeManagerImpl(self, pkVar):
+      """writes Manager Code Implementation as a string"""
+      managerName = self.multitablename + 'Manager'
+      output = "\n\n/************** Manager for "+managerName+"*********************/\n"
+      rowName = self.className()
+      tabelName = self.multitablename.title() + 'MultiTable'
+      output += managerName+'::'+managerName+'() {\n}\n'
+      output += '\nint '+managerName+'::write(vector<'+rowName+'*> rowVector, '+tabelName+'* table) {\n'
+      output += '\n      for(int i = 0 ; i != rowVector.size(); ++i) {'
+      output += '\n         table->addRow(rowVector.at(i));\n'
+      #output += '\n         '+rowName+'* aNewRow = new '+rowName+'();\n'
+      #output += '         this->copyAndAddRow(table, rowVector.at(i), aNewRow);\n' 
+      output += '      }\n'
+      output += '      return this->doWrite((TableInterface*)table, \n                  (string)"'+pkVar+'");\n'
+      output += '}\n'
+      output += '\nint '+managerName+'::read('+rowName+'* aRow, '+tabelName+'* table) {\n'
+      output += '      table->setDBManager(dbManager);\n'
+      output += '      string clause = this->makeClause(table, aRow);\n'
+      output += '      table->select(clause);\n'
+      output += '      return 1;\n'
+      output += '}\n\n'
+      output += managerName+'::~'+managerName+'() {\n'
+      output += '      this->cleanup();\n'
+      output += '}\n' 
+
+      return output     
+
 
    def writeGetValueImpl(self):
       """Write the getValue member function for the class variables"""
@@ -535,4 +575,7 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       output +='\n}'
       #print self.FKTableMap
       return output
+
+
+
 

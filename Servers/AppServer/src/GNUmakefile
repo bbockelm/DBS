@@ -1,4 +1,4 @@
-SUBDIRS = bizlogiclayer clientlayer comlayer objectlayer common
+SUBDIRS = bizlogiclayer objectlayer common iflayer
 
 .PHONY: subdirs $(SUBDIRS)
 
@@ -8,7 +8,7 @@ $(SUBDIRS):
 	$(MAKE) -C $@
 
 clean:
-	for d in bizlogiclayer clientlayer comlayer objectlayer common; do (cd $$d; $(MAKE) clean ;) done
+	for d in bizlogiclayer objectlayer common iflayer; do (cd $$d; $(MAKE) clean ;) done
 
 
 

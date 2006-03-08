@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope
+ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:DBS="http://tempuri.org/DBS.xsd">
+ <SOAP-ENV:Body>
+  <DBS:getDatasetFileBlocksResponse>
+   <blockList>
+    <blockId>0</blockId>
+    <blockStatusName></blockStatusName>
+    <numberOfFiles>0</numberOfFiles>
+    <numberOfBytes>0</numberOfBytes>
+    <eventCollectionList>
+     <collectionId>0</collectionId>
+     <collection-index>0</collection-index>
+     <numberOfEvents>0</numberOfEvents>
+     <collectionName></collectionName>
+     <parent>
+      <collectionId>0</collectionId>
+      <collection-index>0</collection-index>
+      <numberOfEvents>0</numberOfEvents>
+      <collectionName></collectionName>
+      <parent>
+       <collectionId>0</collectionId>
+       <collection-index>0</collection-index>
+       <numberOfEvents>0</numberOfEvents>
+       <collectionName></collectionName>
+       <parent>
+        <collectionId>0</collectionId>
+        <collection-index>0</collection-index>
+        <numberOfEvents>0</numberOfEvents>
+        <collectionName></collectionName>
+        <parent>
+         <collectionId>0</collectionId>
+         <collection-index>0</collection-index>
+         <numberOfEvents>0</numberOfEvents>
+         <collectionName></collectionName>
+         <parent>
+          <collectionId xsi:nil="true"></collectionId>
+          <collection-index xsi:nil="true"></collection-index>
+          <numberOfEvents xsi:nil="true"></numberOfEvents>
+          <collectionName></collectionName>
+          <parent xsi:nil="true"></parent>
+          <parentageType></parentageType>
+          <fileList></fileList>
+         </parent>
+         <parentageType></parentageType>
+         <fileList>
+          <id xsi:nil="true"></id>
+          <guid></guid>
+          <logical-name></logical-name>
+          <checksum></checksum>
+          <filesize xsi:nil="true"></filesize>
+          <status></status>
+          <type></type>
+          <inblock xsi:nil="true"></inblock>
+         </fileList>
+        </parent>
+        <parentageType></parentageType>
+        <fileList>
+         <id>0</id>
+         <guid></guid>
+         <logical-name></logical-name>
+         <checksum></checksum>
+         <filesize>0</filesize>
+         <status></status>
+         <type></type>
+         <inblock>0</inblock>
+        </fileList>
+       </parent>
+       <parentageType></parentageType>
+       <fileList>
+        <id>0</id>
+        <guid></guid>
+        <logical-name></logical-name>
+        <checksum></checksum>
+        <filesize>0</filesize>
+        <status></status>
+        <type></type>
+        <inblock>0</inblock>
+       </fileList>
+      </parent>
+      <parentageType></parentageType>
+      <fileList>
+       <id>0</id>
+       <guid></guid>
+       <logical-name></logical-name>
+       <checksum></checksum>
+       <filesize>0</filesize>
+       <status></status>
+       <type></type>
+       <inblock>0</inblock>
+      </fileList>
+     </parent>
+     <parentageType></parentageType>
+     <fileList>
+      <id>0</id>
+      <guid></guid>
+      <logical-name></logical-name>
+      <checksum></checksum>
+      <filesize>0</filesize>
+      <status></status>
+      <type></type>
+      <inblock>0</inblock>
+     </fileList>
+    </eventCollectionList>
+   </blockList>
+  </DBS:getDatasetFileBlocksResponse>
+ </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

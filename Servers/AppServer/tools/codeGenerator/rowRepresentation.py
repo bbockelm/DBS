@@ -27,6 +27,9 @@ class aRow :
       self.rownschemabinding =""
       # Name of the table for which this row is being created.
       self.tablename = name
+
+   def getPrimaryKeys (self):
+      return self.primarykeys 
    
    def getSchema(self):
       return self.schema
@@ -241,4 +244,13 @@ class rowRepresentation(aRow) :
    def forTableInterface(self):
       stint = "\ntemplate SingleTableInterface<"+self.className()+">;"
       return stint
+
+
+   def writeManagerImpl(self, pkVar):
+      """ Does nothing for SingleTable"""
+      return ""
+ 
+   def writeManagerDef(self):
+      """ Does nothing for SingleTable"""
+      return ""
 

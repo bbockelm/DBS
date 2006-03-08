@@ -23,7 +23,7 @@ class processSQL :
    """
    def __init__(self, sqlfilename) :
       """Constructor takes a sql file name as input"""
-      file = file=open(sqlfilename,'r')
+      file = open(sqlfilename,'r')
       self.alllines=file.readlines()
       file.close()
 
@@ -44,20 +44,9 @@ class processSQL :
        try:
          #print line
          line = line.strip()
-         if line.startswith('/*') and line.find('*/') != -1 :
-            #pdb.set_trace()
+         if line.startswith('/*')and line.find('*/') != -1 :
             after=line.find('*/')+2 
             line=line[after:].strip()
-
-         if line.find('/*') != -1 :
-            #pdb.set_trace()
-            indxb4comment=line.find('/*')
-            lineb4comment=line[:indxb4comment]
-            indxbAftercomment=line.find('*/')+2
-            lineAftercomment=line[indxbAftercomment:]
-            line=lineb4comment+' '+lineAftercomment
-            #print line
-
          if line.find("create sequence") != -1 :
             continue 
          if line == "":
@@ -197,15 +186,13 @@ class processSQL :
          #   newCurrentClass.uniquekeys.append(uniq)
          #   continue
          if line.find(');') != -1 :
-            #pdb.set_trace() 
-            line = line.split(');')[0]
+            line = line.split(')')[0]
             if (line.strip() != '') :
                self.readParam(line, newCurrentClass)
             self.cppClasses.append(newCurrentClass)
             continue
          self.readParam(line, newCurrentClass)
        except:
-         #pdb.set_trace()
          print formatExceptionInfo()
          if line.find('/*') != -1 or line.find('*/') != -1 :
             print "SERIOUS WARNING: A Comment Line found cannount parse" 

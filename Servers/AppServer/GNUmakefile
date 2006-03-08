@@ -1,8 +1,8 @@
 export CC=g++
 export CFLAG=-c
 export CFLAGS=-Wno-deprecated -Wno-implicit
-export INCLUDE=-I$(ODBCHOME)/include/ -I$(LOG4CXX)/include/ -I$(DBSHOME)/include/
-export LDFLAGS=-L$(ODBCHOME)/lib/ -lodbc -L$(LOG4CXX)/lib/ -llog4cxx 
+export INCLUDE=-I$(ODBCHOME)/include/ -I$(LOG4CXX)/include/ -I$(DBSHOME)/include/ -I$(GSOAPHOME)/include
+export LDFLAGS=-L$(ODBCHOME)/lib/ -lodbc -L$(LOG4CXX)/lib/  -llog4cxx -L$(GSOAPHOME)/lib 
 export PYINCLUDE= -I$(PYTHONINCLUDE)
 export SWIG=$(SWIG_HOME)/bin/swig
 #export SWIG=/home/sekhri/swig/bin/swig
@@ -11,7 +11,8 @@ export SWIG=$(SWIG_HOME)/bin/swig
 	$(DBSHOME)/src/objectlayer $(DBSHOME)/src/common/conf $(DBSHOME)/src/common/db $(DBSHOME)/src/common/log
 #export ALLOBJS := $(foreach dir,$(dirs),$(wildcard $(dir)/*.o))
 
-all: cppsource swiginterface
+#all: cppsource swiginterface
+all: cppsource
 
 cppsource:
 	cd src; $(MAKE) all

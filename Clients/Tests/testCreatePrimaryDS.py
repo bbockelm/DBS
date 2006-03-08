@@ -1,5 +1,5 @@
 import dbsException
-import dbsPrimaryDataset
+from dbsClientDatastructures import DbsPrimaryDataset
 import testCaseInterface
 # Unit testing.
 
@@ -17,7 +17,7 @@ class testCreatePrimaryDS(testCaseInterface.testCaseInterface) :
 
     try:
 
-       dataset = dbsPrimaryDataset.DbsPrimaryDataset(datasetName="ThisIsATestDataset")
+       dataset = DbsPrimaryDataset(name="ThisIsATestDataset")
 
        primaryDatasetId = self.api.createPrimaryDataset(dataset)
        print "Got primary dataset id: %s" % primaryDatasetId

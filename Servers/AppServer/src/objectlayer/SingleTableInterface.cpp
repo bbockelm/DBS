@@ -127,6 +127,12 @@ void SingleTableInterface<R>::delRows() {
 
 
 
+
+
+
+
+
+
 template SingleTableInterface<T_Personrow>;
 template SingleTableInterface<T_Object_Historyrow>;
 template SingleTableInterface<T_App_Familyrow>;

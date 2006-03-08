@@ -51,6 +51,7 @@ int Manager::doInsert(TableInterface* inTable) {
 		//cout<<"Rolling back the whole transection"<<endl;
 		LOG4CXX_DEBUG(logger,"Rolling back the whole transection");
 		dbManager->rollback();
+		cout<<"TJust befroe throw    "<<endl;
 		throw BizLayerException(e.report());
 	}
 	dbManager->endTransection();

@@ -40,53 +40,54 @@ protected:
 	void copyAndAddRow(TableInterface* table, RowInterface* aRow, RowInterface* aNewRow);
 };
 
-
-class PrimaryDatasetManager : public Manager {
+//class PrimaryDatasetAPIManager : public Manager {
+class PrimaryDatasetAPIManager  {
 public:
-	PrimaryDatasetManager();
+	PrimaryDatasetAPIManager();
 	int write(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table);
+	//int write(std::vector<Primarydatasetmultirow*> rowVector, PrimarydatasetMultiTable* table);
 	int read(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table);
-	~PrimaryDatasetManager();
+	~PrimaryDatasetAPIManager();
 
 };
 
+/*
 class ProcessedDatasetManager : public Manager {
 public:
 	ProcessedDatasetManager();
-	int write(Processingpathmultirow* aRow, ProcessingpathMultiTable* table);
+	int write(std::vector<Processingpathmultirow*> rowVector, ProcessingpathMultiTable* table);
 	int read(Processingpathmultirow* aRow, ProcessingpathMultiTable* table);
 	~ProcessedDatasetManager();  
 };
 
-class ECManager : public Manager {
+class EvCollViewManager: public Manager {
 public:
-	ECManager();
-	int write(Evcollviewmultirow* aRow, EvcollviewMultiTable* table);
+	EvCollViewManager();
+	int write(std::vector<Evcollviewmultirow*> rowVector, EvcollviewMultiTable* table);
 	int read(Evcollviewmultirow* aRow, EvcollviewMultiTable* table);
-	~ECManager();  
+	~EvCollViewManager();  
 };
 
-class FileManager : public Manager {
+class FileViewManager: public Manager {
 public:
-	FileManager();
+	FileViewManager();
 	int write(std::vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table);
 	int read(Fileviewmultirow* aRow, FileviewMultiTable* table);
-	~FileManager();  
+	~FileViewManager();  
 };
 
 class BlockManager : public Manager {
 public:
 	BlockManager();
-	int write(Blockviewmultirow* aRow, BlockviewMultiTable* table);
+	int write(std::vector<Blockviewmultirow*> rowVector, BlockviewMultiTable* table);
 	int read(Blockviewmultirow* aRow, BlockviewMultiTable* table);
 	~BlockManager();  
 };
 
-
-class PdblockManager : public Manager {
+class PDBlockViewManager: public Manager {
 public:
-	PdblockManager();
-	int write(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table);
+	PDBlockViewManager();
+	int write(std::vector<Pdblockviewmultirow*> rowVector, PdblockviewMultiTable* table);
 	int read(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table);
 	~PdblockManager();  
 };
@@ -108,13 +109,14 @@ public:
 	~DatasetProvcParentManager();  
 };
 */
-
+/*
 class CrabECManager : public Manager {
 public:
 	CrabECManager();
-	int write(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table);
+	int write(std::vector<Crabevcollviewmultirow*> rowVector, CrabevcollviewMultiTable* table);
 	int read(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table);
 	~CrabECManager();  
 };
-
+*/
 #endif
+

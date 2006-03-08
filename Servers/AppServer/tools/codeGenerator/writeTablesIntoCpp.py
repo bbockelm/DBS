@@ -25,6 +25,12 @@ class writeTablesIntoCpp :
 
        return short
 
+   def getClassByName(self, className):
+      """ Utility function returns a Class by its name """
+      for aClass in self.cppClasses :
+          if aClass.className() == className :
+             return aClass
+
    def generateNameMap(self, cppClasses, tbl=1):
       mapStrList = []
       global_unique_vars = []
@@ -293,6 +299,57 @@ class writeTablesIntoCpp :
        cppimpl.write('\n')
        cppimpl.close()
 
+   def writeManagerImpls(self, cppOutPath=os.getcwd(), \
+                cppFile = "ManagerImpls.cpp"):
+       """ call uopn writeMnagerImpl of each Multi Class and write Manager Impl """
+
+       output = '#include "Managers.hpp"'
+       output += '\n#include "ManagerImpls.hpp"'
+       output += '\n#include "Util.hpp"'
+       for eachClass in self.cppClasses:
+           if eachClass.className().find("multirow") != -1:
+
+              """
+              Find the Last table in Schema Order, its PK is the 
+              key whoes value will be returned to User by Manager
+              """
+              pkClassName = eachClass.schameOrder[len(eachClass.schameOrder)-1]
+              
+              """ This must be a single class Object """
+              pkClassName4Search = pkClassName.title()+'row'
+              pkClassObj = self.getClassByName(pkClassName4Search)
+              """ Get its PK """
+              pkVarName = pkClassObj.primarykeys[0]
+              pkVar = pkClassName+'.'+pkVarName
+              output += eachClass.writeManagerImpl(pkVar) 
+
+
+       filepath = os.path.join(cppOutPath, cppFile)
+       cppimpl = open(filepath, 'w')
+       cppimpl.writelines(output)
+       cppimpl.write('\n')
+       cppimpl.close()
+
+   def writeManagerHpp(self, hppOutPath=os.getcwd(), \
+                hppFile = "ManagerImpls.hpp"):
+       """ call uopn writeMnagerDef of each Multi Class and write Manager Header """
+       
+       output = '#ifndef _MANAGER_IMPL_H_'
+       output += '\n#define _MANAGER_IMP_H_'
+       output += '\n#include "ObjectLayerTables.hpp"'
+       output += '\n#include "TableInterface.hpp"'
+       output += '\n#include <string>'
+       output += '\n#include <log4cxx/logger.h>'
+       output += '\n#include "Managers.hpp"' 
+       for eachClass in self.cppClasses:
+           output += eachClass.writeManagerDef()
+       output += '\n#endif'
+       filepath = os.path.join(hppOutPath, hppFile)
+       hppimpl = open(filepath, 'w')
+       hppimpl.writelines(output)
+       hppimpl.write('\n')
+       hppimpl.close()
+ 
  
    def writeClientDataStructure(self, cppOutPath=os.getcwd(), \
                 cppFile = "ClientAPIData.cpp", hppOutPath=os.getcwd(),  \
@@ -449,3 +506,16 @@ class writeTablesIntoCpp :
       cppimpl.close() 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+ 
