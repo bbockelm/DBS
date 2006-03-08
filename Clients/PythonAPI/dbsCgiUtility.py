@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiUtility.py,v 1.9 2006/01/24 18:57:10 sveseli Exp $
+# $Id: dbsCgiUtility.py,v 1.11 2006/01/28 19:40:26 afanfani Exp $
 #
 # Class which uses CGI utilities to extract info from the db.
 #
@@ -265,8 +265,8 @@ if __name__ == "__main__":
     logLevel = dbsLogManager.LOG_LEVEL_ALL_
     dbsLogManager.getInstance().setLogLevel(logLevel)
 
-    datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
-    cgiUtility = DbsCgiUtility(cgiUrl="http://cern.ch/cms-dbs/cgi-bin")
+    datasetPath = "/bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
+    cgiUtility = DbsCgiUtility(cgiUrl="http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer")
 
     
     print "Getting dataset contents for: %s" % datasetPath

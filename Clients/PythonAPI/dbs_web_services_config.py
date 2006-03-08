@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbs_web_services_config.py,v 1.22 2006/02/15 17:07:06 sekhri Exp $
+# $Id: dbs_web_services_config.py,v 1.23 2006/02/17 15:45:35 sekhri Exp $
 #
 # Config manager class. 
 #
@@ -31,7 +31,7 @@ ServerConfigDict_ = {
   "ApiClassName" : "DBSInterface.DBSInterface",
 
   # API class init string.
-  #"ApiArgumentsString" : "cgiUrl='http://cern.ch/cms-dbs/cgi-bin'",
+  #"ApiArgumentsString" : "cgiUrl='http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer'",
   "ApiArgumentsString" : "",
 
   }

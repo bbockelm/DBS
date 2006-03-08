@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsUnitTest.py,v 1.2 2005/10/27 19:47:46 sveseli Exp $
+# $Id: dbsGetDatasetContentsUnitTest.py,v 1.1 2005/11/08 21:46:54 sveseli Exp $
 #
 # Base class for DBS unit tests.
 #
@@ -44,7 +44,12 @@ class DbsGetDatasetContentsUnitTest(dbsUnitTest.DbsUnitTest):
     self.getLogManager().log(what="len(fileBlockList)=%s" % len(fileBlockList),
 			     where=funcName,
 			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
-    self.failIf(len(fileBlockList) == 0)
+    self.failIf(len(fileBlockList) != 1)
+    self.getLogManager().log(what="len(fileBlockList[0].getEventCollectionList())=%s"
+		             % len(fileBlockList[0].getEventCollectionList()),
+			     where=funcName,
+			     logLevel=dbsLogManager.LOG_LEVEL_INFO_)
+    self.failIf(len(fileBlockList[0].getEventCollectionList()) != 1972)
 
 
 class DbsGetDatasetContentsInvalidDatasetPathNameUnitTest(dbsUnitTest.DbsUnitTest):
@@ -79,12 +84,12 @@ class DbsGetDatasetContentsInvalidDatasetPathNameUnitTest(dbsUnitTest.DbsUnitTes
 
 if __name__ == "__main__":
   try:
-    test = DbsGetDatasetContentsUnitTest(datasetPathName="eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC")
+    test = DbsGetDatasetContentsUnitTest(datasetPathName="/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC")
     test2 = DbsGetDatasetContentsUnitTest(datasetPathName="test_will_fail")
     test3 = DbsGetDatasetContentsInvalidDatasetPathNameUnitTest(datasetPathName="non_existing_dataset")
     test.setApi(
       apiClassName="dbsCgiApi.DbsCgiApi",
-      apiClassInitArgsString="cgiUrl='http://cern.ch/cms-dbs/cgi-bin'")
+      apiClassInitArgsString="cgiUrl='http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer'")
 
 
     suite = unittest.makeSuite(

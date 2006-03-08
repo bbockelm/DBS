@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsUnitTest.py,v 1.2 2005/11/09 21:37:59 sveseli Exp $
+# $Id: dbsUnitTest.py,v 1.3 2005/11/23 18:30:31 sveseli Exp $
 #
 # Base class for DBS unit tests.
 #
@@ -95,7 +95,7 @@ class DbsUnitTest(unittest.TestCase):
       raise DbsApiImportError(exception=ex)
 
   # Static method for setting api.
-  setApi = dbsStationMethod.DbsStaticMethod(setApi)
+  setApi = dbsStaticMethod.DbsStaticMethod(setApi)
 
   def getApi():
     """ Get API class instance. """
@@ -109,7 +109,7 @@ class DbsUnitTest(unittest.TestCase):
     return DbsUnitTest.__api
 
   # Static method for getting api.
-  getApi = dbsStationMethod.DbsStaticMethod(getApi)
+  getApi = dbsStaticMethod.DbsStaticMethod(getApi)
 
   def getApiModule():
     """ Get API class instance. """
@@ -123,14 +123,14 @@ class DbsUnitTest(unittest.TestCase):
     return DbsUnitTest.__apiModule
 
   # Static method for getting api module.
-  getApiModule = dbsStationMethod.DbsStaticMethod(getApiModule)
+  getApiModule = dbsStaticMethod.DbsStaticMethod(getApiModule)
 
   def getLogManager():
     """ Get log manager instance. """
     return DbsUnitTest.__logManager
 
   # Static method for getting api module.
-  getLogManager = dbsStationMethod.DbsStaticMethod(getLogManager)
+  getLogManager = dbsStaticMethod.DbsStaticMethod(getLogManager)
 
   def __init__(self, *args):
     """ Constructor. """
@@ -149,11 +149,11 @@ if __name__ == "__main__":
     unitTest = DbsUnitTest()
     DbsUnitTest.setApi(
       apiClassName="dbsCgiApi.DbsCgiApi",
-      apiClassInitArgsString="cgiUrl='http://cern.ch/cms-dbs/cgi-bin'")
+      apiClassInitArgsString="cgiUrl='http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer'")
     api = DbsUnitTest.getApi()
     apiModule = DbsUnitTest.getApiModule()
     print "API module: ", apiModule
-    datasetPath = "eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
+    datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
     print "Getting dataset contents for: %s" % datasetPath
     fileBlockList = api.getDatasetContents(datasetPath)
     print "Dataset contents for: %s" % datasetPath
