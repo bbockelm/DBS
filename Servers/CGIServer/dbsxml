@@ -227,7 +227,9 @@ sub listDatasets
     &reply_success ($out);
   };
 
-  # If there was a failure, spit out an error.
+  # If there was a failure, spit out an error.  Note that "exit" is a
+  # special "die" call under mod_perl, so handle it gracefully.
+  exit if $@ && ref $@ eq 'APR::Error' && $@ == ModPerl::EXIT;
   if ($@) { $@ =~ s/\n$//s; &reply_failure (402, "Execution error", $@) }
   eval { $dbs->disconnect () if $dbs };
 }
@@ -306,7 +308,9 @@ sub getDatasetProvenance
     &reply_success ($out);
   };
 
-  # If there was a failure, spit out an error.
+  # If there was a failure, spit out an error.  Note that "exit" is a
+  # special "die" call under mod_perl, so handle it gracefully.
+  exit if $@ && ref $@ eq 'APR::Error' && $@ == ModPerl::EXIT;
   if ($@) { $@ =~ s/\n$//s; &reply_failure (402, "Execution error", $@) }
   eval { $dbs->disconnect () if $dbs };
 }
@@ -355,7 +359,9 @@ sub getDatasetContents
     &reply_success ($out);
   };
 
-  # If there was a failure, spit out an error.
+  # If there was a failure, spit out an error.  Note that "exit" is a
+  # special "die" call under mod_perl, so handle it gracefully.
+  exit if $@ && ref $@ eq 'APR::Error' && $@ == ModPerl::EXIT;
   if ($@) { $@ =~ s/\n$//s; &reply_failure (402, "Execution error", $@) }
   eval { $dbs->disconnect () if $dbs };
 }
@@ -405,7 +411,9 @@ sub getDatasetFiles
     &reply_success ($out);
   };
 
-  # If there was a failure, spit out an error.
+  # If there was a failure, spit out an error.  Note that "exit" is a
+  # special "die" call under mod_perl, so handle it gracefully.
+  exit if $@ && ref $@ eq 'APR::Error' && $@ == ModPerl::EXIT;
   if ($@) { $@ =~ s/\n$//s; &reply_failure (402, "Execution error", $@) }
   eval { $dbs->disconnect () if $dbs };
 }
