@@ -2,13 +2,14 @@
 import sys, os, string, re
 import exceptions
 try:
- sys.path.append('./DBSAPI')
+ sys.path.append('../PythonAPI')
  import dbsCgiApi
  import dbsApi
 except:
   msg="ERROR no DBS API available"
-  raise CrabException(msg)
-
+  #raise CrabException(msg)
+  print msg
+  sys.exit(1)
 
 # #######################################
 class DBSError(exceptions.Exception):
@@ -48,6 +49,7 @@ class DBSInfo:
           self.dataTiers = dataTiers
           # Construct api object
           self.api = dbsCgiApi.DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin") 
+          #self.api = dbsCgiApi.DbsCgiApi(cgiUrl="http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer")
           # Configure api logging
           self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
           self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_INFO_)
