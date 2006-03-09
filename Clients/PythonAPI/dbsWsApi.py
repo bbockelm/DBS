@@ -53,7 +53,7 @@ class DbsWsApi(dbsApi.DbsApi):
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
 
-   def getDatasetContents(self, datasetPathName, listFiles):
+   def getDatasetContents(self, datasetPathName, listFiles=False):
 
      try:
        request = getDatasetContentsRequestWrapper()

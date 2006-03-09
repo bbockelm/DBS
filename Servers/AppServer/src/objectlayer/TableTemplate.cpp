@@ -131,7 +131,7 @@ Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) 
     if( (string) rs->getElement(rowIndex, rs->getColIndex(i->first)) == 
 	(string) rs->getElement(rowIndex, rs->getColIndex(i->second + "." + i->first)) ) {
       //cout<<"Satisfied relation "<<util.getTokenAt(i->second,0)<<" is equal to "<<i->first<<" value is "<<(string) rs->getElement(rowIndex, rs->getColIndex(i->first))<<endl;
-      LOG4CXX_DEBUG(TableTemplate::logger, "Satisfied relation "+util.getTokenAt(i->second,0) + " is equal to " + i->first + " value is " + (string) rs->getElement(rowIndex, rs->getColIndex(i->first)) );
+      //LOG4CXX_DEBUG(TableTemplate::logger, "Satisfied relation "+util.getTokenAt(i->second,0) + " is equal to " + i->first + " value is " + (string) rs->getElement(rowIndex, rs->getColIndex(i->first)) );
 			satisfiedRefrences.insert(Entry(util.getTokenAt(i->second,0),i->first));
     }
     
@@ -181,8 +181,8 @@ string TableTemplate<R>::makeSelectQuery(string userGivenWhereClause="") {
 	if( whereClause.length() > 0 ) {
 		sqlQuery = sqlQuery + "\nWHERE\n" + whereClause;
 	}
-	//cout<<"Query is "<<endl<<sqlQuery<<endl;
-	LOG4CXX_INFO(logger,"Query is " + sqlQuery);
+	cout<<"Query is "<<endl<<sqlQuery<<endl;
+	//LOG4CXX_INFO(logger,"Query is " + sqlQuery);
 	return (sqlQuery);
 }
 
@@ -259,7 +259,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
     
 		//cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
                 //cout<<"HERE>>>>>>>>>>>MESSAGE...comes..."<< endl; 
-		LOG4CXX_DEBUG(TableTemplate::logger,"Number of Rows returned from DB is "+util.itoa(rs->getNoOfRows()));
+		//LOG4CXX_DEBUG(TableTemplate::logger,"Number of Rows returned from DB is "+util.itoa(rs->getNoOfRows()));
 		for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
 			//cout << "\nChecking.... " << endl;
 			/*bool pKEqual = false;
@@ -298,7 +298,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 				}
 				if(pKEqual) {
 					 //cout<<"ITSEQUAL "<<endl;
-					LOG4CXX_DEBUG(TableTemplate::logger,"ITSEQUAL");
+					////LOG4CXX_DEBUG(TableTemplate::logger,"ITSEQUAL");
 					this->convertIntoRow(rs,rowIndex,aRow);
 					break;
 				}
@@ -314,7 +314,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 			//}
 		}
 		delete rs;
-		LOG4CXX_DEBUG(TableTemplate::logger,"ROWS BUILD SUCCESFULLY");
+		//LOG4CXX_DEBUG(TableTemplate::logger,"ROWS BUILD SUCCESFULLY");
 		//rowIterator = rows.begin();
 	} catch (ObjectLayerException &e) {
 		exceptionOccured = true;
@@ -331,7 +331,7 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
   
 	//return this->rowIterator;
 	if(exceptionOccured) {
-		LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
+		//LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
 		throw ObjectLayerException(exceptionMessage);
 	}
   
@@ -384,12 +384,12 @@ void TableTemplate<R>::insert() {
 	  try{
 	    //cout<<endl<<"inserting ROW no "<<i<<endl;
 			//cout<<"\n\n\n"<<endl;
-			LOG4CXX_DEBUG(TableTemplate::logger,"");
-			LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
-			LOG4CXX_DEBUG(TableTemplate::logger,"Inserting Row Number " + util.itoa(i));
+			//LOG4CXX_DEBUG(TableTemplate::logger,"");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"Inserting Row Number " + util.itoa(i));
 			this->doSmartInsert(aRow);
-			LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
-			LOG4CXX_DEBUG(TableTemplate::logger,"");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"");
 			//cout<<"\n\n\n"<<endl;
 			//cout<<"out of smart insert"<<endl;
 			//doSimpleInsert(aRow);
@@ -410,7 +410,7 @@ void TableTemplate<R>::insert() {
     	}
 	//cout<<"OUT of FOR Loop"<<endl;
 	if(exceptionOccured) {
-	  LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
+	  //LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
 	  throw ObjectLayerException(exceptionMessage);
 	}
 	//cout<<"returnning from insert in TableTamplate"<<endl;
@@ -420,14 +420,14 @@ void TableTemplate<R>::insert() {
 template <class R>
 void TableTemplate<R>::doSimpleInsert(R* aRow) {
   //cout<<"inside doSimpleInsert"<<endl;
-  LOG4CXX_DEBUG(TableTemplate::logger,"TableTemplate::doSimpleInsert");
+  //LOG4CXX_DEBUG(TableTemplate::logger,"TableTemplate::doSimpleInsert");
   //if(!isNotNullKeySet(aRow)) {
   this->fixPKWithSeq(aRow);
   //this->setTimeInRow(aRow);
   //this->setPersonInRow(aRow);
   if(!util.isKeySet(aRow, notNullKeys->begin(), notNullKeys->end()) ) {
     string message = "Coloumn name "+*util.getNullKey(aRow, notNullKeys->begin(), notNullKeys->end())+" is NULL";
-    LOG4CXX_ERROR(TableTemplate::logger,message);
+    //LOG4CXX_ERROR(TableTemplate::logger,message);
     throw ObjectLayerException(message);
     
   }
@@ -440,7 +440,7 @@ void TableTemplate<R>::doSimpleInsert(R* aRow) {
 		for(QueryIter qi = strQuery.begin(); qi != strQuery.end(); ++qi ) {
 		  //cout<<"Query to execute is "<<endl<<*qi<<endl;
 		  
-		  LOG4CXX_INFO(TableTemplate::logger,"Query is "+*qi);
+		  //LOG4CXX_INFO(TableTemplate::logger,"Query is "+*qi);
 		  int returnCode = dbmanager->executeQuery(*qi);
 		  if(returnCode != 0) {
 		    throw ObjectLayerException("Query: "+*qi+" could not be executed");
@@ -465,9 +465,9 @@ template <class R>
 void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
   name += "row";
  // cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
-	LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
-	LOG4CXX_INFO(TableTemplate::logger,"Table Name is "+ name + " fkey is " + fkey);
-	LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
+	////LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
+	//LOG4CXX_INFO(TableTemplate::logger,"Table Name is "+ name + " fkey is " + fkey);
+	//LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
         //cout<<"PRE RowInterface* subRow"<<endl;
 	RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey);
         //cout<<"POST RowInterface* subRow"<<endl;
@@ -557,15 +557,15 @@ void TableTemplate<R>::fixPKWithSeq(R* aRow) {
 			continue;
 		}
 		if(dataType != "INTEGER") {
-			//cout<<"Sequencer for non int type is invalid"<<endl;
-			LOG4CXX_ERROR(TableTemplate::logger,"Sequencer for non int type is invalid");
+			cout<<"Sequencer for non int type is invalid"<<endl;
+			//LOG4CXX_ERROR(TableTemplate::logger,"Sequencer for non int type is invalid");
 			continue;
 		}
 		int value = this->getSeqValue(util.getTokenAt(*i, 0), util.getTokenAt(*i, 1));	
 		//int value = 1;	
-		//cout<<"Setting sequencer value of "<<*i<<" "<<value<<endl;
-		LOG4CXX_DEBUG(TableTemplate::logger,"Setting sequencer value of " + *i);
-		LOG4CXX_DEBUG(TableTemplate::logger,value);
+		cout<<"Setting sequencer value of "<<*i<<" "<<value<<endl;
+		//LOG4CXX_DEBUG(TableTemplate::logger,"Setting sequencer value of " + *i);
+		//LOG4CXX_DEBUG(TableTemplate::logger,value);
 		aRow->setValue(*i,&value);
 	}
 }

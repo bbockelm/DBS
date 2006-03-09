@@ -13,11 +13,11 @@ Manager::Manager(){
 		Manager::logger = l.getLogger();
 		Configuration* conf = Configuration::instance();
 		//cout<<"this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());"<<endl;
-		LOG4CXX_INFO(logger,"DSN is " + conf->getDsn() + " DB USER is " + conf->getDbUser() + " PASSOWRD is " + conf->getDbPasswd());
+		//LOG4CXX_INFO(logger,"DSN is " + conf->getDsn() + " DB USER is " + conf->getDbUser() + " PASSOWRD is " + conf->getDbPasswd());
 		this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());
 		this->dbManager->open();
 	} catch (DBException &e)  {
-		LOG4CXX_DEBUG(logger,e.report());
+		//LOG4CXX_DEBUG(logger,e.report());
 		throw BizLayerException(e.report());
 	}
 
@@ -48,8 +48,8 @@ int Manager::doInsert(TableInterface* inTable) {
 		inTable->insert();
 		dbManager->commit();
 	} catch (ObjectLayerException &e)  {
-		//cout<<"Rolling back the whole transection"<<endl;
-		LOG4CXX_DEBUG(logger,"Rolling back the whole transection");
+		cout<<"Rolling back the whole transection"<<endl;
+		//LOG4CXX_DEBUG(logger,"Rolling back the whole transection");
 		dbManager->rollback();
 		cout<<"TJust befroe throw    "<<endl;
 		throw BizLayerException(e.report());

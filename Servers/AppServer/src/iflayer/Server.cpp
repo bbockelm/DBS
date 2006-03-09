@@ -3,7 +3,7 @@
 #include <iostream.h>
 #include <pthread.h>
 #define BACKLOG (100) // Max. request backlog
-#define MAX_THR (10) // Max. threads to serve requests
+#define MAX_THR (20) // Max. threads to serve requests
 //using namespace std;
 int main(int argc, char **argv) {
 	struct soap soap;

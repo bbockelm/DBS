@@ -22,9 +22,10 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
        # Default behaviour of getDatasetContents
        fileBlockList = self.api.getDatasetContents(self.datasetPath)
        for fileBlock in fileBlockList:
-          print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
-          for eventCollection in fileBlock.getEventCollectionList():
-             print "  %s" % eventCollection
+          #print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
+          print fileBlock._blockId
+          for eventCollection in fileBlock._eventCollectionList:
+             print "  %s" % eventCollection._collectionId
 
     except dbsException.DbsException, ex:
        return 1

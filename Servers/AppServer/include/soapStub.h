@@ -9,7 +9,8 @@
 #define soapStub_H
 #include <vector>
 #include "stdsoap2.h"
-
+#include <iostream>
+using namespace std;
 /******************************************************************************\
  *                                                                            *
  * Enumerations                                                               *
@@ -169,7 +170,11 @@ public:
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
 	         DBS__EventCollection() : collectionId(NULL), collection_index(NULL), numberOfEvents(NULL), parent(NULL) { }
-	virtual ~DBS__EventCollection() { }
+	virtual ~DBS__EventCollection() { 
+		cout<<"\n\n\n\nCalling  virtual ~DBS__EventCollection"<<endl;
+		//delete collectionId;
+		//delete numberOfEvents;
+	}
 };
 #endif
 
@@ -193,7 +198,10 @@ public:
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
 	         DBS__Block() : blockId(NULL), numberOfFiles(NULL), numberOfBytes(NULL) { }
-	virtual ~DBS__Block() { }
+	virtual ~DBS__Block() { 
+		cout<<"\n\nCalling  virtual DBS__Block"<<endl;
+		//delete blockId;
+	}
 };
 #endif
 

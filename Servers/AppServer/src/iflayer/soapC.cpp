@@ -6,8 +6,9 @@
 */
 
 #include "soapH.h"
-
-SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.7.6e 2006-03-08 17:26:20 GMT")
+#include <iostream>
+using namespace std;
+SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.7.6e 2006-03-08 18:05:30 GMT")
 
 
 #ifndef WITH_NOGLOBAL
@@ -617,7 +618,9 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_instantiate(struct soap *soap, int t, const ch
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
-{	switch (p->type)
+{
+	cout<<"INSIDE SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete"<<endl;
+	switch (p->type)
 	{
 	case SOAP_TYPE_std__string:
 		if (p->size < 0)
@@ -656,12 +659,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 			delete[] (DBS__File*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__EventCollection:
+		cout<<"        case SOAP_TYPE_DBS__EventCollection:"<<endl;
 		if (p->size < 0)
 			delete (DBS__EventCollection*)p->ptr;
 		else
 			delete[] (DBS__EventCollection*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__Block:
+		cout<<"        case SOAP_TYPE_DBS__Block:"<<endl;
 		if (p->size < 0)
 			delete (DBS__Block*)p->ptr;
 		else
@@ -1134,7 +1139,9 @@ SOAP_FMAC5 DBS__Block * SOAP_FMAC6 soap_new_DBS__Block(struct soap *soap, int n)
 }
 
 SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__Block(struct soap *soap, DBS__Block *p)
-{	soap_delete(soap, p);
+{	
+	cout<<"INSIDE soap_delete_DBS__Block"<<endl;
+	soap_delete(soap, p);
 }
 
 SOAP_FMAC3 DBS__Block * SOAP_FMAC4 soap_instantiate_DBS__Block(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)

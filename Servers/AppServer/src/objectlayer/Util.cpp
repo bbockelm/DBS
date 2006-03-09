@@ -8,6 +8,19 @@ using namespace std;
 
 
 Util::Util(){}
+void Util::Tokenize(const string& str,
+                      vector<string>& tokens,
+                      const string& delimiters = " ") {
+    string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    string::size_type pos     = str.find_first_of(delimiters, lastPos);
+
+    while (string::npos != pos || string::npos != lastPos) {
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        lastPos = str.find_first_not_of(delimiters, pos);
+        pos = str.find_first_of(delimiters, lastPos);
+    }
+}
+
 void Util::setSchema(Dictionary* schema) {
 	this->schema = schema;
 }
@@ -226,6 +239,16 @@ void Util::display(RowInterface* aRow) {
  }
 
 
+
+string Util::getStrValue(RowInterface* aRow, string name) {
+	string	dataType = this->getDataType(name);
+	if( this->isSet(aRow, name, dataType ) ) {
+		return this->getStrValue(aRow, name, dataType);
+	} else {
+		return "";
+	}
+
+}
 
 string Util::getStrValue(RowInterface* aRow, string name, string dataType) {
 	//cout<<"NAME is "<<name<<" DATATYPE is "<<dataType<<endl;

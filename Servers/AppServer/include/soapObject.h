@@ -8,6 +8,9 @@
 #ifndef soapService_H
 #define soapService_H
 #include "soapH.h"
+#include <iostream>
+
+using namespace std;
 class Service : public soap
 {    public:
 	Service()
@@ -21,7 +24,10 @@ class Service : public soap
 	{NULL, NULL, NULL, NULL}
 };
 	soap_init(this); if (!this->namespaces) this->namespaces = namespaces; };
-	virtual ~Service() { soap_destroy(this); soap_end(this); soap_done(this); };
+	virtual ~Service() { 
+		cout<<"DESTROY *************************************"<<endl;
+		soap_destroy(this); soap_end(this); soap_done(this); 
+	}
 	virtual	int serve() { return soap_serve(this); };
 };
 #endif

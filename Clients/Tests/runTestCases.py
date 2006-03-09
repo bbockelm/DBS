@@ -13,10 +13,10 @@ import time
 
 if __name__ == "__main__":
    startTime = time.mktime(datetime.datetime.now().timetuple())
+   """
    testObj = testCreatePrimaryDS.testCreatePrimaryDS()
    testObj.run()
    
-   """
    testObj = testCreateProcessedDS.testCreateProcessedDS()
    testObj.run()
   
@@ -28,9 +28,10 @@ if __name__ == "__main__":
   
    testObj = testCreateEventCollection.testCreateEventCollection()
    testObj.run()
+   """
    testObj = testGetDatasetContents.testGetDatasetContents()
    testObj.run() 
-   """
+
    endTime = time.mktime(datetime.datetime.now().timetuple())
    timeDiff = endTime - startTime
    print "TIME ELAPSED ",timeDiff

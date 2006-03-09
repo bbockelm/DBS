@@ -9,6 +9,7 @@ class Util {
   
 public:
 	Util();
+	void Tokenize(const string& str, vector<string>& tokens, const string& delimiters);
 	std::string getToken(std::string, int);
 	std::string getTokenAt(std::string, int);
 	std::string eraseEndChars(std::string, int);
@@ -23,6 +24,7 @@ public:
 	//ListOfLists_iter getListOfKey(RowInterface*, ListOfLists_iter, ListOfLists_iter);
 	ListOfLists_iter getListOfKey(RowInterface*, ListOfLists_iter, ListOfLists_iter, Keys* notNullKeys);
 	std::string getDataType(std::string);
+	std::string getStrValue(RowInterface*, std::string);
 	std::string getStrValue(RowInterface*, std::string, std::string);
 	void setValue(RowInterface* aRow, std::string name, std::string dataType, std::string value);
 	Dictionary_iter getMappedValue(std::string, Dictionary_iter, Dictionary_iter);

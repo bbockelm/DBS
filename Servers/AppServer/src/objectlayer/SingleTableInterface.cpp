@@ -20,7 +20,7 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 	bool checkInDB = false;
 	string clause="";
 	//cout<<"inside doSmartInsert of SingleTable"<<endl;
-	LOG4CXX_DEBUG(TableTemplate<R>::logger,"SingleTableInterface::doSmartInsert");
+	//LOG4CXX_DEBUG(TableTemplate<R>::logger,"SingleTableInterface::doSmartInsert");
 	//if( util.isKeySet(aRow, primaryKeys->begin(), primaryKeys->end()) ) {
 	//cout<<"calling util.isKeySetCheckNull(aRow, primaryKeysReal.begin(), primaryKeysReal.end(), notNullKeys )"<<endl;
 	if( util.isKeySetCheckNull(aRow, primaryKeysReal.begin(), primaryKeysReal.end(), notNullKeys )) {
@@ -44,7 +44,7 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 		//cout<<"called doSelect done"<<endl;
 		int noOfRows = rs->getNoOfRows();
 		//cout<<"noOfRows returned from DB is "<<noOfRows<<endl;
-		LOG4CXX_DEBUG(TableTemplate<R>::logger,"Number of Rows returned from DB is "+util.itoa(noOfRows));
+		//LOG4CXX_DEBUG(TableTemplate<R>::logger,"Number of Rows returned from DB is "+util.itoa(noOfRows));
                 //cout << "This message is coming from here" << endl; 
 		if( noOfRows > 0 ) {
 			R* aRowFromDB = new R();
@@ -54,11 +54,11 @@ void SingleTableInterface<R>::doSmartInsert(R* aRow) {
 			delete rs;
 			//cout<<"done  convertIntoRow"<<endl;
 			string message;
-			LOG4CXX_DEBUG(TableTemplate<R>::logger,"Checking consistancy between data provided and data fetched from DB");
+			//LOG4CXX_DEBUG(TableTemplate<R>::logger,"Checking consistancy between data provided and data fetched from DB");
 			bool isConsistantVal = util.isConsistant(aRowFromDB, aRow, message);
 			delete aRowFromDB;
 			if( isConsistantVal ) {
-				LOG4CXX_DEBUG(TableTemplate<R>::logger,"The data is CONSISTANT and there is no need to do insert");
+				//LOG4CXX_DEBUG(TableTemplate<R>::logger,"The data is CONSISTANT and there is no need to do insert");
 				return;
 			} else {
 				throw ObjectLayerException("Data your are trying to insert is inconsistant with data already in DB\n"+message);
