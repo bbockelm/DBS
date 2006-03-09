@@ -27,20 +27,20 @@ void testResults1(DBManagement * dbm, string sql) {
 int main(int argc,char *argv[]) {
 	DBManagement * dbm;
 	try {
-		dbm =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
-		//dbm =  new DBManagement("ProdRO", "cms_dbs_reader", "mi2sbe5stOWu");
+		//dbm =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
+		dbm =  new DBManagement("ProdRO", "cms_dbs_reader", "mi2sbe5stOWu");
                 //dbm  =  new DBManagement("sveseli", "cms_dbs_sveseli", "kIek8ie8ethN");
 		//dbm =  new DBManagement("mydsn", "sekhri", "");
 		//dbm  =  new DBManagement("mydsnvijay", "ggraham", "");
 		
 		dbm->open();
 		//testResults1(dbm,"SELECT * from t_event_collection WHERE processed_dataset=1");
-		while(true){
+		/*while(true){
 			//testResults1(dbm,"SELECT * FROM t_data_tier,t_processing_path,t_primary_dataset,t_processed_dataset,t_event_collection,t_block,t_info_evcoll WHERE (t_block.processed_dataset = t_processed_dataset.id ) AND (t_event_collection.processed_dataset = t_processed_dataset.id ) AND (t_info_evcoll.event_collection = t_event_collection.id ) AND (t_processed_dataset.primary_dataset = t_primary_dataset.id ) AND (t_processed_dataset.processing_path = t_processing_path.id ) AND (t_processing_path.data_tier = t_data_tier.id )  AND t_processed_dataset.name='bt_DST8713_2x1033PU_g133_CMS' AND t_data_tier.name='DST' AND t_primary_dataset.name='bt03_gg_bbh200_2taujmu'");
 			testResults1(dbm,"SELECT t_event_collection.collection_index AS \"tec.ci\",t_event_collection.id AS \"tec.id\",t_event_collection.is_primary AS \"tec.ip\",t_event_collection.processed_dataset AS \"tec.pd\" FROM t_event_collection WHERE (t_event_collection.processed_dataset=14) AND (t_event_collection.collection_index=160800001)");
 			testResults1(dbm,"SELECT * from t_event_collection");
-		}
-		//testResults1(dbm,"SELECT * from t_event_collection");
+		}*/
+		testResults1(dbm,"SELECT * from t_event_collection where t_event_collection.id=12324");
 		dbm->close();
 		//while(true){
 			//testResults1(dbm,"SELECT count(*) FROM mytable");

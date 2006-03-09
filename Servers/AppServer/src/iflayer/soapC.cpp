@@ -619,7 +619,7 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_instantiate(struct soap *soap, int t, const ch
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 {
-	cout<<"INSIDE SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete"<<endl;
+	//cout<<"INSIDE SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete"<<endl;
 	switch (p->type)
 	{
 	case SOAP_TYPE_std__string:
@@ -659,14 +659,14 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 			delete[] (DBS__File*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__EventCollection:
-		cout<<"        case SOAP_TYPE_DBS__EventCollection:"<<endl;
+		//cout<<"        case SOAP_TYPE_DBS__EventCollection:"<<endl;
 		if (p->size < 0)
 			delete (DBS__EventCollection*)p->ptr;
 		else
 			delete[] (DBS__EventCollection*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__Block:
-		cout<<"        case SOAP_TYPE_DBS__Block:"<<endl;
+		//cout<<"        case SOAP_TYPE_DBS__Block:"<<endl;
 		if (p->size < 0)
 			delete (DBS__Block*)p->ptr;
 		else
@@ -1140,7 +1140,7 @@ SOAP_FMAC5 DBS__Block * SOAP_FMAC6 soap_new_DBS__Block(struct soap *soap, int n)
 
 SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__Block(struct soap *soap, DBS__Block *p)
 {	
-	cout<<"INSIDE soap_delete_DBS__Block"<<endl;
+	//cout<<"INSIDE soap_delete_DBS__Block"<<endl;
 	soap_delete(soap, p);
 }
 
