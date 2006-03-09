@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsCgiApi.py,v 1.11 2006/01/28 19:40:26 afanfani Exp $
+# $Id: dbsCgiApi.py,v 1.12 2006/03/08 13:49:43 lat Exp $
 #
 # CGI implementation of the DBS API class. This version of API
 # relies on cgi scripts providing xml output. 
@@ -22,6 +22,17 @@ class DbsCgiApi(dbsApi.DbsApi):
   def __init__(self, cgiUrl=None):
     """ Constructor. """
     self._cgiUtility = dbsCgiUtility.DbsCgiUtility(cgiUrl=cgiUrl)
+
+  def listDatasets(self, pattern="*"):
+    """
+    Retrieve list of datasets matching pattern, a shell glob pattern.
+    Returns: list of dataset objects.
+    Exceptions: DbsCgiApiException
+    """
+    try:
+      return self._cgiUtility.listDatasets(pattern)
+    except dbsCgiUtility.DbsCgiUtilityException, ex:
+      raise dbsApi.DbsApiException(exception=ex)
 
   def getDatasetContents(self, datasetPathName, listFiles=False):
     """
@@ -57,8 +68,6 @@ class DbsCgiApi(dbsApi.DbsApi):
       raise dbsApi.InvalidDataTier(exception=ex)
     except dbsCgiUtility.DbsCgiUtilityException, ex:
       raise dbsApi.DbsApiException(exception=ex)
-      
-
 
 ##############################################################################
 # Unit testing.
@@ -66,15 +75,23 @@ class DbsCgiApi(dbsApi.DbsApi):
 if __name__ == "__main__":
   try:
     # Dataset we need.
+    datasetPattern = "/*/*/eg_2x1033PU761_TkMu_2_g133_OSC"
     datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
     #datasetPath = "/eg03_jets_1e_pt2550/Digi/MissingDataset"
 
     # Construct api object.
-    api = DbsCgiApi(cgiUrl="http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer")
+    api = DbsCgiApi()
 
     # Configure logging.
     api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
     
+    # List some datasets
+    print ""
+    print "Listing datasets for %s" % datasetPattern
+    datasets = api.listDatasets (datasetPattern)
+    for dataset in datasets:
+      print "%s" % dataset
+
     # Get dataset contents. It returns list of file blocks, each
     # file block containing a set of event collections.
     #print "Getting dataset contents for: %s" % datasetPath
@@ -89,7 +106,7 @@ if __name__ == "__main__":
 
     # Get dataset provenance. It returns list of dataset parents.
     print ""
-    dataTierList = [ "Blah" ]
+    dataTierList = [ "Hit" ]
     print "Getting dataset provenance for: %s (dataTiers: %s)" % (
       datasetPath, dataTierList)
     
