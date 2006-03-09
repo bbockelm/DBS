@@ -44,64 +44,48 @@ class DBSInfoError:
 ###############################################################################
 
 class DBSInfo:
-     def __init__(self, dbspath, dataTiers):
-          self.dbspath=dbspath 
-          self.dataTiers = dataTiers
+     def __init__(self):
           # Construct api object
-          self.api = dbsCgiApi.DbsCgiApi(cgiUrl="http://cern.ch/cms-dbs/cgi-bin") 
-          #self.api = dbsCgiApi.DbsCgiApi(cgiUrl="http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer")
+          self.api = dbsCgiApi.DbsCgiApi() 
           # Configure api logging
           self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
           self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_INFO_)
-          # lower log level
 
-# ####################################
-     def getDatasetProvenance(self):
-         """
-          query DBS to get provenance
-         """
+     def getMatchingDatasets (self, owner, dataset):
+         """ Query DBS to get provenance """
          try:
-           datasetParentList = self.api.getDatasetProvenance(self.dbspath,self.dataTiers)
+           list = self.api.listDatasets("/%s/*/%s" % (dataset, owner))
+         except dbsApi.InvalidDataTier, ex:
+           raise DBSInvalidDataTierError(ex.getClassName(),ex.getErrorMessage())
+         except dbsApi.DbsApiException, ex:
+           raise DBSError(ex.getClassName(),ex.getErrorMessage())
+         return list 
+
+     def getDatasetProvenance(self, path, dataTiers):
+         """ Query DBS to get provenance """
+         try:
+           datasetParentList = self.api.getDatasetProvenance(path,dataTiers)
          except dbsApi.InvalidDataTier, ex:
            raise DBSInvalidDataTierError(ex.getClassName(),ex.getErrorMessage())
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())
          return datasetParentList                                                                                                            
-         #parent = {}
-         #for aparent in datasetParentList:
-         #  common.logger.debug(6, "DBSInfo: parent path is "+aparent.getDatasetPath()+" datatier is "+aparent.getDataTier())
-         #  parent[aparent.getDatasetPath()]=aparent.getDataTier()
-         #
-         #return parent
 
-# ####################################
-     def getDatasetContents(self):
-         """
-          query DBS to get event collections
-         """
+     def getDatasetContents(self, path):
+         """ Query DBS to get event collections """
+         # count events per block
+         nevtsbyblock = {}
          try:
-           fileBlockList = self.api.getDatasetContents(self.dbspath)
+           for fileBlock in self.api.getDatasetContents (path):
+              ## get the event collections for each block
+	      nevts = 0
+	      for evc in fileBlock.getEventCollectionList():
+		nevts = nevts + evc.getNumberOfEvents()
+              print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName())
+              nevtsbyblock[fileBlock.getBlockName()]=nevts
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())
-         ## get the fileblock and event collections
-         nevtsbyblock= {}
-         for fileBlock in fileBlockList:
-            ## get the event collections for each block
-            #print fileBlock.getBlockName()
-            #print fileBlock.getBlockId()
-            eventCollectionList = fileBlock.getEventCollectionList()
-            nevts=0
-            for eventCollection in eventCollectionList:
-              #print "DBSInfo:  evc: "+eventCollection.getCollectionName()+" nevts: %i"%eventCollection.getNumberOfEvents()
-              #common.logger.debug(20,"DBSInfo:  evc: "+eventCollection.getCollectionName()+" nevts:%i"%eventCollection.getNumberOfEvents()) 
-              #print "DBSInfo:  evc: "+eventCollection.getCollectionName()+" nevts:%i"%eventCollection.getNumberOfEvents()
-              nevts=nevts+eventCollection.getNumberOfEvents()
-            #common.logger.debug(6,"DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName()))
-            print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName())
-            nevtsbyblock[fileBlock.getBlockName()]=nevts
 
          # returning a map of fileblock-nevts  will be enough for now
          # TODO: in future the EvC collections grouped by fileblock should be returned
-         
          return nevtsbyblock
-
