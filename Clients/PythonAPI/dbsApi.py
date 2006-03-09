@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApi.py,v 1.10 2006/01/26 23:10:01 afaq Exp $
+# $Id: dbsApi.py,v 1.11 2006/01/28 19:40:26 afanfani Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -48,6 +48,10 @@ class DbsApi:
   # No constructor.
   
   # Methods which should be implemented in the derived classes.
+  def listDatasets(self, pattern="*"):
+    """ Retrieve list of datasets matching the pattern. """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
   def getDatasetContents(self, datasetPathName, listFiles=False):
     """ Retrieve event collections given the dataset path name string. """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
