@@ -1,41 +1,29 @@
-#ifndef _DBSApi_hpp_
-#define _DBSApi_hpp_
+#ifndef _DBSAPI_hpp_
+#define _DBSAPI_hpp_
 
-#include "Message.hpp"
-#include "Configuration.hpp"
 #include "ObjectLayerTables.hpp"  
 #include "Util.hpp"
-#include "common.hpp"
-#include <log4cxx/logger.h>
+#include "Interface.hpp"
+//#include <log4cxx/logger.h>
 #include <iostream>
   
 class DBSApi {
 
 public:
-	DBSApi();
+	DBSApi(struct soap* soap);
 	~DBSApi();
-  
-	//int createPrimaryDataset(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table) throw (const char*);
-	int createPrimaryDataset(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table);
-	int readPrimaryDataset(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table) ;
-	int createProcessedDataset(Processingpathmultirow* aRow, ProcessingpathMultiTable* table) ;
-	int readProcessedDataset(Processingpathmultirow* aRow, ProcessingpathMultiTable* table) ;
-	int createEventCollection(Evcollviewmultirow* aRow, EvcollviewMultiTable* table) ;
-	int readEventCollection(Evcollviewmultirow* aRow, EvcollviewMultiTable* table) ;
-	int insertFiles(vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table) ;
-	int readFiles(Fileviewmultirow* aRow, FileviewMultiTable* table) ;
-	int createBlock(Blockviewmultirow* aRow, BlockviewMultiTable* table) ;
-	int readBlock(Blockviewmultirow* aRow, BlockviewMultiTable* table) ;
-	int readPdblock(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table) ;
-	//int readDatasetProvenenceParent(Datasetprovenenceevparentmultirow* aRow, DatasetprovenenceevparentMultiTable* table) ;
-	//int readDatasetProvenenceChild(Datasetprovenenceevchildmultirow* aRow, DatasetprovenenceevchildMultiTable* table) ;
-	int readCrabEC(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table) ;
 
+        int createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, int& primaryDatasetId);
+        int createProcessedDataset(DBS__ProcessedDataset* processedDataset, int& processedDatasetId);
+        int createFileBlock(std::string datasetPathName, DBS__Block* block, int& fileBlockId);
+        int insertEventCollections(std::string datasetPathName, std::vector<DBS__EventCollection*> eventCollectionList, int& result);
+        int getDatasetContents(std::string datasetPathName, bool listFiles, std::vector<DBS__Block*>& blockList);
+        int getDatasetFileBlocks(std::string datasetPathName, std::vector<DBS__Block*>& blockList);
+
+ 
 private:
-	int callServer(void);
-	bool localServer;
 	Util util;
-	log4cxx::LoggerPtr logger;
+        struct soap* soap;
 };
 
 #endif

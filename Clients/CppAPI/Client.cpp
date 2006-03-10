@@ -21,7 +21,7 @@ int main(int argc, char** argv){
 	primaryDataset->testlist = abc;*/
 	//if(soap_call_DBS__createPrimaryDataset(soap, "http://cmssrv22.fnal.gov:27983", NULL, primaryDataset, result) == 0) {
 	//if(soap_call_DBS__getDatasetContents(soap, "http://cmssrv22.fnal.gov:27983", NULL, "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC", false, blockList) == 0) {
-	soap_call_DBS__getDatasetContents(soap, "http://cmslcgco01.cern.ch:27983", NULL, "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC", false, blockList);
+	soap_call_DBS__getDatasetContents(soap, "http://cmssrv22.fnal.gov:27983", NULL, "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC", false, blockList);
 		cout<<"no of blcocks "<<blockList.size()<<endl;
 		for(int i = 0; i != blockList.size(); ++i ) {
 			DBS__Block* block = blockList.at(i);
