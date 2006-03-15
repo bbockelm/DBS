@@ -6,6 +6,20 @@
 #include <log4cxx/logger.h>
 #include "Managers.hpp"
 
+/************** Manager for DatasetPathManager*********************/
+
+class DatasetPathManager : public Manager {
+
+public:
+
+        DatasetPathManager();
+        ~DatasetPathManager();
+        int write(std::vector<Datasetpathmultirow*> rowVector, DatasetpathMultiTable* table);
+        int read(Datasetpathmultirow* aRow, DatasetpathMultiTable* table);
+};
+
+
+
 /************** Manager for EvCollViewManager*********************/
 
 class EvCollViewManager : public Manager {
@@ -16,6 +30,20 @@ public:
         ~EvCollViewManager();
         int write(std::vector<Evcollviewmultirow*> rowVector, EvcollviewMultiTable* table);
         int read(Evcollviewmultirow* aRow, EvcollviewMultiTable* table);
+};
+
+
+
+/************** Manager for EvCollViewNoParentManager*********************/
+
+class EvCollViewNoParentManager : public Manager {
+
+public:
+
+        EvCollViewNoParentManager();
+        ~EvCollViewNoParentManager();
+        int write(std::vector<Evcollviewnoparentmultirow*> rowVector, EvcollviewnoparentMultiTable* table);
+        int read(Evcollviewnoparentmultirow* aRow, EvcollviewnoparentMultiTable* table);
 };
 
 
@@ -86,6 +114,20 @@ public:
         ~ProcessingPathManager();
         int write(std::vector<Processingpathmultirow*> rowVector, ProcessingpathMultiTable* table);
         int read(Processingpathmultirow* aRow, ProcessingpathMultiTable* table);
+};
+
+
+
+/************** Manager for CrabEvCollFileViewManager*********************/
+
+class CrabEvCollFileViewManager : public Manager {
+
+public:
+
+        CrabEvCollFileViewManager();
+        ~CrabEvCollFileViewManager();
+        int write(std::vector<Crabevcollfileviewmultirow*> rowVector, CrabevcollfileviewMultiTable* table);
+        int read(Crabevcollfileviewmultirow* aRow, CrabevcollfileviewMultiTable* table);
 };
 
 

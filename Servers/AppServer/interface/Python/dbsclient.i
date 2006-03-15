@@ -51,9 +51,17 @@
                 }
         };
 
+        %template(DatasetPathMultiTableTemplate) TableTemplate<Datasetpathmultirow>;
+        %template(DatasetPathMultiTable) MultiTableInterface<Datasetpathmultirow>;
+        %template(DatasetPathVector) std::vector<Datasetpathmultirow*>;
+
         %template(EvCollViewMultiTableTemplate) TableTemplate<Evcollviewmultirow>;
         %template(EvCollViewMultiTable) MultiTableInterface<Evcollviewmultirow>;
         %template(EvCollViewVector) std::vector<Evcollviewmultirow*>;
+
+        %template(EvCollViewNoParentMultiTableTemplate) TableTemplate<Evcollviewnoparentmultirow>;
+        %template(EvCollViewNoParentMultiTable) MultiTableInterface<Evcollviewnoparentmultirow>;
+        %template(EvCollViewNoParentVector) std::vector<Evcollviewnoparentmultirow*>;
 
         %template(FileViewMultiTableTemplate) TableTemplate<Fileviewmultirow>;
         %template(FileViewMultiTable) MultiTableInterface<Fileviewmultirow>;
@@ -74,6 +82,10 @@
         %template(ProcessingPathMultiTableTemplate) TableTemplate<Processingpathmultirow>;
         %template(ProcessingPathMultiTable) MultiTableInterface<Processingpathmultirow>;
         %template(ProcessingPathVector) std::vector<Processingpathmultirow*>;
+
+        %template(CrabEvCollFileViewMultiTableTemplate) TableTemplate<Crabevcollfileviewmultirow>;
+        %template(CrabEvCollFileViewMultiTable) MultiTableInterface<Crabevcollfileviewmultirow>;
+        %template(CrabEvCollFileViewVector) std::vector<Crabevcollfileviewmultirow*>;
 
         %template(CrabEvCollViewMultiTableTemplate) TableTemplate<Crabevcollviewmultirow>;
         %template(CrabEvCollViewMultiTable) MultiTableInterface<Crabevcollviewmultirow>;

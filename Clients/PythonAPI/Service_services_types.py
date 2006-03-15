@@ -127,14 +127,14 @@ class tempuri_org_DBS_xsd:
             # internal vars
             self._id = None
             self._guid = None
-            self._logical_name = None
+            self._logicalFileName = None
             self._checksum = None
-            self._filesize = None
-            self._status = None
-            self._type = None
-            self._inblock = None
+            self._fileSize = None
+            self._fileStatus = None
+            self._fileType = None
+            self._fileBlockId = None
 
-            TClist = [ZSI.TCnumbers.Iint(pname="id",aname="_id", optional=1), ZSI.TC.String(pname="guid",aname="_guid", optional=1), ZSI.TC.String(pname="logical-name",aname="_logical_name"), ZSI.TC.String(pname="checksum",aname="_checksum", optional=1), ZSI.TCnumbers.Ilong(pname="filesize",aname="_filesize", optional=1), ZSI.TC.String(pname="status",aname="_status"), ZSI.TC.String(pname="type",aname="_type"), ZSI.TCnumbers.Iint(pname="inblock",aname="_inblock", optional=1), ]
+            TClist = [ZSI.TCnumbers.Iint(pname="id",aname="_id", optional=1), ZSI.TC.String(pname="guid",aname="_guid", optional=1), ZSI.TC.String(pname="logicalFileName",aname="_logicalFileName"), ZSI.TC.String(pname="checksum",aname="_checksum", optional=1), ZSI.TCnumbers.Iint(pname="fileSize",aname="_fileSize", optional=1), ZSI.TC.String(pname="fileStatus",aname="_fileStatus"), ZSI.TC.String(pname="fileType",aname="_fileType"), ZSI.TCnumbers.Iint(pname="fileBlockId",aname="_fileBlockId", optional=1), ]
 
             oname = name
 
@@ -163,11 +163,11 @@ class tempuri_org_DBS_xsd:
         def Set_guid(self,_guid):
             self._guid = _guid
 
-        def Get_logical_name(self):
-            return self._logical_name
+        def Get_logicalFileName(self):
+            return self._logicalFileName
 
-        def Set_logical_name(self,_logical_name):
-            self._logical_name = _logical_name
+        def Set_logicalFileName(self,_logicalFileName):
+            self._logicalFileName = _logicalFileName
 
         def Get_checksum(self):
             return self._checksum
@@ -175,29 +175,29 @@ class tempuri_org_DBS_xsd:
         def Set_checksum(self,_checksum):
             self._checksum = _checksum
 
-        def Get_filesize(self):
-            return self._filesize
+        def Get_fileSize(self):
+            return self._fileSize
 
-        def Set_filesize(self,_filesize):
-            self._filesize = _filesize
+        def Set_fileSize(self,_fileSize):
+            self._fileSize = _fileSize
 
-        def Get_status(self):
-            return self._status
+        def Get_fileStatus(self):
+            return self._fileStatus
 
-        def Set_status(self,_status):
-            self._status = _status
+        def Set_fileStatus(self,_fileStatus):
+            self._fileStatus = _fileStatus
 
-        def Get_type(self):
-            return self._type
+        def Get_fileType(self):
+            return self._fileType
 
-        def Set_type(self,_type):
-            self._type = _type
+        def Set_fileType(self,_fileType):
+            self._fileType = _fileType
 
-        def Get_inblock(self):
-            return self._inblock
+        def Get_fileBlockId(self):
+            return self._fileBlockId
 
-        def Set_inblock(self,_inblock):
-            self._inblock = _inblock
+        def Set_fileBlockId(self,_fileBlockId):
+            self._fileBlockId = _fileBlockId
 
 
     class getDatasetFileBlocks_Dec(ZSI.TCcompound.Struct):
@@ -268,6 +268,76 @@ class tempuri_org_DBS_xsd:
 
         def Set_processedDatasetId(self,_processedDatasetId):
             self._processedDatasetId = _processedDatasetId
+
+
+    class listDatasetResponse_Dec(ZSI.TCcompound.Struct):
+        schema = 'http://tempuri.org/DBS.xsd'
+        literal = 'listDatasetResponse'
+
+        def __init__(self, name=None, ns=None, **kw):
+            name = name or self.__class__.literal
+            ns = ns or self.__class__.schema
+
+            # internal vars
+            self._datasetList = None
+
+            TClist = [ZSI.TC.String(pname="datasetList",aname="_datasetList", repeatable=1), ]
+
+            oname = name
+
+            if name:
+                aname = '_%s' % name
+                if ns:
+                    oname += ' xmlns="%s"' % ns
+                else:
+                    oname += ' xmlns="%s"' % self.__class__.schema
+            else:
+                aname = None
+
+            ZSI.TCcompound.Struct.__init__(self, self.__class__, TClist,
+                                           pname=name, inorder=0,
+                                           aname=aname, oname=oname,
+                                           hasextras=1, **kw)
+        def Get_datasetList(self):
+            return self._datasetList
+
+        def Set_datasetList(self,_datasetList):
+            self._datasetList = _datasetList
+
+
+    class listDataset_Dec(ZSI.TCcompound.Struct):
+        schema = 'http://tempuri.org/DBS.xsd'
+        literal = 'listDataset'
+
+        def __init__(self, name=None, ns=None, **kw):
+            name = name or self.__class__.literal
+            ns = ns or self.__class__.schema
+
+            # internal vars
+            self._datasetPathName = None
+
+            TClist = [ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ]
+
+            oname = name
+
+            if name:
+                aname = '_%s' % name
+                if ns:
+                    oname += ' xmlns="%s"' % ns
+                else:
+                    oname += ' xmlns="%s"' % self.__class__.schema
+            else:
+                aname = None
+
+            ZSI.TCcompound.Struct.__init__(self, self.__class__, TClist,
+                                           pname=name, inorder=0,
+                                           aname=aname, oname=oname,
+                                           **kw)
+        def Get_datasetPathName(self):
+            return self._datasetPathName
+
+        def Set_datasetPathName(self,_datasetPathName):
+            self._datasetPathName = _datasetPathName
 
 
     class insertEventCollectionsResponse_Dec(ZSI.TCcompound.Struct):
@@ -512,17 +582,18 @@ class tempuri_org_DBS_xsd:
         def __init__(self, name=None, ns=None, **kw):
             # internal vars
             self._collectionId = None
-            self._collection_index = None
+            self._collectionIndex = None
             self._numberOfEvents = None
             self._collectionName = None
+            self._datasetPathName = None
             self._parent = None
             self._parentageType = None
             self._fileList = None
 
             if "something" not in kw :
-                TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collection-index",aname="_collection_index", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ns1.EventCollection_Def(name="parent", ns=ns, optional=1, something=""), ZSI.TC.String(pname="parentageType",aname="_parentageType"), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
+                TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collectionIndex",aname="_collectionIndex", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ns1.EventCollection_Def(name="parent", ns=ns, optional=1, something=""), ZSI.TC.String(pname="parentageType",aname="_parentageType", optional=1), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
             else:
-               TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collection-index",aname="_collection_index", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="parentageType",aname="_parentageType"), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
+               TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collectionIndex",aname="_collectionIndex", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ZSI.TC.String(pname="parentageType",aname="_parentageType", optional=1), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
 
 
             oname = name
@@ -546,11 +617,11 @@ class tempuri_org_DBS_xsd:
         def Set_collectionId(self,_collectionId):
             self._collectionId = _collectionId
 
-        def Get_collection_index(self):
-            return self._collection_index
+        def Get_collectionIndex(self):
+            return self._collectionIndex
 
-        def Set_collection_index(self,_collection_index):
-            self._collection_index = _collection_index
+        def Set_collectionIndex(self,_collectionIndex):
+            self._collectionIndex = _collectionIndex
 
         def Get_numberOfEvents(self):
             return self._numberOfEvents
@@ -563,6 +634,12 @@ class tempuri_org_DBS_xsd:
 
         def Set_collectionName(self,_collectionName):
             self._collectionName = _collectionName
+
+        def Get_datasetPathName(self):
+            return self._datasetPathName
+
+        def Set_datasetPathName(self,_datasetPathName):
+            self._datasetPathName = _datasetPathName
 
         def Get_parent(self):
             return self._parent
@@ -595,7 +672,7 @@ class tempuri_org_DBS_xsd:
             self._processingPath = None
             self._isDatasetOpen = None
 
-            TClist = [ZSI.TCnumbers.Iint(pname="id",aname="_id", optional=1), ZSI.TC.String(pname="processedDatasetName",aname="_processedDatasetName"), ZSI.TC.String(pname="primaryDatasetName",aname="_primaryDatasetName"), ns1.ProcessingPath_Def(name="processingPath", ns=ns, optional=1), ZSI.TCnumbers.Ibyte(pname="isDatasetOpen",aname="_isDatasetOpen"), ]
+            TClist = [ZSI.TCnumbers.Iint(pname="id",aname="_id", optional=1), ZSI.TC.String(pname="processedDatasetName",aname="_processedDatasetName"), ZSI.TC.String(pname="primaryDatasetName",aname="_primaryDatasetName"), ns1.ProcessingPath_Def(name="processingPath", ns=ns, optional=1), ZSI.TC.Boolean(pname="isDatasetOpen",aname="_isDatasetOpen"), ]
 
             oname = name
 
@@ -651,11 +728,12 @@ class tempuri_org_DBS_xsd:
             # internal vars
             self._blockId = None
             self._blockStatusName = None
+            self._blockName = None
             self._numberOfFiles = None
             self._numberOfBytes = None
             self._eventCollectionList = None
 
-            TClist = [ZSI.TCnumbers.Iint(pname="blockId",aname="_blockId", optional=1), ZSI.TC.String(pname="blockStatusName",aname="_blockStatusName"), ZSI.TCnumbers.Iint(pname="numberOfFiles",aname="_numberOfFiles", optional=1), ZSI.TCnumbers.Ilong(pname="numberOfBytes",aname="_numberOfBytes", optional=1), ns1.EventCollection_Def(name="eventCollectionList", ns=ns, repeatable=1, optional=1), ]
+            TClist = [ZSI.TCnumbers.Iint(pname="blockId",aname="_blockId", optional=1), ZSI.TC.String(pname="blockStatusName",aname="_blockStatusName"), ZSI.TC.String(pname="blockName",aname="_blockName", optional=1), ZSI.TCnumbers.Iint(pname="numberOfFiles",aname="_numberOfFiles", optional=1), ZSI.TCnumbers.Iint(pname="numberOfBytes",aname="_numberOfBytes", optional=1), ns1.EventCollection_Def(name="eventCollectionList", ns=ns, repeatable=1, optional=1), ]
 
             oname = name
 
@@ -683,6 +761,12 @@ class tempuri_org_DBS_xsd:
 
         def Set_blockStatusName(self,_blockStatusName):
             self._blockStatusName = _blockStatusName
+
+        def Get_blockName(self):
+            return self._blockName
+
+        def Set_blockName(self,_blockName):
+            self._blockName = _blockName
 
         def Get_numberOfFiles(self):
             return self._numberOfFiles
@@ -712,10 +796,9 @@ class tempuri_org_DBS_xsd:
             ns = ns or self.__class__.schema
 
             # internal vars
-            self._datasetPathName = None
             self._eventCollectionList = None
 
-            TClist = [ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ns1.EventCollection_Def(name="eventCollectionList", ns=ns, repeatable=1, optional=1), ]
+            TClist = [ns1.EventCollection_Def(name="eventCollectionList", ns=ns, repeatable=1, optional=1), ]
 
             oname = name
 
@@ -732,12 +815,6 @@ class tempuri_org_DBS_xsd:
                                            pname=name, inorder=0,
                                            aname=aname, oname=oname,
                                            hasextras=1, **kw)
-        def Get_datasetPathName(self):
-            return self._datasetPathName
-
-        def Set_datasetPathName(self,_datasetPathName):
-            self._datasetPathName = _datasetPathName
-
         def Get_eventCollectionList(self):
             return self._eventCollectionList
 

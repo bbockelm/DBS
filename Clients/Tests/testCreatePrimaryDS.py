@@ -23,6 +23,7 @@ class testCreatePrimaryDS(testCaseInterface.testCaseInterface) :
        print "Got primary dataset id: %s" % primaryDatasetId
 
     except dbsException.DbsException, ex:
+       print ex
        return 1
    
     return 0

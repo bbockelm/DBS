@@ -25,7 +25,9 @@ public:
 	ListOfLists_iter getListOfKey(RowInterface*, ListOfLists_iter, ListOfLists_iter, Keys* notNullKeys);
 	std::string getDataType(std::string);
 	std::string getStrValue(RowInterface*, std::string);
+	int getIntValue(RowInterface* aRow, std::string name);
 	std::string getStrValue(RowInterface*, std::string, std::string);
+	void setIntValue(RowInterface* aRow, std::string name, int* value);
 	void setValue(RowInterface* aRow, std::string name, std::string dataType, std::string value);
 	Dictionary_iter getMappedValue(std::string, Dictionary_iter, Dictionary_iter);
 	//Keys_iter getKey(RowInterface*, Keys_iter, Keys_iter);

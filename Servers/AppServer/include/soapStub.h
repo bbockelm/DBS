@@ -9,8 +9,7 @@
 #define soapStub_H
 #include <vector>
 #include "stdsoap2.h"
-#include <iostream>
-using namespace std;
+
 /******************************************************************************\
  *                                                                            *
  * Enumerations                                                               *
@@ -107,7 +106,7 @@ public:
 	std::string processedDatasetName;	/* required element of type xsd:string */
 	std::string primaryDatasetName;	/* required element of type xsd:string */
 	DBS__ProcessingPath *processingPath;	/* required element of type DBS:ProcessingPath */
-	char isDatasetOpen;	/* required element of type xsd:byte */
+	bool isDatasetOpen;	/* required element of type xsd:boolean */
 public:
 	virtual int soap_type() const { return 13; } /* = unique id SOAP_TYPE_DBS__ProcessedDataset */
 	virtual void soap_default(struct soap*);
@@ -122,75 +121,73 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__File
-#define SOAP_TYPE_DBS__File (15)
+#define SOAP_TYPE_DBS__File (16)
 /* DBS:File */
 class SOAP_CMAC DBS__File
 {
 public:
 	int *id;	/* optional element of type xsd:int */
 	std::string guid;	/* optional element of type xsd:string */
-	std::string logical_name;	/* required element of type xsd:string */
+	std::string logicalFileName;	/* required element of type xsd:string */
 	std::string checksum;	/* optional element of type xsd:string */
-	long *filesize;	/* optional element of type xsd:long */
-	std::string status;	/* required element of type xsd:string */
-	std::string type;	/* required element of type xsd:string */
-	int *inblock;	/* required element of type xsd:int */
+	int *fileSize;	/* optional element of type xsd:int */
+	std::string fileStatus;	/* required element of type xsd:string */
+	std::string fileType;	/* required element of type xsd:string */
+	int *fileBlockId;	/* required element of type xsd:int */
 public:
-	virtual int soap_type() const { return 15; } /* = unique id SOAP_TYPE_DBS__File */
+	virtual int soap_type() const { return 16; } /* = unique id SOAP_TYPE_DBS__File */
 	virtual void soap_default(struct soap*);
 	virtual void soap_serialize(struct soap*) const;
 	virtual int soap_put(struct soap*, const char*, const char*) const;
 	virtual int soap_out(struct soap*, const char*, int, const char*) const;
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
-	         DBS__File() : id(NULL), filesize(NULL), inblock(NULL) { }
+	         DBS__File() : id(NULL), fileSize(NULL), fileBlockId(NULL) { }
 	virtual ~DBS__File() { }
 };
 #endif
 
 #ifndef SOAP_TYPE_DBS__EventCollection
-#define SOAP_TYPE_DBS__EventCollection (18)
+#define SOAP_TYPE_DBS__EventCollection (17)
 /* DBS:EventCollection */
 class SOAP_CMAC DBS__EventCollection
 {
 public:
 	int *collectionId;	/* optional element of type xsd:int */
-	int *collection_index;	/* required element of type xsd:int */
+	int *collectionIndex;	/* required element of type xsd:int */
 	int *numberOfEvents;	/* optional element of type xsd:int */
 	std::string collectionName;	/* required element of type xsd:string */
+	std::string datasetPathName;	/* required element of type xsd:string */
 	DBS__EventCollection *parent;	/* optional element of type DBS:EventCollection */
-	std::string parentageType;	/* required element of type xsd:string */
+	std::string parentageType;	/* optional element of type xsd:string */
 	std::vector<DBS__File * >fileList;	/* optional element of type DBS:File */
 public:
-	virtual int soap_type() const { return 18; } /* = unique id SOAP_TYPE_DBS__EventCollection */
+	virtual int soap_type() const { return 17; } /* = unique id SOAP_TYPE_DBS__EventCollection */
 	virtual void soap_default(struct soap*);
 	virtual void soap_serialize(struct soap*) const;
 	virtual int soap_put(struct soap*, const char*, const char*) const;
 	virtual int soap_out(struct soap*, const char*, int, const char*) const;
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
-	         DBS__EventCollection() : collectionId(NULL), collection_index(NULL), numberOfEvents(NULL), parent(NULL) { }
-	virtual ~DBS__EventCollection() { 
-		//cout<<"\n\n\n\nCalling  virtual ~DBS__EventCollection"<<endl;
-		//delete collectionId;
-		//delete numberOfEvents;
-	}
+	         DBS__EventCollection() : collectionId(NULL), collectionIndex(NULL), numberOfEvents(NULL), parent(NULL) { }
+	virtual ~DBS__EventCollection() { }
 };
 #endif
 
 #ifndef SOAP_TYPE_DBS__Block
-#define SOAP_TYPE_DBS__Block (22)
+#define SOAP_TYPE_DBS__Block (21)
 /* DBS:Block */
 class SOAP_CMAC DBS__Block
 {
 public:
 	int *blockId;	/* optional element of type xsd:int */
 	std::string blockStatusName;	/* required element of type xsd:string */
+	std::string blockName;	/* optional element of type xsd:string */
 	int *numberOfFiles;	/* required element of type xsd:int */
-	long *numberOfBytes;	/* required element of type xsd:long */
+	int *numberOfBytes;	/* required element of type xsd:int */
 	std::vector<DBS__EventCollection * >eventCollectionList;	/* optional element of type DBS:EventCollection */
 public:
-	virtual int soap_type() const { return 22; } /* = unique id SOAP_TYPE_DBS__Block */
+	virtual int soap_type() const { return 21; } /* = unique id SOAP_TYPE_DBS__Block */
 	virtual void soap_default(struct soap*);
 	virtual void soap_serialize(struct soap*) const;
 	virtual int soap_put(struct soap*, const char*, const char*) const;
@@ -198,15 +195,12 @@ public:
 	virtual void *soap_get(struct soap*, const char*, const char*);
 	virtual void *soap_in(struct soap*, const char*, const char*);
 	         DBS__Block() : blockId(NULL), numberOfFiles(NULL), numberOfBytes(NULL) { }
-	virtual ~DBS__Block() { 
-		//cout<<"\n\nCalling  virtual DBS__Block"<<endl;
-		//delete blockId;
-	}
+	virtual ~DBS__Block() { }
 };
 #endif
 
 #ifndef SOAP_TYPE_DBS__createPrimaryDatasetResponse
-#define SOAP_TYPE_DBS__createPrimaryDatasetResponse (27)
+#define SOAP_TYPE_DBS__createPrimaryDatasetResponse (26)
 /* DBS:createPrimaryDatasetResponse */
 struct DBS__createPrimaryDatasetResponse
 {
@@ -216,7 +210,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__createPrimaryDataset
-#define SOAP_TYPE_DBS__createPrimaryDataset (28)
+#define SOAP_TYPE_DBS__createPrimaryDataset (27)
 /* DBS:createPrimaryDataset */
 struct DBS__createPrimaryDataset
 {
@@ -226,7 +220,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__createProcessedDatasetResponse
-#define SOAP_TYPE_DBS__createProcessedDatasetResponse (31)
+#define SOAP_TYPE_DBS__createProcessedDatasetResponse (30)
 /* DBS:createProcessedDatasetResponse */
 struct DBS__createProcessedDatasetResponse
 {
@@ -236,7 +230,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__createProcessedDataset
-#define SOAP_TYPE_DBS__createProcessedDataset (32)
+#define SOAP_TYPE_DBS__createProcessedDataset (31)
 /* DBS:createProcessedDataset */
 struct DBS__createProcessedDataset
 {
@@ -246,7 +240,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__createFileBlockResponse
-#define SOAP_TYPE_DBS__createFileBlockResponse (35)
+#define SOAP_TYPE_DBS__createFileBlockResponse (34)
 /* DBS:createFileBlockResponse */
 struct DBS__createFileBlockResponse
 {
@@ -256,7 +250,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__createFileBlock
-#define SOAP_TYPE_DBS__createFileBlock (36)
+#define SOAP_TYPE_DBS__createFileBlock (35)
 /* DBS:createFileBlock */
 struct DBS__createFileBlock
 {
@@ -267,7 +261,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__insertEventCollectionsResponse
-#define SOAP_TYPE_DBS__insertEventCollectionsResponse (38)
+#define SOAP_TYPE_DBS__insertEventCollectionsResponse (37)
 /* DBS:insertEventCollectionsResponse */
 struct DBS__insertEventCollectionsResponse
 {
@@ -277,18 +271,17 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__insertEventCollections
-#define SOAP_TYPE_DBS__insertEventCollections (39)
+#define SOAP_TYPE_DBS__insertEventCollections (38)
 /* DBS:insertEventCollections */
 struct DBS__insertEventCollections
 {
 public:
-	std::string datasetPathName;	/* required element of type xsd:string */
 	std::vector<DBS__EventCollection * >eventCollectionList;	/* required element of type DBS:EventCollection */
 };
 #endif
 
 #ifndef SOAP_TYPE_DBS__getDatasetContentsResponse
-#define SOAP_TYPE_DBS__getDatasetContentsResponse (44)
+#define SOAP_TYPE_DBS__getDatasetContentsResponse (42)
 /* DBS:getDatasetContentsResponse */
 struct DBS__getDatasetContentsResponse
 {
@@ -298,7 +291,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__getDatasetContents
-#define SOAP_TYPE_DBS__getDatasetContents (45)
+#define SOAP_TYPE_DBS__getDatasetContents (43)
 /* DBS:getDatasetContents */
 struct DBS__getDatasetContents
 {
@@ -309,7 +302,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__getDatasetFileBlocksResponse
-#define SOAP_TYPE_DBS__getDatasetFileBlocksResponse (47)
+#define SOAP_TYPE_DBS__getDatasetFileBlocksResponse (45)
 /* DBS:getDatasetFileBlocksResponse */
 struct DBS__getDatasetFileBlocksResponse
 {
@@ -319,7 +312,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_DBS__getDatasetFileBlocks
-#define SOAP_TYPE_DBS__getDatasetFileBlocks (48)
+#define SOAP_TYPE_DBS__getDatasetFileBlocks (46)
 /* DBS:getDatasetFileBlocks */
 struct DBS__getDatasetFileBlocks
 {
@@ -328,8 +321,28 @@ public:
 };
 #endif
 
+#ifndef SOAP_TYPE_DBS__listDatasetResponse
+#define SOAP_TYPE_DBS__listDatasetResponse (50)
+/* DBS:listDatasetResponse */
+struct DBS__listDatasetResponse
+{
+public:
+	std::vector<std::string >datasetList;	/* RPC return element */	/* required element of type xsd:string */
+};
+#endif
+
+#ifndef SOAP_TYPE_DBS__listDataset
+#define SOAP_TYPE_DBS__listDataset (51)
+/* DBS:listDataset */
+struct DBS__listDataset
+{
+public:
+	std::string datasetPathName;	/* required element of type xsd:string */
+};
+#endif
+
 #ifndef SOAP_TYPE_SOAP_ENV__Header
-#define SOAP_TYPE_SOAP_ENV__Header (51)
+#define SOAP_TYPE_SOAP_ENV__Header (54)
 /* SOAP Header: */
 struct SOAP_ENV__Header
 {
@@ -339,7 +352,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_SOAP_ENV__Code
-#define SOAP_TYPE_SOAP_ENV__Code (52)
+#define SOAP_TYPE_SOAP_ENV__Code (55)
 /* SOAP Fault Code: */
 struct SOAP_ENV__Code
 {
@@ -350,7 +363,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_SOAP_ENV__Detail
-#define SOAP_TYPE_SOAP_ENV__Detail (54)
+#define SOAP_TYPE_SOAP_ENV__Detail (57)
 /* SOAP-ENV:Detail */
 struct SOAP_ENV__Detail
 {
@@ -362,7 +375,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_SOAP_ENV__Reason
-#define SOAP_TYPE_SOAP_ENV__Reason (55)
+#define SOAP_TYPE_SOAP_ENV__Reason (58)
 /* SOAP-ENV:Reason */
 struct SOAP_ENV__Reason
 {
@@ -372,7 +385,7 @@ public:
 #endif
 
 #ifndef SOAP_TYPE_SOAP_ENV__Fault
-#define SOAP_TYPE_SOAP_ENV__Fault (56)
+#define SOAP_TYPE_SOAP_ENV__Fault (59)
 /* SOAP Fault: */
 struct SOAP_ENV__Fault
 {
@@ -440,11 +453,13 @@ SOAP_FMAC5 int SOAP_FMAC6 DBS__createProcessedDataset(struct soap*, DBS__Process
 
 SOAP_FMAC5 int SOAP_FMAC6 DBS__createFileBlock(struct soap*, std::string datasetPathName, DBS__Block *block, int &fileBlockId);
 
-SOAP_FMAC5 int SOAP_FMAC6 DBS__insertEventCollections(struct soap*, std::string datasetPathName, std::vector<DBS__EventCollection * >eventCollectionList, int &result);
+SOAP_FMAC5 int SOAP_FMAC6 DBS__insertEventCollections(struct soap*, std::vector<DBS__EventCollection * >eventCollectionList, int &result);
 
 SOAP_FMAC5 int SOAP_FMAC6 DBS__getDatasetContents(struct soap*, std::string datasetPathName, bool listFiles, std::vector<DBS__Block * >&blockList);
 
 SOAP_FMAC5 int SOAP_FMAC6 DBS__getDatasetFileBlocks(struct soap*, std::string datasetPathName, std::vector<DBS__Block * >&blockList);
+
+SOAP_FMAC5 int SOAP_FMAC6 DBS__listDataset(struct soap*, std::string datasetPathName, std::vector<std::string >&datasetList);
 
 /******************************************************************************\
  *                                                                            *
@@ -459,11 +474,13 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__createProcessedDataset(struct soap *soa
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__createFileBlock(struct soap *soap, const char *soap_endpoint, const char *soap_action, std::string datasetPathName, DBS__Block *block, int &fileBlockId);
 
-SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__insertEventCollections(struct soap *soap, const char *soap_endpoint, const char *soap_action, std::string datasetPathName, std::vector<DBS__EventCollection * >eventCollectionList, int &result);
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__insertEventCollections(struct soap *soap, const char *soap_endpoint, const char *soap_action, std::vector<DBS__EventCollection * >eventCollectionList, int &result);
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__getDatasetContents(struct soap *soap, const char *soap_endpoint, const char *soap_action, std::string datasetPathName, bool listFiles, std::vector<DBS__Block * >&blockList);
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__getDatasetFileBlocks(struct soap *soap, const char *soap_endpoint, const char *soap_action, std::string datasetPathName, std::vector<DBS__Block * >&blockList);
+
+SOAP_FMAC5 int SOAP_FMAC6 soap_call_DBS__listDataset(struct soap *soap, const char *soap_endpoint, const char *soap_action, std::string datasetPathName, std::vector<std::string >&datasetList);
 
 /******************************************************************************\
  *                                                                            *
@@ -486,6 +503,8 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__insertEventCollections(struct soap*);
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__getDatasetContents(struct soap*);
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__getDatasetFileBlocks(struct soap*);
+
+SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__listDataset(struct soap*);
 
 #endif
 

@@ -20,7 +20,7 @@ class ServiceInterface:
 
 
 class ServiceLocator(ServiceInterface):
-    ServicePortType_address = "http://cmssrv22.fnal.gov:27983"
+    ServicePortType_address = "http://venom.fnal.gov:27983"
     def getServicePortTypeAddress(self):
         return ServiceLocator.ServicePortType_address
 
@@ -46,23 +46,25 @@ class ServiceSOAP:
         @param: request to createFileBlockRequest::
             _block: ns1.Block_Def, optional
               _blockId: int, optional
+              _blockName: str, optional
               _blockStatusName: str
               _eventCollectionList: ns1.EventCollection_Def, optional
                 _collectionId: int, optional
+                _collectionIndex: int, optional
                 _collectionName: str
-                _collection_index: int, optional
+                _datasetPathName: str
                 _fileList: ns1.File_Def, optional
                   _checksum: str, optional
-                  _filesize: int, optional
+                  _fileBlockId: int, optional
+                  _fileSize: int, optional
+                  _fileStatus: str
+                  _fileType: str
                   _guid: str, optional
                   _id: int, optional
-                  _inblock: int, optional
-                  _logical_name: str
-                  _status: str
-                  _type: str
+                  _logicalFileName: str
                 _numberOfEvents: int, optional
                 _parent: ns1.EventCollection_Def, optional
-                _parentageType: str
+                _parentageType: str, optional
               _numberOfBytes: int, optional
               _numberOfFiles: int, optional
             _datasetPathName: str
@@ -113,7 +115,7 @@ class ServiceSOAP:
         @param: request to createProcessedDatasetRequest::
             _processedDataset: ns1.ProcessedDataset_Def, optional
               _id: int, optional
-              _isDatasetOpen: str
+              _isDatasetOpen: boolean
               _primaryDatasetName: str
               _processedDatasetName: str
               _processingPath: ns1.ProcessingPath_Def, optional
@@ -153,23 +155,25 @@ class ServiceSOAP:
         @return: response from getDatasetContentsResponse::
             _blockList: ns1.Block_Def
               _blockId: int, optional
+              _blockName: str, optional
               _blockStatusName: str
               _eventCollectionList: ns1.EventCollection_Def, optional
                 _collectionId: int, optional
+                _collectionIndex: int, optional
                 _collectionName: str
-                _collection_index: int, optional
+                _datasetPathName: str
                 _fileList: ns1.File_Def, optional
                   _checksum: str, optional
-                  _filesize: int, optional
+                  _fileBlockId: int, optional
+                  _fileSize: int, optional
+                  _fileStatus: str
+                  _fileType: str
                   _guid: str, optional
                   _id: int, optional
-                  _inblock: int, optional
-                  _logical_name: str
-                  _status: str
-                  _type: str
+                  _logicalFileName: str
                 _numberOfEvents: int, optional
                 _parent: ns1.EventCollection_Def, optional
-                _parentageType: str
+                _parentageType: str, optional
               _numberOfBytes: int, optional
               _numberOfFiles: int, optional
         """
@@ -195,23 +199,25 @@ class ServiceSOAP:
         @return: response from getDatasetFileBlocksResponse::
             _blockList: ns1.Block_Def
               _blockId: int, optional
+              _blockName: str, optional
               _blockStatusName: str
               _eventCollectionList: ns1.EventCollection_Def, optional
                 _collectionId: int, optional
+                _collectionIndex: int, optional
                 _collectionName: str
-                _collection_index: int, optional
+                _datasetPathName: str
                 _fileList: ns1.File_Def, optional
                   _checksum: str, optional
-                  _filesize: int, optional
+                  _fileBlockId: int, optional
+                  _fileSize: int, optional
+                  _fileStatus: str
+                  _fileType: str
                   _guid: str, optional
                   _id: int, optional
-                  _inblock: int, optional
-                  _logical_name: str
-                  _status: str
-                  _type: str
+                  _logicalFileName: str
                 _numberOfEvents: int, optional
                 _parent: ns1.EventCollection_Def, optional
-                _parentageType: str
+                _parentageType: str, optional
               _numberOfBytes: int, optional
               _numberOfFiles: int, optional
         """
@@ -232,23 +238,23 @@ class ServiceSOAP:
     def insertEventCollections(self, request):
         """
         @param: request to insertEventCollectionsRequest::
-            _datasetPathName: str
             _eventCollectionList: ns1.EventCollection_Def, optional
               _collectionId: int, optional
+              _collectionIndex: int, optional
               _collectionName: str
-              _collection_index: int, optional
+              _datasetPathName: str
               _fileList: ns1.File_Def, optional
                 _checksum: str, optional
-                _filesize: int, optional
+                _fileBlockId: int, optional
+                _fileSize: int, optional
+                _fileStatus: str
+                _fileType: str
                 _guid: str, optional
                 _id: int, optional
-                _inblock: int, optional
-                _logical_name: str
-                _status: str
-                _type: str
+                _logicalFileName: str
               _numberOfEvents: int, optional
               _parent: ns1.EventCollection_Def, optional
-              _parentageType: str
+              _parentageType: str, optional
 
         @return: response from insertEventCollectionsResponse::
             _result: int
@@ -263,6 +269,28 @@ class ServiceSOAP:
 
         if not isinstance(response, insertEventCollectionsResponse) and\
             not issubclass(insertEventCollectionsResponse, response.__class__):
+            raise TypeError, "%s incorrect response type" %(response.__class__)
+        return response
+
+
+    def listDataset(self, request):
+        """
+        @param: request to listDatasetRequest::
+            _datasetPathName: str
+
+        @return: response from listDatasetResponse::
+            _datasetList: str
+        """
+
+        if not isinstance(request, listDatasetRequest) and\
+            not issubclass(listDatasetRequest, request.__class__):
+            raise TypeError, "%s incorrect request type" %(request.__class__)
+        kw = {}
+        response = self.binding.Send(None, None, request, soapaction="", **kw)
+        response = self.binding.Receive(listDatasetResponseWrapper())
+
+        if not isinstance(response, listDatasetResponse) and\
+            not issubclass(listDatasetResponse, response.__class__):
             raise TypeError, "%s incorrect response type" %(response.__class__)
         return response
 
@@ -435,3 +463,31 @@ class insertEventCollectionsResponseWrapper(insertEventCollectionsResponse):
     typecode = insertEventCollectionsResponse( name=None, ns=None ).typecode
     def __init__( self, name=None, ns=None, **kw ):
         insertEventCollectionsResponse.__init__( self, name=None, ns=None )
+
+class listDatasetRequest(ns1.listDataset_Dec): 
+    if not hasattr( ns1.listDataset_Dec(), "typecode" ):
+        typecode = ns1.listDataset_Dec()
+
+    def __init__(self, name=None, ns=None):
+        ns1.listDataset_Dec.__init__(self, name=None, ns=None)
+
+class listDatasetRequestWrapper(listDatasetRequest):
+    """wrapper for document:literal message"""
+
+    typecode = listDatasetRequest( name=None, ns=None ).typecode
+    def __init__( self, name=None, ns=None, **kw ):
+        listDatasetRequest.__init__( self, name=None, ns=None )
+
+class listDatasetResponse(ns1.listDatasetResponse_Dec): 
+    if not hasattr( ns1.listDatasetResponse_Dec(), "typecode" ):
+        typecode = ns1.listDatasetResponse_Dec()
+
+    def __init__(self, name=None, ns=None):
+        ns1.listDatasetResponse_Dec.__init__(self, name=None, ns=None)
+
+class listDatasetResponseWrapper(listDatasetResponse):
+    """wrapper for document:literal message"""
+
+    typecode = listDatasetResponse( name=None, ns=None ).typecode
+    def __init__( self, name=None, ns=None, **kw ):
+        listDatasetResponse.__init__( self, name=None, ns=None )

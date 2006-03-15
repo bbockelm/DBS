@@ -38,29 +38,30 @@
      <element name="processedDatasetName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="primaryDatasetName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="processingPath" type="DBS:ProcessingPath" minOccurs="1" maxOccurs="1" nillable="false"/>
-     <element name="isDatasetOpen" type="xsd:byte" minOccurs="1" maxOccurs="1"/>
+     <element name="isDatasetOpen" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
    </sequence>
   </complexType>
   <complexType name="File">
    <sequence>
      <element name="id" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
      <element name="guid" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-     <element name="logical-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="logicalFileName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="checksum" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-     <element name="filesize" type="xsd:long" minOccurs="0" maxOccurs="1" nillable="true"/>
-     <element name="status" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-     <element name="type" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-     <element name="inblock" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
+     <element name="fileSize" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="fileStatus" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="fileType" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="fileBlockId" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
    </sequence>
   </complexType>
   <complexType name="EventCollection">
    <sequence>
      <element name="collectionId" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
-     <element name="collection-index" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
+     <element name="collectionIndex" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
      <element name="numberOfEvents" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
      <element name="collectionName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="datasetPathName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="parent" type="DBS:EventCollection" minOccurs="0" maxOccurs="1" nillable="true"/>
-     <element name="parentageType" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="parentageType" type="xsd:string" minOccurs="0" maxOccurs="1"/>
      <element name="fileList" type="DBS:File" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
    </sequence>
   </complexType>
@@ -68,8 +69,9 @@
    <sequence>
      <element name="blockId" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
      <element name="blockStatusName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="blockName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
      <element name="numberOfFiles" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
-     <element name="numberOfBytes" type="xsd:long" minOccurs="1" maxOccurs="1" nillable="false"/>
+     <element name="numberOfBytes" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
      <element name="eventCollectionList" type="DBS:EventCollection" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
    </sequence>
   </complexType>
@@ -126,7 +128,6 @@
   <element name="insertEventCollections">
    <complexType>
     <sequence>
-     <element name="datasetPathName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="eventCollectionList" type="DBS:EventCollection" minOccurs="1" maxOccurs="unbounded" nillable="false"/>
     </sequence>
    </complexType>
@@ -169,6 +170,22 @@
    <complexType>
     <sequence>
      <element name="blockList" type="DBS:Block" minOccurs="1" maxOccurs="unbounded"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="listDataset">
+   <complexType>
+    <sequence>
+     <element name="datasetPathName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="listDatasetResponse">
+   <complexType>
+    <sequence>
+     <element name="datasetList" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
     </sequence>
    </complexType>
   </element>

@@ -1,9 +1,9 @@
-export LOG4CXX=/home/anzar/DBSDependTest/log4cxx
-export ODBCHOME=/home/anzar/DBSDependTest/unixODBC
-export ORACLE_ODBC_HOME=/home/anzar/DBSDependTest/oracleodbcinstall
+export LOG4CXX=/home/sekhri/apps/log4cxx
+export ODBCHOME=/home/sekhri/apps/unixodbc/
+export ORACLE_ODBC_HOME=/home/sekhri/apps/oracle/oracle_odbc_driver
 export DBSHOME=$PWD
-export ORACLE_HOME=/home/anzar/DBS-ORACLE/oracle-10.2.0.1/
-export SWIG_HOME=/home/anzar/DBSDependTest/swig
+export ORACLE_HOME=/home/sekhri/apps/oracle/oracle-10.2.0.1
+export SWIG_HOME=/home/sekhri/apps/swig/
 
 export GSOAPHOME=/home/sekhri/apps/gsoap/
 export LD_LIBRARY_PATH=$ODBCHOME/lib:$LOG4CXX/lib:$ORACLE_HOME/lib:$ORACLE_ODBC_HOME/lib:$LD_LIBRARY_PATH

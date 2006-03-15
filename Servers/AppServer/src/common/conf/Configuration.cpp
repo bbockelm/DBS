@@ -23,6 +23,7 @@ Configuration::Configuration() {
 		file.Find("[Server]");
 		file.GetValue("port", this->port);
 		file.GetValue("backlog", this->backlog);
+		file.GetValue("maxthreads", this->maxthreads);
 		file.GetValue("servertype", this->servertype);
 	        cout << "backlog "<<this->backlog<<endl;
 
@@ -36,6 +37,7 @@ Configuration::Configuration() {
          
 		cout << "port "<<this->port<<endl;
 		cout << "backlog "<<this->backlog<<endl;
+		cout << "maxthreads "<<this->maxthreads<<endl;
 		cout << "log "<<this->logFile<<endl;
 		cout << "dsn "<<this->dsn<<endl;
 		cout << "dbuser "<<this->dbuser<<endl;
@@ -55,6 +57,10 @@ int Configuration::getPort() {
 int Configuration::getBacklog() {
 	return this->backlog;
 }
+int Configuration::getMaxThreads() {
+	return this->maxthreads;
+}
+
 string Configuration::getLog() {
 	return this->logFile;
 }

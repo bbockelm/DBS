@@ -2,6 +2,31 @@
 #include "ManagerImpls.hpp"
 #include "Util.hpp"
 
+/************** Manager for DatasetPathManager*********************/
+DatasetPathManager::DatasetPathManager() {
+}
+
+int DatasetPathManager::write(vector<Datasetpathmultirow*> rowVector, DatasetpathMultiTable* table) {
+
+      for(int i = 0 ; i != rowVector.size(); ++i) {
+         table->addRow(rowVector.at(i));
+      }
+      return this->doWrite((TableInterface*)table, 
+                  (string)"t_processed_dataset.id");
+}
+
+int DatasetPathManager::read(Datasetpathmultirow* aRow, DatasetpathMultiTable* table) {
+      table->setDBManager(dbManager);
+      string clause = this->makeClause(table, aRow);
+      table->select(clause);
+      return 1;
+}
+
+DatasetPathManager::~DatasetPathManager() {
+      this->cleanup();
+}
+
+
 /************** Manager for EvCollViewManager*********************/
 EvCollViewManager::EvCollViewManager() {
 }
@@ -23,6 +48,31 @@ int EvCollViewManager::read(Evcollviewmultirow* aRow, EvcollviewMultiTable* tabl
 }
 
 EvCollViewManager::~EvCollViewManager() {
+      this->cleanup();
+}
+
+
+/************** Manager for EvCollViewNoParentManager*********************/
+EvCollViewNoParentManager::EvCollViewNoParentManager() {
+}
+
+int EvCollViewNoParentManager::write(vector<Evcollviewnoparentmultirow*> rowVector, EvcollviewnoparentMultiTable* table) {
+
+      for(int i = 0 ; i != rowVector.size(); ++i) {
+         table->addRow(rowVector.at(i));
+      }
+      return this->doWrite((TableInterface*)table, 
+                  (string)"t_info_evcoll.event_collection");
+}
+
+int EvCollViewNoParentManager::read(Evcollviewnoparentmultirow* aRow, EvcollviewnoparentMultiTable* table) {
+      table->setDBManager(dbManager);
+      string clause = this->makeClause(table, aRow);
+      table->select(clause);
+      return 1;
+}
+
+EvCollViewNoParentManager::~EvCollViewNoParentManager() {
       this->cleanup();
 }
 
@@ -148,6 +198,31 @@ int ProcessingPathManager::read(Processingpathmultirow* aRow, ProcessingpathMult
 }
 
 ProcessingPathManager::~ProcessingPathManager() {
+      this->cleanup();
+}
+
+
+/************** Manager for CrabEvCollFileViewManager*********************/
+CrabEvCollFileViewManager::CrabEvCollFileViewManager() {
+}
+
+int CrabEvCollFileViewManager::write(vector<Crabevcollfileviewmultirow*> rowVector, CrabevcollfileviewMultiTable* table) {
+
+      for(int i = 0 ; i != rowVector.size(); ++i) {
+         table->addRow(rowVector.at(i));
+      }
+      return this->doWrite((TableInterface*)table, 
+                  (string)"t_evcoll_file.id");
+}
+
+int CrabEvCollFileViewManager::read(Crabevcollfileviewmultirow* aRow, CrabevcollfileviewMultiTable* table) {
+      table->setDBManager(dbManager);
+      string clause = this->makeClause(table, aRow);
+      table->select(clause);
+      return 1;
+}
+
+CrabEvCollFileViewManager::~CrabEvCollFileViewManager() {
       this->cleanup();
 }
 

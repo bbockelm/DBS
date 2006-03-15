@@ -5,6 +5,7 @@ public:
 	static Configuration* instance();
 	int getPort();
 	int getBacklog();
+	int getMaxThreads();
 	std::string getLog();
 	std::string getDsn();
 	std::string getDbUser();
@@ -17,6 +18,7 @@ private:
 	static Configuration* pinstance;
 	int port;
 	int backlog;
+	int maxthreads;
 	std::string logFile;
 	std::string dsn;
 	std::string dbuser;

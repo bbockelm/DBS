@@ -6,7 +6,7 @@
 */
 #include "soapH.h"
 
-SOAP_SOURCE_STAMP("@(#) soapServer.cpp ver 2.7.6e 2006-03-08 18:05:30 GMT")
+SOAP_SOURCE_STAMP("@(#) soapServer.cpp ver 2.7.6e 2006-03-15 17:11:00 GMT")
 
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve(struct soap *soap)
@@ -83,6 +83,8 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_request(struct soap *soap)
 		return soap_serve_DBS__getDatasetContents(soap);
 	if (!soap_match_tag(soap, soap->tag, "DBS:getDatasetFileBlocks"))
 		return soap_serve_DBS__getDatasetFileBlocks(soap);
+	if (!soap_match_tag(soap, soap->tag, "DBS:listDataset"))
+		return soap_serve_DBS__listDataset(soap);
 	return soap->error = SOAP_NO_METHOD;
 }
 #endif
@@ -222,7 +224,7 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__insertEventCollections(struct soap *so
 	 || soap_envelope_end_in(soap)
 	 || soap_end_recv(soap))
 		return soap->error;
-	soap->error = DBS__insertEventCollections(soap, soap_tmp_DBS__insertEventCollections.datasetPathName, soap_tmp_DBS__insertEventCollections.eventCollectionList, soap_tmp_DBS__insertEventCollectionsResponse.result);
+	soap->error = DBS__insertEventCollections(soap, soap_tmp_DBS__insertEventCollections.eventCollectionList, soap_tmp_DBS__insertEventCollectionsResponse.result);
 	if (soap->error)
 		return soap->error;
 	soap_serializeheader(soap);
@@ -326,6 +328,47 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__getDatasetFileBlocks(struct soap *soap
 	 || soap_putheader(soap)
 	 || soap_body_begin_out(soap)
 	 || soap_put_DBS__getDatasetFileBlocksResponse(soap, &soap_tmp_DBS__getDatasetFileBlocksResponse, "DBS:getDatasetFileBlocksResponse", "")
+	 || soap_body_end_out(soap)
+	 || soap_envelope_end_out(soap)
+	 || soap_end_send(soap))
+		return soap->error;
+	return soap_closesock(soap);
+}
+
+SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__listDataset(struct soap *soap)
+{	struct DBS__listDataset soap_tmp_DBS__listDataset;
+	struct DBS__listDatasetResponse soap_tmp_DBS__listDatasetResponse;
+	soap_default_DBS__listDatasetResponse(soap, &soap_tmp_DBS__listDatasetResponse);
+	soap_default_DBS__listDataset(soap, &soap_tmp_DBS__listDataset);
+	soap->encodingStyle = NULL;
+	if (!soap_get_DBS__listDataset(soap, &soap_tmp_DBS__listDataset, "DBS:listDataset", NULL))
+		return soap->error;
+	if (soap_body_end_in(soap)
+	 || soap_envelope_end_in(soap)
+	 || soap_end_recv(soap))
+		return soap->error;
+	soap->error = DBS__listDataset(soap, soap_tmp_DBS__listDataset.datasetPathName, soap_tmp_DBS__listDatasetResponse.datasetList);
+	if (soap->error)
+		return soap->error;
+	soap_serializeheader(soap);
+	soap_serialize_DBS__listDatasetResponse(soap, &soap_tmp_DBS__listDatasetResponse);
+	if (soap_begin_count(soap))
+		return soap->error;
+	if (soap->mode & SOAP_IO_LENGTH)
+	{	if (soap_envelope_begin_out(soap)
+		 || soap_putheader(soap)
+		 || soap_body_begin_out(soap)
+		 || soap_put_DBS__listDatasetResponse(soap, &soap_tmp_DBS__listDatasetResponse, "DBS:listDatasetResponse", "")
+		 || soap_body_end_out(soap)
+		 || soap_envelope_end_out(soap))
+			 return soap->error;
+	};
+	if (soap_end_count(soap)
+	 || soap_response(soap, SOAP_OK)
+	 || soap_envelope_begin_out(soap)
+	 || soap_putheader(soap)
+	 || soap_body_begin_out(soap)
+	 || soap_put_DBS__listDatasetResponse(soap, &soap_tmp_DBS__listDatasetResponse, "DBS:listDatasetResponse", "")
 	 || soap_body_end_out(soap)
 	 || soap_envelope_end_out(soap)
 	 || soap_end_send(soap))

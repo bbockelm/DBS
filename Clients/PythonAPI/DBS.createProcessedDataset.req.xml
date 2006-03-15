@@ -23,7 +23,7 @@
      </application>
      <dataTier></dataTier>
     </processingPath>
-    <isDatasetOpen>0</isDatasetOpen>
+    <isDatasetOpen>false</isDatasetOpen>
    </processedDataset>
   </DBS:createProcessedDataset>
  </SOAP-ENV:Body>

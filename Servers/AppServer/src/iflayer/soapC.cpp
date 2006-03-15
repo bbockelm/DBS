@@ -6,9 +6,8 @@
 */
 
 #include "soapH.h"
-#include <iostream>
-using namespace std;
-SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.7.6e 2006-03-08 18:05:30 GMT")
+
+SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.7.6e 2006-03-15 17:11:00 GMT")
 
 
 #ifndef WITH_NOGLOBAL
@@ -146,8 +145,6 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		return soap_in_byte(soap, NULL, NULL, "xsd:byte");
 	case SOAP_TYPE_int:
 		return soap_in_int(soap, NULL, NULL, "xsd:int");
-	case SOAP_TYPE_long:
-		return soap_in_long(soap, NULL, NULL, "xsd:long");
 	case SOAP_TYPE_bool:
 		return soap_in_bool(soap, NULL, NULL, "xsd:boolean");
 	case SOAP_TYPE_DBS__Block:
@@ -166,6 +163,10 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		return soap_in_std__string(soap, NULL, NULL, "xsd:string");
 	case SOAP_TYPE_DBS__PrimaryDataset:
 		return soap_in_DBS__PrimaryDataset(soap, NULL, NULL, "DBS:PrimaryDataset");
+	case SOAP_TYPE_DBS__listDataset:
+		return soap_in_DBS__listDataset(soap, NULL, NULL, "DBS:listDataset");
+	case SOAP_TYPE_DBS__listDatasetResponse:
+		return soap_in_DBS__listDatasetResponse(soap, NULL, NULL, "DBS:listDatasetResponse");
 	case SOAP_TYPE_DBS__getDatasetFileBlocks:
 		return soap_in_DBS__getDatasetFileBlocks(soap, NULL, NULL, "DBS:getDatasetFileBlocks");
 	case SOAP_TYPE_DBS__getDatasetFileBlocksResponse:
@@ -200,8 +201,6 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		return soap_in_PointerToDBS__File(soap, NULL, NULL, "DBS:File");
 	case SOAP_TYPE_PointerToDBS__EventCollection:
 		return soap_in_PointerToDBS__EventCollection(soap, NULL, NULL, "DBS:EventCollection");
-	case SOAP_TYPE_PointerTolong:
-		return soap_in_PointerTolong(soap, NULL, NULL, "xsd:long");
 	case SOAP_TYPE_PointerToDBS__ProcessingPath:
 		return soap_in_PointerToDBS__ProcessingPath(soap, NULL, NULL, "DBS:ProcessingPath");
 	case SOAP_TYPE_PointerToDBS__Application:
@@ -229,10 +228,6 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		if (!soap_match_tag(soap, t, "xsd:int"))
 		{	*type = SOAP_TYPE_int;
 			return soap_in_int(soap, NULL, NULL, NULL);
-		}
-		if (!soap_match_tag(soap, t, "xsd:long"))
-		{	*type = SOAP_TYPE_long;
-			return soap_in_long(soap, NULL, NULL, NULL);
 		}
 		if (!soap_match_tag(soap, t, "xsd:boolean"))
 		{	*type = SOAP_TYPE_bool;
@@ -269,6 +264,14 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		if (!soap_match_tag(soap, t, "DBS:PrimaryDataset"))
 		{	*type = SOAP_TYPE_DBS__PrimaryDataset;
 			return soap_in_DBS__PrimaryDataset(soap, NULL, NULL, NULL);
+		}
+		if (!soap_match_tag(soap, t, "DBS:listDataset"))
+		{	*type = SOAP_TYPE_DBS__listDataset;
+			return soap_in_DBS__listDataset(soap, NULL, NULL, NULL);
+		}
+		if (!soap_match_tag(soap, t, "DBS:listDatasetResponse"))
+		{	*type = SOAP_TYPE_DBS__listDatasetResponse;
+			return soap_in_DBS__listDatasetResponse(soap, NULL, NULL, NULL);
 		}
 		if (!soap_match_tag(soap, t, "DBS:getDatasetFileBlocks"))
 		{	*type = SOAP_TYPE_DBS__getDatasetFileBlocks;
@@ -389,8 +392,6 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap *soap, const void *ptr, co
 		return soap_out_byte(soap, tag, id, (const char *)ptr, "xsd:byte");
 	case SOAP_TYPE_int:
 		return soap_out_int(soap, tag, id, (const int *)ptr, "xsd:int");
-	case SOAP_TYPE_long:
-		return soap_out_long(soap, tag, id, (const long *)ptr, "xsd:long");
 	case SOAP_TYPE_bool:
 		return soap_out_bool(soap, tag, id, (const bool *)ptr, "xsd:boolean");
 	case SOAP_TYPE_DBS__Block:
@@ -409,6 +410,10 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap *soap, const void *ptr, co
 		return soap_out_std__string(soap, tag, id, (const std::string *)ptr, "xsd:string");
 	case SOAP_TYPE_DBS__PrimaryDataset:
 		return ((DBS__PrimaryDataset *)ptr)->soap_out(soap, tag, id, "DBS:PrimaryDataset");
+	case SOAP_TYPE_DBS__listDataset:
+		return soap_out_DBS__listDataset(soap, tag, id, (const struct DBS__listDataset *)ptr, "DBS:listDataset");
+	case SOAP_TYPE_DBS__listDatasetResponse:
+		return soap_out_DBS__listDatasetResponse(soap, tag, id, (const struct DBS__listDatasetResponse *)ptr, "DBS:listDatasetResponse");
 	case SOAP_TYPE_DBS__getDatasetFileBlocks:
 		return soap_out_DBS__getDatasetFileBlocks(soap, tag, id, (const struct DBS__getDatasetFileBlocks *)ptr, "DBS:getDatasetFileBlocks");
 	case SOAP_TYPE_DBS__getDatasetFileBlocksResponse:
@@ -443,8 +448,6 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap *soap, const void *ptr, co
 		return soap_out_PointerToDBS__File(soap, tag, id, (DBS__File *const*)ptr, "DBS:File");
 	case SOAP_TYPE_PointerToDBS__EventCollection:
 		return soap_out_PointerToDBS__EventCollection(soap, tag, id, (DBS__EventCollection *const*)ptr, "DBS:EventCollection");
-	case SOAP_TYPE_PointerTolong:
-		return soap_out_PointerTolong(soap, tag, id, (long *const*)ptr, "xsd:long");
 	case SOAP_TYPE_PointerToDBS__ProcessingPath:
 		return soap_out_PointerToDBS__ProcessingPath(soap, tag, id, (DBS__ProcessingPath *const*)ptr, "DBS:ProcessingPath");
 	case SOAP_TYPE_PointerToDBS__Application:
@@ -489,6 +492,12 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_markelement(struct soap *soap, const void *ptr, 
 		break;
 	case SOAP_TYPE_DBS__PrimaryDataset:
 		((DBS__PrimaryDataset *)ptr)->soap_serialize(soap);
+		break;
+	case SOAP_TYPE_DBS__listDataset:
+		soap_serialize_DBS__listDataset(soap, (const struct DBS__listDataset *)ptr);
+		break;
+	case SOAP_TYPE_DBS__listDatasetResponse:
+		soap_serialize_DBS__listDatasetResponse(soap, (const struct DBS__listDatasetResponse *)ptr);
 		break;
 	case SOAP_TYPE_DBS__getDatasetFileBlocks:
 		soap_serialize_DBS__getDatasetFileBlocks(soap, (const struct DBS__getDatasetFileBlocks *)ptr);
@@ -540,9 +549,6 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_markelement(struct soap *soap, const void *ptr, 
 		break;
 	case SOAP_TYPE_PointerToDBS__EventCollection:
 		soap_serialize_PointerToDBS__EventCollection(soap, (DBS__EventCollection *const*)ptr);
-		break;
-	case SOAP_TYPE_PointerTolong:
-		soap_serialize_PointerTolong(soap, (long *const*)ptr);
 		break;
 	case SOAP_TYPE_PointerToDBS__ProcessingPath:
 		soap_serialize_PointerToDBS__ProcessingPath(soap, (DBS__ProcessingPath *const*)ptr);
@@ -607,6 +613,12 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_instantiate(struct soap *soap, int t, const ch
 		return (void*)soap_instantiate_DBS__getDatasetFileBlocksResponse(soap, -1, type, arrayType, n);
 	case SOAP_TYPE_DBS__getDatasetFileBlocks:
 		return (void*)soap_instantiate_DBS__getDatasetFileBlocks(soap, -1, type, arrayType, n);
+	case SOAP_TYPE_DBS__listDatasetResponse:
+		return (void*)soap_instantiate_DBS__listDatasetResponse(soap, -1, type, arrayType, n);
+	case SOAP_TYPE_DBS__listDataset:
+		return (void*)soap_instantiate_DBS__listDataset(soap, -1, type, arrayType, n);
+	case SOAP_TYPE_std__vectorTemplateOfstd__string:
+		return (void*)soap_instantiate_std__vectorTemplateOfstd__string(soap, -1, type, arrayType, n);
 	case SOAP_TYPE_std__vectorTemplateOfPointerToDBS__Block:
 		return (void*)soap_instantiate_std__vectorTemplateOfPointerToDBS__Block(soap, -1, type, arrayType, n);
 	case SOAP_TYPE_std__vectorTemplateOfPointerToDBS__EventCollection:
@@ -618,9 +630,7 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_instantiate(struct soap *soap, int t, const ch
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
-{
-	//cout<<"INSIDE SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete"<<endl;
-	switch (p->type)
+{	switch (p->type)
 	{
 	case SOAP_TYPE_std__string:
 		if (p->size < 0)
@@ -659,14 +669,12 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 			delete[] (DBS__File*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__EventCollection:
-		//cout<<"        case SOAP_TYPE_DBS__EventCollection:"<<endl;
 		if (p->size < 0)
 			delete (DBS__EventCollection*)p->ptr;
 		else
 			delete[] (DBS__EventCollection*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__Block:
-		//cout<<"        case SOAP_TYPE_DBS__Block:"<<endl;
 		if (p->size < 0)
 			delete (DBS__Block*)p->ptr;
 		else
@@ -744,6 +752,18 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 		else
 			delete[] (struct DBS__getDatasetFileBlocks*)p->ptr;
 		break;
+	case SOAP_TYPE_DBS__listDatasetResponse:
+		if (p->size < 0)
+			delete (struct DBS__listDatasetResponse*)p->ptr;
+		else
+			delete[] (struct DBS__listDatasetResponse*)p->ptr;
+		break;
+	case SOAP_TYPE_DBS__listDataset:
+		if (p->size < 0)
+			delete (struct DBS__listDataset*)p->ptr;
+		else
+			delete[] (struct DBS__listDataset*)p->ptr;
+		break;
 	case SOAP_TYPE_SOAP_ENV__Header:
 		if (p->size < 0)
 			delete (struct SOAP_ENV__Header*)p->ptr;
@@ -773,6 +793,12 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 			delete (struct SOAP_ENV__Fault*)p->ptr;
 		else
 			delete[] (struct SOAP_ENV__Fault*)p->ptr;
+		break;
+	case SOAP_TYPE_std__vectorTemplateOfstd__string:
+		if (p->size < 0)
+			delete (std::vector<std::string >*)p->ptr;
+		else
+			delete[] (std::vector<std::string >*)p->ptr;
 		break;
 	case SOAP_TYPE_std__vectorTemplateOfPointerToDBS__Block:
 		if (p->size < 0)
@@ -806,6 +832,10 @@ SOAP_FMAC3 void* SOAP_FMAC4 soap_container_id_forward(struct soap *soap, const c
 SOAP_FMAC3 void SOAP_FMAC4 soap_container_insert(struct soap *soap, int st, int tt, void *p, size_t len, const void *q, size_t n)
 {	switch (tt)
 	{
+	case SOAP_TYPE_std__vectorTemplateOfstd__string:
+		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Container insert type=%d in %d location=%p object=%p len=%lu\n", st, tt, p, q, (unsigned long)len));
+		(*(std::vector<std::string >*)p)[len] = *(std::string *)q;
+		break;
 	case SOAP_TYPE_std__vectorTemplateOfPointerToDBS__Block:
 		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Container insert type=%d in %d location=%p object=%p len=%lu\n", st, tt, p, q, (unsigned long)len));
 		(*(std::vector<DBS__Block * >*)p)[len] = *(DBS__Block **)q;
@@ -889,40 +919,6 @@ SOAP_FMAC3 int * SOAP_FMAC4 soap_get_int(struct soap *soap, int *p, const char *
 SOAP_FMAC3 int * SOAP_FMAC4 soap_in_int(struct soap *soap, const char *tag, int *a, const char *type)
 {
 	return soap_inint(soap, tag, a, type, SOAP_TYPE_int);
-}
-
-SOAP_FMAC3 void SOAP_FMAC4 soap_default_long(struct soap *soap, long *a)
-{	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_long
-	*a = SOAP_DEFAULT_long;
-#else
-	*a = (long)0;
-#endif
-}
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_long(struct soap *soap, const long *a, const char *tag, const char *type)
-{
-	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_long);
-	if (soap_out_long(soap, tag, id, a, type))
-		return soap->error;
-	return soap_putindependent(soap);
-}
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_long(struct soap *soap, const char *tag, int id, const long *a, const char *type)
-{
-	return soap_outlong(soap, tag, id, a, type, SOAP_TYPE_long);
-}
-
-SOAP_FMAC3 long * SOAP_FMAC4 soap_get_long(struct soap *soap, long *p, const char *tag, const char *type)
-{
-	if ((p = soap_in_long(soap, tag, p, type)))
-		soap_getindependent(soap);
-	return p;
-}
-
-SOAP_FMAC3 long * SOAP_FMAC4 soap_in_long(struct soap *soap, const char *tag, long *a, const char *type)
-{
-	return soap_inlong(soap, tag, a, type, SOAP_TYPE_long);
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_bool(struct soap *soap, bool *a)
@@ -1013,8 +1009,9 @@ void DBS__Block::soap_serialize(struct soap *soap) const
 	(void)soap; /* appease -Wall -Werror */
 	soap_serialize_PointerToint(soap, &((DBS__Block*)this)->blockId);
 	soap_serialize_std__string(soap, &((DBS__Block*)this)->blockStatusName);
+	soap_serialize_std__string(soap, &((DBS__Block*)this)->blockName);
 	soap_serialize_PointerToint(soap, &((DBS__Block*)this)->numberOfFiles);
-	soap_serialize_PointerTolong(soap, &((DBS__Block*)this)->numberOfBytes);
+	soap_serialize_PointerToint(soap, &((DBS__Block*)this)->numberOfBytes);
 	soap_serialize_std__vectorTemplateOfPointerToDBS__EventCollection(soap, &((DBS__Block*)this)->eventCollectionList);
 }
 
@@ -1023,6 +1020,7 @@ void DBS__Block::soap_default(struct soap *soap)
 	(void)soap; /* appease -Wall -Werror */
 	((DBS__Block*)this)->blockId = NULL;
 	soap_default_std__string(soap, &((DBS__Block*)this)->blockStatusName);
+	soap_default_std__string(soap, &((DBS__Block*)this)->blockName);
 	((DBS__Block*)this)->numberOfFiles = NULL;
 	((DBS__Block*)this)->numberOfBytes = NULL;
 	soap_default_std__vectorTemplateOfPointerToDBS__EventCollection(soap, &((DBS__Block*)this)->eventCollectionList);
@@ -1046,8 +1044,9 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__Block(struct soap *soap, const char *tag
 	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__Block), type);
 	soap_out_PointerToint(soap, "blockId", -1, &(((DBS__Block*)a)->blockId), "");
 	soap_out_std__string(soap, "blockStatusName", -1, &(((DBS__Block*)a)->blockStatusName), "");
+	soap_out_std__string(soap, "blockName", -1, &(((DBS__Block*)a)->blockName), "");
 	soap_out_PointerToint(soap, "numberOfFiles", -1, &(((DBS__Block*)a)->numberOfFiles), "");
-	soap_out_PointerTolong(soap, "numberOfBytes", -1, &(((DBS__Block*)a)->numberOfBytes), "");
+	soap_out_PointerToint(soap, "numberOfBytes", -1, &(((DBS__Block*)a)->numberOfBytes), "");
 	soap_out_std__vectorTemplateOfPointerToDBS__EventCollection(soap, "eventCollectionList", -1, &(((DBS__Block*)a)->eventCollectionList), "");
 	soap_element_end_out(soap, tag);
 	return SOAP_OK;
@@ -1084,7 +1083,7 @@ SOAP_FMAC3 DBS__Block * SOAP_FMAC4 soap_in_DBS__Block(struct soap *soap, const c
 			return (DBS__Block *)a->soap_in(soap, tag, type);
 		}
 	}
-	short soap_flag_blockId1 = 1, soap_flag_blockStatusName1 = 1, soap_flag_numberOfFiles1 = 1, soap_flag_numberOfBytes1 = 1;
+	short soap_flag_blockId1 = 1, soap_flag_blockStatusName1 = 1, soap_flag_blockName1 = 1, soap_flag_numberOfFiles1 = 1, soap_flag_numberOfBytes1 = 1;
 	if (soap->body && !*soap->href)
 	{
 		for (;;)
@@ -1099,13 +1098,18 @@ SOAP_FMAC3 DBS__Block * SOAP_FMAC4 soap_in_DBS__Block(struct soap *soap, const c
 				{	soap_flag_blockStatusName1--;
 					continue;
 				}
+			if (soap_flag_blockName1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "blockName", &(((DBS__Block*)a)->blockName), "xsd:string"))
+				{	soap_flag_blockName1--;
+					continue;
+				}
 			if (soap_flag_numberOfFiles1 && soap->error == SOAP_TAG_MISMATCH)
 				if (soap_in_PointerToint(soap, "numberOfFiles", &(((DBS__Block*)a)->numberOfFiles), "xsd:int"))
 				{	soap_flag_numberOfFiles1--;
 					continue;
 				}
 			if (soap_flag_numberOfBytes1 && soap->error == SOAP_TAG_MISMATCH)
-				if (soap_in_PointerTolong(soap, "numberOfBytes", &(((DBS__Block*)a)->numberOfBytes), "xsd:long"))
+				if (soap_in_PointerToint(soap, "numberOfBytes", &(((DBS__Block*)a)->numberOfBytes), "xsd:int"))
 				{	soap_flag_numberOfBytes1--;
 					continue;
 				}
@@ -1139,9 +1143,7 @@ SOAP_FMAC5 DBS__Block * SOAP_FMAC6 soap_new_DBS__Block(struct soap *soap, int n)
 }
 
 SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__Block(struct soap *soap, DBS__Block *p)
-{	
-	//cout<<"INSIDE soap_delete_DBS__Block"<<endl;
-	soap_delete(soap, p);
+{	soap_delete(soap, p);
 }
 
 SOAP_FMAC3 DBS__Block * SOAP_FMAC4 soap_instantiate_DBS__Block(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)
@@ -1174,9 +1176,10 @@ void DBS__EventCollection::soap_serialize(struct soap *soap) const
 {
 	(void)soap; /* appease -Wall -Werror */
 	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->collectionId);
-	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->collection_index);
+	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->collectionIndex);
 	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->numberOfEvents);
 	soap_serialize_std__string(soap, &((DBS__EventCollection*)this)->collectionName);
+	soap_serialize_std__string(soap, &((DBS__EventCollection*)this)->datasetPathName);
 	soap_serialize_PointerToDBS__EventCollection(soap, &((DBS__EventCollection*)this)->parent);
 	soap_serialize_std__string(soap, &((DBS__EventCollection*)this)->parentageType);
 	soap_serialize_std__vectorTemplateOfPointerToDBS__File(soap, &((DBS__EventCollection*)this)->fileList);
@@ -1186,9 +1189,10 @@ void DBS__EventCollection::soap_default(struct soap *soap)
 {
 	(void)soap; /* appease -Wall -Werror */
 	((DBS__EventCollection*)this)->collectionId = NULL;
-	((DBS__EventCollection*)this)->collection_index = NULL;
+	((DBS__EventCollection*)this)->collectionIndex = NULL;
 	((DBS__EventCollection*)this)->numberOfEvents = NULL;
 	soap_default_std__string(soap, &((DBS__EventCollection*)this)->collectionName);
+	soap_default_std__string(soap, &((DBS__EventCollection*)this)->datasetPathName);
 	((DBS__EventCollection*)this)->parent = NULL;
 	soap_default_std__string(soap, &((DBS__EventCollection*)this)->parentageType);
 	soap_default_std__vectorTemplateOfPointerToDBS__File(soap, &((DBS__EventCollection*)this)->fileList);
@@ -1211,9 +1215,10 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__EventCollection(struct soap *soap, const
 {
 	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__EventCollection), type);
 	soap_out_PointerToint(soap, "collectionId", -1, &(((DBS__EventCollection*)a)->collectionId), "");
-	soap_out_PointerToint(soap, "collection-index", -1, &(((DBS__EventCollection*)a)->collection_index), "");
+	soap_out_PointerToint(soap, "collectionIndex", -1, &(((DBS__EventCollection*)a)->collectionIndex), "");
 	soap_out_PointerToint(soap, "numberOfEvents", -1, &(((DBS__EventCollection*)a)->numberOfEvents), "");
 	soap_out_std__string(soap, "collectionName", -1, &(((DBS__EventCollection*)a)->collectionName), "");
+	soap_out_std__string(soap, "datasetPathName", -1, &(((DBS__EventCollection*)a)->datasetPathName), "");
 	soap_out_PointerToDBS__EventCollection(soap, "parent", -1, &(((DBS__EventCollection*)a)->parent), "");
 	soap_out_std__string(soap, "parentageType", -1, &(((DBS__EventCollection*)a)->parentageType), "");
 	soap_out_std__vectorTemplateOfPointerToDBS__File(soap, "fileList", -1, &(((DBS__EventCollection*)a)->fileList), "");
@@ -1252,7 +1257,7 @@ SOAP_FMAC3 DBS__EventCollection * SOAP_FMAC4 soap_in_DBS__EventCollection(struct
 			return (DBS__EventCollection *)a->soap_in(soap, tag, type);
 		}
 	}
-	short soap_flag_collectionId1 = 1, soap_flag_collection_index1 = 1, soap_flag_numberOfEvents1 = 1, soap_flag_collectionName1 = 1, soap_flag_parent1 = 1, soap_flag_parentageType1 = 1;
+	short soap_flag_collectionId1 = 1, soap_flag_collectionIndex1 = 1, soap_flag_numberOfEvents1 = 1, soap_flag_collectionName1 = 1, soap_flag_datasetPathName1 = 1, soap_flag_parent1 = 1, soap_flag_parentageType1 = 1;
 	if (soap->body && !*soap->href)
 	{
 		for (;;)
@@ -1262,9 +1267,9 @@ SOAP_FMAC3 DBS__EventCollection * SOAP_FMAC4 soap_in_DBS__EventCollection(struct
 				{	soap_flag_collectionId1--;
 					continue;
 				}
-			if (soap_flag_collection_index1 && soap->error == SOAP_TAG_MISMATCH)
-				if (soap_in_PointerToint(soap, "collection-index", &(((DBS__EventCollection*)a)->collection_index), "xsd:int"))
-				{	soap_flag_collection_index1--;
+			if (soap_flag_collectionIndex1 && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerToint(soap, "collectionIndex", &(((DBS__EventCollection*)a)->collectionIndex), "xsd:int"))
+				{	soap_flag_collectionIndex1--;
 					continue;
 				}
 			if (soap_flag_numberOfEvents1 && soap->error == SOAP_TAG_MISMATCH)
@@ -1275,6 +1280,11 @@ SOAP_FMAC3 DBS__EventCollection * SOAP_FMAC4 soap_in_DBS__EventCollection(struct
 			if (soap_flag_collectionName1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
 				if (soap_in_std__string(soap, "collectionName", &(((DBS__EventCollection*)a)->collectionName), "xsd:string"))
 				{	soap_flag_collectionName1--;
+					continue;
+				}
+			if (soap_flag_datasetPathName1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "datasetPathName", &(((DBS__EventCollection*)a)->datasetPathName), "xsd:string"))
+				{	soap_flag_datasetPathName1--;
 					continue;
 				}
 			if (soap_flag_parent1 && soap->error == SOAP_TAG_MISMATCH)
@@ -1297,7 +1307,7 @@ SOAP_FMAC3 DBS__EventCollection * SOAP_FMAC4 soap_in_DBS__EventCollection(struct
 			if (soap->error)
 				return NULL;
 		}
-		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_collection_index1 > 0 || soap_flag_collectionName1 > 0 || soap_flag_parentageType1 > 0))
+		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_collectionIndex1 > 0 || soap_flag_collectionName1 > 0 || soap_flag_datasetPathName1 > 0))
 		{	soap->error = SOAP_OCCURS;
 			return NULL;
 		}
@@ -1351,12 +1361,12 @@ void DBS__File::soap_serialize(struct soap *soap) const
 	(void)soap; /* appease -Wall -Werror */
 	soap_serialize_PointerToint(soap, &((DBS__File*)this)->id);
 	soap_serialize_std__string(soap, &((DBS__File*)this)->guid);
-	soap_serialize_std__string(soap, &((DBS__File*)this)->logical_name);
+	soap_serialize_std__string(soap, &((DBS__File*)this)->logicalFileName);
 	soap_serialize_std__string(soap, &((DBS__File*)this)->checksum);
-	soap_serialize_PointerTolong(soap, &((DBS__File*)this)->filesize);
-	soap_serialize_std__string(soap, &((DBS__File*)this)->status);
-	soap_serialize_std__string(soap, &((DBS__File*)this)->type);
-	soap_serialize_PointerToint(soap, &((DBS__File*)this)->inblock);
+	soap_serialize_PointerToint(soap, &((DBS__File*)this)->fileSize);
+	soap_serialize_std__string(soap, &((DBS__File*)this)->fileStatus);
+	soap_serialize_std__string(soap, &((DBS__File*)this)->fileType);
+	soap_serialize_PointerToint(soap, &((DBS__File*)this)->fileBlockId);
 }
 
 void DBS__File::soap_default(struct soap *soap)
@@ -1364,12 +1374,12 @@ void DBS__File::soap_default(struct soap *soap)
 	(void)soap; /* appease -Wall -Werror */
 	((DBS__File*)this)->id = NULL;
 	soap_default_std__string(soap, &((DBS__File*)this)->guid);
-	soap_default_std__string(soap, &((DBS__File*)this)->logical_name);
+	soap_default_std__string(soap, &((DBS__File*)this)->logicalFileName);
 	soap_default_std__string(soap, &((DBS__File*)this)->checksum);
-	((DBS__File*)this)->filesize = NULL;
-	soap_default_std__string(soap, &((DBS__File*)this)->status);
-	soap_default_std__string(soap, &((DBS__File*)this)->type);
-	((DBS__File*)this)->inblock = NULL;
+	((DBS__File*)this)->fileSize = NULL;
+	soap_default_std__string(soap, &((DBS__File*)this)->fileStatus);
+	soap_default_std__string(soap, &((DBS__File*)this)->fileType);
+	((DBS__File*)this)->fileBlockId = NULL;
 }
 
 int DBS__File::soap_put(struct soap *soap, const char *tag, const  char *type) const
@@ -1390,12 +1400,12 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__File(struct soap *soap, const char *tag,
 	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__File), type);
 	soap_out_PointerToint(soap, "id", -1, &(((DBS__File*)a)->id), "");
 	soap_out_std__string(soap, "guid", -1, &(((DBS__File*)a)->guid), "");
-	soap_out_std__string(soap, "logical-name", -1, &(((DBS__File*)a)->logical_name), "");
+	soap_out_std__string(soap, "logicalFileName", -1, &(((DBS__File*)a)->logicalFileName), "");
 	soap_out_std__string(soap, "checksum", -1, &(((DBS__File*)a)->checksum), "");
-	soap_out_PointerTolong(soap, "filesize", -1, &(((DBS__File*)a)->filesize), "");
-	soap_out_std__string(soap, "status", -1, &(((DBS__File*)a)->status), "");
-	soap_out_std__string(soap, "type", -1, &(((DBS__File*)a)->type), "");
-	soap_out_PointerToint(soap, "inblock", -1, &(((DBS__File*)a)->inblock), "");
+	soap_out_PointerToint(soap, "fileSize", -1, &(((DBS__File*)a)->fileSize), "");
+	soap_out_std__string(soap, "fileStatus", -1, &(((DBS__File*)a)->fileStatus), "");
+	soap_out_std__string(soap, "fileType", -1, &(((DBS__File*)a)->fileType), "");
+	soap_out_PointerToint(soap, "fileBlockId", -1, &(((DBS__File*)a)->fileBlockId), "");
 	soap_element_end_out(soap, tag);
 	return SOAP_OK;
 }
@@ -1431,7 +1441,7 @@ SOAP_FMAC3 DBS__File * SOAP_FMAC4 soap_in_DBS__File(struct soap *soap, const cha
 			return (DBS__File *)a->soap_in(soap, tag, type);
 		}
 	}
-	short soap_flag_id1 = 1, soap_flag_guid1 = 1, soap_flag_logical_name1 = 1, soap_flag_checksum1 = 1, soap_flag_filesize1 = 1, soap_flag_status1 = 1, soap_flag_type1 = 1, soap_flag_inblock1 = 1;
+	short soap_flag_id1 = 1, soap_flag_guid1 = 1, soap_flag_logicalFileName1 = 1, soap_flag_checksum1 = 1, soap_flag_fileSize1 = 1, soap_flag_fileStatus1 = 1, soap_flag_fileType1 = 1, soap_flag_fileBlockId1 = 1;
 	if (soap->body && !*soap->href)
 	{
 		for (;;)
@@ -1446,9 +1456,9 @@ SOAP_FMAC3 DBS__File * SOAP_FMAC4 soap_in_DBS__File(struct soap *soap, const cha
 				{	soap_flag_guid1--;
 					continue;
 				}
-			if (soap_flag_logical_name1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_std__string(soap, "logical-name", &(((DBS__File*)a)->logical_name), "xsd:string"))
-				{	soap_flag_logical_name1--;
+			if (soap_flag_logicalFileName1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "logicalFileName", &(((DBS__File*)a)->logicalFileName), "xsd:string"))
+				{	soap_flag_logicalFileName1--;
 					continue;
 				}
 			if (soap_flag_checksum1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
@@ -1456,24 +1466,24 @@ SOAP_FMAC3 DBS__File * SOAP_FMAC4 soap_in_DBS__File(struct soap *soap, const cha
 				{	soap_flag_checksum1--;
 					continue;
 				}
-			if (soap_flag_filesize1 && soap->error == SOAP_TAG_MISMATCH)
-				if (soap_in_PointerTolong(soap, "filesize", &(((DBS__File*)a)->filesize), "xsd:long"))
-				{	soap_flag_filesize1--;
+			if (soap_flag_fileSize1 && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerToint(soap, "fileSize", &(((DBS__File*)a)->fileSize), "xsd:int"))
+				{	soap_flag_fileSize1--;
 					continue;
 				}
-			if (soap_flag_status1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_std__string(soap, "status", &(((DBS__File*)a)->status), "xsd:string"))
-				{	soap_flag_status1--;
+			if (soap_flag_fileStatus1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "fileStatus", &(((DBS__File*)a)->fileStatus), "xsd:string"))
+				{	soap_flag_fileStatus1--;
 					continue;
 				}
-			if (soap_flag_type1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_std__string(soap, "type", &(((DBS__File*)a)->type), "xsd:string"))
-				{	soap_flag_type1--;
+			if (soap_flag_fileType1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "fileType", &(((DBS__File*)a)->fileType), "xsd:string"))
+				{	soap_flag_fileType1--;
 					continue;
 				}
-			if (soap_flag_inblock1 && soap->error == SOAP_TAG_MISMATCH)
-				if (soap_in_PointerToint(soap, "inblock", &(((DBS__File*)a)->inblock), "xsd:int"))
-				{	soap_flag_inblock1--;
+			if (soap_flag_fileBlockId1 && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerToint(soap, "fileBlockId", &(((DBS__File*)a)->fileBlockId), "xsd:int"))
+				{	soap_flag_fileBlockId1--;
 					continue;
 				}
 			if (soap->error == SOAP_TAG_MISMATCH)
@@ -1483,7 +1493,7 @@ SOAP_FMAC3 DBS__File * SOAP_FMAC4 soap_in_DBS__File(struct soap *soap, const cha
 			if (soap->error)
 				return NULL;
 		}
-		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_logical_name1 > 0 || soap_flag_status1 > 0 || soap_flag_type1 > 0 || soap_flag_inblock1 > 0))
+		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_logicalFileName1 > 0 || soap_flag_fileStatus1 > 0 || soap_flag_fileType1 > 0 || soap_flag_fileBlockId1 > 0))
 		{	soap->error = SOAP_OCCURS;
 			return NULL;
 		}
@@ -1539,7 +1549,6 @@ void DBS__ProcessedDataset::soap_serialize(struct soap *soap) const
 	soap_serialize_std__string(soap, &((DBS__ProcessedDataset*)this)->processedDatasetName);
 	soap_serialize_std__string(soap, &((DBS__ProcessedDataset*)this)->primaryDatasetName);
 	soap_serialize_PointerToDBS__ProcessingPath(soap, &((DBS__ProcessedDataset*)this)->processingPath);
-	soap_embedded(soap, &((DBS__ProcessedDataset*)this)->isDatasetOpen, SOAP_TYPE_byte);
 }
 
 void DBS__ProcessedDataset::soap_default(struct soap *soap)
@@ -1549,7 +1558,7 @@ void DBS__ProcessedDataset::soap_default(struct soap *soap)
 	soap_default_std__string(soap, &((DBS__ProcessedDataset*)this)->processedDatasetName);
 	soap_default_std__string(soap, &((DBS__ProcessedDataset*)this)->primaryDatasetName);
 	((DBS__ProcessedDataset*)this)->processingPath = NULL;
-	soap_default_byte(soap, &((DBS__ProcessedDataset*)this)->isDatasetOpen);
+	soap_default_bool(soap, &((DBS__ProcessedDataset*)this)->isDatasetOpen);
 }
 
 int DBS__ProcessedDataset::soap_put(struct soap *soap, const char *tag, const  char *type) const
@@ -1572,7 +1581,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__ProcessedDataset(struct soap *soap, cons
 	soap_out_std__string(soap, "processedDatasetName", -1, &(((DBS__ProcessedDataset*)a)->processedDatasetName), "");
 	soap_out_std__string(soap, "primaryDatasetName", -1, &(((DBS__ProcessedDataset*)a)->primaryDatasetName), "");
 	soap_out_PointerToDBS__ProcessingPath(soap, "processingPath", -1, &(((DBS__ProcessedDataset*)a)->processingPath), "");
-	soap_out_byte(soap, "isDatasetOpen", -1, &(((DBS__ProcessedDataset*)a)->isDatasetOpen), "");
+	soap_out_bool(soap, "isDatasetOpen", -1, &(((DBS__ProcessedDataset*)a)->isDatasetOpen), "");
 	soap_element_end_out(soap, tag);
 	return SOAP_OK;
 }
@@ -1634,7 +1643,7 @@ SOAP_FMAC3 DBS__ProcessedDataset * SOAP_FMAC4 soap_in_DBS__ProcessedDataset(stru
 					continue;
 				}
 			if (soap_flag_isDatasetOpen1 && soap->error == SOAP_TAG_MISMATCH)
-				if (soap_in_byte(soap, "isDatasetOpen", &(((DBS__ProcessedDataset*)a)->isDatasetOpen), "xsd:byte"))
+				if (soap_in_bool(soap, "isDatasetOpen", &(((DBS__ProcessedDataset*)a)->isDatasetOpen), "xsd:boolean"))
 				{	soap_flag_isDatasetOpen1--;
 					continue;
 				}
@@ -2883,6 +2892,226 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Header(struct soap *soap, int st,
 
 #endif
 
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__listDataset(struct soap *soap, const struct DBS__listDataset *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_serialize_std__string(soap, &a->datasetPathName);
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__listDataset(struct soap *soap, struct DBS__listDataset *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_default_std__string(soap, &a->datasetPathName);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__listDataset(struct soap *soap, const struct DBS__listDataset *a, const char *tag, const char *type)
+{
+	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_DBS__listDataset);
+	if (soap_out_DBS__listDataset(soap, tag, id, a, type))
+		return soap->error;
+	return soap_putindependent(soap);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__listDataset(struct soap *soap, const char *tag, int id, const struct DBS__listDataset *a, const char *type)
+{
+	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__listDataset), type);
+	soap_out_std__string(soap, "datasetPathName", -1, &a->datasetPathName, "");
+	soap_element_end_out(soap, tag);
+	return SOAP_OK;
+}
+
+SOAP_FMAC3 struct DBS__listDataset * SOAP_FMAC4 soap_get_DBS__listDataset(struct soap *soap, struct DBS__listDataset *p, const char *tag, const char *type)
+{
+	if ((p = soap_in_DBS__listDataset(soap, tag, p, type)))
+		soap_getindependent(soap);
+	return p;
+}
+
+SOAP_FMAC3 struct DBS__listDataset * SOAP_FMAC4 soap_in_DBS__listDataset(struct soap *soap, const char *tag, struct DBS__listDataset *a, const char *type)
+{
+	short soap_flag_datasetPathName = 1;
+	if (soap_element_begin_in(soap, tag, 0))
+		return NULL;
+	if (*soap->type && soap_match_tag(soap, soap->type, type))
+	{	soap->error = SOAP_TYPE;
+		return NULL;
+	}
+	a = (struct DBS__listDataset *)soap_class_id_enter(soap, soap->id, a, SOAP_TYPE_DBS__listDataset, sizeof(struct DBS__listDataset), soap->type, soap->arrayType);
+	if (!a)
+		return NULL;
+	soap_default_DBS__listDataset(soap, a);
+	if (soap->body && !*soap->href)
+	{
+		for (;;)
+		{	soap->error = SOAP_TAG_MISMATCH;
+			if (soap_flag_datasetPathName && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "datasetPathName", &a->datasetPathName, "xsd:string"))
+				{	soap_flag_datasetPathName--;
+					continue;
+				}
+			if (soap->error == SOAP_TAG_MISMATCH)
+				soap->error = soap_ignore_element(soap);
+			if (soap->error == SOAP_NO_TAG)
+				break;
+			if (soap->error)
+				return NULL;
+		}
+		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_datasetPathName > 0))
+		{	soap->error = SOAP_OCCURS;
+			return NULL;
+		}
+		if (soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	else
+	{	a = (struct DBS__listDataset *)soap_id_forward(soap, soap->href, (void**)a, 0, SOAP_TYPE_DBS__listDataset, 0, sizeof(struct DBS__listDataset), 0, soap_copy_DBS__listDataset);
+		if (soap->body && soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	return a;
+}
+
+SOAP_FMAC5 struct DBS__listDataset * SOAP_FMAC6 soap_new_DBS__listDataset(struct soap *soap, int n)
+{	return soap_instantiate_DBS__listDataset(soap, n, NULL, NULL, NULL);
+}
+
+SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__listDataset(struct soap *soap, struct DBS__listDataset *p)
+{	soap_delete(soap, p);
+}
+
+SOAP_FMAC3 struct DBS__listDataset * SOAP_FMAC4 soap_instantiate_DBS__listDataset(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "soap_instantiate_DBS__listDataset(%d, %s, %s)\n", n, type?type:"", arrayType?arrayType:""));
+	struct soap_clist *cp = soap_link(soap, NULL, SOAP_TYPE_DBS__listDataset, n, soap_fdelete);
+	if (!cp)
+		return NULL;
+	if (n < 0)
+	{	cp->ptr = (void*)new struct DBS__listDataset;
+		if (size)
+			*size = sizeof(struct DBS__listDataset);
+	}
+	else
+	{	cp->ptr = (void*)new struct DBS__listDataset[n];
+		if (size)
+			*size = n * sizeof(struct DBS__listDataset);
+	}
+		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Instantiated location=%p\n", cp->ptr));
+	return (struct DBS__listDataset*)cp->ptr;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__listDataset(struct soap *soap, int st, int tt, void *p, size_t len, const void *q, size_t n)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Copying struct DBS__listDataset %p -> %p\n", q, p));
+	*(struct DBS__listDataset*)p = *(struct DBS__listDataset*)q;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__listDatasetResponse(struct soap *soap, const struct DBS__listDatasetResponse *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_serialize_std__vectorTemplateOfstd__string(soap, &a->datasetList);
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__listDatasetResponse(struct soap *soap, struct DBS__listDatasetResponse *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_default_std__vectorTemplateOfstd__string(soap, &a->datasetList);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__listDatasetResponse(struct soap *soap, const struct DBS__listDatasetResponse *a, const char *tag, const char *type)
+{
+	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_DBS__listDatasetResponse);
+	if (soap_out_DBS__listDatasetResponse(soap, tag, id, a, type))
+		return soap->error;
+	return soap_putindependent(soap);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__listDatasetResponse(struct soap *soap, const char *tag, int id, const struct DBS__listDatasetResponse *a, const char *type)
+{
+	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__listDatasetResponse), type);
+	soap_element_result(soap, "datasetList");
+	soap_out_std__vectorTemplateOfstd__string(soap, "datasetList", -1, &a->datasetList, "");
+	soap_element_end_out(soap, tag);
+	return SOAP_OK;
+}
+
+SOAP_FMAC3 struct DBS__listDatasetResponse * SOAP_FMAC4 soap_get_DBS__listDatasetResponse(struct soap *soap, struct DBS__listDatasetResponse *p, const char *tag, const char *type)
+{
+	if ((p = soap_in_DBS__listDatasetResponse(soap, tag, p, type)))
+		soap_getindependent(soap);
+	return p;
+}
+
+SOAP_FMAC3 struct DBS__listDatasetResponse * SOAP_FMAC4 soap_in_DBS__listDatasetResponse(struct soap *soap, const char *tag, struct DBS__listDatasetResponse *a, const char *type)
+{;
+	if (soap_element_begin_in(soap, tag, 0))
+		return NULL;
+	if (*soap->type && soap_match_tag(soap, soap->type, type))
+	{	soap->error = SOAP_TYPE;
+		return NULL;
+	}
+	a = (struct DBS__listDatasetResponse *)soap_class_id_enter(soap, soap->id, a, SOAP_TYPE_DBS__listDatasetResponse, sizeof(struct DBS__listDatasetResponse), soap->type, soap->arrayType);
+	if (!a)
+		return NULL;
+	soap_default_DBS__listDatasetResponse(soap, a);
+	if (soap->body && !*soap->href)
+	{
+		for (;;)
+		{	soap->error = SOAP_TAG_MISMATCH;
+			if (soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_std__vectorTemplateOfstd__string(soap, "datasetList", &a->datasetList, "xsd:string"))
+					continue;
+			if (soap->error == SOAP_TAG_MISMATCH)
+				soap->error = soap_ignore_element(soap);
+			if (soap->error == SOAP_NO_TAG)
+				break;
+			if (soap->error)
+				return NULL;
+		}
+		if (soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	else
+	{	a = (struct DBS__listDatasetResponse *)soap_id_forward(soap, soap->href, (void**)a, 0, SOAP_TYPE_DBS__listDatasetResponse, 0, sizeof(struct DBS__listDatasetResponse), 0, soap_copy_DBS__listDatasetResponse);
+		if (soap->body && soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	return a;
+}
+
+SOAP_FMAC5 struct DBS__listDatasetResponse * SOAP_FMAC6 soap_new_DBS__listDatasetResponse(struct soap *soap, int n)
+{	return soap_instantiate_DBS__listDatasetResponse(soap, n, NULL, NULL, NULL);
+}
+
+SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__listDatasetResponse(struct soap *soap, struct DBS__listDatasetResponse *p)
+{	soap_delete(soap, p);
+}
+
+SOAP_FMAC3 struct DBS__listDatasetResponse * SOAP_FMAC4 soap_instantiate_DBS__listDatasetResponse(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "soap_instantiate_DBS__listDatasetResponse(%d, %s, %s)\n", n, type?type:"", arrayType?arrayType:""));
+	struct soap_clist *cp = soap_link(soap, NULL, SOAP_TYPE_DBS__listDatasetResponse, n, soap_fdelete);
+	if (!cp)
+		return NULL;
+	if (n < 0)
+	{	cp->ptr = (void*)new struct DBS__listDatasetResponse;
+		if (size)
+			*size = sizeof(struct DBS__listDatasetResponse);
+	}
+	else
+	{	cp->ptr = (void*)new struct DBS__listDatasetResponse[n];
+		if (size)
+			*size = n * sizeof(struct DBS__listDatasetResponse);
+	}
+		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Instantiated location=%p\n", cp->ptr));
+	return (struct DBS__listDatasetResponse*)cp->ptr;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__listDatasetResponse(struct soap *soap, int st, int tt, void *p, size_t len, const void *q, size_t n)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Copying struct DBS__listDatasetResponse %p -> %p\n", q, p));
+	*(struct DBS__listDatasetResponse*)p = *(struct DBS__listDatasetResponse*)q;
+}
+
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__getDatasetFileBlocks(struct soap *soap, const struct DBS__getDatasetFileBlocks *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
@@ -3333,14 +3562,12 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__getDatasetContentsResponse(struct soap
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__insertEventCollections(struct soap *soap, const struct DBS__insertEventCollections *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_serialize_std__string(soap, &a->datasetPathName);
 	soap_serialize_std__vectorTemplateOfPointerToDBS__EventCollection(soap, &a->eventCollectionList);
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__insertEventCollections(struct soap *soap, struct DBS__insertEventCollections *a)
 {
 	(void)soap; (void)a; /* appease -Wall -Werror */
-	soap_default_std__string(soap, &a->datasetPathName);
 	soap_default_std__vectorTemplateOfPointerToDBS__EventCollection(soap, &a->eventCollectionList);
 }
 
@@ -3355,7 +3582,6 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__insertEventCollections(struct soap *soap
 SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__insertEventCollections(struct soap *soap, const char *tag, int id, const struct DBS__insertEventCollections *a, const char *type)
 {
 	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__insertEventCollections), type);
-	soap_out_std__string(soap, "datasetPathName", -1, &a->datasetPathName, "");
 	soap_out_std__vectorTemplateOfPointerToDBS__EventCollection(soap, "eventCollectionList", -1, &a->eventCollectionList, "");
 	soap_element_end_out(soap, tag);
 	return SOAP_OK;
@@ -3369,8 +3595,7 @@ SOAP_FMAC3 struct DBS__insertEventCollections * SOAP_FMAC4 soap_get_DBS__insertE
 }
 
 SOAP_FMAC3 struct DBS__insertEventCollections * SOAP_FMAC4 soap_in_DBS__insertEventCollections(struct soap *soap, const char *tag, struct DBS__insertEventCollections *a, const char *type)
-{
-	short soap_flag_datasetPathName = 1;
+{;
 	if (soap_element_begin_in(soap, tag, 0))
 		return NULL;
 	if (*soap->type && soap_match_tag(soap, soap->type, type))
@@ -3385,11 +3610,6 @@ SOAP_FMAC3 struct DBS__insertEventCollections * SOAP_FMAC4 soap_in_DBS__insertEv
 	{
 		for (;;)
 		{	soap->error = SOAP_TAG_MISMATCH;
-			if (soap_flag_datasetPathName && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
-				if (soap_in_std__string(soap, "datasetPathName", &a->datasetPathName, "xsd:string"))
-				{	soap_flag_datasetPathName--;
-					continue;
-				}
 			if (soap->error == SOAP_TAG_MISMATCH)
 				if (soap_in_std__vectorTemplateOfPointerToDBS__EventCollection(soap, "eventCollectionList", &a->eventCollectionList, "DBS:EventCollection"))
 					continue;
@@ -3399,10 +3619,6 @@ SOAP_FMAC3 struct DBS__insertEventCollections * SOAP_FMAC4 soap_in_DBS__insertEv
 				break;
 			if (soap->error)
 				return NULL;
-		}
-		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_datasetPathName > 0))
-		{	soap->error = SOAP_OCCURS;
-			return NULL;
 		}
 		if (soap_element_end_in(soap, tag))
 			return NULL;
@@ -4671,55 +4887,6 @@ SOAP_FMAC3 DBS__EventCollection ** SOAP_FMAC4 soap_in_PointerToDBS__EventCollect
 	return a;
 }
 
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerTolong(struct soap *soap, long *const*a)
-{
-	soap_reference(soap, *a, SOAP_TYPE_long);
-}
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerTolong(struct soap *soap, long *const*a, const char *tag, const char *type)
-{
-	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_PointerTolong);
-	if (soap_out_PointerTolong(soap, tag, id, a, type))
-		return soap->error;
-	return soap_putindependent(soap);
-}
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_PointerTolong(struct soap *soap, const char *tag, int id, long *const*a, const char *type)
-{
-	id = soap_element_id(soap, tag, id, *a, NULL, 0, type, SOAP_TYPE_long);
-	if (id < 0)
-		return soap->error;
-	return soap_out_long(soap, tag, id, *a, type);
-}
-
-SOAP_FMAC3 long ** SOAP_FMAC4 soap_get_PointerTolong(struct soap *soap, long **p, const char *tag, const char *type)
-{
-	if ((p = soap_in_PointerTolong(soap, tag, p, type)))
-		soap_getindependent(soap);
-	return p;
-}
-
-SOAP_FMAC3 long ** SOAP_FMAC4 soap_in_PointerTolong(struct soap *soap, const char *tag, long **a, const char *type)
-{
-	if (soap_element_begin_in(soap, tag, 1))
-		return NULL;
-	if (!a)
-		if (!(a = (long **)soap_malloc(soap, sizeof(long *))))
-			return NULL;
-	*a = NULL;
-	if (!soap->null && *soap->href != '#')
-	{	soap_revert(soap);
-		if (!(*a = soap_in_long(soap, tag, *a, type)))
-			return NULL;
-	}
-	else
-	{	a = (long **)soap_id_lookup(soap, soap->href, (void**)a, SOAP_TYPE_long, sizeof(long), 0);
-		if (soap->body && soap_element_end_in(soap, tag))
-			return NULL;
-	}
-	return a;
-}
-
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToDBS__ProcessingPath(struct soap *soap, DBS__ProcessingPath *const*a)
 {
 	if (!soap_reference(soap, *a, SOAP_TYPE_DBS__ProcessingPath))
@@ -4945,6 +5112,92 @@ SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_string(struct soap *soap, char **p, const
 SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_string(struct soap *soap, const char *tag, char **a, const char *type)
 {
 	return soap_instring(soap, tag, a, type, SOAP_TYPE_string, 1, -1, -1);
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_std__vectorTemplateOfstd__string(struct soap *soap, const std::vector<std::string >*a)
+{
+	for (std::vector<std::string >::const_iterator i = a->begin(); i != a->end(); ++i)
+		soap_serialize_std__string(soap, &(*i));
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_default_std__vectorTemplateOfstd__string(struct soap *soap, std::vector<std::string >*p)
+{
+	p->clear();
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_std__vectorTemplateOfstd__string(struct soap *soap, const char *tag, int id, const std::vector<std::string >*a, const char *type)
+{
+	for (std::vector<std::string >::const_iterator i = a->begin(); i != a->end(); ++i)
+	{
+		if (soap_out_std__string(soap, tag, id, &(*i), ""))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+SOAP_FMAC3 std::vector<std::string >* SOAP_FMAC4 soap_in_std__vectorTemplateOfstd__string(struct soap *soap, const char *tag, std::vector<std::string >*a, const char *type)
+{
+	if (soap_element_begin_in(soap, tag, 1))
+		return NULL;
+	if (!a && !(a = soap_new_std__vectorTemplateOfstd__string(soap, -1)))
+		return NULL;
+	std::string n;
+	std::string *p;
+	do
+	{	soap_revert(soap);
+		if (*soap->id || *soap->href)
+		{	if (!soap_container_id_forward(soap, *soap->id?soap->id:soap->href, a, (size_t)a->size(), SOAP_TYPE_std__string, SOAP_TYPE_std__vectorTemplateOfstd__string, sizeof(std::string), 0))
+				break;
+			if (!(p = soap_in_std__string(soap, tag, NULL, "xsd:string")))
+				break;
+		}
+		else
+		{	soap_default_std__string(soap, &n);
+			if (!soap_in_std__string(soap, tag, &n, "xsd:string"))
+				break;
+		}
+		a->push_back(n);
+	}
+	while (!soap_element_begin_in(soap, tag, 1));
+	if (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG)
+	{	soap->error = SOAP_OK;
+		return a;
+	}
+	return NULL;
+}
+
+SOAP_FMAC5 std::vector<std::string > * SOAP_FMAC6 soap_new_std__vectorTemplateOfstd__string(struct soap *soap, int n)
+{	return soap_instantiate_std__vectorTemplateOfstd__string(soap, n, NULL, NULL, NULL);
+}
+
+SOAP_FMAC5 void SOAP_FMAC6 soap_delete_std__vectorTemplateOfstd__string(struct soap *soap, std::vector<std::string >*p)
+{	soap_delete(soap, p);
+}
+
+SOAP_FMAC3 std::vector<std::string > * SOAP_FMAC4 soap_instantiate_std__vectorTemplateOfstd__string(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "soap_instantiate_std__vectorTemplateOfstd__string(%d, %s, %s)\n", n, type?type:"", arrayType?arrayType:""));
+	struct soap_clist *cp = soap_link(soap, NULL, SOAP_TYPE_std__vectorTemplateOfstd__string, n, soap_fdelete);
+	if (!cp)
+		return NULL;
+	if (n < 0)
+	{	cp->ptr = (void*)new std::vector<std::string >;
+		if (size)
+			*size = sizeof(std::vector<std::string >);
+	}
+	else
+	{	cp->ptr = (void*)new std::vector<std::string >[n];
+		if (size)
+			*size = n * sizeof(std::vector<std::string >);
+	}
+		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Instantiated location=%p\n", cp->ptr));
+	return (std::vector<std::string >*)cp->ptr;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_copy_std__vectorTemplateOfstd__string(struct soap *soap, int st, int tt, void *p, size_t len, const void *q, size_t n)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Copying std::vector<std::string > %p -> %p\n", q, p));
+	*(std::vector<std::string >*)p = *(std::vector<std::string >*)q;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_std__vectorTemplateOfPointerToDBS__Block(struct soap *soap, const std::vector<DBS__Block * >*a)

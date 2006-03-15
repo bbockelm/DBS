@@ -79,8 +79,16 @@ TableInterface* TableFactory::getTableObject(string tableName) {
          TableInterface* tmpPtr = new SingleTableInterface<T_Info_Evcollrow>;
          return tmpPtr;
       }
+      if ( tableName.compare("datasetpathmultirow") == 0 ) {
+         TableInterface* tmpPtr = new MultiTableInterface<Datasetpathmultirow>;
+         return tmpPtr;
+      }
       if ( tableName.compare("evcollviewmultirow") == 0 ) {
          TableInterface* tmpPtr = new MultiTableInterface<Evcollviewmultirow>;
+         return tmpPtr;
+      }
+      if ( tableName.compare("evcollviewnoparentmultirow") == 0 ) {
+         TableInterface* tmpPtr = new MultiTableInterface<Evcollviewnoparentmultirow>;
          return tmpPtr;
       }
       if ( tableName.compare("fileviewmultirow") == 0 ) {
@@ -101,6 +109,10 @@ TableInterface* TableFactory::getTableObject(string tableName) {
       }
       if ( tableName.compare("processingpathmultirow") == 0 ) {
          TableInterface* tmpPtr = new MultiTableInterface<Processingpathmultirow>;
+         return tmpPtr;
+      }
+      if ( tableName.compare("crabevcollfileviewmultirow") == 0 ) {
+         TableInterface* tmpPtr = new MultiTableInterface<Crabevcollfileviewmultirow>;
          return tmpPtr;
       }
       if ( tableName.compare("crabevcollviewmultirow") == 0 ) {

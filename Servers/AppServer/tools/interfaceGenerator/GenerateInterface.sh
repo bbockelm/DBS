@@ -10,9 +10,9 @@ port=$APPSERVER_PORT
 soapcpp2 -I $GSOAPHOME/include -L ../../interface/Cpp/Interface.hpp
 #edit DBS.wsdl and soapProxy.h with perl to change localhost:80 to your desired  hosname:port
 cat DBS.wsdl | sed -e "s%localhost:80%$hostname:$port%g" > tmpDBS.wsdl
-cat soapProxy.h | sed -e "s%localhost:80%$hostname:$port%g" > tmpsoapProxy.h
+#cat soapProxy.h | sed -e "s%localhost:80%$hostname:$port%g" > tmpsoapProxy.h
 mv tmpDBS.wsdl DBS.wsdl
-mv tmpsoapProxy.h soapProxy.h
+#mv tmpsoapProxy.h soapProxy.h
 
 cp soap*.cpp ../../src/iflayer
 cp soapC.cpp  soapClient.cpp ../../../../Clients/CppAPI/

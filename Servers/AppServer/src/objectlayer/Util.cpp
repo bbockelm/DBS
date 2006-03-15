@@ -247,8 +247,13 @@ string Util::getStrValue(RowInterface* aRow, string name) {
 	} else {
 		return "";
 	}
-
 }
+
+int Util::getIntValue(RowInterface* aRow, string name) {
+	int* value = (int*)aRow->getValue(name);
+	return *value;
+}
+
 
 string Util::getStrValue(RowInterface* aRow, string name, string dataType) {
 	//cout<<"NAME is "<<name<<" DATATYPE is "<<dataType<<endl;
@@ -278,14 +283,44 @@ string Util::getStrValue(RowInterface* aRow, string name, string dataType) {
 
 }
 
+/*
+void Util::setStrValue(RowInterface* aRow, string name, string value) {
+	if(value.length() > 0) {
+		string strValue = (string) value;
+		aRow->setValue(name, &strValue);
+	}
+}
 
+void Util::setIntValue(RowInterface* aRow, string name, int value) {
+	int intValue  = value;
+	aRow->setValue(name,&intValue );
+}
+
+void Util::setCharValue(RowInterface* aRow, string name, char value) {
+	char charValue = value;
+	aRow->setValue(name,&charValue );
+}
+
+void Util::setCharValue(RowInterface* aRow, string name, float value) {
+	float floatValue  = value;
+	aRow->setValue(name,&floatValue );
+}
+*/
+
+void Util::setIntValue(RowInterface* aRow, string name, int* value) {
+	if(value != NULL) {
+		aRow->setValue(name,value);
+	}
+}
 void Util::setValue(RowInterface* aRow, string name, string dataType, string value) {
 	//cout<<"void Util::setValue value is "<<value<<endl;
 	if( dataType == "STRING" ) {
                 //cout << "dies here STRING"<< "dataType:name" << dataType << name << endl;
-		string strValue = (string) value;
-		//cout<<" STRING "<<name<<" value is "<<strValue<<endl;
-		aRow->setValue(name,&strValue);
+		if(value.length() > 0) {
+			string strValue = (string) value;
+			//cout<<" STRING "<<name<<" value is "<<strValue<<endl;
+			aRow->setValue(name,&strValue);
+		}
 	} 
 	if( dataType == "CHARACTER" ) {
 		char charValue = *(value.c_str());

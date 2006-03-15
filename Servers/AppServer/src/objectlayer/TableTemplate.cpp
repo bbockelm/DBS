@@ -639,6 +639,12 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 
 
 
+
+
+
+
+
+
 template TableTemplate<T_Personrow>;
 template TableTemplate<T_Object_Historyrow>;
 template TableTemplate<T_App_Familyrow>;
@@ -658,10 +664,13 @@ template TableTemplate<T_File_Typerow>;
 template TableTemplate<T_Filerow>;
 template TableTemplate<T_Evcoll_Filerow>;
 template TableTemplate<T_Info_Evcollrow>;
+template TableTemplate<Datasetpathmultirow>;
 template TableTemplate<Evcollviewmultirow>;
+template TableTemplate<Evcollviewnoparentmultirow>;
 template TableTemplate<Fileviewmultirow>;
 template TableTemplate<Pdblockviewmultirow>;
 template TableTemplate<Blockviewmultirow>;
 template TableTemplate<Primarydatasetmultirow>;
 template TableTemplate<Processingpathmultirow>;
+template TableTemplate<Crabevcollfileviewmultirow>;
 template TableTemplate<Crabevcollviewmultirow>;

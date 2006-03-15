@@ -39,7 +39,7 @@ class pyClassRep:
         output += '\n       newObj = inObj'
         output += '\n       if isinstance(newObj, '+self.className+'):'
         output += '\n         # this is ok'
-        output += '\n         return newFile'
+        output += '\n         return newObj'
         output += '\n     except Exception, ex:'
         output += '\n       raise dbsException.InvalidArgument(exception=ex)\n'
         output += '\n   def append(self, thisObj):'
@@ -120,8 +120,8 @@ class writeAPIClass:
         self.apiList = apiList
 
     def genAPIClass(self):
-        output  = 'from Service_services import *\n'
-        output += '\nimport dbsException'
+        output  = 'from Service_services import *'
+        output += '\nimport dbsException\n'
         output += '\nimport dbsApi\n'
         output += '\nimport ZSI\n'
         output += '\nclass DbsWsApi(dbsApi.DbsApi):\n'
@@ -229,10 +229,11 @@ if __name__== '__main__':
       processMyFile = processInterface("../../interface/Cpp/Interface.hpp")
       processMyFile.run()
       output = 'from Service_services import *\n'
+      output += 'import dbsException\n'
       for aClass in processMyFile.pyClassList:
         output += aClass.genPyRep()
-        if aClass.className in ['DbsFile', 'DbsFileBlock', 'DbsEventCollection']:
-           output += aClass.genPyListRep()
+        #if aClass.className in ['DbsFile', 'DbsFileBlock', 'DbsEventCollection']:
+        #   output += aClass.genPyListRep()
       writeIntoFile(output=output, outFile='dbsClientDatastructures.py') 
 
       apiGenerator = writeAPIClass(processMyFile.apiList)

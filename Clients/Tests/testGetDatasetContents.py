@@ -7,7 +7,7 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
   def __init__(self):
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.getDatasetContents)
-    #self.addTestCase(self.getDatasetContentsWithFiles)
+    self.addTestCase(self.getDatasetContentsWithFiles)
 
     self.datasetPath = "/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC"
     #self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
@@ -18,16 +18,15 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
     print "Now executing ", funcName
 
     try:
-
-       # Default behaviour of getDatasetContents
-       fileBlockList = self.api.getDatasetContents(self.datasetPath)
+       fileBlockList = self.api.getDatasetContents(self.datasetPath,False)
        for fileBlock in fileBlockList:
-          #print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
-          print fileBlock._blockId
+          print "block name ",fileBlock._blockName
           for eventCollection in fileBlock._eventCollectionList:
-             print "  %s" % eventCollection._collectionId
+             print "collectionName ", eventCollection._collectionName
+             print "***************************************************"
 
     except dbsException.DbsException, ex:
+       print ex
        return 1
    
     return 0
@@ -41,11 +40,23 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
        # Non-Default behaviour of getDatasetContents
        fileBlockList = self.api.getDatasetContents(self.datasetPath, True)
        for fileBlock in fileBlockList:
-          print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
-          for eventCollection in fileBlock.getEventCollectionList():
-             print "\n\n  %s" % eventCollection
+          print "block name ",fileBlock._blockName
+          for eventCollection in fileBlock._eventCollectionList:
+             print "collectionName ", eventCollection._collectionName
+             print "***************************************************"
+             for aFile in eventCollection._fileList:
+                 print "   id ", aFile._id
+                 print "   guid ", aFile._guid
+                 print "   logicalFileName ", aFile._logicalFileName
+                 print "   checksum ", aFile._checksum
+                 print "   fileSize ", aFile._fileSize
+                 print "   fileStatus ", aFile._fileStatus
+                 print "   fileType ", aFile._fileType
+                 print "   fileBlockId ", aFile._fileBlockId
+                 print "***************************************************"
 
     except dbsException.DbsException, ex:
+       print ex
        return 1
 
     return 0

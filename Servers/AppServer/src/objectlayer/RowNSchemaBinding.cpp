@@ -39,8 +39,12 @@ RowNSchemaBinding::RowNSchemaBinding() {
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("t_evcoll_filerow", T_Evcoll_Filerow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* T_Info_Evcollrow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new T_Info_Evcollrow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("t_info_evcollrow", T_Info_Evcollrow_DB_BINDINGObj));
+      BaseSchemaNConstraintsBinding* Datasetpathmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Datasetpathmultirow_DB_BINDING();
+      this->RowNSchemaBindingMap.insert(SchemaMapEntry("datasetpathmultirow", Datasetpathmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Evcollviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Evcollviewmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("evcollviewmultirow", Evcollviewmultirow_DB_BINDINGObj));
+      BaseSchemaNConstraintsBinding* Evcollviewnoparentmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Evcollviewnoparentmultirow_DB_BINDING();
+      this->RowNSchemaBindingMap.insert(SchemaMapEntry("evcollviewnoparentmultirow", Evcollviewnoparentmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Fileviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Fileviewmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("fileviewmultirow", Fileviewmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Pdblockviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Pdblockviewmultirow_DB_BINDING();
@@ -51,6 +55,8 @@ RowNSchemaBinding::RowNSchemaBinding() {
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("primarydatasetmultirow", Primarydatasetmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Processingpathmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Processingpathmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("processingpathmultirow", Processingpathmultirow_DB_BINDINGObj));
+      BaseSchemaNConstraintsBinding* Crabevcollfileviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Crabevcollfileviewmultirow_DB_BINDING();
+      this->RowNSchemaBindingMap.insert(SchemaMapEntry("crabevcollfileviewmultirow", Crabevcollfileviewmultirow_DB_BINDINGObj));
       BaseSchemaNConstraintsBinding* Crabevcollviewmultirow_DB_BINDINGObj = (BaseSchemaNConstraintsBinding*) new Crabevcollviewmultirow_DB_BINDING();
       this->RowNSchemaBindingMap.insert(SchemaMapEntry("crabevcollviewmultirow", Crabevcollviewmultirow_DB_BINDINGObj));
 }

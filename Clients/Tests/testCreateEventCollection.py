@@ -1,38 +1,20 @@
 import dbsException
-import dbsApplication
-import dbsProcessingPath
-import dbsProcessedDataset
-import dbsFile
-import dbsEventCollection
 import testCaseInterface
+from dbsClientDatastructures import *
 
 class testCreateEventCollection(testCaseInterface.testCaseInterface) : 
 
   def __init__(self):
 
     testCaseInterface.testCaseInterface.__init__(self)
-    self.addTestCase(self.createEventCollection)
-    self.addTestCase(self.createEvCollWithOneFile)
-    self.addTestCase(self.createEvCollFilesShouldHaveSameBlockID)
-    self.addTestCase(self.createEvCollNoFileNoInsertion)
+    #self.addTestCase(self.createEventCollection)
+    #self.addTestCase(self.createEvCollWithOneFile)
+    self.addTestCase(self.createEvCollWithParent)
+    #self.addTestCase(self.createEvCollFilesShouldHaveSameBlockID)
+    #self.addTestCase(self.createEvCollNoFileNoInsertion)
 
-    datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
-    app = dbsApplication.DbsApplication(
-         family="CMSAppFam1",
-         executable="cmsRun1",
-         version="CMSSW_XYZ1",
-         parameterSet="pSetDummy1")
-
-    processingPath = dbsProcessingPath.DbsProcessingPath(
-      dataTier="Digi",
-      application=app)
-
-    self.dataset = dbsProcessedDataset.DbsProcessedDataset(
-      primaryDatasetName="ThisIsATestDataset",
-      isDatasetOpen="y",
-      datasetName="ThisIsATestProcDataset",
-      processingPath=processingPath)
-
+    self.datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+    
 
   def createEventCollection(self):
     funcName = "%s.%s" % (self.__class__.__name__, "createEventCollection: Creates Event Collection with 02 files")
@@ -40,33 +22,34 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
 
     try:
        # Test for inserting event collections.
-       f1 = dbsFile.DbsFile(logicalFileName="myFileF10",
+       f1 = DbsFile(logicalFileName="myFileF10",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
+           fileStatus="dummy",
            fileBlockId=1,
            fileSize=100
            )
-       f2 = dbsFile.DbsFile(logicalFileName="myFileF12",
+       f2 = DbsFile(logicalFileName="myFileF12",
            guid = "7C8A55DE62-D811-892C-00E081250436",
            fileType="EVDZip",
+           fileStatus="dummy",
            fileBlockId=1,
            fileSize=100
            )
-       fList=dbsFile.DbsFileList([f1, f2])
-       #fList.append(f2)
+       fList=[f1, f2]
 
-       ec = dbsEventCollection.DbsEventCollection(
+       ec = DbsEventCollection(
          collectionName="myLFN",
          numberOfEvents=123,
          collectionIndex=100,
-         isPrimary="y",
+         datasetPathName = self.datasetPath,
          fileList=fList)
-       ecList = dbsEventCollection.DbsEventCollectionList([ec])
-       print "Inserting event collections for: %s" % self.dataset.getDatasetName()
-       self.api.insertEventCollections(self.dataset, ecList)
+       print "Inserting event collections for: %s" % self.datasetPath
+       self.api.insertEventCollections([ec])
 
 
     except dbsException.DbsException, ex:
+       print ex
        return 1
    
     return 0
@@ -78,31 +61,33 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
 
     try:
        #TEST   All files in same EvColl should have same blockId
-       file1 = dbsFile.DbsFile(logicalFileName="myFile5",
+       f1 = DbsFile(logicalFileName="myFileF10",
            guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
-           fileBlockId=11,
+           fileStatus="dummy",
+           fileBlockId=1,
            fileSize=100
            )
-       file2 = dbsFile.DbsFile(logicalFileName="myFile6",
-           guid = "7C8A55-DE62-D811-892C-00E081250436a",
+       f2 = DbsFile(logicalFileName="myFileF12",
+           guid = "7C8A55DE62-D811-892C-00E081250436",
            fileType="EVDZip",
-           fileBlockId=10,
+           fileStatus="dummy",
+           fileBlockId=2,
            fileSize=100
            )
-       fileListDifferentBlockIds=dbsFile.DbsFileList([file1, file2])
+       fList=[f1, f2]
 
-       ecFileDifferentBlockIds = dbsEventCollection.DbsEventCollection(
+       ec = DbsEventCollection(
          collectionName="myLFN",
-         numberOfEvents=123456,
-         collectionIndex=1000,
-         isPrimary="y",
-         fileList=fileListDifferentBlockIds)
-
-       ecListFileDifferentBlockIds = dbsEventCollection.DbsEventCollectionList([ecFileDifferentBlockIds])
-       self.api.insertEventCollections(self.dataset, ecListFileDifferentBlockIds)
+         numberOfEvents=123,
+         collectionIndex=100,
+         datasetPathName = self.datasetPath,
+         fileList=fList)
+       print "Inserting event collections for: %s" % self.datasetPath
+       self.api.insertEventCollections([ec])
 
     except dbsException.DbsException, ex:
+       print ex
        # Return Success, Negative testcase
        return 0
 
@@ -113,19 +98,17 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
     print "Now executing ", funcName
 
     try:
-
-       #TEST If No FileList is provided EventCollection shouldn't be inserted
-       ecNoFileTest = dbsEventCollection.DbsEventCollection(
+       ec = DbsEventCollection(
          collectionName="myLFN",
          numberOfEvents=123,
          collectionIndex=100,
-         isPrimary="y",
+         datasetPathName = self.datasetPath,
          fileList=[])
+       print "Inserting event collections for: %s" % self.datasetPath
+       self.api.insertEventCollections([ec])
 
-       ecListNoFileTest = dbsEventCollection.DbsEventCollectionList([ecNoFileTest])
-
-       self.api.insertEventCollections(self.dataset, ecListNoFileTest)
     except dbsException.DbsException, ex:
+       print ex
        # Return Success. negative testcase
        return 0
 
@@ -137,26 +120,64 @@ class testCreateEventCollection(testCaseInterface.testCaseInterface) :
     print "Now executing ", funcName
 
     try:
-       #TEST   All files in same EvColl should have same blockId
-       file1 = dbsFile.DbsFile(logicalFileName="myFile11",
-           guid = "7C8A55-D62-D811-892C-00E0812504361",
+       f1 = DbsFile(logicalFileName="myFileF10",
+           guid = "7C8A55-DE62-D811-892C-00E081250436",
            fileType="EVDZip",
-           fileBlockId=11,
+           fileStatus="dummy",
+           fileBlockId=1,
            fileSize=100
            )
-       fileList=dbsFile.DbsFileList([file1])
+       fList=[f1]
 
-       ecFileBlockId = dbsEventCollection.DbsEventCollection(
-         collectionName="collectionWithOneFile",
-         numberOfEvents=123456,
-         collectionIndex=2121,
-         isPrimary="y",
-         fileList=fileList)
-
-       ecListFileBlockId = dbsEventCollection.DbsEventCollectionList([ecFileBlockId])
-       self.api.insertEventCollections(self.dataset, ecListFileBlockId)
+       ec = DbsEventCollection(
+         collectionName="myLFN",
+         numberOfEvents=123,
+         collectionIndex=100,
+         datasetPathName = self.datasetPath,
+         fileList=fList)
+       print "Inserting event collections for: %s" % self.datasetPath
+       self.api.insertEventCollections([ec])
 
     except dbsException.DbsException, ex:
+       print ex
+       return 1
+
+    return 0
+
+  def createEvCollWithParent(self):
+    funcName = "%s.%s" % (self.__class__.__name__, "createEvCollWithParent ")
+    print "Now executing ", funcName
+
+    try:
+       f1 = DbsFile(logicalFileName="myFileF10",
+           guid = "7C8A55-DE62-D811-892C-00E081250436",
+           fileType="EVDZip",
+           fileStatus="dummy",
+           fileBlockId=1,
+           fileSize=100
+           )
+       fList=[f1]
+
+       ecParent = DbsEventCollection(
+         collectionName="myLFN",
+         numberOfEvents=123,
+         collectionIndex=100,
+         datasetPathName = self.datasetPath,
+         fileList=fList)
+ 
+       ec = DbsEventCollection(
+         collectionName="myLFN",
+         numberOfEvents=123,
+         parentageType="Hit",
+         collectionIndex=100,
+         parent=ecParent,
+         datasetPathName = self.datasetPath,
+         fileList=fList)
+       print "Inserting event collections for: %s" % self.datasetPath
+       self.api.insertEventCollections([ec])
+
+    except dbsException.DbsException, ex:
+       print ex
        return 1
 
     return 0

@@ -1,10 +1,6 @@
 import dbsException
-import dbsProcessedDataset
-import dbsApplication
-import dbsProcessingPath
-import dbsProcessedDataset
-import dbsFileBlock
 import testCaseInterface
+from dbsClientDatastructures import *
 # Unit testing.
 
 
@@ -22,32 +18,18 @@ class testCreateBlock(testCaseInterface.testCaseInterface) :
     try:
 
        datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
-       app = dbsApplication.DbsApplication(
-         family="CMSAppFam",
-         executable="cmsRun",
-         version="CMSSW_XYZ",
-         parameterSet="pSetDummy")
 
-       processingPath = dbsProcessingPath.DbsProcessingPath(
-         dataTier="Digi",
-         application=app)
-
-       dataset = dbsProcessedDataset.DbsProcessedDataset(
-         primaryDatasetName="ThisIsATestDataset",
-         isDatasetOpen="y",
-         datasetName="ThisIsATestProcDataset",
-         processingPath=processingPath)
-
-       block = dbsFileBlock.DbsFileBlock(
+       block = DbsBlock(
          blockStatusName="Dummy Block Status",
          numberOfBytes=1024,
          numberOfFiles=10)
 
        #print "Trying to create fileBlock"
-       fbId = self.api.createFileBlock(dataset, block)
+       fbId = self.api.createFileBlock(datasetPath, block)
        print "Got file block id: %s" % fbId
 
     except dbsException.DbsException, ex:
+       print ex
        return 1
    
     return 0

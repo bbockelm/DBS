@@ -1,4 +1,5 @@
 from Service_services import *
+import dbsException
 
 
 class  DbsPrimaryDataset(ns1.PrimaryDataset_Def):
@@ -44,87 +45,39 @@ class  DbsProcessedDataset(ns1.ProcessedDataset_Def):
 class  DbsFile(ns1.File_Def):
 
    """ Class for File """
-   def __init__(self, inblock, type, status, logical_name, id = None, guid = None, checksum = None, filesize = None):
+   def __init__(self, fileBlockId, fileType, fileStatus, logicalFileName, id = None, guid = None, checksum = None, fileSize = None):
       ns1.File_Def.__init__(self)
       self._id = id
       self._guid = guid
-      self._logical_name = logical_name
+      self._logicalFileName = logicalFileName
       self._checksum = checksum
-      self._filesize = filesize
-      self._status = status
-      self._type = type
-      self._inblock = inblock
-
-class DbsFileList:
-   """a LIST Class for the Python Class Type DbsFile"""
-   def __init__(self, dbsfilelist=[]):
-     self.dbsfilelist = []
-     for anObj in dbsfilelist:
-       newListObj = self.__createListObj(anObj)
-       self.dbsfilelist.append(newListObj)
-
-
-   def __createListObj(self, inObj):
-     """ Create new file object. """
-     try:
-       newObj = inObj
-       if isinstance(newObj, DbsFile):
-         # this is ok
-         return newFile
-     except Exception, ex:
-       raise dbsException.InvalidArgument(exception=ex)
-
-   def append(self, thisObj):
-     """ Append new  object to the list """
-     newObj = self.__createFile(thisObj)
-     self.dbsfilelist.append(newObj)
-
+      self._fileSize = fileSize
+      self._fileStatus = fileStatus
+      self._fileType = fileType
+      self._fileBlockId = fileBlockId
 
 class  DbsEventCollection(ns1.EventCollection_Def):
 
    """ Class for EventCollection """
-   def __init__(self, parentageType, collectionName, collection_index, collectionId = None, numberOfEvents = None, parent = None, fileList = None):
+   def __init__(self, datasetPathName, collectionName, collectionIndex, collectionId = None, numberOfEvents = None, parent = None, parentageType = None, fileList = None):
       ns1.EventCollection_Def.__init__(self)
       self._collectionId = collectionId
-      self._collection_index = collection_index
+      self._collectionIndex = collectionIndex
       self._numberOfEvents = numberOfEvents
       self._collectionName = collectionName
+      self._datasetPathName = datasetPathName
       self._parent = parent
       self._parentageType = parentageType
       self._fileList = fileList
 
-class DbsEventCollectionList:
-   """a LIST Class for the Python Class Type DbsEventCollection"""
-   def __init__(self, dbseventcollectionlist=[]):
-     self.dbseventcollectionlist = []
-     for anObj in dbseventcollectionlist:
-       newListObj = self.__createListObj(anObj)
-       self.dbseventcollectionlist.append(newListObj)
-
-
-   def __createListObj(self, inObj):
-     """ Create new file object. """
-     try:
-       newObj = inObj
-       if isinstance(newObj, DbsEventCollection):
-         # this is ok
-         return newFile
-     except Exception, ex:
-       raise dbsException.InvalidArgument(exception=ex)
-
-   def append(self, thisObj):
-     """ Append new  object to the list """
-     newObj = self.__createFile(thisObj)
-     self.dbseventcollectionlist.append(newObj)
-
-
 class  DbsBlock(ns1.Block_Def):
 
    """ Class for Block """
-   def __init__(self, numberOfBytes, numberOfFiles, blockStatusName, blockId = None, eventCollectionList = None):
+   def __init__(self, numberOfBytes, numberOfFiles, blockStatusName, blockId = None, blockName = None, eventCollectionList = None):
       ns1.Block_Def.__init__(self)
       self._blockId = blockId
       self._blockStatusName = blockStatusName
+      self._blockName = blockName
       self._numberOfFiles = numberOfFiles
       self._numberOfBytes = numberOfBytes
       self._eventCollectionList = eventCollectionList

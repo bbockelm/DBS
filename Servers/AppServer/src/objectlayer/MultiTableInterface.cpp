@@ -100,10 +100,19 @@ void MultiTableInterface<R>::doSmartInsert(R* aRow) {
 
 
 
+
+
+
+
+
+
+template MultiTableInterface<Datasetpathmultirow>;
 template MultiTableInterface<Evcollviewmultirow>;
+template MultiTableInterface<Evcollviewnoparentmultirow>;
 template MultiTableInterface<Fileviewmultirow>;
 template MultiTableInterface<Pdblockviewmultirow>;
 template MultiTableInterface<Blockviewmultirow>;
 template MultiTableInterface<Primarydatasetmultirow>;
 template MultiTableInterface<Processingpathmultirow>;
+template MultiTableInterface<Crabevcollfileviewmultirow>;
 template MultiTableInterface<Crabevcollviewmultirow>;

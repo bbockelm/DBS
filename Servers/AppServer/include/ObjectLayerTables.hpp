@@ -591,6 +591,39 @@ class RowSchemaNConstraintsBinding<T_Info_Evcollrow> {
 
 //##############
 
+class Datasetpathmultirow  : public RowInterface {
+public:
+
+     Datasetpathmultirow();
+     ~Datasetpathmultirow();
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+
+    T_Data_Tierrow* T_Data_Tierobj;
+    T_Processing_Pathrow* T_Processing_Pathobj;
+    T_Primary_Datasetrow* T_Primary_Datasetobj;
+    T_Processed_Datasetrow* T_Processed_Datasetobj;
+};
+
+class  Datasetpathmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      Datasetpathmultirow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<Datasetpathmultirow> {
+   public:
+ Datasetpathmultirow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
 class Evcollviewmultirow  : public RowInterface {
 public:
 
@@ -620,6 +653,37 @@ template<>
 class RowSchemaNConstraintsBinding<Evcollviewmultirow> {
    public:
  Evcollviewmultirow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
+class Evcollviewnoparentmultirow  : public RowInterface {
+public:
+
+     Evcollviewnoparentmultirow();
+     ~Evcollviewnoparentmultirow();
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+
+    T_Event_Collectionrow* T_Event_Collectionobj;
+    T_Info_Evcollrow* T_Info_Evcollobj;
+};
+
+class  Evcollviewnoparentmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      Evcollviewnoparentmultirow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<Evcollviewnoparentmultirow> {
+   public:
+ Evcollviewnoparentmultirow_DB_BINDING  schemaNconstraints;
 };
 
 //##############
@@ -785,6 +849,44 @@ class RowSchemaNConstraintsBinding<Processingpathmultirow> {
 
 //##############
 
+class Crabevcollfileviewmultirow  : public RowInterface {
+public:
+
+     Crabevcollfileviewmultirow();
+     ~Crabevcollfileviewmultirow();
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+
+    T_Data_Tierrow* T_Data_Tierobj;
+    T_Processing_Pathrow* T_Processing_Pathobj;
+    T_Primary_Datasetrow* T_Primary_Datasetobj;
+    T_Processed_Datasetrow* T_Processed_Datasetobj;
+    T_Event_Collectionrow* T_Event_Collectionobj;
+    T_Blockrow* T_Blockobj;
+    T_Info_Evcollrow* T_Info_Evcollobj;
+    T_Filerow* T_Fileobj;
+    T_Evcoll_Filerow* T_Evcoll_Fileobj;
+};
+
+class  Crabevcollfileviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      Crabevcollfileviewmultirow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<Crabevcollfileviewmultirow> {
+   public:
+ Crabevcollfileviewmultirow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
 class Crabevcollviewmultirow  : public RowInterface {
 public:
 
@@ -839,12 +941,15 @@ typedef SingleTableInterface<T_File_Typerow>  T_File_TypeTable;
 typedef SingleTableInterface<T_Filerow>  T_FileTable;
 typedef SingleTableInterface<T_Evcoll_Filerow>  T_Evcoll_FileTable;
 typedef SingleTableInterface<T_Info_Evcollrow>  T_Info_EvcollTable;
+typedef MultiTableInterface<Datasetpathmultirow>  DatasetpathMultiTable;
 typedef MultiTableInterface<Evcollviewmultirow>  EvcollviewMultiTable;
+typedef MultiTableInterface<Evcollviewnoparentmultirow>  EvcollviewnoparentMultiTable;
 typedef MultiTableInterface<Fileviewmultirow>  FileviewMultiTable;
 typedef MultiTableInterface<Pdblockviewmultirow>  PdblockviewMultiTable;
 typedef MultiTableInterface<Blockviewmultirow>  BlockviewMultiTable;
 typedef MultiTableInterface<Primarydatasetmultirow>  PrimarydatasetMultiTable;
 typedef MultiTableInterface<Processingpathmultirow>  ProcessingpathMultiTable;
+typedef MultiTableInterface<Crabevcollfileviewmultirow>  CrabevcollfileviewMultiTable;
 typedef MultiTableInterface<Crabevcollviewmultirow>  CrabevcollviewMultiTable;
 
 #endif

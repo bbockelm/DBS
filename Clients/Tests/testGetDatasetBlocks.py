@@ -1,8 +1,6 @@
 import dbsException
-import dbsApplication
-import dbsProcessingPath
-import dbsProcessedDataset
 import testCaseInterface
+from dbsClientDatastructures import *
 # Unit testing.
 
 class testGetDatasetBlocks(testCaseInterface.testCaseInterface) : 
@@ -11,36 +9,23 @@ class testGetDatasetBlocks(testCaseInterface.testCaseInterface) :
     testCaseInterface.testCaseInterface.__init__(self)
     self.addTestCase(self.getDatasetBlocks)
 
-    datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
-    app = dbsApplication.DbsApplication(
-       family="CMSAppFam",
-       executable="cmsRun",
-       version="CMSSW_XYZ",
-       parameterSet="pSetDummy")
-
-    processingPath = dbsProcessingPath.DbsProcessingPath(
-       dataTier="Digi",
-       application=app)
-
-    self.dataset = dbsProcessedDataset.DbsProcessedDataset(
-       primaryDatasetName="ThisIsATestDataset",
-       isDatasetOpen="y",
-       datasetName="ThisIsATestProcDataset",
-       processingPath=processingPath)
 
   def getDatasetBlocks(self):
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetBlocks : Get a list of File Blocks in a Dataset")
     print "Now executing ", funcName
 
+    datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
     try:
 
-       fileBlockList = self.api.getDatasetFileBlocks(self.dataset)
+       fileBlockList = self.api.getDatasetFileBlocks(datasetPath)
        for fileBlock in fileBlockList:
-          print "File block name/id: %s/%s" % (fileBlock.getBlockName(),fileBlock.getBlockId())
-          for eventCollection in fileBlock.getEventCollectionList():
-             print "  %s" % eventCollection
+          #print "File block name/id: %s/#/%s" % (datasetPath[1:], fileBlock._blockId)
+          print "File block name/id: %s" % (fileBlock._blockName)
+          #for eventCollection in fileBlock.getEventCollectionList():
+          #   print "  %s" % eventCollection
 
     except dbsException.DbsException, ex:
+       print ex
        return 1
    
     return 0

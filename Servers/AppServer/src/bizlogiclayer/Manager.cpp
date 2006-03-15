@@ -52,7 +52,10 @@ int Manager::doInsert(TableInterface* inTable) {
 		//LOG4CXX_DEBUG(logger,"Rolling back the whole transection");
 		dbManager->rollback();
 		cout<<"TJust befroe throw    "<<endl;
+		cout<<"Exception is "<<e.report()<<endl;
 		throw BizLayerException(e.report());
+		//throw BizLayerException("VALUES (2406,'','ThisIsATestProcDataset',817,2407)");
+		//throw BizLayerException("Thi'sdjnds'  '' sis a:\n\n :te:st");
 	}
 	dbManager->endTransection();
 	return 1;  //success

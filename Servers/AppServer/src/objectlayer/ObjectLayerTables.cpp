@@ -1201,6 +1201,246 @@ string* T_Info_Evcollrow_DB_BINDING::getTableName(void) {
 }
 
 
+void Datasetpathmultirow::setValue(string key, void* value) {
+    if( key.compare("t_data_tier.name") == 0) {
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.name", value);
+    }
+    if( key.compare("t_processing_path.parent") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.parent", value);
+    }
+    if( key.compare("t_processing_path.app_config") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.app_config", value);
+    }
+    if( key.compare("t_primary_dataset.name") == 0) {
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.name", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.name") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.name", value);
+    }
+    if( key.compare("t_processed_dataset.is_open") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.is_open", value);
+    }
+    if( key.compare("t_processed_dataset.processing_path") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_processed_dataset.primary_dataset") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
+    }
+    if( key.compare("t_primary_dataset.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
+    }
+}
+
+void* Datasetpathmultirow::getValue(string key) {
+   if( key.compare("t_data_tier.id") == 0) {
+       return  ((T_Data_Tierrow*)this->
+          getConstituentRow("t_data_tierrow", ""))->
+           getValue((string)"t_data_tier.id");
+    }
+   if( key.compare("t_data_tier.name") == 0) {
+       return  ((T_Data_Tierrow*)this->
+          getConstituentRow("t_data_tierrow", ""))->
+           getValue((string)"t_data_tier.name");
+    }
+   if( key.compare("t_processing_path.id") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.id");
+    }
+   if( key.compare("t_processing_path.parent") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.parent");
+    }
+   if( key.compare("t_processing_path.app_config") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.app_config");
+    }
+   if( key.compare("t_processing_path.data_tier") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.data_tier");
+    }
+   if( key.compare("t_primary_dataset.id") == 0) {
+       return  ((T_Primary_Datasetrow*)this->
+          getConstituentRow("t_primary_datasetrow", ""))->
+           getValue((string)"t_primary_dataset.id");
+    }
+   if( key.compare("t_primary_dataset.name") == 0) {
+       return  ((T_Primary_Datasetrow*)this->
+          getConstituentRow("t_primary_datasetrow", ""))->
+           getValue((string)"t_primary_dataset.name");
+    }
+   if( key.compare("t_processed_dataset.id") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.id");
+    }
+   if( key.compare("t_processed_dataset.primary_dataset") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.primary_dataset");
+    }
+   if( key.compare("t_processed_dataset.processing_path") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.processing_path");
+    }
+   if( key.compare("t_processed_dataset.name") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.name");
+    }
+   if( key.compare("t_processed_dataset.is_open") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.is_open");
+    }
+}
+
+Datasetpathmultirow::Datasetpathmultirow(){
+    this->T_Data_Tierobj = new T_Data_Tierrow();
+    this->rowMap.set("t_data_tierrow", (void*)this->T_Data_Tierobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Processing_Pathobj = new T_Processing_Pathrow();
+    this->rowMap.set("t_processing_pathrow", (void*)this->T_Processing_Pathobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Primary_Datasetobj = new T_Primary_Datasetrow();
+    this->rowMap.set("t_primary_datasetrow", (void*)this->T_Primary_Datasetobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Processed_Datasetobj = new T_Processed_Datasetrow();
+    this->rowMap.set("t_processed_datasetrow", (void*)this->T_Processed_Datasetobj);
+    this->constituentObjects.push_back(this->rowMap);
+}
+
+Datasetpathmultirow::~Datasetpathmultirow(){
+   delete this->T_Data_Tierobj;
+   delete this->T_Processing_Pathobj;
+   delete this->T_Primary_Datasetobj;
+   delete this->T_Processed_Datasetobj;
+}
+
+Datasetpathmultirow_DB_BINDING::Datasetpathmultirow_DB_BINDING() {
+    TableName = "DatasetPath";
+
+    Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.name", "STRING"));
+    Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+
+    PrimaryKeys.push_back("t_processed_dataset.id");
+
+    ForeignKeys.push_back("t_processing_path.app_config");
+    ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
+    ForeignKeys.push_back("t_processing_path.data_tier");
+
+    list<string> tmplist;
+    tmplist.push_back("t_processed_dataset.primary_dataset");
+    tmplist.push_back("t_processed_dataset.processing_path");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+    tmplist.push_back("t_processed_dataset.id");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+
+    NotNullKeys.push_back("t_data_tier.id");
+    NotNullKeys.push_back("t_data_tier.name");
+    NotNullKeys.push_back("t_processing_path.id");
+    NotNullKeys.push_back("t_processing_path.app_config");
+    NotNullKeys.push_back("t_processing_path.data_tier");
+    NotNullKeys.push_back("t_primary_dataset.id");
+    NotNullKeys.push_back("t_primary_dataset.name");
+    NotNullKeys.push_back("t_processed_dataset.id");
+    NotNullKeys.push_back("t_processed_dataset.primary_dataset");
+    NotNullKeys.push_back("t_processed_dataset.processing_path");
+    NotNullKeys.push_back("t_processed_dataset.name");
+    NotNullKeys.push_back("t_processed_dataset.is_open");
+
+    SchemaOrder.push_back("t_data_tier");
+    SchemaOrder.push_back("t_processing_path");
+    SchemaOrder.push_back("t_primary_dataset");
+    SchemaOrder.push_back("t_processed_dataset");
+
+    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
+    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
+
+
+    ExternalReferences.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
+}
+
+string* Datasetpathmultirow_DB_BINDING::getTableName(void) {
+      return &this->TableName;
+}
+
+
 void Evcollviewmultirow::setValue(string key, void* value) {
     if( key.compare("t_event_collection.processed_dataset") == 0) {
          ((T_Event_Collectionrow*)this->
@@ -1367,7 +1607,7 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_evcoll_parentage.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
     Schema.insert(Entry("t_parentage_type.id", "INTEGER"));
-    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.type", "INTEGER"));
     Schema.insert(Entry("t_evcoll_parentage.parent", "INTEGER"));
@@ -1375,7 +1615,7 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_parentage_type.name", "STRING"));
     Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_evcoll_parentage.child", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
 
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
     PrimaryKeys.push_back("t_evcoll_parentage.id");
@@ -1423,6 +1663,133 @@ Evcollviewmultirow_DB_BINDING::Evcollviewmultirow_DB_BINDING() {
 }
 
 string* Evcollviewmultirow_DB_BINDING::getTableName(void) {
+      return &this->TableName;
+}
+
+
+void Evcollviewnoparentmultirow::setValue(string key, void* value) {
+    if( key.compare("t_event_collection.processed_dataset") == 0) {
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.processed_dataset", value);
+    }
+    if( key.compare("t_event_collection.collection_index") == 0) {
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.collection_index", value);
+    }
+    if( key.compare("t_info_evcoll.events") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.events", value);
+    }
+    if( key.compare("t_info_evcoll.name") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.name", value);
+    }
+    if( key.compare("t_info_evcoll.event_collection") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.event_collection", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
+    }
+    if( key.compare("t_event_collection.id") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.event_collection", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
+    }
+}
+
+void* Evcollviewnoparentmultirow::getValue(string key) {
+   if( key.compare("t_event_collection.id") == 0) {
+       return  ((T_Event_Collectionrow*)this->
+          getConstituentRow("t_event_collectionrow", ""))->
+           getValue((string)"t_event_collection.id");
+    }
+   if( key.compare("t_event_collection.processed_dataset") == 0) {
+       return  ((T_Event_Collectionrow*)this->
+          getConstituentRow("t_event_collectionrow", ""))->
+           getValue((string)"t_event_collection.processed_dataset");
+    }
+   if( key.compare("t_event_collection.collection_index") == 0) {
+       return  ((T_Event_Collectionrow*)this->
+          getConstituentRow("t_event_collectionrow", ""))->
+           getValue((string)"t_event_collection.collection_index");
+    }
+   if( key.compare("t_info_evcoll.event_collection") == 0) {
+       return  ((T_Info_Evcollrow*)this->
+          getConstituentRow("t_info_evcollrow", ""))->
+           getValue((string)"t_info_evcoll.event_collection");
+    }
+   if( key.compare("t_info_evcoll.events") == 0) {
+       return  ((T_Info_Evcollrow*)this->
+          getConstituentRow("t_info_evcollrow", ""))->
+           getValue((string)"t_info_evcoll.events");
+    }
+   if( key.compare("t_info_evcoll.name") == 0) {
+       return  ((T_Info_Evcollrow*)this->
+          getConstituentRow("t_info_evcollrow", ""))->
+           getValue((string)"t_info_evcoll.name");
+    }
+}
+
+Evcollviewnoparentmultirow::Evcollviewnoparentmultirow(){
+    this->T_Event_Collectionobj = new T_Event_Collectionrow();
+    this->rowMap.set("t_event_collectionrow", (void*)this->T_Event_Collectionobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Info_Evcollobj = new T_Info_Evcollrow();
+    this->rowMap.set("t_info_evcollrow", (void*)this->T_Info_Evcollobj);
+    this->constituentObjects.push_back(this->rowMap);
+}
+
+Evcollviewnoparentmultirow::~Evcollviewnoparentmultirow(){
+   delete this->T_Event_Collectionobj;
+   delete this->T_Info_Evcollobj;
+}
+
+Evcollviewnoparentmultirow_DB_BINDING::Evcollviewnoparentmultirow_DB_BINDING() {
+    TableName = "EvCollViewNoParent";
+
+    Schema.insert(Entry("t_info_evcoll.name", "STRING"));
+    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
+
+    PrimaryKeys.push_back("t_info_evcoll.event_collection");
+
+    ForeignKeys.push_back("t_info_evcoll.event_collection");
+    ForeignKeys.push_back("t_event_collection.processed_dataset");
+
+    list<string> tmplist;
+    tmplist.push_back("t_info_evcoll.event_collection");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+
+    NotNullKeys.push_back("t_event_collection.id");
+    NotNullKeys.push_back("t_event_collection.processed_dataset");
+    NotNullKeys.push_back("t_event_collection.collection_index");
+    NotNullKeys.push_back("t_info_evcoll.event_collection");
+    NotNullKeys.push_back("t_info_evcoll.events");
+    NotNullKeys.push_back("t_info_evcoll.name");
+
+    SchemaOrder.push_back("t_event_collection");
+    SchemaOrder.push_back("t_info_evcoll");
+
+    References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
+
+
+    ExternalReferences.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
+}
+
+string* Evcollviewnoparentmultirow_DB_BINDING::getTableName(void) {
       return &this->TableName;
 }
 
@@ -1591,10 +1958,10 @@ Fileviewmultirow_DB_BINDING::Fileviewmultirow_DB_BINDING() {
     Schema.insert(Entry("t_file.inblock", "INTEGER"));
     Schema.insert(Entry("t_file.logical_name", "STRING"));
     Schema.insert(Entry("t_file.guid", "STRING"));
-    Schema.insert(Entry("t_file_type.name", "STRING"));
     Schema.insert(Entry("t_file_type.id", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
     Schema.insert(Entry("t_file.id", "INTEGER"));
+    Schema.insert(Entry("t_file_type.name", "STRING"));
     Schema.insert(Entry("t_file.filesize", "INTEGER"));
     Schema.insert(Entry("t_file.status", "INTEGER"));
     Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
@@ -1803,11 +2170,11 @@ Pdblockviewmultirow_DB_BINDING::Pdblockviewmultirow_DB_BINDING() {
 
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
     Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_block_status.name", "STRING"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
@@ -1954,13 +2321,13 @@ Blockviewmultirow::~Blockviewmultirow(){
 Blockviewmultirow_DB_BINDING::Blockviewmultirow_DB_BINDING() {
     TableName = "BlockView";
 
-    Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_block_status.name", "STRING"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_block_status.id", "INTEGER"));
-    Schema.insert(Entry("t_block_status.name", "STRING"));
 
     PrimaryKeys.push_back("t_block.id");
 
@@ -2112,6 +2479,38 @@ void Processingpathmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_processed_datasetrow", ""))->
            setValue((string)"t_processed_dataset.is_open", value);
     }
+    if( key.compare("t_processed_dataset.processing_path") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
     if( key.compare("t_processing_path.app_config") == 0) {
          ((T_Processing_Pathrow*)this->
           getConstituentRow((string)"t_processing_pathrow", ""))->
@@ -2144,22 +2543,6 @@ void Processingpathmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_applicationrow", ""))->
            setValue((string)"t_application.id", value);
     }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
     if( key.compare("t_processed_dataset.primary_dataset") == 0) {
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
@@ -2191,22 +2574,6 @@ void Processingpathmultirow::setValue(string key, void* value) {
          ((T_App_Familyrow*)this->
           getConstituentRow((string)"t_app_familyrow", ""))->
            setValue((string)"t_app_family.id", value);
-    }
-    if( key.compare("t_processed_dataset.processing_path") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.processing_path", value);
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.id", value);
-    }
-    if( key.compare("t_processing_path.id") == 0) {
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.processing_path", value);
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.id", value);
     }
 }
 
@@ -2360,36 +2727,36 @@ Processingpathmultirow::~Processingpathmultirow(){
 Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     TableName = "ProcessingPath";
 
+    Schema.insert(Entry("t_processed_dataset.name", "STRING"));
+    Schema.insert(Entry("t_application.app_version", "STRING"));
+    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_application.id", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
+    Schema.insert(Entry("t_app_config.id", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
+    Schema.insert(Entry("t_application.app_family", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.name", "STRING"));
     Schema.insert(Entry("t_app_family.name", "STRING"));
     Schema.insert(Entry("t_app_config.parameter_set", "STRING"));
     Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
     Schema.insert(Entry("t_app_config.application", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_application.id", "INTEGER"));
-    Schema.insert(Entry("t_application.app_version", "STRING"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
-    Schema.insert(Entry("t_data_tier.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
-    Schema.insert(Entry("t_app_family.id", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
-    Schema.insert(Entry("t_app_config.id", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_application.app_family", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
-    Schema.insert(Entry("t_data_tier.name", "STRING"));
     Schema.insert(Entry("t_application.executable", "STRING"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_app_family.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_processed_dataset.id");
 
     ForeignKeys.push_back("t_processing_path.app_config");
-    ForeignKeys.push_back("t_app_config.application");
     ForeignKeys.push_back("t_processing_path.data_tier");
-    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_app_config.application");
+    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_application.app_family");
 
     list<string> tmplist;
@@ -2431,17 +2798,595 @@ Processingpathmultirow_DB_BINDING::Processingpathmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_primary_dataset");
     SchemaOrder.push_back("t_processed_dataset");
 
+    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processing_path.app_config", "t_app_config.id"));
     References.insert(Entry("t_app_config.application", "t_application.id"));
-    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_application.app_family", "t_app_family.id"));
-    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
 
 
 }
 
 string* Processingpathmultirow_DB_BINDING::getTableName(void) {
+      return &this->TableName;
+}
+
+
+void Crabevcollfileviewmultirow::setValue(string key, void* value) {
+    if( key.compare("t_data_tier.name") == 0) {
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.name", value);
+    }
+    if( key.compare("t_processing_path.parent") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.parent", value);
+    }
+    if( key.compare("t_processing_path.app_config") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.app_config", value);
+    }
+    if( key.compare("t_primary_dataset.name") == 0) {
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.name", value);
+    }
+    if( key.compare("t_processed_dataset.name") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.name", value);
+    }
+    if( key.compare("t_processed_dataset.is_open") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.is_open", value);
+    }
+    if( key.compare("t_event_collection.collection_index") == 0) {
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.collection_index", value);
+    }
+    if( key.compare("t_block.status") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.status", value);
+    }
+    if( key.compare("t_block.files") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.files", value);
+    }
+    if( key.compare("t_block.bytes") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.bytes", value);
+    }
+    if( key.compare("t_info_evcoll.events") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.events", value);
+    }
+    if( key.compare("t_info_evcoll.name") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.name", value);
+    }
+    if( key.compare("t_file.guid") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.guid", value);
+    }
+    if( key.compare("t_file.logical_name") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.logical_name", value);
+    }
+    if( key.compare("t_file.filesize") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.filesize", value);
+    }
+    if( key.compare("t_file.status") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.status", value);
+    }
+    if( key.compare("t_file.type") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.type", value);
+    }
+    if( key.compare("t_evcoll_file.id") == 0) {
+         ((T_Evcoll_Filerow*)this->
+          getConstituentRow((string)"t_evcoll_filerow", ""))->
+           setValue((string)"t_evcoll_file.id", value);
+    }
+    if( key.compare("t_evcoll_file.fileid") == 0) {
+         ((T_Evcoll_Filerow*)this->
+          getConstituentRow((string)"t_evcoll_filerow", ""))->
+           setValue((string)"t_evcoll_file.fileid", value);
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.id", value);
+    }
+    if( key.compare("t_file.id") == 0) {
+         ((T_Evcoll_Filerow*)this->
+          getConstituentRow((string)"t_evcoll_filerow", ""))->
+           setValue((string)"t_evcoll_file.fileid", value);
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.id", value);
+    }
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.primary_dataset") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
+    }
+    if( key.compare("t_primary_dataset.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.primary_dataset", value);
+         ((T_Primary_Datasetrow*)this->
+          getConstituentRow((string)"t_primary_datasetrow", ""))->
+           setValue((string)"t_primary_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.processing_path") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_processing_path.id") == 0) {
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.processing_path", value);
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.id", value);
+    }
+    if( key.compare("t_evcoll_file.evcoll") == 0) {
+         ((T_Evcoll_Filerow*)this->
+          getConstituentRow((string)"t_evcoll_filerow", ""))->
+           setValue((string)"t_evcoll_file.evcoll", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
+    }
+    if( key.compare("t_event_collection.id") == 0) {
+         ((T_Evcoll_Filerow*)this->
+          getConstituentRow((string)"t_evcoll_filerow", ""))->
+           setValue((string)"t_evcoll_file.evcoll", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
+    }
+    if( key.compare("t_info_evcoll.event_collection") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.event_collection", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
+    }
+    if( key.compare("t_event_collection.id") == 0) {
+         ((T_Info_Evcollrow*)this->
+          getConstituentRow((string)"t_info_evcollrow", ""))->
+           setValue((string)"t_info_evcoll.event_collection", value);
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.id", value);
+    }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_event_collection.processed_dataset") == 0) {
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Event_Collectionrow*)this->
+          getConstituentRow((string)"t_event_collectionrow", ""))->
+           setValue((string)"t_event_collection.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_file.inblock") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.inblock", value);
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.id", value);
+    }
+    if( key.compare("t_block.id") == 0) {
+         ((T_Filerow*)this->
+          getConstituentRow((string)"t_filerow", ""))->
+           setValue((string)"t_file.inblock", value);
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.id", value);
+    }
+}
+
+void* Crabevcollfileviewmultirow::getValue(string key) {
+   if( key.compare("t_data_tier.id") == 0) {
+       return  ((T_Data_Tierrow*)this->
+          getConstituentRow("t_data_tierrow", ""))->
+           getValue((string)"t_data_tier.id");
+    }
+   if( key.compare("t_data_tier.name") == 0) {
+       return  ((T_Data_Tierrow*)this->
+          getConstituentRow("t_data_tierrow", ""))->
+           getValue((string)"t_data_tier.name");
+    }
+   if( key.compare("t_processing_path.id") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.id");
+    }
+   if( key.compare("t_processing_path.parent") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.parent");
+    }
+   if( key.compare("t_processing_path.app_config") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.app_config");
+    }
+   if( key.compare("t_processing_path.data_tier") == 0) {
+       return  ((T_Processing_Pathrow*)this->
+          getConstituentRow("t_processing_pathrow", ""))->
+           getValue((string)"t_processing_path.data_tier");
+    }
+   if( key.compare("t_primary_dataset.id") == 0) {
+       return  ((T_Primary_Datasetrow*)this->
+          getConstituentRow("t_primary_datasetrow", ""))->
+           getValue((string)"t_primary_dataset.id");
+    }
+   if( key.compare("t_primary_dataset.name") == 0) {
+       return  ((T_Primary_Datasetrow*)this->
+          getConstituentRow("t_primary_datasetrow", ""))->
+           getValue((string)"t_primary_dataset.name");
+    }
+   if( key.compare("t_processed_dataset.id") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.id");
+    }
+   if( key.compare("t_processed_dataset.primary_dataset") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.primary_dataset");
+    }
+   if( key.compare("t_processed_dataset.processing_path") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.processing_path");
+    }
+   if( key.compare("t_processed_dataset.name") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.name");
+    }
+   if( key.compare("t_processed_dataset.is_open") == 0) {
+       return  ((T_Processed_Datasetrow*)this->
+          getConstituentRow("t_processed_datasetrow", ""))->
+           getValue((string)"t_processed_dataset.is_open");
+    }
+   if( key.compare("t_event_collection.id") == 0) {
+       return  ((T_Event_Collectionrow*)this->
+          getConstituentRow("t_event_collectionrow", ""))->
+           getValue((string)"t_event_collection.id");
+    }
+   if( key.compare("t_event_collection.processed_dataset") == 0) {
+       return  ((T_Event_Collectionrow*)this->
+          getConstituentRow("t_event_collectionrow", ""))->
+           getValue((string)"t_event_collection.processed_dataset");
+    }
+   if( key.compare("t_event_collection.collection_index") == 0) {
+       return  ((T_Event_Collectionrow*)this->
+          getConstituentRow("t_event_collectionrow", ""))->
+           getValue((string)"t_event_collection.collection_index");
+    }
+   if( key.compare("t_block.id") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.id");
+    }
+   if( key.compare("t_block.processed_dataset") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.processed_dataset");
+    }
+   if( key.compare("t_block.status") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.status");
+    }
+   if( key.compare("t_block.files") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.files");
+    }
+   if( key.compare("t_block.bytes") == 0) {
+       return  ((T_Blockrow*)this->
+          getConstituentRow("t_blockrow", ""))->
+           getValue((string)"t_block.bytes");
+    }
+   if( key.compare("t_info_evcoll.event_collection") == 0) {
+       return  ((T_Info_Evcollrow*)this->
+          getConstituentRow("t_info_evcollrow", ""))->
+           getValue((string)"t_info_evcoll.event_collection");
+    }
+   if( key.compare("t_info_evcoll.events") == 0) {
+       return  ((T_Info_Evcollrow*)this->
+          getConstituentRow("t_info_evcollrow", ""))->
+           getValue((string)"t_info_evcoll.events");
+    }
+   if( key.compare("t_info_evcoll.name") == 0) {
+       return  ((T_Info_Evcollrow*)this->
+          getConstituentRow("t_info_evcollrow", ""))->
+           getValue((string)"t_info_evcoll.name");
+    }
+   if( key.compare("t_file.id") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.id");
+    }
+   if( key.compare("t_file.guid") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.guid");
+    }
+   if( key.compare("t_file.logical_name") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.logical_name");
+    }
+   if( key.compare("t_file.filesize") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.filesize");
+    }
+   if( key.compare("t_file.status") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.status");
+    }
+   if( key.compare("t_file.type") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.type");
+    }
+   if( key.compare("t_file.inblock") == 0) {
+       return  ((T_Filerow*)this->
+          getConstituentRow("t_filerow", ""))->
+           getValue((string)"t_file.inblock");
+    }
+   if( key.compare("t_evcoll_file.id") == 0) {
+       return  ((T_Evcoll_Filerow*)this->
+          getConstituentRow("t_evcoll_filerow", ""))->
+           getValue((string)"t_evcoll_file.id");
+    }
+   if( key.compare("t_evcoll_file.evcoll") == 0) {
+       return  ((T_Evcoll_Filerow*)this->
+          getConstituentRow("t_evcoll_filerow", ""))->
+           getValue((string)"t_evcoll_file.evcoll");
+    }
+   if( key.compare("t_evcoll_file.fileid") == 0) {
+       return  ((T_Evcoll_Filerow*)this->
+          getConstituentRow("t_evcoll_filerow", ""))->
+           getValue((string)"t_evcoll_file.fileid");
+    }
+}
+
+Crabevcollfileviewmultirow::Crabevcollfileviewmultirow(){
+    this->T_Data_Tierobj = new T_Data_Tierrow();
+    this->rowMap.set("t_data_tierrow", (void*)this->T_Data_Tierobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Processing_Pathobj = new T_Processing_Pathrow();
+    this->rowMap.set("t_processing_pathrow", (void*)this->T_Processing_Pathobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Primary_Datasetobj = new T_Primary_Datasetrow();
+    this->rowMap.set("t_primary_datasetrow", (void*)this->T_Primary_Datasetobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Processed_Datasetobj = new T_Processed_Datasetrow();
+    this->rowMap.set("t_processed_datasetrow", (void*)this->T_Processed_Datasetobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Event_Collectionobj = new T_Event_Collectionrow();
+    this->rowMap.set("t_event_collectionrow", (void*)this->T_Event_Collectionobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Blockobj = new T_Blockrow();
+    this->rowMap.set("t_blockrow", (void*)this->T_Blockobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Info_Evcollobj = new T_Info_Evcollrow();
+    this->rowMap.set("t_info_evcollrow", (void*)this->T_Info_Evcollobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Fileobj = new T_Filerow();
+    this->rowMap.set("t_filerow", (void*)this->T_Fileobj);
+    this->constituentObjects.push_back(this->rowMap);
+    this->T_Evcoll_Fileobj = new T_Evcoll_Filerow();
+    this->rowMap.set("t_evcoll_filerow", (void*)this->T_Evcoll_Fileobj);
+    this->constituentObjects.push_back(this->rowMap);
+}
+
+Crabevcollfileviewmultirow::~Crabevcollfileviewmultirow(){
+   delete this->T_Data_Tierobj;
+   delete this->T_Processing_Pathobj;
+   delete this->T_Primary_Datasetobj;
+   delete this->T_Processed_Datasetobj;
+   delete this->T_Event_Collectionobj;
+   delete this->T_Blockobj;
+   delete this->T_Info_Evcollobj;
+   delete this->T_Fileobj;
+   delete this->T_Evcoll_Fileobj;
+}
+
+Crabevcollfileviewmultirow_DB_BINDING::Crabevcollfileviewmultirow_DB_BINDING() {
+    TableName = "CrabEvCollFileView";
+
+    Schema.insert(Entry("t_evcoll_file.fileid", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.name", "STRING"));
+    Schema.insert(Entry("t_info_evcoll.name", "STRING"));
+    Schema.insert(Entry("t_block.status", "INTEGER"));
+    Schema.insert(Entry("t_file.guid", "STRING"));
+    Schema.insert(Entry("t_event_collection.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.id", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_file.evcoll", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_block.bytes", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.id", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
+    Schema.insert(Entry("t_block.files", "INTEGER"));
+    Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
+    Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_file.type", "INTEGER"));
+    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_file.logical_name", "STRING"));
+    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_file.id", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_file.status", "INTEGER"));
+    Schema.insert(Entry("t_evcoll_file.id", "INTEGER"));
+    Schema.insert(Entry("t_file.inblock", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_file.filesize", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+
+    PrimaryKeys.push_back("t_info_evcoll.event_collection");
+    PrimaryKeys.push_back("t_evcoll_file.id");
+
+    ForeignKeys.push_back("t_evcoll_file.fileid");
+    ForeignKeys.push_back("t_processed_dataset.processing_path");
+    ForeignKeys.push_back("t_file.type");
+    ForeignKeys.push_back("t_block.processed_dataset");
+    ForeignKeys.push_back("t_processing_path.data_tier");
+    ForeignKeys.push_back("t_block.status");
+    ForeignKeys.push_back("t_processing_path.app_config");
+    ForeignKeys.push_back("t_evcoll_file.evcoll");
+    ForeignKeys.push_back("t_info_evcoll.event_collection");
+    ForeignKeys.push_back("t_processed_dataset.primary_dataset");
+    ForeignKeys.push_back("t_event_collection.processed_dataset");
+    ForeignKeys.push_back("t_file.status");
+    ForeignKeys.push_back("t_file.inblock");
+
+    list<string> tmplist;
+    tmplist.push_back("t_evcoll_file.evcoll");
+    tmplist.push_back("t_evcoll_file.fileid");
+    tmplist.push_back("t_info_evcoll.event_collection");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+    tmplist.push_back("t_evcoll_file.id");
+    tmplist.push_back("t_info_evcoll.event_collection");
+    UniqueKeys.push_back(tmplist);
+    tmplist.clear();
+
+    NotNullKeys.push_back("t_data_tier.id");
+    NotNullKeys.push_back("t_data_tier.name");
+    NotNullKeys.push_back("t_processing_path.id");
+    NotNullKeys.push_back("t_processing_path.app_config");
+    NotNullKeys.push_back("t_processing_path.data_tier");
+    NotNullKeys.push_back("t_primary_dataset.id");
+    NotNullKeys.push_back("t_primary_dataset.name");
+    NotNullKeys.push_back("t_processed_dataset.id");
+    NotNullKeys.push_back("t_processed_dataset.primary_dataset");
+    NotNullKeys.push_back("t_processed_dataset.processing_path");
+    NotNullKeys.push_back("t_processed_dataset.name");
+    NotNullKeys.push_back("t_processed_dataset.is_open");
+    NotNullKeys.push_back("t_event_collection.id");
+    NotNullKeys.push_back("t_event_collection.processed_dataset");
+    NotNullKeys.push_back("t_event_collection.collection_index");
+    NotNullKeys.push_back("t_block.id");
+    NotNullKeys.push_back("t_block.processed_dataset");
+    NotNullKeys.push_back("t_block.status");
+    NotNullKeys.push_back("t_block.files");
+    NotNullKeys.push_back("t_block.bytes");
+    NotNullKeys.push_back("t_info_evcoll.event_collection");
+    NotNullKeys.push_back("t_info_evcoll.events");
+    NotNullKeys.push_back("t_info_evcoll.name");
+    NotNullKeys.push_back("t_file.id");
+    NotNullKeys.push_back("t_file.logical_name");
+    NotNullKeys.push_back("t_file.type");
+    NotNullKeys.push_back("t_file.inblock");
+    NotNullKeys.push_back("t_evcoll_file.id");
+    NotNullKeys.push_back("t_evcoll_file.evcoll");
+    NotNullKeys.push_back("t_evcoll_file.fileid");
+
+    SchemaOrder.push_back("t_data_tier");
+    SchemaOrder.push_back("t_processing_path");
+    SchemaOrder.push_back("t_primary_dataset");
+    SchemaOrder.push_back("t_processed_dataset");
+    SchemaOrder.push_back("t_event_collection");
+    SchemaOrder.push_back("t_block");
+    SchemaOrder.push_back("t_info_evcoll");
+    SchemaOrder.push_back("t_file");
+    SchemaOrder.push_back("t_evcoll_file");
+
+    References.insert(Entry("t_evcoll_file.fileid", "t_file.id"));
+    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
+    References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
+    References.insert(Entry("t_evcoll_file.evcoll", "t_event_collection.id"));
+    References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
+    References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_file.inblock", "t_block.id"));
+
+
+    ExternalReferences.insert(Entry("t_file.inblock", "t_block.id"));
+}
+
+string* Crabevcollfileviewmultirow_DB_BINDING::getTableName(void) {
       return &this->TableName;
 }
 
@@ -2512,6 +3457,38 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_info_evcollrow", ""))->
            setValue((string)"t_info_evcoll.name", value);
     }
+    if( key.compare("t_block.processed_dataset") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processed_dataset.id") == 0) {
+         ((T_Blockrow*)this->
+          getConstituentRow((string)"t_blockrow", ""))->
+           setValue((string)"t_block.processed_dataset", value);
+         ((T_Processed_Datasetrow*)this->
+          getConstituentRow((string)"t_processed_datasetrow", ""))->
+           setValue((string)"t_processed_dataset.id", value);
+    }
+    if( key.compare("t_processing_path.data_tier") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
+    if( key.compare("t_data_tier.id") == 0) {
+         ((T_Processing_Pathrow*)this->
+          getConstituentRow((string)"t_processing_pathrow", ""))->
+           setValue((string)"t_processing_path.data_tier", value);
+         ((T_Data_Tierrow*)this->
+          getConstituentRow((string)"t_data_tierrow", ""))->
+           setValue((string)"t_data_tier.id", value);
+    }
     if( key.compare("t_processed_dataset.processing_path") == 0) {
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
@@ -2544,22 +3521,6 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.id", value);
     }
-    if( key.compare("t_processing_path.data_tier") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
-    if( key.compare("t_data_tier.id") == 0) {
-         ((T_Processing_Pathrow*)this->
-          getConstituentRow((string)"t_processing_pathrow", ""))->
-           setValue((string)"t_processing_path.data_tier", value);
-         ((T_Data_Tierrow*)this->
-          getConstituentRow((string)"t_data_tierrow", ""))->
-           setValue((string)"t_data_tier.id", value);
-    }
     if( key.compare("t_processed_dataset.primary_dataset") == 0) {
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
@@ -2588,22 +3549,6 @@ void Crabevcollviewmultirow::setValue(string key, void* value) {
          ((T_Event_Collectionrow*)this->
           getConstituentRow((string)"t_event_collectionrow", ""))->
            setValue((string)"t_event_collection.processed_dataset", value);
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
-    }
-    if( key.compare("t_block.processed_dataset") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
-         ((T_Processed_Datasetrow*)this->
-          getConstituentRow((string)"t_processed_datasetrow", ""))->
-           setValue((string)"t_processed_dataset.id", value);
-    }
-    if( key.compare("t_processed_dataset.id") == 0) {
-         ((T_Blockrow*)this->
-          getConstituentRow((string)"t_blockrow", ""))->
-           setValue((string)"t_block.processed_dataset", value);
          ((T_Processed_Datasetrow*)this->
           getConstituentRow((string)"t_processed_datasetrow", ""))->
            setValue((string)"t_processed_dataset.id", value);
@@ -2771,41 +3716,41 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     TableName = "CrabEvCollView";
 
     Schema.insert(Entry("t_processed_dataset.name", "STRING"));
-    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.name", "STRING"));
     Schema.insert(Entry("t_block.status", "INTEGER"));
-    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
     Schema.insert(Entry("t_event_collection.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.id", "INTEGER"));
     Schema.insert(Entry("t_info_evcoll.event_collection", "INTEGER"));
-    Schema.insert(Entry("t_block.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.processed_dataset", "INTEGER"));
-    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_block.bytes", "INTEGER"));
     Schema.insert(Entry("t_data_tier.id", "INTEGER"));
     Schema.insert(Entry("t_processing_path.parent", "INTEGER"));
-    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
     Schema.insert(Entry("t_processed_dataset.processing_path", "INTEGER"));
     Schema.insert(Entry("t_block.files", "INTEGER"));
     Schema.insert(Entry("t_processing_path.data_tier", "INTEGER"));
-    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.id", "INTEGER"));
     Schema.insert(Entry("t_event_collection.collection_index", "INTEGER"));
     Schema.insert(Entry("t_data_tier.name", "STRING"));
+    Schema.insert(Entry("t_block.processed_dataset", "INTEGER"));
+    Schema.insert(Entry("t_info_evcoll.events", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.is_open", "CHARACTER"));
+    Schema.insert(Entry("t_processing_path.app_config", "INTEGER"));
+    Schema.insert(Entry("t_block.id", "INTEGER"));
+    Schema.insert(Entry("t_primary_dataset.name", "STRING"));
+    Schema.insert(Entry("t_processed_dataset.primary_dataset", "INTEGER"));
+    Schema.insert(Entry("t_processed_dataset.id", "INTEGER"));
 
     PrimaryKeys.push_back("t_block.id");
     PrimaryKeys.push_back("t_info_evcoll.event_collection");
 
     ForeignKeys.push_back("t_processed_dataset.processing_path");
-    ForeignKeys.push_back("t_processing_path.app_config");
     ForeignKeys.push_back("t_block.processed_dataset");
     ForeignKeys.push_back("t_processing_path.data_tier");
+    ForeignKeys.push_back("t_block.status");
+    ForeignKeys.push_back("t_processing_path.app_config");
+    ForeignKeys.push_back("t_info_evcoll.event_collection");
     ForeignKeys.push_back("t_processed_dataset.primary_dataset");
     ForeignKeys.push_back("t_event_collection.processed_dataset");
-    ForeignKeys.push_back("t_block.status");
-    ForeignKeys.push_back("t_info_evcoll.event_collection");
 
     list<string> tmplist;
     tmplist.push_back("t_info_evcoll.event_collection");
@@ -2845,15 +3790,15 @@ Crabevcollviewmultirow_DB_BINDING::Crabevcollviewmultirow_DB_BINDING() {
     SchemaOrder.push_back("t_block");
     SchemaOrder.push_back("t_info_evcoll");
 
+    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
+    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processed_dataset.processing_path", "t_processing_path.id"));
     References.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
-    References.insert(Entry("t_processing_path.data_tier", "t_data_tier.id"));
     References.insert(Entry("t_processed_dataset.primary_dataset", "t_primary_dataset.id"));
     References.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
-    References.insert(Entry("t_block.processed_dataset", "t_processed_dataset.id"));
 
 
-    ExternalReferences.insert(Entry("t_info_evcoll.event_collection", "t_event_collection.id"));
+    ExternalReferences.insert(Entry("t_event_collection.processed_dataset", "t_processed_dataset.id"));
 }
 
 string* Crabevcollviewmultirow_DB_BINDING::getTableName(void) {

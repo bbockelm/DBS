@@ -1,6 +1,6 @@
 from Service_services import *
-
 import dbsException
+
 import dbsApi
 
 import ZSI
@@ -42,18 +42,17 @@ class DbsWsApi(dbsApi.DbsApi):
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
 
-   def insertEventCollections(self, datasetPathName, eventCollectionList):
+   def insertEventCollections(self, eventCollectionList):
 
      try:
        request = insertEventCollectionsRequestWrapper()
-       request._datasetPathName = datasetPathName
        request._eventCollectionList = eventCollectionList
        response = self.portType.insertEventCollections(request)
        return response._result
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
 
-   def getDatasetContents(self, datasetPathName, listFiles=False):
+   def getDatasetContents(self, datasetPathName, listFiles):
 
      try:
        request = getDatasetContentsRequestWrapper()
@@ -71,6 +70,16 @@ class DbsWsApi(dbsApi.DbsApi):
        request._datasetPathName = datasetPathName
        response = self.portType.getDatasetFileBlocks(request)
        return response._blockList
+     except ZSI.FaultException, ex:
+       raise dbsApi.DbsApiException(exception=ex)
+
+   def listDataset(self, datasetPathName):
+
+     try:
+       request = listDatasetRequestWrapper()
+       request._datasetPathName = datasetPathName
+       response = self.portType.listDataset(request)
+       return response._datasetList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
 
