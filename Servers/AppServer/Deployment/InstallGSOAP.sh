@@ -8,7 +8,7 @@ echo "Staring GSOAP Installation in $1"
 DBSDependDir=$1
 mkdir -p $DBSDependDir
 cd $DBSDependDir
-wget http://internap.dl.sourceforge.net/sourceforge/gsoap2/gsoap_2.7.6e.tar.gz
+wget http://umn.dl.sourceforge.net/sourceforge/gsoap2/gsoap_2.7.6e.tar.gz 
 tar -zxf gsoap_2.7.6e.tar.gz
 cd gsoap-2.7
 ./configure --prefix=$DBSDependDir/gSOAP

@@ -20,7 +20,7 @@ class ServiceInterface:
 
 
 class ServiceLocator(ServiceInterface):
-    ServicePortType_address = "http://venom.fnal.gov:27983"
+    ServicePortType_address = "http://cmslcgco01.cern.ch:27984"
     def getServicePortTypeAddress(self):
         return ServiceLocator.ServicePortType_address
 

@@ -11,7 +11,7 @@ DBSDependDir=$1
 mkdir -p $DBSDependDir
 cd $DBSDependDir
 
-wget http://puzzle.dl.sourceforge.net/sourceforge/unixodbc/unixODBC-2.2.11.tar.gz
+wget http://www.unixodbc.org/unixODBC-2.2.11.tar.gz
 tar zxf unixODBC-2.2.11.tar.gz
 cd unixODBC-2.2.11
 #./autogen.sh

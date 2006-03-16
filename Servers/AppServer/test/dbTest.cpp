@@ -27,8 +27,8 @@ void testResults1(DBManagement * dbm, string sql) {
 int main(int argc,char *argv[]) {
 	DBManagement * dbm;
 	try {
-		//dbm =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
-		dbm =  new DBManagement("ProdRO", "cms_dbs_reader", "mi2sbe5stOWu");
+		dbm =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
+		//dbm =  new DBManagement("ProdRO", "cms_dbs_reader", "mi2sbe5stOWu");
                 //dbm  =  new DBManagement("sveseli", "cms_dbs_sveseli", "kIek8ie8ethN");
 		//dbm =  new DBManagement("mydsn", "sekhri", "");
 		//dbm  =  new DBManagement("mydsnvijay", "ggraham", "");
