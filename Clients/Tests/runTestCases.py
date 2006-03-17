@@ -14,15 +14,15 @@ import time
 
 if __name__ == "__main__":
    startTime = time.mktime(datetime.datetime.now().timetuple())
-     
+    
    testObj = testCreatePrimaryDS.testCreatePrimaryDS()
    testObj.run()
      
    testObj = testCreateProcessedDS.testCreateProcessedDS()
    testObj.run()
    
-   testObj = testCreateBlock.testCreateBlock()
-   testObj.run()
+   #testObj = testCreateBlock.testCreateBlock()
+   #testObj.run()
     
    testObj = testGetDatasetBlocks.testGetDatasetBlocks()
    testObj.run()

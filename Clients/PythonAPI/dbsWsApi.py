@@ -62,6 +62,8 @@ class DbsWsApi(dbsApi.DbsApi):
        return response._blockList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
+     except ZSI.EvaluateException, ex:
+       return None
 
    def getDatasetFileBlocks(self, datasetPathName):
 
@@ -72,6 +74,9 @@ class DbsWsApi(dbsApi.DbsApi):
        return response._blockList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
+     except ZSI.EvaluateException, ex:
+       return None
+
 
    def listDataset(self, datasetPathName):
 
@@ -82,5 +87,8 @@ class DbsWsApi(dbsApi.DbsApi):
        return response._datasetList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
+     except ZSI.EvaluateException, ex:
+       return None
+
 
 

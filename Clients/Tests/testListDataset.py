@@ -19,8 +19,11 @@ class testListDataset(testCaseInterface.testCaseInterface) :
 
     try:
        dsList = self.api.listDataset(datasetPath)
-       for ds in dsList:
-          print "Dataset ",ds
+       if dsList != None:
+         for ds in dsList:
+            print "Dataset ",ds
+       else:
+         print "No dataset returned"
 
     except dbsException.DbsException, ex:
        print ex
@@ -35,8 +38,12 @@ class testListDataset(testCaseInterface.testCaseInterface) :
 
     try:
        dsList = self.api.listDataset(datasetPath)
-       for ds in dsList:
-          print "Dataset ",ds
+       if dsList != None:
+         for ds in dsList:
+            print "Dataset ",ds
+       else:
+         print "No dataset returned"
+
 
     except dbsException.DbsException, ex:
        print ex

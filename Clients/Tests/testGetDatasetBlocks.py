@@ -18,11 +18,15 @@ class testGetDatasetBlocks(testCaseInterface.testCaseInterface) :
     try:
 
        fileBlockList = self.api.getDatasetFileBlocks(datasetPath)
-       for fileBlock in fileBlockList:
-          #print "File block name/id: %s/#/%s" % (datasetPath[1:], fileBlock._blockId)
-          print "File block name/id: %s" % (fileBlock._blockName)
-          #for eventCollection in fileBlock.getEventCollectionList():
-          #   print "  %s" % eventCollection
+       if fileBlockList != None:
+         for fileBlock in fileBlockList:
+            #print "File block name/id: %s/#/%s" % (datasetPath[1:], fileBlock._blockId)
+            print "File block name/id: %s" % (fileBlock._blockName)
+            #for eventCollection in fileBlock.getEventCollectionList():
+            #   print "  %s" % eventCollection
+       else:
+         print "No fileBlockList returned"
+
 
     except dbsException.DbsException, ex:
        print ex

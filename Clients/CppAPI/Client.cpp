@@ -30,9 +30,20 @@ void createProcessedDataset() {
 	}
 }
 
+void getDatasetContents() {
+	struct soap *soap = soap_new();
+	string path="/eg03_jets_1e_pt2550/Digi/eg_2x1033PU761_TkMu_2_g133_OSC";
+	std::vector<DBS__Block*> blockList;
+	if(soap_call_DBS__getDatasetContents(soap, "http://cmslcgco01.cern.ch:27984", NULL, path, false, blockList) == 0) {
+		cout<<"size of blockList is  "<<blockList.size()<<endl;
+	} else {
+		soap_print_fault(soap, stderr);
+	}
+}
 
 int main(int argc, char** argv){ 
-	createProcessedDataset();
+	//createProcessedDataset();
+	getDatasetContents();
 	//struct soap *soap = soap_new();
 	//int result;
 	//std::vector<DBS__Block*> blockList;

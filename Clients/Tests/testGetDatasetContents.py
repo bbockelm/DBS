@@ -19,11 +19,14 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
 
     try:
        fileBlockList = self.api.getDatasetContents(self.datasetPath,False)
-       for fileBlock in fileBlockList:
-          print "block name ",fileBlock._blockName
-          for eventCollection in fileBlock._eventCollectionList:
-             print "collectionName ", eventCollection._collectionName
-             print "***************************************************"
+       if fileBlockList != None:
+         for fileBlock in fileBlockList:
+            print "block name ",fileBlock._blockName
+            for eventCollection in fileBlock._eventCollectionList:
+               print "collectionName ", eventCollection._collectionName
+               print "***************************************************"
+       else:
+         print "No fileBlockList returned"
 
     except dbsException.DbsException, ex:
        print ex
@@ -39,22 +42,26 @@ class testGetDatasetContents(testCaseInterface.testCaseInterface) :
 
        # Non-Default behaviour of getDatasetContents
        fileBlockList = self.api.getDatasetContents(self.datasetPath, True)
-       for fileBlock in fileBlockList:
-          print "block name ",fileBlock._blockName
-          for eventCollection in fileBlock._eventCollectionList:
-             print "collectionName ", eventCollection._collectionName
-             print "***************************************************"
-             for aFile in eventCollection._fileList:
-                 print "   id ", aFile._id
-                 print "   guid ", aFile._guid
-                 print "   logicalFileName ", aFile._logicalFileName
-                 print "   checksum ", aFile._checksum
-                 print "   fileSize ", aFile._fileSize
-                 print "   fileStatus ", aFile._fileStatus
-                 print "   fileType ", aFile._fileType
-                 print "   fileBlockId ", aFile._fileBlockId
-                 print "***************************************************"
+       if fileBlockList != None:
+         for fileBlock in fileBlockList:
+            print "block name ",fileBlock._blockName
+            for eventCollection in fileBlock._eventCollectionList:
+               print "collectionName ", eventCollection._collectionName
+               print "***************************************************"
+               for aFile in eventCollection._fileList:
+                   print "   id ", aFile._id
+                   print "   guid ", aFile._guid
+                   print "   logicalFileName ", aFile._logicalFileName
+                   print "   checksum ", aFile._checksum
+                   print "   fileSize ", aFile._fileSize
+                   print "   fileStatus ", aFile._fileStatus
+                   print "   fileType ", aFile._fileType
+                   print "   fileBlockId ", aFile._fileBlockId
+                   print "***************************************************"
+       else:
+         print "No fileBlockList returned"
 
+  
     except dbsException.DbsException, ex:
        print ex
        return 1
