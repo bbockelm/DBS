@@ -15,7 +15,7 @@ fi
 echo "Install Dir is : $1"
 
 export DBSDependDir=$1
-#./InstallLog4CXX.sh $1
+./InstallLog4CXX.sh $1
 if [ $? != 0 ]; then
 	exit 1
 fi

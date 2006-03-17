@@ -18,6 +18,9 @@ std::vector<std::string> DBSApi::getNameElements(std::string datasetPathName) {
         Util util;
         vector<string> tokens;
         util.Tokenize(datasetPathName, tokens, (string)"/");
+	/*tokens.push_back("abc");
+	tokens.push_back("abc");
+	tokens.push_back("abc");*/
         if (tokens.size() != 3) {
                 throw BizLayerException((string)"datasetPathName is invalid. Correct format is /PrimaryDataset/DataTier/ProcessedDataset");
         }
@@ -239,6 +242,10 @@ void DBSApi::setECValues(RowInterface* aRow, DBS__EventCollection* eventCollecti
 }
 
 int DBSApi::getDatasetContents(std::string datasetPathName, bool listFiles, std::vector<DBS__Block*>& blockList) {
+	/*DBS__Block* aBlock = this->getBlock();
+	aBlock->blockId = this->getInt(util.atoi("1234"));
+	blockList.push_back(aBlock);
+	return 1;*/
 	if(listFiles) {
 		return this->getDatasetContents(datasetPathName,blockList);
 	}
@@ -254,12 +261,13 @@ int DBSApi::getDatasetContents(std::string datasetPathName, bool listFiles, std:
 	util.setValue(&aRow, "t_data_tier.name", "STRING", dataTier);
 	util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
 	//util.setValue(&aRow, "t_event_collection.id", "INTEGER", "271478");
-
         CrabEvCollViewManager manager;
 	manager.read(&aRow, &table);
+	
 	int noOfRows = table.getNoOfRows();
 	cout << "Number of Rows from DB is "<<noOfRows<<endl;
 	vector<Crabevcollviewmultirow*> rows = table.getRows();
+	return 1;
 	for (int i = 0 ; i != noOfRows; ++i) {
 		Crabevcollviewmultirow* tmpRow = (Crabevcollviewmultirow*)rows.at(i);
 		string value;
@@ -424,16 +432,20 @@ int DBSApi::getDatasetFileBlocks(std::string datasetPathName, std::vector<DBS__B
 
 
 DBS__Block* DBSApi::getBlock() {
+	//cout<<"DBSApi::getBlock()"<<endl;
 	return new DBS__Block();
 }
 DBS__File* DBSApi::getFile() {
+	//cout<<"DBSApi::getFile()"<<endl;
 	return new DBS__File();
 }
 DBS__EventCollection* DBSApi::getEventCollection() {
+	//cout<<"DBSApi::getEventCollection()"<<endl;
 	return new DBS__EventCollection();
 }
 
 int* DBSApi::getInt(int value) {
+	//cout<<"DBSApi::getInt"<<endl;
 	int* i = (int*)new int(value);
 	return i;
 }

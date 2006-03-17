@@ -22,8 +22,8 @@ tar zxvf ZSI-1.7.linux-i686.tar.gz
 cd ../..
 mkdir wsdl2py
 cd wsdl2py
-cp -r ../ZSI-1.7/dist/usr/bin .
-cp -r ../ZSI-1.7/dist/usr/lib/python2.3/site-packages/ZSI/ .
+cp -r ../ZSI-1.7/dist/usr/local/bin .
+cp -r ../ZSI-1.7/dist/usr//local/lib/python2.4/site-packages/ZSI/ .
 #cp -r ../ZSI-2.0-rc1/dist/usr/bin .
 #cp -r ../ZSI-2.0-rc1/dist/usr/lib/python2.3/site-packages/ZSI/ .
 cd ..
