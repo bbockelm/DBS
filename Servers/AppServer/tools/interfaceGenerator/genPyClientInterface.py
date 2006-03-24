@@ -114,6 +114,41 @@ class funcRep:
      output += '\n       raise dbsApi.DbsApiException(exception=ex)'
      return output
 
+   def genSoapAPI(self):
+     """ Generates a General Wrapper for User Interface """
+     output = '\n\nint DBS__'+self.apiName+'(struct soap* soap'
+     params = ""
+     for aVar, varType in self.genericArgs:
+         output += ',' + varType + ' '+ aVar
+         params += aVar + ','
+     for aVar, varType in self.typeArgs:
+         output += ', ' + varType + ' ' +aVar
+         params += aVar + ','
+     output += ','+self.returnVar[1] + ' '+ self.returnVar[0]
+     params += self.returnVar[0]
+     output += ') {\n'
+     output += '\n\ttry{'
+     output += '\n\t\tSoapDBSApi dbsapi(soap);'
+     output += '\n\t\tdbsapi.'+ self.apiName +'('+ params +');'
+     output += '\n\t} catch (BizLayerException e) {'
+     output += '\n\t\treturn soap_receiver_fault(soap, e.report().c_str() , NULL);'
+     output += '\n\t}'
+     output += '\n\treturn SOAP_OK;'
+     output += '\n}'
+     return output
+
+   def genInterfaceHpp(self):
+     """ Generates a Interface.hpp for used by the C++ Server """
+     output = '\nint '+self.apiName+'('
+     for aVar, varType in self.genericArgs:
+         output +=  varType + ' '+aVar + ','
+     for aVar, varType in self.typeArgs:
+         output +=  varType + ' ' +aVar + ','
+     output = output[:-1]
+     output += ');'
+     #print output
+     return output
+
 class writeAPIClass:
     """ Class that generates dbsWSAPI.py"""
     def __init__(self, apiList=[]):
@@ -131,6 +166,41 @@ class writeAPIClass:
         for anAPI in self.apiList:
             output += anAPI.genAPIWrapper()  
         return output
+
+
+class writeSoapAPIImpl:
+    """ Class that generates SoapApiImpl.cpp"""
+    def __init__(self, apiList=[]):
+        self.apiList = apiList
+
+    def genSoapAPIImpl(self):
+        output  = '#include "Interface.hpp"'
+        output += '\n#include <iostream>'
+        output += '\n#include "BizLayerException.hpp"'
+        output += '\n#include <exception>'
+        output += '\n#include "SoapDBSApi.hpp"'
+        output += '\n\nusing namespace std;'
+        output += '\n'
+        for anAPI in self.apiList:
+            output += anAPI.genSoapAPI()
+	#print output
+        return output
+
+class writeInterfaceHpp:
+    """ Class that generates Interface.hpp"""
+    def __init__(self, apiList=[]):
+        self.apiList = apiList
+
+    def writeInterfaceHpp(self):
+        output  = '#include "soapH.h"'
+        output += '\n#include <vector>'
+        output += '\n#include <string>'
+        output += '\n'
+        for anAPI in self.apiList:
+            output += anAPI.genInterfaceHpp()
+	#print output
+        return output
+
      
 class processInterface :
    """Class that processes a Interface file and extracts all information
@@ -239,5 +309,12 @@ if __name__== '__main__':
       apiGenerator = writeAPIClass(processMyFile.apiList)
       output = apiGenerator.genAPIClass()
       writeIntoFile(output=output, outFile='dbsWsApi.py')
+      apiGenerator = writeSoapAPIImpl(processMyFile.apiList)
+      output = apiGenerator.genSoapAPIImpl()
+      writeIntoFile(output=output, outFile='SoapApiImpl.cpp')
+      apiGenerator = writeInterfaceHpp(processMyFile.apiList)
+      output = apiGenerator.writeInterfaceHpp()
+      writeIntoFile(output=output, outFile='Interface.hpp')
+
 
        

@@ -27,6 +27,8 @@ cp Service* ../../../../Clients/PythonAPI/
 python genPyClientInterface.py
 cp dbsWsApi.py ../../../../Clients/PythonAPI/
 cp dbsClientDatastructures.py ../../../../Clients/PythonAPI/
+cp SoapApiImpl.cpp ../../src/iflayer/
+cp Interface.hpp ../../include/  
 #
 echo "Code Generation is DONE"
 

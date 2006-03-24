@@ -96,6 +96,9 @@ int DBSApi::getProcessedDatasetID(std::string datasetPathName) {
 
 
 int DBSApi::createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, int& primaryDatasetId){
+	if(primaryDataset == NULL) {
+		throw BizLayerException("primaryDataset is NULL");
+	}
 	cout<<"Name is "<<primaryDataset->name<<endl;
 	if (primaryDataset->name.length() < 1) {
 		throw BizLayerException("Primary Dataset name is NULL");
@@ -111,6 +114,10 @@ int DBSApi::createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, int& prima
 }
 
 int DBSApi::createProcessedDataset(DBS__ProcessedDataset* processedDataset, int& processedDatasetId) {
+	if(processedDataset == NULL) {
+		throw BizLayerException("processedDataset is NULL");
+	}
+
 	ProcessingpathMultiTable table;
 
 	DBS__ProcessingPath* procPath = processedDataset->processingPath;
@@ -151,6 +158,10 @@ int DBSApi::createProcessedDataset(DBS__ProcessedDataset* processedDataset, int&
 
 
 int DBSApi::createFileBlock(std::string datasetPathName, DBS__Block* block, int& fileBlockId){
+	if(block == NULL) {
+		throw BizLayerException("block is NULL");
+	}
+
 	int processedDatasetID = this->getProcessedDatasetID(datasetPathName);
 	BlockviewMultiTable table;
 	Blockviewmultirow* aRow = new Blockviewmultirow();
@@ -267,7 +278,7 @@ int DBSApi::getDatasetContents(std::string datasetPathName, bool listFiles, std:
 	int noOfRows = table.getNoOfRows();
 	cout << "Number of Rows from DB is "<<noOfRows<<endl;
 	vector<Crabevcollviewmultirow*> rows = table.getRows();
-	return 1;
+	//return 1;
 	for (int i = 0 ; i != noOfRows; ++i) {
 		Crabevcollviewmultirow* tmpRow = (Crabevcollviewmultirow*)rows.at(i);
 		string value;
