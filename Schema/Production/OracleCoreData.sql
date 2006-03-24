@@ -136,7 +136,7 @@ alter table t_processed_dataset
 
 alter table t_processed_dataset
   add constraint uq_processed_dataset_key
-  unique (primary_dataset, name);
+  unique (primary_dataset, data_tier, name);
 
 alter table t_processed_dataset
   add constraint fk_processed_dataset_primary
