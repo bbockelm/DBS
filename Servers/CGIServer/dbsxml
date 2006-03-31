@@ -65,7 +65,7 @@ use UtilsDB;
 ######################################################################
 # Main program
 
-my $dbparams = "/afs/cern.ch/cms/aprom/DBS/DBAccessInfo/DBParam";
+my $dbparams = "/data/DBSAccessInfo/DBParam";
 
 # Known API calls
 my %apis = (
@@ -217,7 +217,7 @@ sub listDatasets
     while (my ($id, $primary, $processed, $tier) = $q->fetchrow())
     {
       my $token = "/$primary/$tier/$processed";
-      next if (defined $rxpattern && $token !~ m/$rxpattern/o);
+      next if (defined $rxpattern && $token !~ m/$rxpattern/);
       $out .= "  <processed-dataset id='$id' path='$token'/>\n";
     }
     $out .= "</dbs>\n";
