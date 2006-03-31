@@ -3,19 +3,7 @@
    dbsCgiApi (uses CGI scripts) 
    dbsWsApi  (uses web services)
 
-2) Basic CLI API usage:
-
-  import dbsCliApi
-  api=dbsCliApi.DbsCliApi(
-    phedexDir=<phedex directory name>,
-    phedexDbSectionString=<db section>,
-    phedexDbConnectFile=<db connect file>)
-  fileBlockList = api.getDatasetContents(<datasetPath>)
-  parentList = api.getDatasetProvenance(<datasetPath>, <dataTierList>)
-
-  Actual code examples are in dbsCliApi.py.
-
-3) Basic CGI API usage:
+2) Basic CGI API usage:
 
   import dbsCliApi
   datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
@@ -26,7 +14,7 @@
 
   Actual code examples are in dbsCgiApi.py.
 
-4) Basic Web Services API usage:
+3) Basic Web Services API usage:
 
   import dbsWsApi
   datasetPath = "bt03_B0sJPsiX/Hit/bt_Hit245_2_g133"
@@ -38,7 +26,7 @@
   Actual code examples are in dbsWsApi.py. In general, the wsdl argument
   is actual url pointing to the wsdl file.
 
-5) API classes of interest for users:
+4) API classes of interest for users:
    
    DbsFileBlock (dbsFileBlock.py)
    DbsEventCollection (dbsEventCollection.py)
