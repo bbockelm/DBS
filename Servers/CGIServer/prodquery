@@ -497,7 +497,7 @@ sub getDatasetFiles
     $dbs = &connectToDBS ();
 
     # Translate the dataset path to an id
-    my $id = &datasetFromPath ($$dbs{DBH}, @path);
+    my $id = &datasetFromPath ($dbs, @path);
 
     # Prepare output.
     my $out = "<?xml version='1.0' standalone='yes'?>\n<dbs>\n";
@@ -505,7 +505,7 @@ sub getDatasetFiles
     $out .= "  <processed-dataset id='$id' path='$pathname'>\n";
 
     # Fetch blocks, event collections and files
-    my ($blocks, $evcolls, $files) = &datasetContents ($$dbs{DBH}, $id);
+    my ($blocks, $evcolls, $files) = &datasetContents ($dbs, $id);
     foreach my $block (@$blocks)
     {
       $out .= "    <block id='$$block{ID}' name='$pathname#$$block{ID}'";
