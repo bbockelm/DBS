@@ -19,6 +19,10 @@ create table t_parentage_type
   (id				integer		not null,
    name				varchar (1000)	not null);
 
+create table t_evcoll_status
+  (id				integer		not null,
+   name				varchar (1000)	not null);
+
 create table t_primary_dataset
   (id				integer		not null,
    name				varchar (1000)	not null);
@@ -45,16 +49,13 @@ create table t_processed_dataset
 create table t_event_collection
   (id				integer		not null,
    processed_dataset		integer		not null,
-   collection_index		integer		not null);
-
-create table t_info_evcoll
-  (event_collection		integer		not null,
+   name				varchar (1000)	not null,
    events			integer		not null,
-   name				varchar (1000)	not null);
+   status			integer);
 
 create table t_evcoll_parentage
   (id				integer		not null,
-   parent			integer,
+   parent			integer		not null,
    child			integer		not null,
    type				integer		not null);
 
@@ -76,6 +77,16 @@ alter table t_parentage_type
 
 alter table t_parentage_type
   add constraint uq_parentage_type_name
+  unique (name);
+
+--
+alter table t_evcoll_status
+  add constraint pk_evcoll_status
+  primary key (id)
+  using index tablespace INDX01;
+
+alter table t_evcoll_status
+  add constraint uq_evcoll_status_name
   unique (name);
 
 --
@@ -161,22 +172,16 @@ alter table t_event_collection
   using index tablespace INDX01;
 
 alter table t_event_collection
-  add constraint uq_event_collection_key
-  unique (processed_dataset, collection_index);
+  add constraint uq_event_collection_name
+  unique (name);
 
 alter table t_event_collection
   add constraint fk_event_collection_dataset
   foreign key (processed_dataset) references t_processed_dataset (id);
 
---
-alter table t_info_evcoll
-  add constraint pk_info_evcoll
-  primary key (event_collection)
-  using index tablespace INDX01;
-
-alter table t_info_evcoll
-  add constraint fk_info_evcoll_ds
-  foreign key (event_collection) references t_event_collection (id);
+alter table t_event_collection
+  add constraint fk_event_collection_status
+  foreign key (status) references t_evcoll_status (id);
 
 --
 alter table t_evcoll_parentage
