@@ -452,6 +452,8 @@ sub getDatasetFiles
       $bstatus = "" if ! defined $bstatus;
       $status = "" if ! defined $status;
       $guid = "" if ! defined $guid;
+      $cksum = "" if ! defined $cksum; # Not always filled in!
+      $size = "" if ! defined $size; # Not always filled in!
   
       $out .= "</block>" if defined $prev && $prev != $block;
       if (! defined $prev || $prev != $block)
