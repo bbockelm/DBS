@@ -65,18 +65,20 @@ use UtilsDB;
 ######################################################################
 # Main program
 
-my $dbparams = "/data/DBSAccessInfo/DBParam";
+my $dbparams = $ENV{DBS_DBPARAM} || "/data/DBSAccessInfo/DBParam";
 
 # Known API calls
 my %apis = (
   'getDatasetProvenance' => [ \&getDatasetProvenance, {
-    api => REQUIRED, path => REQUIRED, datatier => OPTIONAL } ],
+    path => REQUIRED, datatier => OPTIONAL } ],
   'getDatasetContents' => [ \&getDatasetContents, {
-    api => REQUIRED, path => REQUIRED } ],
+    path => REQUIRED } ],
   'getDatasetFiles' => [ \&getDatasetFiles, {
-    api => REQUIRED, path => REQUIRED } ],
+    path => REQUIRED } ],
   'listDatasets' => [ \&listDatasets, {
-    api => REQUIRED, pattern => OPTIONAL } ]);
+    pattern => OPTIONAL } ]);
+
+map { $$_[1]{api} = REQUIRED; $$_[1]{instance} = OPTIONAL } values %apis;
 
 # Get parameters
 my $api = param('api');
@@ -124,7 +126,8 @@ sub getPath
 # Connect to the DBS database.
 sub connectToDBS
 {
-  my $dbs = eval { UtilsDBS->connect ("DBS", "$dbparams:Production/Reader"); };
+  my $instance = param('instance') || "Production/Reader";
+  my $dbs = eval { UtilsDBS->connect ("DBS", "$dbparams:$instance"); };
   &reply_failure (400, "Database connection failure", $@) if $@;
   &reply_failure (401, "Failed to connect to DBS", "") if ! $dbs;
   $SIG{INT} = 'DEFAULT'; # Restore ORACLE's swallowed signals.
@@ -338,21 +341,45 @@ sub getDatasetContents
     my $pathname = "/$path[0]/$path[1]/$path[2]";
     $out .= "  <processed-dataset id='$id' path='$pathname'>\n";
 
-    # Fetch blocks, event collections and files
-    my ($blocks, $evcolls, $files) = &datasetContents ($dbs, $id);
-    foreach my $block (@$blocks)
+    # Fetch event collections by which block they belong to
+    my $q = &dbexec($$dbs{DBH}, qq{
+      select distinct
+        evc.id,
+        evi.name,
+        evi.events,
+        b.id,
+        bs.name
+      from t_event_collection evc
+        join t_info_evcoll evi
+          on evi.event_collection = evc.id
+        join t_evcoll_file evf
+          on evf.evcoll = evc.id
+        join t_file f
+          on f.id = evf.fileid
+        join t_block b
+          on b.id = f.inblock
+        join t_block_status bs
+          on bs.id = b.status
+      where evc.processed_dataset = :id
+      order by b.id, evi.name},
+      ":id" => $id);
+
+    my $prev = undef;
+    while (my $row = $q->fetchrow_arrayref())
     {
-      $out .= "    <block id='$$block{ID}' name='$pathname#$$block{ID}'>\n";
-      foreach my $evc (sort { $$a{NAME} cmp $$b{NAME} } values %{$$block{EVCS}})
-      {
-	next if $$evc{NAME} eq 'EvC_META';
-	my $name = $$evc{NAME}; $name =~ s/^EvC_Run//;
-	$out .= "      <event-collection name='$name' events='$$evc{EVENTS}'/>\n";
-      }
-      $out .= "    </block>\n";
+      my ($id, $name, $events, $block, $bstatus) = @$row;
+      $bstatus = "" if ! defined $bstatus;
+  
+      $out .= "</block>" if defined $prev && $prev != $block;
+      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>"
+        if ! defined $prev || $prev != $block;
+      $prev = $block;
+      next if $name eq 'EvC_META';
+      $name =~ s/^EvC_Run//;
+      $out .= "<event-collection id='$id' name='$name' events='$events'/>";
     }
-    $out .= "  </processed-dataset>\n";
-    $out .= "</dbs>\n";
+    $out .= "</block>" if defined $prev;
+    $out .= "</processed-dataset></dbs>\n";
 
     # Spit out the result
     $dbs->disconnect ();
@@ -388,23 +415,52 @@ sub getDatasetFiles
     my $pathname = "/$path[0]/$path[1]/$path[2]";
     $out .= "  <processed-dataset id='$id' path='$pathname'>\n";
 
-    # Fetch blocks, event collections and files
-    my ($blocks, $evcolls, $files) = &datasetContents ($dbs, $id);
-    foreach my $block (@$blocks)
+    # Fetch files by which block they belong to
+    my $q = &dbexec($$dbs{DBH}, qq{
+      select
+        f.id,
+        f.logical_name,
+        f.guid,
+        f.filesize,
+        f.checksum,
+        fs.name,
+        ft.name,
+        b.id,
+        b.files,
+        b.bytes,
+        bs.name
+      from t_block b
+        join t_block_status bs
+          on bs.id = b.status
+        join t_file f
+          on f.inblock = b.id
+        left join t_file_status fs
+          on fs.id = f.status
+        join t_file_type ft
+          on ft.id = f.type
+      where b.processed_dataset = :id
+      order by b.id, f.logical_name},
+      ":id" => $id);
+
+    my $prev = undef;
+    while (my $row = $q->fetchrow_arrayref())
     {
-      $out .= "    <block id='$$block{ID}' name='$pathname#$$block{ID}'";
-      $out .= " files='$$block{TOTAL_FILES}' bytes='$$block{TOTAL_BYTES}'>\n";
-      foreach my $file (values %{$$block{FILES}})
-      {
-	$out .= "      <file id='$$file{ID}' inblock='$$file{INBLOCK}'";
-        $out .= " guid='$$file{GUID}' lfn='$$file{LOGICAL_NAME}'";
-        $out .= " checksum='$$file{CHECKSUM}' size='$$file{FILESIZE}'";
-        $out .= " status='@{[$$file{STATUS} || '']}' type='$$file{TYPE}'/>\n";
-      }
-      $out .= "    </block>\n";
+      my ($id, $lfn, $guid, $size, $cksum, $status, $type,
+	  $block, $bfiles, $bbytes, $bstatus) = @$row;
+      $bstatus = "" if ! defined $bstatus;
+      $status = "" if ! defined $status;
+      $guid = "" if ! defined $guid;
+  
+      $out .= "</block>" if defined $prev && $prev != $block;
+      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'"
+        if ! defined $prev || $prev != $block;
+      $prev = $block;
+      $out .= " files='$bfiles' bytes='$bbytes'>";
+      $out .= "<file id='$id' inblock='$block' guid='$guid' lfn='$lfn'";
+      $out .= " checksum='$cksum' size='$size' status='$status' type='$type'/>";
     }
-    $out .= "  </processed-dataset>\n";
-    $out .= "</dbs>\n";
+    $out .= "</block>" if defined $prev;
+    $out .= "</processed-dataset></dbs>\n";
 
     # Spit out the result
     $dbs->disconnect ();
@@ -448,62 +504,4 @@ sub datasetFromPath
   }
 
   return $id;
-}
-
-# Obtain bulk of dataset contents in a convenient data structure.
-sub datasetContents
-{
-  my ($dbs, $id) = @_;
-  my $blocks = &dbexec ($dbs->{DBH}, qq{
-    select id, status, files total_files, bytes total_bytes from t_block
-    where processed_dataset = :id}, ":id" => $id)
-    ->fetchall_arrayref({});
-
-  my $evcolls = &dbexec ($dbs->{DBH}, qq{
-    select
-      evc.id,
-      evc.collection_index,
-      evi.events,
-      evi.name
-    from t_event_collection evc
-      join t_info_evcoll evi on evi.event_collection = evc.id
-    where evc.processed_dataset = :id}, ":id" => $id)
-    ->fetchall_arrayref({});
-
-  my $files = &dbexec ($dbs->{DBH}, qq{
-    select
-      evc.id evcoll,
-      f.inblock,
-      f.id,
-      f.guid,
-      f.logical_name,
-      f.checksum,
-      f.filesize,
-      fs.name status,
-      ft.name type
-    from t_event_collection evc
-      join t_evcoll_file evf
-	on evf.evcoll = evc.id
-      join t_file f
-	on f.id = evf.fileid
-      left join t_file_status fs
-	on fs.id = f.status
-      join t_file_type ft
-	on ft.id = f.type
-    where evc.processed_dataset = :id}, ":id" => $id)
-    ->fetchall_arrayref({});
-
-  # Link blocks, event collections and files to each other.
-  my %id2block = map { $$_{ID} => $_ } @$blocks;
-  my %id2evcoll = map { $$_{ID} => $_ } @$evcolls;
-  foreach my $file (@$files)
-  {
-    my $block = $id2block{$$file{INBLOCK}};
-    my $evcoll = $id2evcoll{$$file{EVCOLL}};
-    push(@{$$evcoll{FILES}}, $file);
-    $$block{FILES}{$$file{ID}} = $file;
-    $$block{EVCS}{$$file{EVCOLL}} = $evcoll;
-  }
-
-  return ($blocks, $evcolls, $files);
 }
