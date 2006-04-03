@@ -93,24 +93,7 @@ my $api = param('api');
 
 # Invoke the method
 &checkParameters ($apis{$api}[1]);
-my $dbs;
-eval
-{
-  $dbs = &connectToDBS();
-  &{$apis{$api}[0]} ($dbs);
-};
-
-# If there was a failure, spit out an error.  Note that "exit" is a
-# special "die" call under mod_perl, so handle it gracefully.
-if ($@)
-{
-  my $msg = $@; $msg =~ s/\n$//s;
-  eval { $$dbs{DBH}->rollback(); $$dbs{DBH}->disconnect () };
-  exit if ref $@ eq 'APR::Error' && $@ == ModPerl::EXIT;
-  &reply_failure (402, "Execution error", $msg)
-}
-eval { $$dbs{DBH}->disconnect () };
-exit;
+&callApi ($apis{$api});
 
 ######################################################################
 # Common routines.
@@ -129,6 +112,30 @@ sub checkParameters
     $err .= "Missing required parameters @missing\n" if @missing;
     &reply_failure (200, "Bad request", $err);
   }
+}
+
+# Call an API function.  Common error handling.
+sub callApi
+{
+  my ($api) = @_;
+  my $dbs;
+  eval
+  {
+    $dbs = &connectToDBS();
+    &{$$api[0]} ($dbs);
+  };
+
+  # If there was a failure, spit out an error.  Note that "exit" is a
+  # special "die" call under mod_perl, so handle it gracefully.
+  if ($@)
+  {
+    my $msg = $@; $msg =~ s/\n$//s;
+    eval { $$dbs{DBH}->rollback(); $$dbs{DBH}->disconnect () };
+    exit if ref $msg eq 'APR::Error' && $msg == ModPerl::EXIT;
+    &reply_failure (402, "Execution error", $msg)
+  }
+  eval { $$dbs{DBH}->disconnect () };
+  exit;
 }
 
 # Validate a path from the form argumens.
@@ -500,9 +507,11 @@ sub getDatasetContents
     $status = "" if ! defined $status;
 
     $out .= "</block>" if defined $prev && $prev != $block;
-    $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>"
-      if ! defined $prev || $prev != $block;
-    $prev = $block;
+    if (! defined $prev || $prev != $block)
+    {
+      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>";
+      $prev = $block;
+    }
     next if $name eq 'EvC_META';
     $name =~ s/^EvC_Run//;
     $out .= "<event-collection id='$id' name='$name' events='$events' status='$status'/>";
@@ -574,10 +583,12 @@ sub getDatasetFiles
     $guid = "" if ! defined $guid;
 
     $out .= "</block>" if defined $prev && $prev != $block;
-    $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>"
-      if ! defined $prev || $prev != $block;
-    $prev = $block;
-    $out .= " files='$bfiles' bytes='$bbytes'>";
+    if (! defined $prev || $prev != $block)
+    {
+      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'";
+      $out .= " files='$bfiles' bytes='$bbytes'>";
+      $prev = $block;
+    }
     $out .= "<file id='$id' inblock='$block' guid='$guid' lfn='$lfn'";
     $out .= " checksum='$cksum' size='$size' status='$status' type='$type'/>";
   }
