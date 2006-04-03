@@ -371,9 +371,11 @@ sub getDatasetContents
       $bstatus = "" if ! defined $bstatus;
   
       $out .= "</block>" if defined $prev && $prev != $block;
-      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>"
-        if ! defined $prev || $prev != $block;
-      $prev = $block;
+      if (! defined $prev || $prev != $block)
+      {
+        $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>";
+        $prev = $block;
+      }
       next if $name eq 'EvC_META';
       $name =~ s/^EvC_Run//;
       $out .= "<event-collection id='$id' name='$name' events='$events'/>";
@@ -452,10 +454,12 @@ sub getDatasetFiles
       $guid = "" if ! defined $guid;
   
       $out .= "</block>" if defined $prev && $prev != $block;
-      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'"
-        if ! defined $prev || $prev != $block;
-      $prev = $block;
-      $out .= " files='$bfiles' bytes='$bbytes'>";
+      if (! defined $prev || $prev != $block)
+      {
+        $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'";
+        $out .= " files='$bfiles' bytes='$bbytes'>";
+        $prev = $block;
+      }
       $out .= "<file id='$id' inblock='$block' guid='$guid' lfn='$lfn'";
       $out .= " checksum='$cksum' size='$size' status='$status' type='$type'/>";
     }
