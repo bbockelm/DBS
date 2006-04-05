@@ -1,5 +1,3 @@
-prompt Application data
-
 -- ======================================================================
 create sequence seq_parameter_set;
 create sequence seq_app_family;
@@ -30,8 +28,7 @@ create table t_app_config
 -- ======================================================================
 alter table t_parameter_set
   add constraint pk_parameter_set
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_parameter_set
   add constraint uq_parameter_set_hash
@@ -40,8 +37,7 @@ alter table t_parameter_set
 --
 alter table t_app_family
   add constraint pk_app_family
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_app_family
   add constraint uq_app_family_name
@@ -50,8 +46,7 @@ alter table t_app_family
 --
 alter table t_application
   add constraint pk_application
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_application
   add constraint uq_application_key
@@ -64,8 +59,7 @@ alter table t_application
 --
 alter table t_app_config
   add constraint pk_app_config
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_app_config
   add constraint uq_app_config

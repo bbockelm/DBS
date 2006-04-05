@@ -1,5 +1,3 @@
-prompt History data
-
 -- ======================================================================
 create table t_object_history
   (object_type			varchar (32)	not null,
@@ -21,9 +19,7 @@ alter table t_object_history
 
 -- ======================================================================
 create index ix_object_history_person
-  on t_object_history (person)
-  tablespace INDX01;
+  on t_object_history (person);
 
 create index ix_object_history_mediator
-  on t_object_history (mediator)
-  tablespace INDX01;
+  on t_object_history (mediator);

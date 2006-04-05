@@ -1,5 +1,3 @@
-prompt People data
-
 -- ======================================================================
 create sequence seq_person;
 
@@ -13,8 +11,7 @@ create table t_person
 -- ======================================================================
 alter table t_person
   add constraint pk_person
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_person
   add constraint uq_person_name

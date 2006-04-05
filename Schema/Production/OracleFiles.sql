@@ -1,5 +1,3 @@
-prompt File data
-
 -- ======================================================================
 create sequence seq_block_status;
 create sequence seq_block;
@@ -46,8 +44,7 @@ create table t_evcoll_file
 -- ======================================================================
 alter table t_block_status
   add constraint pk_block_status
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_block_status
   add constraint uq_block_status_key
@@ -56,8 +53,7 @@ alter table t_block_status
 --
 alter table t_block
   add constraint pk_block
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_block
   add constraint fk_block_status
@@ -70,8 +66,7 @@ alter table t_block
 --
 alter table t_file_status
   add constraint pk_file_status
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_file_status
   add constraint uq_file_status_key
@@ -80,8 +75,7 @@ alter table t_file_status
 --
 alter table t_file_type
   add constraint pk_file_type
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_file_type
   add constraint uq_file_type
@@ -90,8 +84,7 @@ alter table t_file_type
 --
 alter table t_file
   add constraint pk_file
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_file
   add constraint uq_file_lfn
@@ -112,8 +105,7 @@ alter table t_file
 --
 alter table t_evcoll_file
   add constraint pk_evcoll_file
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_evcoll_file
   add constraint uq_evcoll_file_key
@@ -129,18 +121,14 @@ alter table t_evcoll_file
 
 -- ======================================================================
 create index ix_block_status
-  on t_block (status)
-  tablespace INDX01;
+  on t_block (status);
 
 --
 create index ix_file_status
-  on t_file (status)
-  tablespace INDX01;
+  on t_file (status);
 
 create index ix_file_type
-  on t_file (type)
-  tablespace INDX01;
+  on t_file (type);
 
 create index ix_file_inblock
-  on t_file (inblock)
-  tablespace INDX01;
+  on t_file (inblock);

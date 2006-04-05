@@ -1,5 +1,3 @@
-prompt Core data
-
 -- ======================================================================
 create sequence seq_data_tier;
 create sequence seq_parentage_type;
@@ -62,8 +60,7 @@ create table t_evcoll_parentage
 -- ======================================================================
 alter table t_data_tier
   add constraint pk_data_tier
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_data_tier
   add constraint uq_data_tier_name
@@ -72,8 +69,7 @@ alter table t_data_tier
 --
 alter table t_parentage_type
   add constraint pk_parentage_type
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_parentage_type
   add constraint uq_parentage_type_name
@@ -82,8 +78,7 @@ alter table t_parentage_type
 --
 alter table t_evcoll_status
   add constraint pk_evcoll_status
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_evcoll_status
   add constraint uq_evcoll_status_name
@@ -92,8 +87,7 @@ alter table t_evcoll_status
 --
 alter table t_primary_dataset
   add constraint pk_primary_dataset
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_primary_dataset
   add constraint uq_primary_dataset_name
@@ -102,8 +96,7 @@ alter table t_primary_dataset
 --
 alter table t_processing_name
   add constraint pk_processing_name
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_processing_name
   add constraint uq_processing_name_name
@@ -112,8 +105,7 @@ alter table t_processing_name
 --
 alter table t_processing
   add constraint pk_processing
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_processing
   add constraint uq_processing_key
@@ -142,8 +134,7 @@ alter table t_processing
 --
 alter table t_processed_dataset
   add constraint pk_processed_dataset
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_processed_dataset
   add constraint uq_processed_dataset_key
@@ -168,8 +159,7 @@ alter table t_processed_dataset
 --
 alter table t_event_collection
   add constraint pk_event_collection
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_event_collection
   add constraint uq_event_collection_name
@@ -186,8 +176,7 @@ alter table t_event_collection
 --
 alter table t_evcoll_parentage
   add constraint pk_evcoll_parentage
-  primary key (id)
-  using index tablespace INDX01;
+  primary key (id);
 
 alter table t_evcoll_parentage
   add constraint uq_evcoll_parentage
@@ -207,19 +196,15 @@ alter table t_evcoll_parentage
 
 -- ======================================================================
 create index ix_processing_primary
-  on t_processing (primary_dataset)
-  tablespace INDX01;
+  on t_processing (primary_dataset);
 
 create index ix_processing_name
-  on t_processing (name)
-  tablespace INDX01;
+  on t_processing (name);
 
 --
 create index ix_processed_dataset_tier
-  on t_processed_dataset (data_tier)
-  tablespace INDX01;
+  on t_processed_dataset (data_tier);
 
 --
 create index ix_evcoll_parentage_type
-  on t_evcoll_parentage (type)
-  tablespace INDX01;
+  on t_evcoll_parentage (type);
