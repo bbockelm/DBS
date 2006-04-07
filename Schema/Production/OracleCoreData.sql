@@ -163,7 +163,7 @@ alter table t_event_collection
 
 alter table t_event_collection
   add constraint uq_event_collection_name
-  unique (name);
+  unique (processed_dataset, name);
 
 alter table t_event_collection
   add constraint fk_event_collection_dataset
