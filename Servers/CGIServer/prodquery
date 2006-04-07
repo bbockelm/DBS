@@ -141,7 +141,7 @@ sub callApi
   # special "die" call under mod_perl, so handle it gracefully.
   if ($@)
   {
-    my $msg = $@; $msg =~ s/\n$//s;
+    my $msg = $@;
     eval { $$dbs{DBH}->rollback(); $$dbs{DBH}->disconnect () };
     exit if ref $msg eq 'APR::Error' && $msg == ModPerl::EXIT;
     &reply_failure (402, "Execution error", $msg)
@@ -195,7 +195,7 @@ sub checkPattern
   if (defined $pattern && $pattern ne '')
   {
     my $rxpattern = eval { &glob_to_regex ($pattern) };
-    &reply_failure (300, "Bad data", "Invalid match $nameof") if $@;
+    &reply_failure (300, "Bad data", "Invalid glob expression $nameof: $@") if $@;
     return $rxpattern;
   }
   elsif (! $optional)
@@ -242,7 +242,7 @@ sub response_headers
 sub reply_failure
 {
   my ($code, $msg, $detail, @info) = @_;
-  unlink (@tmpfiles);
+  $detail =~ s/\n+/ /sg; $detail =~ s/\s+$//s;
   &response_headers ($code, $msg, $detail);
   print @info;
   exit (1);
@@ -253,7 +253,6 @@ sub reply_failure
 sub reply_success
 {
   my (@data) = @_;
-  unlink (@tmpfiles);
   &response_headers (100, "Success", undef);
   print @data;
   exit (0);
@@ -790,7 +789,7 @@ sub createPrimaryDataset
 
   # Create the primary dataset
   my $obj = eval { &makeNamed($dbs, "primary_dataset", $name, 0) };
-  &reply_failure (303, "Object exists", "Object already exists")
+  &reply_failure (303, "Object exists", "Object already exists: $@")
     if $@ && $@ =~ /ORA-00001/;
   &reply_failure (402, "Execution error", $@)
     if $@;
@@ -1087,7 +1086,7 @@ sub insertFiles
 
   map { $stmt->bind_param_array ($_, $params{$_}) } keys %params;
   eval { $stmt->execute_array ({ ArrayTupleResult => [] }) };
-  &reply_failure (303, "Object exists", "Object already exists")
+  &reply_failure (303, "Object exists", "Object already exists: $@")
     if $@ && $@ =~ /ORA-00001/;
   &reply_failure (402, "Execution error", $@)
     if $@;
@@ -1238,7 +1237,7 @@ sub insertEventCollections
       $fstmt->execute_array ({ ArrayTupleResult => [] });
     }
   };
-  &reply_failure (303, "Object exists", "Object already exists")
+  &reply_failure (303, "Object exists", "Object already exists: $@")
     if $@ && $@ =~ /ORA-00001/;
   &reply_failure (402, "Execution error", $@)
     if $@;
@@ -1362,7 +1361,7 @@ sub makeObject
 
     # Execute
     eval { $stmt->execute() };
-    &reply_failure (303, "Object exists", "Object already exists")
+    &reply_failure (303, "Object exists", "Object already exists: $@")
       if $@ && $@ =~ /ORA-00001/;
     &reply_failure (402, "Execution error", $@)
       if $@;
