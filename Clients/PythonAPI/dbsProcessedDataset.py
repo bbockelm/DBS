@@ -1,117 +1,113 @@
 #!/usr/bin/env python
 #
-# $Id: dbsProcessedDataset.py,v 1.4 2005/12/15 22:52:40 sekhri Exp $
-#
 # Dataset class. 
-#
 
-import types
-import string
+import types, re, string
+from dbsObject import DbsObject
+from dbsException import DbsException
+from dbsPrimaryDataset import DbsPrimaryDataset
 
-import dbsObject
-import dbsException
-import dbsDataset
-import dbsApplication
-import dbsProcessingPath
+ALLOWED_NAME_CHARS_ = "[a-zA-Z0-9_\a\.-]"
+ALLOWED_DATASET_REGEX_ = [
+  re.compile("/%s+/%s+" % (ALLOWED_NAME_CHARS_, ALLOWED_NAME_CHARS_)), 
+  re.compile("/%s+/%s+/%s+" % (ALLOWED_NAME_CHARS_, ALLOWED_NAME_CHARS_,
+		    ALLOWED_NAME_CHARS_))
+  ]
 
-PRIMARY_DATASET_NAME_TAG_ = "primaryDatasetName"
-PROCESSED_DATASET_NAME_TAG_ = "datasetName"
-IS_DATASET_OPEN_TAG_ = "isDatasetOpen"
-PROCESSING_PATH_TAG_ = "processingPath"
+class DbsDatasetException(DbsException):
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsException.__init__(self, **kwargs)
+    
+class InvalidDatasetPathName(DbsDatasetException):
 
-PROCESSED_DATASET_ID_TAG_ = "processedDatasetId"
+  def __init__ (self, **kwargs):
+    """ Initialization. """
+    DbsDatasetException.__init__(self, **kwargs)
 
-WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
-
-
-##############################################################################
-# DBS primary dataset class.
-
-class DbsProcessedDataset(dbsDataset.DbsDataset):
-
-  def __init__(self, datasetName=None, primaryDatasetName=None,
-	       isDatasetOpen=None, processingPath=None, processedDatasetId = None,
-	       datasetDict={}):
+class DbsProcessedDataset(DbsObject):
+  def __init__(self, parent=None, primaryDataset=None, datasetName=None,
+	       dataTier=None, datasetPath=None, isDatasetOpen=None,
+	       objectId=None, dict={}):
     """ Constructor. """
-    dbsDataset.DbsDataset.__init__(self, datasetName=datasetName,
-				   datasetDict=datasetDict)
-    if primaryDatasetName is not None:
-      self[PRIMARY_DATASET_NAME_TAG_] = str(primaryDatasetName)
+    DbsObject.__init__(self, objectId, dict)
+    if primaryDataset is not None:
+      self._primaryDataset = primaryDataset
+
+    if datasetName is not None:
+      self._datasetName = str(datasetName)
+
+    if dataTier is not None:
+      self._dataTier = str(dataTier)
+
+    if datasetPath is not None:
+      self._datasetPath = str(datasetPath)
+
+    if parent is not None:
+      self._parent = parent
 
     if isDatasetOpen is not None:
-      self[IS_DATASET_OPEN_TAG_] = str(isDatasetOpen)
+      self._isDatasetOpen = str(isDatasetOpen)
 
-    if processedDatasetId is not None:
-      self[PROCESSED_DATASET_ID_TAG_] = processedDatasetId
+    if getattr(self, '_primaryDataset', None) \
+       and not isinstance(self._primaryDataset, DbsPrimaryDataset):
+      self._primaryDataset = DbsPrimaryDataset (dict = self._primaryDataset)
 
+    if getattr(self, '_parent', None) \
+       and not isinstance(self._parent, DbsProcessedDataset):
+      self._parent = DbsProcessedDataset (datasetDict = self._parent)
 
-    if processingPath is not None:
-      self[PROCESSING_PATH_TAG_] = processingPath
+    assert (getattr(self, '_datasetPath', None)
+	    or (getattr(self, '_primaryDataset', None)
+		and getattr(self, '_datasetName', None)
+		and getattr(self, '_dataTier', None)))
 
-    # Correct processing path if needed.
-    processingPath = self.get(PROCESSING_PATH_TAG_)
-    if processingPath != None and not isinstance(processingPath, dbsProcessingPath.DbsProcessingPath):
-      try:
-	self[PROCESSING_PATH_TAG_] = dbsProcessingPath.DbsProcessingPath(processingPathDict=processingPath)
-      except Exception, ex:
-	raise dbsException.InvalidArgument(args="Argument %s cannot be converted into a dbsProcessingPath.DbsProcessingPath object." % processingPath)
+     # FIXME: Auto-convert path to primary+name+tier?
 
-    self.setNamespace(WSDL_NAMESPACE_)
-
-
-  def getPrimaryDatasetName(self):
-    """ Retrieve primary dataset name. """
-    result = self.get(PRIMARY_DATASET_NAME_TAG_)
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PRIMARY_DATASET_NAME_TAG_)
-    return result
+  def getPrimaryDataset(self):
+    """ Retrieve primary dataset. """
+    return self._primaryDataset
 
   def getDatasetName(self):
-    """ Retrieve pricessed dataset name. """
-    result = self.get(PROCESSED_DATASET_NAME_TAG_)
-    #if result == None:
-    #   raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
-    return result
+    """ Retrieve the dataset name. """
+    return self._datasetName
 
+  def getDataTier(self):
+    """ Retrieve the data tier name. """
+    return self._dataTier
+
+  def getDatasetPath(self):
+    """ Retrieve the dataset full path. """
+    return self._datasetPath
+
+  def getParent(self):
+    """ Retrieve parent dataset. """
+    return self._parent
 
   def getIsDatasetOpen(self):
     """ Retrieve is open flag. """
-    result = self.get(IS_DATASET_OPEN_TAG_)
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_DATASET_OPEN_TAG_)
-    return result
+    return self._isDatasetOpen
 
-  def getProcessedDatasetID(self):
-    """ aaa. """
-    result = self.get(PROCESSED_DATASET_ID_TAG_)
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % IS_DATASET_OPEN_TAG_)
-    return result
-
-
-  def getProcessingPath(self):
-    """ Retrieve processing path. """
-    result = self.get(PROCESSING_PATH_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSING_PATH_TAG_)
-    return result
-
+def verifyDatasetPathName(datasetPathName):
+  """ Verify the validity of the given name. """
+  for regex in ALLOWED_DATASET_REGEX_:
+    if regex.match(datasetPathName): return
+  raise InvalidDatasetPathName(args="Invalid dataset path name '%s'" % datasetPathName) 
 
 ##############################################################################
 # Unit testing.
 
 if __name__ == "__main__":
-
-  app = dbsApplication.DbsApplication(family="reco", executable="dummy", version="p1")
-  pp1 = dbsProcessingPath.DbsProcessingPath(fullPath="/x/y/z", dataTier="hit", application=app)
-  print pp1
-  pp2 = dbsProcessingPath.DbsProcessingPath(fullPath="/x22/y22/z22", dataTier="Digi",
-			  parentPath=pp1)
-
-  dataset = DbsProcessedDataset(datasetName="ds1",
-			      processingPath=pp2)
-  
-  print dataset
+  from dbsApplication import DbsApplication
+  prim = DbsPrimaryDataset (datasetName = "x")
+  print prim
+  proc1 = DbsProcessedDataset (primaryDataset=prim,
+			       datasetName="y1",
+			       dataTier="Hit")
+  print proc1
+  proc2 = DbsProcessedDataset (primaryDataset=prim,
+			       datasetName="y2",
+			       dataTier="Digi",
+			       parent=proc1)
+  print proc2
   print "Done"
-
-

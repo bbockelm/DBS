@@ -1,168 +1,102 @@
 #!/usr/bin/env python
 #
-# $Id: dbsFileBlock.py,v 1.10 2006/01/26 23:10:01 afaq Exp $
-#
 # File block class. 
-#
 
-import dbsObject
 import types
+from dbsObject import DbsObject
+from dbsEventCollection import DbsEventCollection
+from dbsProcessing import DbsProcessing
+from dbsFile import DbsFile
 
-import dbsEventCollection
-import dbsException
-
-FILE_BLOCK_DICT_TAG_ = "blockDict"
-FILE_BLOCK_NAME_TAG_ = "blockName"
-FILE_BLOCK_ID_TAG_ = "blockId"
-FILE_BLOCK_STATUS_NAME_TAG_ = "blockStatusName"
-NUMBER_OF_FILES_TAG_ = "numberOfFiles"
-NUMBER_OF_BYTES_TAG_ = "numberOfBytes"
-PROCESSED_DATASET_NAME_TAG_ = "processedDatasetName"
-EVENT_COLLECTION_LIST_TAG_ = "eventCollectionList"
-
-WSDL_NAMESPACE_ = "DbsDatasetService.wsdl.xml"
-
-
-##############################################################################
-# DBS file block class.
-
-class DbsFileBlock(dbsObject.DbsObject):
-
-  def __init__(self, blockName=None,
-	       blockId=None, processedDatasetName=None,
+class DbsFileBlock(DbsObject):
+  def __init__(self, blockName=None, objectId=None, processing=None,
 	       blockStatusName=None, numberOfBytes=None, numberOfFiles=None,
-	       eventCollectionList=[], blockDict={}):
+	       fileList=[], eventCollectionList=[], dict={}):
     """ Constructor. """
-    dbsObject.DbsObject.__init__(self, blockDict)
+    DbsObject.__init__(self, objectId, dict)
+    if processing is not None:
+      self._processing = processing
+
     if blockName is not None:
-      self[FILE_BLOCK_NAME_TAG_] = str(blockName)
-
-    if processedDatasetName is not None:
-      self[PROCESSED_DATASET_NAME_TAG_] = str(processedDatasetName)
-
-    if blockId is not None:
-      self[FILE_BLOCK_ID_TAG_] = int(blockId)
+      self._blockName = str(blockName)
 
     if blockStatusName is not None:
-      self[FILE_BLOCK_STATUS_NAME_TAG_] = str(blockStatusName)
+      self._blockStatusName = str(blockStatusName)
 
     if numberOfBytes is not None:
-      self[NUMBER_OF_BYTES_TAG_] = long(numberOfBytes)
+      self._numberOfBytes = long(numberOfBytes)
 
     if numberOfFiles is not None:
-      self[NUMBER_OF_FILES_TAG_] = long(numberOfFiles)
+      self._numberOfFiles = long(numberOfFiles)
+
+    # Make sure processing is an object
+    if getattr(self, '_processing', None) \
+       and not isinstance(self._processing, DbsProcessing):
+      self._processing = DbsProcessing(dict=self._processing)
+
+    # Make sure that all files are of the type DbsFile
+    if not self.__dict__.has_key('_fileList'):
+      self._fileList = []
+
+    for file in fileList:
+      self.addFile (file)
 
     # Make sure that all event collections are of the type DbsEventCollection
-    # and that the list os of type DbsEventCollectionList.
-    dictEcList = []
-    if self.has_key(EVENT_COLLECTION_LIST_TAG_):
-      dictEcList = self[EVENT_COLLECTION_LIST_TAG_]
-    self[EVENT_COLLECTION_LIST_TAG_] = dbsEventCollection.DbsEventCollectionList()
-    for eventCollection in eventCollectionList+dictEcList:
-      self.addEventCollection(eventCollection)
+    if not self.__dict__.has_key('_eventCollectionList'):
+      self._eventCollectionList = []
 
-    self.setNamespace(WSDL_NAMESPACE_)
+    for eventCollection in eventCollectionList:
+      self.addEventCollection (eventCollection)
 
   def getBlockName(self):
     """ Retrieve block name. """
-    result = self.get(FILE_BLOCK_NAME_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_NAME_TAG_)
-    return result
-
-  def getBlockId(self):
-    """ Retrieve block id. """
-    result = self.get(FILE_BLOCK_ID_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_ID_TAG_)
-    return result
+    return self._blockName
 
   def getBlockStatusName(self):
     """ Retrieve block status. """
-    result = self.get(FILE_BLOCK_STATUS_NAME_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % FILE_BLOCK_STATUS_NAME_TAG_)
-    return result
+    return self._blockStatusName
 
   def getNumberOfBytes(self):
     """ Retrieve number of bytes. """
-    result = self.get(NUMBER_OF_BYTES_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_BYTES_TAG_)
-    return result
+    return self._numberOfBytes
 
   def getNumberOfFiles(self):
     """ Retrieve number of files. """
-    result = self.get(NUMBER_OF_FILES_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % NUMBER_OF_FILES_TAG_)
-    return result  
+    return self._numberOfFiles
 
-  def getDatasetName(self):
-    """ Retrieve processed dataset name. """
-    result = self.get(PROCESSED_DATASET_NAME_TAG_) 
-    #if result == None:
-    #  raise dbsException.DataNotInitialized(args="Value for %s has not been set." % PROCESSED_DATASET_NAME_TAG_)
-    return result
+  def getProcessing(self):
+    """ Retrieve processing. """
+    return self._processing
 
-  def getEventCollectionList(self):
+  def getFileList (self):
+    """ Retrieve file list. """
+    return self._fileList
+
+  def getEventCollectionList (self):
     """ Retrieve event collection list. """
-    return self.get(EVENT_COLLECTION_LIST_TAG_)
+    return self._eventCollectionList
 
-  def addEventCollection(self, eventCollection):
+  def addEventCollection (self, eventCollection):
     """ Add event collection. """
-    self[EVENT_COLLECTION_LIST_TAG_].append(eventCollection)
-        
-class DbsFileBlockList(dbsObject.DbsObjectList):
+    if not isinstance(eventCollection, DbsEventCollection):
+      eventCollection = DbsEventCollection (dict = eventCollection)
+    self._eventCollectionList.append (eventCollection)
 
-  def __init__(self, fileBlockList=[]):
-    """ Constructor. """
-    # If needed convert elements to DbsFileBlock. If this cannot
-    # be done, InvalidArgument exception will be thrown.
-    fbList = []
-    for fb in fileBlockList:
-      newFb = self.__createFileBlock(fb)
-      fbList.append(newFb)
-    dbsObject.DbsObjectList.__init__(self, fbList)
-    self.setNamespace(WSDL_NAMESPACE_)
-
-  def __createFileBlock(self, fileBlock):
-    """ Create new fileBlock object. """
-    try:
-      newFb = fileBlock
-      if isinstance(fileBlock, DbsFileBlock):
-	# this is ok
-	pass
-      elif type(fileBlock) == types.DictType:
-	# can convert to DbsFileBlock
-	newFb = DbsFileBlock(blockDict=fileBlock)
-      else:
-	# assume this is soap struct; wild guess, may throw exception
-	blockId = fileBlock.blockId
-	blockName = fileBlock.blockName
-	eventCollectionList = fileBlock.eventCollectionList
-	newFb = DbsFileBlock(blockId=blockId,
-			     blockName=blockName,
-			     eventCollectionList=eventCollectionList)
-      return newFb
-    except Exception, ex:
-      raise dbsException.InvalidArgument(exception=ex)
-
-  def append(self, fileBlock):
-    """ Append new file block object. """
-    newFb = self.__createFileBlock(fileBlock)
-    dbsObject.DbsObjectList.append(self, newFb)
-
+  def addFile (self, file):
+    """ Add event collection. """
+    if not isinstance(file, DbsFile):
+      file = DbsFile (dict = file)
+    self._fileList.append (file)
 
 ##############################################################################
 # Unit testing.
 
 if __name__ == "__main__":
-  eventCollection = dbsEventCollection.DbsEventCollection(
-    collectionName="ec1", numberOfEvents=111)
-  fileBlock = DbsFileBlock(blockId=123, blockName="fb1", blockStatusName="good", numberOfBytes=12123688, numberOfFiles=13)
+  from dbsException import DbsException
+  file = DbsFile(logicalFileName="f1", fileSize=1234)
+  fileBlock = DbsFileBlock(objectId=123, blockName="fb1", blockStatusName="good", numberOfBytes=12123688, numberOfFiles=13)
   print fileBlock
-  fileBlock.addEventCollection(eventCollection)
+  fileBlock.addFile(file)
   print fileBlock
   print fileBlock.getBlockStatusName()
   print fileBlock.getNumberOfFiles()
@@ -170,9 +104,9 @@ if __name__ == "__main__":
   print "Adding myAttr to the dataset"
   fileBlock["myAttr"] = "myValue"
   print fileBlock
-  print "Adding 11 as eventCollection"
+  print "Adding 11 as file"
   try:
-    fileBlock.addEventCollection(11)
-  except dbsException.DbsException, ex:
+    fileBlock.addFile(11)
+  except DbsException, ex:
     print "OK, exception caught: %s" % ex
   print "Done"
