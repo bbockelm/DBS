@@ -9,7 +9,10 @@ SQL::SQL(Util * util){
 	this->SQL::util = util;
 }
 
-string SQL::makeInsertQuery(RowInterface* aRow, string tableName, string refrence, Dictionary_iter b, Dictionary_iter e) {//Schema
+SQL::SQL(){
+}
+
+string SQL::makeInsertQuery(RowInterface* aRow, string tableName, string refrence, Dictionary_iter b, Dictionary_iter e, Keys* primaryKeys) {//Schema
 	string intoClause = "INSERT INTO "+ tableName  +" (";
 	string valueClause = "VALUES (";
 	for(Dictionary_iter i = b; i != e; ++i) {
@@ -38,6 +41,33 @@ string SQL::makeInsertQuery(RowInterface* aRow, string tableName, string refrenc
 	string strQuery = intoClause + " " + valueClause;
         
 	cout<<"\n"<<strQuery<<"\n"<<endl;
+	return(strQuery);
+}
+
+string SQL::makeUpdateQuery(RowInterface* aRow, string tableName, string refrence, Dictionary_iter b, Dictionary_iter e, Keys* primaryKeys) {//Schema
+	//cout<<"inside SQL::makeUpdateQuery"<<endl;
+	string strQuery = "UPDATE "+ tableName  +" SET ";
+	for(Dictionary_iter i = b; i != e; ++i) {
+		string tableNameTwo = util->getTokenAt(i->first,2);
+		string nameTwoWithDot = "";
+		if(tableNameTwo.length() != 0 ) {
+			nameTwoWithDot = tableNameTwo + "." + util->getTokenAt(i->first,3);//colNameTwo
+		}
+		if ( (tableName != util->getTokenAt(i->first,0)) || 
+			( (nameTwoWithDot != refrence) && (refrence.length() != 0) ) ) {
+			continue;
+		}
+		if( util->isSet(aRow, i->first, i->second) ) {
+			strQuery += util->getTokenAt(i->first,1) + "=";//colNameOne
+			string strValue = util->getStrValue(aRow, i->first, i->second);
+			strQuery += this->formatValue(strValue, i->second) + ",";
+			//cout<<"value is "<<strValue<<endl;
+		} 
+	}
+	int len = strQuery.length() - 1;
+	strQuery.erase(len,1);
+        
+	//cout<<"\n"<<strQuery<<"\n"<<endl;
 	return(strQuery);
 }
 
@@ -166,7 +196,8 @@ string SQL::makeMultiRefClause(Dictionary_iter b, Dictionary_iter e) {
 }*/
 string SQL::makeSelectClause(Dictionary_iter b, Dictionary_iter e) {//Schema
 	NameMaper nm;
-	string selectClause = "SELECT UNIQUE ";
+	//string selectClause = "SELECT UNIQUE ";
+	string selectClause = "SELECT ";
 	for(Dictionary_iter i = b; i != e; ++i) {
 		//cout<<selectClause<<"\n"<<endl;
 		//NmIterator ni = nm.NameMap.find(i->first);
@@ -195,6 +226,10 @@ string SQL::makeTableClause(Keys_iter b, Keys_iter e) {
 
 string SQL::makeSeqQuery(string tableName, string colName) {
 	return (string)("SELECT max("+colName+") FROM "+tableName);
+}
+
+string SQL::makeSeqQuery(string tableName, string colName, string clause) {
+	return (string)("SELECT " + colName + " FROM " + tableName + " WHERE " + clause);
 }
 
 

@@ -7,7 +7,7 @@
 
 #include "soapH.h"
 
-SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.7.6e 2006-03-15 17:11:00 GMT")
+SOAP_SOURCE_STAMP("@(#) soapC.cpp ver 2.7.6e 2006-04-20 14:35:30 GMT")
 
 
 #ifndef WITH_NOGLOBAL
@@ -175,6 +175,10 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		return soap_in_DBS__getDatasetContents(soap, NULL, NULL, "DBS:getDatasetContents");
 	case SOAP_TYPE_DBS__getDatasetContentsResponse:
 		return soap_in_DBS__getDatasetContentsResponse(soap, NULL, NULL, "DBS:getDatasetContentsResponse");
+	case SOAP_TYPE_DBS__mergeEventCollections:
+		return soap_in_DBS__mergeEventCollections(soap, NULL, NULL, "DBS:mergeEventCollections");
+	case SOAP_TYPE_DBS__mergeEventCollectionsResponse:
+		return soap_in_DBS__mergeEventCollectionsResponse(soap, NULL, NULL, "DBS:mergeEventCollectionsResponse");
 	case SOAP_TYPE_DBS__insertEventCollections:
 		return soap_in_DBS__insertEventCollections(soap, NULL, NULL, "DBS:insertEventCollections");
 	case SOAP_TYPE_DBS__insertEventCollectionsResponse:
@@ -288,6 +292,14 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_getelement(struct soap *soap, int *type)
 		if (!soap_match_tag(soap, t, "DBS:getDatasetContentsResponse"))
 		{	*type = SOAP_TYPE_DBS__getDatasetContentsResponse;
 			return soap_in_DBS__getDatasetContentsResponse(soap, NULL, NULL, NULL);
+		}
+		if (!soap_match_tag(soap, t, "DBS:mergeEventCollections"))
+		{	*type = SOAP_TYPE_DBS__mergeEventCollections;
+			return soap_in_DBS__mergeEventCollections(soap, NULL, NULL, NULL);
+		}
+		if (!soap_match_tag(soap, t, "DBS:mergeEventCollectionsResponse"))
+		{	*type = SOAP_TYPE_DBS__mergeEventCollectionsResponse;
+			return soap_in_DBS__mergeEventCollectionsResponse(soap, NULL, NULL, NULL);
 		}
 		if (!soap_match_tag(soap, t, "DBS:insertEventCollections"))
 		{	*type = SOAP_TYPE_DBS__insertEventCollections;
@@ -422,6 +434,10 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_putelement(struct soap *soap, const void *ptr, co
 		return soap_out_DBS__getDatasetContents(soap, tag, id, (const struct DBS__getDatasetContents *)ptr, "DBS:getDatasetContents");
 	case SOAP_TYPE_DBS__getDatasetContentsResponse:
 		return soap_out_DBS__getDatasetContentsResponse(soap, tag, id, (const struct DBS__getDatasetContentsResponse *)ptr, "DBS:getDatasetContentsResponse");
+	case SOAP_TYPE_DBS__mergeEventCollections:
+		return soap_out_DBS__mergeEventCollections(soap, tag, id, (const struct DBS__mergeEventCollections *)ptr, "DBS:mergeEventCollections");
+	case SOAP_TYPE_DBS__mergeEventCollectionsResponse:
+		return soap_out_DBS__mergeEventCollectionsResponse(soap, tag, id, (const struct DBS__mergeEventCollectionsResponse *)ptr, "DBS:mergeEventCollectionsResponse");
 	case SOAP_TYPE_DBS__insertEventCollections:
 		return soap_out_DBS__insertEventCollections(soap, tag, id, (const struct DBS__insertEventCollections *)ptr, "DBS:insertEventCollections");
 	case SOAP_TYPE_DBS__insertEventCollectionsResponse:
@@ -510,6 +526,12 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_markelement(struct soap *soap, const void *ptr, 
 		break;
 	case SOAP_TYPE_DBS__getDatasetContentsResponse:
 		soap_serialize_DBS__getDatasetContentsResponse(soap, (const struct DBS__getDatasetContentsResponse *)ptr);
+		break;
+	case SOAP_TYPE_DBS__mergeEventCollections:
+		soap_serialize_DBS__mergeEventCollections(soap, (const struct DBS__mergeEventCollections *)ptr);
+		break;
+	case SOAP_TYPE_DBS__mergeEventCollectionsResponse:
+		soap_serialize_DBS__mergeEventCollectionsResponse(soap, (const struct DBS__mergeEventCollectionsResponse *)ptr);
 		break;
 	case SOAP_TYPE_DBS__insertEventCollections:
 		soap_serialize_DBS__insertEventCollections(soap, (const struct DBS__insertEventCollections *)ptr);
@@ -605,6 +627,10 @@ SOAP_FMAC3 void * SOAP_FMAC4 soap_instantiate(struct soap *soap, int t, const ch
 		return (void*)soap_instantiate_DBS__insertEventCollectionsResponse(soap, -1, type, arrayType, n);
 	case SOAP_TYPE_DBS__insertEventCollections:
 		return (void*)soap_instantiate_DBS__insertEventCollections(soap, -1, type, arrayType, n);
+	case SOAP_TYPE_DBS__mergeEventCollectionsResponse:
+		return (void*)soap_instantiate_DBS__mergeEventCollectionsResponse(soap, -1, type, arrayType, n);
+	case SOAP_TYPE_DBS__mergeEventCollections:
+		return (void*)soap_instantiate_DBS__mergeEventCollections(soap, -1, type, arrayType, n);
 	case SOAP_TYPE_DBS__getDatasetContentsResponse:
 		return (void*)soap_instantiate_DBS__getDatasetContentsResponse(soap, -1, type, arrayType, n);
 	case SOAP_TYPE_DBS__getDatasetContents:
@@ -727,6 +753,18 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_fdelete(struct soap_clist *p)
 			delete (struct DBS__insertEventCollections*)p->ptr;
 		else
 			delete[] (struct DBS__insertEventCollections*)p->ptr;
+		break;
+	case SOAP_TYPE_DBS__mergeEventCollectionsResponse:
+		if (p->size < 0)
+			delete (struct DBS__mergeEventCollectionsResponse*)p->ptr;
+		else
+			delete[] (struct DBS__mergeEventCollectionsResponse*)p->ptr;
+		break;
+	case SOAP_TYPE_DBS__mergeEventCollections:
+		if (p->size < 0)
+			delete (struct DBS__mergeEventCollections*)p->ptr;
+		else
+			delete[] (struct DBS__mergeEventCollections*)p->ptr;
 		break;
 	case SOAP_TYPE_DBS__getDatasetContentsResponse:
 		if (p->size < 0)
@@ -1178,6 +1216,7 @@ void DBS__EventCollection::soap_serialize(struct soap *soap) const
 	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->collectionId);
 	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->collectionIndex);
 	soap_serialize_PointerToint(soap, &((DBS__EventCollection*)this)->numberOfEvents);
+	soap_serialize_std__string(soap, &((DBS__EventCollection*)this)->status);
 	soap_serialize_std__string(soap, &((DBS__EventCollection*)this)->collectionName);
 	soap_serialize_std__string(soap, &((DBS__EventCollection*)this)->datasetPathName);
 	soap_serialize_PointerToDBS__EventCollection(soap, &((DBS__EventCollection*)this)->parent);
@@ -1191,6 +1230,7 @@ void DBS__EventCollection::soap_default(struct soap *soap)
 	((DBS__EventCollection*)this)->collectionId = NULL;
 	((DBS__EventCollection*)this)->collectionIndex = NULL;
 	((DBS__EventCollection*)this)->numberOfEvents = NULL;
+	soap_default_std__string(soap, &((DBS__EventCollection*)this)->status);
 	soap_default_std__string(soap, &((DBS__EventCollection*)this)->collectionName);
 	soap_default_std__string(soap, &((DBS__EventCollection*)this)->datasetPathName);
 	((DBS__EventCollection*)this)->parent = NULL;
@@ -1217,6 +1257,7 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__EventCollection(struct soap *soap, const
 	soap_out_PointerToint(soap, "collectionId", -1, &(((DBS__EventCollection*)a)->collectionId), "");
 	soap_out_PointerToint(soap, "collectionIndex", -1, &(((DBS__EventCollection*)a)->collectionIndex), "");
 	soap_out_PointerToint(soap, "numberOfEvents", -1, &(((DBS__EventCollection*)a)->numberOfEvents), "");
+	soap_out_std__string(soap, "status", -1, &(((DBS__EventCollection*)a)->status), "");
 	soap_out_std__string(soap, "collectionName", -1, &(((DBS__EventCollection*)a)->collectionName), "");
 	soap_out_std__string(soap, "datasetPathName", -1, &(((DBS__EventCollection*)a)->datasetPathName), "");
 	soap_out_PointerToDBS__EventCollection(soap, "parent", -1, &(((DBS__EventCollection*)a)->parent), "");
@@ -1257,7 +1298,7 @@ SOAP_FMAC3 DBS__EventCollection * SOAP_FMAC4 soap_in_DBS__EventCollection(struct
 			return (DBS__EventCollection *)a->soap_in(soap, tag, type);
 		}
 	}
-	short soap_flag_collectionId1 = 1, soap_flag_collectionIndex1 = 1, soap_flag_numberOfEvents1 = 1, soap_flag_collectionName1 = 1, soap_flag_datasetPathName1 = 1, soap_flag_parent1 = 1, soap_flag_parentageType1 = 1;
+	short soap_flag_collectionId1 = 1, soap_flag_collectionIndex1 = 1, soap_flag_numberOfEvents1 = 1, soap_flag_status1 = 1, soap_flag_collectionName1 = 1, soap_flag_datasetPathName1 = 1, soap_flag_parent1 = 1, soap_flag_parentageType1 = 1;
 	if (soap->body && !*soap->href)
 	{
 		for (;;)
@@ -1275,6 +1316,11 @@ SOAP_FMAC3 DBS__EventCollection * SOAP_FMAC4 soap_in_DBS__EventCollection(struct
 			if (soap_flag_numberOfEvents1 && soap->error == SOAP_TAG_MISMATCH)
 				if (soap_in_PointerToint(soap, "numberOfEvents", &(((DBS__EventCollection*)a)->numberOfEvents), "xsd:int"))
 				{	soap_flag_numberOfEvents1--;
+					continue;
+				}
+			if (soap_flag_status1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
+				if (soap_in_std__string(soap, "status", &(((DBS__EventCollection*)a)->status), "xsd:string"))
+				{	soap_flag_status1--;
 					continue;
 				}
 			if (soap_flag_collectionName1 && (soap->error == SOAP_TAG_MISMATCH || soap->error == SOAP_NO_TAG))
@@ -3557,6 +3603,235 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__getDatasetContentsResponse(struct soap
 {
 	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Copying struct DBS__getDatasetContentsResponse %p -> %p\n", q, p));
 	*(struct DBS__getDatasetContentsResponse*)p = *(struct DBS__getDatasetContentsResponse*)q;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__mergeEventCollections(struct soap *soap, const struct DBS__mergeEventCollections *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_serialize_std__vectorTemplateOfPointerToDBS__EventCollection(soap, &a->inputEventCollectionList);
+	soap_serialize_PointerToDBS__EventCollection(soap, &a->outputEventCollection);
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__mergeEventCollections(struct soap *soap, struct DBS__mergeEventCollections *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_default_std__vectorTemplateOfPointerToDBS__EventCollection(soap, &a->inputEventCollectionList);
+	a->outputEventCollection = NULL;
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__mergeEventCollections(struct soap *soap, const struct DBS__mergeEventCollections *a, const char *tag, const char *type)
+{
+	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_DBS__mergeEventCollections);
+	if (soap_out_DBS__mergeEventCollections(soap, tag, id, a, type))
+		return soap->error;
+	return soap_putindependent(soap);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__mergeEventCollections(struct soap *soap, const char *tag, int id, const struct DBS__mergeEventCollections *a, const char *type)
+{
+	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__mergeEventCollections), type);
+	soap_out_std__vectorTemplateOfPointerToDBS__EventCollection(soap, "inputEventCollectionList", -1, &a->inputEventCollectionList, "");
+	soap_out_PointerToDBS__EventCollection(soap, "outputEventCollection", -1, &a->outputEventCollection, "");
+	soap_element_end_out(soap, tag);
+	return SOAP_OK;
+}
+
+SOAP_FMAC3 struct DBS__mergeEventCollections * SOAP_FMAC4 soap_get_DBS__mergeEventCollections(struct soap *soap, struct DBS__mergeEventCollections *p, const char *tag, const char *type)
+{
+	if ((p = soap_in_DBS__mergeEventCollections(soap, tag, p, type)))
+		soap_getindependent(soap);
+	return p;
+}
+
+SOAP_FMAC3 struct DBS__mergeEventCollections * SOAP_FMAC4 soap_in_DBS__mergeEventCollections(struct soap *soap, const char *tag, struct DBS__mergeEventCollections *a, const char *type)
+{
+	short soap_flag_outputEventCollection = 1;
+	if (soap_element_begin_in(soap, tag, 0))
+		return NULL;
+	if (*soap->type && soap_match_tag(soap, soap->type, type))
+	{	soap->error = SOAP_TYPE;
+		return NULL;
+	}
+	a = (struct DBS__mergeEventCollections *)soap_class_id_enter(soap, soap->id, a, SOAP_TYPE_DBS__mergeEventCollections, sizeof(struct DBS__mergeEventCollections), soap->type, soap->arrayType);
+	if (!a)
+		return NULL;
+	soap_default_DBS__mergeEventCollections(soap, a);
+	if (soap->body && !*soap->href)
+	{
+		for (;;)
+		{	soap->error = SOAP_TAG_MISMATCH;
+			if (soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_std__vectorTemplateOfPointerToDBS__EventCollection(soap, "inputEventCollectionList", &a->inputEventCollectionList, "DBS:EventCollection"))
+					continue;
+			if (soap_flag_outputEventCollection && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_PointerToDBS__EventCollection(soap, "outputEventCollection", &a->outputEventCollection, "DBS:EventCollection"))
+				{	soap_flag_outputEventCollection--;
+					continue;
+				}
+			if (soap->error == SOAP_TAG_MISMATCH)
+				soap->error = soap_ignore_element(soap);
+			if (soap->error == SOAP_NO_TAG)
+				break;
+			if (soap->error)
+				return NULL;
+		}
+		if (soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	else
+	{	a = (struct DBS__mergeEventCollections *)soap_id_forward(soap, soap->href, (void**)a, 0, SOAP_TYPE_DBS__mergeEventCollections, 0, sizeof(struct DBS__mergeEventCollections), 0, soap_copy_DBS__mergeEventCollections);
+		if (soap->body && soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	return a;
+}
+
+SOAP_FMAC5 struct DBS__mergeEventCollections * SOAP_FMAC6 soap_new_DBS__mergeEventCollections(struct soap *soap, int n)
+{	return soap_instantiate_DBS__mergeEventCollections(soap, n, NULL, NULL, NULL);
+}
+
+SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__mergeEventCollections(struct soap *soap, struct DBS__mergeEventCollections *p)
+{	soap_delete(soap, p);
+}
+
+SOAP_FMAC3 struct DBS__mergeEventCollections * SOAP_FMAC4 soap_instantiate_DBS__mergeEventCollections(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "soap_instantiate_DBS__mergeEventCollections(%d, %s, %s)\n", n, type?type:"", arrayType?arrayType:""));
+	struct soap_clist *cp = soap_link(soap, NULL, SOAP_TYPE_DBS__mergeEventCollections, n, soap_fdelete);
+	if (!cp)
+		return NULL;
+	if (n < 0)
+	{	cp->ptr = (void*)new struct DBS__mergeEventCollections;
+		if (size)
+			*size = sizeof(struct DBS__mergeEventCollections);
+	}
+	else
+	{	cp->ptr = (void*)new struct DBS__mergeEventCollections[n];
+		if (size)
+			*size = n * sizeof(struct DBS__mergeEventCollections);
+	}
+		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Instantiated location=%p\n", cp->ptr));
+	return (struct DBS__mergeEventCollections*)cp->ptr;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__mergeEventCollections(struct soap *soap, int st, int tt, void *p, size_t len, const void *q, size_t n)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Copying struct DBS__mergeEventCollections %p -> %p\n", q, p));
+	*(struct DBS__mergeEventCollections*)p = *(struct DBS__mergeEventCollections*)q;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__mergeEventCollectionsResponse(struct soap *soap, const struct DBS__mergeEventCollectionsResponse *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_embedded(soap, &a->result, SOAP_TYPE_int);
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__mergeEventCollectionsResponse(struct soap *soap, struct DBS__mergeEventCollectionsResponse *a)
+{
+	(void)soap; (void)a; /* appease -Wall -Werror */
+	soap_default_int(soap, &a->result);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__mergeEventCollectionsResponse(struct soap *soap, const struct DBS__mergeEventCollectionsResponse *a, const char *tag, const char *type)
+{
+	register int id = soap_embed(soap, (void*)a, NULL, 0, tag, SOAP_TYPE_DBS__mergeEventCollectionsResponse);
+	if (soap_out_DBS__mergeEventCollectionsResponse(soap, tag, id, a, type))
+		return soap->error;
+	return soap_putindependent(soap);
+}
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__mergeEventCollectionsResponse(struct soap *soap, const char *tag, int id, const struct DBS__mergeEventCollectionsResponse *a, const char *type)
+{
+	soap_element_begin_out(soap, tag, soap_embedded_id(soap, id, a, SOAP_TYPE_DBS__mergeEventCollectionsResponse), type);
+	soap_element_result(soap, "result");
+	soap_out_int(soap, "result", -1, &a->result, "");
+	soap_element_end_out(soap, tag);
+	return SOAP_OK;
+}
+
+SOAP_FMAC3 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC4 soap_get_DBS__mergeEventCollectionsResponse(struct soap *soap, struct DBS__mergeEventCollectionsResponse *p, const char *tag, const char *type)
+{
+	if ((p = soap_in_DBS__mergeEventCollectionsResponse(soap, tag, p, type)))
+		soap_getindependent(soap);
+	return p;
+}
+
+SOAP_FMAC3 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC4 soap_in_DBS__mergeEventCollectionsResponse(struct soap *soap, const char *tag, struct DBS__mergeEventCollectionsResponse *a, const char *type)
+{
+	short soap_flag_result = 1;
+	if (soap_element_begin_in(soap, tag, 0))
+		return NULL;
+	if (*soap->type && soap_match_tag(soap, soap->type, type))
+	{	soap->error = SOAP_TYPE;
+		return NULL;
+	}
+	a = (struct DBS__mergeEventCollectionsResponse *)soap_id_enter(soap, soap->id, a, SOAP_TYPE_DBS__mergeEventCollectionsResponse, sizeof(struct DBS__mergeEventCollectionsResponse), 0, NULL, NULL, NULL);
+	if (!a)
+		return NULL;
+	soap_default_DBS__mergeEventCollectionsResponse(soap, a);
+	if (soap->body && !*soap->href)
+	{
+		for (;;)
+		{	soap->error = SOAP_TAG_MISMATCH;
+			if (soap_flag_result && soap->error == SOAP_TAG_MISMATCH)
+				if (soap_in_int(soap, "result", &a->result, "xsd:int"))
+				{	soap_flag_result--;
+					continue;
+				}
+			if (soap->error == SOAP_TAG_MISMATCH)
+				soap->error = soap_ignore_element(soap);
+			if (soap->error == SOAP_NO_TAG)
+				break;
+			if (soap->error)
+				return NULL;
+		}
+		if ((soap->mode & SOAP_XML_STRICT) && (soap_flag_result > 0))
+		{	soap->error = SOAP_OCCURS;
+			return NULL;
+		}
+		if (soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	else
+	{	a = (struct DBS__mergeEventCollectionsResponse *)soap_id_forward(soap, soap->href, (void**)a, 0, SOAP_TYPE_DBS__mergeEventCollectionsResponse, 0, sizeof(struct DBS__mergeEventCollectionsResponse), 0, NULL);
+		if (soap->body && soap_element_end_in(soap, tag))
+			return NULL;
+	}
+	return a;
+}
+
+SOAP_FMAC5 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC6 soap_new_DBS__mergeEventCollectionsResponse(struct soap *soap, int n)
+{	return soap_instantiate_DBS__mergeEventCollectionsResponse(soap, n, NULL, NULL, NULL);
+}
+
+SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__mergeEventCollectionsResponse(struct soap *soap, struct DBS__mergeEventCollectionsResponse *p)
+{	soap_delete(soap, p);
+}
+
+SOAP_FMAC3 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC4 soap_instantiate_DBS__mergeEventCollectionsResponse(struct soap *soap, int n, const char *type, const char *arrayType, size_t *size)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "soap_instantiate_DBS__mergeEventCollectionsResponse(%d, %s, %s)\n", n, type?type:"", arrayType?arrayType:""));
+	struct soap_clist *cp = soap_link(soap, NULL, SOAP_TYPE_DBS__mergeEventCollectionsResponse, n, soap_fdelete);
+	if (!cp)
+		return NULL;
+	if (n < 0)
+	{	cp->ptr = (void*)new struct DBS__mergeEventCollectionsResponse;
+		if (size)
+			*size = sizeof(struct DBS__mergeEventCollectionsResponse);
+	}
+	else
+	{	cp->ptr = (void*)new struct DBS__mergeEventCollectionsResponse[n];
+		if (size)
+			*size = n * sizeof(struct DBS__mergeEventCollectionsResponse);
+	}
+		DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Instantiated location=%p\n", cp->ptr));
+	return (struct DBS__mergeEventCollectionsResponse*)cp->ptr;
+}
+
+SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__mergeEventCollectionsResponse(struct soap *soap, int st, int tt, void *p, size_t len, const void *q, size_t n)
+{
+	DBGLOG(TEST, SOAP_MESSAGE(fdebug, "Copying struct DBS__mergeEventCollectionsResponse %p -> %p\n", q, p));
+	*(struct DBS__mergeEventCollectionsResponse*)p = *(struct DBS__mergeEventCollectionsResponse*)q;
 }
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__insertEventCollections(struct soap *soap, const struct DBS__insertEventCollections *a)

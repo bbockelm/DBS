@@ -8,7 +8,8 @@ create sequence seq_app_config;
 create table t_parameter_set
   (id				integer		not null,
    hash				varchar (1000)	not null,
-   content			clob		not null);
+   content			varchar (1000)	not null);
+   --content			clob		not null);
 
 create table t_app_family
   (id				integer		not null,

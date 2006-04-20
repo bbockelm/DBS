@@ -14,7 +14,9 @@ class testGetDatasetBlocks(testCaseInterface.testCaseInterface) :
     funcName = "%s.%s" % (self.__class__.__name__, "getDatasetBlocks : Get a list of File Blocks in a Dataset")
     print "Now executing ", funcName
 
-    datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+    #datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
+    datasetPath = "/eg03_jets_1e_pt50170/Hit/eg_Hit245_2_g133"
+    #datasetPath = "/AF_PrimDataset1/AF_Hit/AF_ProcDataset1"
     try:
 
        fileBlockList = self.api.getDatasetFileBlocks(datasetPath)

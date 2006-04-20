@@ -20,7 +20,7 @@ class ServiceInterface:
 
 
 class ServiceLocator(ServiceInterface):
-    ServicePortType_address = "http://cmslcgco01.cern.ch:27984"
+    ServicePortType_address = "http://venom.fnal.gov:27986"
     def getServicePortTypeAddress(self):
         return ServiceLocator.ServicePortType_address
 
@@ -65,6 +65,7 @@ class ServiceSOAP:
                 _numberOfEvents: int, optional
                 _parent: ns1.EventCollection_Def, optional
                 _parentageType: str, optional
+                _status: str, optional
               _numberOfBytes: int, optional
               _numberOfFiles: int, optional
             _datasetPathName: str
@@ -174,6 +175,7 @@ class ServiceSOAP:
                 _numberOfEvents: int, optional
                 _parent: ns1.EventCollection_Def, optional
                 _parentageType: str, optional
+                _status: str, optional
               _numberOfBytes: int, optional
               _numberOfFiles: int, optional
         """
@@ -218,6 +220,7 @@ class ServiceSOAP:
                 _numberOfEvents: int, optional
                 _parent: ns1.EventCollection_Def, optional
                 _parentageType: str, optional
+                _status: str, optional
               _numberOfBytes: int, optional
               _numberOfFiles: int, optional
         """
@@ -255,6 +258,7 @@ class ServiceSOAP:
               _numberOfEvents: int, optional
               _parent: ns1.EventCollection_Def, optional
               _parentageType: str, optional
+              _status: str, optional
 
         @return: response from insertEventCollectionsResponse::
             _result: int
@@ -291,6 +295,46 @@ class ServiceSOAP:
 
         if not isinstance(response, listDatasetResponse) and\
             not issubclass(listDatasetResponse, response.__class__):
+            raise TypeError, "%s incorrect response type" %(response.__class__)
+        return response
+
+
+    def mergeEventCollections(self, request):
+        """
+        @param: request to mergeEventCollectionsRequest::
+            _inputEventCollectionList: ns1.EventCollection_Def, optional
+              _collectionId: int, optional
+              _collectionIndex: int, optional
+              _collectionName: str
+              _datasetPathName: str
+              _fileList: ns1.File_Def, optional
+                _checksum: str, optional
+                _fileBlockId: int, optional
+                _fileSize: int, optional
+                _fileStatus: str
+                _fileType: str
+                _guid: str, optional
+                _id: int, optional
+                _logicalFileName: str
+              _numberOfEvents: int, optional
+              _parent: ns1.EventCollection_Def, optional
+              _parentageType: str, optional
+              _status: str, optional
+            _outputEventCollection: ns1.EventCollection_Def, optional
+
+        @return: response from mergeEventCollectionsResponse::
+            _result: int
+        """
+
+        if not isinstance(request, mergeEventCollectionsRequest) and\
+            not issubclass(mergeEventCollectionsRequest, request.__class__):
+            raise TypeError, "%s incorrect request type" %(request.__class__)
+        kw = {}
+        response = self.binding.Send(None, None, request, soapaction="", **kw)
+        response = self.binding.Receive(mergeEventCollectionsResponseWrapper())
+
+        if not isinstance(response, mergeEventCollectionsResponse) and\
+            not issubclass(mergeEventCollectionsResponse, response.__class__):
             raise TypeError, "%s incorrect response type" %(response.__class__)
         return response
 
@@ -491,3 +535,31 @@ class listDatasetResponseWrapper(listDatasetResponse):
     typecode = listDatasetResponse( name=None, ns=None ).typecode
     def __init__( self, name=None, ns=None, **kw ):
         listDatasetResponse.__init__( self, name=None, ns=None )
+
+class mergeEventCollectionsRequest(ns1.mergeEventCollections_Dec): 
+    if not hasattr( ns1.mergeEventCollections_Dec(), "typecode" ):
+        typecode = ns1.mergeEventCollections_Dec()
+
+    def __init__(self, name=None, ns=None):
+        ns1.mergeEventCollections_Dec.__init__(self, name=None, ns=None)
+
+class mergeEventCollectionsRequestWrapper(mergeEventCollectionsRequest):
+    """wrapper for document:literal message"""
+
+    typecode = mergeEventCollectionsRequest( name=None, ns=None ).typecode
+    def __init__( self, name=None, ns=None, **kw ):
+        mergeEventCollectionsRequest.__init__( self, name=None, ns=None )
+
+class mergeEventCollectionsResponse(ns1.mergeEventCollectionsResponse_Dec): 
+    if not hasattr( ns1.mergeEventCollectionsResponse_Dec(), "typecode" ):
+        typecode = ns1.mergeEventCollectionsResponse_Dec()
+
+    def __init__(self, name=None, ns=None):
+        ns1.mergeEventCollectionsResponse_Dec.__init__(self, name=None, ns=None)
+
+class mergeEventCollectionsResponseWrapper(mergeEventCollectionsResponse):
+    """wrapper for document:literal message"""
+
+    typecode = mergeEventCollectionsResponse( name=None, ns=None ).typecode
+    def __init__( self, name=None, ns=None, **kw ):
+        mergeEventCollectionsResponse.__init__( self, name=None, ns=None )

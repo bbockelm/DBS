@@ -23,8 +23,8 @@ GEG 11-May-2005: Restructured the implementation so that schemas and not
                  tables were being combined.  This has the advantage of  
                  better encapsulation. 
 """
-__revision__ = "$Revision: 1.7 $"
-__version__ = "$Id: ViewObjectLayer.py,v 1.7 2005/06/27 14:36:58 anzar Exp $"
+__revision__ = "$Revision: 1.1.1.1 $"
+__version__ = "$Id: ViewObjectLayer.py,v 1.1.1.1 2005/10/31 22:10:36 afaq Exp $"
 
 class ViewObjectLayerException(genException.genException) : 
     """
@@ -922,7 +922,18 @@ class MultiSchema(SchemaInterface) :
                 Method = "uniqueMatchAttribute", \
                 Module = "ViewObjectLayer", \
                 Attribute = attr)
-        elif len(tmpList) > 1 : 
+        
+        elif len(tmpList) > 1 :
+            testMe = tmpList[0]
+            newList = [] 
+            newList.append(tmpList[0]) 
+            for anItem in tmpList :
+               if testMe != anItem :
+                  newList.append(anItem)
+                  testMe = anItem     
+            tmpList = newList 
+            print "WARNING: Too many matching attributes found ", attr, tmpList.__str__()
+            return newList[0]
             raise ViewObjectLayerException("Too many matching attributes found.", \
                 Class = "SingleSchema", \
                 Method = "uniqueMatchAttribute", \
@@ -930,6 +941,7 @@ class MultiSchema(SchemaInterface) :
                 Attribute = attr, \
                 Hint = "Did you include the foreign key target?", \
                 FoundMatches = tmpList.__str__())
+        
         return tmpList[0]
 
     def addSchema(self, schema, nary = 0) : 

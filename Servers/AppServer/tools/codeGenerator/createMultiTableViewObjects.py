@@ -61,25 +61,28 @@ class createMultiTableViewObjects :
         # View that describes /PrimaryDS/DataTier/ProcDS path - self referencing
         self.DatasetPath = multiRowRepresentation("DatasetPath", self.fkExclusionAttributes)   
         self.DatasetPath.addSchema(self.allSchemas['t_data_tier'])    
-        self.DatasetPath.addSchema(self.allSchemas['t_processing_path'])    
+        self.DatasetPath.addSchema(self.allSchemas['t_processing'])    
+        self.DatasetPath.addSchema(self.allSchemas['t_processing_name'])    
         self.DatasetPath.addSchema(self.allSchemas['t_processed_dataset'])   
         self.DatasetPath.addSchema(self.allSchemas['t_primary_dataset'])   
-        self.DatasetPath.addCondition('t_processed_dataset.processing_path = t_processing_path.id')     
-        self.DatasetPath.addCondition('t_processing_path.data_tier = t_data_tier.id') 
-        self.DatasetPath.addCondition("t_processed_dataset.primary_dataset = t_primary_dataset.id")
+        self.DatasetPath.addCondition('t_processed_dataset.name = t_processing_name.id')     
+        self.DatasetPath.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')     
+        self.DatasetPath.addCondition('t_processed_dataset.data_tier = t_data_tier.id')     
+        self.DatasetPath.addCondition('t_processing.primary_dataset = t_primary_dataset.id') 
+        self.DatasetPath.addCondition('t_processing.name = t_processing_name.id') 
         self.multiTableViewObjects.append(self.DatasetPath)
 
-
+        
         # View on EvenetCollection without File
         self.EvCollView = multiRowRepresentation("EvCollView", self.fkExclusionAttributes)
         self.EvCollView.addSchema(self.allSchemas['t_event_collection'])
-        self.EvCollView.addSchema(self.allSchemas['t_info_evcoll'])
         self.EvCollView.addSchema(self.allSchemas['t_evcoll_parentage'])
-        self.EvCollView.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
+        self.EvCollView.addSchema(self.allSchemas['t_evcoll_status'])
+        self.EvCollView.addSchema(self.allSchemas['t_parentage_type'])
         self.EvCollView.addCondition('t_evcoll_parentage.child = t_event_collection.id')
         self.EvCollView.addCondition('t_evcoll_parentage.parent = t_event_collection.id')
-        self.EvCollView.addSchema(self.allSchemas['t_parentage_type'])
         self.EvCollView.addCondition('t_evcoll_parentage.type = t_parentage_type.id')        
+        self.EvCollView.addCondition('t_event_collection.status = t_evcoll_status.id')        
         self.EvCollView.ExcludeThisMultiRelation({'t_evcoll_parentage.child':'t_event_collection.id'})
         self.EvCollView.ExcludeThisMultiRelation({'t_evcoll_parentage.parent':'t_event_collection.id'})
         self.EvCollView.AddThisRelation({'t_evcoll_parentage.child':'t_event_collection.id'})
@@ -90,8 +93,8 @@ class createMultiTableViewObjects :
         # View on EvenetCollection without File and without Parent
         self.EvCollViewNoParent = multiRowRepresentation("EvCollViewNoParent", self.fkExclusionAttributes)
         self.EvCollViewNoParent.addSchema(self.allSchemas['t_event_collection'])
-        self.EvCollViewNoParent.addSchema(self.allSchemas['t_info_evcoll'])
-        self.EvCollViewNoParent.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
+        self.EvCollViewNoParent.addSchema(self.allSchemas['t_evcoll_status'])
+        self.EvCollViewNoParent.addCondition('t_event_collection.status = t_evcoll_status.id')        
 
         self.multiTableViewObjects.append(self.EvCollViewNoParent)
        
@@ -100,10 +103,9 @@ class createMultiTableViewObjects :
         self.Fileview.addSchema(self.allSchemas['t_file_type'])
         self.Fileview.addSchema(self.allSchemas['t_file'])
         self.Fileview.addSchema(self.allSchemas['t_evcoll_file'])
+        self.Fileview.addSchema(self.allSchemas['t_file_status'])
+        self.Fileview.addCondition('t_file.status = t_file_status.id')
         self.Fileview.addCondition('t_file.type = t_file_type.id')
-        # Anzar: 02-13-2006 taking out t_file_status, not used for the time being.
-        #self.Fileview.addSchema(self.allSchemas['t_file_status'])
-        #self.Fileview.addCondition('t_file.status = t_file_status.id')
         self.Fileview.addCondition('t_evcoll_file.fileid = t_file.id')
         self.multiTableViewObjects.append(self.Fileview)
 
@@ -139,17 +141,20 @@ class createMultiTableViewObjects :
         self.ProcessingPath.addSchema(self.allSchemas['t_data_tier'])
         self.ProcessingPath.addSchema(self.allSchemas['t_application'])
         self.ProcessingPath.addSchema(self.allSchemas['t_app_config'])
-        self.ProcessingPath.addSchema(self.allSchemas['t_processing_path'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_parameter_set'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_processing'])
+        self.ProcessingPath.addSchema(self.allSchemas['t_processing_name'])
         self.ProcessingPath.addSchema(self.allSchemas['t_processed_dataset'])
         self.ProcessingPath.addSchema(self.allSchemas['t_primary_dataset'])
+        self.ProcessingPath.addCondition('t_processed_dataset.name = t_processing_name.id')
+        self.ProcessingPath.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
+        self.ProcessingPath.addCondition('t_processed_dataset.data_tier = t_data_tier.id')
+        self.ProcessingPath.addCondition('t_processing.primary_dataset = t_primary_dataset.id')
+        self.ProcessingPath.addCondition('t_processing.app_config = t_app_config.id')
+        self.ProcessingPath.addCondition('t_processing.name = t_processing_name.id')
         self.ProcessingPath.addCondition("t_application.app_family = t_app_family.id")
-	self.ProcessingPath.addCondition('t_processed_dataset.processing_path = ' + \
-                                         't_processing_path.id')
-        self.ProcessingPath.addCondition('t_processing_path.data_tier = t_data_tier.id')
-        self.ProcessingPath.addCondition('t_processing_path.app_config = t_app_config.id')
-        self.ProcessingPath.addCondition("t_app_config.application = " + \
-                                       "t_application.id")
-        self.ProcessingPath.addCondition("t_processed_dataset.primary_dataset = t_primary_dataset.id")
+        self.ProcessingPath.addCondition("t_app_config.parameter_set = t_parameter_set.id")
+        self.ProcessingPath.addCondition('t_app_config.application = t_application.id')
         self.multiTableViewObjects.append(self.ProcessingPath)
 
 
@@ -158,10 +163,93 @@ class createMultiTableViewObjects :
         self.CrabEvCollFileView= multiRowRepresentation("CrabEvCollFileView", self.fkExclusionAttributes)
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_event_collection'])
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_processed_dataset'])
-        self.CrabEvCollFileView.addSchema(self.allSchemas['t_processing_path'])
+        self.CrabEvCollFileView.addSchema(self.allSchemas['t_processing'])
+        self.CrabEvCollFileView.addSchema(self.allSchemas['t_processing_name'])
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_data_tier'])
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_primary_dataset'])
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_block'])
+        self.CrabEvCollFileView.addSchema(self.allSchemas['t_evcoll_file'])
+        self.CrabEvCollFileView.addSchema(self.allSchemas['t_file'])
+        self.CrabEvCollFileView.addSchema(self.allSchemas['t_file_type'])
+        self.CrabEvCollFileView.addCondition('t_processed_dataset.name = t_processing_name.id')
+        self.CrabEvCollFileView.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
+        self.CrabEvCollFileView.addCondition('t_processed_dataset.data_tier = t_data_tier.id')
+        self.CrabEvCollFileView.addCondition('t_processing.primary_dataset = t_primary_dataset.id')
+        self.CrabEvCollFileView.addCondition('t_processing.name = t_processing_name.id')
+        self.CrabEvCollFileView.addCondition('t_event_collection.processed_dataset = t_processed_dataset.id')
+        self.CrabEvCollFileView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
+        self.CrabEvCollFileView.addCondition('t_evcoll_file.evcoll = t_event_collection.id')
+        self.CrabEvCollFileView.addCondition('t_evcoll_file.fileid = t_file.id')
+        self.CrabEvCollFileView.addCondition('t_file.inblock = t_block.id')
+        self.CrabEvCollFileView.addCondition('t_file.type = t_file_type.id')
+        self.multiTableViewObjects.append(self.CrabEvCollFileView)
+        
+
+
+
+        # View that describes the Parentage Relation of a EvColl.
+        self.CrabEvCollView= multiRowRepresentation("CrabEvCollView", self.fkExclusionAttributes)
+        self.CrabEvCollView.addSchema(self.allSchemas['t_event_collection'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_processed_dataset'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_processing'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_processing_name'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_data_tier'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_primary_dataset'])
+        self.CrabEvCollView.addSchema(self.allSchemas['t_block'])
+        self.CrabEvCollView.addCondition('t_processed_dataset.name = t_processing_name.id')
+        self.CrabEvCollView.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
+        self.CrabEvCollView.addCondition('t_processed_dataset.data_tier = t_data_tier.id')
+        self.CrabEvCollView.addCondition('t_processing.primary_dataset = t_primary_dataset.id')
+        self.CrabEvCollView.addCondition('t_processing.name = t_processing_name.id')
+        self.CrabEvCollView.addCondition('t_event_collection.processed_dataset = t_processed_dataset.id')
+        self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
+        self.multiTableViewObjects.append(self.CrabEvCollView)
+
+        # View on EvenetCollection without File
+        self.EvCollFileView = multiRowRepresentation("EvCollFileView", self.fkExclusionAttributes)
+        self.EvCollFileView.addSchema(self.allSchemas['t_event_collection'])
+        #self.EvCollFileView.addSchema(self.allSchemas['t_evcoll_parentage'])
+        #self.EvCollFileView.addSchema(self.allSchemas['t_parentage_type'])
+        self.EvCollFileView.addSchema(self.allSchemas['t_evcoll_file'])
+        self.EvCollFileView.addSchema(self.allSchemas['t_evcoll_status'])
+        self.EvCollFileView.addSchema(self.allSchemas['t_file'])
+        self.EvCollFileView.addSchema(self.allSchemas['t_file_type'])
+        self.EvCollFileView.addSchema(self.allSchemas['t_file_status'])
+        self.EvCollFileView.addCondition('t_file.status = t_file_status.id')
+        self.EvCollFileView.addCondition('t_file.type = t_file_type.id')
+        self.EvCollFileView.addCondition('t_evcoll_file.evcoll = t_event_collection.id')
+        self.EvCollFileView.addCondition('t_evcoll_file.fileid = t_file.id')
+        #self.EvCollFileView.addCondition('t_evcoll_parentage.child = t_event_collection.id')
+        #self.EvCollFileView.addCondition('t_evcoll_parentage.parent = t_event_collection.id')
+        #self.EvCollFileView.addCondition('t_evcoll_parentage.type = t_parentage_type.id')        
+        self.EvCollFileView.addCondition('t_event_collection.status = t_evcoll_status.id')        
+        #self.EvCollFileView.ExcludeThisMultiRelation({'t_evcoll_parentage.child':'t_event_collection.id'})
+        #self.EvCollFileView.ExcludeThisMultiRelation({'t_evcoll_parentage.parent':'t_event_collection.id'})
+        #self.EvCollFileView.AddThisRelation({'t_evcoll_parentage.child':'t_event_collection.id'})
+        self.multiTableViewObjects.append(self.EvCollFileView)
+
+	# View on EvenetCollection Parentage only 
+        self.EvCollParentageView = multiRowRepresentation("EvCollParentageView", self.fkExclusionAttributes)
+        self.EvCollParentageView.addSchema(self.allSchemas['t_evcoll_parentage'])
+        self.multiTableViewObjects.append(self.EvCollParentageView)
+        
+	# View on EvenetCollection Status only 
+        self.EvCollStatusView = multiRowRepresentation("EvCollStatusView", self.fkExclusionAttributes)
+        self.EvCollStatusView.addSchema(self.allSchemas['t_evcoll_status'])
+        self.multiTableViewObjects.append(self.EvCollStatusView)
+
+	# View on EvenetCollection without File and without Parent or status
+        self.EvCollSingleView = multiRowRepresentation("EvCollSingleView", self.fkExclusionAttributes)
+        self.EvCollSingleView.addSchema(self.allSchemas['t_event_collection'])
+        self.multiTableViewObjects.append(self.EvCollSingleView)
+
+        # View that describes the Parentage Relation of a EvColl.
+        """
+        self.EvCollFileView= multiRowRepresentation("EvCollFileView", self.fkExclusionAttributes)
+        self.CrabEvCollFileView.addSchema(self.allSchemas['t_event_collection'])
+        self.EvCollView.addSchema(self.allSchemas['t_evcoll_parentage'])
+        self.EvCollView.addSchema(self.allSchemas['t_parentage_type'])
+
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_info_evcoll'])
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_evcoll_file'])
         self.CrabEvCollFileView.addSchema(self.allSchemas['t_file'])
@@ -175,28 +263,7 @@ class createMultiTableViewObjects :
         self.CrabEvCollFileView.addCondition('t_evcoll_file.fileid = t_file.id')
         self.CrabEvCollFileView.addCondition('t_file.inblock = t_block.id')
         self.multiTableViewObjects.append(self.CrabEvCollFileView)
-        
-
-
-
-        # View that describes the Parentage Relation of a EvColl.
-        self.CrabEvCollView= multiRowRepresentation("CrabEvCollView", self.fkExclusionAttributes)
-        self.CrabEvCollView.addSchema(self.allSchemas['t_event_collection'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_processed_dataset'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_processing_path'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_data_tier'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_primary_dataset'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_block'])
-        self.CrabEvCollView.addSchema(self.allSchemas['t_info_evcoll'])
-        self.CrabEvCollView.addCondition('t_processing_path.data_tier = t_data_tier.id')
-        self.CrabEvCollView.addCondition('t_processed_dataset.processing_path = t_processing_path.id')
-        self.CrabEvCollView.addCondition('t_processed_dataset.primary_dataset = t_primary_dataset.id')
-        self.CrabEvCollView.addCondition('t_event_collection.processed_dataset = t_processed_dataset.id')
-        self.CrabEvCollView.addCondition('t_info_evcoll.event_collection = t_event_collection.id')
-        self.CrabEvCollView.addCondition('t_block.processed_dataset = t_processed_dataset.id')
-        self.multiTableViewObjects.append(self.CrabEvCollView)
-
-
+        """
         # View that describes the Parentage Relation of a EvColl.
         """
         self.DatasetProvenenceEvChild= multiRowRepresentation("DatasetProvenenceEvChild", self.fkExclusionAttributes)

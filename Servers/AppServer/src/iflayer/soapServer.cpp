@@ -6,7 +6,7 @@
 */
 #include "soapH.h"
 
-SOAP_SOURCE_STAMP("@(#) soapServer.cpp ver 2.7.6e 2006-03-15 17:11:00 GMT")
+SOAP_SOURCE_STAMP("@(#) soapServer.cpp ver 2.7.6e 2006-04-20 14:35:30 GMT")
 
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_serve(struct soap *soap)
@@ -79,6 +79,8 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_request(struct soap *soap)
 		return soap_serve_DBS__createFileBlock(soap);
 	if (!soap_match_tag(soap, soap->tag, "DBS:insertEventCollections"))
 		return soap_serve_DBS__insertEventCollections(soap);
+	if (!soap_match_tag(soap, soap->tag, "DBS:mergeEventCollections"))
+		return soap_serve_DBS__mergeEventCollections(soap);
 	if (!soap_match_tag(soap, soap->tag, "DBS:getDatasetContents"))
 		return soap_serve_DBS__getDatasetContents(soap);
 	if (!soap_match_tag(soap, soap->tag, "DBS:getDatasetFileBlocks"))
@@ -246,6 +248,47 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__insertEventCollections(struct soap *so
 	 || soap_putheader(soap)
 	 || soap_body_begin_out(soap)
 	 || soap_put_DBS__insertEventCollectionsResponse(soap, &soap_tmp_DBS__insertEventCollectionsResponse, "DBS:insertEventCollectionsResponse", "")
+	 || soap_body_end_out(soap)
+	 || soap_envelope_end_out(soap)
+	 || soap_end_send(soap))
+		return soap->error;
+	return soap_closesock(soap);
+}
+
+SOAP_FMAC5 int SOAP_FMAC6 soap_serve_DBS__mergeEventCollections(struct soap *soap)
+{	struct DBS__mergeEventCollections soap_tmp_DBS__mergeEventCollections;
+	struct DBS__mergeEventCollectionsResponse soap_tmp_DBS__mergeEventCollectionsResponse;
+	soap_default_DBS__mergeEventCollectionsResponse(soap, &soap_tmp_DBS__mergeEventCollectionsResponse);
+	soap_default_DBS__mergeEventCollections(soap, &soap_tmp_DBS__mergeEventCollections);
+	soap->encodingStyle = NULL;
+	if (!soap_get_DBS__mergeEventCollections(soap, &soap_tmp_DBS__mergeEventCollections, "DBS:mergeEventCollections", NULL))
+		return soap->error;
+	if (soap_body_end_in(soap)
+	 || soap_envelope_end_in(soap)
+	 || soap_end_recv(soap))
+		return soap->error;
+	soap->error = DBS__mergeEventCollections(soap, soap_tmp_DBS__mergeEventCollections.inputEventCollectionList, soap_tmp_DBS__mergeEventCollections.outputEventCollection, soap_tmp_DBS__mergeEventCollectionsResponse.result);
+	if (soap->error)
+		return soap->error;
+	soap_serializeheader(soap);
+	soap_serialize_DBS__mergeEventCollectionsResponse(soap, &soap_tmp_DBS__mergeEventCollectionsResponse);
+	if (soap_begin_count(soap))
+		return soap->error;
+	if (soap->mode & SOAP_IO_LENGTH)
+	{	if (soap_envelope_begin_out(soap)
+		 || soap_putheader(soap)
+		 || soap_body_begin_out(soap)
+		 || soap_put_DBS__mergeEventCollectionsResponse(soap, &soap_tmp_DBS__mergeEventCollectionsResponse, "DBS:mergeEventCollectionsResponse", "")
+		 || soap_body_end_out(soap)
+		 || soap_envelope_end_out(soap))
+			 return soap->error;
+	};
+	if (soap_end_count(soap)
+	 || soap_response(soap, SOAP_OK)
+	 || soap_envelope_begin_out(soap)
+	 || soap_putheader(soap)
+	 || soap_body_begin_out(soap)
+	 || soap_put_DBS__mergeEventCollectionsResponse(soap, &soap_tmp_DBS__mergeEventCollectionsResponse, "DBS:mergeEventCollectionsResponse", "")
 	 || soap_body_end_out(soap)
 	 || soap_envelope_end_out(soap)
 	 || soap_end_send(soap))

@@ -145,7 +145,7 @@ class funcRep:
      for aVar, varType in self.typeArgs:
          output +=  varType + ' ' +aVar + ','
      output = output[:-1]
-     output += ');'
+     output += ','+self.returnVar[1] + ' '+ self.returnVar[0] + ');'
      #print output
      return output
 

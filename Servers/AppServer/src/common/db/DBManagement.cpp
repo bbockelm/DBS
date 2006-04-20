@@ -29,94 +29,16 @@ int DBManagement::executeQuery(string sql) {
 ResultSet* DBManagement::executeQueryWithResults(string sql) {
 	allocateStmtHandle();
 	runGenericQuery(sql);
-	SQLINTEGER noOfRows = getNoOfRows();
-	SQLSMALLINT noOfCols = getNoOfCols();
+	//SQLINTEGER noOfRows = getNoOfRows();
+	//SQLSMALLINT noOfCols = getNoOfCols();
 
 	//cout<<"executeQueryWithResults::: Number of Columns "<<noOfCols<<endl;
 	//cout<<"executeQueryWithResults::: Number of Rows "<<noOfRows<<endl;
 	
-	SQLSMALLINT colNameLen[noOfCols];
-	SQLSMALLINT colType;
-	SQLUINTEGER colSize;
-	SQLSMALLINT colScale;
-	SQLCHAR* buff[noOfCols];
-	SQLINTEGER len[noOfCols];
-	SQLINTEGER buffLen[noOfCols];
-	SQLCHAR colName[MAX_COL_NAME_LEN];
+
 	//ResultSet* rs = new ResultSet((int)noOfRows, (int)noOfCols);
-	ResultSet* rs = new ResultSet();
- 
-	for (int i = 0 ; i < noOfCols; i++) {
-		returnCode = SQLDescribeCol(stmtHandle,
-					(SQLSMALLINT)(1 + i),
-					colName,
-					MAX_COL_NAME_LEN,
-					&colNameLen[i],
-					&colType,
-					&colSize,
-					&colScale,
-					NULL);
-		if (!isSuccess()) {
-			doDiagnostics();
-			freeStmtHandle();
-			for(int j = 0; j <= i; j++) {
-				delete[] buff[j];
-			}
-			throw DBException("Error in fetching coloum information: SQLDescribeCol");
-		}
-		rs->addColName((string)((char*)colName));
-		//cout<<"colName is "<<colName.at(i)<<endl;
-		//cout<<"colName is "<<colName<<" \n colNameLen is "<<colNameLen<<" \ncolType is "<<colType<<" \ncolSize is "<<colSize<<"colDataDisplaySize is "<<colDataDisplaySize<<endl;
-		buffLen[i] = colSize + 1;
-		buff[i] = new SQLCHAR[buffLen[i]];
-		returnCode = SQLBindCol(stmtHandle,
-				(SQLSMALLINT)(i + 1 ),
-				SQL_C_CHAR,
-				buff[i],
-				buffLen[i],
-				&len[i]);
-		if (!isSuccess()) {
-			doDiagnostics();
-			freeStmtHandle();
-			for(int j = 0; j <= i; j++) {
-				delete[] buff[j];
-			}
-			throw DBException("Error in binding data types with coloums: SQLBindCol");
-		}
-		
-	}
-
-	returnCode = SQLFetch(stmtHandle); 
-	int row = 0; 
-	while(returnCode != SQL_NO_DATA) {
-                //cout << "New ROW Added <<<<<<<<<<" << endl;
-
-		for (int i = 0 ; i < noOfCols; i++) {
-			//cout<<"(char*)buff[i] "<<(char*)buff[i]<<" len is "<<len[i]<<endl;
-			//cout<<"strlen is "<<strlen((char*)buff[i])<<endl;
-			//int length = (int)len[i];
-			int length = (int)strlen((char*)buff[i]);
-			if( length > 0 ) {
-                                //cout << "addElement????? " << (char*)buff[i] << endl;
-                                //cout << "addElement????? (string)" << ((string)(char*)buff[i]) << endl;
-                                //cout << "addElemet WITH BUFF" <<endl;
-				rs->addElement((string)((char*)buff[i]));
-			} else {
-                                //cout << "addElemet EMPTY" <<endl;
-				rs->addElement((string)"");
-			}
-		}
-		returnCode = SQLFetch(stmtHandle);  
-		++row;
-	} 
-	freeStmtHandle();
-
-        rs->setNoOfRows(row);
-        rs->setNoOfCols((int)noOfCols);
-
-	for(int i = 0; i < noOfCols; i++) {
-		delete[] buff[i];
-	}
+	//ResultSet* rs = new ResultSet(this,stmtHandle);
+	ResultSet* rs = new ResultSet(connHandle,stmtHandle);
 	return rs;
 }
 

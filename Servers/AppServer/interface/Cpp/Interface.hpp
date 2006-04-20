@@ -55,6 +55,7 @@ class DBS__EventCollection {
 		int* collectionId 0;
 		int* collectionIndex 1;
 		int* numberOfEvents 0;
+		std::string status 0;
 		std::string collectionName 1;
 		std::string datasetPathName 1;
 		DBS__EventCollection* parent 0;
@@ -78,9 +79,8 @@ class DBS__Block {
 int DBS__createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, int& primaryDatasetId);
 int DBS__createProcessedDataset(DBS__ProcessedDataset* processedDataset, int& processedDatasetId);
 int DBS__createFileBlock(std::string datasetPathName, DBS__Block* block, int& fileBlockId);
-//int DBS__insertEventCollections(std::string datasetPathName, std::vector<DBS__EventCollection*> eventCollectionList, int& result);
 int DBS__insertEventCollections(std::vector<DBS__EventCollection*> eventCollectionList, int& result);
+int DBS__mergeEventCollections(std::vector<DBS__EventCollection*> inputEventCollectionList, DBS__EventCollection* outputEventCollection, int& result);
 int DBS__getDatasetContents(std::string datasetPathName, bool listFiles, std::vector<DBS__Block*>& blockList);
 int DBS__getDatasetFileBlocks(std::string datasetPathName, std::vector<DBS__Block*>& blockList);
 int DBS__listDataset(std::string datasetPathName, std::vector<std::string>& datasetList);
-

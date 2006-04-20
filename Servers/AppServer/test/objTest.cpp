@@ -57,7 +57,7 @@ int main() {
         DBManagement* dbManager  =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
         //DBManagement* dbManager  =  new DBManagement("ProdRO", "cms_dbs_reader", "mi2sbe5stOWu");
         dbManager->open();
-	while(true){
+	//while(true){
 		PrimarydatasetMultiTable * aMultiTable;
 		Primarydatasetmultirow * aRow;
 		try{
@@ -67,14 +67,15 @@ int main() {
 		string name = "sw04_Anzar";
 		aRow->setValue("t_primary_dataset.name", &name);
 		aMultiTable->addRow(aRow);
-		aMultiTable->insert();
+		//aMultiTable->insert();
+		aMultiTable->update();
         //CrabevcollviewMultiTable* aMultiTable = new CrabevcollviewMultiTable(dbManager);
 
         //cout << " >> Calling Select on the Table <<" << endl; 
         //aMultiTable->select( (string)"t_primary_dataset.name='bt03_gg_bbh200_2taujmu'");
 
         	cout << " >> Deleting Multi Object << " << endl;
-		delete aRow;
+		//delete aRow;
 	        delete aMultiTable;
 		}catch(ObjectLayerException &e) {
 			delete aRow;
@@ -82,7 +83,7 @@ int main() {
 			cout<<"Eception is "<<e.report()<<endl;;
 		}
 
-	}
+	//}
         cout << " >> Disconnecting to DBManager << " << endl;
 	dbManager->close();
 

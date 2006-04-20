@@ -35,6 +35,7 @@ echo "Invoking code generator".
 python2 GenCPPFromSQL.py
 #
 #
+#exit 0
 date=`date +%s%m%d%y`
 cp ../../src/objectlayer/SingleTableInterface.cpp ../../src/objectlayer/SingleTableInterface.cpp.b4codeGen.$date
 cp ../../src/objectlayer/MultiTableInterface.cpp ../../src/objectlayer/MultiTableInterface.cpp.b4codeGen.$date

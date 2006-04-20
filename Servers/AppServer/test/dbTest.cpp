@@ -24,23 +24,65 @@ void testResults1(DBManagement * dbm, string sql) {
 
 }
 
+void testResults(DBManagement * dbm, string sql) {
+	ResultSet* rs = dbm->executeQueryWithResults(sql);
+	ResultSet* rs1 = dbm->executeQueryWithResults("select * from www");
+	int noOfRows = 0;
+	int noOfCols = rs->getNoOfCols();
+	cout<<"noOfCols: "<<noOfCols<<endl;
+	while(rs->next()) {
+		++noOfRows;
+		for(int j = 0; j < noOfCols; j++) {
+			//cout<<"\t["<<i<<","<<j<<"] : "<<rs->getElement(i,j)<<endl;
+			cout<<"NAME "<<rs->getColName(j);
+			cout<<"\t["<<noOfRows<<","<<j<<"] : "<<rs->getElement(j)<<endl;
+		}
+		cout<<endl;
+	}
+	while(rs->next()) {
+		++noOfRows;
+		for(int j = 0; j < noOfCols; j++) {
+			//cout<<"\t["<<i<<","<<j<<"] : "<<rs->getElement(i,j)<<endl;
+			cout<<"NAME "<<rs->getColName(j);
+			cout<<"\t["<<noOfRows<<","<<j<<"] : "<<rs->getElement(j)<<endl;
+		}
+		cout<<endl;
+	}
+
+	/*noOfRows = 0;
+	noOfCols = rs1->getNoOfCols();
+	cout<<"noOfCols: "<<noOfCols<<endl;
+	while(rs1->next()) {
+		++noOfRows;
+		for(int j = 0; j < noOfCols; j++) {
+			//cout<<"\t["<<i<<","<<j<<"] : "<<rs->getElement(i,j)<<endl;
+			cout<<"NAME "<<rs1->getColName(j);
+			cout<<"\t["<<noOfRows<<","<<j<<"] : "<<rs1->getElement(j)<<endl;
+		}
+		cout<<endl;
+	}
+	delete rs;
+	delete rs1;*/
+
+}
 int main(int argc,char *argv[]) {
 	DBManagement * dbm;
 	try {
-		dbm =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
 		//dbm =  new DBManagement("ORACLE", "cms_dbs_afaq", "Me1tabOlia6s");
+		dbm =  new DBManagement("mysqldsn2", "sekhri", "");
+		//dbm =  new DBManagement("anzar", "cms_dbs_afaq", "Me1tabOlia6s");
 		//dbm =  new DBManagement("ProdRO", "cms_dbs_reader", "mi2sbe5stOWu");
                 //dbm  =  new DBManagement("sveseli", "cms_dbs_sveseli", "kIek8ie8ethN");
 		//dbm =  new DBManagement("mydsn", "sekhri", "");
 		//dbm  =  new DBManagement("mydsnvijay", "ggraham", "");
 		
 		//testResults1(dbm,"SELECT * from t_event_collection WHERE processed_dataset=1");
-		while(true){
+		//while(true){
 			dbm->open();
-			testResults1(dbm,"SELECT * from t_event_collection");
+			//testResults1(dbm,"SELECT * from t_event_collection");
+			testResults(dbm,"select * from abc");
 			dbm->close();
-		}
-		//testResults1(dbm,"SELECT * from t_event_collection where t_event_collection.id=12324");
+		//}
 		//while(true){
 			//testResults1(dbm,"SELECT count(*) FROM mytable");
 			//testResults1(dbm,(string)"SELECT id,name,lastname,batch FROM mytable");

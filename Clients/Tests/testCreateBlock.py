@@ -20,7 +20,7 @@ class testCreateBlock(testCaseInterface.testCaseInterface) :
        datasetPath = "/ThisIsATestDataset/Digi/ThisIsATestProcDataset"
 
        block = DbsBlock(
-         blockStatusName="Dummy Block Status",
+         blockStatusName="DummyBlockStatus",
          numberOfBytes=1024,
          numberOfFiles=10)
 

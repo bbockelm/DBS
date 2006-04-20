@@ -34,7 +34,6 @@ class processSQL :
        for aClass in self.cppClasses :
           if aClass.tableName() == tablename :
             return aClass
-       #pdb.set_trace() 
        print "SERIOUS ERROR: Table Not Yet Defined in SQL, Cannot Alter it"
        return None
  
@@ -82,21 +81,24 @@ class processSQL :
             continue
             #');'
          if (line.find('CHECK') != -1) or (line.find('check') != -1):
-            #if line.split()[0].endswith('check') == True:
-            continue
-
+            if (line.find('CHECKSUM') != -1) or (line.find('checksum') != -1):
+               #keep on working on this line
+               print "Checksum found" 
+               
+            else :   
+               continue
          #if line == '(':
          #   continue
          #if line == ');':
          #   self.cppClasses.append(newCurrentClass)
          #   continue
-         if (line.find('CHECK') != -1) or (line.find('check') != -1):
+         #if (line.find('CHECK') != -1) or (line.find('check') != -1):
             #if line.split()[0].endswith('check') == True: 
-            continue   
+            #continue   
          #if line.find('is_primary') != -1 : 
          #   self.readParam(line, newCurrentClass)
             # well yes this is ahack to avoid 'is_primary variable'
-            continue
+            #continue
          if line.find('primary') != -1 and line.find('is_primary') == -1:
             if line.split()[0].endswith('primary') == True:
               token1=string.split(line, '(')[1]
@@ -186,7 +188,7 @@ class processSQL :
          #   newCurrentClass.uniquekeys.append(uniq)
          #   continue
          if line.find(');') != -1 :
-            line = line.split(')')[0]
+            #line = line.split(')')[0]
             if (line.strip() != '') :
                self.readParam(line, newCurrentClass)
             self.cppClasses.append(newCurrentClass)
@@ -217,7 +219,6 @@ class processSQL :
          attribute={}
          attribute[paramName]=paramType
          newCurrentClass.schema.append(attribute)
-
          if line.find('not null') != -1 :
             constraint={}
             constraint[paramName] = "NOTNULL"

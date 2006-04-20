@@ -1,10 +1,10 @@
 CC=g++
 CFLAG=-c
 CFLAGS=-Wno-deprecated -Wno-implicit
-LDFLAGS=-L$(ODBCHOME)/lib/ -lodbc -L$(LOG4CXX)/lib/ -llog4cxx 
-INCLUDE=-I$(ODBCHOME)/include/ -I$(LOG4CXX)/include/ -I$(DBSHOME)/include/ 
+LDFLAGS=-L$(ODBCHOME)/lib/ -lodbc -L$(LOG4CXX)/lib/ -llog4cxx  -L$(GSOAPHOME)/lib -lpthread -lgsoap++
+INCLUDE=-I$(ODBCHOME)/include/ -I$(LOG4CXX)/include/ -I$(DBSHOME)/include/ -I$(GSOAPHOME)/include
 
-dirs := ../src/bizlogiclayer ../src/clientlayer ../src/comlayer ../src/objectlayer ../src/common/conf ../src/common/db ../src/common/log
+dirs := ../src/bizlogiclayer ../src/clientlayer ../src/comlayer ../src/objectlayer ../src/common/conf ../src/common/db ../src/common/log ../src/iflayer
 ALL_OBJECTS := $(foreach dir,$(dirs),$(wildcard $(dir)/*.o))
 
 #SOCKETOBJECTS=../cpp/common/socket/Socket.o ../cpp/common/socket/ServerSocket.o ../cpp/common/socket/SocketException.o

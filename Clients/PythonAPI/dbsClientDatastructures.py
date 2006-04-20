@@ -59,11 +59,12 @@ class  DbsFile(ns1.File_Def):
 class  DbsEventCollection(ns1.EventCollection_Def):
 
    """ Class for EventCollection """
-   def __init__(self, datasetPathName, collectionName, collectionIndex, collectionId = None, numberOfEvents = None, parent = None, parentageType = None, fileList = None):
+   def __init__(self, datasetPathName, collectionName, collectionIndex, collectionId = None, numberOfEvents = None, status = None, parent = None, parentageType = None, fileList = None):
       ns1.EventCollection_Def.__init__(self)
       self._collectionId = collectionId
       self._collectionIndex = collectionIndex
       self._numberOfEvents = numberOfEvents
+      self._status = status
       self._collectionName = collectionName
       self._datasetPathName = datasetPathName
       self._parent = parent

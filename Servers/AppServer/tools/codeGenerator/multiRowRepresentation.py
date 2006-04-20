@@ -144,7 +144,8 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
    def setSchemaOrder(self):
       self.schameOrder = []
       for aSchemaOrder in self.schemaOrder():
-         self.schameOrder.append(aSchemaOrder.names()[0])
+         if aSchemaOrder.names()[0] not in self.schameOrder :
+            self.schameOrder.append(aSchemaOrder.names()[0])
 
    def writeDBBindingImpl(self):
       """write the Impl for DB Binding Classes"""
@@ -211,6 +212,7 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       """write objects of constituent tables"""
       output = "\n"
       objList = []
+      objCreated = []
       allConstituentTables = self.names()
       for aTable in allConstituentTables :
         if self.FKTableMap.values().count(aTable) > 0 :
@@ -219,20 +221,29 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
                   objName = self.makeAttributeName(akey).replace('.','_')+'Obj'
                   objName = objName.title()
                   if objName not in objList:
-                   output += '\n    '+aTable.title()+ 'row* '+objName+ ';'
+                   if objName not in objCreated :
+                      output += '\n    '+aTable.title()+ 'row* '+objName+ ';'
+                      objCreated.append(objName) 
                   else :
                    nameCount = objList.count(objName) + 1
-                   output += '\n    '+aTable.title()+ 'row* '+objName + nameCount+ ';'
-                   objList.append(objName) 
+                   if objName+nameCount not in objCreated :
+                      output += '\n    '+aTable.title()+ 'row* '+objName + nameCount+ ';'
+                      objList.append(objName) 
+                      objCreated.append(objName+nameCount)
         else:
            objName = aTable.replace('.','_')+'Obj'
            objName = objName.title()
            if objName not in objList:
-              output += '\n    '+aTable.title()+ 'row* '+objName+ ';'
+              if objName not in objCreated :
+                 output += '\n    '+aTable.title()+ 'row* '+objName+ ';'
+                 objCreated.append(objName)
            else :
+              
               nameCount = objList.count(objName) + 1
-              output += '\n    '+aTable.title()+ 'row* '+objName+nameCount +';'
-              objList.append(objName)
+              if objName+nameCount not in objCreated :
+                 output += '\n    '+aTable.title()+ 'row* '+objName+nameCount +';'
+                 objList.append(objName)
+                 objCreated.append(objName+nameCount)
       return output
 
 
@@ -240,6 +251,7 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       """write objects of constituent tables"""
       
       #print self.FKTableMap
+      addedKeyObjPair = {}
       output2 = "\n\n"+self.className()+"::~"+self.className()+"(){"
       output = "\n\n"+self.className()+"::"+self.className()+"(){"
       allConstituentTables = self.names() 
@@ -255,11 +267,13 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
                     nameCount = objList.count(objName) + 1
                     objName = objName + nameCount
                     objList.append(objName)
-                  objName = objName.title() 
-                  output += '\n    this->'+objName+ ' = new '+aTable.title()+ 'row();' 
-                  output += '\n    this->rowMap.set("'+akey.lower()+'", (void*)this->'+objName+');'
-                  output += '\n    this->constituentObjects.push_back(this->rowMap);'
-                  output2 += '\n   delete this->'+objName+';'
+                  objName = objName.title()
+                  if not addedKeyObjPair.has_key(akey.lower()) :
+                    output += '\n    this->'+objName+ ' = new '+aTable.title()+ 'row();' 
+                    output += '\n    this->rowMap.set("'+akey.lower()+'", (void*)this->'+objName+');'
+                    output += '\n    this->constituentObjects.push_back(this->rowMap);'
+                    output2 += '\n   delete this->'+objName+';'
+                    addedKeyObjPair[akey.lower()] = objName 
         else:
            objName = aTable.replace('.','_')+'Obj'
            if objName not in objList:
@@ -269,10 +283,13 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
               objName = objName+nameCount
               objList.append(objName)
            objName = objName.title()
-           output += '\n    this->'+objName+ ' = new '+aTable.title()+ 'row();'
-           output += '\n    this->rowMap.set("'+aTable.lower() + 'row", (void*)this->'+objName.title()+');'
-           output += '\n    this->constituentObjects.push_back(this->rowMap);'
-           output2 += '\n   delete this->'+objName+';'
+           if not addedKeyObjPair.has_key(aTable.lower()) : 
+             output += '\n    this->'+objName+ ' = new '+aTable.title()+ 'row();'
+             output += '\n    this->rowMap.set("'+aTable.lower() + 'row", (void*)this->'+objName.title()+');'
+             output += '\n    this->constituentObjects.push_back(this->rowMap);'
+             output2 += '\n   delete this->'+objName+';'
+             addedKeyObjPair[aTable.lower()] = objName.title()
+
       output += "\n}"
       output2 += "\n}"
 
@@ -427,9 +444,10 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       tabelName = self.multitablename.title() + 'MultiTable'
       output += '\nclass '+managerName+' : public Manager {\n' 
       output += '\npublic:\n'
-      output += '\n        '+managerName+'();'
+      output += '\n        '+managerName+'(DBManagement* dbManager);'
       output += '\n        ~'+managerName+'();'
       output += '\n        int write(std::vector<'+rowName+'*> rowVector, '+tabelName+'* table);'
+      output += '\n        int update(std::vector<'+rowName+'*> rowVector, '+tabelName+'* table);'
       output += '\n        int read('+rowName+'* aRow, '+tabelName+'* table);\n'
       output += '};\n\n'
       return output
@@ -440,7 +458,8 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       output = "\n\n/************** Manager for "+managerName+"*********************/\n"
       rowName = self.className()
       tabelName = self.multitablename.title() + 'MultiTable'
-      output += managerName+'::'+managerName+'() {\n}\n'
+      output += managerName+'::'+managerName+'(DBManagement* dbManager) {\n\tthis->dbManager = dbManager;\n}\n'
+
       output += '\nint '+managerName+'::write(vector<'+rowName+'*> rowVector, '+tabelName+'* table) {\n'
       output += '\n      for(int i = 0 ; i != rowVector.size(); ++i) {'
       output += '\n         table->addRow(rowVector.at(i));\n'
@@ -449,10 +468,25 @@ class multiRowRepresentation(MultiSchema, rowRepresentation) :
       output += '      }\n'
       output += '      return this->doWrite((TableInterface*)table, \n                  (string)"'+pkVar+'");\n'
       output += '}\n'
+
+      output += '\nint '+managerName+'::update(vector<'+rowName+'*> rowVector, '+tabelName+'* table) {\n'
+      output += '\n      for(int i = 0 ; i != rowVector.size(); ++i) {'
+      output += '\n         table->addRow(rowVector.at(i));\n'
+      #output += '\n         '+rowName+'* aNewRow = new '+rowName+'();\n'
+      #output += '         this->copyAndAddRow(table, rowVector.at(i), aNewRow);\n' 
+      output += '      }\n'
+      output += '      return this->doUpdate((TableInterface*)table, \n                  (string)"'+pkVar+'");\n'
+      output += '}\n'
+
+
       output += '\nint '+managerName+'::read('+rowName+'* aRow, '+tabelName+'* table) {\n'
-      output += '      table->setDBManager(dbManager);\n'
-      output += '      string clause = this->makeClause(table, aRow);\n'
-      output += '      table->select(clause);\n'
+      output += '      try{\n'
+      output += '          table->setDBManager(dbManager);\n'
+      output += '          string clause = this->makeClause(table, aRow);\n'
+      output += '          table->select(clause);\n'
+      output += '      } catch (ObjectLayerException &e) {\n'
+      output += '          throw BizLayerException(e.report());\n'
+      output += '      }\n'
       output += '      return 1;\n'
       output += '}\n\n'
       output += managerName+'::~'+managerName+'() {\n'

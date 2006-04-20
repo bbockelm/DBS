@@ -91,4 +91,20 @@
         %template(CrabEvCollViewMultiTable) MultiTableInterface<Crabevcollviewmultirow>;
         %template(CrabEvCollViewVector) std::vector<Crabevcollviewmultirow*>;
 
+        %template(EvCollFileViewMultiTableTemplate) TableTemplate<Evcollfileviewmultirow>;
+        %template(EvCollFileViewMultiTable) MultiTableInterface<Evcollfileviewmultirow>;
+        %template(EvCollFileViewVector) std::vector<Evcollfileviewmultirow*>;
+
+        %template(EvCollParentageViewMultiTableTemplate) TableTemplate<Evcollparentageviewmultirow>;
+        %template(EvCollParentageViewMultiTable) MultiTableInterface<Evcollparentageviewmultirow>;
+        %template(EvCollParentageViewVector) std::vector<Evcollparentageviewmultirow*>;
+
+        %template(EvCollStatusViewMultiTableTemplate) TableTemplate<Evcollstatusviewmultirow>;
+        %template(EvCollStatusViewMultiTable) MultiTableInterface<Evcollstatusviewmultirow>;
+        %template(EvCollStatusViewVector) std::vector<Evcollstatusviewmultirow*>;
+
+        %template(EvCollSingleViewMultiTableTemplate) TableTemplate<Evcollsingleviewmultirow>;
+        %template(EvCollSingleViewMultiTable) MultiTableInterface<Evcollsingleviewmultirow>;
+        %template(EvCollSingleViewVector) std::vector<Evcollsingleviewmultirow*>;
+
 

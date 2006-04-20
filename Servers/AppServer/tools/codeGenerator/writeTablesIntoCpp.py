@@ -302,9 +302,10 @@ class writeTablesIntoCpp :
    def writeManagerImpls(self, cppOutPath=os.getcwd(), \
                 cppFile = "ManagerImpls.cpp"):
        """ call uopn writeMnagerImpl of each Multi Class and write Manager Impl """
-
        output = '#include "Managers.hpp"'
        output += '\n#include "ManagerImpls.hpp"'
+       output += '\n#include "ObjectLayerException.hpp"'
+       output += '\n#include "BizLayerException.hpp"'
        output += '\n#include "Util.hpp"'
        for eachClass in self.cppClasses:
            if eachClass.className().find("multirow") != -1:

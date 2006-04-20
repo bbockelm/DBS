@@ -17,7 +17,7 @@ class testCreatePrimaryDS(testCaseInterface.testCaseInterface) :
 
     try:
 
-       dataset = DbsPrimaryDataset(name="ThisIsATestDataset")
+       dataset = DbsPrimaryDataset(name="ThisIsATestDatasetf")
 
        primaryDatasetId = self.api.createPrimaryDataset(dataset)
        print "Got primary dataset id: %s" % primaryDatasetId
