@@ -23,6 +23,36 @@ DBSApi::~DBSApi() {
 	delete this->dbManager;
 }
 
+string DBSApi::makeXMLTag(TableInterface* table, string tagID, vector<string>& keys) {
+
+
+	string xml = "<"+tagID;
+
+	for (int i = 0; i != keys.size(); ++i ) {
+		string value;
+                string colname = keys.at(i);
+		string col;
+		if(( value = table->getStrValue(colname)) != "" ) {
+        		string col =  util.getTokenAt(colname,1);
+                        xml += " "+col+ "="+value; 
+		}
+	}
+	xml += "/>";
+}	
+
+
+std::string DBSApi::write_xml_header(){
+
+   string header="<?xml version='1.0' standalone='yes'?><dbs>";
+   return header;
+}
+
+std::string DBSApi::write_xml_footer(){
+   string footer="</dbs>";
+   return footer;
+}
+
+
 std::vector<std::string> DBSApi::getNameElements(std::string datasetPathName) {
         if (datasetPathName.length() < 1) {
                 throw (string)"datasetPathName is NULL";

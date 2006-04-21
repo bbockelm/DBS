@@ -52,6 +52,10 @@ private:
 	int updateStatus(std::vector<int> evIDList, int statusID);
 	int createStatus(std::string status);
 	int getEVChildOrParents(int eventCollectionID, bool type,  std::vector<int>& evChildList);
+	std::string DBSApi::makeXMLTag(TableInterface* table, std::string tagID, std::vector<std::string>& keys);
+        std::string write_xml_header();
+        std::string write_xml_footer();
+
 	Map procDSIdMap;
 };
 
