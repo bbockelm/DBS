@@ -41,7 +41,6 @@ class DBManagement {
 	void freeEnvConStmtHandle();
 	void allocateEnvHandle();
 	void allocateConHandle();
-	//void allocateStmtHandle(SQLHSTMT &stmtHandle);
 	void allocateStmtHandle();
 	void doDiagnostics();
 	void runGenericQuery(std::string sql);
@@ -115,7 +114,6 @@ class DBManagement {
 	* @param sql a string representing the actual sql query to be executed.
 	* @return ResultSet* An object containning the data retrived from the database.
 	*/
-
 	ResultSet* executeQueryWithResults(std::string sql);
 	
 };

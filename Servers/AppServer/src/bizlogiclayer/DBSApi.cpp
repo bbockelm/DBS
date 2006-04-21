@@ -1,26 +1,14 @@
 #include "DBSApi.hpp"
 #include "ManagerImpls.hpp"
 #include "BizLayerException.hpp"
-#include "DBException.hpp"
-#include "Configuration.hpp"
 #include <exception>
 
 using namespace std;
 DBSApi::DBSApi() {
-	try {
-		Configuration* conf = Configuration::instance();
-		this->dbManager = new DBManagement(conf->getDsn(), conf->getDbUser() , conf->getDbPasswd());
-		this->dbManager->open();
-	} catch (DBException &e)  {
-		throw BizLayerException(e.report());
-	}
-
 }
 
 
 DBSApi::~DBSApi() {
-	this->dbManager->close();
-	delete this->dbManager;
 }
 
 std::vector<std::string> DBSApi::getNameElements(std::string datasetPathName) {
@@ -51,19 +39,23 @@ int DBSApi::getProcessingPathID(std::string datasetPathName) {
 	DatasetpathMultiTable aTable;
 	util.setValue(&aRow, "t_primary_dataset.name", "STRING", primaryDSName);
 	util.setValue(&aRow, "t_data_tier.name", "STRING", dataTier);
-	util.setValue(&aRow, "t_processing_name.name", "STRING", processedDSName);
-	DatasetPathManager manager(this->dbManager);
-	manager.read(&aRow, &aTable);
-	
-	if(!aTable.next()) {
+	util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
+	DatasetPathManager dsPathMgr;
+	dsPathMgr.read(&aRow, &aTable);
+	int noOfRows = aTable.getNoOfRows();
+	cout<<"No of Rows "<<noOfRows<<endl;
+	if ( noOfRows < 1 ) {
 		throw BizLayerException((string)"Processing Path not found for "+datasetPathName);
 	}
-	int value = aTable.getIntValue("t_processing.id");
-	if(aTable.next()) {
+
+	if ( noOfRows > 1 ) {
 		throw BizLayerException((string)"More then one Processing Path found for "+datasetPathName);
 	}
-	cout<<"Processing Path ID "<<value<<endl;
-	return value;
+
+	vector<Datasetpathmultirow*> rows = aTable.getRows();
+	util.setSchema(aTable.getSchema());
+	Datasetpathmultirow* tmpRow = (Datasetpathmultirow*)rows.at(0);
+	return util.getIntValue(tmpRow, "t_processing_path.id");
 
 
 }
@@ -79,19 +71,25 @@ int DBSApi::getProcessedDatasetID(std::string datasetPathName) {
 
         util.setValue(&aRow, "t_primary_dataset.name", "STRING", primaryDSName);
         util.setValue(&aRow, "t_data_tier.name", "STRING", dataTier);
-        //util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
-        util.setValue(&aRow, "t_processing_name.name", "STRING", processedDSName);
-        DatasetPathManager manager(this->dbManager);
-        manager.read(&aRow, &aTable);
-	if(!aTable.next()) {
-		throw BizLayerException((string)"Processed Dataset not found for "+datasetPathName);
-	}
-	int value = aTable.getIntValue("t_processed_dataset.id");
-	if(aTable.next()) {
-		throw BizLayerException((string)"More then one Processed Dataset found for "+datasetPathName);
-	}
-	cout<<"Processed Dataset ID "<<value<<endl;
-	return value;
+        util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
+
+        DatasetPathManager dsPathMgr;
+        dsPathMgr.read(&aRow, &aTable);
+        int noOfRows = aTable.getNoOfRows();
+
+        if ( noOfRows < 1 ) {
+           throw BizLayerException((string)"Processed Dataset not found for "+datasetPathName);
+        }
+
+        if ( noOfRows > 1 ) {
+           throw BizLayerException((string)"More then one Processed Dataset found for "+datasetPathName);
+        }
+
+        vector<Datasetpathmultirow*> rows = aTable.getRows();
+        util.setSchema(aTable.getSchema());
+        Datasetpathmultirow* tmpRow = (Datasetpathmultirow*)rows.at(0);
+        return util.getIntValue(tmpRow, "t_processed_dataset.id");
+
 
 }
 
@@ -110,7 +108,7 @@ int DBSApi::createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, int& prima
 	util.setValue(aRow, "t_primary_dataset.name", "STRING", primaryDataset->name);
 	vector<Primarydatasetmultirow*> vect;
 	vect.push_back(aRow);
-        PrimaryDatasetManager manager(this->dbManager);
+        PrimaryDatasetManager manager;
 	primaryDatasetId = manager.write(vect, &table);
 	return 1;
 }
@@ -137,29 +135,22 @@ int DBSApi::createProcessedDataset(DBS__ProcessedDataset* processedDataset, int&
 	}
 	Processingpathmultirow* aRow = new Processingpathmultirow();
 	if(procPath->parent != "") {
-		//util.setIntValue(aRow, "t_processing_path.parent",  &parentProcPathID);
-		util.setIntValue(aRow, "t_processing.input",  &parentProcPathID);
+		util.setIntValue(aRow, "t_processing_path.parent",  &parentProcPathID);
 	}
 	util.setValue(aRow, "t_app_family.name", "STRING", app->family);
 	util.setValue(aRow, "t_application.executable", "STRING",app->executable);
-	//util.setValue(aRow, "t_app_config.parameter_set", "STRING", app->parameterSet);
+	util.setValue(aRow, "t_app_config.parameter_set", "STRING", app->parameterSet);
 	util.setValue(aRow, "t_application.app_version", "STRING", app->version);
 	util.setValue(aRow, "t_data_tier.name","STRING", procPath->dataTier);
-	//util.setValue(aRow, "t_processed_dataset.is_open", "CHARACTER", isOpen);
-	util.setValue(aRow, "t_processing.is_open", "CHARACTER", isOpen);
-	//util.setValue(aRow, "t_processed_dataset.name", "STRING", processedDataset->processedDatasetName);
-	util.setValue(aRow, "t_processing_name.name", "STRING", processedDataset->processedDatasetName);
+	util.setValue(aRow, "t_processed_dataset.is_open", "CHARACTER", isOpen);
+	util.setValue(aRow, "t_processed_dataset.name", "STRING", processedDataset->processedDatasetName);
 	util.setValue(aRow, "t_primary_dataset.name", "STRING", processedDataset->primaryDatasetName);
-	util.setValue(aRow, "t_parameter_set.hash", "STRING", "DUMMY");
-	util.setValue(aRow, "t_parameter_set.content", "STRING", "DUMMYCONTENT");
 	util.setIntValue(aRow, "t_processed_dataset.id", processedDataset->id );
-	//cout<<"Making manager "<<endl;
-	ProcessingPathManager manager(this->dbManager);
+
+	ProcessingPathManager procPathMgr;
 	vector<Processingpathmultirow*> tmpVect;
 	tmpVect.push_back(aRow);
-	//cout<<"calling write "<<endl;
-	processedDatasetId = manager.write(tmpVect, &table);
-	//cout<<"DONE write "<<endl;
+	processedDatasetId = procPathMgr.write(tmpVect, &table);
 	return 1;
 
 }
@@ -176,12 +167,12 @@ int DBSApi::createFileBlock(std::string datasetPathName, DBS__Block* block, int&
 	Blockviewmultirow* aRow = new Blockviewmultirow();
 	util.setIntValue(aRow, "t_block.bytes", block->numberOfBytes);
 	util.setIntValue(aRow, "t_block.files", block->numberOfFiles);
-	util.setIntValue(aRow, "t_block.processing", &processedDatasetID);
+	util.setIntValue(aRow, "t_block.processed_dataset", &processedDatasetID);
 	util.setValue(aRow, "t_block_status.name", "STRING", block->blockStatusName);
 
 	vector<Blockviewmultirow*> vect;
 	vect.push_back(aRow);
-        BlockViewManager manager(this->dbManager);
+        BlockViewManager manager;
 	fileBlockId = manager.write(vect, &table);
 	return 1;
 
@@ -192,14 +183,13 @@ int DBSApi::createFileBlock(std::string datasetPathName, DBS__Block* block, int&
 int DBSApi::insertEventCollections( std::vector<DBS__EventCollection*> eventCollectionList, int& result) {
 	for(int i = 0; i != eventCollectionList.size() ; ++i) {
 		DBS__EventCollection* aEventCollection = eventCollectionList.at(i);
-		result = recInsertEventCollection(aEventCollection);
+		recInsertEventCollection(aEventCollection);
 	}
+	result = 1;
+
 }
 
 int DBSApi::recInsertEventCollection(DBS__EventCollection* eventCollection) {
-	if(eventCollection == NULL) {
-		throw BizLayerException("eventCollection is NULL");
-	}
 	int fileSize = eventCollection->fileList.size();
 	if(fileSize == 0) {
 		throw BizLayerException("File List Empty. You must provide FileList to Insert EventCollection");
@@ -215,23 +205,18 @@ int DBSApi::recInsertEventCollection(DBS__EventCollection* eventCollection) {
 	if(mi != procDSIdMap.end()) {
 		processedDatasetID = mi->second;
 	} else {
-		//cout<<"calling this->getProcessedDatasetID"<<endl;
 		processedDatasetID = this->getProcessedDatasetID(eventCollection->datasetPathName);
-		cout<<"processedDatasetID "<<processedDatasetID<<endl;
 		procDSIdMap.insert(MapEntry(eventCollection->datasetPathName, processedDatasetID ));
 	}
 	int parentEventCollectionID = 0;
 	if(eventCollection->parent != NULL) {
-		//cout<<">>>>>>>>>>>>>>>>>>>PARENt is NOT NULL. Calling insert on Parent"<<endl;
 		parentEventCollectionID = this->recInsertEventCollection(eventCollection->parent);
-		//cout<<"-------------------->parentEventCollectionID "<<parentEventCollectionID<<endl;
 	}
 	if(eventCollection->collectionId != NULL) {
 		return *eventCollection->collectionId;
 	}
 	int eventCollectionID;
 	if (eventCollection->parent != NULL) {
-		cout<<"Making EvcollviewMultiTable"<<endl;
 		EvcollviewMultiTable table;
 		Evcollviewmultirow* aRow = new Evcollviewmultirow();
 		this->setECValues(aRow, eventCollection,processedDatasetID);
@@ -242,30 +227,18 @@ int DBSApi::recInsertEventCollection(DBS__EventCollection* eventCollection) {
 		}
 		vector<Evcollviewmultirow*> vect;
 		vect.push_back(aRow);
-	        EvCollViewManager manager(this->dbManager);
-		manager.write(vect, &table);
-		if(table.getNoOfRows() > 0) {
-			string value = table.getStrValue(0, "t_event_collection.id");
-			eventCollectionID =  util.atoi(value);
-		}
-
+	        EvCollViewManager manager;
+		eventCollectionID = manager.write(vect, &table);
 	} else {
-		cout<<"Making EvcollviewnoparentMultiTable"<<endl;
 		EvcollviewnoparentMultiTable table;
 		Evcollviewnoparentmultirow* aRow = new Evcollviewnoparentmultirow();
 		this->setECValues(aRow, eventCollection,processedDatasetID);
 		vector<Evcollviewnoparentmultirow*> vect;
 		vect.push_back(aRow);
-	        EvCollViewNoParentManager manager(this->dbManager);
-		manager.write(vect, &table);
-		if(table.getNoOfRows() > 0) {
-			string value = table.getStrValue(0, "t_event_collection.id");
-			eventCollectionID =  util.atoi(value);
-		}
+	        EvCollViewNoParentManager manager;
+		eventCollectionID = manager.write(vect, &table);
 
 	}
-
-	cout<<"...................>Returnning eventCollectionID "<<eventCollectionID<<endl;
 	insertFiles(eventCollectionID, eventCollection->fileList);
 	return eventCollectionID;
 
@@ -274,11 +247,9 @@ int DBSApi::recInsertEventCollection(DBS__EventCollection* eventCollection) {
 
 void DBSApi::setECValues(RowInterface* aRow, DBS__EventCollection* eventCollection, int processedDatasetID) {
 	util.setIntValue(aRow, "t_event_collection.collection_index", eventCollection->collectionIndex);
-	util.setIntValue(aRow, "t_event_collection.events", eventCollection->numberOfEvents);
-	util.setValue(aRow, "t_event_collection.name", "STRING", eventCollection->collectionName);
-	util.setValue(aRow, "t_evcoll_status.name", "STRING", eventCollection->status);
+	util.setIntValue(aRow, "t_info_evcoll.events", eventCollection->numberOfEvents);
+	util.setValue(aRow, "t_info_evcoll.name", "STRING", eventCollection->collectionName);
 	util.setIntValue(aRow, "t_event_collection.processed_dataset", &processedDatasetID);
-	//cout<<"length of status is "<<eventCollection->status.length()<<endl;
 }
 
 int DBSApi::getDatasetContents(std::string datasetPathName, bool listFiles, std::vector<DBS__Block*>& blockList) {
@@ -299,18 +270,20 @@ int DBSApi::getDatasetContents(std::string datasetPathName, bool listFiles, std:
 	Crabevcollviewmultirow aRow;
 	util.setValue(&aRow, "t_primary_dataset.name", "STRING", primaryDSName);
 	util.setValue(&aRow, "t_data_tier.name", "STRING", dataTier);
-	util.setValue(&aRow, "t_processing_name.name", "STRING", processedDSName);
+	util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
 	//util.setValue(&aRow, "t_event_collection.id", "INTEGER", "271478");
-        CrabEvCollViewManager manager(this->dbManager);
+        CrabEvCollViewManager manager;
 	manager.read(&aRow, &table);
 	
-
-
+	int noOfRows = table.getNoOfRows();
+	cout << "Number of Rows from DB is "<<noOfRows<<endl;
 	vector<Crabevcollviewmultirow*> rows = table.getRows();
 	//return 1;
-	while (table.next()) {
+	for (int i = 0 ; i != noOfRows; ++i) {
+		Crabevcollviewmultirow* tmpRow = (Crabevcollviewmultirow*)rows.at(i);
 		string value;
-		if((value = table.getStrValue("t_block.id")) != "" ) {
+		util.setSchema(table.getSchema());
+		if((value = util.getStrValue(tmpRow, "t_block.id")) != "" ) {
 			bool found = false;
 			DBS__Block* aBlock;
 			for (int j = 0 ; j != blockList.size() ; ++j ) {
@@ -328,16 +301,21 @@ int DBSApi::getDatasetContents(std::string datasetPathName, bool listFiles, std:
 			}
 			DBS__EventCollection * aEventCollection = this->getEventCollection();
 
-			if((value = table.getStrValue("t_event_collection.name")) != "" ) {
+			if((value = util.getStrValue(tmpRow, "t_info_evcoll.name")) != "" ) {
 				aEventCollection->collectionName = value;
 			}			
-			if((value = table.getStrValue("t_event_collection.events")) != "" ) {
+			if((value = util.getStrValue(tmpRow, "t_info_evcoll.events")) != "" ) {
 				aEventCollection->numberOfEvents = this->getInt(util.atoi(value));
 			}
-			if((value = table.getStrValue("t_event_collection.id")) != "" ) {
+			if((value = util.getStrValue(tmpRow, "t_event_collection.id")) != "" ) {
 				aEventCollection->collectionId = this->getInt(util.atoi(value));
 			}
 
+			//if(listFiles) {
+			//	//vector<DBS__File*> fileList;
+			//	this->listFiles(*(aEventCollection->collectionId), *(aBlock->blockId), aEventCollection->fileList);
+			//	cout<<"size of fileList "<<aEventCollection->fileList.size()<<endl;
+			//}
 			aBlock->eventCollectionList.push_back(aEventCollection);
 
 			if (!found) {
@@ -361,14 +339,19 @@ int DBSApi::getDatasetContents(std::string datasetPathName, std::vector<DBS__Blo
 	Crabevcollfileviewmultirow aRow;
 	util.setValue(&aRow, "t_primary_dataset.name", "STRING", primaryDSName);
 	util.setValue(&aRow, "t_data_tier.name", "STRING", dataTier);
-	util.setValue(&aRow, "t_processing_name.name", "STRING", processedDSName);
+	util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
 	//util.setValue(&aRow, "t_event_collection.id", "INTEGER", "272232");
 
-        CrabEvCollFileViewManager manager(this->dbManager);
+        CrabEvCollFileViewManager manager;
 	manager.read(&aRow, &table);
-	while (table.next()) {
+	int noOfRows = table.getNoOfRows();
+	cout << "Number of Rows from DB is "<<noOfRows<<endl;
+	vector<Crabevcollfileviewmultirow*> rows = table.getRows();
+	for (int i = 0 ; i != noOfRows; ++i) {
+		Crabevcollfileviewmultirow* tmpRow = (Crabevcollfileviewmultirow*)rows.at(i);
 		string value;
-		if((value = table.getStrValue("t_block.id")) != "" ) {
+		util.setSchema(table.getSchema());
+		if((value = util.getStrValue(tmpRow, "t_block.id")) != "" ) {
 			bool found = false;
 			DBS__Block* aBlock;
 			for (int j = 0 ; j != blockList.size() ; ++j ) {
@@ -383,7 +366,7 @@ int DBSApi::getDatasetContents(std::string datasetPathName, std::vector<DBS__Blo
 				aBlock->blockId = this->getInt(util.atoi(value));
 			        aBlock->blockName = datasetPathName.substr(1, (datasetPathName.length() - 1) ) + "/#/" + value;
 			}
-			if((value = table.getStrValue("t_event_collection.id")) != "" ) {
+			if((value = util.getStrValue(tmpRow, "t_event_collection.id")) != "" ) {
 				bool foundEC = false;
 				DBS__EventCollection * aEventCollection;
 				for (int j = 0 ; j != aBlock->eventCollectionList.size() ; ++j ) {
@@ -396,15 +379,14 @@ int DBSApi::getDatasetContents(std::string datasetPathName, std::vector<DBS__Blo
 				if (!foundEC) {
 					aEventCollection = this->getEventCollection();
 					aEventCollection->collectionId = this->getInt(util.atoi(value));
-					if((value = table.getStrValue("t_event_collection.name")) != "" ) {
+					if((value = util.getStrValue(tmpRow, "t_info_evcoll.name")) != "" ) {
 						aEventCollection->collectionName = value;
 					}			
-					if((value = table.getStrValue("t_event_collection.events")) != "" ) {
+					if((value = util.getStrValue(tmpRow, "t_info_evcoll.events")) != "" ) {
 						aEventCollection->numberOfEvents = this->getInt(util.atoi(value));
 					}
 				}
-				//this->addFile(tmpRow, aEventCollection->fileList);
-				this->addFile(&table, aEventCollection->fileList);
+				this->addFile(tmpRow, aEventCollection->fileList);
 				//cout<<"size of fileList "<<aEventCollection->fileList.size()<<endl;
 				
 				if (!foundEC) {
@@ -427,24 +409,29 @@ int DBSApi::getDatasetFileBlocks(std::string datasetPathName, std::vector<DBS__B
 	Pdblockviewmultirow aRow;
 	PdblockviewMultiTable table;
 	util.setIntValue(&aRow, "t_processed_dataset.id", &processedDatasetID );
-	PDBlockViewManager manager(this->dbManager);
-	manager.read(&aRow, &table);
+	PDBlockViewManager pdbMgr;
+	pdbMgr.read(&aRow, &table);
 
-	while (table.next()) {
+	int noOfRows = table.getNoOfRows();
+	cout << "Number of Rows from DB is "<<noOfRows<<endl;
+	vector<Pdblockviewmultirow*> rows = table.getRows();
+	util.setSchema(table.getSchema());
+	for (int i = 0 ; i != noOfRows; ++i) {
+		Pdblockviewmultirow* tmpRow = (Pdblockviewmultirow*)rows.at(i);
 
 		DBS__Block* newBlock = this->getBlock();
 		string value;
-		if((value = table.getStrValue("t_block.id")) != "" ) {
+		if((value = util.getStrValue(tmpRow, "t_block.id")) != "" ) {
 			newBlock->blockId = this->getInt(util.atoi(value));
 			newBlock->blockName = datasetPathName.substr(1, (datasetPathName.length() - 1) ) + "/#/" + value;
 		}
-		if((value = table.getStrValue("t_block_status.name")) != "" ) {
+		if((value = util.getStrValue(tmpRow, "t_block_status.name")) != "" ) {
 			newBlock->blockStatusName = value;
 		}
-		if((value = table.getStrValue("t_block.files")) != "" ) {
+		if((value = util.getStrValue(tmpRow, "t_block.files")) != "" ) {
 			newBlock->numberOfFiles = this->getInt(util.atoi(value));
 		}
-		if((value = table.getStrValue("t_block.bytes")) != "" ) {
+		if((value = util.getStrValue(tmpRow, "t_block.bytes")) != "" ) {
 			newBlock->numberOfBytes = this->getInt(util.atoi(value));
 		}
 		blockList.push_back(newBlock);
@@ -473,44 +460,37 @@ int* DBSApi::getInt(int value) {
 	int* i = (int*)new int(value);
 	return i;
 }
-
+/*
 int DBSApi::getEventCollectionID(DBS__EventCollection* eventCollection) {
-	cout<<"Inside getEventCollectionID"<<endl;
 	if(eventCollection->collectionId != NULL) {
-		return *eventCollection->collectionId;
+		return eventCollection->collectionId;
 	}
-	EvcollfileviewMultiTable table;
-	Evcollfileviewmultirow aRow;
-	util.setIntValue(&aRow, "t_event_collection.collection_index", eventCollection->collectionIndex);
-	util.setIntValue(&aRow, "t_event_collection.events", eventCollection->numberOfEvents);
-	util.setValue(&aRow, "t_event_collection.name", "STRING", eventCollection->collectionName);
-	util.setValue(&aRow, "t_evcoll_status.name", "STRING", eventCollection->status);
 
-	//Assuming only one file per event collection
-	DBS__File* aFile = eventCollection->fileList.at(0);
-	util.setValue(&aRow, "t_file.guid", "STRING", aFile->guid);
-	util.setValue(&aRow, "t_file.logical_name", "STRING", aFile->logicalFileName);
-	util.setValue(&aRow, "t_file_type.name", "STRING", aFile->fileType);
-	util.setValue(&aRow, "t_file_status.name", "STRING", aFile->fileStatus);
-	util.setIntValue(&aRow, "t_file.inblock", aFile->fileBlockId);
-	util.setIntValue(&aRow, "t_file.filesize", aFile->fileSize);
-	//util.setIntValue(aRow, "t_evcoll_file.evcoll", &eventCollectionID);
+	EvcollviewMultiTable table;
+	Evcollviewmultirow aRow;
+	util.setIntValue(aRow, "t_event_collection.collection_index", eventCollection->collection_index);
+	util.setIntValue(aRow, "t_info_evcoll.events", eventCollection->numberOfEvents);
+	util.setValue(&aRow, "t_info_evcoll.name", "STRING", eventCollection->collectionName);
+	util.setValue(&aRow, "t_parentage_type.name", "STRING", eventCollection->parentageType);
 
-	EvCollFileViewManager manager(this->dbManager);
-
+        EvCollViewManager manager;
 	manager.read(&aRow, &table);
-	if(!table.next()) {
-		throw BizLayerException((string)"No EventCollection found.");
+	int noOfRows = table.getNoOfRows();
+	cout << "Number of Rows from DB is "<<noOfRows<<endl;
+	if(noOfRows > 1) {
+		throw BizLayerException("More than one EventCollection found.");
 	}
-	int value = table.getIntValue("t_event_collection.id");
-	if(table.next()) {
-		throw BizLayerException((string)"More than one EventCollection found.");
+	if(noOfRows == 0) {
+		return -1;
 	}
-	cout<<"EventCollection ID "<<value<<endl;
-	return value;
-
+	Evcollviewmultirow* tmpRow = (Evcollviewmultirow*)rows.at(0);
+	string value;
+	if((value = util.getStrValue(tmpRow, "t_event_collection.id")) != "" ) {
+		return(util.atoi(value));
+	}
+	return -1;
 }
-
+*/
 int DBSApi::insertFiles(int eventCollectionID, vector<DBS__File*> fileList) {
 	FileviewMultiTable table;
 	vector<Fileviewmultirow*> vect;
@@ -520,14 +500,12 @@ int DBSApi::insertFiles(int eventCollectionID, vector<DBS__File*> fileList) {
 		util.setValue(aRow, "t_file.guid", "STRING", aFile->guid);
 		util.setValue(aRow, "t_file.logical_name", "STRING", aFile->logicalFileName);
 		util.setValue(aRow, "t_file_type.name", "STRING", aFile->fileType);
-		util.setValue(aRow, "t_file_status.name", "STRING", aFile->fileStatus);
-		util.setValue(aRow, "t_file.checksum", "STRING", aFile->checksum);
 		util.setIntValue(aRow, "t_file.inblock", aFile->fileBlockId);
 		util.setIntValue(aRow, "t_file.filesize", aFile->fileSize);
 		util.setIntValue(aRow, "t_evcoll_file.evcoll", &eventCollectionID);
 		vect.push_back(aRow);
 	}
-        FileViewManager manager(this->dbManager);
+        FileViewManager manager;
 	return manager.write(vect, &table);
 
 }
@@ -537,21 +515,44 @@ int DBSApi::listFiles(int eventCollectionID, int blockID, vector<DBS__File*>& fi
 	Fileviewmultirow aRow;
 	util.setIntValue(&aRow, "t_evcoll_file.evcoll", &eventCollectionID);
 	util.setIntValue(&aRow, "t_file.inblock", &blockID);
-        FileViewManager manager(this->dbManager);
+        FileViewManager manager;
 	manager.read(&aRow, &aTable);
-	while(aTable.next()) {
-		//this->addFile(tmpRow,fileList);
-		this->addFile(&aTable,fileList);
+	int noOfRows = aTable.getNoOfRows();
+	cout<<"no of rows "<<noOfRows<<endl;
+	vector<Fileviewmultirow*> rows = aTable.getRows();
+	util.setSchema(aTable.getSchema());
+	for( int i = 0 ; i != noOfRows; ++i) {
+		Fileviewmultirow* tmpRow = (Fileviewmultirow*)rows.at(i);
+		this->addFile(tmpRow,fileList);
+		/*DBS__File* newFile = this->getFile();
+		//cout<<"created a new file"<<endl;
+		string value;
+
+		if((value = util.getStrValue(tmpRow, "t_file.guid")) != "" ) {
+			newFile->guid = value;
+		}
+		if((value = util.getStrValue(tmpRow, "t_file.logical_name")) != "" ) {
+			newFile->logicalFileName = value;
+		}
+		if((value = util.getStrValue(tmpRow, "t_file_type.name")) != "" ) {
+			newFile->fileType = value;
+		}
+		if((value = util.getStrValue(tmpRow, "t_file.inblock")) != "" ) {
+			newFile->fileBlockId = this->getInt(util.atoi(value));
+		}
+		if((value = util.getStrValue(tmpRow, "t_file.filesize")) != "" ) {
+			newFile->fileSize = this->getInt(util.atoi(value));
+		}
+		fileList.push_back(newFile);*/
 	}
 	return 1;
 }
 
 
-//int DBSApi::addFile(RowInterface* aRow, vector<DBS__File*>& fileList) {
-int DBSApi::addFile(TableInterface* table, vector<DBS__File*>& fileList) {
+int DBSApi::addFile(RowInterface* aRow, vector<DBS__File*>& fileList) {
 		string value;
 		DBS__File* newFile;
-		if((value = table->getStrValue("t_file.logical_name")) != "" ) {
+		if((value = util.getStrValue(aRow, "t_file.logical_name")) != "" ) {
 			newFile = this->getFile();
 			newFile->logicalFileName = value;
 			cout<<"Creating a new file"<<endl;
@@ -559,19 +560,17 @@ int DBSApi::addFile(TableInterface* table, vector<DBS__File*>& fileList) {
 			cout<<"t_file.logical_name not found "<<endl;
 			return 0;
 		}
-		if((value = table->getStrValue("t_file.guid")) != "" ) {
+		if((value = util.getStrValue(aRow, "t_file.guid")) != "" ) {
 			newFile->guid = value;
 		}
-		if((value = table->getStrValue("t_file_type.name")) != "" ) {
+		
+		if((value = util.getStrValue(aRow, "t_file_type.name")) != "" ) {
 			newFile->fileType = value;
 		}
-		if((value = table->getStrValue("t_file.checksum")) != "" ) {
-			newFile->checksum = value;
-		}
-		if((value = table->getStrValue( "t_file.inblock")) != "" ) {
+		if((value = util.getStrValue(aRow, "t_file.inblock")) != "" ) {
 			newFile->fileBlockId = this->getInt(util.atoi(value));
 		}
-		if((value = table->getStrValue("t_file.filesize")) != "" ) {
+		if((value = util.getStrValue(aRow, "t_file.filesize")) != "" ) {
 			newFile->fileSize = this->getInt(util.atoi(value));
 		}
 		fileList.push_back(newFile);
@@ -595,149 +594,24 @@ int DBSApi::listDataset(std::string datasetPathName, std::vector<std::string>& d
 	if(processedDSName != "*") {
 		util.setValue(&aRow, "t_processed_dataset.name", "STRING", processedDSName);
 	}
-	DatasetPathManager manager(this->dbManager);
-	manager.read(&aRow, &aTable);
+	DatasetPathManager dsPathMgr;
+	dsPathMgr.read(&aRow, &aTable);
+	int noOfRows = aTable.getNoOfRows();
+	cout<<"no of rows are "<<noOfRows<<endl;
 
-	while(aTable.next()) {
+
+	vector<Datasetpathmultirow*> rows = aTable.getRows();
+	util.setSchema(aTable.getSchema());
+	for( int i = 0 ; i != noOfRows; ++i) {
 		
+		Datasetpathmultirow* tmpRow = (Datasetpathmultirow*)rows.at(i);
 		string fullPath = "/" +
-			aTable.getStrValue("t_primary_dataset.name") +
+			util.getStrValue(tmpRow, "t_primary_dataset.name") +
 			"/" +
-			aTable.getStrValue("t_data_tier.name") +
+			util.getStrValue(tmpRow, "t_data_tier.name") +
 			"/" +
-			aTable.getStrValue("t_processed_dataset.name");
+			util.getStrValue(tmpRow, "t_processed_dataset.name");
 		datasetList.push_back(fullPath);
 	}
 
 }
-
-int DBSApi::mergeEventCollections(vector<DBS__EventCollection*> inputEventCollectionList,DBS__EventCollection* outputEventCollection, int& result){
-}
-/*int DBSApi::mergeEventCollections(vector<DBS__EventCollection*> inputEventCollectionList,DBS__EventCollection* outputEventCollection, int& result){
-	if(outputEventCollection == NULL) {
-		throw BizLayerException("outputEventCollection is NULL");
-	}
-	if(inputEventCollectionList.size() < 2) {
-		throw BizLayerException("Less than two input EventCollection given. Expected atleast two");
-	}
-	vector<int> evChildList;
-	vector<int> evParentList;
-	vector<int> evIDList;
-	cout<<"size of inputEventCollectionList "<<inputEventCollectionList.size()<<endl;
-	for(int i = 0; i != inputEventCollectionList.size() ; ++i) {
-		cout<<"Calling getEventCollectionID for "<<i<<endl;
-		evIDList.push_back(this->getEventCollectionID(inputEventCollectionList.at(i)));
-		cout<<"Done calling getEventCollectionID . ID is "<<evIDList.at(i)<<endl;
-	}
-	//Create a New Status called Megred in t_evcoll_status table
-	int statusID = this->createStatus("MERGED");
-	cout<<"statusID "<<statusID<<endl;
-	//Set Status of all input Event Collection as Merged
-	this->updateStatus(evIDList, statusID);	
-
-	for(int i = 0; i != inputEventCollectionList.size() ; ++i) {
-		DBS__EventCollection* aEventCollection = inputEventCollectionList.at(i);
-		//Get Childs of this Event Collection
-		this->getEVChildOrParents(evIDList.at(i), true, evChildList);
-		//Get Parents of this Event Collection
-		this->getEVChildOrParents(evIDList.at(i), false, evParentList);
-	}
-	vector<DBS__EventCollection*> ecToInsert;
-	ecToInsert.push_back(outputEventCollection);
-	int newECID;
-	this->insertEventCollections(ecToInsert, newECID);
-	cout<<"New EC that got inserted has ID "<<newECID<<endl;
-	this->insertEVParents(evParentList, newECID);
-	this->updateEVChilds(evChildList, newECID);
-
-}
-
-int DBSApi::insertEVParents(vector<int> evParentList, int eventCollectionID) {
-	cout<<"Inserting new parents"<<endl;
-	vector<Evcollparentageviewmultirow*> vect;
-	EvcollparentageviewMultiTable table;
-	for(int i = 0; i != evParentList.size() ; ++i) {
-		Evcollparentageviewmultirow* aRow = new Evcollparentageviewmultirow();
-		util.setIntValue(aRow, "t_evcoll_parentage.child", &eventCollectionID);
-		util.setIntValue(aRow, "t_evcoll_parentage.parent", &evParentList.at(i));
-		vect.push_back(aRow);
-	}
-	EvCollParentageViewManager manager(this->dbManager);
-	return manager.write(vect, &table);
-}
-
-int DBSApi::updateEVChilds(vector<int> evChildList, int eventCollectionID) {
-	cout<<"Updating childs"<<endl;
-	vector<Evcollparentageviewmultirow*> vect;
-	EvcollparentageviewMultiTable table;
-	for(int i = 0; i != evChildList.size() ; ++i) {
-		Evcollparentageviewmultirow* aRow = new Evcollparentageviewmultirow();
-		util.setIntValue(aRow, "t_evcoll_parentage.child", &evChildList.at(i));
-		util.setIntValue(aRow, "t_evcoll_parentage.parent", &eventCollectionID);
-		vect.push_back(aRow);
-	}
-	EvCollParentageViewManager manager(this->dbManager);
-	return manager.update(vect, &table);
-}
-
-int DBSApi::updateStatus(vector<int> evIDList, int statusID) {
-	cout<<"Updating the status of EC as "<<statusID<<endl;
-	cout<<"evIDList size is "<<evIDList.size()<<endl;
-	vector<Evcollsingleviewmultirow*> vect;
-	EvcollsingleviewMultiTable table;
-	for(int i = 0; i != evIDList.size() ; ++i) {
-		Evcollsingleviewmultirow* aRow = new Evcollsingleviewmultirow();
-		util.setIntValue(aRow, "t_event_collection.status", &statusID);
-		util.setIntValue(aRow, "t_event_collection.id", &evIDList.at(i));
-		vect.push_back(aRow);
-	}
-       	EvCollSingleViewManager manager(this->dbManager);
-	return manager.update(vect, &table);
-}
-
-int DBSApi::createStatus(string status) {
-	cout<<"Creating a new Status "<<status<<endl;
-	EvcollstatusviewMultiTable table;
-	vector<Evcollstatusviewmultirow*> vect;
-	Evcollstatusviewmultirow* aRow = new Evcollstatusviewmultirow();
-	util.setValue(aRow, "t_evcoll_status.name", "STRING", status);
-	vect.push_back(aRow);
-       	EvCollStatusViewManager manager(this->dbManager);
-	return manager.write(vect, &table);
-}
-
-int DBSApi::getEVChildOrParents(int eventCollectionID, bool type , vector<int>& evChildList) {
-	//type True is Child , type False is Parent
-
-	cout<<"Inside getEVChildOrParents "<<endl;
-	EvcollparentageviewMultiTable table;
-	Evcollparentageviewmultirow aRow;
-	if(type) {
-		util.setIntValue(&aRow, "t_evcoll_parentage.parent", &eventCollectionID);
-	} else {
-		util.setIntValue(&aRow, "t_evcoll_parentage.child", &eventCollectionID);
-	}	
-
-	EvCollParentageViewManager manager(this->dbManager);
-
-	manager.read(&aRow, &table);
-	int noOfRows = table.getNoOfRows();
-	cout << "Number of Rows from DB is "<<noOfRows<<endl;
-	vector<Evcollparentageviewmultirow*> rows = table.getRows();
-	util.setSchema(table.getSchema());
-
-	for(int i = 0; i != noOfRows; ++i) {
-		Evcollparentageviewmultirow* tmpRow = (Evcollparentageviewmultirow*)rows.at(i);
-		string value;
-		if(type) {
-			if((value = util.getStrValue(tmpRow, "t_evcoll_parentage.child")) != "" ) {
-				evChildList.push_back(util.atoi(value));
-			}
-		} else {
-			if((value = util.getStrValue(tmpRow, "t_evcoll_parentage.parent")) != "" ) {
-				evChildList.push_back(util.atoi(value));
-			}
-		}
-	}
-}
-*/

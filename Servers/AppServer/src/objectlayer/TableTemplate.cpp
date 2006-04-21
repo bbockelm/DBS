@@ -38,9 +38,6 @@ TableTemplate<R>::~TableTemplate(){
 	  ++tivIterator )	{
 	  delete *tivIterator;
 	  }*/
-	if(isRs) {
-		delete this->rs;
-	}
 	
 };
 
@@ -105,9 +102,8 @@ string TableTemplate<R>::getStrValue(int index, string name) {
 template <class R>
 void TableTemplate<R>::init() {
   //cout<<"initilizing......"<<endl;
-	static Log l("TableTemplate");
-	this->isRs = false ;
-	TableTemplate::logger = l.getLogger();
+  static Log l("TableTemplate");
+  TableTemplate::logger = l.getLogger();
 	schema = this->schemaNconstraints.schemaNconstraints.getSchema();
 	constraints = this->schemaNconstraints.schemaNconstraints.getConstraints();
 	primaryKeys = this->schemaNconstraints.schemaNconstraints.getPrimaryKeys();
@@ -121,14 +117,13 @@ void TableTemplate<R>::init() {
 	//LOG4CXX_DEBUG(TableTemplate::logger, "table name is set now");
 	schemaOrder = this->schemaNconstraints.schemaNconstraints.getSchemaOrder();
 	util.setSchema(schema);
-	//sql = new SQL(&util);
-	sql = new SQLOracle(&util);
+	sql = new SQL(&util);
 	//cout<<"primary keys "<<endl;
 	primaryKeysReal = util.getPrimaryKeys(schemaOrder->begin(), schemaOrder->end(), multiRefrences->begin(), multiRefrences->end());
 	//cout<<"DONE initilizing......"<<endl;
 };
 
-/*
+
 template <class R>
 Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) {
   Dictionary satisfiedRefrences;
@@ -143,10 +138,9 @@ Dictionary TableTemplate<R>::getSatisfiedRefrences(ResultSet* rs, int rowIndex) 
   }
   return(satisfiedRefrences);
 }
-*/
+
 template <class R>
-//void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
-void TableTemplate<R>::convertIntoRow(ResultSet* rs,  R* tmpRow) {
+void TableTemplate<R>::convertIntoRow(ResultSet* rs, int rowIndex, R* tmpRow) {
   //cout << "Entering convertIntoRow\n"<<endl;
   //NOTE NOTE NOTE
   //COMMENTING Satisfied refrences beacus ether are no MultiRefrences in schema.
@@ -167,8 +161,7 @@ void TableTemplate<R>::convertIntoRow(ResultSet* rs,  R* tmpRow) {
 		if(!util.toSetCol(name, satisfiedRefrences.begin(), satisfiedRefrences.end())) {
 		  continue;
 		} */
-		//string value = rs->getElement(rowIndex, colIndex);
-		string value = rs->getElement(colIndex);
+		string value = rs->getElement(rowIndex, colIndex);
 		if(value.length() == 0) { 
 			continue;
 		}
@@ -258,19 +251,16 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 	bool exceptionOccured = false;
 	string exceptionMessage = "\n";
   
+	//ResultSet * rs = this->doSelect("",whereClause);
+	ResultSet * rs;
 	try {
-		this->rs = this->doSelect("",whereClause);
-		
-		this->isRs = true;
-		this->reSetColNamesInRS(this->rs);
+		rs = this->doSelect("",whereClause);
+		this->reSetColNamesInRS(rs);
     
 		//cout<<"NOOFROWS iS "<<rs->getNoOfRows()<<endl<<endl;
                 //cout<<"HERE>>>>>>>>>>>MESSAGE...comes..."<< endl; 
 		//LOG4CXX_DEBUG(TableTemplate::logger,"Number of Rows returned from DB is "+util.itoa(rs->getNoOfRows()));
-		//for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
-		//int rowIndex = -1;
-		//while(this->rs->next()) {
-			//++rowIndex;
+		for(int rowIndex = 0; rowIndex < rs->getNoOfRows(); rowIndex++) {
 			//cout << "\nChecking.... " << endl;
 			/*bool pKEqual = false;
 			for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
@@ -316,28 +306,27 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 			//if(!pKEqual) {
 				//cout<<"INSERT BEACUSE it is UNEQUAL"<<endl;
 				//LOG4CXX_DEBUG(TableTemplate::logger,"INSERT BEACUSE it is UNEQUAL");
-
-				/*R* tempRow = new R();
+				R* tempRow = new R();
 				//cout<<"calling convert into rows"<<endl;
 				this->convertIntoRow(rs, rowIndex,tempRow);
-				rows.push_back(tempRow);*/
+				rows.push_back(tempRow);
 				//cout<<"line11"<<endl;
 			//}
-		//}
-		//delete rs;
+		}
+		delete rs;
 		//LOG4CXX_DEBUG(TableTemplate::logger,"ROWS BUILD SUCCESFULLY");
 		//rowIterator = rows.begin();
 	} catch (ObjectLayerException &e) {
 		exceptionOccured = true;
 		exceptionMessage += e.report() + "\n";
-		//delete rs;
+		delete rs;
 	} catch (DBException &e) {
 		exceptionOccured = true;
 		exceptionMessage += e.report() + "\n";
 	} catch (exception &e) {
 		exceptionOccured = true;
 		exceptionMessage += e.what();
-		//delete rs;
+		delete rs;
 	}
   
 	//return this->rowIterator;
@@ -352,19 +341,22 @@ vector<R*>& TableTemplate<R>::select(string whereClause=""){
 
 template <class R>
 vector<string> TableTemplate<R>::makeInsertQuery(R* aRow) {
-	vector<string> toReturn;
-	for(Keys_iter i = schemaOrder->begin(); i != schemaOrder->end(); ++i) {
-		if( util.isInMultiRef(*i, multiRefrences->begin(), multiRefrences->end()) ) {
-			for(Dictionary_iter m = multiRefrences->begin(); m != multiRefrences->end(); ++m) {
-				if(*i == util.getTokenAt(m->second,0) ) {
-					//cout<<"Multi FOUND" <<endl;
-					toReturn.push_back( sql->makeInsertQuery(aRow,*i,m->first, schema->begin(), schema->end(), &primaryKeysReal ));
-				}
-			}
-		} else {
-			toReturn.push_back( sql->makeInsertQuery(aRow, *i, "", schema->begin(), schema->end(), &primaryKeysReal ));
-		}
-	}
+  vector<string> toReturn;
+	for(Keys_iter i = schemaOrder->begin();
+	    i != schemaOrder->end(); i++) {
+	  if( util.isInMultiRef(*i, multiRefrences->begin(), multiRefrences->end()) ) {
+	    for(Dictionary_iter m = multiRefrences->begin(); 
+		m != multiRefrences->end(); 
+				m++) {
+	      if(*i == util.getTokenAt(m->second,0) ) {
+		//cout<<"Multi FOUND" <<endl;
+		toReturn.push_back( sql->makeInsertQuery(aRow,*i,m->first, schema->begin(), schema->end()) );
+	      }
+	    }
+	  } else {
+			toReturn.push_back( sql->makeInsertQuery(aRow, *i, "", schema->begin(), schema->end()) );
+	  }
+        }
 	return(toReturn);
 }
 
@@ -379,120 +371,86 @@ vector<string> TableTemplate<R>::makeInsertQuery(R* aRow) {
   }
 }
 */
-template <class R>
-void TableTemplate<R>::executeOperation(string op) {
-	bool exceptionOccured = false;
-	string exceptionMessage = "\n";
-
-	for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
-		R* aRow = (R*)*rowIterator;
-		try{
-			//LOG4CXX_DEBUG(TableTemplate::logger,"");
-			//LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
-			//LOG4CXX_DEBUG(TableTemplate::logger,"Updating Row Number " + util.itoa(i));
-			
-			if(op == "insert") {
-				this->doSmartInsert(aRow);
-			} else if (op == "update") {
-				this->doSmartUpdate(aRow);
-			}
-			//LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
-			//LOG4CXX_DEBUG(TableTemplate::logger,"");
-		} catch (ObjectLayerException &e) {
-			exceptionOccured = true;
-			exceptionMessage +=  e.report() + " \n";
-		} catch (DBException &e) {
-			exceptionOccured = true;
-			exceptionMessage +=  e.report() + " \n";
-		} catch (exception &e) {
-			exceptionOccured = true;
-			exceptionMessage +=  (string)e.what() + (string)" \n";
-		}
-    	}
-	if(exceptionOccured) {
-		//LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
-		throw ObjectLayerException(exceptionMessage);
-	}
-
-}
-
-
-template <class R>
-void TableTemplate<R>::update() {
-	cout<<"inside update of TableTemplate"<<endl;
-	this->executeOperation("update");
-	cout<<"returnning from update in TableTamplate"<<endl;
-}
 
 template <class R>
 void TableTemplate<R>::insert() {
 	//cout<<"inside insert of TableTemplate"<<endl;
-	this->executeOperation("insert");
+	bool exceptionOccured = false;
+	string exceptionMessage = "\n";
+	int i = -1;
+	for(rowIterator = rows.begin(); rowIterator != rows.end(); ++rowIterator ) {
+	  ++i;
+	  R* aRow = (R*)*rowIterator;
+	  try{
+	    //cout<<endl<<"inserting ROW no "<<i<<endl;
+			//cout<<"\n\n\n"<<endl;
+			//LOG4CXX_DEBUG(TableTemplate::logger,"");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"*******************BEGIN**********************");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"Inserting Row Number " + util.itoa(i));
+			this->doSmartInsert(aRow);
+			//LOG4CXX_DEBUG(TableTemplate::logger,"*******************END**********************");
+			//LOG4CXX_DEBUG(TableTemplate::logger,"");
+			//cout<<"\n\n\n"<<endl;
+			//cout<<"out of smart insert"<<endl;
+			//doSimpleInsert(aRow);
+		} catch (ObjectLayerException &e) {
+			exceptionOccured = true;
+			//exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+			exceptionMessage +=  e.report() + " \n";
+		} catch (DBException &e) {
+			exceptionOccured = true;
+			//exceptionMessage += "At row "+util.itoa(i)+": "+ e.report() + " \n";
+			exceptionMessage +=  e.report() + " \n";
+		} catch (exception &e) {
+			exceptionOccured = true;
+			//exceptionMessage += "At row "+util.itoa(i)+": "+ e.what() + " \n";
+			exceptionMessage +=  (string)e.what() + (string)" \n";
+		}
+	  
+    	}
+	//cout<<"OUT of FOR Loop"<<endl;
+	if(exceptionOccured) {
+	  //LOG4CXX_ERROR(TableTemplate::logger,exceptionMessage);
+	  throw ObjectLayerException(exceptionMessage);
+	}
 	//cout<<"returnning from insert in TableTamplate"<<endl;
 }
 
-/*
-template <class R>
-void TableTemplate<R>::doSimpleUpdate(R* aRow) {
-	cout<<"inside doSimpleUpdate"<<endl;
-	bool checkInDB = false;
-	string clause="";
-	cout<<"inside doSmartUpdate of SingleTable"<<endl;
-	if( util.isListOfKeySet(aRow, uniqueKeys->begin(), uniqueKeys->end() , notNullKeys )) {
-		Keys uniqueKeysTmp = *util.getListOfKey(aRow,uniqueKeys->begin(), uniqueKeys->end() , notNullKeys) ;
-		checkInDB = true;
-	} else if( util.isKeySetCheckNull(aRow, primaryKeysReal.begin(), primaryKeysReal.end(), notNullKeys )) {
-		Keys primaryKeysTmp = util.getKey(aRow, primaryKeysReal.begin(), primaryKeysReal.end()) ;
-		checkInDB = true;	
-	}
-	if(!checkInDB) {
-		throw ObjectLayerException("Unique key or Primary key not provided for update\n");
-	}
-
-	sql->makeUpdateQuery(aRow, *i, "", schema->begin(), schema->end(), &primaryKeysReal );
-	if(dbmanager->executeQuery(*qi) != 0) {
-		throw ObjectLayerException("Query: "+*qi+" could not be executed");
-	}
-	
-}
 
 template <class R>
 void TableTemplate<R>::doSimpleInsert(R* aRow) {
-	cout<<"inside doSimpleInsert"<<endl;
+  //cout<<"inside doSimpleInsert"<<endl;
   //LOG4CXX_DEBUG(TableTemplate::logger,"TableTemplate::doSimpleInsert");
   //if(!isNotNullKeySet(aRow)) {
-  //this->fixPKWithSeq(aRow);
+  this->fixPKWithSeq(aRow);
   //this->setTimeInRow(aRow);
   //this->setPersonInRow(aRow);
-
-	//if(!util.isKeySet(aRow, notNullKeys->begin(), notNullKeys->end()) ) {
-	if(!util.isKeySetCheckPK(aRow, notNullKeys->begin(), notNullKeys->end() , &primaryKeysReal) ) {
-		string message = "Coloumn name "+*util.getNullKey(aRow, notNullKeys->begin(), notNullKeys->end())+" is NULL";
+  if(!util.isKeySet(aRow, notNullKeys->begin(), notNullKeys->end()) ) {
+    string message = "Coloumn name "+*util.getNullKey(aRow, notNullKeys->begin(), notNullKeys->end())+" is NULL";
     //LOG4CXX_ERROR(TableTemplate::logger,message);
-		throw ObjectLayerException(message);
+    throw ObjectLayerException(message);
     
-	}
+  }
+  //this->fixPKWithSeq(aRow);
   //if(isPrimaryKeySet(aRow)) {
   //if( util.isKeySet(aRow, primaryKeys->begin(), primaryKeys->end()) ) {
-	cout<<"this->makeInsertQuery(aRow)"<<endl;
-  //if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end())) {
-	vector<string> strQuery = this->makeInsertQuery(aRow);
-	typedef vector<string>::iterator QueryIter;
-	for(QueryIter qi = strQuery.begin(); qi != strQuery.end(); ++qi ) {
-		//cout<<"Query to execute is "<<endl<<*qi<<endl;
-		//LOG4CXX_INFO(TableTemplate::logger,"Query is "+*qi);
-		int returnCode = dbmanager->executeQuery(*qi);
-		if(returnCode != 0) {
-			throw ObjectLayerException("Query: "+*qi+" could not be executed");
+  if( util.isKeySet(aRow, primaryKeysReal.begin(), primaryKeysReal.end())) {
+    vector<string> strQuery = this->makeInsertQuery(aRow);
+    typedef vector<string>::iterator QueryIter;
+		for(QueryIter qi = strQuery.begin(); qi != strQuery.end(); ++qi ) {
+		  //cout<<"Query to execute is "<<endl<<*qi<<endl;
+		  
+		  //LOG4CXX_INFO(TableTemplate::logger,"Query is "+*qi);
+		  int returnCode = dbmanager->executeQuery(*qi);
+		  if(returnCode != 0) {
+		    throw ObjectLayerException("Query: "+*qi+" could not be executed");
+		  }
 		}
-		this->fixPKWithSeq(aRow);
-	}
-//Set primary key now again in the row
-//  } else {
-  //  throw ObjectLayerException("Sequencers falied to set Primary key ");
-  //}
+  } else {
+    throw ObjectLayerException("Sequencers falied to set Primary key ");
+  }
 }
-*/
+
 /*
 This is very important . This will make sure the rows are emptied so that they do not get deleted from ::insertSingle
 */
@@ -504,9 +462,9 @@ void TableTemplate<R>::delRows() {
 
 
 template <class R>
-void TableTemplate<R>::operationSingle(R* aRow, string name, string fkey, string op) {
-	name += "row";
-	// cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
+void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
+  name += "row";
+ // cout<<"name is "<<name<<" fkey is "<<fkey<<endl;
 	////LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
 	//LOG4CXX_INFO(TableTemplate::logger,"Table Name is "+ name + " fkey is " + fkey);
 	//LOG4CXX_INFO(TableTemplate::logger,"------------------------------------------");
@@ -515,18 +473,14 @@ void TableTemplate<R>::operationSingle(R* aRow, string name, string fkey, string
         //cout<<"POST RowInterface* subRow"<<endl;
 	//LOG4CXX_INFO(TableTemplate::logger,"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey)");
 	//cout<<"RowInterface* subRow = (RowInterface*)aRow->getConstituentRow(name,fkey) "<<endl;	  
-	TableFactory tf;
-	//cout<<"calling tf.getTableObject"<<endl;
-	TableInterface* ti = tf.getTableObject(name);
-	ti->setDBManager(dbmanager);
-	//cout<<"Done calling tf.getTableObject"<<endl;
-	ti->addRow(subRow);
+TableFactory tf;
+  //cout<<"calling tf.getTableObject"<<endl;
+  TableInterface* ti = tf.getTableObject(name);
+  ti->setDBManager(dbmanager);
+  //cout<<"Done calling tf.getTableObject"<<endl;
+  ti->addRow(subRow);
 	try {
-		if(op == "insert") {
-			ti->insert();
-		} else if (op == "update") {
-			ti->update();
-		}
+		ti->insert();
 	} catch (ObjectLayerException &e) {
 		ti->delRows();
 		delete ti;
@@ -534,123 +488,64 @@ void TableTemplate<R>::operationSingle(R* aRow, string name, string fkey, string
 		util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
 		throw ObjectLayerException(e.report());
 	}
-	ti->delRows();
-	delete ti;
+  ti->delRows();
+  delete ti;
   
-	util.equatePKWithRef(aRow, refrences->begin(), refrences->end() );
-	util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
-	//LOG4CXX_INFO(TableTemplate::logger,"Out from insertSingle");
+  util.equatePKWithRef(aRow, refrences->begin(), refrences->end() );
+  util.equatePKWithMultiRef(aRow, multiRefrences->begin(), multiRefrences->end());
+  //LOG4CXX_INFO(TableTemplate::logger,"Out from insertSingle");
+  
 }
 
 
-template <class R>
-void TableTemplate<R>::insertSingle(R* aRow, string name, string fkey) {
-	this->operationSingle(aRow, name, fkey, "insert");
-}
-template <class R>
-void TableTemplate<R>::updateSingle(R* aRow, string name, string fkey) {
-	this->operationSingle(aRow, name, fkey, "update");
-}
 
 
 template <class R>
-void TableTemplate<R>::operationMulti(R* aRow, string name, string op) {
-	bool exceptionOccured = false;
-	string exceptionMessage = "\n";
+void TableTemplate<R>::insertMulti(R* aRow, string name) {
+  bool exceptionOccured = false;
+  string exceptionMessage = "\n";
   
 	for(Dictionary_iter m = multiRefrences->begin(); m != multiRefrences->end(); ++m) {
-		try {
-			if(name == util.getTokenAt(m->second,0) ) {
-				if(op == "insert") {
-					this->insertSingle(aRow, name, m->first);
-				} else if (op == "update") {
-					this->updateSingle(aRow, name, m->first);
-				}
-				
-			}
-		} catch (ObjectLayerException &e) {
+	  try {
+	    //cout<<"checking name "<<name<<" with util.getTokenAt(m->second,0) "<<util.getTokenAt(m->second,0)<<endl;
+	    if(name == util.getTokenAt(m->second,0) ) {
+	     this->insertSingle(aRow, name, m->first);
+	    }
+	  } catch (ObjectLayerException &e) {
 			exceptionOccured = true;
 			exceptionMessage += name+": "+ e.report() + " \n";
-		} catch (DBException &e) {
-			exceptionOccured = true;
-			exceptionMessage += name+": "+ e.report() + " \n";
-		} catch (exception &e) {
+	  } catch (DBException &e) {
+	    exceptionOccured = true;
+	    exceptionMessage += name+": "+ e.report() + " \n";
+	  } catch (exception &e) {
 			exceptionOccured = true;
 			exceptionMessage += name+": "+ e.what() + " \n";
-		}
+	  }
+	  
 	}
 	if(exceptionOccured) {
 		throw ObjectLayerException(exceptionMessage);
 	}
 }
 
-
-
 template <class R>
-void TableTemplate<R>::insertMulti(R* aRow, string name) {
-	this->operationMulti(aRow, name, "insert");
-}
-template <class R>
-void TableTemplate<R>::updateMulti(R* aRow, string name) {
-	this->operationMulti(aRow, name, "update");
-}
-
-template <class R>
-string TableTemplate<R>::getStrValue(string colName) {
-	//cout<<"::getStrValue colName "<<colName<<endl;
-	//cout<<"this->rs->getColIndex(colName) "<<this->rs->getColIndex(colName)<<endl;
-	return this->rs->getElement(this->rs->getColIndex(colName));
-}
-
-template <class R>
-int TableTemplate<R>::getIntValue(string colName) {
-	//cout<<"::getIntValue colName "<<colName<<endl;
-	return util.atoi(this->rs->getElement(this->rs->getColIndex(colName)));
-}
-
-template <class R>
-void TableTemplate<R>::reset() {
-	this->rs->reset();
-}
-
-template <class R>
-bool TableTemplate<R>::next() {
-	this->rs->next();
+void TableTemplate<R>::update(){
+	  cout << "Hello I am in Update" << endl;
 }
 
 template <class R>
 int TableTemplate<R>::getSeqValue(string tableName, string colName) {
 	ResultSet* rs = this->doSelect(sql->makeSeqQuery(tableName,colName),"");
-	int intValue = -1;
-	if(rs->next()) {
-		intValue  = util.atoi(rs->getElement(0));
+	if(rs->getNoOfRows() == 0) {
+		delete rs;
+		return 0;
 	}
+	int intValue  = atoi(rs->getElement(0,0).c_str());
 	//cout<<"intValue is "<<intValue<<endl;
 	delete rs;
 	return ++intValue;
 	
 }
-
-template <class R>
-int TableTemplate<R>::getSeqValue(R* aRow, string tableName, string colName) {
-	int intValue = 0;
-	if( util.isListOfKeySet(aRow, uniqueKeys->begin(), uniqueKeys->end() , notNullKeys )) {
-		cout<<"I GOT UNIQUE KEY"<<endl;
-		Keys uniqueKeysTmp = *util.getListOfKey(aRow,uniqueKeys->begin(), uniqueKeys->end() , notNullKeys) ;
-		string clause = sql->makeClause(aRow, uniqueKeysTmp.begin() , uniqueKeysTmp.end(), multiRefrences->begin(), multiRefrences->end());
-		ResultSet* rs = this->doSelect(sql->makeSeqQuery(tableName, colName, clause),"");
-		//cout<<"QUERY is "<<sql->makeSeqQuery(tableName, colName, clause)<<endl;
-		while(rs->next()) {
-			intValue  = util.atoi(rs->getElement(0));
-		}
-			
-		delete rs;
-
-	}
-	//cout<<"intValue is "<<intValue<<endl;
-	return intValue;
-}
-
 
 template <class R>
 void TableTemplate<R>::fixPKWithSeq(R* aRow) {
@@ -666,9 +561,7 @@ void TableTemplate<R>::fixPKWithSeq(R* aRow) {
 			//LOG4CXX_ERROR(TableTemplate::logger,"Sequencer for non int type is invalid");
 			continue;
 		}
-		//int value = this->getSeqValue(util.getTokenAt(*i, 0), util.getTokenAt(*i, 1));
-			
-		int value = this->getSeqValue(aRow, util.getTokenAt(*i, 0), util.getTokenAt(*i, 1));	
+		int value = this->getSeqValue(util.getTokenAt(*i, 0), util.getTokenAt(*i, 1));	
 		//int value = 1;	
 		cout<<"Setting sequencer value of "<<*i<<" "<<value<<endl;
 		//LOG4CXX_DEBUG(TableTemplate::logger,"Setting sequencer value of " + *i);
@@ -708,20 +601,61 @@ void TableTemplate<R>::setPersonInRow(R* aRow) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template TableTemplate<T_Personrow>;
 template TableTemplate<T_Object_Historyrow>;
-template TableTemplate<T_Parameter_Setrow>;
 template TableTemplate<T_App_Familyrow>;
 template TableTemplate<T_Applicationrow>;
 template TableTemplate<T_App_Configrow>;
 template TableTemplate<T_Data_Tierrow>;
-template TableTemplate<T_Parentage_Typerow>;
-template TableTemplate<T_Evcoll_Statusrow>;
 template TableTemplate<T_Primary_Datasetrow>;
-template TableTemplate<T_Processing_Namerow>;
-template TableTemplate<T_Processingrow>;
+template TableTemplate<T_Processing_Pathrow>;
 template TableTemplate<T_Processed_Datasetrow>;
 template TableTemplate<T_Event_Collectionrow>;
+template TableTemplate<T_Parentage_Typerow>;
 template TableTemplate<T_Evcoll_Parentagerow>;
 template TableTemplate<T_Block_Statusrow>;
 template TableTemplate<T_Blockrow>;
@@ -729,6 +663,7 @@ template TableTemplate<T_File_Statusrow>;
 template TableTemplate<T_File_Typerow>;
 template TableTemplate<T_Filerow>;
 template TableTemplate<T_Evcoll_Filerow>;
+template TableTemplate<T_Info_Evcollrow>;
 template TableTemplate<Datasetpathmultirow>;
 template TableTemplate<Evcollviewmultirow>;
 template TableTemplate<Evcollviewnoparentmultirow>;
@@ -739,7 +674,3 @@ template TableTemplate<Primarydatasetmultirow>;
 template TableTemplate<Processingpathmultirow>;
 template TableTemplate<Crabevcollfileviewmultirow>;
 template TableTemplate<Crabevcollviewmultirow>;
-template TableTemplate<Evcollfileviewmultirow>;
-template TableTemplate<Evcollparentageviewmultirow>;
-template TableTemplate<Evcollstatusviewmultirow>;
-template TableTemplate<Evcollsingleviewmultirow>;

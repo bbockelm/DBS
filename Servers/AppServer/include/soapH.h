@@ -157,7 +157,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__PrimaryDataset(struct soap*, int, int,
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Fault
-#define SOAP_TYPE_SOAP_ENV__Fault (62)
+#define SOAP_TYPE_SOAP_ENV__Fault (59)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Fault(struct soap*, const struct SOAP_ENV__Fault *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Fault(struct soap*, struct SOAP_ENV__Fault *);
@@ -175,7 +175,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Fault(struct soap*, int, int, voi
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Reason
-#define SOAP_TYPE_SOAP_ENV__Reason (61)
+#define SOAP_TYPE_SOAP_ENV__Reason (58)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Reason(struct soap*, const struct SOAP_ENV__Reason *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Reason(struct soap*, struct SOAP_ENV__Reason *);
@@ -193,7 +193,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Reason(struct soap*, int, int, vo
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Detail
-#define SOAP_TYPE_SOAP_ENV__Detail (60)
+#define SOAP_TYPE_SOAP_ENV__Detail (57)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Detail(struct soap*, const struct SOAP_ENV__Detail *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Detail(struct soap*, struct SOAP_ENV__Detail *);
@@ -211,7 +211,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Detail(struct soap*, int, int, vo
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Code
-#define SOAP_TYPE_SOAP_ENV__Code (58)
+#define SOAP_TYPE_SOAP_ENV__Code (55)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Code(struct soap*, const struct SOAP_ENV__Code *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Code(struct soap*, struct SOAP_ENV__Code *);
@@ -229,7 +229,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Code(struct soap*, int, int, void
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_SOAP_ENV__Header
-#define SOAP_TYPE_SOAP_ENV__Header (57)
+#define SOAP_TYPE_SOAP_ENV__Header (54)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_SOAP_ENV__Header(struct soap*, const struct SOAP_ENV__Header *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_SOAP_ENV__Header(struct soap*, struct SOAP_ENV__Header *);
@@ -245,7 +245,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_SOAP_ENV__Header(struct soap*, int, int, vo
 #endif
 
 #ifndef SOAP_TYPE_DBS__listDataset
-#define SOAP_TYPE_DBS__listDataset (54)
+#define SOAP_TYPE_DBS__listDataset (51)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__listDataset(struct soap*, const struct DBS__listDataset *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__listDataset(struct soap*, struct DBS__listDataset *);
@@ -259,7 +259,7 @@ SOAP_FMAC3 struct DBS__listDataset * SOAP_FMAC4 soap_instantiate_DBS__listDatase
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__listDataset(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_DBS__listDatasetResponse
-#define SOAP_TYPE_DBS__listDatasetResponse (53)
+#define SOAP_TYPE_DBS__listDatasetResponse (50)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__listDatasetResponse(struct soap*, const struct DBS__listDatasetResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__listDatasetResponse(struct soap*, struct DBS__listDatasetResponse *);
@@ -273,7 +273,7 @@ SOAP_FMAC3 struct DBS__listDatasetResponse * SOAP_FMAC4 soap_instantiate_DBS__li
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__listDatasetResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_DBS__getDatasetFileBlocks
-#define SOAP_TYPE_DBS__getDatasetFileBlocks (49)
+#define SOAP_TYPE_DBS__getDatasetFileBlocks (46)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__getDatasetFileBlocks(struct soap*, const struct DBS__getDatasetFileBlocks *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__getDatasetFileBlocks(struct soap*, struct DBS__getDatasetFileBlocks *);
@@ -287,7 +287,7 @@ SOAP_FMAC3 struct DBS__getDatasetFileBlocks * SOAP_FMAC4 soap_instantiate_DBS__g
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__getDatasetFileBlocks(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_DBS__getDatasetFileBlocksResponse
-#define SOAP_TYPE_DBS__getDatasetFileBlocksResponse (48)
+#define SOAP_TYPE_DBS__getDatasetFileBlocksResponse (45)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__getDatasetFileBlocksResponse(struct soap*, const struct DBS__getDatasetFileBlocksResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__getDatasetFileBlocksResponse(struct soap*, struct DBS__getDatasetFileBlocksResponse *);
@@ -301,7 +301,7 @@ SOAP_FMAC3 struct DBS__getDatasetFileBlocksResponse * SOAP_FMAC4 soap_instantiat
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__getDatasetFileBlocksResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_DBS__getDatasetContents
-#define SOAP_TYPE_DBS__getDatasetContents (46)
+#define SOAP_TYPE_DBS__getDatasetContents (43)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__getDatasetContents(struct soap*, const struct DBS__getDatasetContents *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__getDatasetContents(struct soap*, struct DBS__getDatasetContents *);
@@ -315,7 +315,7 @@ SOAP_FMAC3 struct DBS__getDatasetContents * SOAP_FMAC4 soap_instantiate_DBS__get
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__getDatasetContents(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_DBS__getDatasetContentsResponse
-#define SOAP_TYPE_DBS__getDatasetContentsResponse (45)
+#define SOAP_TYPE_DBS__getDatasetContentsResponse (42)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__getDatasetContentsResponse(struct soap*, const struct DBS__getDatasetContentsResponse *);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__getDatasetContentsResponse(struct soap*, struct DBS__getDatasetContentsResponse *);
@@ -327,34 +327,6 @@ SOAP_FMAC5 struct DBS__getDatasetContentsResponse * SOAP_FMAC6 soap_new_DBS__get
 SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__getDatasetContentsResponse(struct soap*, struct DBS__getDatasetContentsResponse*);
 SOAP_FMAC3 struct DBS__getDatasetContentsResponse * SOAP_FMAC4 soap_instantiate_DBS__getDatasetContentsResponse(struct soap*, int, const char*, const char*, size_t*);
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__getDatasetContentsResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
-
-#ifndef SOAP_TYPE_DBS__mergeEventCollections
-#define SOAP_TYPE_DBS__mergeEventCollections (41)
-#endif
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__mergeEventCollections(struct soap*, const struct DBS__mergeEventCollections *);
-SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__mergeEventCollections(struct soap*, struct DBS__mergeEventCollections *);
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__mergeEventCollections(struct soap*, const struct DBS__mergeEventCollections *, const char*, const char*);
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__mergeEventCollections(struct soap*, const char*, int, const struct DBS__mergeEventCollections *, const char*);
-SOAP_FMAC3 struct DBS__mergeEventCollections * SOAP_FMAC4 soap_get_DBS__mergeEventCollections(struct soap*, struct DBS__mergeEventCollections *, const char*, const char*);
-SOAP_FMAC3 struct DBS__mergeEventCollections * SOAP_FMAC4 soap_in_DBS__mergeEventCollections(struct soap*, const char*, struct DBS__mergeEventCollections *, const char*);
-SOAP_FMAC5 struct DBS__mergeEventCollections * SOAP_FMAC6 soap_new_DBS__mergeEventCollections(struct soap*, int);
-SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__mergeEventCollections(struct soap*, struct DBS__mergeEventCollections*);
-SOAP_FMAC3 struct DBS__mergeEventCollections * SOAP_FMAC4 soap_instantiate_DBS__mergeEventCollections(struct soap*, int, const char*, const char*, size_t*);
-SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__mergeEventCollections(struct soap*, int, int, void*, size_t, const void*, size_t);
-
-#ifndef SOAP_TYPE_DBS__mergeEventCollectionsResponse
-#define SOAP_TYPE_DBS__mergeEventCollectionsResponse (40)
-#endif
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_DBS__mergeEventCollectionsResponse(struct soap*, const struct DBS__mergeEventCollectionsResponse *);
-SOAP_FMAC3 void SOAP_FMAC4 soap_default_DBS__mergeEventCollectionsResponse(struct soap*, struct DBS__mergeEventCollectionsResponse *);
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_DBS__mergeEventCollectionsResponse(struct soap*, const struct DBS__mergeEventCollectionsResponse *, const char*, const char*);
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_DBS__mergeEventCollectionsResponse(struct soap*, const char*, int, const struct DBS__mergeEventCollectionsResponse *, const char*);
-SOAP_FMAC3 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC4 soap_get_DBS__mergeEventCollectionsResponse(struct soap*, struct DBS__mergeEventCollectionsResponse *, const char*, const char*);
-SOAP_FMAC3 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC4 soap_in_DBS__mergeEventCollectionsResponse(struct soap*, const char*, struct DBS__mergeEventCollectionsResponse *, const char*);
-SOAP_FMAC5 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC6 soap_new_DBS__mergeEventCollectionsResponse(struct soap*, int);
-SOAP_FMAC5 void SOAP_FMAC6 soap_delete_DBS__mergeEventCollectionsResponse(struct soap*, struct DBS__mergeEventCollectionsResponse*);
-SOAP_FMAC3 struct DBS__mergeEventCollectionsResponse * SOAP_FMAC4 soap_instantiate_DBS__mergeEventCollectionsResponse(struct soap*, int, const char*, const char*, size_t*);
-SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__mergeEventCollectionsResponse(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_DBS__insertEventCollections
 #define SOAP_TYPE_DBS__insertEventCollections (38)
@@ -471,7 +443,7 @@ SOAP_FMAC3 void SOAP_FMAC4 soap_copy_DBS__createPrimaryDatasetResponse(struct so
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Reason
-#define SOAP_TYPE_PointerToSOAP_ENV__Reason (64)
+#define SOAP_TYPE_PointerToSOAP_ENV__Reason (61)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToSOAP_ENV__Reason(struct soap*, struct SOAP_ENV__Reason *const*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerToSOAP_ENV__Reason(struct soap*, struct SOAP_ENV__Reason *const*, const char*, const char*);
@@ -484,7 +456,7 @@ SOAP_FMAC3 struct SOAP_ENV__Reason ** SOAP_FMAC4 soap_in_PointerToSOAP_ENV__Reas
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Detail
-#define SOAP_TYPE_PointerToSOAP_ENV__Detail (63)
+#define SOAP_TYPE_PointerToSOAP_ENV__Detail (60)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToSOAP_ENV__Detail(struct soap*, struct SOAP_ENV__Detail *const*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerToSOAP_ENV__Detail(struct soap*, struct SOAP_ENV__Detail *const*, const char*, const char*);
@@ -497,7 +469,7 @@ SOAP_FMAC3 struct SOAP_ENV__Detail ** SOAP_FMAC4 soap_in_PointerToSOAP_ENV__Deta
 #ifndef WITH_NOGLOBAL
 
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Code
-#define SOAP_TYPE_PointerToSOAP_ENV__Code (59)
+#define SOAP_TYPE_PointerToSOAP_ENV__Code (56)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_PointerToSOAP_ENV__Code(struct soap*, struct SOAP_ENV__Code *const*);
 SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerToSOAP_ENV__Code(struct soap*, struct SOAP_ENV__Code *const*, const char*, const char*);
@@ -600,7 +572,7 @@ SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_string(struct soap*, char **, const char*
 SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_string(struct soap*, const char*, char **, const char*);
 
 #ifndef SOAP_TYPE_std__vectorTemplateOfstd__string
-#define SOAP_TYPE_std__vectorTemplateOfstd__string (50)
+#define SOAP_TYPE_std__vectorTemplateOfstd__string (47)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_std__vectorTemplateOfstd__string(struct soap*, const std::vector<std::string >*);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_std__vectorTemplateOfstd__string(struct soap*, std::vector<std::string >*);
@@ -612,7 +584,7 @@ SOAP_FMAC3 std::vector<std::string > * SOAP_FMAC4 soap_instantiate_std__vectorTe
 SOAP_FMAC3 void SOAP_FMAC4 soap_copy_std__vectorTemplateOfstd__string(struct soap*, int, int, void*, size_t, const void*, size_t);
 
 #ifndef SOAP_TYPE_std__vectorTemplateOfPointerToDBS__Block
-#define SOAP_TYPE_std__vectorTemplateOfPointerToDBS__Block (42)
+#define SOAP_TYPE_std__vectorTemplateOfPointerToDBS__Block (39)
 #endif
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_std__vectorTemplateOfPointerToDBS__Block(struct soap*, const std::vector<DBS__Block * >*);
 SOAP_FMAC3 void SOAP_FMAC4 soap_default_std__vectorTemplateOfPointerToDBS__Block(struct soap*, std::vector<DBS__Block * >*);

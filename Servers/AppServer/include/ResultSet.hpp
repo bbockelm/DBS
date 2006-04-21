@@ -3,19 +3,13 @@
 
 #include <string>
 #include <vector>
-#include "DBUtil.hpp"
-#include <sql.h>
-#include <sqlext.h>
-#include <sqltypes.h>
-#include <stdlib.h>
-#include <stdio.h>
+
 
 /**
 * A ResultSet Class
 * This class holds all the data indexed by rows and columns that is returned by executing the sql queries.
 * There are methods to retrive and set the data at any particular index. It also holds the column names of the columns fetched from the database.
 */
-
 class ResultSet {
 	private:
 	int noOfCols;/* An integer to store the number of columns in this ResultSet */
@@ -23,14 +17,7 @@ class ResultSet {
 	std::vector<std::string> data; /*A vector of string to hold the data of the ResultSet */
 	std::vector<std::string> colName; /* A vector of string to hold colNames retuned from database */
 	typedef std::vector<std::string>::iterator ColIterator; /*Iterator for vector of colNames*/
-	SQLCHAR** buff;
-	SQLINTEGER* len;
-	SQLINTEGER* buffLen;
-	SQLINTEGER returnCode;
-	SQLHSTMT stmtHandle;// Handle SQL Statement
-	SQLHDBC connHandle;
-	DBUtil dbUtil;
-	//DBManagement* dbManager;
+
 	
 	public:
 
@@ -39,16 +26,13 @@ class ResultSet {
 	* @param noOfCols an integer that represents the number of coloums in the ResultSet.
 	*/
 
-	//ResultSet(int noOfRows, int noOfCols);
+	ResultSet(int noOfRows, int noOfCols);
 
       
         //Anzar is adding these three functions.
 	ResultSet();
-	//ResultSet(DBManagement* dbManager, SQLHSTMT stmtHandle);
-	ResultSet(SQLHDBC connHandle, SQLHSTMT stmtHandle);
         void setNoOfRows(int); 
         void setNoOfCols(int);
-	//void setStmtHandle(SQLHSTMT stmtHandle);
 	/**
 	* A default destructor . 
 	*/
@@ -61,9 +45,7 @@ class ResultSet {
 	* @return a string representing the actual value of the ResultSet at the given index.
 	*/
 	std::string ResultSet::getElement(int row, int col);
-	std::string getElement(int col);
-	bool next();
-	void reset();
+	
 	/*
 	* This method is to fetch colName at the give index
 	* @param index at which the colName needs to be fetched.

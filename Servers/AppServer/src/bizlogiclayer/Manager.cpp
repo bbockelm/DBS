@@ -5,13 +5,10 @@
 #include "DBException.hpp"
 #include "TableInterface.hpp"
 #include "Log.hpp"
-Manager::Manager(DBManagement* dbManager){
-	this->dbManager = dbManager;
-}
 
 Manager::Manager(){
   //this->dbManager = new DBManagement("mydsn", "anzar", "");
-	/*try {
+	try {
 		static Log l("Manager");
 		Manager::logger = l.getLogger();
 		Configuration* conf = Configuration::instance();
@@ -22,7 +19,7 @@ Manager::Manager(){
 	} catch (DBException &e)  {
 		//LOG4CXX_DEBUG(logger,e.report());
 		throw BizLayerException(e.report());
-	}*/
+	}
 
 }
 
@@ -35,7 +32,6 @@ int Manager::doWrite(TableInterface* inTable, string name) {
 	}
 	return 0;
 }
-
 
 void Manager::copyAndAddRow(TableInterface* table, RowInterface* aRow, RowInterface* aNewRow) {
 	util.setSchema(table->getSchema());
@@ -65,27 +61,6 @@ int Manager::doInsert(TableInterface* inTable) {
 	return 1;  //success
 }
 
-int Manager::doUpdate(TableInterface* inTable, string name) {
-	inTable->setDBManager(dbManager);
-	dbManager->beginTransection();
-	try {
-		//cout<<"calling insert for inTable on Manager"<<endl;
-		inTable->update();
-		dbManager->commit();
-	} catch (ObjectLayerException &e)  {
-		cout<<"Rolling back the whole transection"<<endl;
-		dbManager->rollback();
-		cout<<"Exception is "<<e.report()<<endl;
-		throw BizLayerException(e.report());
-	}
-	dbManager->endTransection();
-	if(inTable->getNoOfRows() > 0) {
-		string value = inTable->getStrValue(0, name);
-		return util.atoi(value);
-	}
-	return 1;
-}
-
 
 
 string Manager::makeClause(TableInterface* inTable, RowInterface* aRow) {
@@ -104,8 +79,8 @@ string Manager::makeClause(TableInterface* inTable, RowInterface* aRow) {
 
 void Manager::cleanup() {
 	//cout<<"Manager::cleanup() DELETING dbManager"<<endl;
-        /*this->dbManager->close();
-        delete this->dbManager;*/
+        this->dbManager->close();
+        delete this->dbManager;
 }
  
 Manager::~Manager() {

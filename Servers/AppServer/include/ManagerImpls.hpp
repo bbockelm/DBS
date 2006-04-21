@@ -12,10 +12,9 @@ class DatasetPathManager : public Manager {
 
 public:
 
-        DatasetPathManager(DBManagement* dbManager);
+        DatasetPathManager();
         ~DatasetPathManager();
         int write(std::vector<Datasetpathmultirow*> rowVector, DatasetpathMultiTable* table);
-        int update(std::vector<Datasetpathmultirow*> rowVector, DatasetpathMultiTable* table);
         int read(Datasetpathmultirow* aRow, DatasetpathMultiTable* table);
 };
 
@@ -27,10 +26,9 @@ class EvCollViewManager : public Manager {
 
 public:
 
-        EvCollViewManager(DBManagement* dbManager);
+        EvCollViewManager();
         ~EvCollViewManager();
         int write(std::vector<Evcollviewmultirow*> rowVector, EvcollviewMultiTable* table);
-        int update(std::vector<Evcollviewmultirow*> rowVector, EvcollviewMultiTable* table);
         int read(Evcollviewmultirow* aRow, EvcollviewMultiTable* table);
 };
 
@@ -42,10 +40,9 @@ class EvCollViewNoParentManager : public Manager {
 
 public:
 
-        EvCollViewNoParentManager(DBManagement* dbManager);
+        EvCollViewNoParentManager();
         ~EvCollViewNoParentManager();
         int write(std::vector<Evcollviewnoparentmultirow*> rowVector, EvcollviewnoparentMultiTable* table);
-        int update(std::vector<Evcollviewnoparentmultirow*> rowVector, EvcollviewnoparentMultiTable* table);
         int read(Evcollviewnoparentmultirow* aRow, EvcollviewnoparentMultiTable* table);
 };
 
@@ -57,10 +54,9 @@ class FileViewManager : public Manager {
 
 public:
 
-        FileViewManager(DBManagement* dbManager);
+        FileViewManager();
         ~FileViewManager();
         int write(std::vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table);
-        int update(std::vector<Fileviewmultirow*> rowVector, FileviewMultiTable* table);
         int read(Fileviewmultirow* aRow, FileviewMultiTable* table);
 };
 
@@ -72,10 +68,9 @@ class PDBlockViewManager : public Manager {
 
 public:
 
-        PDBlockViewManager(DBManagement* dbManager);
+        PDBlockViewManager();
         ~PDBlockViewManager();
         int write(std::vector<Pdblockviewmultirow*> rowVector, PdblockviewMultiTable* table);
-        int update(std::vector<Pdblockviewmultirow*> rowVector, PdblockviewMultiTable* table);
         int read(Pdblockviewmultirow* aRow, PdblockviewMultiTable* table);
 };
 
@@ -87,10 +82,9 @@ class BlockViewManager : public Manager {
 
 public:
 
-        BlockViewManager(DBManagement* dbManager);
+        BlockViewManager();
         ~BlockViewManager();
         int write(std::vector<Blockviewmultirow*> rowVector, BlockviewMultiTable* table);
-        int update(std::vector<Blockviewmultirow*> rowVector, BlockviewMultiTable* table);
         int read(Blockviewmultirow* aRow, BlockviewMultiTable* table);
 };
 
@@ -102,10 +96,9 @@ class PrimaryDatasetManager : public Manager {
 
 public:
 
-        PrimaryDatasetManager(DBManagement* dbManager);
+        PrimaryDatasetManager();
         ~PrimaryDatasetManager();
         int write(std::vector<Primarydatasetmultirow*> rowVector, PrimarydatasetMultiTable* table);
-        int update(std::vector<Primarydatasetmultirow*> rowVector, PrimarydatasetMultiTable* table);
         int read(Primarydatasetmultirow* aRow, PrimarydatasetMultiTable* table);
 };
 
@@ -117,10 +110,9 @@ class ProcessingPathManager : public Manager {
 
 public:
 
-        ProcessingPathManager(DBManagement* dbManager);
+        ProcessingPathManager();
         ~ProcessingPathManager();
         int write(std::vector<Processingpathmultirow*> rowVector, ProcessingpathMultiTable* table);
-        int update(std::vector<Processingpathmultirow*> rowVector, ProcessingpathMultiTable* table);
         int read(Processingpathmultirow* aRow, ProcessingpathMultiTable* table);
 };
 
@@ -132,10 +124,9 @@ class CrabEvCollFileViewManager : public Manager {
 
 public:
 
-        CrabEvCollFileViewManager(DBManagement* dbManager);
+        CrabEvCollFileViewManager();
         ~CrabEvCollFileViewManager();
         int write(std::vector<Crabevcollfileviewmultirow*> rowVector, CrabevcollfileviewMultiTable* table);
-        int update(std::vector<Crabevcollfileviewmultirow*> rowVector, CrabevcollfileviewMultiTable* table);
         int read(Crabevcollfileviewmultirow* aRow, CrabevcollfileviewMultiTable* table);
 };
 
@@ -147,71 +138,10 @@ class CrabEvCollViewManager : public Manager {
 
 public:
 
-        CrabEvCollViewManager(DBManagement* dbManager);
+        CrabEvCollViewManager();
         ~CrabEvCollViewManager();
         int write(std::vector<Crabevcollviewmultirow*> rowVector, CrabevcollviewMultiTable* table);
-        int update(std::vector<Crabevcollviewmultirow*> rowVector, CrabevcollviewMultiTable* table);
         int read(Crabevcollviewmultirow* aRow, CrabevcollviewMultiTable* table);
-};
-
-
-
-/************** Manager for EvCollFileViewManager*********************/
-
-class EvCollFileViewManager : public Manager {
-
-public:
-
-        EvCollFileViewManager(DBManagement* dbManager);
-        ~EvCollFileViewManager();
-        int write(std::vector<Evcollfileviewmultirow*> rowVector, EvcollfileviewMultiTable* table);
-        int update(std::vector<Evcollfileviewmultirow*> rowVector, EvcollfileviewMultiTable* table);
-        int read(Evcollfileviewmultirow* aRow, EvcollfileviewMultiTable* table);
-};
-
-
-
-/************** Manager for EvCollParentageViewManager*********************/
-
-class EvCollParentageViewManager : public Manager {
-
-public:
-
-        EvCollParentageViewManager(DBManagement* dbManager);
-        ~EvCollParentageViewManager();
-        int write(std::vector<Evcollparentageviewmultirow*> rowVector, EvcollparentageviewMultiTable* table);
-        int update(std::vector<Evcollparentageviewmultirow*> rowVector, EvcollparentageviewMultiTable* table);
-        int read(Evcollparentageviewmultirow* aRow, EvcollparentageviewMultiTable* table);
-};
-
-
-
-/************** Manager for EvCollStatusViewManager*********************/
-
-class EvCollStatusViewManager : public Manager {
-
-public:
-
-        EvCollStatusViewManager(DBManagement* dbManager);
-        ~EvCollStatusViewManager();
-        int write(std::vector<Evcollstatusviewmultirow*> rowVector, EvcollstatusviewMultiTable* table);
-        int update(std::vector<Evcollstatusviewmultirow*> rowVector, EvcollstatusviewMultiTable* table);
-        int read(Evcollstatusviewmultirow* aRow, EvcollstatusviewMultiTable* table);
-};
-
-
-
-/************** Manager for EvCollSingleViewManager*********************/
-
-class EvCollSingleViewManager : public Manager {
-
-public:
-
-        EvCollSingleViewManager(DBManagement* dbManager);
-        ~EvCollSingleViewManager();
-        int write(std::vector<Evcollsingleviewmultirow*> rowVector, EvcollsingleviewMultiTable* table);
-        int update(std::vector<Evcollsingleviewmultirow*> rowVector, EvcollsingleviewMultiTable* table);
-        int read(Evcollsingleviewmultirow* aRow, EvcollsingleviewMultiTable* table);
 };
 
 

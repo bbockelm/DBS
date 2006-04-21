@@ -77,36 +77,6 @@ class RowSchemaNConstraintsBinding<T_Object_Historyrow> {
 
 //##############
 
-class T_Parameter_Setrow  : public RowInterface {
-public:
-     T_Parameter_Setrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER id;
-     STRING hash;
-     STRING content;
-};
-
-class  T_Parameter_Setrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Parameter_Setrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Parameter_Setrow> {
-   public:
- T_Parameter_Setrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
 class T_App_Familyrow  : public RowInterface {
 public:
      T_App_Familyrow();
@@ -178,7 +148,7 @@ public:
 private:
      INTEGER id;
      INTEGER application;
-     INTEGER parameter_set;
+     STRING parameter_set;
 };
 
 class  T_App_Configrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -226,64 +196,6 @@ class RowSchemaNConstraintsBinding<T_Data_Tierrow> {
 
 //##############
 
-class T_Parentage_Typerow  : public RowInterface {
-public:
-     T_Parentage_Typerow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER id;
-     STRING name;
-};
-
-class  T_Parentage_Typerow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Parentage_Typerow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Parentage_Typerow> {
-   public:
- T_Parentage_Typerow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class T_Evcoll_Statusrow  : public RowInterface {
-public:
-     T_Evcoll_Statusrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER id;
-     STRING name;
-};
-
-class  T_Evcoll_Statusrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Evcoll_Statusrow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Evcoll_Statusrow> {
-   public:
- T_Evcoll_Statusrow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
 class T_Primary_Datasetrow  : public RowInterface {
 public:
      T_Primary_Datasetrow();
@@ -313,9 +225,9 @@ class RowSchemaNConstraintsBinding<T_Primary_Datasetrow> {
 
 //##############
 
-class T_Processing_Namerow  : public RowInterface {
+class T_Processing_Pathrow  : public RowInterface {
 public:
-     T_Processing_Namerow();
+     T_Processing_Pathrow();
 
 
      virtual void* getValue(string key);
@@ -323,54 +235,23 @@ public:
 
 private:
      INTEGER id;
-     STRING name;
-};
-
-class  T_Processing_Namerow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      T_Processing_Namerow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<T_Processing_Namerow> {
-   public:
- T_Processing_Namerow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class T_Processingrow  : public RowInterface {
-public:
-     T_Processingrow();
-
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-     INTEGER id;
-     INTEGER primary_dataset;
+     INTEGER parent;
      INTEGER app_config;
-     INTEGER name;
-     CHARACTER is_open;
-     INTEGER input;
+     INTEGER data_tier;
 };
 
-class  T_Processingrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+class  T_Processing_Pathrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
     public:
-      T_Processingrow_DB_BINDING(); 
+      T_Processing_Pathrow_DB_BINDING(); 
       virtual string* getTableName(void);
     private:
  string TableName;
 };
 
 template<>
-class RowSchemaNConstraintsBinding<T_Processingrow> {
+class RowSchemaNConstraintsBinding<T_Processing_Pathrow> {
    public:
- T_Processingrow_DB_BINDING  schemaNconstraints;
+ T_Processing_Pathrow_DB_BINDING  schemaNconstraints;
 };
 
 //##############
@@ -386,9 +267,9 @@ public:
 private:
      INTEGER id;
      INTEGER primary_dataset;
-     INTEGER data_tier;
-     INTEGER name;
-     INTEGER input;
+     INTEGER processing_path;
+     STRING name;
+     CHARACTER is_open;
 };
 
 class  T_Processed_Datasetrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -418,9 +299,7 @@ public:
 private:
      INTEGER id;
      INTEGER processed_dataset;
-     STRING name;
-     INTEGER events;
-     INTEGER status;
+     INTEGER collection_index;
 };
 
 class  T_Event_Collectionrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -435,6 +314,35 @@ template<>
 class RowSchemaNConstraintsBinding<T_Event_Collectionrow> {
    public:
  T_Event_Collectionrow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
+class T_Parentage_Typerow  : public RowInterface {
+public:
+     T_Parentage_Typerow();
+
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+     INTEGER id;
+     STRING name;
+};
+
+class  T_Parentage_Typerow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      T_Parentage_Typerow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<T_Parentage_Typerow> {
+   public:
+ T_Parentage_Typerow_DB_BINDING  schemaNconstraints;
 };
 
 //##############
@@ -509,7 +417,7 @@ public:
 
 private:
      INTEGER id;
-     INTEGER processing;
+     INTEGER processed_dataset;
      INTEGER status;
      INTEGER files;
      INTEGER bytes;
@@ -601,7 +509,6 @@ private:
      INTEGER id;
      STRING guid;
      STRING logical_name;
-     STRING checksum;
      INTEGER filesize;
      INTEGER status;
      INTEGER type;
@@ -654,6 +561,36 @@ class RowSchemaNConstraintsBinding<T_Evcoll_Filerow> {
 
 //##############
 
+class T_Info_Evcollrow  : public RowInterface {
+public:
+     T_Info_Evcollrow();
+
+
+     virtual void* getValue(string key);
+     virtual void setValue(string key, void* value);
+
+private:
+     INTEGER event_collection;
+     INTEGER events;
+     STRING name;
+};
+
+class  T_Info_Evcollrow_DB_BINDING : public BaseSchemaNConstraintsBinding {
+    public:
+      T_Info_Evcollrow_DB_BINDING(); 
+      virtual string* getTableName(void);
+    private:
+ string TableName;
+};
+
+template<>
+class RowSchemaNConstraintsBinding<T_Info_Evcollrow> {
+   public:
+ T_Info_Evcollrow_DB_BINDING  schemaNconstraints;
+};
+
+//##############
+
 class Datasetpathmultirow  : public RowInterface {
 public:
 
@@ -666,9 +603,8 @@ public:
 private:
 
     T_Data_Tierrow* T_Data_Tierobj;
-    T_Processing_Namerow* T_Processing_Nameobj;
+    T_Processing_Pathrow* T_Processing_Pathobj;
     T_Primary_Datasetrow* T_Primary_Datasetobj;
-    T_Processingrow* T_Processingobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
 };
 
@@ -699,8 +635,8 @@ public:
 
 private:
 
-    T_Evcoll_Statusrow* T_Evcoll_Statusobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
+    T_Info_Evcollrow* T_Info_Evcollobj;
     T_Parentage_Typerow* T_Parentage_Typeobj;
     T_Evcoll_Parentagerow* T_Evcoll_Parentageobj;
 };
@@ -732,8 +668,8 @@ public:
 
 private:
 
-    T_Evcoll_Statusrow* T_Evcoll_Statusobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
+    T_Info_Evcollrow* T_Info_Evcollobj;
 };
 
 class  Evcollviewnoparentmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -764,7 +700,6 @@ public:
 private:
 
     T_File_Typerow* T_File_Typeobj;
-    T_File_Statusrow* T_File_Statusobj;
     T_Filerow* T_Fileobj;
     T_Evcoll_Filerow* T_Evcoll_Fileobj;
 };
@@ -797,8 +732,8 @@ public:
 private:
 
     T_Block_Statusrow* T_Block_Statusobj;
-    T_Blockrow* T_Blockobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
+    T_Blockrow* T_Blockobj;
 };
 
 class  Pdblockviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -892,11 +827,9 @@ private:
     T_App_Familyrow* T_App_Familyobj;
     T_Data_Tierrow* T_Data_Tierobj;
     T_Applicationrow* T_Applicationobj;
-    T_Parameter_Setrow* T_Parameter_Setobj;
     T_App_Configrow* T_App_Configobj;
-    T_Processing_Namerow* T_Processing_Nameobj;
+    T_Processing_Pathrow* T_Processing_Pathobj;
     T_Primary_Datasetrow* T_Primary_Datasetobj;
-    T_Processingrow* T_Processingobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
 };
 
@@ -927,14 +860,13 @@ public:
 
 private:
 
-    T_Processing_Namerow* T_Processing_Nameobj;
-    T_Primary_Datasetrow* T_Primary_Datasetobj;
-    T_Processingrow* T_Block_Processingobj;
     T_Data_Tierrow* T_Data_Tierobj;
+    T_Processing_Pathrow* T_Processing_Pathobj;
+    T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
     T_Blockrow* T_Blockobj;
-    T_File_Typerow* T_File_Typeobj;
+    T_Info_Evcollrow* T_Info_Evcollobj;
     T_Filerow* T_Fileobj;
     T_Evcoll_Filerow* T_Evcoll_Fileobj;
 };
@@ -966,13 +898,13 @@ public:
 
 private:
 
-    T_Processing_Namerow* T_Processing_Nameobj;
-    T_Primary_Datasetrow* T_Primary_Datasetobj;
-    T_Processingrow* T_Block_Processingobj;
     T_Data_Tierrow* T_Data_Tierobj;
+    T_Processing_Pathrow* T_Processing_Pathobj;
+    T_Primary_Datasetrow* T_Primary_Datasetobj;
     T_Processed_Datasetrow* T_Processed_Datasetobj;
     T_Event_Collectionrow* T_Event_Collectionobj;
     T_Blockrow* T_Blockobj;
+    T_Info_Evcollrow* T_Info_Evcollobj;
 };
 
 class  Crabevcollviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
@@ -990,145 +922,17 @@ class RowSchemaNConstraintsBinding<Crabevcollviewmultirow> {
 };
 
 //##############
-
-class Evcollfileviewmultirow  : public RowInterface {
-public:
-
-     Evcollfileviewmultirow();
-     ~Evcollfileviewmultirow();
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-
-    T_Evcoll_Statusrow* T_Evcoll_Statusobj;
-    T_Event_Collectionrow* T_Event_Collectionobj;
-    T_File_Typerow* T_File_Typeobj;
-    T_File_Statusrow* T_File_Statusobj;
-    T_Filerow* T_Fileobj;
-    T_Evcoll_Filerow* T_Evcoll_Fileobj;
-};
-
-class  Evcollfileviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      Evcollfileviewmultirow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<Evcollfileviewmultirow> {
-   public:
- Evcollfileviewmultirow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class Evcollparentageviewmultirow  : public RowInterface {
-public:
-
-     Evcollparentageviewmultirow();
-     ~Evcollparentageviewmultirow();
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-
-    T_Evcoll_Parentagerow* T_Evcoll_Parentageobj;
-};
-
-class  Evcollparentageviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      Evcollparentageviewmultirow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<Evcollparentageviewmultirow> {
-   public:
- Evcollparentageviewmultirow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class Evcollstatusviewmultirow  : public RowInterface {
-public:
-
-     Evcollstatusviewmultirow();
-     ~Evcollstatusviewmultirow();
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-
-    T_Evcoll_Statusrow* T_Evcoll_Statusobj;
-};
-
-class  Evcollstatusviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      Evcollstatusviewmultirow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<Evcollstatusviewmultirow> {
-   public:
- Evcollstatusviewmultirow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
-
-class Evcollsingleviewmultirow  : public RowInterface {
-public:
-
-     Evcollsingleviewmultirow();
-     ~Evcollsingleviewmultirow();
-
-     virtual void* getValue(string key);
-     virtual void setValue(string key, void* value);
-
-private:
-
-    T_Event_Collectionrow* T_Event_Collectionobj;
-};
-
-class  Evcollsingleviewmultirow_DB_BINDING : public BaseSchemaNConstraintsBinding {
-    public:
-      Evcollsingleviewmultirow_DB_BINDING(); 
-      virtual string* getTableName(void);
-    private:
- string TableName;
-};
-
-template<>
-class RowSchemaNConstraintsBinding<Evcollsingleviewmultirow> {
-   public:
- Evcollsingleviewmultirow_DB_BINDING  schemaNconstraints;
-};
-
-//##############
 typedef SingleTableInterface<T_Personrow>  T_PersonTable;
 typedef SingleTableInterface<T_Object_Historyrow>  T_Object_HistoryTable;
-typedef SingleTableInterface<T_Parameter_Setrow>  T_Parameter_SetTable;
 typedef SingleTableInterface<T_App_Familyrow>  T_App_FamilyTable;
 typedef SingleTableInterface<T_Applicationrow>  T_ApplicationTable;
 typedef SingleTableInterface<T_App_Configrow>  T_App_ConfigTable;
 typedef SingleTableInterface<T_Data_Tierrow>  T_Data_TierTable;
-typedef SingleTableInterface<T_Parentage_Typerow>  T_Parentage_TypeTable;
-typedef SingleTableInterface<T_Evcoll_Statusrow>  T_Evcoll_StatusTable;
 typedef SingleTableInterface<T_Primary_Datasetrow>  T_Primary_DatasetTable;
-typedef SingleTableInterface<T_Processing_Namerow>  T_Processing_NameTable;
-typedef SingleTableInterface<T_Processingrow>  T_ProcessingTable;
+typedef SingleTableInterface<T_Processing_Pathrow>  T_Processing_PathTable;
 typedef SingleTableInterface<T_Processed_Datasetrow>  T_Processed_DatasetTable;
 typedef SingleTableInterface<T_Event_Collectionrow>  T_Event_CollectionTable;
+typedef SingleTableInterface<T_Parentage_Typerow>  T_Parentage_TypeTable;
 typedef SingleTableInterface<T_Evcoll_Parentagerow>  T_Evcoll_ParentageTable;
 typedef SingleTableInterface<T_Block_Statusrow>  T_Block_StatusTable;
 typedef SingleTableInterface<T_Blockrow>  T_BlockTable;
@@ -1136,6 +940,7 @@ typedef SingleTableInterface<T_File_Statusrow>  T_File_StatusTable;
 typedef SingleTableInterface<T_File_Typerow>  T_File_TypeTable;
 typedef SingleTableInterface<T_Filerow>  T_FileTable;
 typedef SingleTableInterface<T_Evcoll_Filerow>  T_Evcoll_FileTable;
+typedef SingleTableInterface<T_Info_Evcollrow>  T_Info_EvcollTable;
 typedef MultiTableInterface<Datasetpathmultirow>  DatasetpathMultiTable;
 typedef MultiTableInterface<Evcollviewmultirow>  EvcollviewMultiTable;
 typedef MultiTableInterface<Evcollviewnoparentmultirow>  EvcollviewnoparentMultiTable;
@@ -1146,10 +951,6 @@ typedef MultiTableInterface<Primarydatasetmultirow>  PrimarydatasetMultiTable;
 typedef MultiTableInterface<Processingpathmultirow>  ProcessingpathMultiTable;
 typedef MultiTableInterface<Crabevcollfileviewmultirow>  CrabevcollfileviewMultiTable;
 typedef MultiTableInterface<Crabevcollviewmultirow>  CrabevcollviewMultiTable;
-typedef MultiTableInterface<Evcollfileviewmultirow>  EvcollfileviewMultiTable;
-typedef MultiTableInterface<Evcollparentageviewmultirow>  EvcollparentageviewMultiTable;
-typedef MultiTableInterface<Evcollstatusviewmultirow>  EvcollstatusviewMultiTable;
-typedef MultiTableInterface<Evcollsingleviewmultirow>  EvcollsingleviewMultiTable;
 
 #endif
 

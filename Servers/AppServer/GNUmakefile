@@ -7,9 +7,10 @@ export PYINCLUDE= -I$(PYTHONINCLUDE)
 export SWIG=$(SWIG_HOME)/bin/swig
 #export SWIG=/home/sekhri/swig/bin/swig
 
-#dirs := $(DBSHOME)/src/bizlogiclayer $(DBSHOME)/src/clientlayer $(DBSHOME)/src/comlayer \
+dirs := $(DBSHOME)/src/bizlogiclayer $(DBSHOME)/src/clientlayer $(DBSHOME)/src/comlayer \
 	$(DBSHOME)/src/objectlayer $(DBSHOME)/src/common/conf $(DBSHOME)/src/common/db $(DBSHOME)/src/common/log
-#export ALLOBJS := $(foreach dir,$(dirs),$(wildcard $(dir)/*.o))
+
+export ALLOBJS := $(foreach dir,$(dirs),$(wildcard $(dir)/*.o))
 
 #all: cppsource swiginterface
 all: cppsource

@@ -12,12 +12,10 @@ public:
 	void Tokenize(const string& str, vector<string>& tokens, const string& delimiters);
 	std::string getToken(std::string, int);
 	std::string getTokenAt(std::string, int);
-	std::string getToken(std::string data, int index, std::string delim);
 	std::string eraseEndChars(std::string, int);
 	bool isSet(RowInterface*, std::string, std::string);
 	bool isKeySet(RowInterface*, Keys_iter, Keys_iter);
 	bool isKeySetCheckNull(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Keys* notNullKeys );
-	bool isKeySetCheckPK(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Keys* primaryKeys );
 	//bool isListOfKeySet(RowInterface*, ListOfLists_iter, ListOfLists_iter);
 	bool isListOfKeySet(RowInterface*, ListOfLists_iter, ListOfLists_iter, Keys* notNullKeys);
 	bool isConsistant(RowInterface*, RowInterface*, std::string& message);
@@ -39,7 +37,6 @@ public:
 	void display(RowInterface* aRow);
 	Keys getKey(RowInterface*, Keys_iter, Keys_iter);
 	Keys_iter getNullKey(RowInterface*, Keys_iter, Keys_iter);
-	Keys_iter getNullKeyCheckPK(RowInterface*, Keys_iter, Keys_iter, Keys* primaryKeys);
 	Keys getPrimaryKeys(Keys_iter, Keys_iter, Dictionary_iter, Dictionary_iter);
 
 	void setSchema(Dictionary*);

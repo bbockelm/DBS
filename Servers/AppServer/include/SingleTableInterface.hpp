@@ -11,14 +11,10 @@ public:
   ///Default constructor
 	SingleTableInterface();
 	SingleTableInterface(DBManagement*);
-	std::string getClause(R* aRow);
+
 
 private:
-	
 	void doSmartInsert(R*);
-	void doSmartUpdate(R*);
-	void doSimpleInsert(R*);
-	void doSimpleUpdate(R*);
 };
 #endif
 

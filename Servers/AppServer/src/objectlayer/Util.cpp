@@ -25,10 +25,7 @@ void Util::setSchema(Dictionary* schema) {
 	this->schema = schema;
 }
 string Util::getToken(string data, int index) {
-	return this->getToken(data, index, ".");
-}
-string Util::getToken(string data, int index, string delim) {
-	int firstIndex = data.find(delim,index);
+	int firstIndex = data.find(".",index);
 	//cout<<"index is "<<index<<" firstIndex "<<firstIndex<<endl;
 	int dataLen = data.length();
 	if( (firstIndex < 0) && (index < dataLen) ) {
@@ -119,21 +116,11 @@ Keys Util::getKey(RowInterface* aRow, Keys_iter bk, Keys_iter ek) {
 	}
 	return(toReturn);
 }
+
 Keys_iter Util::getNullKey(RowInterface* aRow, Keys_iter bk, Keys_iter ek) {
 	for(Keys_iter i = bk; i != ek; ++i) {
 		if(!this->isSet(aRow, *i, this->getDataType(*i) ) ) {
 			return(i);
-		}
-	}
-	return(ek);
-}
-
-Keys_iter Util::getNullKeyCheckPK(RowInterface* aRow, Keys_iter bk, Keys_iter ek,   Keys* primaryKeys ) {
-	for(Keys_iter i = bk; i != ek; ++i) {
-		if( find(primaryKeys->begin(), primaryKeys->end(), *i) == primaryKeys->end() ) {
-			if(!this->isSet(aRow, *i, this->getDataType(*i) ) ) {
-				return(i);
-			}
 		}
 	}
 	return(ek);
@@ -184,16 +171,6 @@ bool Util::isKeySetCheckNull(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Ke
 	return(true);
 }
 
-bool Util::isKeySetCheckPK(RowInterface* aRow, Keys_iter bk, Keys_iter ek,  Keys* primaryKeys ) {
-	for(Keys_iter i = bk; i != ek; ++i) {
-		if( find(primaryKeys->begin(), primaryKeys->end(), *i) == primaryKeys->end() ) {
-			if(!this->isSet(aRow, *i, this->getDataType(*i) ) ) {
-				return(false);
-			}
-		} 
-	}
-	return(true);
-}
 
 bool Util::isListOfKeySet(RowInterface* aRow, ListOfLists_iter b, ListOfLists_iter e,  Keys* notNullKeys) {
 	 //cout<<"\n\n INSIDE isListOfKeySet"<<endl;
@@ -351,7 +328,7 @@ void Util::setValue(RowInterface* aRow, string name, string dataType, string val
 		aRow->setValue(name,&charValue );
 	}
 	if( dataType == "INTEGER" ) {
-		int intValue  = this->atoi(value);
+		int intValue  = atoi(value.c_str());
 		//cout<<" INTEGER "<<name<<" value is "<<intValue<<endl;
 		aRow->setValue(name,&intValue );
                 //cout << "DONE................AAAAAAA"<<endl; 

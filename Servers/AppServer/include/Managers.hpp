@@ -23,11 +23,9 @@ class Manager {
 public:
 
 	Manager();
-	Manager(DBManagement* dbManager);
 	Manager(std::string, std::string);
 
 	int doInsert(TableInterface* inTable);
-	int doUpdate(TableInterface* inTable, std::string name);
 	int doWrite(TableInterface* inTable, std::string name);
 	int doWrite(TableInterface* inTable, RowInterface* aRow, std::string name);
 	std::string makeClause(TableInterface* inTable, RowInterface* aRow);

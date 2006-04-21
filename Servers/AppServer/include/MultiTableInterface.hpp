@@ -15,8 +15,6 @@ public:
 
 private:
 	void doSmartInsert(R*);
-	void doSmartUpdate(R*);
-	void doSmartOperation(R*, std::string);
 };
 #endif
 
