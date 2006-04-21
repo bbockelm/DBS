@@ -14,7 +14,6 @@ SoapDBSApi::~SoapDBSApi() {
 }
 
 DBS__Block* SoapDBSApi::getBlock() {
-	//cout<<"SoapDBSApi::getBlock()"<<endl;
 	return soap_new_DBS__Block(soap, -1);
 }
 DBS__File* SoapDBSApi::getFile() {
@@ -22,12 +21,10 @@ DBS__File* SoapDBSApi::getFile() {
 }
 
 DBS__EventCollection* SoapDBSApi::getEventCollection() {
-	//cout<<"SoapDBSApi::getEventCollection()"<<endl;
 	return soap_new_DBS__EventCollection(soap, -1);
 }
 
 int* SoapDBSApi::getInt(int value) {
-	//cout<<"SoapDBSApi::getInt"<<endl;
 	int * i = (int*)soap_malloc(soap, sizeof(int));
 	*i = value;
 	return i;

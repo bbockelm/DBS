@@ -24,6 +24,11 @@ public:
 	virtual void insert(){};
 	virtual void update(){};
 	virtual int getNoOfRows(){};
+	virtual bool next() {};
+	virtual void reset() {};
+	virtual std::string getStrValue(std::string colName) {};
+	virtual int getIntValue(std::string colName) {};
+
 	//virtual std::vector<RowInterface*>& select(std::string whereClause){cout<<"INSIDE VIRTUAL SELECT"<<endl; };
         virtual std::string* getTableName(){}; 
 	virtual std::string getStrValue(int index, string name){};
