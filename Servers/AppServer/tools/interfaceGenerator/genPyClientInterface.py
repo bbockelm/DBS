@@ -52,25 +52,43 @@ class pyClassRep:
         
         """Writes Python Representation"""
         #pdb.set_trace()
-        output = '\n\nclass  '+self.className+'('+self.parentClass+'):\n'
-        output += '\n   """ Class for '+self.className[3:]+' """'
-        output += '\n   def __init__(self'
-        reVars = self.reArrangeVars()
-        for aVar, varVal in reVars:
-           if varVal == '1':
-              output += ', '+ aVar 
-           else:
-              output += ', '+ aVar + ' = None' 
+        output = '\n\nclass  '+self.className+'(DbsBase):'
+        output += '\n   """ '
+	output += '\n   Class for '+self.className[3:]
+	output += '\n   """'
+        output += '\n   def __init__(self, **args):'
+        #output += '\n   def __init__(self'
+        #reVars = self.reArrangeVars()
+        #for aVar, varVal in reVars:
+        #   if varVal == '1':
+        #      output += ', '+ aVar 
+        #   else:
+        #      output += ', '+ aVar + ' = None' 
         #for aVar, varType, mustHave in self.variables :
         #    if mustHave not in (None, '0'): 
         #       output += aVar + ', '
         #       continue   
         #    output += aVar + ' = None, '
-         
-        output += '):'
-        output += '\n      '+self.parentClass+'.__init__(self)'
+        #output += '):'
+        output += '\n      DbsBase.__init__(self)'
         for aVar, varType, mustHave in self.variables :
-           output += '\n      self._'+ aVar + ' = '+aVar 
+           output += '\n      self.setDefault("'+ aVar + '", None)'
+	output += '\n      self.update(args)'
+	output += '\n      if imported_ZSI:'
+	output += '\n          self.writeWsRep()'
+	#write web service rep
+	output += '\n\n   def writeWsRep(self):'
+        output += '\n      """ Utility function for setting up Web Service object """'
+        output += '\n      try:'
+	output += '\n           '+self.className+'.__bases__ = (DbsBase, '+self.parentClass+')'
+        output += '\n           '+self.parentClass+'.__init__(self)'
+        for aVar, varType, mustHave in self.variables :
+           output += "\n           if self['"+aVar+"'] != None : self._"+ aVar + " = self['"+aVar+"']"
+	output += '\n      except Exception, e:'
+	output += '\n          raise dbsApi.DbsApiException(exception=e)'
+        output += '\n      except ZSI.FaultException, ex:'
+        output += '\n          raise dbsApi.DbsApiException(exception=ex)'
+
         #print output
         return output
 
@@ -248,6 +266,10 @@ class processInterface :
             continue
          if line.startswith('//') :
             continue
+	 if (line.find('class') != -1) and \
+                line.endswith(';'):  # Take care of forward declarations
+	    #print "Forward declaration found"
+	    continue
          if line.find('(') != -1: # Function definition line encountered
             #pdb.set_trace() 
             funcName = line.split('__')[1].split('(')[0]
@@ -266,7 +288,8 @@ class processInterface :
             #print funcName
             #int DBS__getDatasetContents(std::string datasetPathName, bool listFiles, std::vector<DBS__Block*>& blockList);
             continue 
-         if (line.find('class') != -1) :
+         if (line.find('class') != -1) and \
+		not line.endswith(';'):  # Take care of forward declarations
             currentClassBaseName = line.split()[1]
             currentClassName = 'Dbs'+currentClassBaseName.split('__')[1]
             currentClassParent = self.parentNameSpect+'.'+currentClassBaseName.split('__')[1]+'_Def'
@@ -296,10 +319,21 @@ def writeIntoFile(output, outFile, outPath=os.getcwd()) :
 
 if __name__== '__main__':
 
-      processMyFile = processInterface("../../interface/Cpp/Interface.hpp")
+      processMyFile = processInterface("/home/sekhri/work/dm/DMSCurr/DBS/Servers/AppServer/interface/Cpp/Interface.hpp")
+      #processMyFile = processInterface("../../interface/Cpp/Interface.hpp")
       processMyFile.run()
-      output = 'from Service_services import *\n'
-      output += 'import dbsException\n'
+      output = 'import dbsException\n'
+      output += 'import exceptions\n'
+      output += 'try:\n'
+      output += '  from Service_services import *\n'
+      output += '  imported_ZSI = True\n'
+      output += 'except:\n'
+      output += '  imported_ZSI = False\n'
+      output += '\nclass DbsBase(dict):\n'
+      output += '     """ Base Class for all DBS Client Data Types """\n'
+      output += '     def __init__(self, **args):\n'
+      output += '           dict.__init__(self)\n'
+
       for aClass in processMyFile.pyClassList:
         output += aClass.genPyRep()
         #if aClass.className in ['DbsFile', 'DbsFileBlock', 'DbsEventCollection']:
