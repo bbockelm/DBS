@@ -1,34 +1,23 @@
-#!/usr/bin/env python
-#
-# ParameterSet class. 
+# This file is generated on date XXXX
 
-from dbsObject import DbsObject
+import dbsException
+from dbsBaseObject import *
 
-class DbsParameterSet(DbsObject):
-  def __init__(self, objectId=None, hash=None, content=None, dict={}):
-    """ Constructor. """
-    DbsObject.__init__(self, objectId, dict)
-    if hash is not None:
-      self._hash = str(hash)
+class  DbsParameterSet(DbsBase):
+   """ 
+   Class for ParameterSet
 
-    if content is not None:
-      self._content = str(content)
+   Following input parameters:
+              objectId, User may not need to set this variable always
+              hash, Probably a required variable
+              content, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-    assert (self._hash)
-    assert (self._content)
 
-  def getHash(self):
-    """ Retrieve hash. """
-    return self._hash
-
-  def getContent(self):
-    """ Retrieve content. """
-    return self._content
-
-##############################################################################
-# Unit testing.
-
-if __name__ == "__main__":
-  print DbsParameterSet(hash="reco", content="dummy")
-  print DbsParameterSet(dict={ 'hash' : '1234', 'content' : 'foobar' })
-  print "Done"

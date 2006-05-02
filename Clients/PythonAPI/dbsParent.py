@@ -1,35 +1,22 @@
-#!/usr/bin/env python
-#
-# Parent-child relationship. 
+# This file is generated on date XXXX
 
-import types
-from dbsObject import DbsObject
+import dbsException
+from dbsBaseObject import *
 
-class DbsParent(DbsObject):
-  def __init__(self, parent=None, type=None, dict={}):
-    """ Constructor. """
-    DbsObject.__init__(self, None, dict)
-    if parent is not None:
-      self._parent = parent
+class  DbsParent(DbsBase):
+   """ 
+   Class for Parent
 
-    if type is not None:
-      self._type = str(type)
+   Following input parameters:
+              parent, Probably a required variable
+              type, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-    assert(isinstance(self._parent, DbsObject))
-    assert(self._type)
 
-  def getParent(self):
-    """ Retrieve parent object. """
-    return self._parent
-
-  def getType(self):
-    """ Retrieve parentage type. """
-    return self._type
-
-##############################################################################
-# Unit testing.
-
-if __name__ == "__main__":
-  from dbsEventCollection import DbsEventCollection
-  print DbsParent(parent=DbsEventCollection(), type="foo")
-  print "Done"

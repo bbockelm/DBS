@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApi.py,v 1.11 2006/01/28 19:40:26 afanfani Exp $
+# $Id: dbsApi.py,v 1.12 2006/03/09 15:22:54 lat Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -8,16 +8,16 @@
 #
 
 import dbsException
-import dbsLogManager
+#import dbsLogManager
 
 # Log levels used as masks (defined in dbsLogManager). 
-DBS_LOG_LEVEL_QUIET_ = dbsLogManager.LOG_LEVEL_QUIET_       # no output
-DBS_LOG_LEVEL_INFO_ = dbsLogManager.LOG_LEVEL_INFO_         # info for users
-DBS_LOG_LEVEL_TRACE_ = dbsLogManager.LOG_LEVEL_TRACE_       # execution trace
-DBS_LOG_LEVEL_DEBUG_ = dbsLogManager.LOG_LEVEL_DEBUG_       # debugging
-DBS_LOG_LEVEL_WARNING_ = dbsLogManager.LOG_LEVEL_WARNING_   # warnings
-DBS_LOG_LEVEL_ERROR_ = dbsLogManager.LOG_LEVEL_ERROR_       # errors
-DBS_LOG_LEVEL_ALL_ = dbsLogManager.LOG_LEVEL_ALL_           # all messages
+#DBS_LOG_LEVEL_QUIET_ = dbsLogManager.LOG_LEVEL_QUIET_       # no output
+#DBS_LOG_LEVEL_INFO_ = dbsLogManager.LOG_LEVEL_INFO_         # info for users
+#DBS_LOG_LEVEL_TRACE_ = dbsLogManager.LOG_LEVEL_TRACE_       # execution trace
+#DBS_LOG_LEVEL_DEBUG_ = dbsLogManager.LOG_LEVEL_DEBUG_       # debugging
+#DBS_LOG_LEVEL_WARNING_ = dbsLogManager.LOG_LEVEL_WARNING_   # warnings
+#DBS_LOG_LEVEL_ERROR_ = dbsLogManager.LOG_LEVEL_ERROR_       # errors
+#DBS_LOG_LEVEL_ALL_ = dbsLogManager.LOG_LEVEL_ALL_           # all messages
 
 ##############################################################################
 # DBS API exceptions.
@@ -122,7 +122,7 @@ class DbsApi:
 if __name__ == "__main__":
   try:
     api = DbsApi()
-    api.setLogLevel(DBS_LOG_LEVEL_INFO_|DBS_LOG_LEVEL_ERROR_)
+    #api.setLogLevel(DBS_LOG_LEVEL_INFO_|DBS_LOG_LEVEL_ERROR_)
     api.getDatasetContents("myowner/mydataset")
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())

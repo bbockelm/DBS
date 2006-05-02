@@ -5,16 +5,20 @@
 import sys
 from dbsCgiApi import DbsCgiApi
 from dbsException import DbsException
-from dbsApi import DbsApi, DbsApiException, InvalidDataTier, DBS_LOG_LEVEL_ALL_
+from dbsApi import DbsApi, DbsApiException, InvalidDataTier
+#, DBS_LOG_LEVEL_ALL_
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+import pdb
+
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 # DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
 
 try:
   args = {}
   if len(sys.argv) == 2: args['instance'] = sys.argv[1]
   api = DbsCgiApi(DEFAULT_URL, args)
-  api.setLogLevel(DBS_LOG_LEVEL_ALL_)
+  #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
 
   # List all parameter sets
@@ -28,10 +32,10 @@ try:
   print "Listing applications"
   for app in api.listApplications():
     print "  %s" % app
-
   # List all application configurations
   print ""
   print "Listing application configurations"
+
   for appc in api.listApplicationConfigs():
     print "  %s" % appc
 
@@ -51,6 +55,7 @@ try:
   for dataset in datasets:
     print "  %s" % dataset
 
+  
   # Get dataset provenance. It returns list of dataset parents.
   print ""
   tiers = [ "Hit" ]
@@ -71,14 +76,14 @@ try:
   print "Dataset contents for: %s" % otherDatasetPath
   for block in api.getDatasetContents(otherDatasetPath):
     print "  File block name/id: %s/%d, %d event collections}" % \
-      (block.getBlockName(), block.getObjectId(), len(block.getEventCollectionList()))
-
+      (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')) )
+  
   # Get dataset contents as a list of blocks with files
   print ""
   print "Dataset files for: %s" % datasets[0]
   for block in api.getDatasetFileBlocks (datasets[0]):
     print "  File block name/id: %s/%d, %d files}" % \
-      (block.getBlockName(), block.getObjectId(), len(block.getFileList()))
+      (block.get('blockName'), block.get('objectId'), len(block.get('fileList')) )
 
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())

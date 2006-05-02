@@ -1,86 +1,144 @@
-from Service_services import *
+# This file is generated on date XXXX
+
 import dbsException
+import exceptions
+from dbsBaseObject import *
 
+class  DbsPrimaryDataset(DbsBase):
+   """ 
+   Class for PrimaryDataset
 
-class  DbsPrimaryDataset(ns1.PrimaryDataset_Def):
+   Following input parameters:
+              primaryDatasetId, User may not need to set this variable always
+              name, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-   """ Class for PrimaryDataset """
-   def __init__(self, name, primaryDatasetId = None):
-      ns1.PrimaryDataset_Def.__init__(self)
-      self._primaryDatasetId = primaryDatasetId
-      self._name = name
+class  DbsApplication(DbsBase):
+   """ 
+   Class for Application
 
-class  DbsApplication(ns1.Application_Def):
+   Following input parameters:
+              applicationId, User may not need to set this variable always
+              executable, Probably a required variable
+              version, Probably a required variable
+              family, Probably a required variable
+              parameterSet, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-   """ Class for Application """
-   def __init__(self, parameterSet, family, version, executable, applicationId = None):
-      ns1.Application_Def.__init__(self)
-      self._applicationId = applicationId
-      self._executable = executable
-      self._version = version
-      self._family = family
-      self._parameterSet = parameterSet
+class  DbsProcessingPath(DbsBase):
+   """ 
+   Class for ProcessingPath
 
-class  DbsProcessingPath(ns1.ProcessingPath_Def):
+   Following input parameters:
+              pathId, User may not need to set this variable always
+              parent, User may not need to set this variable always
+              application, Probably a required variable
+              dataTier, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-   """ Class for ProcessingPath """
-   def __init__(self, dataTier, application, pathId = None, parent = None):
-      ns1.ProcessingPath_Def.__init__(self)
-      self._pathId = pathId
-      self._parent = parent
-      self._application = application
-      self._dataTier = dataTier
+class  DbsProcessedDataset(DbsBase):
+   """ 
+   Class for ProcessedDataset
 
-class  DbsProcessedDataset(ns1.ProcessedDataset_Def):
+   Following input parameters:
+              id, User may not need to set this variable always
+              processedDatasetName, Probably a required variable
+              primaryDatasetName, Probably a required variable
+              processingPath, Probably a required variable
+              isDatasetOpen, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-   """ Class for ProcessedDataset """
-   def __init__(self, isDatasetOpen, processingPath, primaryDatasetName, processedDatasetName, id = None):
-      ns1.ProcessedDataset_Def.__init__(self)
-      self._id = id
-      self._processedDatasetName = processedDatasetName
-      self._primaryDatasetName = primaryDatasetName
-      self._processingPath = processingPath
-      self._isDatasetOpen = isDatasetOpen
+class  DbsFile(DbsBase):
+   """ 
+   Class for File
 
-class  DbsFile(ns1.File_Def):
+   Following input parameters:
+              id, User may not need to set this variable always
+              guid, User may not need to set this variable always
+              logicalFileName, Probably a required variable
+              checksum, User may not need to set this variable always
+              fileSize, User may not need to set this variable always
+              fileStatus, Probably a required variable
+              fileType, Probably a required variable
+              fileBlockId, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-   """ Class for File """
-   def __init__(self, fileBlockId, fileType, fileStatus, logicalFileName, id = None, guid = None, checksum = None, fileSize = None):
-      ns1.File_Def.__init__(self)
-      self._id = id
-      self._guid = guid
-      self._logicalFileName = logicalFileName
-      self._checksum = checksum
-      self._fileSize = fileSize
-      self._fileStatus = fileStatus
-      self._fileType = fileType
-      self._fileBlockId = fileBlockId
+class  DbsEventCollection(DbsBase):
+   """ 
+   Class for EventCollection
 
-class  DbsEventCollection(ns1.EventCollection_Def):
+   Following input parameters:
+              collectionId, User may not need to set this variable always
+              collectionIndex, Probably a required variable
+              numberOfEvents, User may not need to set this variable always
+              status, User may not need to set this variable always
+              collectionName, Probably a required variable
+              datasetPathName, Probably a required variable
+              parent, User may not need to set this variable always
+              parentageType, User may not need to set this variable always
+              fileList, User may not need to set this variable always
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-   """ Class for EventCollection """
-   def __init__(self, datasetPathName, collectionName, collectionIndex, collectionId = None, numberOfEvents = None, status = None, parent = None, parentageType = None, fileList = None):
-      ns1.EventCollection_Def.__init__(self)
-      self._collectionId = collectionId
-      self._collectionIndex = collectionIndex
-      self._numberOfEvents = numberOfEvents
-      self._status = status
-      self._collectionName = collectionName
-      self._datasetPathName = datasetPathName
-      self._parent = parent
-      self._parentageType = parentageType
-      self._fileList = fileList
+class  DbsBlock(DbsBase):
+   """ 
+   Class for Block
 
-class  DbsBlock(ns1.Block_Def):
-
-   """ Class for Block """
-   def __init__(self, numberOfBytes, numberOfFiles, blockStatusName, blockId = None, blockName = None, eventCollectionList = None):
-      ns1.Block_Def.__init__(self)
-      self._blockId = blockId
-      self._blockStatusName = blockStatusName
-      self._blockName = blockName
-      self._numberOfFiles = numberOfFiles
-      self._numberOfBytes = numberOfBytes
-      self._eventCollectionList = eventCollectionList
+   Following input parameters:
+              blockId, User may not need to set this variable always
+              blockStatusName, Probably a required variable
+              blockName, User may not need to set this variable always
+              numberOfFiles, Probably a required variable
+              numberOfBytes, Probably a required variable
+              eventCollectionList, User may not need to set this variable always
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
 

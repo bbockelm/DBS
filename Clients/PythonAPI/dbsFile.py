@@ -1,75 +1,28 @@
-#!/usr/bin/env python
-#
-# File class. 
+# This file is generated on date XXXX
 
-from dbsObject import DbsObject
+import dbsException
+from dbsBaseObject import *
 
-class DbsFile(DbsObject):
-  def __init__(self, objectId=None, logicalFileName=None,
-	       guid=None, checkSum=None, fileType=None,
-	       fileStatus=None, fileBlockId=None, fileSize=None,
-	       dict={}):
-    """ Constructor. """
-    DbsObject.__init__ (self, objectId, dict)
-    if logicalFileName is not None:
-      self._logicalFileName = str(logicalFileName)
+class  DbsFile(DbsBase):
+   """ 
+   Class for File
 
-    if guid is not None:
-      self._guid = str(guid)
+   Following input parameters:
+              objectId, User may not need to set this variable always
+              logicalFileName, Probably a required variable
+              guid, User may not need to set this variable always
+              checkSum, User may not need to set this variable always
+              fileType, Probably a required variable
+              fileStatus, Probably a required variable
+              fileSize, User may not need to set this variable always
+              block, Probably a required variable
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      # Read in all User provided values
+      self.update(args)
+      # Verifying that data types of user provide parameters is correct
+      # Validating the data using ValidationTable(.py)
+      self.validate()
 
-    if checkSum is not None and checkSum != '': # empty chceck for RefDB only!
-      self._checkSum = str(checkSum)
 
-    if fileType is not None:
-      self._fileType = str(fileType)
-
-    if fileSize is not None and fileSize != '': # empty check for RefDB only!
-      self._fileSize = long(fileSize)
-
-    if fileStatus is not None:
-      self._fileStatus = str(fileStatus)
-
-    if fileBlockId is not None:
-      self._fileBlockId = str(fileBlockId)
-
-    assert (self._logicalFileName)
-    # assert (self._fileType) -- for RefDB
-    # assert (self._checkSum) -- for RefDB
-    # assert (self._fileSize) -- for RefDB
-
-  def getLogicalFileName(self):
-    """ Retrieve logical file name. """
-    return self._logicalFileName
-
-  def getGuid(self):
-    """ Retrieve file guid. """
-    return self._guid
-
-  def getCheckSum(self):
-    """ Retrieve check sum. """
-    return self._checkSum
-
-  def getFileType(self):
-    """ Retrieve file type. """
-    return self._fileType
-
-  def getFileSize(self):
-    """ Retrieve file type. """
-    return self._fileSize
-
-  def getFileStatus(self):
-    """ Retrieve file status. """
-    return self._fileStatus
-
-  def getFileBlockId(self):
-    """ Retrieve file block id. """
-    return self._fileBlockId
-
-##############################################################################
-# Unit testing.
-
-if __name__ == "__main__":
-  file = DbsFile(logicalFileName="lfn", fileSize=12345678)
-  print file
-  print file.getFileSize()
-  print "Done"
