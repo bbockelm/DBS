@@ -1,19 +1,13 @@
 #!/usr/bin/env python
 #
-# $Id: dbsException.py,v 1.1 2005/10/21 22:50:51 lat Exp $
-#
 # Contains base DBS exception class, as well as other common exceptions.
-#
 
-import exceptions
-
-ARGS_KWD_ = "args"
-EXCEPTION_KWD_ = "exception"
+from exceptions import Exception
 
 ##############################################################################
 # Base exception class.
 
-class DbsException(exceptions.Exception):
+class DbsException(Exception):
 
   def __init__(self, **kwargs):
     """
@@ -21,16 +15,16 @@ class DbsException(exceptions.Exception):
       DBSException(args=exceptionString)
       DBSException(exception=exceptionObject)      
     """ 
-    args = kwargs.get(ARGS_KWD_, "")
-    ex = kwargs.get(EXCEPTION_KWD_, None)
+    args = kwargs.get("args", "")
+    ex = kwargs.get("exception", None)
     if ex != None:
-      if isinstance(ex, exceptions.Exception):
+      if isinstance(ex, Exception):
 	 exArgs = "%s" % (ex)
 	 if args == "":
 	   args = exArgs
 	 else:
 	   args = "%s (%s)" % (args, exArgs)
-    exceptions.Exception.__init__(self, args)
+    Exception.__init__(self, args)
 
   def getArgs(self):
     """ Return exception arguments. """
