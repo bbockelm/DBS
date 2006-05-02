@@ -6,12 +6,9 @@ import sys
 from dbsCgiApi import DbsCgiApi
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
-#, DBS_LOG_LEVEL_ALL_
 
-import pdb
-
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 # DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
 
 try:

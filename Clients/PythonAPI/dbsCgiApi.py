@@ -21,13 +21,6 @@ from dbsProcessing import DbsProcessing
 from dbsParent import DbsParent
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-
-
-import pdb
-
-
-#verifyDatasetPathName
-
 DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 
 ##############################################################################
@@ -414,7 +407,6 @@ class DbsCgiApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if name == 'parent':
-            pdb.set_trace()
 	    p = DbsProcessedDataset(datasetPathName=str(attrs['path']),
 			            dataTier=str(attrs['tier']))
 	    parents.append(DbsParent(parent=p, type=str(attrs['type'])))

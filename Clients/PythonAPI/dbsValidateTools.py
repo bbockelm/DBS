@@ -34,10 +34,7 @@ def isListType(inObj) :
 
 def isDictType(inObj) :
   """ Type Checking for LIST Type """
-  #import pdb
-  #pdb.set_trace()
   if isinstance(inObj,dict) :
-  #if type(inObj) ==  type({}):
      return True
   return False
 
