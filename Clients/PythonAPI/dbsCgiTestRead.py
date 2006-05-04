@@ -48,7 +48,7 @@ try:
   # List some datasets
   print ""
   print "Listing datasets %s" % datasetPattern
-  datasets = api.listDatasets (datasetPattern)
+  datasets = api.listProcessedDatasets (datasetPattern)
   for dataset in datasets:
     print "  %s" % dataset
 

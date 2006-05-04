@@ -217,18 +217,18 @@ class DbsCgiApi(DbsApi):
       return dataset
 
     try:
+      if dataset.get('datasetPathName') in ('', None):
+         return "/" + dataset.get('primaryDataset').get('datasetName') \
+             + "/" + dataset.get('dataTier') + "/" + dataset.get('datasetName')
+
       return dataset.get('datasetPathName')
+
     except:
       return "/" + dataset.get('primaryDataset').get('datasetName') \
 	     + "/" + dataset.get('dataTier') + "/" + dataset.get('datasetName')
 
   # ------------------------------------------------------------
-  def listDatasets(self, pattern="*"):
-    """
-    Obsolete.  Use listProcessedDatasets instead.
-    """
-    return self.listProcessedDatasets (pattern)
-
+  #  dbsApi API Implementation follows
   # ------------------------------------------------------------
   def listPrimaryDatasets(self, pattern="*"):
     """
@@ -453,7 +453,7 @@ class DbsCgiApi(DbsApi):
 	      fileBlocks[id] = DbsFileBlock(objectId=long(id), blockName=str(attrs['name']))
 	    self._block = fileBlocks[id]
           elif name == 'event-collection':
-	    self._block.addEventCollection (DbsEventCollection(
+	    self._block['eventCollectionList'].append (DbsEventCollection(
 	      collectionName=str(attrs['name']), numberOfEvents=int(attrs['events'])))
 
       xml.sax.parseString (data, Handler ())
@@ -504,7 +504,7 @@ class DbsCgiApi(DbsApi):
 					 numberOfBytes=int(attrs['bytes']))
 	    self._block = blocks[id]
           elif name == 'file':
-	    self._block.addFile (DbsFile (objectId=long(attrs['id']),
+	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
 		    			  fileBlockId=int(attrs['inblock']),
 		    			  guid=str(attrs['guid']),
 		    			  logicalFileName=str(attrs['lfn']),
@@ -528,12 +528,12 @@ class DbsCgiApi(DbsApi):
     the database, otherwise may raise an DbsCgiApiException.
     """
     data = self._call ({ 'api' : 'createPrimaryDataset',
-		         'name' : dataset.datasetName })
+		         'name' : dataset.get('datasetName') })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if (name == 'primary-dataset'):
-	    dataset.objectId = long(attrs['id'])
+	    dataset['objectId'] = long(attrs['id'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
@@ -554,19 +554,19 @@ class DbsCgiApi(DbsApi):
     may raise an DbsCgiApiException.
     """
     # Prepare XML description of the input
-    appc = processing.applicationConfig
-    app = appc.application
+    appc = processing.get('applicationConfig')
+    app = appc.get('application')
     pname = ""
     if processing.get('parent', None) is not None:
-      pname = processing.parent.processingName
+      pname = processing.get('parent').get('processingName')
     input = "<dbs><processing name='%s' primary='%s' parent='%s'>" % (
-      escape (processing.processingName),
-      escape (processing.primaryDataset.datasetName),
+      escape (processing.get('processingName')),
+      escape (processing.get('primaryDataset').get('datasetName')),
       escape (pname))
     input += "<application executable='%s' version='%s' family='%s'/>" % (
-      escape (app.executable), escape (app.version), escape (app.family))
+      escape (app.get('executable')), escape (app.get('version')), escape (app.get('family')))
     input += "<parameter-set hash='%s' content='%s'/>" % (
-      escape (appc.parameterSet.hash), escape (appc.parameterSet.content))
+      escape (appc.get('parameterSet').get('hash')), escape (appc.get('parameterSet').get('content')))
     input += "</processing></dbs>"
 
     # Call the method and fill in object id
@@ -575,7 +575,7 @@ class DbsCgiApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
 	  if (name == 'processing'):
-	    processing.objectId = long(attrs['id'])
+	    processing['objectId'] = long(attrs['id'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
@@ -593,15 +593,15 @@ class DbsCgiApi(DbsApi):
     database, otherwise may raise an DbsCgiApiException.
     """
     pname = "/%s/%s" % \
-      (block._processing._primaryDataset._datasetName,
-       block._processing._processingName)
+      (block.get('processing').get('primaryDataset').get('datasetName'),
+       block.get('processing').get('processingName'))
     data = self._call ({ 'api' : 'createFileBlock', 'processing' : pname })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
 	  if (name == 'block'):
-	    block.objectId = long(attrs['id'])
-	    block.blockName = str(attrs['name'])
+	    block['objectId'] = long(attrs['id'])
+	    block['blockName'] = str(attrs['name'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
@@ -628,7 +628,7 @@ class DbsCgiApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
 	  if (name == 'processed-dataset'):
-	    dataset.objectId = long(attrs['id'])
+	    dataset['objectId'] = long(attrs['id'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
@@ -647,13 +647,14 @@ class DbsCgiApi(DbsApi):
     otherwise may raise an DbsCgiApiException.
     """
     # Prepare XML description of the input
-    input = "<dbs><block name='%s'>" % escape (block._blockName)
+
+    input = "<dbs><block name='%s'>" % escape (block.get('blockName'))
     for f in files:
       input += ("<file lfn='%s' guid='%s' checksum='%s' size='%d'"
 		+ " status='%s' type='%s' />") % (
-	escape (f.logicalFileName), escape (f.get('guid', '')),
-	escape (f.checkSum), f.fileSize,
-	escape (f.get('fileStatus', '')), escape (f.fileType))
+	escape (f.get('logicalFileName')), escape (f.get('guid', '')),
+	escape (f.get('checkSum')), f.get('fileSize'),
+	escape (f.get('fileStatus', '')), escape (f.get('fileType')))
     input += "</block></dbs>"
 
     # Call the method.
@@ -681,13 +682,13 @@ class DbsCgiApi(DbsApi):
     input = "<dbs><processed-dataset path='%s'>" % escape (self._path(dataset))
     for evc in eventCollections:
       input += "<event-collection name='%s' events='%d' status='%s'>" % (
-	escape (evc.collectionName), evc.numberOfEvents,
+	escape (evc.get('collectionName')), evc.get('numberOfEvents'),
 	escape (evc.get('collectionStatus', '')))
-      for p in evc.parentageList:
+      for p in evc.get('parentageList'):
         input += "<parent name='%s' type='%s'/>" % (
-	  escape (p.parent.collectionName), escape (p.type))
-      for f in evc.fileList:
-        input += "<file lfn='%s'/>" % escape (f.logicalFileName)
+	  escape (p.get('parent').get('collectionName')), escape (p.get('type')))
+      for f in evc.get('fileList'):
+        input += "<file lfn='%s'/>" % escape (f.get('logicalFileName'))
       input += "</event-collection>"
     input += "</processed-dataset></dbs>"
 

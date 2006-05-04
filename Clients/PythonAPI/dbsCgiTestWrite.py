@@ -11,30 +11,31 @@ from dbsEventCollection import DbsEventCollection
 from dbsPrimaryDataset import DbsPrimaryDataset
 from dbsProcessedDataset import DbsProcessedDataset
 from dbsProcessing import DbsProcessing
-from dbsApi import DbsApi, DbsApiException, InvalidDataTier, DBS_LOG_LEVEL_ALL_
+from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
 DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
 # DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
 
 try:
   api = DbsCgiApi(DEFAULT_URL, { 'instance' : sys.argv[1] })
-  api.setLogLevel(DBS_LOG_LEVEL_ALL_)
+  #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
 
   # Attempt to create a primary dataset
   print ""
-  primary = DbsPrimaryDataset (datasetName = "test_primary")
+  primary = DbsPrimaryDataset (datasetName = "test_primary_anzar")
   print "Creating primary dataset %s" % primary
   try:
     api.createPrimaryDataset (primary)
     print "Result: %s" % primary
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
+  
 
   # Attempt to create a processing
   print ""
   processing = DbsProcessing (primaryDataset = primary,
-		      	      processingName = "test_process",
+		      	      processingName = "test_process_anzar",
 			      applicationConfig = {
 			        'application' : { 'executable' : 'testexe',
 				 		  'version' : 'test',
@@ -48,6 +49,8 @@ try:
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
 
+
+
   # Attempt to create a file block
   print ""
   block = DbsFileBlock (processing = processing)
@@ -55,19 +58,21 @@ try:
   try:
     api.createFileBlock (block)
     print "Result: %s" % block
+    print "Block creation commented out!"
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
 
   # Attempt to create hits, digi and dst datasets
   print ""
+
   hits = DbsProcessedDataset (primaryDataset=primary,
-		              datasetName="test_process",
+		              datasetName="test_process_anzar",
 			      dataTier="Hit")
   digi = DbsProcessedDataset (primaryDataset=primary,
-		              datasetName="test_process",
+		              datasetName="test_process_anzar",
 			      dataTier="Digi")
   dst = DbsProcessedDataset (primaryDataset=primary,
-		             datasetName="test_process",
+		             datasetName="test_process_anzar",
 			     dataTier="DST")
   print "Creating datasets\n %s\n %s\n %s" % (hits, digi, dst)
   try:

@@ -19,6 +19,9 @@ class  DbsEventCollection(DbsBase):
    def __init__(self, **args):
       DbsBase.__init__(self)
       # Read in all User provided values
+
+      self.setdefault('fileList', [])
+      self.setdefault('parentageList', [])
       self.update(args)
       # Verifying that data types of user provide parameters is correct
       # Validating the data using ValidationTable(.py)

@@ -19,17 +19,12 @@ class  DbsFileBlock(DbsBase):
    """
    def __init__(self, **args):
       DbsBase.__init__(self)
-      # Read in all User provided values
       self.setdefault('fileList', [])
+      self.setdefault('eventCollectionList', [])
+      # Read in all User provided values
       self.update(args)
       # Verifying that data types of user provide parameters is correct
       # Validating the data using ValidationTable(.py)
       self.validate()
-
-   def addFile (self, file):
-    """ Add event collection. """
-    #if not isinstance(file, DbsFile):
-    #  file = DbsFile (dict = file)
-    self['fileList'].append(file)
 
 
