@@ -64,9 +64,14 @@ class pyClassRep:
 	output += '\n   """'
         output += '\n   def __init__(self, **args):'
         output += '\n      DbsBase.__init__(self)'
+        # List type Objects should be declared so that they do not 
+        # Return None instead of empty list []
+        for aVar, varType, mustHave in self.variables :
+		if varType == 'List':
+			output += '\n      # List type object '+aVar+' needs to be initialized'
+			output += '\n      # to avoid return "None" instead of empty list []'
+			output += '\n      self.setdefault(\''+aVar+'\', [])'
 	output += '\n      # Read in all User provided values'
-	if self.className == 'DbsFileBlock' :
-        	output += '\n      self.setdefault(\'fileList\', [])'
 	output += '\n      self.update(args)'
 	output += '\n      # Verifying that data types of user provide parameters is correct'
 	output += '\n      # Validating the data using ValidationTable(.py)'
@@ -85,20 +90,6 @@ class pyClassRep:
 		forValidate += '\n         "'+aVar+'" : { "Comment" : "'+mustHave+'", "Validator" : '+varType+' },'
 	forValidate +=  '\n          },'
 	#print forValidate
-
-        if self.className == 'DbsProcessedDataset' :
-           assert_this = """\n      assert (self.get('datasetPathName', None)
-          or (self.get('primaryDataset', None)
-          and self.get('datasetName', None)
-          and self.get('dataTier', None)))"""
-           output += assert_this
-        if self.className == 'DbsFileBlock' :
-           add_this = """\n\n   def addFile (self, file):
-    \""" Add event collection. \"""
-    #if not isinstance(file, DbsFile):
-    #  file = DbsFile (dict = file)
-    self['fileList'].append(file)"""
-	   output += add_this
 
         return output, forValidate
 
