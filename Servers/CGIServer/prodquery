@@ -353,7 +353,7 @@ sub dbsql
 sub dbprep
 {
     my ($dbh, $sql) = @_;
-    return $dbh->prepare_cached (&dbsql ($sql));
+    return $dbh->prepare (&dbsql ($sql));
 }
 
 # Simple utility to prepare, bind and execute a SQL statement.
