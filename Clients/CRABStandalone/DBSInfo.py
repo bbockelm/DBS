@@ -48,13 +48,13 @@ class DBSInfo:
           # Construct api object
           self.api = dbsCgiApi.DbsCgiApi() 
           # Configure api logging
-          self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
-          self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_INFO_)
+          #self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_ALL_)
+          #self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_INFO_)
 
      def getMatchingDatasets (self, owner, dataset):
          """ Query DBS to get provenance """
          try:
-           list = self.api.listDatasets("/%s/*/%s" % (dataset, owner))
+           list = self.api.listProcessedDatasets("/%s/*/%s" % (dataset, owner))
          except dbsApi.InvalidDataTier, ex:
            raise DBSInvalidDataTierError(ex.getClassName(),ex.getErrorMessage())
          except dbsApi.DbsApiException, ex:
@@ -79,10 +79,10 @@ class DBSInfo:
            for fileBlock in self.api.getDatasetContents (path):
               ## get the event collections for each block
 	      nevts = 0
-	      for evc in fileBlock.getEventCollectionList():
-		nevts = nevts + evc.getNumberOfEvents()
-              print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName())
-              nevtsbyblock[fileBlock.getBlockName()]=nevts
+	      for evc in fileBlock.get('eventCollectionList'):
+		nevts = nevts + evc.get('numberOfEvents')
+              print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.get('blockName'))
+              nevtsbyblock[fileBlock.get('blockName')]=nevts
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())
 
