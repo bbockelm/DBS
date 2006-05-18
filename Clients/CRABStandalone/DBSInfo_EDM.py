@@ -57,18 +57,22 @@ class DBSInfo_EDM:
 
          self.api = DbsCgiApi(DEFAULT_URL, args)
          ## set log level
-         self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_INFO_)
+         # self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_INFO_)
          #self.api.setLogLevel(dbsApi.DBS_LOG_LEVEL_QUIET_)
 
-     def getMatchingDatasets (self,datasetPath):
+     def getMatchingDatasets (self, datasetPath):
          """ Query DBS to get provenance """
          try:
-           list = self.api.listDatasets("%s"%datasetPath)
+           list = self.api.listProcessedDatasets("%s" %datasetPath)
          except dbsApi.InvalidDataTier, ex:
            raise DBSInvalidDataTierError(ex.getClassName(),ex.getErrorMessage())
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())
-         return list 
+         except dbsCgiApi.DbsCgiToolError , ex:
+           raise DBSError(ex.getClassName(),ex.getErrorMessage())
+
+         return list
+
 
      def getDatasetProvenance(self, path, dataTiers):
          """ Query DBS to get provenance """
@@ -88,10 +92,10 @@ class DBSInfo_EDM:
            for fileBlock in self.api.getDatasetContents (path):
               ## get the event collections for each block
 	      nevts = 0
-	      for evc in fileBlock.getEventCollectionList():
-		nevts = nevts + evc.getNumberOfEvents()
-              print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.getBlockName())
-              nevtsbyblock[fileBlock.getBlockName()]=nevts
+	      for evc in fileBlock.get('eventCollectionList'):
+		nevts = nevts + evc.get('numberOfEvents')
+              print "DBSInfo: total nevts %i in block %s "%(nevts,fileBlock.get('blockName'))
+              nevtsbyblock[fileBlock.get('blockName')]=nevts
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())
 
@@ -105,11 +109,11 @@ class DBSInfo_EDM:
          try:
            FilesbyBlock={}
            for fileBlock in self.api.getDatasetFileBlocks(path):
-            blockname=fileBlock.getBlockName()
+            blockname=fileBlock.get('blockName')
             filesinblock=[]
-            for files in fileBlock.getFileList():
+            for files in fileBlock.get('fileList'):
               #print "  block %s has file %s"%(blockname,files.getLogicalFileName())
-              filesinblock.append(files.getLogicalFileName())
+              filesinblock.append(files.get('logicalFileName'))
             FilesbyBlock[blockname]=filesinblock
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())

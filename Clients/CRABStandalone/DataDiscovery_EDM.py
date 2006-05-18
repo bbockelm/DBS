@@ -65,7 +65,7 @@ class DataDiscovery_EDM:
 	  raise DataDiscoveryError("DatasetPath=%s is ambiguous" %self.datasetPath)
 
         try:
-	  self.dbsdataset = self.datasets[0].getDatasetPath()
+          self.dbsdataset = self.datasets[0].get('datasetPathName')
 
           self.evcinfo = dbs.getDatasetContents(self.dbsdataset)
           self.blocksinfo = dbs.getDatasetFileBlocks(self.dbsdataset)

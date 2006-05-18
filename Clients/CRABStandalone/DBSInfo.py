@@ -59,6 +59,9 @@ class DBSInfo:
            raise DBSInvalidDataTierError(ex.getClassName(),ex.getErrorMessage())
          except dbsApi.DbsApiException, ex:
            raise DBSError(ex.getClassName(),ex.getErrorMessage())
+         except dbsCgiApi.DbsCgiToolError , ex:
+           raise DBSError(ex.getClassName(),ex.getErrorMessage())
+
          return list 
 
      def getDatasetProvenance(self, path, dataTiers):

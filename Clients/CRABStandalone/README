@@ -31,10 +31,6 @@ The others python modules it uses are:
  o DataDiscovery_EDM.py  --> uses DBSInfo
  o DBSInfo_EDM.py --> DBS queries are done using the dbsCgiApi
                       and reading from "Dev/fanfani" database
-This assumes:
-   * the python CGI API files are in ../PyhtonAPI
-   * the python client API are from brach tag MiniPythonAPI-20060407
-So you have to download from CVS:
- cvs co -r MiniPythonAPI-20060407 DBS/Clients
- cvs co  DBS/Clients/CRABStandalone
+This assumes the python CGI API files are in ../PyhtonAPI
+that is the case if you download from CVS the whole COMP/DBS/Clients.
 
