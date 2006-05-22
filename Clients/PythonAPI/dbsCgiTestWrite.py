@@ -13,11 +13,14 @@ from dbsProcessedDataset import DbsProcessedDataset
 from dbsProcessing import DbsProcessing
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
-# DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+DEFAULT_URL = "exec:../CGIServer/prodquery"
 
 try:
-  api = DbsCgiApi(DEFAULT_URL, { 'instance' : sys.argv[1] })
+  args = {}
+  if len(sys.argv) == 2: args['instance'] = sys.argv[1]
+  api = DbsCgiApi(DEFAULT_URL, args)
+
   #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
 

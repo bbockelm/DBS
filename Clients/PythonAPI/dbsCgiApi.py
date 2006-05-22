@@ -167,12 +167,13 @@ class DbsCgiApi(DbsApi):
     """
     # First apply forced options
     for k, v in self._cgiArgs.items(): args[k] = v
-
     # Fetch result from the CGI server
     try:
       request = urllib2.Request (self._cgiUrl)
       request.add_header ('Accept-encoding', 'gzip')
+      #print "args ",args
       self._marshall (args, request)
+      #print "request ",request
       result = urllib2.build_opener (DbsCgiExecHandler).open (request)
       data = result.read()
       if result.headers.get ('Content-encoding', '') == 'gzip':
@@ -695,6 +696,38 @@ class DbsCgiApi(DbsApi):
     # Call the method and parse output to fill in object id into each
     # event collection we passed in
     data = self._call ({ 'api' : 'insertEventCollections', 'xmlinput' : input })
+
+  # ------------------------------------------------------------
+  def mergeAndRemap(self, eventCollections, outEventCollection, dataset):
+
+   input = "<dbs><processed-dataset path='%s'>" % escape (self._path(dataset))
+   for evc in eventCollections:
+      input += "<event-collection-in name='%s' events='%d' status='%s'>" % (
+	escape (evc.get('collectionName')), evc.get('numberOfEvents'),
+	escape (evc.get('collectionStatus', '')))
+      for p in evc.get('parentageList'):
+        input += "<parent-in name='%s' type='%s'/>" % (
+	  escape (p.get('parent').get('collectionName')), escape (p.get('type')))
+      for f in evc.get('fileList'):
+        input += "<file-in lfn='%s'/>" % escape (f.get('logicalFileName'))
+      input += "</event-collection-in>"
+   input += "<event-collection name='%s' events='%d' status='%s'>" % (
+     escape (outEventCollection.get('collectionName')), outEventCollection.get('numberOfEvents'),
+     escape (outEventCollection.get('collectionStatus', '')))
+   for p in outEventCollection.get('parentageList'):
+        input += "<parent name='%s' type='%s'/>" % (
+	  escape (p.get('parent').get('collectionName')), escape (p.get('type')))
+   for f in outEventCollection.get('fileList'):
+        input += "<file lfn='%s'/>" % escape (f.get('logicalFileName'))
+
+   input += "</event-collection>"
+
+   input += "</processed-dataset></dbs>"
+    
+   #print "calling _call mergeAndRemap inside dbsCgiApi"
+   data = self._call ({ 'api' : 'mergeAndRemap',
+		         'xmlinput' : input })
+
 
 ##############################################################################
 # Unit testing: see dbsCgiTest*.py
