@@ -51,11 +51,12 @@ $Text::Glob::strict_wildcard_slash = 0;
 ######################################################################
 # Main program
 
-my $dbparams = $ENV{DBS_DBPARAM} || "/data/DBSAccessInfo/DBParam";
+my $dbparams = $ENV{DBS_DBPARAM} || "/home/sekhri/cgi/PythonAPI/DBParam";
 my $SAFE_NAME = qr|^[-A-Za-z0-9_.]+$|;
 my $SAFE_PATH = qr|^[-A-Za-z0-9_./]+$|;
 my $SAFE_TIERS = qr|^[-A-Za-z,]+$|;
-
+#$file = 'out.txt';
+#open(INFO, ">$file");
 # Known API calls
 my %apis = (
   # Query side
@@ -91,12 +92,14 @@ my %apis = (
     path => REQUIRED } ],
   'insertEventCollections' => [ \&insertEventCollections, {
     xmlinput => REQUIRED } ],
+  'mergeAndRemap' => [ \&mergeAndRemap, {
+    xmlinput => REQUIRED } ],
   'insertFiles' => [ \&insertFiles, {
     xmlinput => REQUIRED } ]);
 
 map { $$_[1]{api} = REQUIRED; $$_[1]{instance} = OPTIONAL } values %apis;
-
 # Get parameters
+
 my $api = param('api');
 &reply_failure (200, "Bad request", "API call was not defined")
   if (! defined $api);
@@ -211,7 +214,10 @@ sub checkPattern
 # Connect to the DBS database.
 sub connectToDBS
 {
-  my $instance = param('instance') || "Production/Reader";
+  #my $instance = param('instance') || "DevMC/Reader";
+  my $instance = param('instance') || "Anzar/Writer";
+  #my $instance = param('instance') || "Production/Reader";
+  #my $instance = param('instance') || "Dev/Reader";
   my $self = { DBCONFIG => "$dbparams:$instance" };
   my $dbh = eval { &connectToDatabase ($self) };
   &reply_failure (400, "Database connection failure", $@) if $@;
@@ -1106,12 +1112,201 @@ sub insertFiles
   &reply_success ("<?xml version='1.0' standalone='yes'?><dbs/>");
 }
 
+
+
+
+sub mergeAndRemap {
+	my ($dbs) = @_;
+
+	# Parse parameters
+	my $xmlinput = param('xmlinput');
+	&reply_failure (200, "Bad request", "No xmlinput specified")
+	if (! defined $xmlinput);
+	#print INFO "XMLINPUT is \n";
+	#print INFO $xmlinput;
+  
+	my ($path, @path, @evcs, @evcsmerged,) = ();
+	eval {
+		(new XML::Parser (Handlers => { Start => sub {
+		my ($parser, $element, %attrs) = @_;
+		if ($element eq 'processed-dataset') {
+			$path = $attrs{path};
+		} elsif ($element eq 'event-collection-in') {
+			push(@evcs, \%attrs);
+			$evcs[$#evcs]{parents} = [];
+			$evcs[$#evcs]{files} = [];
+		} elsif ($element eq 'parent-in') {
+			push(@{$evcs[$#evcs]{parents}}, \%attrs);
+		} elsif ($element eq 'file-in') {
+			push(@{$evcs[$#evcs]{files}}, \%attrs);
+		} elsif ($element eq 'event-collection') {
+			push(@evcsmerged, \%attrs);
+			$evcsmerged[$#evcsmerged]{parents} = [];
+			$evcsmerged[$#evcsmerged]{files} = [];
+		} elsif ($element eq 'parent') {
+			push(@{$evcsmerged[$#evcsmerged]{parents}}, \%attrs);
+		} elsif ($element eq 'file') {
+			push(@{$evcsmerged[$#evcsmerged]{files}}, \%attrs);
+		} } } ))->parse ($xmlinput);
+	};
+
+	# Verify the parameters.
+	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
+	@path = &checkPath ($path, 'path');
+	&reply_failure (300, "Bad data", "Missing or invalid processed dataset") if ! @path;
+        #Get the ID of t_evcoll_status for status name as merged
+        #If status merged doesnot exist then create one
+	$ecsid = ${&makeNamed ($dbs, "evcoll_status", "merged", 1)}{id};
+	#print INFO "\nSTATUS ID   $ecsid \n";
+	@plist  = ();#parent list of id
+	@ptlist  = ();#parentage type list of id for parents
+	@cptlist  = ();#parentage type list of id for child
+	@clist  = ();#child list of id
+	@eclist  = ();#evecent collection list of id
+
+	foreach my $evc (@evcs) {
+		&reply_failure (300, "Bad data", "Invalid event collection")
+		if (! defined $$evc{name} || $$evc{name} !~ /$SAFE_PATH/o
+		|| ! defined $$evc{events} || $$evc{events} !~ /^\d+$/o
+		|| (defined $$file{status} && $$file{status} !~ /^[A-Z]*$/o)
+		|| ! @{$$evc{files}});
+  
+		#print INFO "\n  $$evc{name} ";
+
+		$gecid = ();
+		foreach my $f (@{$$evc{files}})	{
+			&reply_failure (300, "Bad data", "Invalid file") if (! defined $$f{lfn} || $$f{lfn} !~ /$SAFE_PATH/o);
+			# Get all the parents and ECID and push it in the array
+			my ($q) = &dbexec($$dbs{DBH}, qq{
+				select p.parent, ec.id, pt.id
+				from t_evcoll_parentage p, t_file f,t_event_collection ec,t_evcoll_file ecf, t_parentage_type pt
+				where 
+				ec.id = p.child
+				and ecf.evcoll = ec.id
+				and ecf.fileid = f.id
+				and p.type = pt.id
+				and ec.name = :ec_name
+				and ec.events = :ec_events
+				and f.logical_name = :f_logical_name},
+				":ec_name" => $$evc{name},
+				":ec_events" => $$evc{events},
+				":f_logical_name" => $$f{lfn});
+			#push all the parent, evcoll id and parentage type in lists
+			while (my ($parent, $ecid, $ptype) = $q->fetchrow()) {
+				#print INFO "\nPARENT   $parent \n";
+				#print INFO "\nECID   $ecid \n";
+				#print INFO "\nPTYPE   $ptype \n";
+				push(@plist, $parent);	    
+				push(@ptlist, $ptype);	    
+				push(@eclist, $parent);	    
+				$gecid = $ecid;
+                	}
+		
+		}#//For each file
+		# Get all the child and parentage type of this ECID and push it in the array
+		my ($q1) = &dbexec($$dbs{DBH}, qq{
+			select p.child, p.type
+			from t_evcoll_parentage p, t_evcoll_parentage pt
+			where 
+			p.type = pt.id
+			and p.parent = :ec_id},
+			":ec_id" => $gecid);
+		while (my ($child, $ptype) = $q1->fetchrow()) {
+			#print INFO "\nCHILD   $child \n";
+			#print INFO "\nPTYPE   $ptype \n";
+			push(@clist, $child);	    
+			push(@cptlist, $ptype);	    
+		}
+		#update the event collection status to be merged
+		&dbexec($$dbs{DBH}, qq{
+			update t_event_collection
+			set status = :status
+			where id = :id},
+		        ":id" => $gecid,
+			":status" => $ecsid);
+				  
+	}#For each EVC
+
+	#Get the processed dataset id in which the new event collection neeeds to get inserted.
+	my $procds = &datasetFromPath ($dbs, @path);
+	&reply_failure (300, "Bad data", "No such processed dataset $path") if ! defined $procds;
+
+	#print INFO "Processed dataset id is $procds";
+	#Now insert the new Merged EventCollection. Call insertEventCollection to do the dirty work
+	my $estmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_event_collection
+		(id, processed_dataset, name, events, status)
+		values (seq_event_collection.nextval, :proid ,:name, :events, :status)
+		returning id into :id});
+	my $fstmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_evcoll_file (id, evcoll, fileid)
+		select seq_evcoll_file.nextval, e.id, f.id
+		from t_event_collection e, t_file f
+		where e.name = :ev_name and f.logical_name = :f_logical_name});
+
+	my $obj = ();
+	foreach my $evc (@evcsmerged) {
+		$statusid = ${&makeNamed ($dbs, "evcoll_status", "final", 1)}{id};
+		$estmt->bind_param(":proid", $procds);
+		$estmt->bind_param(":name", $$evc{name});
+		$estmt->bind_param(":events", $$evc{events});
+		$estmt->bind_param(":status", $statusid);
+		$estmt->bind_param_inout(":id", \$$obj{id}, 10, { TYPE => SQL_INTEGER });
+		foreach my $f (@{$$evc{files}}) {
+			$fstmt->bind_param(":ev_name", $$evc{name});
+			$fstmt->bind_param(":f_logical_name", $$f{lfn});
+		}
+	}
+	$estmt->execute ();
+	$fstmt->execute ();
+	my ($ecidmerged) = $$obj{id};
+	&reply_failure (300, "Bad data", "Could not insert a new Event Collection") if ! defined $ecidmerged;
+	#print INFO "EV ID that just got inserted is $ecidmerged \n";
+
+	#insert all the new parents and child relationships
+	my (%pparams) = ();
+	my $pstmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_evcoll_parentage
+		(id, parent, child, type)
+		values (seq_evcoll_parentage.nextval, ?, ?, ?)});
+	for ($count = 0; $count != @plist; $count++) {
+		push(@{$pparams{1}}, $plist[$count]);
+		push(@{$pparams{2}}, $ecidmerged);
+		push(@{$pparams{3}}, $ptlist[$count]);
+		#print INFO "\$plist[$count] $plist[$count]\n";
+		#print INFO "ecidmerged $ecidmerged\n";
+		#print INFO "\$ptlist[$count] $ptlist[$count]\n";
+	}
+	for ($count = 0; $count != @clist; $count++) {
+		push(@{$pparams{1}}, $ecidmerged);
+		push(@{$pparams{2}}, $clist[$count]);
+		push(@{$pparams{3}}, $cptlist[$count]);
+		#print INFO "ecidmerged $ecidmerged\n";
+		#print INFO "\$clist[$count] $clist[$count]\n";
+		#print INFO "\$cptlist[$count] $cptlist[$count]\n";
+	}
+
+	eval {
+		if (keys %pparams) {
+			#print INFO "inside keys ppram\n";
+			map { $pstmt->bind_param_array ($_, $pparams{$_}) } keys %pparams;
+			$pstmt->execute_array ({ ArrayTupleResult => [] });
+		}
+	};
+	&reply_failure (402, "Execution error", $@) if $@;
+
+	$$dbs{DBH}->commit();
+	$$dbs{DBH}->disconnect ();
+	#close(INFO);
+	&reply_success ("<?xml version='1.0' standalone='yes'?><dbs/>");
+}
+    
 ######################################################################
 # Insert event collections with parentage and files.
 sub insertEventCollections
 {
   my ($dbs) = @_;
-
+   
   # Parse parameters
   my $xmlinput = param('xmlinput');
   &reply_failure (200, "Bad request", "No xmlinput specified")
@@ -1156,7 +1351,7 @@ sub insertEventCollections
 	  || ! defined $$evc{events} || $$evc{events} !~ /^\d+$/o
 	  || (defined $$file{status} && $$file{status} !~ /^[A-Z]*$/o)
   	  || ! @{$$evc{files}});
-
+	
     foreach my $p (@{$$evc{parents}})
     {
       &reply_failure (300, "Bad data", "Invalid parentage")
@@ -1319,6 +1514,7 @@ sub getNamed
   my ($id) = &dbexec($$dbs{DBH}, qq{
     select id from t_$kind where name = :name},
     ":name" => $name)->fetchrow();
+   
   &reply_failure (302, "Missing object", "No such $required $name")
     if ! defined $id && defined $required;
   return { 'id' => $id, 'name' => $name };
