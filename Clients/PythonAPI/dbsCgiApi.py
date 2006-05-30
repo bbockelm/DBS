@@ -502,7 +502,7 @@ class DbsCgiApi(DbsApi):
 	      blocks[id] = DbsFileBlock (objectId=long(id),
 			      		 blockName=str(attrs['name']),
 					 numberOfFiles=int(attrs['files']),
-					 numberOfBytes=long(attrs['bytes']))
+					 numberOfBytes=int(attrs['bytes']))
 	    self._block = blocks[id]
           elif name == 'file':
 	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
@@ -728,6 +728,56 @@ class DbsCgiApi(DbsApi):
    data = self._call ({ 'api' : 'mergeAndRemap',
 		         'xmlinput' : input })
 
+ 
+  # ------------------------------------------------------------
+  def getDatasetInfo(self, dataset):
+    """
+    Retrieve the complete DBS snapshpot of a processed dataset with 
+    event collections , files ,processing and blocks
+    Returns a list of ???? objects, with event collection list filled
+    with DbsEventCollection objects.
+
+    The input dataset should be an DbsProcessedDataset with path set,
+    or a DbsProcessedDataset with primary dataset, tier and processed
+    dataset name filled in.  For backwards compatibility a simple
+    dataset path name string is also accepted.
+
+    Raises InvalidDatasetPathName if the path is invalid, otherwise
+    may raise an DbsCgiApiException.
+
+    """
+    # Check path.
+    path = self._path(dataset)
+    verifyDatasetPathName(path)
+
+    # Invoke cgi script.
+    data = self._call ({ 'api' : 'getDatasetInfo', 'path' : path })
+    #print "data is ",data
+    return data
+    # Parse the resulting xml output.  The output consits of a list of blocks,
+    # each with its list of event collections.
+    """
+    try:
+      fileBlocks = {}
+      class Handler (xml.sax.handler.ContentHandler):
+	def __init__ (self):
+	  self._block = None
+	def startElement(self, name, attrs):
+	  if name == 'block':
+	    id = attrs['id']
+	    if not fileBlocks.has_key (id):
+	      fileBlocks[id] = DbsFileBlock(objectId=long(id), blockName=str(attrs['name']))
+	    self._block = fileBlocks[id]
+          elif name == 'event-collection':
+	    self._block['eventCollectionList'].append (DbsEventCollection(
+	      collectionName=str(attrs['name']), numberOfEvents=int(attrs['events'])))
+
+      xml.sax.parseString (data, Handler ())
+      return fileBlocks.values ()
+    except Exception, ex:
+      raise DbsCgiBadResponse(exception=ex)
+    """
+    
 
 ##############################################################################
 # Unit testing: see dbsCgiTest*.py

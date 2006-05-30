@@ -64,6 +64,9 @@ my %apis = (
     path => REQUIRED, datatier => OPTIONAL } ],
   'getDatasetContents' => [ \&getDatasetContents, {
     path => REQUIRED } ],
+  'getDatasetInfo' => [ \&getDatasetInfo, {
+    path => REQUIRED } ],
+
   'getDatasetFiles' => [ \&getDatasetFiles, {
     path => REQUIRED } ],
   'listPrimaryDatasets' => [ \&listPrimaryDatasets, {
@@ -1632,3 +1635,111 @@ sub addHistory
 	    ":person" => $person->{ID},
 	    ":mediator" => $self->makeMediator()->{ID});
 }
+
+
+# Get the snapshot of the complete dataset in xml
+sub getDatasetInfo {
+	my ($dbs) = @_;
+	# Parse parameters
+	my @path = &getPath ();
+
+	# Translate the dataset path to an id
+	my $processid = &datasetFromPath ($dbs, @path);
+
+	# Prepare output.
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+	my $primaryid = &getNamed($dbs, "primary_dataset", $path[0], 1)->{id};
+	my $pathname = "/$path[0]/$path[1]/$path[2]";
+	$out .= "<primary-dataset id='$primaryid' name='$path[0]'>\n";
+	$out .= "<processed-dataset id='$processid' path='$pathname'>\n";
+
+	# Fetch event collections in this processed dataset
+	$q = &dbexec($$dbs{DBH}, qq{
+		select 	evc.id,	evc.name, evc.events, evs.name
+		from t_event_collection evc, t_evcoll_status evs
+		where 
+			evs.id = evc.status
+			and evc.processed_dataset = :id},
+		":id" => $processid);
+	while (my $row = $q->fetchrow_arrayref()) {
+		my ($id, $name, $events, $status) = @$row;
+		$status = "" if ! defined $status;
+		$out .= "<event-collection id='$id' name='$name' events='$events' status='$status'>\n";
+		#For each Event Collection get the list of fileids
+		my $q1 = &dbexec($$dbs{DBH}, qq{
+			select evf.fileid
+			from t_evcoll_file evf
+			where 
+				evf.evcoll = :id},
+			":id" => $id);
+		while (my ($fileid) = $q1->fetchrow()) {
+			$out .= "<file id='$fileid'/>\n";
+		}
+		#For each Event Collection get the parent Event Collection
+		my $q2 = &dbexec($$dbs{DBH}, qq{
+		select 	evc.id,	evc.name, evc.events, evs.name, pt.name
+		from t_event_collection evc, t_evcoll_status evs, t_evcoll_parentage evp, t_parentage_type pt
+		where 
+			evs.id = evc.status
+			and evp.child = :child
+			and evp.parent = evc.id
+			and evp.type = pt.id},
+		":child" => $id);
+		while (my ($id, $name, $events, $status, $ptype) = $q2->fetchrow()) {
+			$out .= "<parent id='$id' name='$name' events='$events' status='$status' type='$ptype'/>\n";
+		}
+		$out .= "</event-collection>\n";
+
+	
+
+	}
+	$out .= "</processed-dataset>\n";
+	#Fetch all the processing with application in this Primary dataset
+	my $q3 = &dbexec($$dbs{DBH}, qq{
+		select p.id, pn.name, p.is_open, app.executable, app.app_version, ps.hash, ps.content
+		from t_processing p, t_processing_name pn, t_app_config appc, t_application app, t_parameter_set ps
+		where 
+			p.app_config = appc.id 
+			and p.name = pn.id
+			and appc.application = app.id
+			and appc.parameter_set = ps.id
+			and p.primary_dataset = :primid},
+		":primid" => $primaryid);
+	while (my ($processingid, $processingname, $isopen, $exe, $version, $hash, $content) = $q3->fetchrow()) {
+		$out .= "\n<processing id='$processingid' name='$processingname' is-open='$isopen' executable='$exe' version='$version' hash='$hash' content='$content'>\n";
+
+		#Get all the Blocks inside this Processing
+		my $q4 = &dbexec($$dbs{DBH}, qq{
+			select b.id, b.files, b.bytes, bs.name
+			from t_block b, t_block_status bs
+			where 
+				b.status = bs.id 
+				and b.processing = :procid},
+			":procid" => $processingid);
+		while (my ($bid, $bfiles, $bbytes, $status) = $q4->fetchrow()) {
+			$out .= "\n<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'>\n";
+			#Fetch all the files inside this block
+			my $q5 = &dbexec($$dbs{DBH}, qq{
+				select f.id, f.guid, f.logical_name, f.checksum,f.filesize, ft.name, fs.name
+				from t_file f, t_file_type ft, t_file_status fs
+				where 
+					f.status = fs.id
+					and f.type = ft.id
+					and f.inblock = :blockid},
+				":blockid" => $bid);
+			while (my ($fid, $fguid, $flogicalname, $fchecksum, $ffilesize, $ftype, $fstatus) = $q5->fetchrow()) {
+				$out .= "\n<file id='$fid' guid='$fguid' logical-name='$flogicalname' checksum='$fchecksum' size='$ffilesize' type='$ftype' status='$fstatus'/>\n";
+			}
+		 	$out .= "</block>\n";
+		}
+		 $out .= "</processing>\n";
+	}
+	$out .= "</primary-dataset></dbs>\n";
+
+	# Spit out the result
+	$$dbs{DBH}->disconnect ();
+	&reply_success ($out);
+}
+
+
+
