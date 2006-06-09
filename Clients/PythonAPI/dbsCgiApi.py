@@ -502,7 +502,7 @@ class DbsCgiApi(DbsApi):
 	      blocks[id] = DbsFileBlock (objectId=long(id),
 			      		 blockName=str(attrs['name']),
 					 numberOfFiles=int(attrs['files']),
-					 numberOfBytes=int(attrs['bytes']))
+					 numberOfBytes=long(attrs['bytes']))
 	    self._block = blocks[id]
           elif name == 'file':
 	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
