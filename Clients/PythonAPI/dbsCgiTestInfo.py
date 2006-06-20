@@ -22,7 +22,9 @@ try:
    print ""
    otherDatasetPath = "/test_primary_anzar/Hit/test_process_anzar"
    print "Dataset info for: %s" % otherDatasetPath
-   print api.getDatasetInfo(otherDatasetPath)
+   xmlinput = api.getDatasetInfo(otherDatasetPath)
+   print "xmlinput %s" % xmlinput
+   print api.insertDatasetInfo(xmlinput)
   except DbsCgiDatabaseError,e:
    print e
  

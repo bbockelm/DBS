@@ -46,7 +46,11 @@ use CGI qw(header param escapeHTML);
 use DBI qw(:sql_types);
 use XML::Parser;
 use Text::Glob 'glob_to_regex';
+use Error qw(:try);
 $Text::Glob::strict_wildcard_slash = 0;
+
+$file = 'out.txt';
+open(INFO, ">$file");
 
 ######################################################################
 # Main program
@@ -55,8 +59,6 @@ my $dbparams = $ENV{DBS_DBPARAM} || "/home/sekhri/cgi/PythonAPI/DBParam";
 my $SAFE_NAME = qr|^[-A-Za-z0-9_.]+$|;
 my $SAFE_PATH = qr|^[-A-Za-z0-9_./]+$|;
 my $SAFE_TIERS = qr|^[-A-Za-z,]+$|;
-#$file = 'out.txt';
-#open(INFO, ">$file");
 # Known API calls
 my %apis = (
   # Query side
@@ -66,7 +68,6 @@ my %apis = (
     path => REQUIRED } ],
   'getDatasetInfo' => [ \&getDatasetInfo, {
     path => REQUIRED } ],
-
   'getDatasetFiles' => [ \&getDatasetFiles, {
     path => REQUIRED } ],
   'listPrimaryDatasets' => [ \&listPrimaryDatasets, {
@@ -88,6 +89,8 @@ my %apis = (
   'createPrimaryDataset' => [ \&createPrimaryDataset, {
     name => REQUIRED } ],
   'createProcessing' => [ \&createProcessing, {
+    xmlinput => REQUIRED } ],
+  'insertDatasetInfo' => [ \&insertDatasetInfo, {
     xmlinput => REQUIRED } ],
   'createFileBlock' => [ \&createFileBlock, {
     processing => REQUIRED } ],
@@ -112,6 +115,14 @@ my $api = param('api');
 # Invoke the method
 &checkParameters ($apis{$api}[1]);
 &callApi ($apis{$api});
+
+my($exceptionClass) = ();
+
+sub throwException{
+	my($myValue ,$myClass, $myMessage) = @_;
+	$exceptionClass = $myClass;
+	throw Error::Simple($myMessage,$myValue);
+}
 
 ######################################################################
 # Common routines.
@@ -217,7 +228,7 @@ sub checkPattern
 # Connect to the DBS database.
 sub connectToDBS
 {
-  #my $instance = param('instance') || "DevMC/Reader";
+#my $instance = param('instance') || "DevMC/Reader";
   my $instance = param('instance') || "Anzar/Writer";
   #my $instance = param('instance') || "Production/Reader";
   #my $instance = param('instance') || "Dev/Reader";
@@ -642,13 +653,14 @@ sub getDatasetContents
 
   # Parse parameters
   my @path = &getPath ();
-
+  
   # Translate the dataset path to an id
   my $id = &datasetFromPath ($dbs, @path);
 
   # Prepare output.
   my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
   my $pathname = "/$path[0]/$path[1]/$path[2]";
+  my $blockbase = "/$path[0]/$path[2]";
   $out .= "<processed-dataset id='$id' path='$pathname'>";
 
   # Fetch event collections by which block they belong to
@@ -685,7 +697,8 @@ sub getDatasetContents
     $out .= "</block>" if defined $prev && $prev != $block;
     if (! defined $prev || $prev != $block)
     {
-      $out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>";
+	    #$out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>";
+      $out .= "<block id='$block' name='$blockbase#$block' status='$bstatus'>";
       $prev = $block;
     }
     next if $name eq 'EvC_META';
@@ -785,336 +798,518 @@ sub getDatasetFiles
 
 ######################################################################
 # Create a new primary dataset
-sub createPrimaryDataset
-{
-  my ($dbs) = @_;
+sub createPrimaryDataset {
+	my ($dbs) = @_;
+      	# Parse parameters
+	my $name = param('name');
+	my ($id) = ();
+	try {
+		$id = &createPrimaryDatasetLogic ($dbs, $name);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+	# Prepare output.
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+	$out .= "<primary-dataset id='$id' name='$name'/></dbs>\n";
 
-  # Parse parameters
-  my $name = param('name');
-  &reply_failure (200, "Bad request", "No name specified")
-    if (! defined $name);
-  &reply_failure (300, "Bad data", "Invalid characters in name")
-    if ($name !~ /$SAFE_NAME/o);
+	&reply_success ($out);
 
-  # Create the primary dataset
-  my $obj = eval { &makeNamed($dbs, "primary_dataset", $name, 0) };
-  &reply_failure (303, "Object exists", "Object already exists: $@")
-    if $@ && $@ =~ /ORA-00001/;
-  &reply_failure (402, "Execution error", $@)
-    if $@;
-  &reply_failure (402, "Execution error", "Failed to fetch object id")
-    if ! defined $$obj{id};
+}
 
-  # Prepare output.
-  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-  $out .= "<primary-dataset id='$$obj{id}' name='$name'/></dbs>\n";
+sub createPrimaryDatasetLogic {
+	my ($dbs, $name) = @_;
 
-  # Spit out the result
-  $$dbs{DBH}->commit();
-  $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+	&throwException(300, "Bad request",  "No name specified") if (! defined $name);
+	&throwException (300, "Bad data", "Invalid characters in name") if ($name !~ /$SAFE_NAME/o);
+
+	# Create the primary dataset
+	my $obj = eval { &makeNamed($dbs, "primary_dataset", $name, 1) };
+	#&throwException (303, "Object exists", "Object already exists: $@") if $@ && $@ =~ /ORA-00001/;
+	&throwException (402, "Execution error", $@) if $@;
+	&throwException (402, "Execution error", "Failed to fetch object id") if ! defined $$obj{id};
+
+	$$dbs{DBH}->commit();
+	return ($$obj{id});
 }
 
 ######################################################################
 # Create a new processing
-sub createProcessing
-{
-  my ($dbs) = @_;
+sub createProcessing {
+	my ($dbs) = @_;
+      	# Parse parameters
+	my $xmlinput = param('xmlinput');
+	&reply_failure (200, "Bad request", "No xmlinput specified")
+	if (! defined $xmlinput);
 
-  # Parse parameters
-  my $xmlinput = param('xmlinput');
-  &reply_failure (200, "Bad request", "No xmlinput specified")
-    if (! defined $xmlinput);
+	# Parse the xmlinput.  We expect a structure like this:
+	#   <processing name='' primary='' parent=''>
+	#     <application executable='' version='' family=''/>
+	#     <parameter-set hash='' content=''/>
+	#   </processing>
+	my ($name, $primary, $pname);
+	my ($appexe, $appvers, $appfamily);
+	my ($psethash, $psetcontent);
+	eval {
+		(new XML::Parser (Handlers => { Start => sub {
+		my ($parser, $element, %attrs) = @_;
+		if ($element eq 'processing') {
+			$name = $attrs{name};
+			$primary = $attrs{primary};
+			$pname = $attrs{parent};
+		} elsif ($element eq 'application') {
+			$appexe = $attrs{executable};
+			$appvers = $attrs{version};
+			$appfamily = $attrs{family};
+		} elsif ($element eq 'parameter-set') {
+			$psethash = $attrs{hash};
+			$psetcontent = $attrs{content};
+		} } } ))->parse ($xmlinput);
+	};
+	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
+	my ($id) = ();
+	try {
+		$id = &createProcessingLogic ($dbs, $name, $primary, $pname, $appexe, $appvers, $appfamily, $psethash, $psetcontent);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+      	# Produce an output
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+	$out .= "<processing id='$id' name='$name'/></dbs>\n";
+	$$dbs{DBH}->disconnect ();
+	&reply_success ($out);
+}
 
-  # Parse the xmlinput.  We expect a structure like this:
-  #   <processing name='' primary='' parent=''>
-  #     <application executable='' version='' family=''/>
-  #     <parameter-set hash='' content=''/>
-  #   </processing>
-  my ($name, $primary, $pname);
-  my ($appexe, $appvers, $appfamily);
-  my ($psethash, $psetcontent);
-  eval
-  {
-    (new XML::Parser (Handlers => { Start => sub {
-	my ($parser, $element, %attrs) = @_;
-	if ($element eq 'processing') {
-	  $name = $attrs{name};
-	  $primary = $attrs{primary};
-	  $pname = $attrs{parent};
-	} elsif ($element eq 'application') {
-	  $appexe = $attrs{executable};
-	  $appvers = $attrs{version};
-	  $appfamily = $attrs{family};
-	} elsif ($element eq 'parameter-set') {
-	  $psethash = $attrs{hash};
-	  $psetcontent = $attrs{content};
-	} } } ))->parse ($xmlinput);
-  };
+sub createProcessingLogic {
+	my ($dbs, $name, $primary, $pname, $appexe, $appvers, $appfamily, $psethash, $psetcontent) = @_;
+	# Verify the parameters.
+	&throwException (300, "Bad data", "Missing or invalid processing name")	if ! defined $name || $name eq '' || $name !~ /$SAFE_NAME/o;
+	&throwException (300, "Bad data", "Missing or invalid primary name") if ! defined $primary || $primary eq '' || $primary !~ /$SAFE_NAME/o;
+	&throwException (300, "Bad data", "Invalid processing parent name") if defined $pname && $pname ne '' && $pname !~ /$SAFE_NAME/o;
+	&throwException (300, "Bad data", "Missing application parameters") if (! defined $appexe || $appexe eq '' || ! defined $appvers || $appvers eq '' || ! defined $appfamily || $appfamily eq '');
+	&throwException (300, "Bad data", "Missing parameter-set parameters") if (! defined $psethash || $psethash eq '' || ! defined $psetcontent || $psetcontent eq '');
 
-  # Verify the parameters.
-  &reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
-  &reply_failure (300, "Bad data", "Missing or invalid processing name")
-    if ! defined $name || $name eq '' || $name !~ /$SAFE_NAME/o;
-  &reply_failure (300, "Bad data", "Missing or invalid primary name")
-    if ! defined $primary || $primary eq '' || $primary !~ /$SAFE_NAME/o;
-  &reply_failure (300, "Bad data", "Invalid processing parent name")
-    if defined $pname && $pname ne '' && $pname !~ /$SAFE_NAME/o;
-  &reply_failure (300, "Bad data", "Missing application parameters")
-    if (! defined $appexe || $appexe eq ''
-	|| ! defined $appvers || $appvers eq ''
-	|| ! defined $appfamily || $appfamily eq '');
-  &reply_failure (300, "Bad data", "Missing parameter-set parameters")
-    if (! defined $psethash || $psethash eq ''
-	|| ! defined $psetcontent || $psetcontent eq '');
+	# If a parent was named, make sure it exists and obtain the id.
+	my $parent = undef;
+	if (defined $pname && $pname ne '') {
+		($parent) = &dbexec($$dbs{DBH}, qq{
+			select p.id
+			from t_processing p
+			join t_processing_name pn
+			on pn.id = p.name
+			join t_primary_dataset pd
+			on pd.id = p.primary_dataset
+			where pn.name = :processing_name
+			and pd.name = :primary_name},
+			":processing_name" => $pname,
+			":primary_name" => $primary)
+			->fetchrow();
+		&throwException (302, "Missing object", "No such parent processing $pname") if ! defined $parent;
+	}
 
-  # If a parent was named, make sure it exists and obtain the id.
-  my $parent = undef;
-  if (defined $pname && $pname ne '')
-  {
-    ($parent) = &dbexec($$dbs{DBH}, qq{
-      select p.id
-      from t_processing p
-        join t_processing_name pn
-          on pn.id = p.name
-        join t_primary_dataset pd
-          on pd.id = p.primary_dataset
-      where pn.name = :processing_name
-        and pd.name = :primary_name},
-      ":processing_name" => $pname,
-      ":primary_name" => $primary)
-      ->fetchrow();
-    &reply_failure (302, "Missing object", "No such parent processing $pname")
-      if ! defined $parent;
-  }
+	# Get the ids for various things we need
+	my ($primaryid) = &getNamed($dbs, "primary_dataset", $primary);
 
-  # Get the ids for various things we need
-  my ($primaryid) = &getNamed($dbs, "primary_dataset", $primary);
-
-  # Proceed to create objects.  Create parameter set, application and
-  # application configuration if they do not yet exist.
-  my $pset = &makeObject($dbs, "parameter_set", "hash", {
+	# Proceed to create objects.  Create parameter set, application and
+	# application configuration if they do not yet exist.
+	my $pset = &makeObject($dbs, "parameter_set", "hash", {
 		'hash' => $psethash,
-		'content' => $psetcontent });
-  my $app = &makeObject($dbs, "application", "", {
+		'content' => $psetcontent }, 0);
+	my $app = &makeObject($dbs, "application", "", {
 		'executable' => $appexe,
 		'app_version' => $appvers,
-		'app_family' => &makeNamed ($dbs, "app_family", $appfamily, 1) });
-  my $appc = &makeObject($dbs, "app_config", "", {
+		'app_family' => &makeNamed ($dbs, "app_family", $appfamily, 1) }, 0);
+	my $appc = &makeObject($dbs, "app_config", "", {
 		'application' => $app,
-		'parameter_set' => $pset });
-
-  my $processing = &makeObject($dbs, "processing", undef, {
-		'primary_dataset' => $primaryid,
-		'app_config' => $appc,
-		'name' => &makeNamed($dbs, "processing_name", $name, 1),
-		'is_open' => 'y',
-		'input' => $parent });
-
-  # Produce an output
-  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-  $out .= "<processing id='$$processing{id}' name='$name'/></dbs>\n";
-
-  # Spit out the result
-  $$dbs{DBH}->commit();
-  $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+		'parameter_set' => $pset }, 0);
+	#if processing doesnot already exist then get the id and return it.
+	my $processing = ();
+	#try{
+		$processing = &makeObject($dbs, "processing", undef, {
+			'primary_dataset' => $primaryid,
+			'app_config' => $appc,
+			'name' => &makeNamed($dbs, "processing_name", $name, 1),
+			'is_open' => 'y',
+			'input' => $parent }, 1);
+	#} catch	Error with {
+	#	my $ex = shift;
+	#	if ($exceptionClass eq "Object exists" ) {
+	#		$$processing{id} = &dbexec($$dbs{DBH}, qq{
+	#			select p.id
+	#			from t_processing p
+	#			where 
+	#				p.app_config = :app_config},
+					#and p.input = :input},
+					#			":app_config" => $$appc{id})->fetchrow();
+				#":input" => $processingid);
+				#	} else {
+			#Rethrow the exception
+			#		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+			#	}
+			#};
+	# Spit out the result
+	$$dbs{DBH}->commit();
+	return ($$processing{id});
 }
 
 ######################################################################
 # Create a new file block
-sub createFileBlock
-{
-  my ($dbs) = @_;
+sub createFileBlock {
+	my ($dbs) = @_;
+	# Parse parameters
+	my $processing = param('processing');
+	my ($id) = ();
+	try {
+		$id = &createFileBlockLogic ($dbs, $processing);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
 
-  # Parse parameters
-  my $processing = param('processing');
-  &reply_failure (200, "Bad request", "No processing specified")
-    if (! defined $processing);
-  &reply_failure (300, "Bad data", "Invalid characters in processing")
-    if ($processing !~ /$SAFE_PATH/o);
-  &reply_failure (300, "Bad data", "Expecting /PRIMARY/NAME processing name")
-    if ($processing !~ m|^/([^/]+)/([^/]+)$|o);
+	# Produce output
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+	$out .= "<block id='$id' name='$processing#$id'/></dbs>\n";
+	&reply_success ($out);
+}
 
-  # First find the processing.  This is required to exist.
-  my ($owner) = &dbexec($$dbs{DBH}, qq{
-      select p.id
-      from t_processing p
-        join t_processing_name pn
-          on pn.id = p.name
-        join t_primary_dataset pd
-          on pd.id = p.primary_dataset
-      where pn.name = :processing_name
-        and pd.name = :primary_name},
-      ":processing_name" => $2,
-      ":primary_name" => $1)
-      ->fetchrow();
-  &reply_failure (302, "Missing object", "No such processing $processing")
-    if ! defined $owner;
 
-  # Now create the block.  (FIXME: Do we give this a name?)
-  my $obj = &makeObject($dbs, "block", undef, {
-		  'processing' => $owner,
-		  'status' => &makeNamed ($dbs, "block_status", "OPEN", 1),
-		  'files' => 0,
-		  'bytes' => 0 });
+sub createFileBlockLogic {
+	my ($dbs, $processing) = @_;
+	&throwException (200, "Bad request", "No processing specified") if (! defined $processing);
+	&throwException (300, "Bad data", "Invalid characters in processing") if ($processing !~ /$SAFE_PATH/o);
+	&throwException (300, "Bad data", "Expecting /PRIMARY/NAME processing name") if ($processing !~ m|^/([^/]+)/([^/]+)$|o);
 
-  # Produce output
-  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-  $out .= "<block id='$$obj{id}' name='$processing#$$obj{id}'/></dbs>\n";
+	# First find the processing.  This is required to exist.
+	my ($owner) = &dbexec($$dbs{DBH}, qq{
+		select p.id
+		from t_processing p
+		join t_processing_name pn
+		on pn.id = p.name
+		join t_primary_dataset pd
+		on pd.id = p.primary_dataset
+		where pn.name = :processing_name
+		and pd.name = :primary_name},
+		":processing_name" => $2,
+		":primary_name" => $1)
+		->fetchrow();
+	&throwException (302, "Missing object", "No such processing $processing") if ! defined $owner;
 
-  # Spit out the result
-  $$dbs{DBH}->commit();
-  $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+	# Now create the block.  (FIXME: Do we give this a name?)
+	my $obj = &makeObject($dbs, "block", undef, {
+		'processing' => $owner,
+		'status' => &makeNamed ($dbs, "block_status", "OPEN", 1),
+		'files' => 0,
+		'bytes' => 0 }, 0);
+
+	# Spit out the result
+	$$dbs{DBH}->commit();
+	return ($$obj{id});
 }
 
 ######################################################################
 # Create a new primary dataset
-sub createProcessedDataset
-{
-  my ($dbs) = @_;
+sub createProcessedDataset {
+	my ($dbs) = @_;
 
-  # Parse parameters
-  my @path = &getPath();
-  my @input = &getPath('input', 1);
+	# Parse parameters
+	my @path = &getPath();
+	my @input = &getPath('input', 1);
 
-  # Verify the path components exist.  We require primary dataset and the
-  # processing name to exist already, the latter created at the time the
-  # processing entity was created.  The data tier is created on demand.
-  # This allows us to catch some mistyped names.
-  my $primaryid = &getNamed($dbs, "primary_dataset", $path[0], 1)->{id};
-  my $nameid = &getNamed($dbs, "processing_name", $path[2], 1)->{id};
-  my $tierid = &makeNamed ($dbs, "data_tier", $path[1], 1)->{id};
+	# Verify the path components exist.  We require primary dataset and the
+	# processing name to exist already, the latter created at the time the
+	# processing entity was created.  The data tier is created on demand.
+	# This allows us to catch some mistyped names.
+	my $primaryName = $path[0];
+	my $dataTier = $path[1];
+	my $processedName = $path[2];
+	my ($id) = ();
+	try {
+		$id = &createProcessedDatasetLogic ($dbs, $primaryName, $dataTier, $processedName, @input);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+	my $path = "/" . join("/", @path);
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+	$out .= "<processeed-dataset id='$id' path='$path'/></dbs>\n";
+	&reply_success ($out);
 
-  # If an input was given, locate it.
-  my $inputid = (defined $input[0] ? &datasetFromPath($$dbs, @input) : undef);
 
-  # Create the processed dataset
-  my $obj = &makeObject($dbs, "processed_dataset", undef, {
+}
+
+sub createProcessedDatasetLogic {
+	my ($dbs, $primaryName, $dataTier, $processedName, @input) = @_;
+	&throwException (300, "Bad data", "Invalid Data Tier") if (! defined $dataTier || $dataTier !~ /^[A-Za-z]+$/o);
+
+	my $primaryid = &getNamed($dbs, "primary_dataset", $primaryName,, 1)->{id};
+	my $nameid = &getNamed($dbs, "processing_name", $processedName, 1)->{id};
+	my $tierid = &makeNamed ($dbs, "data_tier", $dataTier, 1)->{id};
+
+	# If an input was given, locate it. Note that &datasetFromPath will directly return failure to the client
+	my $inputid = (defined $input[0] ? &datasetFromPath($$dbs, @input) : undef);
+
+	# Create the processed dataset
+	my $obj = &makeObject($dbs, "processed_dataset", undef, {
 		'primary_dataset' => $primaryid,
 		'data_tier' => $tierid,
 		'name' => $nameid,
-		'input' => $inputid });
+		'input' => $inputid }, 1);
 
-  # Prepare output.
-  my $path = "/" . join("/", @path);
-  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-  $out .= "<processeed-dataset id='$$obj{id}' path='$path'/></dbs>\n";
-
-  # Spit out the result
-  $$dbs{DBH}->commit();
-  $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+	$$dbs{DBH}->commit();
+	return($$obj{id});
 }
 
 ######################################################################
 # Insert files into a block of a processing.
-sub insertFiles
-{
-  my ($dbs) = @_;
+sub insertFiles {
+	my ($dbs) = @_;
 
-  # Parse parameters
-  my $xmlinput = param('xmlinput');
-  &reply_failure (200, "Bad request", "No xmlinput specified")
-    if (! defined $xmlinput);
+	# Parse parameters
+	my $xmlinput = param('xmlinput');
+	&reply_failure (200, "Bad request", "No xmlinput specified") if (! defined $xmlinput);
 
-  # Parse the xmlinput.  We expect a structure like this:
-  #   <block name=>
-  #     <file lfn= guid= checksum= size= status= type= />
-  #   </block>
-  my ($name, @files) = ();
-  eval
-  {
-    (new XML::Parser (Handlers => { Start => sub {
-	my ($parser, $element, %attrs) = @_;
-	if ($element eq 'block') {
-	  $name = $attrs{name};
-	} elsif ($element eq 'file') {
-	  push(@files, \%attrs);
-	} } } ))->parse ($xmlinput);
-  };
+	# Parse the xmlinput.  We expect a structure like this:
+	#   <block name=>
+	#     <file lfn= guid= checksum= size= status= type= />
+	#   </block>
+	my ($name, @files) = ();
+	eval {
+		(new XML::Parser (Handlers => { Start => sub {
+		my ($parser, $element, %attrs) = @_;
+		if ($element eq 'block') {
+			$name = $attrs{name};
+		} elsif ($element eq 'file') {
+			push(@files, \%attrs);
+		} } } ))->parse ($xmlinput);
+	};
+	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
+	my ($primary, $processed, $blockid)  = (($name || '') =~ m!^/([^/]+)/([^/]+)\#(\d+)$!o);
+	try {
+		&insertFilesLogic ($dbs, $name, $primary, $processed, $blockid, @files);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
 
-  # Verify the parameters.
-  my ($primary, $processed, $blockid)
-    = (($name || '') =~ m!^/([^/]+)/([^/]+)\#(\d+)$!o);
+	&reply_success ("<?xml version='1.0' standalone='yes'?><dbs/>");
 
-  &reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
-  &reply_failure (300, "Bad data", "Missing or invalid block name")
-    if (! defined $name || $name eq ''
+}
+
+
+sub insertFilesLogic {
+
+	my ($dbs, $name, $primary, $processed, $blockid, @files) = @_;
+	# Verify the parameters.
+
+	&throwException (300, "Bad data", "Missing or invalid block name")
+	if (! defined $name || $name eq ''
         || ! defined $primary || $primary eq ''
 	|| ! defined $processed || $processed eq ''
 	|| ! defined $blockid || $blockid eq '');
 
-  foreach my $file (@files)
-  {
-    &reply_failure (300, "Bad data", "Invalid file definition")
-      if (! defined $$file{lfn} || $$file{lfn} !~ /$SAFE_PATH/o
-	  || (defined $$file{guid} && $$file{guid} !~ /^[-A-Fa-f0-9]*$/o)
-	  || ! defined $$file{checksum} || $$file{checksum} !~ /^cksum:\d+$/o
-	  || ! defined $$file{size} || $$file{size} !~ /^\d+$/o
-	  || (defined $$file{status} && $$file{status} !~ /^[A-Z]*$/o)
-	  || (defined $$file{type} && $$file{type} !~ /^[A-Za-z]*$/o));
-  }
+	foreach my $file (@files)  {
+		&throwException (300, "Bad data", "Invalid file definition")
+			if (! defined $$file{lfn} || $$file{lfn} !~ /$SAFE_PATH/o
+				|| (defined $$file{guid} && $$file{guid} !~ /^[-A-Fa-f0-9]*$/o)
+				|| ! defined $$file{checksum} || $$file{checksum} !~ /^cksum:\d+$/o
+				|| ! defined $$file{size} || $$file{size} !~ /^\d+$/o
+				|| (defined $$file{status} && $$file{status} !~ /^[A-Z]*$/o)
+			|| (defined $$file{type} && $$file{type} !~ /^[A-Za-z]*$/o));
+	}
 
-  # Check the block exists and lock it.
-  my ($blockid2) = &dbexec($$dbs{DBH}, qq{
-    select id from t_block where id = :id for update},
-    ":id" => $blockid)->fetchrow ();
-  &reply_failure (300, "Bad data", "No such block $name")
-    if ! defined $blockid2;
+	# Check the block exists and lock it.
+	my ($blockid2) = &dbexec($$dbs{DBH}, qq{
+		select id from t_block where id = :id for update},
+		":id" => $blockid)->fetchrow ();
+	&throwException (300, "Bad data", "No such block $name") if ! defined $blockid2;
 
-  # Insert files into the block.  We do everything in one whopping
-  # array operation, plus update the block in the end.  We do not
-  # return the ids of the file objects in the database.
-  my ($nfiles, $nbytes, %type, %status) = (0, 0);
-  my $stmt = &dbprep($$dbs{DBH}, qq{
-    insert into t_file
-    (id, logical_name, guid, checksum, filesize, type, status, inblock)
-    values (seq_file.nextval, ?, ?, ?, ?, ?, ?, ?)});
-  my %params = ();
-  foreach my $file (@files)
-  {
-    $type{$$file{type}} ||= &makeNamed ($dbs, "file_type", $$file{type}, 1)
-      if defined $$file{type} && $$file{type} ne '';
+	# Insert files into the block.  We do everything in one whopping
+	# array operation, plus update the block in the end.  We do not
+	# return the ids of the file objects in the database.
+	my ($nfiles, $nbytes, %type, %status) = (0, 0);
+	my $stmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_file
+		(id, logical_name, guid, checksum, filesize, type, status, inblock)
+		values (seq_file.nextval, ?, ?, ?, ?, ?, ?, ?)});
+	my %params = ();
+	foreach my $file (@files) {
+		$type{$$file{type}} ||= &makeNamed ($dbs, "file_type", $$file{type}, 1) if defined $$file{type} && $$file{type} ne '';
+		$status{$$file{status}} ||= &makeNamed ($dbs, "file_status", $$file{status}, 1)  if defined $$file{status} && $$file{status} ne '';
 
-    $status{$$file{status}} ||= &makeNamed ($dbs, "file_status", $$file{status}, 1)
-      if defined $$file{status} && $$file{status} ne '';
+		push(@{$params{1}}, $$file{lfn});
+		push(@{$params{2}}, $$file{guid});
+		push(@{$params{3}}, $$file{checksum});
+		push(@{$params{4}}, $$file{size});
+		push(@{$params{5}}, $type{$$file{type}}{id});
+		push(@{$params{6}}, $status{$$file{status}}{id});
+		push(@{$params{7}}, $blockid);
 
-    push(@{$params{1}}, $$file{lfn});
-    push(@{$params{2}}, $$file{guid});
-    push(@{$params{3}}, $$file{checksum});
-    push(@{$params{4}}, $$file{size});
-    push(@{$params{5}}, $type{$$file{type}}{id});
-    push(@{$params{6}}, $status{$$file{status}}{id});
-    push(@{$params{7}}, $blockid);
+		$nbytes += $$file{size};
+		$nfiles++;
+	}
 
-    $nbytes += $$file{size};
-    $nfiles++;
-  }
+	map { $stmt->bind_param_array ($_, $params{$_}) } keys %params;
+	eval { $stmt->execute_array ({ ArrayTupleResult => [] }) };
+	&throwException (303, "Object exists", "Object already exists: $@") if $@ && $@ =~ /ORA-00001/;
+	&throwException (402, "Execution error", $@) if $@;
 
-  map { $stmt->bind_param_array ($_, $params{$_}) } keys %params;
-  eval { $stmt->execute_array ({ ArrayTupleResult => [] }) };
-  &reply_failure (303, "Object exists", "Object already exists: $@")
-    if $@ && $@ =~ /ORA-00001/;
-  &reply_failure (402, "Execution error", $@)
-    if $@;
+	&dbexec($$dbs{DBH}, qq{
+		update t_block
+		set files = files + :nfiles,
+		bytes = bytes + :nbytes
+		where id = :id},
+		":id" => $blockid,
+		":nfiles" => $nfiles,
+		":nbytes" => $nbytes);
 
-  &dbexec($$dbs{DBH}, qq{
-    update t_block
-    set files = files + :nfiles,
-        bytes = bytes + :nbytes
-    where id = :id},
-    ":id" => $blockid,
-    ":nfiles" => $nfiles,
-    ":nbytes" => $nbytes);
-
-  # Spit out the result
-  $$dbs{DBH}->commit();
-  $$dbs{DBH}->disconnect ();
-  &reply_success ("<?xml version='1.0' standalone='yes'?><dbs/>");
+	$$dbs{DBH}->commit();
 }
 
+######################################################################
+# Insert event collections with parentage and files.
+sub insertEventCollections {
+	my ($dbs) = @_;
+   
+	# Parse parameters
+	my $xmlinput = param('xmlinput');
+	&reply_failure (200, "Bad request", "No xmlinput specified") if (! defined $xmlinput);
+
+	# Parse the xmlinput.  We expect a structure like this:
+	#   <processed-dataset path=>
+	#     ( <event-collection name= events= status=>
+	#          <parent name= type=/> +
+	#          <file lfn=/> +
+	#       </event-collection> ) +
+	#   </block>
+	my ($path, @path, @evcs) = ();
+	eval  {
+		(new XML::Parser (Handlers => { Start => sub {
+		my ($parser, $element, %attrs) = @_;
+		if ($element eq 'processed-dataset') {
+			$path = $attrs{path};
+		} elsif ($element eq 'event-collection') {
+			push(@evcs, \%attrs);
+			$evcs[$#evcs]{parents} = [];
+			$evcs[$#evcs]{files} = [];
+		} elsif ($element eq 'parent') {
+			push(@{$evcs[$#evcs]{parents}}, \%attrs);
+		} elsif ($element eq 'file') {
+			push(@{$evcs[$#evcs]{files}}, \%attrs);
+		} } } ))->parse ($xmlinput);
+	};
+	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
+	try {
+		&insertEventCollectionsLogic ($dbs, $path,  @evcs);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+	&reply_success ("<?xml version='1.0' standalone='yes'?><dbs/>");
+
+}
+
+sub insertEventCollectionsLogic {
+	my ($dbs, $path, @evcs) = @_;
+	
+	# Verify the parameters.
+	@path = &checkPath ($path, 'path');
+	&throwException (300, "Bad data", "Missing or invalid processed dataset") if ! @path;
+
+	foreach my $evc (@evcs) {
+		&throwException (300, "Bad data", "Invalid event collection")
+			if (! defined $$evc{name} || $$evc{name} !~ /$SAFE_PATH/o
+			|| ! defined $$evc{events} || $$evc{events} !~ /^\d+$/o
+			|| (defined $$file{status} && $$file{status} !~ /^[A-Z]*$/o)
+			|| ! @{$$evc{files}});
+	
+		foreach my $p (@{$$evc{parents}}) {
+			&throwException (300, "Bad data", "Invalid parentage")
+				if (! defined $$p{name} || $$p{name} !~ /$SAFE_PATH/o
+				|| ! defined $$p{type} || $$p{type} !~ /^[A-Za-z]+$/o);
+			}
+
+		foreach my $f (@{$$evc{files}}) {
+			&throwException (300, "Bad data", "Invalid file")  if (! defined $$f{lfn} || $$f{lfn} !~ /$SAFE_PATH/o);
+		}
+	}
+
+	# Check the dataset exists and lock it.
+	my $procds = &datasetFromPath ($dbs, @path, "for update");
+	&throwException (300, "Bad data", "No such processed dataset $path") if ! defined $procds;
+
+	# Insert first the event collections, then parentage and files.
+	# FIXME: Verify that the named parents and files exist!
+	my $estmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_event_collection
+		(id, processed_dataset, name, events, status)
+		values (seq_event_collection.nextval, ?, ?, ?, ?)});
+	my $pstmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_evcoll_parentage (id, parent, child, type)
+		select seq_evcoll_parentage.nextval, p.id, c.id, ?
+		from t_event_collection p, t_event_collection c
+		where p.name = ? and c.name = ?});
+	my $fstmt = &dbprep($$dbs{DBH}, qq{
+		insert into t_evcoll_file (id, evcoll, fileid)
+		select seq_evcoll_file.nextval, e.id, f.id
+		from t_event_collection e, t_file f
+		where e.name = ? and f.logical_name = ?});
+	my (%eparams, %pparams, %fparams, %type, %status) = ();
+	foreach my $evc (@evcs) {
+		$status{$$evc{status}} ||= &makeNamed ($dbs, "evcoll_status", $$evc{status}, 1) if defined $$evc{status} && $$evc{status} ne '';
+		push(@{$eparams{1}}, $procds);
+		push(@{$eparams{2}}, $$evc{name});
+		push(@{$eparams{3}}, $$evc{events});
+		push(@{$eparams{4}}, $status{$$evc{status}}{id});
+
+		foreach my $p (@{$$evc{parents}}) {
+			$type{$$p{type}} ||= &makeNamed ($dbs, "parentage_type", $$p{type}, 1);
+			push(@{$pparams{1}}, $type{$$p{type}}{id});
+			push(@{$pparams{2}}, $$p{name});
+			push(@{$pparams{3}}, $$evc{name});
+		}
+
+		foreach my $f (@{$$evc{files}}) {
+			push(@{$fparams{1}}, $$evc{name});
+			push(@{$fparams{2}}, $$f{lfn});
+		}
+	}
+
+	eval {
+		if (keys %eparams) {
+			map { $estmt->bind_param_array ($_, $eparams{$_}) } keys %eparams;
+			$estmt->execute_array ({ ArrayTupleResult => [] });
+		}
+
+		if (keys %pparams) {
+			map { $pstmt->bind_param_array ($_, $pparams{$_}) } keys %pparams;
+			$pstmt->execute_array ({ ArrayTupleResult => [] });
+		}
+
+		if (keys %fparams) {
+			map { $fstmt->bind_param_array ($_, $fparams{$_}) } keys %fparams;
+			$fstmt->execute_array ({ ArrayTupleResult => [] });
+		}
+	};
+
+	&throwException (303, "Object exists", "Object already exists: $@") if $@ && $@ =~ /ORA-00001/;
+	&throwException (402, "Execution error", $@)  if $@;
+
+	# Spit out the result
+	$$dbs{DBH}->commit();
+}
 
 
 
@@ -1305,148 +1500,6 @@ sub mergeAndRemap {
 }
     
 ######################################################################
-# Insert event collections with parentage and files.
-sub insertEventCollections
-{
-  my ($dbs) = @_;
-   
-  # Parse parameters
-  my $xmlinput = param('xmlinput');
-  &reply_failure (200, "Bad request", "No xmlinput specified")
-    if (! defined $xmlinput);
-
-  # Parse the xmlinput.  We expect a structure like this:
-  #   <processed-dataset path=>
-  #     ( <event-collection name= events= status=>
-  #          <parent name= type=/> +
-  #          <file lfn=/> +
-  #       </event-collection> ) +
-  #   </block>
-  my ($path, @path, @evcs) = ();
-  eval
-  {
-    (new XML::Parser (Handlers => { Start => sub {
-	my ($parser, $element, %attrs) = @_;
-	if ($element eq 'processed-dataset') {
-	  $path = $attrs{path};
-	} elsif ($element eq 'event-collection') {
-	  push(@evcs, \%attrs);
-	  $evcs[$#evcs]{parents} = [];
-	  $evcs[$#evcs]{files} = [];
-	} elsif ($element eq 'parent') {
-	  push(@{$evcs[$#evcs]{parents}}, \%attrs);
-	} elsif ($element eq 'file') {
-	  push(@{$evcs[$#evcs]{files}}, \%attrs);
-	} } } ))->parse ($xmlinput);
-  };
-
-  # Verify the parameters.
-  &reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
-
-  @path = &checkPath ($path, 'path');
-  &reply_failure (300, "Bad data", "Missing or invalid processed dataset")
-    if ! @path;
-
-  foreach my $evc (@evcs)
-  {
-    &reply_failure (300, "Bad data", "Invalid event collection")
-      if (! defined $$evc{name} || $$evc{name} !~ /$SAFE_PATH/o
-	  || ! defined $$evc{events} || $$evc{events} !~ /^\d+$/o
-	  || (defined $$file{status} && $$file{status} !~ /^[A-Z]*$/o)
-  	  || ! @{$$evc{files}});
-	
-    foreach my $p (@{$$evc{parents}})
-    {
-      &reply_failure (300, "Bad data", "Invalid parentage")
-        if (! defined $$p{name} || $$p{name} !~ /$SAFE_PATH/o
-	    || ! defined $$p{type} || $$p{type} !~ /^[A-Za-z]+$/o);
-    }
-
-    foreach my $f (@{$$evc{files}})
-    {
-      &reply_failure (300, "Bad data", "Invalid file")
-        if (! defined $$f{lfn} || $$f{lfn} !~ /$SAFE_PATH/o);
-    }
-  }
-
-  # Check the dataset exists and lock it.
-  my $procds = &datasetFromPath ($dbs, @path, "for update");
-  &reply_failure (300, "Bad data", "No such processed dataset $path")
-    if ! defined $procds;
-
-  # Insert first the event collections, then parentage and files.
-  # FIXME: Verify that the named parents and files exist!
-  my $estmt = &dbprep($$dbs{DBH}, qq{
-    insert into t_event_collection
-    (id, processed_dataset, name, events, status)
-    values (seq_event_collection.nextval, ?, ?, ?, ?)});
-  my $pstmt = &dbprep($$dbs{DBH}, qq{
-    insert into t_evcoll_parentage (id, parent, child, type)
-    select seq_evcoll_parentage.nextval, p.id, c.id, ?
-    from t_event_collection p, t_event_collection c
-    where p.name = ? and c.name = ?});
-  my $fstmt = &dbprep($$dbs{DBH}, qq{
-    insert into t_evcoll_file (id, evcoll, fileid)
-    select seq_evcoll_file.nextval, e.id, f.id
-    from t_event_collection e, t_file f
-    where e.name = ? and f.logical_name = ?});
-  my (%eparams, %pparams, %fparams, %type, %status) = ();
-  foreach my $evc (@evcs)
-  {
-    $status{$$evc{status}} ||= &makeNamed ($dbs, "evcoll_status", $$evc{status}, 1)
-      if defined $$evc{status} && $$evc{status} ne '';
-    push(@{$eparams{1}}, $procds);
-    push(@{$eparams{2}}, $$evc{name});
-    push(@{$eparams{3}}, $$evc{events});
-    push(@{$eparams{4}}, $status{$$evc{status}}{id});
-
-    foreach my $p (@{$$evc{parents}})
-    {
-      $type{$$p{type}} ||= &makeNamed ($dbs, "parentage_type", $$p{type}, 1);
-      push(@{$pparams{1}}, $type{$$p{type}}{id});
-      push(@{$pparams{2}}, $$p{name});
-      push(@{$pparams{3}}, $$evc{name});
-    }
-
-    foreach my $f (@{$$evc{files}})
-    {
-      push(@{$fparams{1}}, $$evc{name});
-      push(@{$fparams{2}}, $$f{lfn});
-    }
-  }
-
-  eval
-  {
-    if (keys %eparams)
-    {
-      map { $estmt->bind_param_array ($_, $eparams{$_}) } keys %eparams;
-      $estmt->execute_array ({ ArrayTupleResult => [] });
-    }
-
-    if (keys %pparams)
-    {
-      map { $pstmt->bind_param_array ($_, $pparams{$_}) } keys %pparams;
-      $pstmt->execute_array ({ ArrayTupleResult => [] });
-    }
-
-    if (keys %fparams)
-    {
-      map { $fstmt->bind_param_array ($_, $fparams{$_}) } keys %fparams;
-      $fstmt->execute_array ({ ArrayTupleResult => [] });
-    }
-  };
-  &reply_failure (303, "Object exists", "Object already exists: $@")
-    if $@ && $@ =~ /ORA-00001/;
-  &reply_failure (402, "Execution error", $@)
-    if $@;
-
-  # Spit out the result
-  $$dbs{DBH}->commit();
-  $$dbs{DBH}->disconnect ();
-  &reply_success ("<?xml version='1.0' standalone='yes'?><dbs/>");
-}
-
-######################################################################
 # Schema utilities.
 sub datasetFromPath
 {
@@ -1470,7 +1523,7 @@ sub datasetFromPath
     ":tiername" => $tier)
     ->fetchrow ();
 
-  if (! defined $id)
+  if (! defined $id )
   {
     $$dbs{DBH}->disconnect ();
     &reply_failure (302, "Missing object",
@@ -1527,9 +1580,11 @@ sub getNamed
 # which should be the names of the columns to the database.  Each hash
 # element may map to a scalar value, or to another hash with 'id' set.
 # On return, the object's 'id' has been set.
+
+							
 sub makeObject
 {
-  my ($dbs, $kind, $keycheck, $attrs) = @_;
+  my ($dbs, $kind, $keycheck, $attrs, $except) = @_;
   my $id = $$attrs{id};
   my @names = sort keys %$attrs;
   my %params = ();
@@ -1547,7 +1602,8 @@ sub makeObject
       . join(" and ", map { "$_ = :param_$_" } @matching),
       map { (":param_$_" => $params{$_}) } @matching)->fetchrow();
   }
-
+  	      
+  #print INFO "\nkind is $kind\n";
   if (! defined $id)
   {
     # Prepare a SQL statement
@@ -1557,15 +1613,16 @@ sub makeObject
     my $stmt = &dbprep($$dbs{DBH}, $sql);
     $stmt->bind_param_inout(":id", \$id, 10, { TYPE => SQL_INTEGER });
     map { $stmt->bind_param(":param_$_", $params{$_}) } keys %params;
-
     # Execute
     eval { $stmt->execute() };
-    &reply_failure (303, "Object exists", "Object already exists: $@")
-      if $@ && $@ =~ /ORA-00001/;
-    &reply_failure (402, "Execution error", $@)
+    &throwException (303, "Object exists", "Object already exists: $@")
+      if $@ && $@ =~ /ORA-00001/ && $except;
+    &throwException (402, "Execution error", $@)
       if $@;
-    &reply_failure (402, "Execution error", "Failed to fetch object id")
+    &throwException (402, "Execution error", "Failed to fetch object id")
       if ! defined $id;
+  } else {
+	  #print INFO "id is  $id\n";
   }
 
   $$attrs{id} = $id;
@@ -1667,13 +1724,14 @@ sub getDatasetInfo {
 		$out .= "<event-collection id='$id' name='$name' events='$events' status='$status'>\n";
 		#For each Event Collection get the list of fileids
 		my $q1 = &dbexec($$dbs{DBH}, qq{
-			select evf.fileid
-			from t_evcoll_file evf
+			select evf.fileid, f.logical_name
+			from t_evcoll_file evf, t_file f
 			where 
-				evf.evcoll = :id},
+				evf.fileid = f.id
+				and evf.evcoll = :id},
 			":id" => $id);
-		while (my ($fileid) = $q1->fetchrow()) {
-			$out .= "<file id='$fileid'/>\n";
+		while (my ($fileid, $lfn) = $q1->fetchrow()) {
+			$out .= "<file id='$fileid' lfn='$lfn'/>\n";
 		}
 		#For each Event Collection get the parent Event Collection
 		my $q2 = &dbexec($$dbs{DBH}, qq{
@@ -1696,17 +1754,18 @@ sub getDatasetInfo {
 	$out .= "</processed-dataset>\n";
 	#Fetch all the processing with application in this Primary dataset
 	my $q3 = &dbexec($$dbs{DBH}, qq{
-		select p.id, pn.name, p.is_open, app.executable, app.app_version, ps.hash, ps.content
-		from t_processing p, t_processing_name pn, t_app_config appc, t_application app, t_parameter_set ps
+		select p.id, pn.name, p.is_open, app.executable, app.app_version, appf.name, ps.hash, ps.content
+		from t_processing p, t_processing_name pn, t_app_config appc, t_application app, t_app_family appf, t_parameter_set ps
 		where 
 			p.app_config = appc.id 
 			and p.name = pn.id
 			and appc.application = app.id
 			and appc.parameter_set = ps.id
+			and app.app_family = appf.id
 			and p.primary_dataset = :primid},
 		":primid" => $primaryid);
-	while (my ($processingid, $processingname, $isopen, $exe, $version, $hash, $content) = $q3->fetchrow()) {
-		$out .= "\n<processing id='$processingid' name='$processingname' is-open='$isopen' executable='$exe' version='$version' hash='$hash' content='$content'>\n";
+	while (my ($processingid, $processingname, $isopen, $exe, $version, $family, $hash, $content) = $q3->fetchrow()) {
+		$out .= "\n<processing id='$processingid' name='$processingname' is-open='$isopen' executable='$exe' version='$version' family='$family' hash='$hash' content='$content'>\n";
 
 		#Get all the Blocks inside this Processing
 		my $q4 = &dbexec($$dbs{DBH}, qq{
@@ -1717,7 +1776,7 @@ sub getDatasetInfo {
 				and b.processing = :procid},
 			":procid" => $processingid);
 		while (my ($bid, $bfiles, $bbytes, $status) = $q4->fetchrow()) {
-			$out .= "\n<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'>\n";
+			$out .= "<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'>\n";
 			#Fetch all the files inside this block
 			my $q5 = &dbexec($$dbs{DBH}, qq{
 				select f.id, f.guid, f.logical_name, f.checksum,f.filesize, ft.name, fs.name
@@ -1728,18 +1787,192 @@ sub getDatasetInfo {
 					and f.inblock = :blockid},
 				":blockid" => $bid);
 			while (my ($fid, $fguid, $flogicalname, $fchecksum, $ffilesize, $ftype, $fstatus) = $q5->fetchrow()) {
-				$out .= "\n<file id='$fid' guid='$fguid' logical-name='$flogicalname' checksum='$fchecksum' size='$ffilesize' type='$ftype' status='$fstatus'/>\n";
+				$out .= "<afile id='$fid' guid='$fguid' lfn='$flogicalname' checksum='$fchecksum' size='$ffilesize' inblock='$bid' type='$ftype' status='$fstatus'/>\n";
 			}
 		 	$out .= "</block>\n";
 		}
 		 $out .= "</processing>\n";
 	}
 	$out .= "</primary-dataset></dbs>\n";
-
-	# Spit out the result
+	
 	$$dbs{DBH}->disconnect ();
 	&reply_success ($out);
 }
 
+sub insertDatasetInfo {
+	my ($dbs) = @_;
+
+	# Parse parameters
+	my $xmlinput = param('xmlinput');
+	&reply_failure (200, "Bad request", "No xmlinput specified") if (! defined $xmlinput);
+	print INFO "xmlinput $xmlinput\n";
+	my ($primaryDatasetName, $path,  @evcs, @processing,) = ();
+	eval {
+		(new XML::Parser (Handlers => { Start => sub {
+		my ($parser, $element, %attrs) = @_;
+		if ($element eq 'primary-dataset') {
+			$primaryDatasetName = $attrs{name};
+		}elsif ($element eq 'processed-dataset') {
+			$path = $attrs{path};
+		} elsif ($element eq 'event-collection') {
+			push(@evcs, \%attrs);
+			$evcs[$#evcs]{parents} = [];
+			$evcs[$#evcs]{files} = [];
+		} elsif ($element eq 'parent') {
+			push(@{$evcs[$#evcs]{parents}}, \%attrs);
+		} elsif ($element eq 'file') {
+			push(@{$evcs[$#evcs]{files}}, \%attrs);
+		} elsif ($element eq 'processing') {
+			push(@processing, \%attrs);
+			$processing[$#processing]{block} = [];
+			$processing[$#processing]{files} = [];
+		} elsif ($element eq 'block') {
+			push(@{$processing[$#processing]{block}}, \%attrs);
+		} elsif ($element eq 'afile') {
+			push(@{$processing[$#processing]{files}}, \%attrs);
+		} } } ))->parse ($xmlinput);
+	};
+
+	# Verify the parameters.
+	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
+
+	try {	
+		&insertDatasetInfoLogic ($dbs, $primaryDatasetName, $path,  \@evcs, \@processing);
+		#&insertDatasetInfoLogic ($dbs, $primaryDatasetName, $path,   @processing);
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+      	# Produce an output
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs/>";
+	&reply_success ($out);
+
+}
+	
+# Insert the contents of a remote DBS into this local DBS
+sub insertDatasetInfoLogic {
+	#To pass two arrays as a parameter you have to convert into scaler ref and then convert it back to array
+	my ($dbs, $primaryDatasetName, $path,  $ref_evcs, $ref_processing,) = @_;
+	my (@evcs) = @{$ref_evcs};
+	my (@processing) = @{$ref_processing};
+	##########################################################################################################
+	##########################################################################################################
+	#Insert a new Primary Dataset if it doesnot exist alerady.
+	my $primaryId = &createPrimaryDatasetLogic ($dbs, $primaryDatasetName);
+	print INFO "\nprimary id $primaryId \nprimary name $primaryDatasetName";
+	
+	##########################################################################################################
+	##########################################################################################################
+	#Insert a new Processing if it does not exist
+	&printProcessing(@processing);
+	foreach my $aProcessing (@processing) {
+		#FIXME Get the input and pass it correctly to the &createProcessingLogic method and change ithe code  to select the processing id with input in where clause.
+		my ($processingId) = ();
+		try {
+			$processingId = &createProcessingLogic ($dbs, $$aProcessing{name}, $primaryDatasetName, "",  $$aProcessing{executable}, $$aProcessing{version}, $$aProcessing{family}, $$aProcessing{hash} , $$aProcessing{content} );
+		} catch	Error with {
+			my $ex = shift;
+			if (!($exceptionClass eq "Object exists") ) {
+				&throwException ($ex->value(), $exceptionClass, $ex->text());
+			}
+		};
+		print INFO "\nProcessing ID  $processingId ";
+		
+		##########################################################################################################
+		##########################################################################################################
+		# Insert new Blocks
+		my ($tmpName) = "/$primaryDatasetName/$$aProcessing{name}";
+		my (%blocks) = (); #Array to strore remote and local block id mapping
+		foreach my $aBlock  (@{$$aProcessing{block}}) {
+			my ($blockId) =  &createFileBlockLogic ($dbs, $tmpName);
+			#$blockId = 178;#For testing only
+			$blocks{$$aBlock{id}} = $blockId;
+			print INFO "MAP $$aBlock{id} -> $blocks{$$aBlock{id}}";
+		}
+		##########################################################################################################
+		##########################################################################################################
+		# Insert new Files
+		#FIXME Instead of inserting one file by ine file. Insert many files at once. This woudld require change in XML from getDatasetInfo
+		foreach my $aFile (@{$$aProcessing{files}}) {
+			my (@files) = ();
+			push(@files, $aFile);
+			&printFile(@files);
+			try {
+				&insertFilesLogic ($dbs, "$tmpName/$blocks{$$aFile{inblock}}", $primaryDatasetName, $$aProcessing{name}, $blocks{$$aFile{inblock}}, @files);
+			} catch	Error with {
+				my $ex = shift;
+				if (!($exceptionClass eq "Object exists") ) {
+					&throwException ($ex->value(), $exceptionClass, $ex->text());
+				}
+			};	
+		}
+	}
+	
+	##########################################################################################################
+	#########################################################################################################
+	#Insert a new Processed Dataset if it doesnot exist already.
+	#FIXME the input filed is null when getDatasetInfo is called.
+	my($priName, $dataTier, $proName) = &checkPath($path, "path");
+	print INFO "\npriName $priName \ndataTier $dataTier \nproName $proName \n";
+	my ($processedId) = ();
+	try {
+		$processedId = &createProcessedDatasetLogic ($dbs, $priName, $dataTier, $proName, undef);
+	} catch	Error with {
+		my $ex = shift;
+		if (!($exceptionClass eq "Object exists") ) {
+			&throwException ($ex->value(), $exceptionClass, $ex->text());
+		}
+	};
+	print INFO "processedId $processedId\n";
 
 
+	##########################################################################################################
+	#########################################################################################################
+	#Insert all the Event Collections if it doesnot exist already.
+	&printEvc(@evcs);
+	&insertEventCollectionsLogic ($dbs, $path,  @evcs);
+	print INFO "\nEVC inserted properly\n";
+	
+
+	close(INFO);
+
+}
+
+
+#Temporary Printing functions 
+sub printFile {
+	my (@files) = @_;
+	foreach my $atmp (@files) {
+		print INFO "\nid : $$atmp{id}\n";
+		print INFO "guid : $$atmp{guid}\n";
+		print INFO "logical-name : $$atmp{lfn}\n";
+		print INFO "checksum : $$atmp{checksum}\n";
+		print INFO "size : $$atmp{size}\n";
+		print INFO "inblock : $$atmp{inblock}\n";
+		print INFO "type : $$atmp{type}\n";
+		print INFO "status : $$atmp{status}\n";
+	}
+}
+sub printEvc {
+	my (@evcs) = @_;
+	foreach my $aEvc (@evcs) {
+		print INFO "id : $$aEvc{id}\n";
+		print INFO "name : $$aEvc{name}\n";
+		print INFO "events : $$aEvc{events}\n";
+		print INFO "status : $$aEvc{status}\n";
+	}
+}
+
+sub printProcessing {
+	my (@proc) = @_;
+	foreach my $aProcessing (@proc) {
+		print INFO "\nprocessingName  $$aProcessing{name} ";
+		print INFO "\nexecutable  $$aProcessing{executable} ";
+		print INFO "\nversion  $$aProcessing{version} ";
+		print INFO "\nfamily  $$aProcessing{family} ";
+		print INFO "\nhash  $$aProcessing{hash} ";
+		print INFO "\ncontent  $$aProcessing{content} ";
+	}
+}
