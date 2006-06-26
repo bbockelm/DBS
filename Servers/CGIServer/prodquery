@@ -55,7 +55,7 @@ open(INFO, ">$file");
 ######################################################################
 # Main program
 
-my $dbparams = $ENV{DBS_DBPARAM} || "/home/sekhri/cgi/PythonAPI/DBParam";
+my $dbparams = $ENV{DBS_DBPARAM} || die "No \$DBS_DBPARAM.\n";
 my $SAFE_NAME = qr|^[-A-Za-z0-9_.]+$|;
 my $SAFE_PATH = qr|^[-A-Za-z0-9_./]+$|;
 my $SAFE_TIERS = qr|^[-A-Za-z,]+$|;
