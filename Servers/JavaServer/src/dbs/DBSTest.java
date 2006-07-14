@@ -27,9 +27,9 @@ public class DBSTest {
 				//System.out.println("\n\nPrimary Dataset");
 				PrintWriter out = new PrintWriter(System.out);
 				api.listPrimaryDatasets(out, "*");
-				/*
+				
 				System.out.println("\n\nProcessed Dataset");
-				api.listProcessedDatasets(out, "/*d/*d/*");
+				api.listProcessedDatasets(out, "/*/*/*");
 				System.out.println("\n\nParameter Sets");
 				api.listParameterSets(out, "*");
 				System.out.println("\n\nApplications");
@@ -40,9 +40,9 @@ public class DBSTest {
 				api.getDatasetContents(out, "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI");
 				System.out.println("\n\nDataset Files");
 				api.getDatasetFiles(out, "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI");
-				*/
+				
 				//System.out.println();
-				out.flush();
+				//out.flush();
 			//}
 
 		} catch(Exception e) {
