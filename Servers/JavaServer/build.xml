@@ -1,8 +1,10 @@
 <project name="dbs" default="compile">
 
     <property name="sourcedir" value="${basedir}/src"/>
-    <property name="targetdir" value="${basedir}/bin"/>
+    <property name="targetdir" value="${basedir}/bin/WEB-INF/classes"/>
+    <property name="targetlibdir" value="${basedir}/bin/WEB-INF/lib"/>
     <property name="librarydir" value="${basedir}/lib"/>
+    <property name="app.name" value="DBS"/>
 
     <path id="libraries">
         <fileset dir="${librarydir}">
@@ -27,6 +29,12 @@
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
+        <copy todir="${targetlibdir}">
+            <fileset dir="${librarydir}">
+                <exclude name="servlet-api.jar"/>
+            </fileset>
+        </copy>
+
     </target>
 
 	<target name="run" depends="compile">
@@ -35,5 +43,14 @@
         <arg value="${action}"/>
     </java>
 </target>
+
+
+  <target name="dist" depends="compile" description="Create binary distribution">
+
+    <jar jarfile="${basedir}/${app.name}.war"
+         basedir="${basedir}/bin"/>
+
+  </target>
+
 
 </project>
