@@ -50,7 +50,7 @@ ValidationTable = {
          "blockName" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "processing" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "blockStatusName" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
-         "numberOfBytes" : { "Comment" : "Probably a required variable", "Validator" : isLongType },
+         "numberOfBytes" : { "Comment" : "Probably a required variable", "Validator" : isIntType },
          "numberOfFiles" : { "Comment" : "Probably a required variable", "Validator" : isIntType },
          "fileList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "eventCollectionList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },

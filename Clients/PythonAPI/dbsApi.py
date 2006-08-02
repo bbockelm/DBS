@@ -104,7 +104,7 @@ class DbsApi:
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def createFileBlock(self, fileBlock):
+  def createFileBlock(self, dataset, fileBlock):
     """
     Insert event collections for a given processed dataset.
     """

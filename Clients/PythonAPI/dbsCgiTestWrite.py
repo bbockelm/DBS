@@ -13,7 +13,9 @@ from dbsProcessedDataset import DbsProcessedDataset
 from dbsProcessing import DbsProcessing
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
+#DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/in.sh"
+
 DEFAULT_URL = "exec:../CGIServer/prodquery"
 
 try:
@@ -25,16 +27,18 @@ try:
   # api.setDebug(1)
 
   # Attempt to create a primary dataset
+  
   print ""
   primary = DbsPrimaryDataset (datasetName = "test_primary_anzar")
   print "Creating primary dataset %s" % primary
+  
   try:
     api.createPrimaryDataset (primary)
     print "Result: %s" % primary
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
   
-
+  
   # Attempt to create a processing
   print ""
   processing = DbsProcessing (primaryDataset = primary,
@@ -51,7 +55,6 @@ try:
     print "Result: %s" % processing
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
-
 
 
   # Attempt to create a file block
@@ -79,25 +82,27 @@ try:
 			     dataTier="DST")
   print "Creating datasets\n %s\n %s\n %s" % (hits, digi, dst)
   try:
+    pass
     api.createProcessedDataset (hits)
     api.createProcessedDataset (digi)
     api.createProcessedDataset (dst)
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
-
+  
   # Attempt to insert a file
   print ""
-  file = DbsFile (logicalFileName="LFN1", fileSize=1,
+  file = DbsFile (logicalFileName="LFN1xyz", fileSize=1,
 		  checkSum="cksum:1", fileType="EVD")
   print "Inserting file %s" % file
   try:
-    api.insertFiles (block, [ file ])
+    pass
+    #api.insertFiles (block, [ file ])
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
-
+  
   # Attempt to insert hit and digi event collections
   print ""
-  ech = DbsEventCollection (collectionName="HC1", numberOfEvents=1, fileList=[file])
+  ech = DbsEventCollection (collectionName="HC2", numberOfEvents=1, collectionStatus='NEW', fileList=[file])
   ecd = DbsEventCollection (collectionName="DC2", numberOfEvents=1, fileList=[file],
 			    parentageList=[ { 'parent' : ech, 'type' : 'Hit' } ])
   ecs = DbsEventCollection (collectionName="SC2", numberOfEvents=1, fileList=[file],
@@ -109,7 +114,7 @@ try:
     api.insertEventCollections (dst, [ ecs ])
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
-
+  
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:

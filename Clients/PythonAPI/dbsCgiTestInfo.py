@@ -24,7 +24,7 @@ try:
    print "Dataset info for: %s" % otherDatasetPath
    xmlinput = api.getDatasetInfo(otherDatasetPath)
    print "xmlinput %s" % xmlinput
-   print api.insertDatasetInfo(xmlinput)
+   #print api.insertDatasetInfo(xmlinput)
   except DbsCgiDatabaseError,e:
    print e
  

@@ -73,7 +73,7 @@ class DbsCgiExecHandler (urllib2.BaseHandler):
     path = req.get_selector()
     args = path.split("?", 1)
     if len(args) == 1: args.append('')
-
+    print "args ", args
     # Prepare CGI-like environment
     os.putenv ('GATEWAY_INTERFACE', 'CGI/1.1')
     os.putenv ('HTTP_ACCEPT_ENCODING', req.headers.get ('Accept-encoding'))
@@ -148,6 +148,7 @@ class DbsCgiApi(DbsApi):
     request.add_header ('Content-type', type)
     request.add_header ('Content-length', str(len(body)))
     request.add_data (body)
+    #print "body ", body
 
   def _call (self, args):
     """
@@ -169,19 +170,30 @@ class DbsCgiApi(DbsApi):
     for k, v in self._cgiArgs.items(): args[k] = v
     # Fetch result from the CGI server
     try:
+      #request = urllib2.Request (self._cgiUrl, urllib.urlencode(args))
       request = urllib2.Request (self._cgiUrl)
       request.add_header ('Accept-encoding', 'gzip')
       #print "args ",args
       self._marshall (args, request)
       #print "request ",request
       result = urllib2.build_opener (DbsCgiExecHandler).open (request)
+      #print "\n\nresult ->>>>>>>>", result
+      #import pdb
+      #pdb.set_trace()
       data = result.read()
+      #f = open("out.txt", "w")
+      #print "\n\ndata ->>>>>>>>", data
       if result.headers.get ('Content-encoding', '') == 'gzip':
         data = gzip.GzipFile (fileobj=StringIO(data)).read ()
+      #f.write(data);
+      #f.close();
+
       statusCode = int(result.headers.get ('Dbs-status-code'))
       statusMessage = result.headers.get ('Dbs-status-message')
       statusDetail = result.headers.get ('Dbs-status-detail')
-
+      #print "statusCode ", statusCode
+      #print "statusMessage ", statusMessage 
+      #print "statusDetail ", statusDetail
       # If there was a server-side error, raise an appropriate exception
       if statusCode != 100:
         exmsg = "Status message: '%s', Status detail: '%s'" % (statusMessage, statusDetail)
@@ -241,7 +253,8 @@ class DbsCgiApi(DbsApi):
     May raise an DbsCgiApiException.
     """
     # Invoke cgi script.
-    data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern })
+    data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
+    #data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  })
 
     # Parse the resulting xml output.
     try:
@@ -269,6 +282,36 @@ class DbsCgiApi(DbsApi):
     # Invoke cgi script.
     # data = self._call ({ 'api' : 'listProcessedDatasets', 'pattern' : pattern })
     data = self._call ({ 'api' : 'listDatasets', 'pattern' : pattern })
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+	def startElement(self, name, attrs):
+	  if name == 'processed-dataset':
+	    result.append(DbsProcessedDataset (objectId=long(attrs['id']),
+	    				       datasetPathName=str(attrs['path'])))
+      xml.sax.parseString (data, Handler ())
+      return result
+    except DbsException, ex:
+	raise DbsCgiBadResponse(exception=ex)
+    except Exception, ex:
+	raise DbsCgiBadResponse(exception=ex)
+
+
+  # ------------------------------------------------------------
+  def listDatasetsFromApp(self, pattern="*"):
+    """
+    Retrieve list of processed datasets matching a shell glob pattern against 
+    application executable or version or family.
+    Returns a list of DbsProcessedDataset objects.  If the pattern is
+    given, it will be matched against the dataset path as a shell glob
+    pattern.
+
+    May raise an DbsCgiApiException.
+    """
+    # Invoke cgi script.
+    # data = self._call ({ 'api' : 'listProcessedDatasets', 'pattern' : pattern })
+    data = self._call ({ 'api' : 'listDatasetsFromApp', 'pattern' : pattern })
     # Parse the resulting xml output.
     try:
       result = []
@@ -502,7 +545,7 @@ class DbsCgiApi(DbsApi):
 	      blocks[id] = DbsFileBlock (objectId=long(id),
 			      		 blockName=str(attrs['name']),
 					 numberOfFiles=int(attrs['files']),
-					 numberOfBytes=long(attrs['bytes']))
+					 numberOfBytes=int(attrs['bytes']))
 	    self._block = blocks[id]
           elif name == 'file':
 	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
@@ -529,7 +572,8 @@ class DbsCgiApi(DbsApi):
     the database, otherwise may raise an DbsCgiApiException.
     """
     data = self._call ({ 'api' : 'createPrimaryDataset',
-		         'name' : dataset.get('datasetName') })
+		         'name' : dataset.get('datasetName') , 'instance' : 'MCLocal/Writer'  })
+		         #'name' : dataset.get('datasetName') })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
@@ -571,7 +615,8 @@ class DbsCgiApi(DbsApi):
     input += "</processing></dbs>"
 
     # Call the method and fill in object id
-    data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
+    #data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
+    data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input , 'instance' : 'MCLocal/Writer' })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
@@ -606,6 +651,13 @@ class DbsCgiApi(DbsApi):
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
+ 
+  def closeFileBlock(self, block):
+    """
+    Closes a file block.  
+    """
+    input = "<dbs><block id='%s'/></dbs>" % block.get('objectId').__str__()
+    data = self._call ({ 'api' : 'closeFileBlock', 'xmlinput' : input })
     
   # ------------------------------------------------------------
   def createProcessedDataset(self, dataset):
@@ -624,7 +676,8 @@ class DbsCgiApi(DbsApi):
     """
     # Call the method and fill in object id
     data = self._call ({ 'api' : 'createProcessedDataset',
-		    	 'path' : self._path(dataset) })
+		    'path' : self._path(dataset), 'instance' : 'MCLocal/Writer'})
+		    #'path' : self._path(dataset)})
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
@@ -698,34 +751,17 @@ class DbsCgiApi(DbsApi):
     data = self._call ({ 'api' : 'insertEventCollections', 'xmlinput' : input })
 
   # ------------------------------------------------------------
-  def mergeAndRemap(self, eventCollections, outEventCollection, dataset):
+  #def remap(self, eventCollections, outEventCollection, dataset):
+  def remap(self, files, outFile):
 
-   input = "<dbs><processed-dataset path='%s'>" % escape (self._path(dataset))
-   for evc in eventCollections:
-      input += "<event-collection-in name='%s' events='%d' status='%s'>" % (
-	escape (evc.get('collectionName')), evc.get('numberOfEvents'),
-	escape (evc.get('collectionStatus', '')))
-      for p in evc.get('parentageList'):
-        input += "<parent-in name='%s' type='%s'/>" % (
-	  escape (p.get('parent').get('collectionName')), escape (p.get('type')))
-      for f in evc.get('fileList'):
+   input = "<dbs>"
+   for f in files:
         input += "<file-in lfn='%s'/>" % escape (f.get('logicalFileName'))
-      input += "</event-collection-in>"
-   input += "<event-collection name='%s' events='%d' status='%s'>" % (
-     escape (outEventCollection.get('collectionName')), outEventCollection.get('numberOfEvents'),
-     escape (outEventCollection.get('collectionStatus', '')))
-   for p in outEventCollection.get('parentageList'):
-        input += "<parent name='%s' type='%s'/>" % (
-	  escape (p.get('parent').get('collectionName')), escape (p.get('type')))
-   for f in outEventCollection.get('fileList'):
-        input += "<file lfn='%s'/>" % escape (f.get('logicalFileName'))
-
-   input += "</event-collection>"
-
-   input += "</processed-dataset></dbs>"
+   input += "<file lfn='%s'/>" % escape (outFile.get('logicalFileName'))
+   input += "</dbs>"
     
-   #print "calling _call mergeAndRemap inside dbsCgiApi"
-   data = self._call ({ 'api' : 'mergeAndRemap',
+   #print "calling _call remap inside dbsCgiApi"
+   data = self._call ({ 'api' : 'remap',
 		         'xmlinput' : input })
 
  

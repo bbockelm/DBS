@@ -5,8 +5,7 @@
 import os, sys
 from dbsCgiApi import DbsCgiApi
 from dbsException import DbsException
-#LOG is not working: from dbsApi import DbsApi, DbsApiException, InvalidDataTier, DBS_LOG_LEVEL_ALL_
-from dbsApi import DbsApi, DbsApiException, InvalidDataTier
+from dbsApi import DbsApi, DbsApiException, InvalidDataTier, DBS_LOG_LEVEL_ALL_
 
 DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 # DEFAULT_URL = "exec:../../Servers/CGIServer/dbsxml"
@@ -15,7 +14,7 @@ try:
   args = {}
   if len(sys.argv) == 2: args['instance'] = sys.argv[1]
   api = DbsCgiApi(DEFAULT_URL, args)
-  #LOG is not working api.setLogLevel(DBS_LOG_LEVEL_ALL_)
+  api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
 
   # Datasets we play with
@@ -26,7 +25,7 @@ try:
   # List some datasets
   print ""
   print "Listing datasets %s" % datasetPattern
-  datasets = api.listProcessedDatasets (datasetPattern)
+  datasets = api.listDatasets (datasetPattern)
   for dataset in datasets:
     print "  %s" % dataset
 
@@ -48,7 +47,7 @@ try:
   print "Dataset contents for: %s" % otherDatasetPath
   for block in api.getDatasetContents(otherDatasetPath):
     print "  File block name/id: %s/%d, %d event collections}" % \
-      (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')))
+      (block.getBlockName(), block.getObjectId(), len(block.getEventCollectionList()))
 
   # Get dataset contents as a list of blocks with files
   print ""
@@ -57,7 +56,7 @@ try:
   print "Dataset files for: %s" % datasetPath
   for block in api.getDatasetFileBlocks (datasetPath):
     print "  File block name/id: %s/%d, %d files}" % \
-        (block.get('blockName'), block.get('objectId'), len(block.get('fileList')))
+      (block.getBlockName(), block.getObjectId(), len(block.getFileList()))
 
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())

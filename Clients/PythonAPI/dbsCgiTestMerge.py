@@ -13,8 +13,8 @@ from dbsProcessedDataset import DbsProcessedDataset
 from dbsProcessing import DbsProcessing
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
-DEFAULT_URL = "exec:../CGIServer/prodquery"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+#DEFAULT_URL = "exec:../CGIServer/prodquery"
 
 try:
   args = {}
@@ -70,58 +70,65 @@ try:
   
   print "Creating datasets\n %s\n %s\n %s" % (hits, digi, dst)
   try:
-    api.createProcessedDataset (hits)
-    api.createProcessedDataset (digi)
-    api.createProcessedDataset (dst)
+    pass	  
+    #api.createProcessedDataset (hits)
+    #api.createProcessedDataset (digi)
+    #api.createProcessedDataset (dst)
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
   
 
 
-  file = DbsFile (logicalFileName="LFN1", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  file2 = DbsFile (logicalFileName="LFN5", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  ech = DbsEventCollection (collectionName="DC2", numberOfEvents=1, fileList=[file])
+  file1 = DbsFile (logicalFileName="tmpaLFN1", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  file2 = DbsFile (logicalFileName="tmpaLFN2", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  file3 = DbsFile (logicalFileName="tmpaLFN3", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  file4 = DbsFile (logicalFileName="tmpaLFN4", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  file5 = DbsFile (logicalFileName="tmpaLFN5", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  file6 = DbsFile (logicalFileName="tmpaLFN6", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  fileout = DbsFile (logicalFileName="tmpaLFNout", fileSize=1, checkSum="cksum:1", fileType="EVD")
+
   
-  file1 = DbsFile (logicalFileName="myLFN1", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  eout = DbsEventCollection (collectionName="ec2and5", numberOfEvents=10, fileList=[file1])
-  e1 = DbsEventCollection (collectionName="E1", numberOfEvents=10, fileList=[file1])
-  e2 = DbsEventCollection (collectionName="E2", numberOfEvents=10, fileList=[file1],  parentageList=[ { 'parent' : e1, 'type' : 'Hit' } ])
-  e3 = DbsEventCollection (collectionName="E3", numberOfEvents=10, fileList=[file1],  parentageList=[ { 'parent' : e2, 'type' : 'Digi' } ])
+  
+  eout = DbsEventCollection (collectionName="tmpwE2and5", numberOfEvents=10, fileList=[fileout])
+  e1 = DbsEventCollection (collectionName="tmpwE1", numberOfEvents=10, fileList=[file1])
+  e2 = DbsEventCollection (collectionName="tmpwE2", numberOfEvents=10, fileList=[file2],  parentageList=[ { 'parent' : e1, 'type' : 'Hit' } ])
+  e3 = DbsEventCollection (collectionName="tmpwE3", numberOfEvents=10, fileList=[file3],  parentageList=[ { 'parent' : e2, 'type' : 'Hit' } ])
 
-  e4 = DbsEventCollection (collectionName="E4", numberOfEvents=10, fileList=[file1])
-  e5 = DbsEventCollection (collectionName="E5", numberOfEvents=10, fileList=[file1],  parentageList=[ { 'parent' : e4, 'type' : 'Hit' } ])
-  e6 = DbsEventCollection (collectionName="E6", numberOfEvents=10, fileList=[file1],  parentageList=[ { 'parent' : e5, 'type' : 'Digi' } ])
+  e4 = DbsEventCollection (collectionName="tmpwE4", numberOfEvents=10, fileList=[file4])
+  e5 = DbsEventCollection (collectionName="tmpwE5", numberOfEvents=10, fileList=[file5],  parentageList=[ { 'parent' : e4, 'type' : 'Hit' } ])
+  e6 = DbsEventCollection (collectionName="tmpwE6", numberOfEvents=10, fileList=[file6],  parentageList=[ { 'parent' : e5, 'type' : 'Hit' } ])
 
-  ecd = DbsEventCollection (collectionName="DC2", numberOfEvents=1, fileList=[file] )
   
   print ""
-  print "Inserting file %s" % file
+  print "Inserting file " 
   try:
-    #api.insertFiles (block, [ file2 ])
-    api.insertFiles (block, [ file1 ])
+    pass
+    api.insertFiles (block, [ file1, file2, file3, file4, file5, file6, fileout])
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
     
   
   print "Inserting event collections\n %s" % (eout)
   try:
-     #api.insertEventCollections (hits, [ eout])
+     #pass	
+     
      api.insertEventCollections (hits, [e1])
-     api.insertEventCollections (digi, [e2])
-     api.insertEventCollections (dst, [e3])
+     api.insertEventCollections (hits, [e2])
+     api.insertEventCollections (hits, [e3])
      api.insertEventCollections (hits, [e4])
-     api.insertEventCollections (digi, [e5])
-     api.insertEventCollections (dst, [e6])
+     api.insertEventCollections (hits, [e5])
+     api.insertEventCollections (hits, [e6])
+     api.insertEventCollections (digi, [ eout])
   except DbsCgiObjectExists, ex:
      print "Object existed already, passing",ex
   except:
      print "Unexpected error:", sys.exc_info()[0]
 									      
   
-  print "Remapping event collections\n %s\n " % (ech)
+  print "Remapping file\n %s\n " % (file2)
+  print "and file\n %s\n " % (file5)
   try:
-    #api.mergeAndRemap([ ech ], eout, hits)
-    api.mergeAndRemap([ e2,e5 ], eout, hits)
+    api.remap([ file2, file5 ], fileout)
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
   

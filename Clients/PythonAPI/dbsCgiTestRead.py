@@ -6,22 +6,34 @@ import sys
 from dbsCgiApi import DbsCgiApi, DbsCgiDatabaseError
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
-
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+DEFAULT_HOST = "cmssrv18.fnal.gov"
+DEFAULT_PORT = 8443
+DEFAULT_BASE = "/DBS/servlet/DBSServlet"
+#DEFAULT_URL = "http://venom.fnal.gov:8080/DBS/servlet/DBSServlet"
+#DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/RequestHeaderExample"
+#DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/HeaderExample"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
-DEFAULT_URL = "exec:../CGIServer/prodquery"
+#DEFAULT_URL = "exec:../CGIServer/prodquery"
+#DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/catout.sh"
+#DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/abc.sh"
+#DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/run.sh"
+#DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/in.sh"
+#DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/err.sh"
 
 try:
   args = {}
   if len(sys.argv) == 2: args['instance'] = sys.argv[1]
+  print args
   api = DbsCgiApi(DEFAULT_URL, args)
   #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
+  
   try:
    # List all parameter sets
    print ""
    print "Listing parameter sets"
-   for pset in api.listParameterSets():
+   for pset in api.listParameterSets("**"):
      print "  %s" % pset
   except DbsCgiDatabaseError,e:
    print e
@@ -36,23 +48,24 @@ try:
    print ""
    print "Listing application configurations"
 
+   
    for appc in api.listApplicationConfigs():
      print "  %s" % appc
+   
   except DbsCgiDatabaseError,e:
    print e
-
+  
   try:
    # List all primary datasets
    print ""
    print "Listing primary datasets t*"
-   for p in api.listPrimaryDatasets("t*"):
+   for p in api.listPrimaryDatasets("*"):
      print "  %s" % p
   except DbsCgiDatabaseError,e:
    print e
-
   # Datasets we play with
-  datasetPattern = "/*/*/test*"
-
+  datasetPattern = "/*/*/*"
+  
   try:
    # List some datasets
    print ""
@@ -74,7 +87,7 @@ try:
      print "  %s" % parent
   except DbsCgiDatabaseError,e:
    print e
-
+  
   try:
    print ""
    tiers = [ "Digi", "Hit" ]
@@ -84,7 +97,8 @@ try:
      print "  %s" % parent
   except DbsCgiDatabaseError,e:
    print e
-
+  
+  #otherDatasetPath = "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI"
   try:
    # Get dataset contents, returning a list of blocks with event collections
    print ""
@@ -92,19 +106,23 @@ try:
    for block in api.getDatasetContents(otherDatasetPath):
      print "  File block name/id: %s/%d, %d event collections}" % \
        (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')) )
+     for ev in block.get('eventCollectionList') :
+       print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
  
   try:
    # Get dataset contents as a list of blocks with files
    print ""
-   print "Dataset files for: %s" % datasets[0]
-   for block in api.getDatasetFileBlocks (datasets[0]):
+   #print "Dataset files for: %s" % datasets[0]
+   for block in api.getDatasetFileBlocks (otherDatasetPath):
      print "  File block name/id: %s/%d, %d files}" % \
        (block.get('blockName'), block.get('objectId'), len(block.get('fileList')) )
+     for ev in block.get('eventCollectionList') :
+       print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-
+  
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:
