@@ -28,7 +28,7 @@ try:
   api = DbsCgiApi(DEFAULT_URL, args)
   #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
-  
+  """ 
   try:
    # List all parameter sets
    print ""
@@ -97,8 +97,8 @@ try:
      print "  %s" % parent
   except DbsCgiDatabaseError,e:
    print e
-  
-  #otherDatasetPath = "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI"
+  """
+  otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   try:
    # Get dataset contents, returning a list of blocks with event collections
    print ""
@@ -110,7 +110,9 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
- 
+  """
+
+
   try:
    # Get dataset contents as a list of blocks with files
    print ""
@@ -122,7 +124,7 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-  
+   """
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:

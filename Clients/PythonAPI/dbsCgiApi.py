@@ -497,7 +497,13 @@ class DbsCgiApi(DbsApi):
 	      fileBlocks[id] = DbsFileBlock(objectId=long(id), blockName=str(attrs['name']))
 	    self._block = fileBlocks[id]
           elif name == 'event-collection':
-	    self._block['eventCollectionList'].append (DbsEventCollection(
+	    f =  DbsFile (     fileBlockId=int(attrs['inblock']),
+                                guid=str(attrs['guid']),
+                                logicalFileName=str(attrs['lfn']),
+                                fileStatus=str(attrs['fstatus']),
+                                checkSum=str(attrs['checksum']),
+                                fileSize=int(attrs['size']))
+	    self._block['eventCollectionList'].append (DbsEventCollection(fileList=[f], 
 	      collectionName=str(attrs['name']), numberOfEvents=int(attrs['events'])))
 
       xml.sax.parseString (data, Handler ())
