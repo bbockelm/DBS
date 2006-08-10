@@ -97,8 +97,9 @@ try:
      print "  %s" % parent
   except DbsCgiDatabaseError,e:
    print e
-  """
+  
   otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
+  #otherDatasetPath = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged"
   try:
    # Get dataset contents, returning a list of blocks with event collections
    print ""
@@ -110,9 +111,11 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
+  
   """
 
-
+  otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
+  #otherDatasetPath = "/test_primary_anzar/DST/test_process_anzar"
   try:
    # Get dataset contents as a list of blocks with files
    print ""
@@ -124,7 +127,7 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-   """
+   
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:
