@@ -49,13 +49,13 @@ use Text::Glob 'glob_to_regex';
 use Error qw(:try);
 $Text::Glob::strict_wildcard_slash = 0;
 
-$file = 'out.txt';
-open(INFO, ">$file");
+#$file = 'out.txt';
+#open(INFO, ">$file");
 
 ######################################################################
 # Main program
 
-my $dbparams = $ENV{DBS_DBPARAM} || "/home/sekhri/cgi/PythonAPI/DBParam";
+my $dbparams = $ENV{DBS_DBPARAM} || "/data/DBSAccessInfo/DBParam";
 my $SAFE_NAME = qr|^[-A-Za-z0-9_.]+$|;
 my $SAFE_PATH = qr|^[-A-Za-z0-9_./]+$|;
 my $SAFE_TIERS = qr|^[-A-Za-z,]+$|;
@@ -261,7 +261,7 @@ sub response_headers
     $args{dbs_status_detail} = $detail;
   }
   print header (-type => 'text/plain', %args);
-  print INFO header (-type => 'text/plain', %args);
+  #print INFO header (-type => 'text/plain', %args);
 }
 
 # Generate a failure reply.
@@ -271,8 +271,8 @@ sub reply_failure
   $detail =~ s/\n+/ /sg; $detail =~ s/\s+$//s;
   &response_headers ($code, $msg, $detail);
   print @info;
-  print INFO @info;
-  close(INFO);
+  #print INFO @info;
+  #close(INFO);
   exit (1);
 
 }
@@ -283,8 +283,8 @@ sub reply_success
   my (@data) = @_;
   &response_headers (100, "Success", undef);
   print @data;
-  print INFO @data;
-  close(INFO);
+  #print INFO @data;
+  #close(INFO);
   exit (0);
 }
 
@@ -423,8 +423,6 @@ sub listPrimaryDatasets
 
   # Get an optional pattern
   my $rxpattern = &getPattern('pattern', 1);
-  print INFO "rxpattern ";
-  print INFO $rxpattern;
   # Fetch the list of datasets from the database.
   my $q = &dbexec($$dbs{DBH}, qq{
     select id, name from t_primary_dataset});
@@ -521,8 +519,10 @@ sub listDatasetsFromApp
   while (my ($id, $primary, $processed, $tier, $app, $version, $family) = $q->fetchrow())
   {
     my $token = "/$primary/$tier/$processed";
-    next if (defined $rxpattern && $app !~ /$rxpattern/ &&  $version !~ /$rxpattern/ &&  $family !~ /$rxpattern/);
-    $out .= "<processed-dataset id='$id' path='@{[&escapeHTML($token)]}'/>";
+    my $appToken = "/$version/$family/$app";
+    #next if (defined $rxpattern && $app !~ /$rxpattern/ &&  $version !~ /$rxpattern/ &&  $family !~ /$rxpattern/);
+    next if (defined $rxpattern && $appToken !~ /$rxpattern/);
+    $out .= "<processed-dataset id='$id' path='@{[&escapeHTML($token)]}' app='$app' version = '$version' family='$family'/>";
   }
   $out .= "</dbs>\n";
 
@@ -706,9 +706,87 @@ sub getDatasetProvenance
   &reply_success ($out);
 }
 
+
 ######################################################################
 # Get the contents of the dataset: the blocks and event collections.
 sub getDatasetContents
+{
+  my ($dbs) = @_;
+
+  # Parse parameters
+  my @path = &getPath ();
+
+  # Translate the dataset path to an id
+  my $id = &datasetFromPath ($dbs, @path);
+
+  # Prepare output.
+  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+  my $pathname = "/$path[0]/$path[1]/$path[2]";
+  my $blockbase = "/$path[0]/$path[2]";
+  $out .= "<processed-dataset id='$id' path='$pathname'>";
+
+  # Fetch event collections by which block they belong to
+  my $q = &dbexec($$dbs{DBH}, qq{
+    select distinct
+      evc.id,
+      evc.name,
+      evc.events,
+      evs.name,
+      b.id,
+      bs.name,
+      f.inblock,
+      f.guid,
+      f.logical_name,
+      f.status,
+      f.checksum,
+      f.filesize
+    from t_event_collection evc
+      join t_evcoll_file evf
+        on evf.evcoll = evc.id
+      left join t_evcoll_status evs
+        on evs.id = evc.status
+      join t_file f
+        on f.id = evf.fileid
+      join t_block b
+        on b.id = f.inblock
+      join t_block_status bs
+        on bs.id = b.status
+    where evc.processed_dataset = :id
+    order by b.id, evc.name},
+    ":id" => $id);
+
+  my $prev = undef;
+  while (my $row = $q->fetchrow_arrayref())
+  {
+    my ($id, $name, $events, $status, $block, $bstatus, $inblock, $guid, $lfn, $fstatus, $checksum, $size) = @$row;
+    $bstatus = "" if ! defined $bstatus;
+    $status = "" if ! defined $status;
+
+    $out .= "</block>" if defined $prev && $prev != $block;
+    if (! defined $prev || $prev != $block)
+    {
+            #$out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>";
+      $out .= "<block id='$block' name='$blockbase#$block' status='$bstatus'>";
+      $prev = $block;
+    }
+    next if $name eq 'EvC_META';
+    $name =~ s/^EvC_Run//;
+    $out .= "<event-collection id='$id' name='$name' events='$events' status='$status' inblock='$inblock' guid='$guid' lfn='$lfn' fstatus='$fstatus' checksum='$checksum' size='$size'/>";
+  }
+  $out .= "</block>" if defined $prev;
+  $out .= "</processed-dataset></dbs>\n";
+
+  # Spit out the result
+  $$dbs{DBH}->disconnect ();
+  &reply_success ($out);
+}
+
+
+
+
+######################################################################
+# Get the contents of the dataset: the blocks and event collections.
+sub getDatasetContentsa
 {
   my ($dbs) = @_;
 
@@ -1433,8 +1511,8 @@ sub remap {
 	my $xmlinput = param('xmlinput');
 	&reply_failure (200, "Bad request", "No xmlinput specified")
 	if (! defined $xmlinput);
-	print INFO "XMLINPUT is \n";
-	print INFO $xmlinput;
+	#print INFO "XMLINPUT is \n";
+	#print INFO $xmlinput;
   
 	my (@files, @filesmerged,) = ();
 	eval {
@@ -1452,7 +1530,7 @@ sub remap {
         #Get the ID of t_evcoll_status for status name as merged
         #If status merged doesnot exist then create one
 	$ecsid = ${&makeNamed ($dbs, "evcoll_status", "merged", 1)}{id};
-	print INFO "\nSTATUS ID   $ecsid \n";
+	#print INFO "\nSTATUS ID   $ecsid \n";
 	@plist  = ();#parent list of id
 	@ptlist  = ();#parentage type list of id for parents
 	@cptlist  = ();#parentage type list of id for child
@@ -1476,9 +1554,9 @@ sub remap {
 			":f_logical_name" => $$f{lfn});
 		#push all the parent, evcoll id and parentage type in lists
 		while (my ($parent, $ecid, $ptype, $prodsid) = $q->fetchrow()) {
-			print INFO "\nPARENT   $parent \n";
-			print INFO "\nECID   $ecid \n";
-			print INFO "\nPTYPE   $ptype \n";
+			#print INFO "\nPARENT   $parent \n";
+			#print INFO "\nECID   $ecid \n";
+			#print INFO "\nPTYPE   $ptype \n";
 			push(@plist, $parent);	    
 			push(@ptlist, $ptype);	    
 			push(@eclist, $parent);	    
@@ -1495,8 +1573,8 @@ sub remap {
 			and p.parent = :ec_id},
 			":ec_id" => $gecid);
 		while (my ($child, $ptype) = $q1->fetchrow()) {
-			print INFO "\nCHILD   $child \n";
-			print INFO "\nPTYPE   $ptype \n";
+			#print INFO "\nCHILD   $child \n";
+			#print INFO "\nPTYPE   $ptype \n";
 			push(@clist, $child);	    
 			push(@cptlist, $ptype);	    
 		}
@@ -1522,7 +1600,7 @@ sub remap {
 			and ecf.fileid = f.id
 			and f.logical_name = :f_logical_name},
 			":f_logical_name" => $$f{lfn})->fetchrow();
-		print INFO "\necidmerged   $ecidmerged \n";
+		#print INFO "\necidmerged   $ecidmerged \n";
 		&reply_failure (300, "Bad data", "Could not find the Event Collection with this file $$f{lfn}") if ! defined $ecidmerged;
 	}
 	#Update the processed Dataset for the putput file/evc to the parent processed dataset
@@ -1543,17 +1621,17 @@ sub remap {
 		push(@{$pparams{1}}, $plist[$count]);
 		push(@{$pparams{2}}, $ecidmerged);
 		push(@{$pparams{3}}, $ptlist[$count]);
-		print INFO "\$plist[$count] $plist[$count]\n";
-		print INFO "ecidmerged $ecidmerged\n";
-		print INFO "\$ptlist[$count] $ptlist[$count]\n";
+		#print INFO "\$plist[$count] $plist[$count]\n";
+		#print INFO "ecidmerged $ecidmerged\n";
+		#print INFO "\$ptlist[$count] $ptlist[$count]\n";
 	}
 	for ($count = 0; $count != @clist; $count++) {
 		push(@{$pparams{1}}, $ecidmerged);
 		push(@{$pparams{2}}, $clist[$count]);
 		push(@{$pparams{3}}, $cptlist[$count]);
-		print INFO "ecidmerged $ecidmerged\n";
-		print INFO "\$clist[$count] $clist[$count]\n";
-		print INFO "\$cptlist[$count] $cptlist[$count]\n";
+		#print INFO "ecidmerged $ecidmerged\n";
+		#print INFO "\$clist[$count] $clist[$count]\n";
+		#print INFO "\$cptlist[$count] $cptlist[$count]\n";
 	}
 
 	eval {
@@ -1877,7 +1955,7 @@ sub insertDatasetInfo {
 	# Parse parameters
 	my $xmlinput = param('xmlinput');
 	&reply_failure (200, "Bad request", "No xmlinput specified") if (! defined $xmlinput);
-	print INFO "xmlinput $xmlinput\n";
+	#print INFO "xmlinput $xmlinput\n";
 	my ($primaryDatasetName, $path,  @evcs, @processing,) = ();
 	eval {
 		(new XML::Parser (Handlers => { Start => sub {
@@ -1933,7 +2011,7 @@ sub insertDatasetInfoLogic {
 	##########################################################################################################
 	#Insert a new Primary Dataset if it doesnot exist alerady.
 	my $primaryId = &createPrimaryDatasetLogic ($dbs, $primaryDatasetName);
-	print INFO "\nprimary id $primaryId \nprimary name $primaryDatasetName";
+	#print INFO "\nprimary id $primaryId \nprimary name $primaryDatasetName";
 	
 	##########################################################################################################
 	##########################################################################################################
@@ -1950,7 +2028,7 @@ sub insertDatasetInfoLogic {
 				&throwException ($ex->value(), $exceptionClass, $ex->text());
 			}
 		};
-		print INFO "\nProcessing ID  $processingId ";
+		#print INFO "\nProcessing ID  $processingId ";
 		
 		##########################################################################################################
 		##########################################################################################################
@@ -1961,7 +2039,7 @@ sub insertDatasetInfoLogic {
 			my ($blockId) =  &createFileBlockLogic ($dbs, $tmpName);
 			#$blockId = 178;#For testing only
 			$blocks{$$aBlock{id}} = $blockId;
-			print INFO "MAP $$aBlock{id} -> $blocks{$$aBlock{id}}";
+			#print INFO "MAP $$aBlock{id} -> $blocks{$$aBlock{id}}";
 		}
 		##########################################################################################################
 		##########################################################################################################
@@ -1987,7 +2065,7 @@ sub insertDatasetInfoLogic {
 	#Insert a new Processed Dataset if it doesnot exist already.
 	#FIXME the input filed is null when getDatasetInfo is called.
 	my($priName, $dataTier, $proName) = &checkPath($path, "path");
-	print INFO "\npriName $priName \ndataTier $dataTier \nproName $proName \n";
+	#print INFO "\npriName $priName \ndataTier $dataTier \nproName $proName \n";
 	my ($processedId) = ();
 	try {
 		$processedId = &createProcessedDatasetLogic ($dbs, $priName, $dataTier, $proName, undef);
@@ -1997,7 +2075,7 @@ sub insertDatasetInfoLogic {
 			&throwException ($ex->value(), $exceptionClass, $ex->text());
 		}
 	};
-	print INFO "processedId $processedId\n";
+	#print INFO "processedId $processedId\n";
 
 
 	##########################################################################################################
@@ -2005,46 +2083,46 @@ sub insertDatasetInfoLogic {
 	#Insert all the Event Collections if it doesnot exist already.
 	&printEvc(@evcs);
 	&insertEventCollectionsLogic ($dbs, $path,  @evcs);
-	print INFO "\nEVC inserted properly\n";
+	#print INFO "\nEVC inserted properly\n";
 	
 
-	close(INFO);
+	#close(INFO);
 
 }
 
 
 #Temporary Printing functions 
-sub printFile {
-	my (@files) = @_;
-	foreach my $atmp (@files) {
-		print INFO "\nid : $$atmp{id}\n";
-		print INFO "guid : $$atmp{guid}\n";
-		print INFO "logical-name : $$atmp{lfn}\n";
-		print INFO "checksum : $$atmp{checksum}\n";
-		print INFO "size : $$atmp{size}\n";
-		print INFO "inblock : $$atmp{inblock}\n";
-		print INFO "type : $$atmp{type}\n";
-		print INFO "status : $$atmp{status}\n";
-	}
-}
-sub printEvc {
-	my (@evcs) = @_;
-	foreach my $aEvc (@evcs) {
-		print INFO "id : $$aEvc{id}\n";
-		print INFO "name : $$aEvc{name}\n";
-		print INFO "events : $$aEvc{events}\n";
-		print INFO "status : $$aEvc{status}\n";
-	}
-}
-
-sub printProcessing {
-	my (@proc) = @_;
-	foreach my $aProcessing (@proc) {
-		print INFO "\nprocessingName  $$aProcessing{name} ";
-		print INFO "\nexecutable  $$aProcessing{executable} ";
-		print INFO "\nversion  $$aProcessing{version} ";
-		print INFO "\nfamily  $$aProcessing{family} ";
-		print INFO "\nhash  $$aProcessing{hash} ";
-		print INFO "\ncontent  $$aProcessing{content} ";
-	}
-}
+#sub printFile {
+#	my (@files) = @_;
+#	foreach my $atmp (@files) {
+#		print INFO "\nid : $$atmp{id}\n";
+#		print INFO "guid : $$atmp{guid}\n";
+#		print INFO "logical-name : $$atmp{lfn}\n";
+#		print INFO "checksum : $$atmp{checksum}\n";
+#		print INFO "size : $$atmp{size}\n";
+#		print INFO "inblock : $$atmp{inblock}\n";
+#		print INFO "type : $$atmp{type}\n";
+#		print INFO "status : $$atmp{status}\n";
+#	}
+#}
+#sub printEvc {
+#	my (@evcs) = @_;
+#	foreach my $aEvc (@evcs) {
+#		print INFO "id : $$aEvc{id}\n";
+#		print INFO "name : $$aEvc{name}\n";
+#		print INFO "events : $$aEvc{events}\n";
+#		print INFO "status : $$aEvc{status}\n";
+#	}
+#}
+#
+#sub printProcessing {
+#	my (@proc) = @_;
+#	foreach my $aProcessing (@proc) {
+#		print INFO "\nprocessingName  $$aProcessing{name} ";
+#		print INFO "\nexecutable  $$aProcessing{executable} ";
+#		print INFO "\nversion  $$aProcessing{version} ";
+#		print INFO "\nfamily  $$aProcessing{family} ";
+#		print INFO "\nhash  $$aProcessing{hash} ";
+#		print INFO "\ncontent  $$aProcessing{content} ";
+#	}
+#}

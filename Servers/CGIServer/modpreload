@@ -1,6 +1,16 @@
 #!/usr/bin/env perl
 
 # Setup environment for dbsxml at Apache server startup with mod_perl.
+BEGIN {
+  use strict; use warnings; $^W=1; use Config;
+  # unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/PHEDEX/Toolkit/Common");
+  unshift(@INC, "/data/sw/slc3_ia32_gcc323/cms/PHEDEX/PHEDEX_2_3_8/Toolkit/Common");
+  push(@INC, "/opt/Packages/mod_perl2/lib/perl5/site_perl/5.8.0/$Config{archname}");
+  push(@INC, "/opt/Packages/mod_perl2/lib/perl5/5.8.0");
+  push(@INC, "/opt/Packages/mod_perl2/lib/perl5/site_perl/5.8.0");
+  print STDERR "INC = @INC\n";
+}
+
 
 # use Apache2 ();   # <-- only for mod_perl 1.99!
 # use ModPerl::MethodLookup ();
@@ -18,21 +28,10 @@ use ModPerl::Registry ();
 use Apache2::Const -compile => ':common';
 use APR::Const -compile => ':common';
 
-BEGIN {
-  use strict; use warnings; $^W=1; use Config;
-  if ($Config{archname} =~ /solaris/) {
-    unshift (@INC, "/afs/cern.ch/cms/aprom/DBS/ToolsForCMSDOC/perl-modules/lib");
-    unshift (@INC, "/afs/cern.ch/cms/aprom/DBS/ToolsForCMSDOC/perl-modules/lib/$Config{archname}");
-  } else {
-    unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/Tools/perl-modules/lib");
-    unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/Tools/perl-modules/lib/$Config{archname}");
-  }
-  unshift (@INC, "/afs/cern.ch/cms/aprom/phedex/PHEDEX/Toolkit/Common");
-}
-
 use CGI ();
 CGI->compile(':all');
 use Apache::DBI ();
 use DBD::Oracle ();
+use POSIX ();
 
 1;
