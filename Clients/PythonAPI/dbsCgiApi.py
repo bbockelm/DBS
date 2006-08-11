@@ -253,8 +253,8 @@ class DbsCgiApi(DbsApi):
     May raise an DbsCgiApiException.
     """
     # Invoke cgi script.
-    #data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
-    data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  })
+    data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
+    #data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  })
 
     # Parse the resulting xml output.
     try:
@@ -318,8 +318,13 @@ class DbsCgiApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if name == 'processed-dataset':
+            app = DbsApplication(executable = str(attrs['app']),
+			    version =  str(attrs['version']),
+                            family = str(attrs['family']) )
+	    print "app" , app
 	    result.append(DbsProcessedDataset (objectId=long(attrs['id']),
-	    				       datasetPathName=str(attrs['path'])))
+	    				       datasetPathName=str(attrs['path']),
+					       application = app))
       xml.sax.parseString (data, Handler ())
       return result
     except DbsException, ex:
@@ -551,7 +556,7 @@ class DbsCgiApi(DbsApi):
 	      blocks[id] = DbsFileBlock (objectId=long(id),
 			      		 blockName=str(attrs['name']),
 					 numberOfFiles=int(attrs['files']),
-					 numberOfBytes=long(attrs['bytes']))
+					 numberOfBytes=int(attrs['bytes']))
 	    self._block = blocks[id]
           elif name == 'file':
 	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
@@ -578,8 +583,8 @@ class DbsCgiApi(DbsApi):
     the database, otherwise may raise an DbsCgiApiException.
     """
     data = self._call ({ 'api' : 'createPrimaryDataset',
-		         #'name' : dataset.get('datasetName') , 'instance' : 'MCLocal/Writer'  })
-		         'name' : dataset.get('datasetName') })
+		         'name' : dataset.get('datasetName') , 'instance' : 'MCLocal/Writer'  })
+		         #'name' : dataset.get('datasetName') })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
@@ -621,8 +626,8 @@ class DbsCgiApi(DbsApi):
     input += "</processing></dbs>"
 
     # Call the method and fill in object id
-    data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
-    #data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input , 'instance' : 'MCLocal/Writer' })
+    #data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
+    data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input , 'instance' : 'MCLocal/Writer' })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
@@ -682,8 +687,8 @@ class DbsCgiApi(DbsApi):
     """
     # Call the method and fill in object id
     data = self._call ({ 'api' : 'createProcessedDataset',
-		    #'path' : self._path(dataset), 'instance' : 'MCLocal/Writer'})
-		    'path' : self._path(dataset)})
+		    'path' : self._path(dataset), 'instance' : 'MCLocal/Writer'})
+		    #'path' : self._path(dataset)})
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
