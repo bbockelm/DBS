@@ -47,9 +47,10 @@ use DBI qw(:sql_types);
 use XML::Parser;
 use Text::Glob 'glob_to_regex';
 use Error qw(:try);
+use XML::XSLT;
 $Text::Glob::strict_wildcard_slash = 0;
 
-#$file = 'out.txt';
+#$file = '/tmp/out.txt';
 #open(INFO, ">$file");
 
 ######################################################################
@@ -107,7 +108,7 @@ my %apis = (
   'insertFiles' => [ \&insertFiles, {
     xmlinput => REQUIRED } ]);
 
-map { $$_[1]{api} = REQUIRED; $$_[1]{instance} = OPTIONAL } values %apis;
+map { $$_[1]{api} = REQUIRED; $$_[1]{instance} = OPTIONAL; $$_[1]{html} = OPTIONAL; } values %apis;
 # Get parameters
 
 my $api = param('api');
@@ -115,7 +116,9 @@ my $api = param('api');
   if (! defined $api);
 &reply_failure (300, "Bad data", "Requested API call was not recognised")
   if (! exists $apis{$api});
+my $html = param('html');
 
+#close(INFO);
 # Invoke the method
 &checkParameters ($apis{$api}[1]);
 &callApi ($apis{$api});
@@ -236,6 +239,7 @@ sub connectToDBS
 	#my $instance = param('instance') || "Anzar/Writer";
 	#my $instance = param('instance') || "MCLocal/Writer";
   my $instance = param('instance') || "Production/Reader";
+  #print INFO "instance is $instance\n";
   #my $instance = param('instance') || "Dev/Reader";
   my $self = { DBCONFIG => "$dbparams:$instance" };
   my $dbh = eval { &connectToDatabase ($self) };
@@ -271,8 +275,8 @@ sub reply_failure
   $detail =~ s/\n+/ /sg; $detail =~ s/\s+$//s;
   &response_headers ($code, $msg, $detail);
   print @info;
-  #print INFO @info;
-  #close(INFO);
+#  print INFO @info;
+#  close(INFO);
   exit (1);
 
 }
@@ -283,9 +287,18 @@ sub reply_success
   my (@data) = @_;
   &response_headers (100, "Success", undef);
   print @data;
-  #print INFO @data;
-  #close(INFO);
+#  print INFO @data;
+#  close(INFO);
   exit (0);
+}
+
+sub reply_html {
+	my ($xslfile, $xml) = @_;
+	my $parser = XML::XSLT->new ($xslfile, "FILE", use_deprecated => 1);
+	$parser->transform ($xml, "STRING", use_deprecated => 1);
+	print header (-type => 'text/html');
+	print $parser->toString;
+	$parser->dispose ();  
 }
 
 ######################################################################
@@ -426,18 +439,23 @@ sub listPrimaryDatasets
   # Fetch the list of datasets from the database.
   my $q = &dbexec($$dbs{DBH}, qq{
     select id, name from t_primary_dataset});
-
   my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
   while (my ($id, $name) = $q->fetchrow())
   {
+	 # print INFO "name $name\n";
     next if (defined $rxpattern && $name !~ /$rxpattern/);
     $out .= "<primary-dataset id='$id' name='@{[&escapeHTML($name)]}'/>";
   }
+  #close(INFO);
   $out .= "</dbs>\n";
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('PrimaryDataset.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 ######################################################################
@@ -476,7 +494,11 @@ sub listProcessedDatasets
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('ProcessedDataset.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 
@@ -528,7 +550,11 @@ sub listDatasetsFromApp
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('ProcessedDatasetWithApp.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 ######################################################################
@@ -555,8 +581,12 @@ sub listParameterSets
   $out .= "</dbs>\n";
 
   # Spit out the result
-  $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  $$dbs{DBH}->disconnect (); 
+  if (defined $html && $html eq 'true') {
+	&reply_html('ParameterSets.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 ######################################################################
@@ -565,10 +595,8 @@ sub listParameterSets
 sub listApplications
 {
   my ($dbs) = @_;
-
   # Get an optional pattern
   my $rxpattern = &getPattern('pattern', 1);
-
   # Fetch the list of datasets from the database.
   my $q = &dbexec($$dbs{DBH}, qq{
     select a.id, af.name, a.executable, a.app_version
@@ -588,7 +616,11 @@ sub listApplications
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('Applications.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 ######################################################################
@@ -635,7 +667,11 @@ sub listApplicationConfigs
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('ApplicationConfiguration.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 ######################################################################
@@ -703,7 +739,12 @@ sub getDatasetProvenance
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('Provenence.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
+
 }
 
 
@@ -778,7 +819,11 @@ sub getDatasetContents
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('EventCollection.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 
@@ -932,7 +977,11 @@ sub getDatasetFiles
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
-  &reply_success ($out);
+  if (defined $html && $html eq 'true') {
+	&reply_html('FileBlock.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
 }
 
 ######################################################################
