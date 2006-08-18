@@ -91,6 +91,10 @@ my %apis = (
   # Update side, requires authentication (FIXME)
   'createPrimaryDataset' => [ \&createPrimaryDataset, {
     name => REQUIRED } ],
+  'setFileUnavailable' => [ \&setFileUnavailable, {
+    name => REQUIRED } ],
+  'setFileAvailable' => [ \&setFileAvailable, {
+    name => REQUIRED } ],
   'createProcessing' => [ \&createProcessing, {
     xmlinput => REQUIRED } ],
   'insertDatasetInfo' => [ \&insertDatasetInfo, {
@@ -778,7 +782,7 @@ sub getDatasetContents
       f.inblock,
       f.guid,
       f.logical_name,
-      f.status,
+      fs.name,
       f.checksum,
       f.filesize
     from t_event_collection evc
@@ -792,6 +796,9 @@ sub getDatasetContents
         on b.id = f.inblock
       join t_block_status bs
         on bs.id = b.status
+      left join t_file_status fs
+        on fs.id = f.status
+
     where evc.processed_dataset = :id
     order by b.id, evc.name},
     ":id" => $id);
@@ -811,8 +818,12 @@ sub getDatasetContents
       $prev = $block;
     }
     next if $name eq 'EvC_META';
+    $status = "" if ! defined $status;
+    $fstatus = "" if ! defined $fstatus;
     $name =~ s/^EvC_Run//;
-    $out .= "<event-collection id='$id' name='$name' events='$events' status='$status' inblock='$inblock' guid='$guid' lfn='$lfn' fstatus='$fstatus' checksum='$checksum' size='$size'/>";
+    if ($fstatus ne "invalid") {
+	    $out .= "<event-collection id='$id' name='$name' events='$events' status='$status' inblock='$inblock' guid='$guid' lfn='$lfn' fstatus='$fstatus' checksum='$checksum' size='$size'/>";
+    }
   }
   $out .= "</block>" if defined $prev;
   $out .= "</processed-dataset></dbs>\n";
@@ -968,8 +979,13 @@ sub getDatasetFiles
     {
       $status = "" if ! defined $status;
       $guid = "" if ! defined $guid;
-      $out .= "<file id='$id' inblock='$block' guid='$guid' lfn='$lfn'";
-      $out .= " checksum='$cksum' size='$size' status='$status' type='$type'/>";
+
+
+	if ($status ne "invalid") {
+	      $out .= "<file id='$id' inblock='$block' guid='$guid' lfn='$lfn'";
+	      $out .= " checksum='$cksum' size='$size' status='$status' type='$type'/>";
+	}
+
     }
   }
   $out .= "</block>" if defined $prev;
@@ -2138,6 +2154,61 @@ sub insertDatasetInfoLogic {
 	#close(INFO);
 
 }
+
+sub setFileAvailable {
+	my ($dbs) = @_;
+	my $name = param('name');
+	try {
+		&setFileStatusLogic ($dbs, $name, "valid");
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+	# Prepare output.
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs/>";
+	&reply_success ($out);
+}
+
+sub setFileUnavailable {
+	my ($dbs) = @_;
+	my $name = param('name');
+	try {
+		&setFileStatusLogic ($dbs, $name, "invalid");
+	} catch	Error with {
+		my $ex = shift;
+		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+	} finally {
+		$$dbs{DBH}->disconnect ();
+	};
+	# Prepare output.
+	my $out = "<?xml version='1.0' standalone='yes'?><dbs/>";
+	&reply_success ($out);
+}
+
+
+sub setFileStatusLogic {
+	my ($dbs, $name, $statusName) = @_;
+
+	&throwException(300, "Bad request",  "No name specified") if (! defined $name);
+	&throwException (300, "Bad data", "Invalid characters in name") if ($name !~ /$SAFE_NAME/o);
+
+	# Change the file status
+	my $statusId = ${&makeNamed($dbs, "file_status", $statusName, 1)}{id};
+	&dbexec($$dbs{DBH}, qq{
+		update t_file
+		set status = :status
+		where logical_name = :logical_name},
+		":logical_name" => $name,
+		":status" => $statusId);
+
+	&throwException (402, "Execution error", $@) if $@;
+
+	$$dbs{DBH}->commit();
+	return ;
+}
+
 
 
 #Temporary Printing functions 
