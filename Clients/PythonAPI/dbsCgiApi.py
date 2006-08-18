@@ -808,7 +808,29 @@ class DbsCgiApi(DbsApi):
     #data = self._call ({ 'api' : 'export', 'path' : path })
     data = self._call ({ 'api' : 'insertDatasetInfo', 'xmlinput' : xmlinput })
     return data
-    
+ # ------------------------------------------------------------
+  def setFileAvailable(self, name):
+    data = self._call ({ 'api' : 'setFileAvailable',
+		         'name' : name })
+    try:
+       class Handler (xml.sax.handler.ContentHandler):
+         def startElement(self, name, attrs):
+		 pass
+       xml.sax.parseString (data, Handler())
+    except Exception, ex:
+      raise DbsCgiBadResponse(exception=ex)
+ 
+  def setFileUnavailable(self, name):
+    data = self._call ({ 'api' : 'setFileUnavailable',
+		         'name' : name })
+    try:
+       class Handler (xml.sax.handler.ContentHandler):
+         def startElement(self, name, attrs):
+		 pass
+       xml.sax.parseString (data, Handler())
+    except Exception, ex:
+      raise DbsCgiBadResponse(exception=ex)
+  
 
 ##############################################################################
 # Unit testing: see dbsCgiTest*.py

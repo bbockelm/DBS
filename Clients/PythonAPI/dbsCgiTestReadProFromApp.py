@@ -30,7 +30,7 @@ try:
   # api.setDebug(1)
    
  # Datasets we play with
-  datasetPattern = "*test"
+  datasetPattern = "/CMSSW_0_6_0_pre7/*/*"
   
   try:
    # List some datasets
