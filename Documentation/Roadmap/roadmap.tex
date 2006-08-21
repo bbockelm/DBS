@@ -1,0 +1,538 @@
+
+\documentclass{cmspaper}
+\begin{document}
+
+%==============================================================================
+% title page for few authors
+
+\begin{titlepage}
+
+% select one of the following and type in the proper number:
+%   \cmsnote{2005/000}
+  \internalnote{2006/000}
+%  \conferencereport{2005/000}
+   \date{1 August, 2006}
+
+  \title{A 2006-07 Roadmap for CMS Dataset Bookkeeping System}
+
+  \begin{Authlist}
+   Lee Lueking, Andrew Dolgert, Vijay Sekhri, Anzar Afaq, Valentin Kuznetsov, Alessandra Fanfani, Stefano Belforte, Lothar Bauerdick, Ian Fisk, Elizabeth Sexton-Kennedy, Chris Jones, Dan Riley, Stefano Lacaprara, Peter Elmer  \Instfoot{fnal}{FNAL, Batavia, IL, USA}
+%    R.~Egeland \Instfoot{minn}{University of Minnesota, Twin Cities, MN, USA}
+  \end{Authlist}
+
+% if needed, use the following:
+%\collaboration{Flying Saucers Investigation Group}
+%\collaboration{CMS collaboration}
+
+%  \Anotfoot{a}{On leave from prison}
+%  \Anotfoot{b}{Now at the Moon}
+
+  \begin{abstract}
+Mission: To bring together experts in data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system we will follow for the next 6 months. The system we discuss will provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007. Establish the overall vision, requirements, and scope for the project.
+ 
+  \end{abstract} 
+  
+\end{titlepage}
+
+\setcounter{page}{2}%JPP
+
+
+%
+%==============================================================================
+
+\section{Introduction}
+
+The DBS Workshop held at Cornell July 20-22 of 2006 brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's longterm needs. Our mission was to bring together experts in data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system we will follow for the next 6 months. The system we discuss will provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007. Establish the overall vision, requirements, and scope for the project.
+
+\section{DBS Workshop Overview}
+
+\subsection{Goals for Cornell workshop}
+
+Workshop Goals:
+\begin{itemize}
+\item Agree to a set of common definitions used in describing the DBS system. Deliverable: Glossary document.
+\item  Produce a set of use cases we think are representative of the needs of CMS analysis in general, but targeting the DBS specifically. Deliverable: Documented use cases and work user flow diagrams illustrating them.
+\item  Explore existing data management and discovery systems employed by HEP experiments and identify features we would like to have for CMS. Deliverable: Document describing key features we may have overlooked in CMS.
+\item  Understand the needed relationships between DBS and the other components of DM and WM systems. Deliverable: Concept diagram showing the relationships.
+\item  Understand the relationships between DBS and the CMSSW Framework. Deliverables: Document describing this and diagrams as needed.
+\item  Understand the relationships between DBS and the many other sources of non-event information in CMS such as trigger, luminosity, run configuration, run quality information, calibration, alignment, ... Deliverables: Concept map showing the relationships.
+\item  Understand how DBS will fit into the picture for the various tiers of CMS computing such as, online, Tier 0, Tier 1, Tier 2 and Tier-n. Deliverable: Document the specific and overlapping needs for each tier.
+\item  Establish a set of written requirements for the DBS. Deliverable: Document
+\item  Review the existing CMS DBS system, its schema and API
+\item  Devise (revise) the schema and API to meet the requirements. Deliverable: Updated schema and APIs. Revise existing DBS description document.
+\item  Update the design for the overall DBS system, servers, clients, et cetera. Deliverable: Description document and diagrams.
+\item  Explore options for data discovery desirables, and techniques for doing them. Deliverable: Document and list of things to try out.
+\item  Discuss possible implementation options. Prototype if time permits. Document issues and further work needed to make final choices. Deliverable: Description of options and motivation for any particular choices. Description of additional work needed.
+\item  Draft a plan, describe deliverables, estimate work, prioritize, schedule and assign tasks. Deliverable: Description, schedule, assignments, milestone dates.
+\end{itemize}
+
+\subsection{Workshop Topics}
+
+\begin{itemize}
+\item Review of existing DBS system
+\item Glossary of terms
+\item Use cases for Data analysis
+\item EDM/FW connections to DBS 
+\item DBS In the context of DM and WM
+\item A look at CLEO, Run II, and BaBaR approaches
+\item DLS Interactions with DBS 
+\item CRAB Interactions with DBS
+\item Monte Carlo Request system present and future 
+\item Additional DBS Scenarios 
+\item Details of and alternatives to existing prototype 
+\item Data discovery needs and approaches
+\end{itemize}
+
+\section{Glossary} 
+\begin{itemize}
+\item Dataset-"any set of 'event collections' that would naturally be
+grouped and analysed together as determined by
+physics attributes" -ctdr
+e.g., common trigger path or MC generator (configuration?)
+e.g., "a particular object model representation of those events" such as
+RAW, RECO, AOD??
+\item Primary Dataset-"data at all levels of processing pertaining to a given
+trigger or common MC production criteria" -dm-dbsv0.85
+"For Monte Carlo data 'primary datasets' comprise
+data generated with the same parameters" -dm-dbsv0.85
+Is the set of MC primary datasets bounded? Determinable?
+\item Processed Dataset- "a slice of data from a Primary Dataset defined by the
+processing history applied to it" -dm-dbs-v0.85
+"will correspond to a large production of data with a
+single major software release version, but may include
+multiple minor versions for small bug fixes and also
+may contain the output of multiple processings of
+some given input event collection" -dm-dbs-v0.85
+´multiple minor versions lost in some versions of the DBS schema
+\item Analysis Dataset- "A subset of Event Collections from a given Processed
+Dataset" -dm-dbs-v0.85
+Adds constraints to processed dataset
+Similar to CLEO EventStore ´physics grade--the data physicists should run
+on?
+Gone from current schema, no mechanism to create one
+\item Data Tier- "2.5.1 Data Tiers" -ctdr
+DAQ-RAW, RAW, RECO, AOD, TAG, FEVT
+"type of content resulting from a degree of processing
+applied to the data" -dm-dbs-v0.85
+What about RECO and AOD?
+Actually defined by the objects contained?
+Then data tier is an attribute of a file or event collection, not processing?
+What about data tier evolution? AOD2, AOD3, ...?
+Or finer grained processing path (not in framework provenance)?
+\item Event Collection-The smallest unit that a user is able to select through
+the dataset bookkeeping system" -ctdr
+e.g., event data from a particular trigger selection from one given run
+"a single event collection will give access to data from
+exactly one data tier" -dm-dbs-v0.85
+Currently supporting multiple data tiers, e.g., FEVT
+Relationship to file one-to-many or many-to-many
+many-to-many for old EDM?
+\item File Block- "a set of files likely to be accessed together" -dm-dbsv0.85
+data management packaging unit
+"will in general correspond to the same Primary
+Dataset, Data Tier and Processed Dataset" -dm-dbsv0.85
+incorrectly reflected in schema?
+\item non-event data-Non-event data: detector configuration, conditions, ...
+Mostly time domain: run, luminosity interval?
+DBS currently knows nothing about this
+so we told Drew not to work on them
+Is this in scope for DBS? If not, what should answer these queries?
+\end{itemize}
+
+
+\section{DBS interaction with other DM, WM areas, and CMS at large}
+
+\subsection{DLS}
+The Data Location Service (DLS) provides the means to locate replicas of data in the distributed computing system
+it maps file-blocks to storage elements (SEs)
+provide only names of sites hosting the data and not the physical location of constituent files at the sites
+few attributes (custodial  replica = considered a 
+   permanent copy at a site)
+
+ Interactions with DLS
+Insert file-blocks produced at a site (MC Production)
+Insert file-blocks upon data replication (PhEDEx)
+Query to locate file-blocks (CRAB, MC Production)
+
+
+DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS
+
+Fileblock name
+DBS knows how dataset are organized in term of fileblocks
+DLS knows fileblocks locations
+ Fileblock name needs to be consistent across DBS and DLS
+Local scopes DBS/DLS upload into global DBS/DLS (clashes on fileblock name?)
+Data discovery and location: combine DBS and DLS information
+
+\subsection{PhEDEx}
+
+\subsection{DBS Context Diagram}
+Fig.~\ref{fig:dbs-context-diagram}
+% I have a png file for this, need to convert to eps and 
+% have some technical problem on my new laptop.
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{15cm}{!}{\includegraphics{dbs-context-map.eps}}
+    \caption{Concept diagram for DBS within CMS.}
+    \label{fig:dbs-context-diagram}
+  \end{center}
+\end{figure} 
+
+\section{Tasks and Use Cases from the  Workshop}
+
+
+List from the WS
+
+These will be reviewed, sorted, and assigned for further work. Many people volunteered (or were volunteered ) to help.
+
+
+   1.  (use case, fermilab)Need to develop use case for publishing locally analyzed data to global scope - Fermilab
+
+   2. (dbs)Fix a subset of a dataset due to problem found later, e.g. sqrt (-1) (changing does not affect the physics when it does not happen), calibration change. These are cases where only selected parts of the data need to be reprocessed, and then "blended" back in to the data set"
+
+   3. (dbs)Need to track event processing failures in dbs, as reported by EDM in the job report run, event, reason for failure.
+
+   4. (dbs)use pass ID to determine what data is interesting to analyze. Pass ID is equivalent to processing path name.
+
+   5. (dbs)Allow for fruit salad mixing of data in a processed dataset.
+
+   6. (dbs)Store filter information for each file (stream) for multi-output skimming
+
+   7. (dbs, need more info)support for pileup input datasets/files.
+
+   8. (use case-?)data quality information. What level of granularity? run, luminosity block, event?
+
+   9. (dbs, use case-?)Must be able to track luminosity for analysis dataset. Run over N luminosity blocks, some fail, some pass. How to integrate luminosity for all data used.
+
+  10. (dbs)All copies of a physical file are lost. Must be able to mark the status as unavailable or lost. Needs to be reported to DLS, and PhEDEx also.
+
+  11. (ReqSys?)Need a way to specify and submit processing requests for MC generation, and general data processing.
+
+  12. (ProdAgent)Recovery of files that were not processed due to input failures, or high error rates in application.
+
+  13. (ProdAgent)Recovery of data lost after processed. Outfile is lost 1. before entered into DBS, or 2. after entered in DBS.
+
+  14. (dbs) Users need to store special data, such as log files or personal or group data.
+
+  15. (dbs)Group needs a way to specify "official" data sets or analysis datasets.
+
+  16. (dbs)Primary datasets must be special and have special meta data or ability to link to other information that characterizes it.
+
+  17. (review w/ ProdAgent, dbs)Merge and remapping requirements and use case. Is it really required (or advisable) that we get rid of intermediate files? Refer to SAM experience reported by Adam.
+
+  18. (dbs)Authentication and authorization for DBS API
+
+  19. (dbs)Who or which group created a particular set of data?
+
+  20. (?)Naming convention for processed dataset. Can this be automated.
+
+  21. (dbs, in progress)Schema review items: does family have any meaning in CMS? , Dans talk, review SAM schema, others.
+
+  22. (use case-Drew,Lothar)Additions needed for CSA06: 1. find data based on application version, 2. link with DLS to find where data is.
+
+  23. (use case) Need to go through analysis workflow (use cases) and determine additional API calls that will be needed.
+
+  24. (use case-C.Jones)How is Analysis data set defined and how will it be used? Will it be static or dynamic (changes as new data is added or old removed)? Is there something like a snapshot? Are names prescribed for Anal DS, are they pre-fabed by physics groups or other admin policy. Can users create their own at will? What will UI look like, what is API required.?
+
+  25. (dbs, FJR)Need way to have the set of tags (one for each subsystem) specifying calibration and alignment into DBS so it can be query-able. (it is in the config file)
+
+  26. (dbs) Introducing data from out side official processing machinery, so-called offroad data"
+
+  27. (usecase-?)Private and semi-private data sharing. How can you share data with colleagues at other institutions before it is ready for global scope publication.
+
+  28. (dbs)Getting runs into DBS, need DBS to have relation to luminosity block information.
+
+  29. (?)Need to have LFN naming convention.
+
+  30. (use case, need more input) High level trigger information in DBS based on trigger mask, or trigger object, so can discover data based on trigger.
+
+  31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
+
+  32. (dbs,FJR) Data tier is defined well enough to know what objects are in it. Some concern that this will change. How can we store the branch information from the FJR in a useful way? How will it be queried?
+
+  33. (dbs) it is not correct to define parentage between processed datasets as some child data may be missing. Better to define at the file level.
+
+  34. (dbs, some assumptions to clear up)Need way to select individual events from a particular tier given run/event.
+
+  35. (ProdAgent, dbs)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access.
+
+  36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
+
+  37. (dbs,FJR)The FJR should contain as much as possible of the information that is recorded in DBS.
+
+  38. (use case-?)What is the software environment an analysis user will be using while in the local scope? Who moves data and DBS info about the data from local to public scope and how is it accomplished? What is the software setup, configuration, and what tools are needed? What authentication and authorization is needed for this?
+
+  39. (ReqSys?-Giulio, dbs-fnal)Use cases for the data processing request system for both MC and real physics data processing. What is the overlap between the request system and DBS? DBS and the Request system share discovery of 'applications' (i.e. the configuration). It is assumed this sharing will not be needed for CSA06 but should be understood for the final system.
+
+  40. (ReqSys?-Giulio) Confusion about meaning of payload and workflow in MC request system [Guillio needs to make a glossary that synchs up with the DBS jargon].
+
+  41. (ReqSys?, dbs)The Request System and DBS are related but Peter thinks should be 'decoupled'. It seems possible and useful to link up the parameter set discovery system of the two in the long term. Not needed for CSA06.
+
+  42. (?) Explore use of defaults for data specification [e.g. do not make people say 'AOD' since that is the most requested]
+
+  43. (need more inout)How is DBS used for Online? what might DBS Track?
+         1. Laser data
+         2. alignment stuff
+         3. express stream
+         4. dedicated calibration runs
+         5. Physics data> ==> Does DBS begin before or after repacking? << big issue. 
+
+  44. (use case) How is DBS used for Tier 0?
+         1. Reconstruction
+         2. Tracking calibration and alignment output data 
+
+  45. (use case) How is DBS used in Tier1:
+         1. Re-reconstruction
+         2. skimming 
+
+  46. (use case) How is DBS used in Tier 2?
+         1. MC Production
+         2. Data analysis 
+
+  47. (usecase) How might DBS be employed for MTCC and Test Beam data?
+         1. If a run table is added thenthis type of data could be added
+         2. Under no pressure to make this work on a short time scale, but can use run for existing data to load the DBS catalog.
+         3. Would be useful experience for the DBS system and good interaction form physisists. 
+
+  48. (use case, dbs?) DBS/DLS/PheDex know about file/file block sizes
+         1. How is this space 'assigned'/'allocated' at Tier-2 sites?
+         2. Need tools to determine how disk (resources?) are used by "groups" in CMS?
+         3. detail: Need to have concept of ownership (grolup/user) in either DBS or DLS
+         4. research: map how people running jobs work within the constraints of the existing system (how do they deal with disk allocations, and stepping on one anothers resources?) 
+
+49. (need to present to other cms db players - Lee) Concept map for DBS and how it relates to other event and non-event data repositories. (DLS/DBS, conditions DB, trigger DB, luminosity DB, et cetera.
+  
+50. (use cases) Data Discovery use cases and what should be available for discovery (Need subgroup to further explore this):
+         1. detector experts looking at detector problems, Range of data (run range) with certain conditions, bad detector component, special trigger.
+         2. What Physics meta data is needed to be related to datasets? Is it good enough to have 'simple' trigger name or all details of trigger needed? What high-level queryable things needed to store to find data? We need to make 'synthesized' easy to query versions AND allow full physics physics metadata discovery. 
+
+  51. (dbs) From schema discussion:
+         1. Three main concepts (more when have pictures of notes):
+               1. Files
+               2. Processings
+               3. Datasets 
+         2. We see no need to continue the concept of event collections.
+         3. Schema was discussed and sketched out at workshop. Anzar will enter and draw using druid. 
+
+\section{Use Cases}
+\subsection{Use cases for CSA06}
+
+ 
+\begin{enumerate}
+\item{Physicist Tier 2 Creates Skim of Re-RECO at Tier 1}
+
+Physicist polls list of available datasets for those produces by CSA06. He sees a job which he identifies as a skim by its name. Someone tells this physicist what Tier 1 has the data. The tool shows him the dataset identifier. He puts that identifier into a Prodagent job, along with the name of the Tier 1 on which to do processing.
+
+\item{Physicist Tier 2 Discovers Tier 1 Data Available for Processing}
+
+Physicist polls a list of available datasets for datasets produced by CSA06. The physicist recognizes Re-RECO data because of the dataset name. The program (or web page) provides a dataset identifier.
+
+\item{Physicist Tier 2 runs analysis job}
+
+Physicist asks CRAB to run an analysis job.
+
+\item{Alignment Person Recalibrates using Z to mu-mu to produce a new version of alignment}
+
+\item{Physicist polls a tool which shows a list of available datasets.} He identifies CSA06 jobs by name. [Should be done at CAF, but not for CSA06.]
+
+He submits the alignment job to CRAB or Prodagent, which returns a new version of the alignment. Alignment person puts this alignment into alignment database.
+
+\item{Production Manager Tier 2 Re-runs RECO analysis}
+
+Alignment person tells production manager about newly-available calibration. Production manager specifies new alignment in Prodagent or CRAB configuration file. Production Manager specifies a subset of the RAW dataset and submits it to run. Prodagent puts result into global DBS. (It could be a job robot that runs this instead of Prodagent or CRAB. How do you insert new detector conditions? Do you need a new version of the software or configuration.)
+
+\item{Production Manager Watches CSA06 Progress}
+
+Production Manager wants to see what data exists and what file blocks are transferred. They open a web page tailored to CSA06. It queries the DBS for file existence and PhEDEx for file transfer rate. (Can PhEDEx tell you this? Would something else do it, like the DLS?)
+
+\item{Production Manager Creates Real HLT Data from MC Data}
+
+Production Manager runs the HLT on a large dataset of MC Data. Production Manager uses Y to put that data into the DBS. Only five million events go through the HLT from all of the MC data, and DBS tracks these.
+
+\item{Tony at Tier 0 Puts Real Data into Global Scope}
+
+He creates data with a set of scripts. He asks X to make file blocks from that data. He asks Y to put that data into the DBS.
+
+\item{Physicist Tier 2 Runs Skim on One of Six Copies of AOD}
+
+Physicist sees in exploration tool that AOD is available at Tier 1 and can tell that this is AOD from Re-RECO. Physicist asks X where this data is stored. Physicist puts into the CRAB configuration the name of the dataset and where to do the computation. CRAB puts the resulting file into the DBS. 
+
+\end{enumerate}
+\subsection{Use Cases Long-term Project}
+\subsubsection{Monte Carlo Production}
+\subsubsection{Physics Data Production}
+\subsubsection{Data Analysis}
+
+\section{DBS client server Archetecture}
+\subsection{Requirements}
+
++ DBS Access What are the avenues through which the DBS information will be accessed?
+
+\subsubsection{Overview of usage}
+
+   1. Production processing
+         1. ProdAgent 
+   2. Group processing
+   3. Individual processing
+   4. Individual and group analysis
+         1. CMSSW
+         2. ROOT
+         3. Other tools, shells, et cetera 
+   5. Interactions and relationships with other CMS databases
+         1. Trigger, Luminosity
+         2. Online Runs
+         3. Conditions, et cetera. 
+
+\subsubsection{Access}
+
+   1. API
+         1. CRAB
+         2. ProdAgent
+         3. Framework (CMSSW) through some wrappers?
+         4. ROOT ?
+         5. Primary language is expected to be Python, but could include C++, Java, et cetera. 
+   2. Command Line Input
+         1. Designed to work conveniently with standard Unix commands
+         2. based on API 
+   3. Web tools
+         1. Initial tools will use API
+         2. May grow beyond API
+         3. Include high level search and discovery features 
+
+\subsection{Options for service architecture technology approaches}
+There are at least two issues here, 1. server technology, and 2. transport and messaging layer. The two can be closely related as the tools provided for the messaging layer are better for some server solutions than others.
+Server options
+
+\begin{enumerate}
+\item   1. CGI/Perl: Continue to develop CGI w/ Perl scripts
+\item   2. CGI/Python: Continue to use CGI, but rewrite scripts in Python
+\item  3. Servlets: Use Tomcat servlet container and implement API in Java servelets.
+\item   4. Commercial Appserver: Use a commercial application server solution, for example JBOSS and Hibernate.
+\item   5. C++ DBS AppSrv?: Reuse the DBS App server developed at FNAL under a standard server technology, like Apache, or Tomcat.
+\item   6. RAD or Agile Web technology: Use one of the recent rapid web development platforms, for example Ruby On Rails (Ruby), or Django (Python), Zope 3. 
+\end{enumerate}
+Transport and messaging layer
+\begin{enumerate}
+ \item  1. Assume the transport layer is HTTP
+ \item  2. Messaging layer can have a couple of choices
+         1. Standard like SOAP, XML-RPC, REST
+         2. We make something that is performant (like the XML messages used now for CGI, or something similar to Frontier). 
+\end{enumerate}
+\subsubsection{Criteria for decision}
+\begin{enumerate}
+ \item   1. Must be proven technology
+  \item  2. Not out dated
+  \item  3. Well supported by existing tools and documentation
+ \item   4. Flexible framework that we can grow to meet future needs
+ \item   5. Provide needed scalability
+  \item  6. Easily maintainable
+ \item   7. Accommodate schema evolution
+ \item   8. Accommodate API evolution
+ \item   9. Server functions must be well factorable
+ \item  10. Provide "local" and "global" scope functionality. This implies a. using multiple database technologies and a. having access through local library or remote server.
+ \item  11. Meet performance needs. This depends on transport and messaging layer employed.
+\item   12. Web Services support. This is a desirable, and determines the flexibility for the future. 
+\end{enumerate}
+
+
+
+Decision matris can be found in Table~\ref{tab:ecal-full-read}.
+\begin{table}[htb]
+    \caption{Features provided by each technology option. X=Yes,*=Maybe, but involves more work, ?=Unknown, or too soon to tell, Blank=No  }
+    \label{tab:tech-options}
+    \begin{center}
+      \begin{tabular}{|l|c|c|c|c|c|} \hline 
+Criteria/Approach & CGI/Perl & CGI/Python & Java Servlets & Jboss &Ruby\\
+ Proven           & X & X & X & X &      \\
+ Modern           &   &   & X & X &    X  \\
+ Supported        & X & X & X & X &    ?  \\
+ Flexible         &   &   & X & X &    ? \\
+ Scalable         & X & X & X & X & ?    \\
+ Maintainable     & * & X & X & X &    ?  \\
+ Schema evolution & * & * & X & X &    ?  \\
+ API evolution    & * & * & X & X &   ?  \\
+ Easily factorized& X & X & X & X &   ?  \\
+ Mult DB backends & X & X & X & X &    ?  \\
+ Accessed via lib 
+     or server    & X & X & X & X &    ? \\
+ Performance      & X & X & X & X & *       \\
+ WS Support       & X & X & X & X & ?       \\ \hline
+      \end{tabular}
+    \end{center}
+  \end{table}  
+%put into tablualr format
+%\begin{verbatim}
+%Criteria\Approach 	CGI/Perl 	CGI/Python 	Java Servlets/tomcat 	JBOSS/Hibernate 	C++ DBS AppSrv? 	RUBY on Rails
+%1. Proven technology 	X 	X 	X 	X 	  	 
+%2. Not out dated 	  	  	X 	X 	  	X
+%3. Well supported 	X 	X 	X 	X 	  	?
+%4. Flexible framework 	  	  	X 	X 	  	?
+%5. Scalability 	X 	X 	X 	X 	X 	?
+%6. Maintainable 	* 	X 	X 	X 	  	?
+%7. Schema evolution 	* 	* 	X 	X 	X 	?
+%8. API evolution 	* 	* 	X 	X 	X 	?
+%9. Well factorized 	* 	* 	X 	X 	X 	?
+%10a. Mult DB backends 	  	  	X 	X 	X 	 
+%10b. Access via lib or server 	X 	X 	X 	X 	X 	 
+%11. Performance 	X 	* 	X 	X 	* 	?
+%12. WS Support 	  	  	X 	X 	* 	?
+
+%    * X=Yes
+%    * *=Maybe, but involves more work.
+%    * ?=Unknown, or too soon to tell
+%    * Blank=No 
+%\end{verbatim}
+
+\section{Data discovery needs and options}
+
+
+\section{Framework needs}
+
+\subsection{CMSSW Framework provenance/DBS interaction}
+
+The "Unambiguous identification of reconstruction results" section of the "CMS Core Software Re-engineering Roadmap" is mostly correct (a few things are not implemented yet, and some recent design decisions are not reflected there yet). This page provides a brief summary of the the aspects of the framework provenance which may have implications for the DBS provenance database.
+
+\subsubsection{Framework provenance summary}
+
+There are two kinds of provenance produced by the framework: (1) module configuration for the process; (2) event-by-event, for each object produced, what event objects were accessed by the module producing that object. Event-by-event provenance is dropped if the objects are dropped (TODO: verify); module configuration is always stored (it was decided that garbage-collecting unreferenced configurations was not worth the effort) (TODO: verify). Dropping the event-by-event provenance can lose processing history, since only direct parentage is kept (TODO; verify), but the sequence of processing steps is stored. The module configuration stored is currently the configuration for the entire process (i.e. the union of all the module configurations) (TODO: verify), not a module-by-module configuration, but the module by module configuration can be recovered from the overall process configuration. Provenance tracking for the EventSetup is planned, but not (as of May 2006) implemented yet. The full provenance is written to the output file.
+
+Names/paths of files containing event data are untracked parameters, so they are not recorded in the provenance. There are also no file unique identifiers--the framework, except for the input and output modules, deals with events as objects with no association with any file. Filenames of some conditions data are tracked parameters.
+
+Each CMSSW production process has a "job configuration" name. The job configuration name is a component of the branch name for objects produced in that job, so branch names will be different for objects where the processing steps differ (e.g., SIM/DIGI/RECO in one job vs. three separate jobs). The framework partially hides this, but it is visible in ROOT, so there is a strong incentive to use an identical sequence of processing steps for all objects of a given type. As of May 2006, there are proposals for aliasing branch names which may change this consideration if every branch has an explicitly configured alias.
+
+EDM fast merge will, in one job, only process files with identical provenannces. Prior to the 0.8.0 release, the CMSSW Framework had the same restriction. Starting with 0.8.0, CMSSW plans to support "fruit salad" processing, where files with different provenance may be processed in the same job if the provenances are compatible. Provenances are considered compatible if the object name to number mappings are the same for all objects in common between the files. The fast merge does not modify any objects, and does not create any provenance--so far as CMSSW is concerned, fastmerge is completely transparent.
+
+\subsubsection{DBS implications}
+
+At the file level of the DBS, the CMSSW provenance mostly provides constraints. File parentage must be tracked entirely by the DBS--CMSSW does not track it. CMSSW provenance provides a processing history at the object level, not the file level, and the object history may not be a complete record of the processing steps that produced the file containing that object if intermediate objects have been dropped from the output.
+
+The framework allows objects of the same type but different provenance if they differ in the process name, process instance label, or module label. The framework provenance may also include module configurations for objects which are not in the output file, since module configurations are not "garbage collected". The presence of multiple configurations for the same module--for objects which may not even be in the corresponding files--will limit the accuracy and reliability of queries on any "file level" provenance summary. A simple example of this would be if the HLT places reconstructed objects in the output stream which are also produced in prompt RECO or re-reconstruction. At the very least, this would mean that any query on the DBS provenance must include the process name as part of the query, and that may not be sufficient for the analysis use cases envisioned.
+
+\subsubsection{Notes and links}
+
+    * How to Configure Output Modules documents how branch names are constructed
+    * EDM Paths and Trigger Bits explains how to selectively write events based on "trigger" paths
+    * The framework currently reads only one data file at a time--there is no ability to join data from multiple files in the baseline. Adding this ability is (as of June 2006) under discussion. 
+\section{Schema Description and Design}
+\section{Client API}
+\section{Plan of Work}
+
+\begin{thebibliography}{9}
+  \bibitem {dar} {All bogus entries below}
+  \bibitem {smtp} {Simple Network Management Protocal}
+  \bibitem {mrtg} {Multi Router Traffic Grapher}
+  \bibitem {pool-ral} {POOL-RAL: POOL Persistence Framework, url{http://pool.cern.ch/ .}
+  \bibitem {frontier}{FroNTier Project, see S. Kosyakov, et. al.,''Frontier: High Performance Database Access Using Standard Web Components,'' Proceedings of the CHEP\,04 Conference, Interlaken Switzerland, 27 September - 1 October, 2004,
+Available at http://lynx.fnal.gov/ntier\-wiki/Additional\_20Documentation.}
+  \bibitem {tomcat}{Tomcat home page: http://tomcat.apache.org}
+  \bibitem {squid}{D. Wessels, Squid: The Definitive Guide, O'Reilly and Associates, 2004. Squid home page: http://www.squid-cache.org.}
+  \bibitem {squid-accel-mode}{op. cite~\cite{squid}, pp. 302-314.}}
+%last } is a mystry but latex asked for it. 
+  \bibitem {squid-objects}{For additional information see http://lynx.fnal.gov/ntier-wiki/Squid\_20performance\_20for\_20big\_20objects}
+\end{thebibliography}
+
+\pagebreak
+
+
+
+\end{document}
