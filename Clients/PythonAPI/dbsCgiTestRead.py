@@ -12,7 +12,7 @@ DEFAULT_BASE = "/DBS/servlet/DBSServlet"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/DBS/servlet/DBSServlet"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/RequestHeaderExample"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/HeaderExample"
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest1"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 #DEFAULT_URL = "exec:../CGIServer/prodquery"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/catout.sh"
@@ -98,6 +98,7 @@ try:
   except DbsCgiDatabaseError,e:
    print e
   
+  """
   otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   #otherDatasetPath = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged"
   try:
@@ -112,7 +113,6 @@ try:
   except DbsCgiDatabaseError,e:
    print e
   
-  """
 
   otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   #otherDatasetPath = "/test_primary_anzar/DST/test_process_anzar"

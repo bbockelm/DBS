@@ -502,14 +502,14 @@ class DbsCgiApi(DbsApi):
 	      fileBlocks[id] = DbsFileBlock(objectId=long(id), blockName=str(attrs['name']))
 	    self._block = fileBlocks[id]
           elif name == 'event-collection':
-	    f =  DbsFile (     fileBlockId=int(attrs['inblock']),
+	    f =  DbsFile (     fileBlockId=long(attrs['inblock']),
                                 guid=str(attrs['guid']),
                                 logicalFileName=str(attrs['lfn']),
                                 fileStatus=str(attrs['fstatus']),
                                 checkSum=str(attrs['checksum']),
-                                fileSize=int(attrs['size']))
+                                fileSize=long(attrs['size']))
 	    self._block['eventCollectionList'].append (DbsEventCollection(fileList=[f], 
-	      collectionName=str(attrs['name']), numberOfEvents=int(attrs['events'])))
+	      collectionName=str(attrs['name']), numberOfEvents=long(attrs['events'])))
 
       xml.sax.parseString (data, Handler ())
       return fileBlocks.values ()
@@ -555,17 +555,17 @@ class DbsCgiApi(DbsApi):
 	    if not blocks.has_key (id):
 	      blocks[id] = DbsFileBlock (objectId=long(id),
 			      		 blockName=str(attrs['name']),
-					 numberOfFiles=int(attrs['files']),
-					 numberOfBytes=int(attrs['bytes']))
+					 numberOfFiles=long(attrs['files']),
+					 numberOfBytes=long(attrs['bytes']))
 	    self._block = blocks[id]
           elif name == 'file':
 	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
-		    			  fileBlockId=int(attrs['inblock']),
+		    			  fileBlockId=long(attrs['inblock']),
 		    			  guid=str(attrs['guid']),
 		    			  logicalFileName=str(attrs['lfn']),
 		    			  fileStatus=str(attrs['status']),
 		    			  checkSum=str(attrs['checksum']),
-		    			  fileSize=int(attrs['size'])))
+		    			  fileSize=long(attrs['size'])))
 
       xml.sax.parseString (data, Handler ())
       return blocks.values ()
