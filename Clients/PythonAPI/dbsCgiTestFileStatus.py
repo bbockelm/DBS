@@ -18,10 +18,13 @@ try:
   api = DbsCgiApi(DEFAULT_URL, args)
 
   print "Setting file status as invalid"
-  api.setFileUnavailable ("tmpLFN3")
+  api.setFileStatus ("tmpLFN6", "invalid")
  
   print "Setting file status as valid"
-  api.setFileAvailable ("tmpLFN6")
+  api.setFileStatus ("tmpLFN6", "valid")
+  #api.setFileAvailable ("tmpLFN6")
+  #api.setFileUnavailable ("6B9EC-5026-DB11-9898-003048713B63.root")
+  #api.setFileAvailable ("/store/unmerged/PreProd/2006/8/2/ProdAgentDevTest1/GEN-SIM-DIGI/0000/9CE6B9EC-5026-DB11-9898-003048713B63.root")
 
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())

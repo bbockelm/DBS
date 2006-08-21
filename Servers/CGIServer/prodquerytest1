@@ -91,10 +91,8 @@ my %apis = (
   # Update side, requires authentication (FIXME)
   'createPrimaryDataset' => [ \&createPrimaryDataset, {
     name => REQUIRED } ],
-  'setFileUnavailable' => [ \&setFileUnavailable, {
-    name => REQUIRED } ],
-  'setFileAvailable' => [ \&setFileAvailable, {
-    name => REQUIRED } ],
+  'setFileStatus' => [ \&setFileStatus, {
+    name => REQUIRED, status => OPTIONAL} ],
   'createProcessing' => [ \&createProcessing, {
     xmlinput => REQUIRED } ],
   'insertDatasetInfo' => [ \&insertDatasetInfo, {
@@ -113,6 +111,8 @@ my %apis = (
     xmlinput => REQUIRED } ]);
 
 map { $$_[1]{api} = REQUIRED; $$_[1]{instance} = OPTIONAL; $$_[1]{html} = OPTIONAL; } values %apis;
+@fileStatus = ("valid", "invalid");
+
 # Get parameters
 
 my $api = param('api');
@@ -133,6 +133,16 @@ sub throwException{
 	my($myValue ,$myClass, $myMessage) = @_;
 	$exceptionClass = $myClass;
 	throw Error::Simple($myMessage,$myValue);
+}
+
+sub isStatus {
+	my ($inStatus) = @_;
+	foreach $status (@fileStatus) {
+		if ($inStatus eq $status) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
 ######################################################################
@@ -2155,11 +2165,12 @@ sub insertDatasetInfoLogic {
 
 }
 
-sub setFileAvailable {
+sub setFileStatus {
 	my ($dbs) = @_;
 	my $name = param('name');
+	my $status = param('status');
 	try {
-		&setFileStatusLogic ($dbs, $name, "valid");
+		&setFileStatusLogic ($dbs, $name, $status);
 	} catch	Error with {
 		my $ex = shift;
 		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
@@ -2170,29 +2181,13 @@ sub setFileAvailable {
 	my $out = "<?xml version='1.0' standalone='yes'?><dbs/>";
 	&reply_success ($out);
 }
-
-sub setFileUnavailable {
-	my ($dbs) = @_;
-	my $name = param('name');
-	try {
-		&setFileStatusLogic ($dbs, $name, "invalid");
-	} catch	Error with {
-		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
-	} finally {
-		$$dbs{DBH}->disconnect ();
-	};
-	# Prepare output.
-	my $out = "<?xml version='1.0' standalone='yes'?><dbs/>";
-	&reply_success ($out);
-}
-
 
 sub setFileStatusLogic {
 	my ($dbs, $name, $statusName) = @_;
-
+	return if ! defined $statusName;
+	&throwException(300, "Bad request",  "Invalid status. Expected values @fileStatus") if (!&isStatus($statusName));
 	&throwException(300, "Bad request",  "No name specified") if (! defined $name);
-	&throwException (300, "Bad data", "Invalid characters in name") if ($name !~ /$SAFE_NAME/o);
+	&throwException (300, "Bad data", "Invalid characters in name") if ($name !~ /$SAFE_PATH/o);
 
 	# Change the file status
 	my $statusId = ${&makeNamed($dbs, "file_status", $statusName, 1)}{id};
