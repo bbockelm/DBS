@@ -451,12 +451,12 @@ Criteria/Approach & CGI/Perl & CGI/Python & Java Servlets & Jboss &Ruby\\
  Maintainable     & * & X & X & X &    ?  \\
  Schema evolution & * & * & X & X &    ?  \\
  API evolution    & * & * & X & X &   ?  \\
- Easily factorized& X & X & X & X &   ?  \\
- Mult DB backends & X & X & X & X &    ?  \\
+ Easily factorized& * & * & X & X &   ?  \\
+ Mult DB backends &   &   & X & X &    ?  \\
  Accessed via lib 
      or server    & X & X & X & X &    ? \\
- Performance      & X & X & X & X & *       \\
- WS Support       & X & X & X & X & ?       \\ \hline
+ Performance      & X & ? & X & X & *       \\
+ WS Support       &   &   & X & X & ?       \\ \hline
       \end{tabular}
     \end{center}
   \end{table}  
@@ -514,6 +514,214 @@ The framework allows objects of the same type but different provenance if they d
     * EDM Paths and Trigger Bits explains how to selectively write events based on "trigger" paths
     * The framework currently reads only one data file at a time--there is no ability to join data from multiple files in the baseline. Adding this ability is (as of June 2006) under discussion. 
 \section{Schema Description and Design}
+
+\begin{enumerate}
+\item{File}
+ A File can contain multiple runs. A run can contain multiple files. The
+ event range in a file represents the lowest bound event number to the
+ highest bound event number. For example in a run r with a File f has
+ event range 19,130. This does not imply that all the events are
+ contiguous . There might be some events that can be missing. For example
+ in this file f , only events 19,20,25,130 are present and rest of then
+ are bad or missing.
+ 
+ \item{FileRun}
+ This table will represent many to many relationship in file and run.
+ Note that the event range is an attribute of the FileRun table and not
+ just of the File Table. This is required when multiple files will be
+ merged into one single file. Then a File can spawn multiple runs and can
+ spawn multiple event ranges. To discover all the event in this file we
+ need to make event range an attribute of FileRun table. For example say
+ a file f1 in run r1 contains events 3,16 and file f2 in run r2 contains
+ events 5,15 and file f3 in run r1 contains events 2,13 . After we
+ can merge f1,f2 and f3 into a big file ff, now FileRun table would
+ contain two entries for file ff and run r1 and run r2. First entry for
+ ff,r1 would have event range 2,16 and another entry for ff,r2 would
+ contain 5,15. Note that of the files to be merged are in the same run
+ then the event range would be minimum of lower bounds to maximum of
+ higher bounds min(3,2),max(16,13).
+ 
+ \item{FileParentage}
+ This represents the lineage of the file. All the parents of the file are
+ represented in this table. This file parentage is required at the file
+ granularity. If it is not presents at this granularity , then there
+ would be no way to correctly determining the exact parent of any
+ particular file. Please note that this parentage is also specified at
+ the ProcessedDataset level. The only reason for that is the optimization
+ for discovery. One can easily find the parents of a dataset via
+ traversing all the files and finding the parents of those files and then
+ locating the datasets those files exists in. To optimize this discovery
+ we need parentage at the dataset level too.
+ 
+\item{ Block}
+ This entity is entirely a concept of size and number of files. It can
+ contain many files but if the collective size of those files reaches a
+ certain limit (can be set by DBS admins), then it cannot accommodate any
+ more files in it. In that case a block can be closed and a new block can
+ be opened for adding new files into it. A block can be uniquely
+ determined by its name that can also include dataset path along with its
+ id.
+
+(Dan's comments)
+As was pointed out to me at the workshop, a block is supposed to
+be homogeneous--all the contents should of a block should be of
+the same data tier and processed data set.  This is important for
+PhEDEx and for some of the management data discovery use cases we
+discussed at last Friday's meeting.  PhEDEx in particular needs to
+be able to efficiently find all the blocks for a given data tier
+and processed data set, so this constraint may need to appear in
+the schema as an optimization.
+ 
+ \item{Lumi}
+ A file can contains many Lumi Sections and a Lumi Sections can be
+ contained in many files. These Lumi Sections are used for describing an
+ analysis dataset which is conceptually more or less not related with
+ files.
+
+(Dan's comments) Missing here is what a luminosity section is.  The definition can be
+found on this page:
+
+https://twiki.cern.ch/twiki/bin/view/CMS/CMSTORTagonline
+
+What's relevant for the DBS is that a luminosity section maps
+onto a (contiguous) set of events defined at the time the data
+are taken.  Since the the luminosity section boundaries are
+defined by the DAQ, they will never change.  Luminosity sections
+are not supposed to cross file boundaries--when the framework
+splits a file for size limit reasons, it is supposed to do so
+at a luminosity section boundary (I don't believe this is
+implemented yet).
+
+\item{DataTier}
+ DataTier is infact related with the AppConfig via ParameterSet. But we
+ need DataTier linked with Files also , since a physicists would require
+ to know all the file in a dataset which has a certain DataTier. If
+ DataTier would just be an ProcessedDataset Attribute, then the above
+ query could not be executed. This is because a ProcessedDataset can
+ spawn multiple DataTiers. If there is a restriction that a
+ ProcessedDataset would only have a single DataTier then we would not
+ required DataTier linkage with files at all. Also a File can have
+ muliple DataTiers also, that iss why all the more reasons to link
+ DataTier with File. Note that FileTier is enough for associating and
+ determining the DataTier with in a file as well as within a
+ ProcessedDataset. So why would we need linkage of DataTier with a
+ ProcessedDataset. The reason is same as that of File Parentage and
+ ProcessedDataset Parentage. This is just an optimization for determining
+ the DataTier with in a DataSet. One has to traverse all the files
+ otherwise to know the DataTiers.
+
+(Dan's comments)
+
+As you note, a single AppConfig can write multiple files of different
+data tiers at the same time, so the AppConfig <-> data tier
+relationship is ambiguous.  The new definition of data tier is that a
+data tier comprises a list of objects defined by a release which are
+written to files of that tier.  The objects written to a file of a
+given data tier will be defined by a release-dependent configuration
+fragment, so what objects go into an AOD or RECO file may vary from
+release to release.  I don't know how practical it will be to retrieve
+these lists from the full ParameterSet -- it may be desirable to have
+a separate table mapping (data tier, release) to a list of objects.
+ 
+ \item{PrimaryDataset}
+ PrimaryDataset is a placeholder for any type of data like raw or
+ production. It is determined by the name and the description. Now this
+ description can be of 3 different types: Monte Carlo type, Trigger Path
+ type or some Generic Description. Therefore there are 3 tables
+ representing each one. PrimaryDataset can contains raw data which means
+ that it was not processed. To manage this within the schema, one can
+ create a dummy ProcessedDataset with no link to any Application
+ (AppConfig in this case). All the raw files can now be placed in this
+ dummy ProcessedDataset
+
+(Dan's comments)
+
+There's actually two kinds of raw data: DAQ-RAW is the raw response
+data from the detector in FED format, which is input to the HLT; RAW
+is the output of the HLT.  Normally what will be injected into the DBS
+is RAW data from the HLT, and the HLT is a cmsRun application with a
+standard parameter set, so the normal RAW data will have real
+processed data sets, not a dummy one.
+
+ 
+ \item{Application}
+ Application is uniquely determined by the Application Version,
+ Application Executable and Application Family. There are three table
+ representing each one and collectively they represents an Application
+ \item{ParameterSet}
+ ParameterSet is a collection of Parameters which are used to make a
+ process. An entry in the ParameterSet can represent a single parameter
+ or a composite parameter. For example a single parameter would contain
+ name, value ,type and hash and a composite parameter would contain
+ name, value ,type and hash  with or without content. Also a composite
+ parameter would contain lot of other single or composite parameters.
+ This is represented by the ParameterBinding table. One can look at these
+ as a hierarchical directory structure. A single parameter would be
+ lowest level directory which does not contain any other directory. A
+ composite parameter would be a directory that may or may not contain
+ other directory and may or may not contain a file (content). Hash
+ uniquely identifies a parameter (both single and composite)
+ 
+(Dan's comments)
+
+I believe there's a way of getting the framework's pset parser to
+give access to its internal parse tree, which could be used to
+construct the QueryableParameterSet.  Parameter set's can have
+fairly complicated nesting, so I'm a little worried about what a
+query on this will look like, but I guess this is a reasonable
+starting point.
+
+ \item{AppConfig}
+ A unique combination of an Application and a ParameterSet would
+ represent an AppConfig. A file will be produced by a single AppConfig.
+ That is why we have many to one relationship between AppConfig and File
+ table. Note that a File has a relationship with ProcessedDataset, but
+ that is not enough to determine the exact AppConfig used to produce the
+ file. The reason being that a ProcessedDataset can spawn multiple
+ AppConfig.
+ 
+(Dan's comments)
+
+While this is true, keep in mind that the framework can now merge
+files with different provenance (the "fruit salad" mode), so different
+objects in a single file may have different parentage/processing
+history.
+
+\item{ ProcessedDataset}
+ Is uniquely represented by the PrimaryDataset , AppConfig and the input
+ ProcessedDataset if any. Also, a ProcessedDataset can contain various
+ AppConfig (Different version of Application). This satusfy the use case
+ of creating many files with same application but different version of
+ the software used. It can contain multiple files and therefore has
+ one to may relationship with file. Also it can contain multiple DataTier
+ which itself can spawn multiple ProcessedDataset and therefore many to
+ many relationship among them. The reason for this linkage is for
+ optimization purposes only and is described in FileTier section
+ 
+ \item{AnalysisDataset}
+ It is uniquely determined by Lumi Sections and ProcessedDataset. An
+ AnalysisDataset is a subset of ProcessedDataset. From one
+ ProcessedDataset many AnalysisDataset can be derived. Driving a new
+ AnalysisDataset from an existing AnalysisDataset would mean to create a
+ new ProcessedDataset. So essentially it will be a new AnalysisDataset
+ from a ProcessedDataset again. Also AnalysisDataset can contain many
+ Lumi Sections and same Lumi Sections can spawn multiple AnalysisDataset.
+ Therefore we have AnalysisDSLumi table which represents many to many
+ relationship among these entities.
+
+(Dan's comments)
+
+Analysis data set is more complicated than this.  The definition we've
+been using is "a list of luminosity sections which were specified by
+running an analysis query on a processed dataset at a particular
+instant of time".  A processed data set may contain multiple instances
+of a luminosity section processed with different application
+configurations, so an analysis data set is determined by a processed
+data set, a list of luminosity sections, and an AppConfig for each
+luminosity section.
+
+We haven't discussed how (or if) this maps onto MC data.
+
 \section{Client API}
 \section{Plan of Work}
 
