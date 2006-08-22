@@ -13,10 +13,14 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
       <tr bgcolor="#9acd32">
 
         <th align="left">Path</th>
+        <th align="left">NumberOfEvents</th>
+        <th align="left">NumberOfFiles</th>
       </tr>
       <xsl:for-each select="dbs/processed-dataset">
       <tr>
         <td><xsl:value-of select="@path"/></td>
+        <td><xsl:value-of select="@numberOfEvents"/></td>
+        <td><xsl:value-of select="@numberOfFiles"/></td>
       </tr>
 
       </xsl:for-each>

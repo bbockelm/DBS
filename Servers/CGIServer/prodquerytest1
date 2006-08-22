@@ -50,8 +50,8 @@ use Error qw(:try);
 use XML::XSLT;
 $Text::Glob::strict_wildcard_slash = 0;
 
-#$file = '/tmp/out.txt';
-#open(INFO, ">$file");
+$file = '/tmp/out.txt';
+open(INFO, ">$file");
 
 ######################################################################
 # Main program
@@ -775,10 +775,11 @@ sub getDatasetContents
   my $id = &datasetFromPath ($dbs, @path);
 
   # Prepare output.
-  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+  my $outHead = "<?xml version='1.0' standalone='yes'?><dbs>";
   my $pathname = "/$path[0]/$path[1]/$path[2]";
   my $blockbase = "/$path[0]/$path[2]";
-  $out .= "<processed-dataset id='$id' path='$pathname'>";
+  $outHead .= "<processed-dataset id='$id' path='$pathname'";
+  $out = "";
 
   # Fetch event collections by which block they belong to
   my $q = &dbexec($$dbs{DBH}, qq{
@@ -814,6 +815,7 @@ sub getDatasetContents
     ":id" => $id);
 
   my $prev = undef;
+  my ($noOfFiles, $noOfEvents) = (0, 0);
   while (my $row = $q->fetchrow_arrayref())
   {
     my ($id, $name, $events, $status, $block, $bstatus, $inblock, $guid, $lfn, $fstatus, $checksum, $size) = @$row;
@@ -830,13 +832,19 @@ sub getDatasetContents
     next if $name eq 'EvC_META';
     $status = "" if ! defined $status;
     $fstatus = "" if ! defined $fstatus;
+    $checksum = "" if ! defined $checksum;
+    $guid = "" if ! defined $guid;
     $name =~ s/^EvC_Run//;
     if ($fstatus ne "invalid") {
+            ++$noOfFiles;
+            $noOfEvents = $noOfEvents + $events; 
 	    $out .= "<event-collection id='$id' name='$name' events='$events' status='$status' inblock='$inblock' guid='$guid' lfn='$lfn' fstatus='$fstatus' checksum='$checksum' size='$size'/>";
     }
   }
   $out .= "</block>" if defined $prev;
+  $outHead .= " numberOfEvents='$noOfEvents' numberOfFiles='$noOfFiles'>" ;
   $out .= "</processed-dataset></dbs>\n";
+  $out = $outHead . $out;
 
   # Spit out the result
   $$dbs{DBH}->disconnect ();
@@ -1021,7 +1029,11 @@ sub createPrimaryDataset {
 		$id = &createPrimaryDatasetLogic ($dbs, $name);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -1088,7 +1100,11 @@ sub createProcessing {
 		$id = &createProcessingLogic ($dbs, $name, $primary, $pname, $appexe, $appvers, $appfamily, $psethash, $psetcontent);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -1182,7 +1198,11 @@ sub createFileBlock {
 		$id = &createFileBlockLogic ($dbs, $processing);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -1248,7 +1268,11 @@ sub createProcessedDataset {
 		$id = &createProcessedDatasetLogic ($dbs, $primaryName, $dataTier, $processedName, @input);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -1305,7 +1329,11 @@ sub closeFileBlock {
 		&closeFileBlockLogic ($dbs, $id, $name);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -1363,7 +1391,11 @@ sub insertFiles {
 		&insertFilesLogic ($dbs, $name, $primary, $processed, $blockid, @files);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -1479,7 +1511,11 @@ sub insertEventCollections {
 		&insertEventCollectionsLogic ($dbs, $path,  @evcs);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -2066,7 +2102,11 @@ sub insertDatasetInfo {
 		#&insertDatasetInfoLogic ($dbs, $primaryDatasetName, $path,   @processing);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -2173,7 +2213,11 @@ sub setFileStatus {
 		&setFileStatusLogic ($dbs, $name, $status);
 	} catch	Error with {
 		my $ex = shift;
-		&reply_failure ($ex->value(), $exceptionClass, $ex->text());
+		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
+		if(defined $exceptionClass) {
+			($value, $class, $text) = ($ex->value(), $exceptionClass, $ex->text());
+		}
+		&reply_failure ($value, $class, $text);
 	} finally {
 		$$dbs{DBH}->disconnect ();
 	};
@@ -2184,13 +2228,60 @@ sub setFileStatus {
 
 sub setFileStatusLogic {
 	my ($dbs, $name, $statusName) = @_;
-	return if ! defined $statusName;
-	&throwException(300, "Bad request",  "Invalid status. Expected values @fileStatus") if (!&isStatus($statusName));
+	&throwException(300, "Bad request",  "Invalid status. Expected values @fileStatus") if (defined $statusName &&  !&isStatus($statusName));
 	&throwException(300, "Bad request",  "No name specified") if (! defined $name);
 	&throwException (300, "Bad data", "Invalid characters in name") if ($name !~ /$SAFE_PATH/o);
 
+	#check previous status to decide wether to update block or not
+	my ($fstatus, $filesize, $blockId, $bytes, $files) = &dbexec($$dbs{DBH}, qq{
+		select distinct
+		fs.name,
+		f.filesize,
+		f.inblock,
+		b.bytes,
+		b.files
+			from t_file f
+		left join t_file_status fs
+			on fs.id = f.status
+		left join t_block b
+			on b.id = f.inblock
+		where f.logical_name = :logical_name},
+		":logical_name" => $name)->fetchrow();
+	$fstatus = ''  if ! defined $fstatus;
+
+	#print INFO "file status $fstatus\n";
+	#print INFO "size $filesize\n";
+	#print INFO "inlock $blockId\n";
+	&throwException (300, "Bad data", "Trying to set status as it was before") if($fstatus eq $statusName);
+	my $updateBlock = 0;
+	if($statusName eq "invalid") {
+		#decrement Block
+		$bytes = $bytes - $filesize;
+		--$files;
+		$updateBlock = 1;
+	}
+	if($fstatus eq "invalid") {
+		#Increment Block
+		$bytes = $bytes + $filesize;
+		++$files;
+		$updateBlock = 1;
+	}
+	#print INFO "bytes  -> $bytes  files -> $files updateBlock -> $updateBlock\n";
+ 	#close(INFO);
+	if($updateBlock) {
+		&dbexec($$dbs{DBH}, qq{
+		update t_block
+			set bytes = :bytes,
+			files = :files
+		where id = :id},
+		":files" => $files,
+		":bytes" => $bytes,
+		":id" => $blockId);
+		&throwException (402, "Execution error", $@) if $@;
+	}
 	# Change the file status
-	my $statusId = ${&makeNamed($dbs, "file_status", $statusName, 1)}{id};
+	my $statusId = '';
+	$statusId = ${&makeNamed($dbs, "file_status", $statusName, 1)}{id} if defined $statusName;
 	&dbexec($$dbs{DBH}, qq{
 		update t_file
 		set status = :status
