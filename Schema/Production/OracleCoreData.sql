@@ -1,6 +1,7 @@
 -- ======================================================================
 create sequence seq_data_tier;
 create sequence seq_parentage_type;
+create sequence seq_evcoll_status;
 create sequence seq_primary_dataset;
 create sequence seq_processing_name;
 create sequence seq_processing;
