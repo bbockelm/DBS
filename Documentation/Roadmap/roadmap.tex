@@ -11,7 +11,7 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{1 August, 2006}
+   \date{24 August, 2006}
 
   \title{A 2006-07 Roadmap for CMS Dataset Bookkeeping System}
 
@@ -167,12 +167,11 @@ Data discovery and location: combine DBS and DLS information
 \subsection{PhEDEx}
 
 \subsection{DBS Context Diagram}
-Fig.~\ref{fig:dbs-context-diagram}
-% I have a png file for this, need to convert to eps and 
-% have some technical problem on my new laptop.
+The DBS system is just one component in the Data Management system, and also has relationships to other sources of information in CMS at large. An overall picture of CMS is illustrated in Fig.~\ref{fig:dbs-context-diagram} with DBS represented in the center. 
+
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{15cm}{!}{\includegraphics{dbs-context-map.eps}}
+    \resizebox{15cm}{!}{\includegraphics{DBS-WS-DatabasesConceptMap-20060721.eps}}
     \caption{Concept diagram for DBS within CMS.}
     \label{fig:dbs-context-diagram}
   \end{center}
@@ -180,11 +179,9 @@ Fig.~\ref{fig:dbs-context-diagram}
 
 \section{Tasks and Use Cases from the  Workshop}
 
+During the Cornell Workshop we compiled a list of 51 items to be followed up in our work to design the DBS system. There are several categories for the items and we have characterized them here as 1) use cases to be further expanded, 2) design requirement, 3) relationship with other subsystem in Data Management, 4) relationship within CMS at large.
 
-List from the WS
-
-These will be reviewed, sorted, and assigned for further work. Many people volunteered (or were volunteered ) to help.
-
+\subsection{ Use cases to be further expanded}
 
    1.  (use case, fermilab)Need to develop use case for publishing locally analyzed data to global scope - Fermilab
 
@@ -198,19 +195,6 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
 
    6. (dbs)Store filter information for each file (stream) for multi-output skimming
 
-   7. (dbs, need more info)support for pileup input datasets/files.
-
-   8. (use case-?)data quality information. What level of granularity? run, luminosity block, event?
-
-   9. (dbs, use case-?)Must be able to track luminosity for analysis dataset. Run over N luminosity blocks, some fail, some pass. How to integrate luminosity for all data used.
-
-  10. (dbs)All copies of a physical file are lost. Must be able to mark the status as unavailable or lost. Needs to be reported to DLS, and PhEDEx also.
-
-  11. (ReqSys?)Need a way to specify and submit processing requests for MC generation, and general data processing.
-
-  12. (ProdAgent)Recovery of files that were not processed due to input failures, or high error rates in application.
-
-  13. (ProdAgent)Recovery of data lost after processed. Outfile is lost 1. before entered into DBS, or 2. after entered in DBS.
 
   14. (dbs) Users need to store special data, such as log files or personal or group data.
 
@@ -218,13 +202,12 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
 
   16. (dbs)Primary datasets must be special and have special meta data or ability to link to other information that characterizes it.
 
+
   17. (review w/ ProdAgent, dbs)Merge and remapping requirements and use case. Is it really required (or advisable) that we get rid of intermediate files? Refer to SAM experience reported by Adam.
 
   18. (dbs)Authentication and authorization for DBS API
 
   19. (dbs)Who or which group created a particular set of data?
-
-  20. (?)Naming convention for processed dataset. Can this be automated.
 
   21. (dbs, in progress)Schema review items: does family have any meaning in CMS? , Dans talk, review SAM schema, others.
 
@@ -242,11 +225,6 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
 
   28. (dbs)Getting runs into DBS, need DBS to have relation to luminosity block information.
 
-  29. (?)Need to have LFN naming convention.
-
-  30. (use case, need more input) High level trigger information in DBS based on trigger mask, or trigger object, so can discover data based on trigger.
-
-  31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
 
   32. (dbs,FJR) Data tier is defined well enough to know what objects are in it. Some concern that this will change. How can we store the branch information from the FJR in a useful way? How will it be queried?
 
@@ -254,19 +232,9 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
 
   34. (dbs, some assumptions to clear up)Need way to select individual events from a particular tier given run/event.
 
-  35. (ProdAgent, dbs)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access.
-
-  36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
 
   37. (dbs,FJR)The FJR should contain as much as possible of the information that is recorded in DBS.
 
-  38. (use case-?)What is the software environment an analysis user will be using while in the local scope? Who moves data and DBS info about the data from local to public scope and how is it accomplished? What is the software setup, configuration, and what tools are needed? What authentication and authorization is needed for this?
-
-  39. (ReqSys?-Giulio, dbs-fnal)Use cases for the data processing request system for both MC and real physics data processing. What is the overlap between the request system and DBS? DBS and the Request system share discovery of 'applications' (i.e. the configuration). It is assumed this sharing will not be needed for CSA06 but should be understood for the final system.
-
-  40. (ReqSys?-Giulio) Confusion about meaning of payload and workflow in MC request system [Guillio needs to make a glossary that synchs up with the DBS jargon].
-
-  41. (ReqSys?, dbs)The Request System and DBS are related but Peter thinks should be 'decoupled'. It seems possible and useful to link up the parameter set discovery system of the two in the long term. Not needed for CSA06.
 
   42. (?) Explore use of defaults for data specification [e.g. do not make people say 'AOD' since that is the most requested]
 
@@ -276,6 +244,7 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
          3. express stream
          4. dedicated calibration runs
          5. Physics data> ==> Does DBS begin before or after repacking? << big issue. 
+
 
   44. (use case) How is DBS used for Tier 0?
          1. Reconstruction
@@ -294,13 +263,6 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
          2. Under no pressure to make this work on a short time scale, but can use run for existing data to load the DBS catalog.
          3. Would be useful experience for the DBS system and good interaction form physisists. 
 
-  48. (use case, dbs?) DBS/DLS/PheDex know about file/file block sizes
-         1. How is this space 'assigned'/'allocated' at Tier-2 sites?
-         2. Need tools to determine how disk (resources?) are used by "groups" in CMS?
-         3. detail: Need to have concept of ownership (grolup/user) in either DBS or DLS
-         4. research: map how people running jobs work within the constraints of the existing system (how do they deal with disk allocations, and stepping on one anothers resources?) 
-
-49. (need to present to other cms db players - Lee) Concept map for DBS and how it relates to other event and non-event data repositories. (DLS/DBS, conditions DB, trigger DB, luminosity DB, et cetera.
   
 50. (use cases) Data Discovery use cases and what should be available for discovery (Need subgroup to further explore this):
          1. detector experts looking at detector problems, Range of data (run range) with certain conditions, bad detector component, special trigger.
@@ -314,14 +276,74 @@ These will be reviewed, sorted, and assigned for further work. Many people volun
          2. We see no need to continue the concept of event collections.
          3. Schema was discussed and sketched out at workshop. Anzar will enter and draw using druid. 
 
+
+\subsection{Design requirement}
+
+  10. (dbs)All copies of a physical file are lost. Must be able to mark the status as unavailable or lost. Needs to be reported to DLS, and PhEDEx also.
+
+\subsection{Relationship with other subsystem in Technical Project}
+   7. (dbs, need more info)support for pileup input datasets/files.
+
+  11. (ReqSys?)Need a way to specify and submit processing requests for MC generation, and general data processing.
+
+  12. (ProdAgent)Recovery of files that were not processed due to input failures, or high error rates in application.
+
+  13. (ProdAgent)Recovery of data lost after processed. Outfile is lost 1. before entered into DBS, or 2. after entered in DBS.
+
+  20. (?)Naming convention for processed dataset. Can this be automated.
+
+
+\subsection{Relationship within CMS at large}
+   8. (use case-?)data quality information. What level of granularity? run, luminosity block, event?
+
+   9. (dbs, use case-?)Must be able to track luminosity for analysis dataset. Run over N luminosity blocks, some fail, some pass. How to integrate luminosity for all data used.
+
+  29. (?)Need to have LFN naming convention.
+
+  30. (use case, need more input) High level trigger information in DBS based on trigger mask, or trigger object, so can discover data based on trigger.
+
+  31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
+
+
+  35. (ProdAgent, dbs)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access.
+
+  36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
+
+  38. (use case-?)What is the software environment an analysis user will be using while in the local scope? Who moves data and DBS info about the data from local to public scope and how is it accomplished? What is the software setup, configuration, and what tools are needed? What authentication and authorization is needed for this?
+
+  39. (ReqSys?-Giulio, dbs-fnal)Use cases for the data processing request system for both MC and real physics data processing. What is the overlap between the request system and DBS? DBS and the Request system share discovery of 'applications' (i.e. the configuration). It is assumed this sharing will not be needed for CSA06 but should be understood for the final system.
+
+  40. (ReqSys?-Giulio) Confusion about meaning of payload and workflow in MC request system [Guillio needs to make a glossary that synchs up with the DBS jargon].
+
+  41. (ReqSys?, dbs)The Request System and DBS are related but Peter thinks should be 'decoupled'. It seems possible and useful to link up the parameter set discovery system of the two in the long term. Not needed for CSA06.
+  48. (use case, dbs?) DBS/DLS/PheDex know about file/file block sizes
+         1. How is this space 'assigned'/'allocated' at Tier-2 sites?
+         2. Need tools to determine how disk (resources?) are used by "groups" in CMS?
+         3. detail: Need to have concept of ownership (grolup/user) in either DBS or DLS
+         4. research: map how people running jobs work within the constraints of the existing system (how do they deal with disk allocations, and stepping on one anothers resources?) 
+
+49. (need to present to other cms db players - Lee) Concept map for DBS and how it relates to other event and non-event data repositories. (DLS/DBS, conditions DB, trigger DB, luminosity DB, et cetera.
+
 \section{Use Cases}
 \subsection{Use cases for CSA06}
+Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:csa06-use-cases-diagram} and described in this section.
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{15cm}{!}{\includegraphics{CSA06_use_cases_dfd.eps}}
+    \caption{CSA06 use cases diagram.}
+    \label{fig:csa06-use-cases-diagram}
+  \end{center}
+\end{figure} 
 
  
 \begin{enumerate}
+
+
 \item{Physicist Tier 2 Creates Skim of Re-RECO at Tier 1}
 
 Physicist polls list of available datasets for those produces by CSA06. He sees a job which he identifies as a skim by its name. Someone tells this physicist what Tier 1 has the data. The tool shows him the dataset identifier. He puts that identifier into a Prodagent job, along with the name of the Tier 1 on which to do processing.
+
+
 
 \item{Physicist Tier 2 Discovers Tier 1 Data Available for Processing}
 
@@ -488,6 +510,16 @@ Criteria/Approach & CGI/Perl & CGI/Python & Java Servlets & Jboss &Ruby\\
 
 \section{Framework needs}
 
+
+This is shown in  Fig.~\ref{fig:framework-access} and described in this section.
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{15cm}{!}{\includegraphics{access.eps}}
+    \caption{CMSSW Framework access.}
+    \label{fig:framework-access}
+  \end{center}
+\end{figure} 
+
 \subsection{CMSSW Framework provenance/DBS interaction}
 
 The "Unambiguous identification of reconstruction results" section of the "CMS Core Software Re-engineering Roadmap" is mostly correct (a few things are not implemented yet, and some recent design decisions are not reflected there yet). This page provides a brief summary of the the aspects of the framework provenance which may have implications for the DBS provenance database.
@@ -513,7 +545,18 @@ The framework allows objects of the same type but different provenance if they d
     * How to Configure Output Modules documents how branch names are constructed
     * EDM Paths and Trigger Bits explains how to selectively write events based on "trigger" paths
     * The framework currently reads only one data file at a time--there is no ability to join data from multiple files in the baseline. Adding this ability is (as of June 2006) under discussion. 
+
 \section{Schema Description and Design}
+
+During the Workshop we started a design for a new schema to superceed the one being used for CSA06. This has been drawn and several modifications added to reflect the entire Workshop discussion and decisions made there. This is shown in  Fig.~\ref{fig:new-dbs-schema-design} and described in this section.
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{15cm}{!}{\includegraphics{schema_07272006.eps}}
+    \caption{New DBS schema design.}
+    \label{fig:new-dbs-schema-design}
+  \end{center}
+\end{figure} 
+
 
 \begin{enumerate}
 \item{File}
@@ -721,7 +764,7 @@ data set, a list of luminosity sections, and an AppConfig for each
 luminosity section.
 
 We haven't discussed how (or if) this maps onto MC data.
-
+\end{enumerate}
 \section{Client API}
 \section{Plan of Work}
 
