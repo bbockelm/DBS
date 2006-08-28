@@ -11,13 +11,17 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{24 August, 2006}
+   \date{28 August, 2006}
 
   \title{A 2006-07 Roadmap for CMS Dataset Bookkeeping System}
 
   \begin{Authlist}
-   Lee Lueking, Andrew Dolgert, Vijay Sekhri, Anzar Afaq, Valentin Kuznetsov, Alessandra Fanfani, Stefano Belforte, Lothar Bauerdick, Ian Fisk, Elizabeth Sexton-Kennedy, Chris Jones, Dan Riley, Stefano Lacaprara, Peter Elmer  \Instfoot{fnal}{FNAL, Batavia, IL, USA}
-%    R.~Egeland \Instfoot{minn}{University of Minnesota, Twin Cities, MN, USA}
+  Anzar Afaq,  Lothar Bauerdick, Stefano Belforte, Andrew Dolgert, Peter Elmer, Alessandra Fanfani, Ian Fisk,  Chris Jones,  Valentin Kuznetsov,  Stefano Lacaprara, Lee Lueking, Dan Riley, Vijay Sekhri, Elizabeth Sexton-Kennedy     
+\Instfoot{fnal}{FNAL, Batavia, IL, USA}
+\Instfoot{italy}{Italy}
+\Instfoot{cornell}{Cornell, Ithica, NY, USA}
+\Instfoot{princeton}{Princeton, Princeton, NJ, USA}
+\Instfoot{balonia}{Balonia, Balonia, Italy}
   \end{Authlist}
 
 % if needed, use the following:
@@ -84,19 +88,19 @@ Workshop Goals:
 \end{itemize}
 
 \section{Glossary} 
-\begin{itemize}
-\item Dataset-"any set of 'event collections' that would naturally be
+\begin{description}
+\item{Dataset}-"any set of 'event collections' that would naturally be
 grouped and analysed together as determined by
 physics attributes" -ctdr
 e.g., common trigger path or MC generator (configuration?)
 e.g., "a particular object model representation of those events" such as
 RAW, RECO, AOD??
-\item Primary Dataset-"data at all levels of processing pertaining to a given
+\item{Primary Dataset}-"data at all levels of processing pertaining to a given
 trigger or common MC production criteria" -dm-dbsv0.85
 "For Monte Carlo data 'primary datasets' comprise
 data generated with the same parameters" -dm-dbsv0.85
 Is the set of MC primary datasets bounded? Determinable?
-\item Processed Dataset- "a slice of data from a Primary Dataset defined by the
+\item{Processed Dataset}- "a slice of data from a Primary Dataset defined by the
 processing history applied to it" -dm-dbs-v0.85
 "will correspond to a large production of data with a
 single major software release version, but may include
@@ -104,13 +108,13 @@ multiple minor versions for small bug fixes and also
 may contain the output of multiple processings of
 some given input event collection" -dm-dbs-v0.85
 ´multiple minor versions lost in some versions of the DBS schema
-\item Analysis Dataset- "A subset of Event Collections from a given Processed
+\item{Analysis Dataset}- "A subset of Event Collections from a given Processed
 Dataset" -dm-dbs-v0.85
 Adds constraints to processed dataset
 Similar to CLEO EventStore ´physics grade--the data physicists should run
 on?
 Gone from current schema, no mechanism to create one
-\item Data Tier- "2.5.1 Data Tiers" -ctdr
+\item{Data Tier}- "2.5.1 Data Tiers" -ctdr
 DAQ-RAW, RAW, RECO, AOD, TAG, FEVT
 "type of content resulting from a degree of processing
 applied to the data" -dm-dbs-v0.85
@@ -119,7 +123,7 @@ Actually defined by the objects contained?
 Then data tier is an attribute of a file or event collection, not processing?
 What about data tier evolution? AOD2, AOD3, ...?
 Or finer grained processing path (not in framework provenance)?
-\item Event Collection-The smallest unit that a user is able to select through
+\item{Event Collection}-The smallest unit that a user is able to select through
 the dataset bookkeeping system" -ctdr
 e.g., event data from a particular trigger selection from one given run
 "a single event collection will give access to data from
@@ -127,17 +131,17 @@ exactly one data tier" -dm-dbs-v0.85
 Currently supporting multiple data tiers, e.g., FEVT
 Relationship to file one-to-many or many-to-many
 many-to-many for old EDM?
-\item File Block- "a set of files likely to be accessed together" -dm-dbsv0.85
+\item{File Block}- "a set of files likely to be accessed together" -dm-dbsv0.85
 data management packaging unit
 "will in general correspond to the same Primary
 Dataset, Data Tier and Processed Dataset" -dm-dbsv0.85
 incorrectly reflected in schema?
-\item non-event data-Non-event data: detector configuration, conditions, ...
+\item{non-event data-Non-event data}: detector configuration, conditions, ...
 Mostly time domain: run, luminosity interval?
 DBS currently knows nothing about this
 so we told Drew not to work on them
 Is this in scope for DBS? If not, what should answer these queries?
-\end{itemize}
+\end{description}
 
 
 \section{DBS interaction with other DM, WM areas, and CMS at large}
@@ -162,7 +166,9 @@ DBS knows how dataset are organized in term of fileblocks
 DLS knows fileblocks locations
  Fileblock name needs to be consistent across DBS and DLS
 Local scopes DBS/DLS upload into global DBS/DLS (clashes on fileblock name?)
-Data discovery and location: combine DBS and DLS information
+Data discovery and location: combine DBS and DLS information.
+
+DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS
 
 \subsection{PhEDEx}
 
@@ -339,43 +345,61 @@ Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:c
 \begin{enumerate}
 
 
-\item{Physicist Tier 2 Creates Skim of Re-RECO at Tier 1}
+\item Physicist Tier 2 Creates Skim of Re-RECO at Tier 1
 
 Physicist polls list of available datasets for those produces by CSA06. He sees a job which he identifies as a skim by its name. Someone tells this physicist what Tier 1 has the data. The tool shows him the dataset identifier. He puts that identifier into a Prodagent job, along with the name of the Tier 1 on which to do processing.
 
+Data discovery requirements:
+\begin{itemize}
+    \item Identify data as CSA06 - by primary dataset name?
+    \item Identify a skim - by processed dataset name?
+    \item Locate a dataset - /primary/tier/processed -> blocks -> SE via DLS 
+\end{itemize}
 
-
-\item{Physicist Tier 2 Discovers Tier 1 Data Available for Processing}
+\item  Physicist Tier 2 runs analysis job
+\begin{itemize}
+\item Physicist Tier 2 Discovers Tier 1 Data Available for Processing
 
 Physicist polls a list of available datasets for datasets produced by CSA06. The physicist recognizes Re-RECO data because of the dataset name. The program (or web page) provides a dataset identifier.
+
+ Data discovery requirements: Identify reRECO - by processed dataset name? 
 
 \item{Physicist Tier 2 runs analysis job}
 
 Physicist asks CRAB to run an analysis job.
 
-\item{Alignment Person Recalibrates using Z to mu-mu to produce a new version of alignment}
+\end{itemize}
 
-\item{Physicist polls a tool which shows a list of available datasets.} He identifies CSA06 jobs by name. [Should be done at CAF, but not for CSA06.]
+\item Alignment Person Recalibrates using Z to mu-mu to produce a new version of alignment
+
+Physicist polls a tool which shows a list of available datasets. He identifies CSA06 jobs by name. [Should be done at CAF, but not for CSA06.]
 
 He submits the alignment job to CRAB or Prodagent, which returns a new version of the alignment. Alignment person puts this alignment into alignment database.
 
-\item{Production Manager Tier 2 Re-runs RECO analysis}
+\item Production Manager Tier 2 Re-runs RECO analysis
 
 Alignment person tells production manager about newly-available calibration. Production manager specifies new alignment in Prodagent or CRAB configuration file. Production Manager specifies a subset of the RAW dataset and submits it to run. Prodagent puts result into global DBS. (It could be a job robot that runs this instead of Prodagent or CRAB. How do you insert new detector conditions? Do you need a new version of the software or configuration.)
 
-\item{Production Manager Watches CSA06 Progress}
+Data discovery requirements: Specify a subset of the RAW data for reRECO (by primary dataset?).
+
+\item Production Manager Watches CSA06 Progress
 
 Production Manager wants to see what data exists and what file blocks are transferred. They open a web page tailored to CSA06. It queries the DBS for file existence and PhEDEx for file transfer rate. (Can PhEDEx tell you this? Would something else do it, like the DLS?)
 
-\item{Production Manager Creates Real HLT Data from MC Data}
+Data discovery requirements: Identify a subset of CSA06 MC data injected at the HLT (differnet primary dataset?).
+\item Production Manager Creates Real HLT Data from MC Data
 
 Production Manager runs the HLT on a large dataset of MC Data. Production Manager uses Y to put that data into the DBS. Only five million events go through the HLT from all of the MC data, and DBS tracks these.
 
-\item{Tony at Tier 0 Puts Real Data into Global Scope}
 
-He creates data with a set of scripts. He asks X to make file blocks from that data. He asks Y to put that data into the DBS.
 
-\item{Physicist Tier 2 Runs Skim on One of Six Copies of AOD}
+\item Tony at Tier 0 Puts Real Data into Global Scope
+
+He creates data with a set of scripts. He asks X to make file blocks from that data. He asks Y to put that data into the DBS. What tool is used at the tier 0 to insert RAW data into the DBS? How are the primary datasets for real data managed at the tier0? How are primary datasets for MC handled?
+
+Data discovery requirements: Management of primary dataset IDs at the tier 0.
+
+\item Physicist Tier 2 Runs Skim on One of Six Copies of AOD
 
 Physicist sees in exploration tool that AOD is available at Tier 1 and can tell that this is AOD from Re-RECO. Physicist asks X where this data is stored. Physicist puts into the CRAB configuration the name of the dataset and where to do the computation. CRAB puts the resulting file into the DBS. 
 
@@ -426,45 +450,46 @@ There are at least two issues here, 1. server technology, and 2. transport and m
 Server options
 
 \begin{enumerate}
-\item   1. CGI/Perl: Continue to develop CGI w/ Perl scripts
-\item   2. CGI/Python: Continue to use CGI, but rewrite scripts in Python
-\item  3. Servlets: Use Tomcat servlet container and implement API in Java servelets.
-\item   4. Commercial Appserver: Use a commercial application server solution, for example JBOSS and Hibernate.
-\item   5. C++ DBS AppSrv?: Reuse the DBS App server developed at FNAL under a standard server technology, like Apache, or Tomcat.
-\item   6. RAD or Agile Web technology: Use one of the recent rapid web development platforms, for example Ruby On Rails (Ruby), or Django (Python), Zope 3. 
+\item  CGI/Perl: Continue to develop CGI w/ Perl scripts
+\item  CGI/Python: Continue to use CGI, but rewrite scripts in Python
+\item  Servlets: Use Tomcat servlet container and implement API in Java servelets.
+\item  Commercial Appserver: Use a commercial application server solution, for example JBOSS and Hibernate.
+\item  C++ DBS AppSrv?: Reuse the DBS App server developed at FNAL under a standard server technology, like Apache, or Tomcat.
+\item  RAD or Agile Web technology: Use one of the recent rapid web development platforms, for example Ruby On Rails (Ruby), or Django (Python), Zope 3. 
 \end{enumerate}
 Transport and messaging layer
 \begin{enumerate}
- \item  1. Assume the transport layer is HTTP
- \item  2. Messaging layer can have a couple of choices
+ \item  Assume the transport layer is HTTP
+ \item  Messaging layer can have a couple of choices
          1. Standard like SOAP, XML-RPC, REST
          2. We make something that is performant (like the XML messages used now for CGI, or something similar to Frontier). 
 \end{enumerate}
 \subsubsection{Criteria for decision}
 \begin{enumerate}
- \item   1. Must be proven technology
-  \item  2. Not out dated
-  \item  3. Well supported by existing tools and documentation
- \item   4. Flexible framework that we can grow to meet future needs
- \item   5. Provide needed scalability
-  \item  6. Easily maintainable
- \item   7. Accommodate schema evolution
- \item   8. Accommodate API evolution
- \item   9. Server functions must be well factorable
- \item  10. Provide "local" and "global" scope functionality. This implies a. using multiple database technologies and a. having access through local library or remote server.
- \item  11. Meet performance needs. This depends on transport and messaging layer employed.
-\item   12. Web Services support. This is a desirable, and determines the flexibility for the future. 
+ \item  Must be proven technology
+ \item  Not out dated
+ \item  Well supported by existing tools and documentation
+ \item  Flexible framework that we can grow to meet future needs
+ \item  Provide needed scalability
+ \item  Easily maintainable
+ \item  Accommodate schema evolution
+ \item  Accommodate API evolution
+ \item  Server functions must be well factorable
+ \item  Provide "local" and "global" scope functionality. This implies a. using multiple database technologies and a. having access through local library or remote server.
+ \item  Meet performance needs. This depends on transport and messaging layer employed.
+\item   Web Services support. This is a desirable, and determines the flexibility for the future. 
 \end{enumerate}
 
 
 
-Decision matris can be found in Table~\ref{tab:ecal-full-read}.
+Decision matris can be found in Table~\ref{tab:tech-options}.
 \begin{table}[htb]
     \caption{Features provided by each technology option. X=Yes,*=Maybe, but involves more work, ?=Unknown, or too soon to tell, Blank=No  }
     \label{tab:tech-options}
     \begin{center}
       \begin{tabular}{|l|c|c|c|c|c|} \hline 
-Criteria/Approach & CGI/Perl & CGI/Python & Java Servlets & Jboss &Ruby\\
+Criteria/Approach & CGI/Perl & CGI/Python & Tomcat w/ Java & Jboss &Ruby\\
+                  & (CSA06)  &            & Servlets      &Hibernate & on Rails \\ \hline
  Proven           & X & X & X & X &      \\
  Modern           &   &   & X & X &    X  \\
  Supported        & X & X & X & X &    ?  \\
@@ -506,6 +531,104 @@ Criteria/Approach & CGI/Perl & CGI/Python & Java Servlets & Jboss &Ruby\\
 %\end{verbatim}
 
 \section{Data discovery needs and options}
+
+\subsection{Needs for Data Discovery}
+
+\subsubsection{Data discovery}
+
+ need a clear definition of †¡data†¢
+ who are the actors
+ versioning
+ level of granularity
+ push or pull model
+ data, meta-data, luminosity ....
+ descriptive criteria
+
+
+\subsubsection{Data to discover}
+
+ we need to discover at least the following items:
+ files, file blocks, event collections, runs, datasets,
+meta data, data types (e.g. MC/reco)
+ But actors have different vision for data discovery:
+ Production interested in: files, file blocks, event
+collections, data type
+ Physicists interested in: event collections, datasets,
+runs, meta-data, data type
+ data managers/site admins: files
+
+
+\subsubsection{Meta data}
+
+ Which kind of meta data physicists wants:
+ run, dataset, trigger stream, energy, ...
+ how they want to express their requests
+ who is going to generate meta data
+ how meta data will be populated to DBS?
+ where meta data will be stored
+
+\subsubsection{Actors behavior}
+ we need clear understanding how different actors
+behave
+ Physicist wants to perform manual discovery at initial step
+of analysis and automate the process later
+ Phedex will/should perform auto discovery
+ site admins/data managers will do it periodically and make it
+semi-automatic
+ we need a set of tools to support such behavior
+
+\subsubsection{Data indexing}
+ All actors mostly interested in fast data access
+ DB vs file based indexing
+ data indexing level: file block, files, evcoll, ...
+
+\subsection{Possible tools for indexing}
+We need to be able to provide search capabilities on the data that most interests analysis use-cases. 
+The important parts of bits are in Parameter-Sets that describe how datasets/files are produced.
+
+What we have today in DBS is just a place holder and no real use.
+We need to define how we want to store Parameters-Sets in DBS and keep in mind that they are easily searchable.
+We can individually add and describe parameter-set(s) into DBS (for example).
+This is Pre-requisite to search and discovery, if we don†¢t have parameters-sets organized somewhere we can†¢t index/search them too.
+
+Many interesting ideas/tools exists out in the wild, we need to define the Requirements. 
+I say we need to index the parameter-sets and some ´other¡ characteristics of datasets to make them searchable. We might need to create some definitions and mappings too.
+Names that comes to mind a Google, LXR, Apache Lucene‘¡­.
+We need something that doesn†¢t return 10,000‘¡­ pages (google type searches are out), that, specific to our needs could be tailored (Lucene is in), be capable of searching for specific keywords that makes sense to users but are not actually in the files (LXR is out!). [Sort of maps between what files hold and what it means].
+
+
+http://lucene.apache.org/java/docs/index.html
+Lucene is Doug Cutting's wife's middle name, and her maternal grandmother's first name !. 
+Apache Lucene is a high-performance, full-featured text search engine library written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform. 
+open source project 
+Lucene is 100% pure Java and has no external dependencies. 
+Provides serach and indexing capability, one can write his/her own indexing mechanism and rest is taken care off.
+
+Indexing
+over 20MB/minute on Pentium M 1.5GHz
+small RAM requirements -- only 1MB heap 
+incremental indexing as fast as batch indexing 
+index size roughly 20-30% the size of text indexed 
+
+Searching
+ranked searching -- best results returned first 
+many powerful query types: phrase queries, wildcard queries, proximity queries, range queries and more 
+fielded searching (e.g., title, author, contents) 
+date-range searching 
+sorting by any field 
+multiple-index searching with merged results 
+allows simultaneous update and searching 
+
+This is shown in  Fig.~\ref{fig:dbs-indexing} and described in this section.
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{15cm}{!}{\includegraphics{DBS_Indexing.eps}}
+    \caption{Using a tool, such as Apache Lucene, to index parameter files.}
+    \label{fig:dbs-indexing}
+  \end{center}
+\end{figure} 
+
+
 
 
 \section{Framework needs}
@@ -766,8 +889,408 @@ luminosity section.
 We haven't discussed how (or if) this maps onto MC data.
 \end{enumerate}
 \section{Client API}
-\section{Plan of Work}
+\subsection{CSA06}
+Python based (2.4.x and backward).
+No external dependencies.
+Independent of server implementation.
+Exchange Python objects and Python data types with client(s).
+Defines Client Data Structures/Types (CDS) for convenience (Derived from Python dictionary). CDS implement strict type checking for good reasons.
+Throws DbsApiException.
+Currently covers CRAB and Prod. Use-cases. Analysis use-cases are targeted during DM/DBS workshop at Cornell in July. 
+Some dataset discovery APIs are also present, though we are in stone-age of dataset discovery. 
+http://cmsdoc.cern.ch/~sekhri/Html/mc.htm
+API Documentation at,
 
+https://uimon.cern.ch/twiki/bin/view/CMS/CMS-DMS-DBS-API
+
+Currently two type of interactions with DBS, 
+Update DBS: The key is to understand the insert work flow for each type of information you need to record in DBS. Always a set of API calls in right order will work.
+You need to know quite well what you want to do with DBS. Some advanced operations (Merge/Import/Export) need in-depth knowledge of DBS-API, DBS-Workflow and Dataset organization in DBS.
+FWRK and DBS do not map 1-1 when it comes to Dataset organization. (not here!).
+Example: you cannot insert a File Block, before you have inserted Primary Dataset and Processing.
+DBS API is low level API, and calls for an interface layer between client Application(s), like ProdAgent, and DBS for a real work. One example is ProdAgent DBSInterface,
+https://uimon.cern.ch/twiki/bin/view/CMS/ProdAgentDBSInterface
+
+Simple use cases are coded in DBS Test cases (part of DBS API code).
+Query DBS: Straight forward, you only need to understand ´CDS¡, and how they relate to each other. Exposed via above mentioned web-tool.
+
+\subsubsection{The API Structures (Python Implementation)}
+
+Following describes the way dbsAPI Client data types look like schematically.
+\begin{verbatim}
+DbsPrimaryDataset:
+      datasetName (name of primary dataset)
+
+DbsApplication:
+      executable 
+      version
+      family
+
+DbsParameterSet:
+      hash
+      content
+
+DbsApplicationConfig:
+      application
+      parameterSet
+
+DbsProcessing:
+      parent
+      primaryDataset
+      processingName
+      applicationConfig
+      isOpen
+
+DbsProcessedDataset:
+      primaryDataset
+      processing
+      datasetName
+      dataTier
+      datasetPath
+      isDatasetOpen
+
+DbsParent:
+      parent
+      type
+
+DbsBlock:
+      blockName
+      processing
+      blockStatusName
+      numberOfBytes
+      numberOfFiles
+      fileList
+      eventCollectionList
+
+DbsFile:
+      logicalFileName
+      guid
+      checkSum
+      fileType
+      fileStatus
+      fileSize
+      block
+
+DbsEventCollection:
+      collectionName
+      numberOfEvents
+      collectionStatus
+      datasetPathName
+      parentageList
+      fileList
+
+
+Python representation of Client Data Types
+
+We have been working on coming up with a generic dictionary type representation for these types.
+
+For example, a client data type can look like below,
+
+class DbsBase(dict):
+     """ Base Class for all DBS Client Data Types """
+     def __init__(self, **args):
+           dict.__init__(self)
+
+
+class  DbsProcessedDataset(DbsBase):
+   """ 
+   Class for ProcessedDataset
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      self.setDefault("primaryDataset", None)
+      self.setDefault("processing", None)
+      self.setDefault("datasetName", None)
+      self.setDefault("dataTier", None)
+      self.setDefault("datasetPath", None)
+      self.setDefault("isDatasetOpen", None)
+      self.update(args)
+
+class  DbsFile(DbsBase):
+   """ 
+   Class for File
+   """
+   def __init__(self, **args):
+      DbsBase.__init__(self)
+      self.setDefault("logicalFileName", None)
+      self.setDefault("guid", None)
+      self.setDefault("checkSum", None)
+      self.setDefault("fileType", None)
+      self.setDefault("fileStatus", None)
+      self.setDefault("fileSize", None)
+      self.setDefault("block", None)
+      self.update(args)
+
+\end{verbatim}
+
+\subsubsection{The API Calls (Python implementation)}
+The API will allow the argument for datasetPath to be a string, 
+or polymorphicly an object. The string is convenient for users 
+entering arguments by hand say, but the object is more convenient when 
+using the result returned from another call.   
+\begin{verbatim}
+[] listDatasets(self, pattern="*"):
+\end{verbatim}
+   Given a string pattern, provide a list of DbsProcessedDataset objects by name.  The pattern option does not need to have 
+three *'s (like */*/*). Returns always a list. If there are none, the 
+return will be an empty list.
+
+\begin{verbatim}
+[] getDatasetContents(self, (string/obj) datasetPathName)
+\end{verbatim}
+   (This call is still being discussed with the CRAB developers.) Given a datasetPathName object, or string, return a list of file blocks and event collections. The search proceeds  via the tables processed\_datasets $\Rightarrow$ event\_collection $\Rightarrow$ file $\Rightarrow$ block. 
+
+%************ This call is open for discussion ************
+\begin{verbatim}
+[] getDatasetBlockContents(self, (string/obj) datasetPathName, (obj) block):
+\end{verbatim}
+  (This call is still being discussed with the  CRAB developers.) Given a datasetPathName object, or string, and a block object name, returns all files and all parentage information. 
+%***********************************************
+\begin{verbatim}
+?? getDatasetProvenance(self, (string/obj) datasetPathName, dataTierList=[]):
+\end{verbatim}
+(This call is still being discussed with the  CRAB developers. We need to understand how the provenance is described.)
+\begin{verbatim}
+   primaryDataset createPrimaryDataset(self, (obj) primaryDataset):
+\end{verbatim}
+Create a primary dataset and return the same primary dataset back. If
+passed an object with the ID already set it will ignore it. 
+The authorative source of the PrimaryDataset object ID is always the database.
+
+\begin{verbatim}
+   processing createProcessing(self, (obj) processing):
+\end{verbatim}
+Create a processing and return the same processing back. If
+passed an object with the ID already set it will ignore it. 
+The authorative source of the object ID is always the database.
+\begin{verbatim}
+   processedDataset createProcessedDataset(self, (obj) processedDataset): 
+\end{verbatim}
+Create a processed dataset and return the same processed dataset back. If
+passed an object with the ID already set it will ignore it. 
+The authorative source of the object ID is always the database.
+What is the significance of "name" for the processed dataset.
+
+\begin{verbatim}
+def createFileBlock(self, (obj) block): Refer to processing.
+\end{verbatim}
+\begin{verbatim}
+   processedDataset createProcessedDataset(self, (obj) processedDataset):
+\end{verbatim}
+   Create a processed dataset with 0 size and 0 files in the block.
+\begin{verbatim}
+def insertFiles(self, block (defined by processing), fileList):
+\end{verbatim}   
+Insert the file or files in fileList into the specified block. The number of Files and total size for the block is adjusted accordingly. The table t\_block is locked  when files are being inserted.
+\begin{verbatim}
+def insertEventCollections(self, (string/obj) datasetPathName, eventCollectionList):
+\end{verbatim}
+   Remove the rule that EvColls must have Files.
+   Remove the other rules about EvColl.
+   So each EvColl has a list of "Parent" of object
+   With a "type" like PU/Digi etc. Type of parent.
+   Parent points to an EvColl.
+   Parent EvColl points to parent dataset for parent evcoll.
+   EvColl has list of LFN and they go into evcoll\_file table.
+   Array inserts, 03 database inserts.
+   Go one level parentage.
+   Parents MUST already exist.
+\begin{verbatim}
+  block (list of files) getDatasetFileBlocks(self, (string/obj) datasetPathName):      
+\end{verbatim}
+Get a list of file blocks. Proceed  via processing $\Rightarrow$ block $\Rightarrow$ files. This call returns empty blocks as well if there are no files in them. This is something PheDEX will need to know. When a file is given to PheDEX 
+it needs to know what block it belongs to. 
+\begin{verbatim}
+[] listPrimaryDatasets(self, (string) pattern="*"):
+\end{verbatim}
+\begin{verbatim}
+[] listProcessedDatasets(self, (string) pattern="*"):
+\end{verbatim}
+\begin{verbatim}
+[] listParameterSets(self, (string) pattern="*"):
+\end{verbatim}   parameterSet contents matching, part of contents.
+\begin{verbatim}
+[] listApplications(self, (string) pattern="*"):
+\end{verbatim}
+\begin{verbatim}
+  pattern= /family/executable/version
+\end{verbatim}
+\begin{verbatim}
+[] listApplicationConfigs(self, (string) pattern="*"):
+\end{verbatim}
+   pattern=applicationName
+>
+Consider the usecase of trying to narrow down from a primary dataset,
+to a particular tier, to an analysis dataset.  We are missing the 
+ability to list dataset tiers, need the call 
+\begin{verbatim}
+[] listDatasetTiers(self, (string) pattern="*")
+\end{verbatim}
+The argument could be like /primaryDataset/DataTier, or just DataTier
+\begin{verbatim}
+[] listFileBlocks(self, datasetPathName):
+\end{verbatim}
+
+\begin{verbatim}
+def closeFileBlock(self, block):
+\end{verbatim}
+The block must have an object.
+(?BlockName: Processing\#BlockID)
+
+
+  The API methods needed to manipulate Analysis Datasets may include: 
+\begin{itemize}
+\item addEventCollection( basePathName, ECInfo ) 
+       where basePathName is the $/PrimD/DT/ProcD$ part of a pathname, and 
+       ECInfo is a structure containing required and extra parameters for 
+       describing the Event Collection, including the luminosity estimate, 
+       run number, number of events, and list of files.  (Possibly also lumi 
+       segment information, see below.) 
+
+\item pathName = buildDataset ( basePathName, $AD$, list$<$EventCollections$>$ )
+       where basePathName is as above, $AD$ is the desired name of the new
+       dataset,  and list<EventCollections> is a list of Event Collections in 
+       terms of some yet-to-be-named identifier.  (The point is to have an API 
+       that builds directly from a list.)  If $AD$ is already a name used 
+       somewhere else, this will generate an exception.   (We can introduce 
+       namespaces later to help avoid conflicts.  On success, the pathName 
+       should be returned as the basePathName + / + $AD$.) 
+
+\item  pathName = buildDataset ( initialPathName, $AD$, predicate )
+       If initialPathName is a basePathName as above, then $AD$ and pathname 
+       are also as above, and the list of Event Collections is generated by a
+       query from among all the Event Collections in /PriDName/ProDName 
+       matching the given predicate.  If initialPathName is itself an Analysis 
+       Dataset, then the predicate is evaluated against only the Event 
+       Collections in the Analysis Dataset.  The returned pathname will drop 
+       the basename of the initial path and replace it with the new $AD$ so 
+       the returned path still has a depth of three.  
+
+\item  list$<$parentpathName$>$  = getDatasetProvenance( pathName, list$<$DataTier$>$ )
+
+       where pathName is a Processed or Analysis Dataset and list$<$DataTier$>$        is a list of parent's DataTier.
+       This provide a list of DBS datasets corresponding to all the parents
+       data tier of a given DBS dataset. 
+       The provenance relationship at the level of dataset is used by
+       an analysis tool (i.e. CRAB) in the old EDM context, to perform
+       data discovery of all the data tier requested by the user.
+       {\bf FIXME: to be reconsidered in the new EDM}
+
+\item  list$<$EventCollections$>$ = getDatasetContents ( pathName ) 
+       This provides a list of event collections in a Processed or Analysis 
+       Dataset. The list of EventCollections, with the number of events per 
+       event collection, should be organized by File Block.
+
+       The list of EventCollections is needed by an analysis tool (i.e. CRAB)          to perform site-independent job configuration. The grouping in term
+       of File Blocks is needed by an analysis tool (i.e. CRAB) in order to 
+       perform job splitting and file-block location. 
+       (See example in section ~\ref{sec:oldEDM}).
+
+\item  list$<$EventCollections$>$ = getDatasetContents ( initialPathName, predicate ) 
+       This provides a list of event collections satisfying a predicate as in 
+       buildDataset above.  (This method is intended as a helper for 
+       buildDataset.) 
+
+\item list$<$FileBlocks$>$ = getDatasetFileBlocks ( pathName )
+      This provide a list of file-blocks in which a Processed or Analysis
+      Dataset is organized.
+      The file-blocks index is needed to query the DLS for file-block location. 
+      The list of file-blocks could be extracted from the result
+      of the getDatasetContents API, so no dedicated API is 
+      strictly needed.
+
+\item  pathName = buildDataset ( basePathName, $AD$ )
+\item  closeDataset() 
+       It is intended that Analysis Datasets are normally ``snapshots''
+       of the available data at a particular time.  Therefore the API
+       methods defined so far will create and close Analysis Datasets
+       while recording information internally about the API call that
+       created them, including the timestamp, the initial query if
+       present and the parentage if created from another Dataset.
+       Workload management needs to be able to create open datasets
+       and add Event Collections to them as they become available.
+       Therefore buildDataset with only two arguments will create an
+       empty open Analysis Dataset, and a special close call is provided
+       to go along with it.  These methods are only intended for local
+       scope DBS.
+
+\item  addToDataset ( pathName, list$<$EventCollection$>$ )
+       This adds (existing) Event Collections to the already existing dataset 
+       given in pathName.  These will be checked for consistency with the 
+       existing Event Collections already there.  This method only works for 
+       open Datasets in local scope DBS.
+   
+\item  globalPathName = publishDataset ( pathName )
+      This method publishes an Analysis Dataset from a local scope DBS
+      to the global scope DBS.  The pathName is the full name of an
+      Analysis Dataset in local scope, and if it is also unique in the
+      global namespace, then the returned globalPathName is the same
+      as pathName.  If the pathName is not globally unique, then it
+      is modified by the global scope DBS to make it unique (ie- like
+      appending an ordinal number to the end.) The local scope DBS will
+      make a note of this global name.  This method obviously must have
+      concurrency controls at the point of contact with global DBS.
+
+\item  deleteDataset ( pathName, deepFlag ) 
+      This method removes an Analysis Dataset from the local scope DBS.
+      It will be disabled at global scope.  If deepFlag is set, then
+      the included Event Collections that do not also belong to another
+      Analysis Dataset at local scope are also deleted.  Otherwise,
+      all EventCollections are left in place.
+
+\item  list$<$EventCollections$>$, foundLumi = partialDataset( pathName, lumiDesired )
+       This returns a list of the first N event collections such that the sum 
+       of their luminosity is the minimum luminosity above lumiDesired.  Also 
+       returned is the found luminosity.  If there is not enough luminosity in 
+       the given Analysis Dataset, then all Event Collections are returned.  
+       The user can check for this by checking foundLumi < lumiDesired.
+
+\end{itemize}
+
+Several helper API methods are needed to support the above.  
+
+\begin{itemize}
+\item  createPrimaryDataset ( /PriDName, PriDatasetInfo )
+\item  createProcessedDataset ( /PriDName/DT/ProcDName, ProcDatasetInfo )
+      These create Primary and data tiers with appropriate data
+      structures.  For example, Primary Dataset needs to have some
+      generator information in the case of Monte Carlo and Trigger Path
+      information in the case of real data.  Data Tier needs to have
+      Application information and parameters.
+
+\item  showDatasetInfo ( outputSelector )
+      This method shows the metadata associated with an Analysis Dataset
+      in desired detail by outputSelector.  It will include the query
+      and timestamp as will as contents.  In the case that the Analysis
+      Dataset was built from an existing Analysis Dataset, then the parent
+      will be shown.  (Note: absolute parentage in the sense of processing
+      is kept at the Event Collection level.  This parentage is purely
+      logical and is only an artifact of possibly having built an Analysis
+      Dataset from another in the buildDataset API method().)  It should
+      also show accumulated data like number of events and luminosity sum.
+
+\end{itemize}
+
+\subsection{Extensions and Changes for next generation DBS}
+\section{Plan of Work}
+A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
+\begin{table}[htb]
+    \caption{DBS workplan for the Aug. 2006 through Jan 2007 in detail, rough plan beyond. to July 2007.  }
+    \label{tab:dbs-work-plan}
+    \begin{center}
+      \begin{tabular}{|l|p{1.5in}|p{1.5in}|p{1.5in}|} \hline 
+Date & CSA06 DBS & 2nd Gen. DBS & Comments \\ \hline
+Aug. 2006 & Updates to API, minimal updates to schema, operation of existing service. Initial discover tools for MC production & Roadmap development  &    \\ \hline
+Sep. 2006 & Operations, global and local relationship field experience.   & Use case development, API and schema review and revisions.  &    \\ \hline
+Oct. 2006 & Maintanence    & Schema, API prototyping. Test development.Discovery tools & \\ \hline
+Nov. 2006 & Migration plan   & Transfer tools CSA to 2G., Production server planning  &    \\ \hline
+Dec. 2006 &     &   &    \\ \hline
+Jan. 2007 &    &   &    \\ \hline
+Feb.-Jul. 2007 &    &   &    \\ \hline
+      \end{tabular}
+    \end{center}
+  \end{table}  
+\pagebreak
 \begin{thebibliography}{9}
   \bibitem {dar} {All bogus entries below}
   \bibitem {smtp} {Simple Network Management Protocal}
