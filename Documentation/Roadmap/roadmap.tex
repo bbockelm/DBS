@@ -38,7 +38,7 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{28 August, 2006}
+   \date{5 September, 2006}
 
   \title{A 2006-07 Roadmap for CMS Dataset Bookkeeping System}
 
@@ -59,7 +59,7 @@
 %  \Anotfoot{b}{Now at the Moon}
 
   \begin{abstract}
-Mission: To bring together experts in data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system we will follow for the next 6 months. The system we discuss will provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007. Establish the overall vision, requirements, and scope for the project.
+    Based on the discussion and material presented at the DBS Workshop held at Cornell, this is a roadmap for the concepts and development of hte CMS DBS system. The workshop brought together areas data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system that will be followed for the next 6 months and provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007.
  
   \end{abstract} 
   
@@ -73,7 +73,7 @@ Mission: To bring together experts in data management, workflow management, CMSS
 
 \section{Introduction}
 
-The DBS Workshop held at Cornell July 20-22 of 2006 brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's longterm needs. Our mission was to bring together experts in data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system we will follow for the next 6 months. The system we discuss will provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007. Establish the overall vision, requirements, and scope for the project.
+The DBS Workshop held at Cornell July 20-22 of 2006 brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's longterm needs. Our mission was to bring together experts in data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system we will follow for the next 6 months. The system we discuss will provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007. This document is an attempt to establish the overall vision, requirements, and scope for the project, as well as begin to work out implementation details and work plan.
 
 \section{DBS Workshop Overview}
 
@@ -114,7 +114,8 @@ Workshop Goals:
 \item Data discovery needs and approaches
 \end{itemize}
 
-\section{Glossary} 
+\section{Glossary and Concepts} 
+\subsection{Glossary}
 \begin{description}
 \item{Dataset}-"any set of 'event collections' that would naturally be
 grouped and analysed together as determined by
@@ -169,11 +170,20 @@ DBS currently knows nothing about this
 so we told Drew not to work on them
 Is this in scope for DBS? If not, what should answer these queries?
 \end{description}
+(Add additional list to appendix of general ``domain'' terms that Drew/Dave Dykstra have)
+\subsection{Concepts in more detail}
+\subsubsection{Analysis Dataset}
 
+(Assignment: Dan will fill this in)
 
 \section{DBS interaction with other DM, WM areas, and CMS at large}
+The role of DBS in CMS as described in the Computing TDR~\cite{CTDR}.
 
+(Assignment: Drew - Broad overview of DBS form Pete's talk.Workflow tools are interoperable through using the DBS API. ) 
 \subsection{DLS}
+
+(Assignment: Alessandra to fill this in)
+
 The Data Location Service (DLS) provides the means to locate replicas of data in the distributed computing system
 it maps file-blocks to storage elements (SEs)
 provide only names of sites hosting the data and not the physical location of constituent files at the sites
@@ -186,7 +196,7 @@ Insert file-blocks upon data replication (PhEDEx)
 Query to locate file-blocks (CRAB, MC Production)
 
 
-DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS
+~\cite{dls-twiki}
 
 Fileblock name
 DBS knows how dataset are organized in term of fileblocks
@@ -198,7 +208,7 @@ Data discovery and location: combine DBS and DLS information.
 DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS
 
 \subsection{PhEDEx}
-
+Assignment: Lee Ref to PhEDEx. Ask Lassi for text.)
 \subsection{DBS Context Diagram}
 The DBS system is just one component in the Data Management system, and also has relationships to other sources of information in CMS at large. An overall picture of CMS is illustrated in Fig.~\ref{fig:dbs-context-diagram} with DBS represented in the center. 
 
@@ -210,35 +220,31 @@ The DBS system is just one component in the Data Management system, and also has
   \end{center}
 \end{figure} 
 
+(Assignment: Lee will fill this in)
+
 \section{Tasks and Use Cases from the  Workshop}
 
 During the Cornell Workshop we compiled a list of 51 items to be followed up in our work to design the DBS system. There are several categories for the items and we have characterized them here as 1) use cases to be further expanded, 2) design requirement, 3) relationship with other subsystem in Data Management, 4) relationship within CMS at large.
 
 \subsection{ Use cases to be further expanded}
 
-   1.  (use case, fermilab)Need to develop use case for publishing locally analyzed data to global scope - Fermilab
+   1.  (Assignment: Vijay)(use case, fermilab)Need to develop use case for publishing locally analyzed data to global scope - Fermilab
 
-   2. (dbs)Fix a subset of a dataset due to problem found later, e.g. sqrt (-1) (changing does not affect the physics when it does not happen), calibration change. These are cases where only selected parts of the data need to be reprocessed, and then "blended" back in to the data set"
+   2. (Assignment: Dan)(dbs)Fix a subset of a dataset due to problem found later, e.g. sqrt (-1) (changing does not affect the physics when it does not happen), calibration change. These are cases where only selected parts of the data need to be reprocessed, and then "blended" back in to the data set"
 
-   3. (dbs)Need to track event processing failures in dbs, as reported by EDM in the job report run, event, reason for failure.
+   3. (Assignment: Dan)(dbs)Need to track event processing failures in dbs, as reported by EDM in the job report run, event, reason for failure.
 
-   4. (dbs)use pass ID to determine what data is interesting to analyze. Pass ID is equivalent to processing path name.
+   4. (Assignment: Dan)(dbs)use pass ID to determine what data is interesting to analyze. Pass ID is equivalent to processing path name.
 
-   5. (dbs)Allow for fruit salad mixing of data in a processed dataset.
+   5. (Assignment: Dan)(dbs)Allow for fruit salad mixing of data in a processed dataset.
 
    6. (dbs)Store filter information for each file (stream) for multi-output skimming
 
 
-  14. (dbs) Users need to store special data, such as log files or personal or group data.
-
-  15. (dbs)Group needs a way to specify "official" data sets or analysis datasets.
-
-  16. (dbs)Primary datasets must be special and have special meta data or ability to link to other information that characterizes it.
+  14.(Assignment: Anzar) (dbs) Users need to store special data, such as log files or personal or group data.
 
 
   17. (review w/ ProdAgent, dbs)Merge and remapping requirements and use case. Is it really required (or advisable) that we get rid of intermediate files? Refer to SAM experience reported by Adam.
-
-  18. (dbs)Authentication and authorization for DBS API
 
   19. (dbs)Who or which group created a particular set of data?
 
@@ -248,15 +254,15 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 
   23. (use case) Need to go through analysis workflow (use cases) and determine additional API calls that will be needed.
 
-  24. (use case-C.Jones)How is Analysis data set defined and how will it be used? Will it be static or dynamic (changes as new data is added or old removed)? Is there something like a snapshot? Are names prescribed for Anal DS, are they pre-fabed by physics groups or other admin policy. Can users create their own at will? What will UI look like, what is API required.?
+  24. (Assignment: Dan)(use case-C.Jones)How is Analysis data set defined and how will it be used? Will it be static or dynamic (changes as new data is added or old removed)? Is there something like a snapshot? Are names prescribed for Anal DS, are they pre-fabed by physics groups or other admin policy. Can users create their own at will? What will UI look like, what is API required.?
 
   25. (dbs, FJR)Need way to have the set of tags (one for each subsystem) specifying calibration and alignment into DBS so it can be query-able. (it is in the config file)
 
-  26. (dbs) Introducing data from out side official processing machinery, so-called offroad data"
+  26. (Assignment: Anzar)(dbs) Introducing data from out side official processing machinery, so-called offroad data"
 
-  27. (usecase-?)Private and semi-private data sharing. How can you share data with colleagues at other institutions before it is ready for global scope publication.
+  27. (Assignment: Anzar)(usecase-?)Private and semi-private data sharing. How can you share data with colleagues at other institutions before it is ready for global scope publication.
 
-  28. (dbs)Getting runs into DBS, need DBS to have relation to luminosity block information.
+  28. (Assignment: Lee)(dbs)Getting runs into DBS, need DBS to have relation to luminosity block information.
 
 
   32. (dbs,FJR) Data tier is defined well enough to know what objects are in it. Some concern that this will change. How can we store the branch information from the FJR in a useful way? How will it be queried?
@@ -279,25 +285,25 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
          5. Physics data> ==> Does DBS begin before or after repacking? << big issue. 
 
 
-  44. (use case) How is DBS used for Tier 0?
+  44. (Assignment: Drew) (use case) How is DBS used for Tier 0?
          1. Reconstruction
          2. Tracking calibration and alignment output data 
 
-  45. (use case) How is DBS used in Tier1:
+  45. (Assignment: Drew)(use case) How is DBS used in Tier1:
          1. Re-reconstruction
          2. skimming 
 
-  46. (use case) How is DBS used in Tier 2?
+  46. (Assignment: Drew)(use case) How is DBS used in Tier 2?
          1. MC Production
          2. Data analysis 
 
-  47. (usecase) How might DBS be employed for MTCC and Test Beam data?
+  47. (Assignment: Anzar)(usecase) How might DBS be employed for MTCC and Test Beam data?
          1. If a run table is added thenthis type of data could be added
          2. Under no pressure to make this work on a short time scale, but can use run for existing data to load the DBS catalog.
          3. Would be useful experience for the DBS system and good interaction form physisists. 
 
   
-50. (use cases) Data Discovery use cases and what should be available for discovery (Need subgroup to further explore this):
+50. {Assignment: Valentin, in section on data discovery)(use cases) Data Discovery use cases and what should be available for discovery (Need subgroup to further explore this):
          1. detector experts looking at detector problems, Range of data (run range) with certain conditions, bad detector component, special trigger.
          2. What Physics meta data is needed to be related to datasets? Is it good enough to have 'simple' trigger name or all details of trigger needed? What high-level queryable things needed to store to find data? We need to make 'synthesized' easy to query versions AND allow full physics physics metadata discovery. 
 
@@ -313,6 +319,14 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 \subsection{Design requirement}
 
   10. (dbs)All copies of a physical file are lost. Must be able to mark the status as unavailable or lost. Needs to be reported to DLS, and PhEDEx also.
+  15. (Requirement)(dbs)Group needs a way to specify "official" data sets or analysis datasets.
+
+  16. (Requirement)(dbs)Primary datasets must be special and have special meta data or ability to link to other information that characterizes it.
+
+
+  18. (Requirement)(dbs)Authentication and authorization for DBS API
+
+ new. Status flags for files, whatelse?
 
 \subsection{Relationship with other subsystem in Technical Project}
    7. (dbs, need more info)support for pileup input datasets/files.
@@ -338,7 +352,9 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
   31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
 
 
-  35. (ProdAgent, dbs)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access.
+  35. (ProdAgent, dbs)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access. 
+
+note: FJR shows which branches were used. probably want to dump FJR and logs in to archive, could be DBS. 
 
   36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
 
@@ -348,8 +364,9 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 
   40. (ReqSys?-Giulio) Confusion about meaning of payload and workflow in MC request system [Guillio needs to make a glossary that synchs up with the DBS jargon].
 
-  41. (ReqSys?, dbs)The Request System and DBS are related but Peter thinks should be 'decoupled'. It seems possible and useful to link up the parameter set discovery system of the two in the long term. Not needed for CSA06.
-  48. (use case, dbs?) DBS/DLS/PheDex know about file/file block sizes
+  41. (ReqSys?, dbs Gulio,Pete,Lee)The Request System and DBS are related but Peter thinks should be 'decoupled'. It seems possible and useful to link up the parameter set discovery system of the two in the long term. Not needed for CSA06.
+
+  48. (Assignment: Ian) (use case, dbs?) DBS/DLS/PheDex know about file/file block sizes
          1. How is this space 'assigned'/'allocated' at Tier-2 sites?
          2. Need tools to determine how disk (resources?) are used by "groups" in CMS?
          3. detail: Need to have concept of ownership (grolup/user) in either DBS or DLS
@@ -1217,7 +1234,9 @@ Feb.-Jul. 2007 &    &   &    \\ \hline
   \end{table}  
 \pagebreak
 \begin{thebibliography}{9}
-  \bibitem {dar} {All bogus entries below}
+  \bibitem {dls-twiki} {DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS}
+  \bibitem{CTDR} {\bf ????}, , {\bf CMS Computing Technical Design Report}
+  \bibitem {bogus} {all items below are bogus}
   \bibitem {smtp} {Simple Network Management Protocal}
   \bibitem {mrtg} {Multi Router Traffic Grapher}
   \bibitem {pool-ral} {POOL-RAL: POOL Persistence Framework, url{http://pool.cern.ch/ .}
