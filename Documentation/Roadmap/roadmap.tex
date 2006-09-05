@@ -1,5 +1,32 @@
 
 \documentclass{cmspaper}
+\usepackage{xspace}
+\usepackage{verbatim}
+
+% The graphics extensions below support using pdflatex to make
+% pdf files. They say that, if you compile with latex, the graphics
+% package should look for file.eps but that if you compile with
+% pdflatex, the graphics package should look for file.pdf or other.
+%\usepackage{ifpdf}
+%\ifpdf
+%  \DeclareGraphicsExtensions{.pdf,.png,.jpg,.nps}
+%\else
+  \DeclareGraphicsExtensions{.eps}
+%\fi
+
+% Code inline with text
+\newcommand{\code}[1]{\texttt{#1}}
+% Code in its own quotation. Needs \usepackage{verbatim}.
+\newenvironment{codequote}{\hfill\minipage{0.9\textwidth}\small\verbatim}%
+{\endverbatim\endminipage\hfill\par}
+
+% Macros for usage narratives
+\newcounter{countnarrative}
+\renewcommand{\thecountnarrative}{N\arabic{countnarrative}}
+
+\newenvironment{narrative}[1]{\medskip\par\noindent\refstepcounter{countnarrative}%
+\textbf{\thecountnarrative. {#1}}\par}{}
+
 \begin{document}
 
 %==============================================================================
@@ -19,7 +46,7 @@
   Anzar Afaq,  Lothar Bauerdick, Stefano Belforte, Andrew Dolgert, Peter Elmer, Alessandra Fanfani, Ian Fisk,  Chris Jones,  Valentin Kuznetsov,  Stefano Lacaprara, Lee Lueking, Dan Riley, Vijay Sekhri, Elizabeth Sexton-Kennedy     
 \Instfoot{fnal}{FNAL, Batavia, IL, USA}
 \Instfoot{italy}{Italy}
-\Instfoot{cornell}{Cornell, Ithica, NY, USA}
+\Instfoot{cornell}{Cornell, Ithaca, NY, USA}
 \Instfoot{princeton}{Princeton, Princeton, NJ, USA}
 \Instfoot{balonia}{Balonia, Balonia, Italy}
   \end{Authlist}
@@ -331,80 +358,109 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 49. (need to present to other cms db players - Lee) Concept map for DBS and how it relates to other event and non-event data repositories. (DLS/DBS, conditions DB, trigger DB, luminosity DB, et cetera.
 
 \section{Use Cases}
+
+
 \subsection{Use cases for CSA06}
-Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:csa06-use-cases-diagram} and described in this section.
+
+Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:csa06-use-cases-diagram} and described in this section. CSA06 will use Monte Carlo data to simulate real data from the detector. This data will pass through the HLT and all production steps, ending in several steps of physics analysis. The CSA06 test will use a version of the DBS and other tools current as of July 2006.
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{15cm}{!}{\includegraphics{figure/CSA06_use_cases_dfd.eps}}
-    \caption{CSA06 use cases diagram.}
+    \resizebox{0.8\textwidth}{!}{\includegraphics{figure/CSA06_use_cases_dfd}}
+    \caption{This data flow diagram for CSA shows processing in yellow
+    and products in green. PhEDeX performs transfers across data tiers
+    and the ``Tier~1 File Exchange" of AOD among Tier~1 storage.}
+    % To make eps from Visio, save as WMF. Open in Illustrator and save eps and pdf.
+    % Include fonts. Use Acrobat full version to trim the pdf page.
     \label{fig:csa06-use-cases-diagram}
   \end{center}
 \end{figure} 
 
- 
-\begin{enumerate}
+
+\begin{narrative}{Production Manager Creates Real HLT Data from MC Data}
+
+Production Manager runs the HLT on a large dataset of MC Data. Production Manager uses Y to put that data into the DBS. Only five million events go through the HLT from all of the MC data, and DBS tracks these.
+\end{narrative}
+
+\begin{narrative}{Tony at Tier~0 Presents Raw Data from HLT\label{narr:tony0}}
+
+Tony uses a set of scripts to process simulated HLT data. He asks X to make file blocks from that data. He asks Y to put that data into the DBS. \emph{Actually, I think Tony produces RAW, RECO, FEVT, and AOD at one go, right?\/} Tony gives tool Y a list of information, which we will figure out below. Tool Y contacts the Global DBS to place correct processing history.
+
+What tool is used at the Tier~0 to insert RAW data into the DBS? How are the primary datasets for real data managed at the tier0? How are primary datasets for MC handled?
+
+Data discovery requirements: Management of primary dataset IDs at the Tier~0.
+\end{narrative}
+
+\begin{narrative}{PhEDeX Transfers Data Among Facilities\label{narr:phedex}}
+All of the places that the diagram shows a transfer, it is done by PhEDeX. Someone tells PhEDeX to look for a particular file in the DBS, and it will transfer that file. How does it identify that file? Is there a set of search criteria, so that any file matching a description is transferred?
+\end{narrative}
 
 
-\item Physicist Tier 2 Creates Skim of Re-RECO at Tier 1
+\begin{narrative}{Alignment Person Recalibrates Using Z to $\mu$-$\mu$ to Produce a New Version of Alignment\label{narr:recalib}}
 
-Physicist polls list of available datasets for those produces by CSA06. He sees a job which he identifies as a skim by its name. Someone tells this physicist what Tier 1 has the data. The tool shows him the dataset identifier. He puts that identifier into a Prodagent job, along with the name of the Tier 1 on which to do processing.
+Data Quality Expert polls a tool which shows a list of available datasets. He knows that he is looking for FEVT from CSA06 and that this FEVT data should be straight from the HLT, not reprocessed in any way. (Should be done at CAF, but not for CSA06.)
+
+He submits the alignment job to CRAB or Prodagent. He specifies a subset of the total FEVT dataset. The recalibration job returns new detector conditions. He gives these detector conditions to \emph{someone\/} who places them into alignment database where they will be found by future RECO production. (It could be a job robot that runs this instead of Prodagent or CRAB. How do you insert new detector conditions? Do you need a new version of the software or configuration.)
+
+The Data Quality Expert then asks Prodagent to create RECO and AOD from the RAW data within the FEVT. He already knows the exact dataset but may use a different subset than was used for recalibration. Prodagent performs this calibration and creates a new, partial set of FEVT and AOD.
+\end{narrative}
+
+\begin{narrative}{Physicist Tier~2 Creates Skim of Re-RECO at Tier~1\label{narr:skim2}}
+
+Physicist looks for re-RECO data from a recalibration at Tier~1. (Will there be more than one?)
+Finding that dataset, he asks which Tier~1 has that data. He puts some identifier for the dataset into a Prodagent job, along with the name of the Tier~1 on which to do processing. Prodagent creates the skim and registers it in the Global DBS.
 
 Data discovery requirements:
 \begin{itemize}
-    \item Identify data as CSA06 - by primary dataset name?
-    \item Identify a skim - by processed dataset name?
-    \item Locate a dataset - /primary/tier/processed -> blocks -> SE via DLS 
+    \item Identify data as CSA06 -- by primary dataset name?
+    \item Identify a skim -- by processed dataset name?
+    \item Locate a dataset -- /primary/tier/processed $\rightarrow$ blocks $\rightarrow$ SE via DLS 
 \end{itemize}
+\end{narrative}
 
-\item  Physicist Tier 2 runs analysis job
-\begin{itemize}
-\item Physicist Tier 2 Discovers Tier 1 Data Available for Processing
 
-Physicist polls a list of available datasets for datasets produced by CSA06. The physicist recognizes Re-RECO data because of the dataset name. The program (or web page) provides a dataset identifier.
 
- Data discovery requirements: Identify reRECO - by processed dataset name? 
+\begin{narrative}{Physicist Tier~2 Runs Analysis Job}
+Physicist has just created a skim of Tier~1 FEVT data from re-RECO. He needs to tell PhEDeX to transfer that data to his Tier 2 site. Then he tells CRAB to run that job.
+\end{narrative}
 
-\item{Physicist Tier 2 runs analysis job}
 
-Physicist asks CRAB to run an analysis job.
+\begin{narrative}{Physicist Tier~2 Runs Skim on One of Six Copies of AOD}
+This is much like narrative~\ref{narr:skim2} except that the file type is AOD. He must perform a skim at a Tier~1, ask PhEDeX to transfer that skim to the Tier~2, and then process it.
+\end{narrative}
 
-\end{itemize}
 
-\item Alignment Person Recalibrates using Z to mu-mu to produce a new version of alignment
-
-Physicist polls a tool which shows a list of available datasets. He identifies CSA06 jobs by name. [Should be done at CAF, but not for CSA06.]
-
-He submits the alignment job to CRAB or Prodagent, which returns a new version of the alignment. Alignment person puts this alignment into alignment database.
-
-\item Production Manager Tier 2 Re-runs RECO analysis
-
-Alignment person tells production manager about newly-available calibration. Production manager specifies new alignment in Prodagent or CRAB configuration file. Production Manager specifies a subset of the RAW dataset and submits it to run. Prodagent puts result into global DBS. (It could be a job robot that runs this instead of Prodagent or CRAB. How do you insert new detector conditions? Do you need a new version of the software or configuration.)
-
-Data discovery requirements: Specify a subset of the RAW data for reRECO (by primary dataset?).
-
-\item Production Manager Watches CSA06 Progress
-
+\begin{narrative}{Production Manager Watches CSA06 Progress}
 Production Manager wants to see what data exists and what file blocks are transferred. They open a web page tailored to CSA06. It queries the DBS for file existence and PhEDEx for file transfer rate. (Can PhEDEx tell you this? Would something else do it, like the DLS?)
 
 Data discovery requirements: Identify a subset of CSA06 MC data injected at the HLT (differnet primary dataset?).
-\item Production Manager Creates Real HLT Data from MC Data
+\end{narrative}
 
-Production Manager runs the HLT on a large dataset of MC Data. Production Manager uses Y to put that data into the DBS. Only five million events go through the HLT from all of the MC data, and DBS tracks these.
+\subsection{Data Discovery for CSA06}
+From the usage narratives above, we can compile needs for data discovery.
+\begin{itemize}
+\item PhEDeX identifies a subset CSA06 FEVT data for transfer to Tier~1. (\ref{narr:phedex})
+\item PhEDeX identifies CSA06 AOD data, whether produced by Tier~0 or Tier~1, and transfers it to particular Tier~1 facilities which subscribe to different trigger lines. (\ref{narr:phedex})
+\item PhEDeX identifies a particular skim dataset, created by a Physicist, from Tier~1 to Tier~2. This can be either FEVT or AOD. (\ref{narr:phedex})
+\item Data Quality Expert needs CSA06 FEVT data that is identifiable as coming straight from Tier~0. (\ref{narr:recalib})
+\item Prodagent has to be able to find RAW data within an FEVT dataset. (\ref{narr:recalib})
+\item Physicist must identify re-RECO and find what Tier~1 facility has the data. (\ref{narr:skim2})
+\end{itemize}
+Given these requirements, what should Tony-at-Tier-0 put into the DBS? Our working trial is the following:
+\begin{itemize}
+    \item file blocks by LFN,
+    \item application name, family, and version for each step, and
+    \item data set names, such as \\ \code{/csa06-081-os-minbias/DIGI/CMSSW\_0\_8\_1-GEN-sim-digi-1154005302-merged}, \\ where the primary dataset indicates that this is CSA06.
+\end{itemize}
+The primary dataset will start with \code{csa06} for this data. Whether it is RAW, FEVT, RECO, or AOD is encoded in the data tier, as was planned. The software version won't help identify re-RECO because it changes the conditions database, not the software version. We could identify re-RECO by changing the processed dataset name, as is done with \code{merged}.
 
+How would we like do data discovery after CSA06? The dataset name encodes the primary dataset and data tier clearly. We would prefer not to use the processed (or analysis) dataset name to encode something a computer needs to understand. What other qualities do computer programs need to identify?
+\begin{itemize}
+\item When you subscribe to a particular dataset with PhEDeX, it should be able to know that future re-RECO of that dataset, or other reprocessing of that dataset, is associated with the same subscription.
+\end{itemize}
+I don't see anything else to encode.
 
-
-\item Tony at Tier 0 Puts Real Data into Global Scope
-
-He creates data with a set of scripts. He asks X to make file blocks from that data. He asks Y to put that data into the DBS. What tool is used at the tier 0 to insert RAW data into the DBS? How are the primary datasets for real data managed at the tier0? How are primary datasets for MC handled?
-
-Data discovery requirements: Management of primary dataset IDs at the tier 0.
-
-\item Physicist Tier 2 Runs Skim on One of Six Copies of AOD
-
-Physicist sees in exploration tool that AOD is available at Tier 1 and can tell that this is AOD from Re-RECO. Physicist asks X where this data is stored. Physicist puts into the CRAB configuration the name of the dataset and where to do the computation. CRAB puts the resulting file into the DBS. 
-
-\end{enumerate}
 \subsection{Use Cases Long-term Project}
+
 \subsubsection{Monte Carlo Production}
 \subsubsection{Physics Data Production}
 \subsubsection{Data Analysis}
@@ -1138,138 +1194,7 @@ The block must have an object.
 (?BlockName: Processing\#BlockID)
 
 
-  The API methods needed to manipulate Analysis Datasets may include: 
-\begin{itemize}
-\item addEventCollection( basePathName, ECInfo ) 
-       where basePathName is the $/PrimD/DT/ProcD$ part of a pathname, and 
-       ECInfo is a structure containing required and extra parameters for 
-       describing the Event Collection, including the luminosity estimate, 
-       run number, number of events, and list of files.  (Possibly also lumi 
-       segment information, see below.) 
 
-\item pathName = buildDataset ( basePathName, $AD$, list$<$EventCollections$>$ )
-       where basePathName is as above, $AD$ is the desired name of the new
-       dataset,  and list<EventCollections> is a list of Event Collections in 
-       terms of some yet-to-be-named identifier.  (The point is to have an API 
-       that builds directly from a list.)  If $AD$ is already a name used 
-       somewhere else, this will generate an exception.   (We can introduce 
-       namespaces later to help avoid conflicts.  On success, the pathName 
-       should be returned as the basePathName + / + $AD$.) 
-
-\item  pathName = buildDataset ( initialPathName, $AD$, predicate )
-       If initialPathName is a basePathName as above, then $AD$ and pathname 
-       are also as above, and the list of Event Collections is generated by a
-       query from among all the Event Collections in /PriDName/ProDName 
-       matching the given predicate.  If initialPathName is itself an Analysis 
-       Dataset, then the predicate is evaluated against only the Event 
-       Collections in the Analysis Dataset.  The returned pathname will drop 
-       the basename of the initial path and replace it with the new $AD$ so 
-       the returned path still has a depth of three.  
-
-\item  list$<$parentpathName$>$  = getDatasetProvenance( pathName, list$<$DataTier$>$ )
-
-       where pathName is a Processed or Analysis Dataset and list$<$DataTier$>$        is a list of parent's DataTier.
-       This provide a list of DBS datasets corresponding to all the parents
-       data tier of a given DBS dataset. 
-       The provenance relationship at the level of dataset is used by
-       an analysis tool (i.e. CRAB) in the old EDM context, to perform
-       data discovery of all the data tier requested by the user.
-       {\bf FIXME: to be reconsidered in the new EDM}
-
-\item  list$<$EventCollections$>$ = getDatasetContents ( pathName ) 
-       This provides a list of event collections in a Processed or Analysis 
-       Dataset. The list of EventCollections, with the number of events per 
-       event collection, should be organized by File Block.
-
-       The list of EventCollections is needed by an analysis tool (i.e. CRAB)          to perform site-independent job configuration. The grouping in term
-       of File Blocks is needed by an analysis tool (i.e. CRAB) in order to 
-       perform job splitting and file-block location. 
-       (See example in section ~\ref{sec:oldEDM}).
-
-\item  list$<$EventCollections$>$ = getDatasetContents ( initialPathName, predicate ) 
-       This provides a list of event collections satisfying a predicate as in 
-       buildDataset above.  (This method is intended as a helper for 
-       buildDataset.) 
-
-\item list$<$FileBlocks$>$ = getDatasetFileBlocks ( pathName )
-      This provide a list of file-blocks in which a Processed or Analysis
-      Dataset is organized.
-      The file-blocks index is needed to query the DLS for file-block location. 
-      The list of file-blocks could be extracted from the result
-      of the getDatasetContents API, so no dedicated API is 
-      strictly needed.
-
-\item  pathName = buildDataset ( basePathName, $AD$ )
-\item  closeDataset() 
-       It is intended that Analysis Datasets are normally ``snapshots''
-       of the available data at a particular time.  Therefore the API
-       methods defined so far will create and close Analysis Datasets
-       while recording information internally about the API call that
-       created them, including the timestamp, the initial query if
-       present and the parentage if created from another Dataset.
-       Workload management needs to be able to create open datasets
-       and add Event Collections to them as they become available.
-       Therefore buildDataset with only two arguments will create an
-       empty open Analysis Dataset, and a special close call is provided
-       to go along with it.  These methods are only intended for local
-       scope DBS.
-
-\item  addToDataset ( pathName, list$<$EventCollection$>$ )
-       This adds (existing) Event Collections to the already existing dataset 
-       given in pathName.  These will be checked for consistency with the 
-       existing Event Collections already there.  This method only works for 
-       open Datasets in local scope DBS.
-   
-\item  globalPathName = publishDataset ( pathName )
-      This method publishes an Analysis Dataset from a local scope DBS
-      to the global scope DBS.  The pathName is the full name of an
-      Analysis Dataset in local scope, and if it is also unique in the
-      global namespace, then the returned globalPathName is the same
-      as pathName.  If the pathName is not globally unique, then it
-      is modified by the global scope DBS to make it unique (ie- like
-      appending an ordinal number to the end.) The local scope DBS will
-      make a note of this global name.  This method obviously must have
-      concurrency controls at the point of contact with global DBS.
-
-\item  deleteDataset ( pathName, deepFlag ) 
-      This method removes an Analysis Dataset from the local scope DBS.
-      It will be disabled at global scope.  If deepFlag is set, then
-      the included Event Collections that do not also belong to another
-      Analysis Dataset at local scope are also deleted.  Otherwise,
-      all EventCollections are left in place.
-
-\item  list$<$EventCollections$>$, foundLumi = partialDataset( pathName, lumiDesired )
-       This returns a list of the first N event collections such that the sum 
-       of their luminosity is the minimum luminosity above lumiDesired.  Also 
-       returned is the found luminosity.  If there is not enough luminosity in 
-       the given Analysis Dataset, then all Event Collections are returned.  
-       The user can check for this by checking foundLumi < lumiDesired.
-
-\end{itemize}
-
-Several helper API methods are needed to support the above.  
-
-\begin{itemize}
-\item  createPrimaryDataset ( /PriDName, PriDatasetInfo )
-\item  createProcessedDataset ( /PriDName/DT/ProcDName, ProcDatasetInfo )
-      These create Primary and data tiers with appropriate data
-      structures.  For example, Primary Dataset needs to have some
-      generator information in the case of Monte Carlo and Trigger Path
-      information in the case of real data.  Data Tier needs to have
-      Application information and parameters.
-
-\item  showDatasetInfo ( outputSelector )
-      This method shows the metadata associated with an Analysis Dataset
-      in desired detail by outputSelector.  It will include the query
-      and timestamp as will as contents.  In the case that the Analysis
-      Dataset was built from an existing Analysis Dataset, then the parent
-      will be shown.  (Note: absolute parentage in the sense of processing
-      is kept at the Event Collection level.  This parentage is purely
-      logical and is only an artifact of possibly having built an Analysis
-      Dataset from another in the buildDataset API method().)  It should
-      also show accumulated data like number of events and luminosity sum.
-
-\end{itemize}
 
 \subsection{Extensions and Changes for next generation DBS}
 \section{Plan of Work}
