@@ -13,8 +13,8 @@ from dbsProcessedDataset import DbsProcessedDataset
 from dbsProcessing import DbsProcessing
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
-#DEFAULT_URL = "exec:../CGIServer/prodquery"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
 
 try:
   args = {}
@@ -79,24 +79,25 @@ try:
   
 
 
-  file1 = DbsFile (logicalFileName="tmpaLFN1", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  file2 = DbsFile (logicalFileName="tmpaLFN2", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  file3 = DbsFile (logicalFileName="tmpaLFN3", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  file4 = DbsFile (logicalFileName="tmpaLFN4", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  file5 = DbsFile (logicalFileName="tmpaLFN5", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  file6 = DbsFile (logicalFileName="tmpaLFN6", fileSize=1, checkSum="cksum:1", fileType="EVD")
-  fileout = DbsFile (logicalFileName="tmpaLFNout", fileSize=1, checkSum="cksum:1", fileType="EVD")
+  file1 = DbsFile (logicalFileName="tempbLFN1", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
+  file2 = DbsFile (logicalFileName="tempbLFN2", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
+  file3 = DbsFile (logicalFileName="tempbLFN3", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
+  file4 = DbsFile (logicalFileName="tempbLFN4", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
+  file5 = DbsFile (logicalFileName="tempbLFN5", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
+  file6 = DbsFile (logicalFileName="tempbLFN6", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
+  fileout = DbsFile (logicalFileName="tempbLFNout", fileSize=long(1), checkSum="cksum:1", fileType="EVD")
 
   
   
-  eout = DbsEventCollection (collectionName="tmpwE2and5", numberOfEvents=10, fileList=[fileout])
-  e1 = DbsEventCollection (collectionName="tmpwE1", numberOfEvents=10, fileList=[file1])
-  e2 = DbsEventCollection (collectionName="tmpwE2", numberOfEvents=10, fileList=[file2],  parentageList=[ { 'parent' : e1, 'type' : 'Hit' } ])
-  e3 = DbsEventCollection (collectionName="tmpwE3", numberOfEvents=10, fileList=[file3],  parentageList=[ { 'parent' : e2, 'type' : 'Hit' } ])
+  eout1 = DbsEventCollection (collectionName="tmpx_1_E2and5", numberOfEvents=long(10), fileList=[fileout])
+  eout2 = DbsEventCollection (collectionName="tmpx_2_E2and5", numberOfEvents=long(10), fileList=[fileout])
+  e1 = DbsEventCollection (collectionName="tmpxE1", numberOfEvents=long(10), fileList=[file1])
+  e2 = DbsEventCollection (collectionName="tmpxE2", numberOfEvents=long(10), fileList=[file2],  parentageList=[ { 'parent' : e1, 'type' : 'Hit' } ])
+  e3 = DbsEventCollection (collectionName="tmpxE3", numberOfEvents=long(10), fileList=[file3],  parentageList=[ { 'parent' : e2, 'type' : 'Hit' } ])
 
-  e4 = DbsEventCollection (collectionName="tmpwE4", numberOfEvents=10, fileList=[file4])
-  e5 = DbsEventCollection (collectionName="tmpwE5", numberOfEvents=10, fileList=[file5],  parentageList=[ { 'parent' : e4, 'type' : 'Hit' } ])
-  e6 = DbsEventCollection (collectionName="tmpwE6", numberOfEvents=10, fileList=[file6],  parentageList=[ { 'parent' : e5, 'type' : 'Hit' } ])
+  e4 = DbsEventCollection (collectionName="tmpxE4", numberOfEvents=long(10), fileList=[file4])
+  e5 = DbsEventCollection (collectionName="tmpxE5", numberOfEvents=long(10), fileList=[file5],  parentageList=[ { 'parent' : e4, 'type' : 'Hit' } ])
+  e6 = DbsEventCollection (collectionName="tmpxE6", numberOfEvents=long(10), fileList=[file6],  parentageList=[ { 'parent' : e5, 'type' : 'Hit' } ])
 
   
   print ""
@@ -108,7 +109,7 @@ try:
     print "Object existed already, passing"
     
   
-  print "Inserting event collections\n %s" % (eout)
+  print "Inserting event collections\n %s " % (eout1)
   try:
      #pass	
      
@@ -118,7 +119,8 @@ try:
      api.insertEventCollections (hits, [e4])
      api.insertEventCollections (hits, [e5])
      api.insertEventCollections (hits, [e6])
-     api.insertEventCollections (digi, [ eout])
+     api.insertEventCollections (digi, [ eout1])
+     api.insertEventCollections (dst, [ eout2])
   except DbsCgiObjectExists, ex:
      print "Object existed already, passing",ex
   except:

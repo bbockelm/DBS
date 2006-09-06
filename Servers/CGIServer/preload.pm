@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 # Setup environment for dbsxml at Apache server startup with mod_perl.
 BEGIN {

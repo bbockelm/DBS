@@ -12,8 +12,9 @@ DEFAULT_BASE = "/DBS/servlet/DBSServlet"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/DBS/servlet/DBSServlet"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/RequestHeaderExample"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/HeaderExample"
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest1"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
+DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
 #DEFAULT_URL = "exec:../CGIServer/prodquery"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/catout.sh"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/abc.sh"
@@ -100,20 +101,21 @@ try:
   
   """
   otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
-  #otherDatasetPath = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged"
+  otherDatasetPath = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged"
   try:
    # Get dataset contents, returning a list of blocks with event collections
    print ""
    print "Dataset contents for: %s" % otherDatasetPath
    for block in api.getDatasetContents(otherDatasetPath):
-     print "  File block name/id: %s/%d, %d event collections}" % \
-       (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')) )
-     for ev in block.get('eventCollectionList') :
-       print "evc ", ev
+     print block.get('blockName')
+     #print "  File block name/id: %s/%d, %d event collections}" % \
+     #  (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')) )
+     #for ev in block.get('eventCollectionList') :
+     #  print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
   
-
+  """
   otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   #otherDatasetPath = "/test_primary_anzar/DST/test_process_anzar"
   try:
@@ -127,7 +129,7 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-   
+  """
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:

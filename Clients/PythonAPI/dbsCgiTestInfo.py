@@ -7,24 +7,94 @@ from dbsCgiApi import DbsCgiApi, DbsCgiDatabaseError
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
-DEFAULT_URL = "exec:../CGIServer/prodquery"
+#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
+DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
 
 try:
   args = {}
-  if len(sys.argv) == 2: args['instance'] = sys.argv[1]
+  args1 = {}
+  if (len(sys.argv) == 3) | (len(sys.argv) == 2) : args['instance'] = sys.argv[1]
   api = DbsCgiApi(DEFAULT_URL, args)
+  if len(sys.argv) == 3: 
+	  args1['instance'] = sys.argv[2]
+  else :
+	  args1['instance'] = sys.argv[1]
+  api1 = DbsCgiApi(DEFAULT_URL, args1)
   #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
   try:
    # Get dataset contents, returning a list of blocks with event collections
-   print ""
+   #print ""
    otherDatasetPath = "/test_primary_anzar/Hit/test_process_anzar"
-   print "Dataset info for: %s" % otherDatasetPath
-   xmlinput = api.getDatasetInfo(otherDatasetPath)
-   print "xmlinput %s" % xmlinput
-   #print api.insertDatasetInfo(xmlinput)
+   #otherDatasetPath = "/CSA06-081-os-minbias/SIM/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302" #for MCLocal_2/Writer
+   #otherDatasetPath = "/RelVal080pre5SingleMuPlusPt100/SIM/GEN-SIM-DIGI-RECO-merged"
+
+   #for Very Large Datasets use Block granulity to publish data
+   
+   #print "Dataset info for: %s" % otherDatasetPath
+   #blocks = api.listBlocks(otherDatasetPath)
+   
+   #for i in blocks:
+	   #print "Fetching infro for Block %s " % i['objectId']
+	   #print "******************************************"
+           #xmlinput = api.getDatasetInfo(otherDatasetPath, str(i['objectId']))
+	   #print "------------------------------------------------------------"
+           #print "xmlinput %s" % xmlinput
+	   #print "------------------------------------------------------------\n\n"
+           #print api1.insertDatasetInfo(xmlinput)
+	   #print "******************************************"
+	   
+	   
+   # for small dataset use the whole dataset to publish
+   #otherDatasetPath = "/CSA06-081-os-minbias/GEN/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302" #for MCLocal_1/Writer
+   #otherDatasetPath = "/test_primary_anzar/Hit/test_process_anzar" #for MCLocal/Writer
+
+   #xmlinput = api.getDatasetInfo(otherDatasetPath)
+   #print api1.insertDatasetInfo(xmlinput)
+
+
+
+   pathList = [ "/CSA06-081-os-minbias/SIM/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+		"/CSA06-081-os-minbias/GEN/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+		"/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+		"/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged" ,
+		"/CSA06-082-os-TTbar/GEN/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged" ,
+		"/CSA06-082-os-TTbar/DIGI/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
+	] # for MCLocal_3/Writer
+
+
+   pathList = [ "/CSA06-081-os-minbias/SIM/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+           "/CSA06-081-os-minbias/GEN/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+           "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+           "/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged" ,
+           "/CSA06-082-os-TTbar/GEN/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged" ,
+           "/CSA06-082-os-TTbar/DIGI/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged" 
+        ] # for MCLocal_4/Writer
+
+
+   pathList = [ #"/CSA06-081-os-minbias/SIM/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" 
+           #"/CSA06-081-os-minbias/GEN/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
+           "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" 
+        ] # for MCLocal_2/writer and MCLocal_1/Writer
+
+
+
+   for path in pathList:
+     print path
+     name = path.replace('/', '_')
+     xmlinput = api.getDatasetInfo(path)
+     f = open(name +".New.xml", "w");
+     f.write(xmlinput)
+     f.close()
+
+
+     flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
+     flog.write(api1.insertDatasetInfo(xmlinput))
+     flog.close()
+				   
+
   except DbsCgiDatabaseError,e:
    print e
  

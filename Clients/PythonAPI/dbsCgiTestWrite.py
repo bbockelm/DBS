@@ -13,10 +13,12 @@ from dbsProcessedDataset import DbsProcessedDataset
 from dbsProcessing import DbsProcessing
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/prodquery"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest1"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/in.sh"
 
-DEFAULT_URL = "exec:../CGIServer/prodquery"
+#DEFAULT_URL = "exec:../CGIServer/prodquery"
 
 try:
   args = {}
@@ -90,22 +92,23 @@ try:
     print "Object existed already, passing"
   
   # Attempt to insert a file
-  print ""
-  file = DbsFile (logicalFileName="LFN1xyz", fileSize=1,
+  print "trying to create file object"
+  file = DbsFile (logicalFileName="LFN1xyz", fileSize=long(1),
 		  checkSum="cksum:1", fileType="EVD")
   print "Inserting file %s" % file
   try:
     pass
-    #api.insertFiles (block, [ file ])
+    api.insertFiles (block, [ file ])
   except DbsCgiObjectExists, ex:
     print "Object existed already, passing"
   
   # Attempt to insert hit and digi event collections
-  print ""
-  ech = DbsEventCollection (collectionName="HC2", numberOfEvents=1, collectionStatus='NEW', fileList=[file])
-  ecd = DbsEventCollection (collectionName="DC2", numberOfEvents=1, fileList=[file],
+  print "creating ev object"
+  #ech = DbsEventCollection (collectionName="HC2", numberOfEvents=long(1), collectionStatus='NEW', fileList=[file])
+  ech = DbsEventCollection (collectionName="HC2", numberOfEvents=long(1),  fileList=[file])
+  ecd = DbsEventCollection (collectionName="DC2", numberOfEvents=long(1), fileList=[file],
 			    parentageList=[ { 'parent' : ech, 'type' : 'Hit' } ])
-  ecs = DbsEventCollection (collectionName="SC2", numberOfEvents=1, fileList=[file],
+  ecs = DbsEventCollection (collectionName="SC2", numberOfEvents=long(1), fileList=[file],
 		      	    parentageList=[ { 'parent' : ecd, 'type' : 'Digi' } ])
   print "Inserting event collections\n %s\n %s\n %s" % (ech, ecd, ecs)
   try:

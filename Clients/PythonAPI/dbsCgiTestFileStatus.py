@@ -7,7 +7,7 @@ from dbsCgiApi import DbsCgiApi, DbsCgiObjectExists
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest1"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/in.sh"
 
 #DEFAULT_URL = "exec:../CGIServer/prodquery"
@@ -18,10 +18,11 @@ try:
   api = DbsCgiApi(DEFAULT_URL, args)
 
   print "Setting file status as invalid"
-  api.setFileStatus ("tmpLFN6", "invalid")
+  api.setFileStatus ("tmpLFN4", "invalid")
  
   print "Setting file status as valid"
-  api.setFileStatus ("tmpLFN6", "valid")
+  #api.setFileStatus ("tmpLFN6", "valid")
+  #api.setFileStatus ("tmpLFN6", None)
   #api.setFileAvailable ("tmpLFN6")
   #api.setFileUnavailable ("6B9EC-5026-DB11-9898-003048713B63.root")
   #api.setFileAvailable ("/store/unmerged/PreProd/2006/8/2/ProdAgentDevTest1/GEN-SIM-DIGI/0000/9CE6B9EC-5026-DB11-9898-003048713B63.root")

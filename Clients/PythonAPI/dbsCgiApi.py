@@ -73,7 +73,7 @@ class DbsCgiExecHandler (urllib2.BaseHandler):
     path = req.get_selector()
     args = path.split("?", 1)
     if len(args) == 1: args.append('')
-    print "args ", args
+    #print "args ", args
     # Prepare CGI-like environment
     os.putenv ('GATEWAY_INTERFACE', 'CGI/1.1')
     os.putenv ('HTTP_ACCEPT_ENCODING', req.headers.get ('Accept-encoding'))
@@ -777,7 +777,7 @@ class DbsCgiApi(DbsApi):
 
  
   # ------------------------------------------------------------
-  def getDatasetInfo(self, dataset):
+  def getDatasetInfo(self, dataset, blockId=None):
     """
     Retrieve the complete DBS snapshpot of a processed dataset with 
     event collections , files ,processing and blocks
@@ -796,7 +796,12 @@ class DbsCgiApi(DbsApi):
     verifyDatasetPathName(path)
 
     # Invoke cgi script.
-    return  self._call ({ 'api' : 'getDatasetInfo', 'path' : path })
+    if(blockId != None) :
+	print "blockId ",blockId
+	return  self._call ({ 'api' : 'getDatasetInfo', 'path' : path , 'blockId' : blockId})
+    else :
+    	return  self._call ({ 'api' : 'getDatasetInfo', 'path' : path })
+    
 
   # ------------------------------------------------------------
   def insertDatasetInfo(self, xmlinput):
@@ -829,5 +834,35 @@ class DbsCgiApi(DbsApi):
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
  
+ 
+  def listBlocks(self, dataset):
+    # Check path.
+    path = self._path(dataset)
+    verifyDatasetPathName(path)
+
+    # Invoke cgi script.
+    data = self._call ({ 'api' : 'listBlocks', 'path' : path })
+
+    # Parse the resulting xml output.  The output consits of a list of blocks,
+    # each with its list of event collections.
+    try:
+      blocks = {}
+      class Handler (xml.sax.handler.ContentHandler):
+	def __init__ (self):
+	  self._block = None
+	def startElement(self, name, attrs):
+	  if name == 'block':
+	    id = attrs['id']
+	    if not blocks.has_key (id):
+	      blocks[id] = DbsFileBlock (objectId=long(id),
+			      		 #blockName=str(attrs['name']),
+					 numberOfFiles=long(attrs['files']),
+					 numberOfBytes=long(attrs['bytes']))
+	    self._block = blocks[id]
+      xml.sax.parseString (data, Handler ())
+      return blocks.values ()
+    except Exception, ex:
+      raise DbsCgiBadResponse(exception=ex)
+
 ##############################################################################
 # Unit testing: see dbsCgiTest*.py
