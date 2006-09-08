@@ -47,7 +47,7 @@
 \Instfoot{fnal}{FNAL, Batavia, IL, USA}
 \Instfoot{italy}{Italy}
 \Instfoot{cornell}{Cornell, Ithaca, NY, USA}
-\Instfoot{princeton}{Princeton, Princeton, NJ, USA}
+\Instfoot{Princeton}{Princeton, Princeton, NJ, USA}
 \Instfoot{balonia}{Balonia, Balonia, Italy}
   \end{Authlist}
 
@@ -59,7 +59,7 @@
 %  \Anotfoot{b}{Now at the Moon}
 
   \begin{abstract}
-    Based on the discussion and material presented at the DBS Workshop held at Cornell, this is a roadmap for the concepts and development of hte CMS DBS system. The workshop brought together areas data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system that will be followed for the next 6 months and provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007.
+    Based on the discussion and material presented at the DBS Workshop held at Cornell, this is a roadmap for the concepts and development of the CMS Dataset Bookkeeping System (DBS). The workshop brought together data management, work-flow management, CMSSW framework and other CMS areas, to discuss, document and devise a work plan for DBS that will be followed for the next 6 months. This will provide the needed function and features for the testing throughout 2007 and the beginning of data taking in Fall of 2007.
  
   \end{abstract} 
   
@@ -73,14 +73,14 @@
 
 \section{Introduction}
 
-The DBS Workshop held at Cornell July 20-22 of 2006 brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's longterm needs. Our mission was to bring together experts in data management, workflow management, CMSSW framework and other CMS areas, to discuss, document and devise a workplan for the dataset bookkeeping system we will follow for the next 6 months. The system we discuss will provide the needed function and features for the testing throughout 2007 and the beginning of datataking in Fall of 2007. This document is an attempt to establish the overall vision, requirements, and scope for the project, as well as begin to work out implementation details and work plan.
+The DBS Workshop held at Cornell July 20-22 of 2006 brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookkeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's long-term needs. Our mission was to bring together experts in data management, work-flow management, CMSSW framework and other CMS areas, to discuss, document and devise a work plan for the dataset bookkeeping system to  follow for the next 6 months. The system discussed will provide the needed function and features for the testing throughout 2007 and the beginning of data taking in Fall of 2007. This document establishes the overall vision, requirements, and scope for the project, and begins to work out implementation details and a work plan.
 
 \section{DBS Workshop Overview}
 
 \subsection{Goals for Cornell workshop}
 
 Workshop Goals:
-\begin{itemize}
+\begin{enumerate}
 \item Agree to a set of common definitions used in describing the DBS system. Deliverable: Glossary document.
 \item  Produce a set of use cases we think are representative of the needs of CMS analysis in general, but targeting the DBS specifically. Deliverable: Documented use cases and work user flow diagrams illustrating them.
 \item  Explore existing data management and discovery systems employed by HEP experiments and identify features we would like to have for CMS. Deliverable: Document describing key features we may have overlooked in CMS.
@@ -95,7 +95,7 @@ Workshop Goals:
 \item  Explore options for data discovery desirables, and techniques for doing them. Deliverable: Document and list of things to try out.
 \item  Discuss possible implementation options. Prototype if time permits. Document issues and further work needed to make final choices. Deliverable: Description of options and motivation for any particular choices. Description of additional work needed.
 \item  Draft a plan, describe deliverables, estimate work, prioritize, schedule and assign tasks. Deliverable: Description, schedule, assignments, milestone dates.
-\end{itemize}
+\end{enumerate}
 
 \subsection{Workshop Topics}
 
@@ -118,7 +118,7 @@ Workshop Goals:
 \subsection{Glossary}
 \begin{description}
 \item{Dataset}-"any set of 'event collections' that would naturally be
-grouped and analysed together as determined by
+grouped and analyzed together as determined by
 physics attributes" -ctdr
 e.g., common trigger path or MC generator (configuration?)
 e.g., "a particular object model representation of those events" such as
@@ -184,19 +184,18 @@ The role of DBS in CMS as described in the Computing TDR~\cite{CTDR}.
 
 (Assignment: Alessandra to fill this in)
 
-The Data Location Service (DLS) provides the means to locate replicas of data in the distributed computing system
-it maps file-blocks to storage elements (SEs)
-provide only names of sites hosting the data and not the physical location of constituent files at the sites
-few attributes (custodial  replica = considered a 
-   permanent copy at a site)
+The Data Location Service (DLS) provides the means to locate replicas of data in the distributed computing system. 
+It maps file-blocks to storage elements (SEs). It
+provides only the  names of sites hosting the data and not the physical location of the constituent files at the sites. The attributes for data in DLS include  (custodial  replica = considered a  permanent copy at a site)
 
- Interactions with DLS
-Insert file-blocks produced at a site (MC Production)
-Insert file-blocks upon data replication (PhEDEx)
-Query to locate file-blocks (CRAB, MC Production)
+ Interactions with DLS include 
+\begin{enumerate}
+\item Insert file-blocks produced at a site (MC Production)
+\item Insert file-blocks upon data replication (PhEDEx)
+\item Query to locate file-blocks (CRAB, MC Production)
+\end{enumerate}
 
 
-~\cite{dls-twiki}
 
 Fileblock name
 DBS knows how dataset are organized in term of fileblocks
@@ -205,7 +204,7 @@ DLS knows fileblocks locations
 Local scopes DBS/DLS upload into global DBS/DLS (clashes on fileblock name?)
 Data discovery and location: combine DBS and DLS information.
 
-DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS
+
 
 \subsection{PhEDEx}
 Assignment: Lee Ref to PhEDEx. Ask Lassi for text.)
@@ -300,12 +299,12 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
   47. (Assignment: Anzar)(usecase) How might DBS be employed for MTCC and Test Beam data?
          1. If a run table is added thenthis type of data could be added
          2. Under no pressure to make this work on a short time scale, but can use run for existing data to load the DBS catalog.
-         3. Would be useful experience for the DBS system and good interaction form physisists. 
+         3. Would be useful experience for the DBS system and good interaction form physicists. 
 
   
 50. {Assignment: Valentin, in section on data discovery)(use cases) Data Discovery use cases and what should be available for discovery (Need subgroup to further explore this):
          1. detector experts looking at detector problems, Range of data (run range) with certain conditions, bad detector component, special trigger.
-         2. What Physics meta data is needed to be related to datasets? Is it good enough to have 'simple' trigger name or all details of trigger needed? What high-level queryable things needed to store to find data? We need to make 'synthesized' easy to query versions AND allow full physics physics metadata discovery. 
+         2. What Physics meta data is needed to be related to datasets? Is it good enough to have 'simple' trigger name or all details of trigger needed? What high-level query-able things needed to store to find data? We need to make 'synthesized' easy to query versions AND allow full physics physics metadata discovery. 
 
   51. (dbs) From schema discussion:
          1. Three main concepts (more when have pictures of notes):
@@ -370,7 +369,7 @@ note: FJR shows which branches were used. probably want to dump FJR and logs in 
          1. How is this space 'assigned'/'allocated' at Tier-2 sites?
          2. Need tools to determine how disk (resources?) are used by "groups" in CMS?
          3. detail: Need to have concept of ownership (grolup/user) in either DBS or DLS
-         4. research: map how people running jobs work within the constraints of the existing system (how do they deal with disk allocations, and stepping on one anothers resources?) 
+         4. research: map how people running jobs work within the constraints of the existing system (how do they deal with disk allocations, and stepping on one another's resources?) 
 
 49. (need to present to other cms db players - Lee) Concept map for DBS and how it relates to other event and non-event data repositories. (DLS/DBS, conditions DB, trigger DB, luminosity DB, et cetera.
 
@@ -382,7 +381,7 @@ note: FJR shows which branches were used. probably want to dump FJR and logs in 
 Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:csa06-use-cases-diagram} and described in this section. CSA06 will use Monte Carlo data to simulate real data from the detector. This data will pass through the HLT and all production steps, ending in several steps of physics analysis. The CSA06 test will use a version of the DBS and other tools current as of July 2006.
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{0.8\textwidth}{!}{\includegraphics{figure/CSA06_use_cases_dfd}}
+    \resizebox{0.8\textwidth}{!}{\includegraphics{figure/CSA06_use_cases_dfd.eps}}
     \caption{This data flow diagram for CSA shows processing in yellow
     and products in green. PhEDeX performs transfers across data tiers
     and the ``Tier~1 File Exchange" of AOD among Tier~1 storage.}
@@ -482,7 +481,7 @@ I don't see anything else to encode.
 \subsubsection{Physics Data Production}
 \subsubsection{Data Analysis}
 
-\section{DBS client server Archetecture}
+\section{DBS client server Architecture}
 \subsection{Requirements}
 
 + DBS Access What are the avenues through which the DBS information will be accessed?
@@ -547,7 +546,7 @@ Transport and messaging layer
  \item  Easily maintainable
  \item  Accommodate schema evolution
  \item  Accommodate API evolution
- \item  Server functions must be well factorable
+ \item  Server functions must be well factor-able
  \item  Provide "local" and "global" scope functionality. This implies a. using multiple database technologies and a. having access through local library or remote server.
  \item  Meet performance needs. This depends on transport and messaging layer employed.
 \item   Web Services support. This is a desirable, and determines the flexibility for the future. 
@@ -555,28 +554,28 @@ Transport and messaging layer
 
 
 
-Decision matris can be found in Table~\ref{tab:tech-options}.
+Decision matrix can be found in Table~\ref{tab:tech-options}.
 \begin{table}[htb]
     \caption{Features provided by each technology option. X=Yes,*=Maybe, but involves more work, ?=Unknown, or too soon to tell, Blank=No  }
     \label{tab:tech-options}
     \begin{center}
-      \begin{tabular}{|l|c|c|c|c|c|} \hline 
-Criteria/Approach & CGI/Perl & CGI/Python & Tomcat w/ Java & Jboss &Ruby\\
-                  & (CSA06)  &            & Servlets      &Hibernate & on Rails \\ \hline
- Proven           & X & X & X & X &      \\
- Modern           &   &   & X & X &    X  \\
- Supported        & X & X & X & X &    ?  \\
- Flexible         &   &   & X & X &    ? \\
- Scalable         & X & X & X & X & ?    \\
- Maintainable     & * & X & X & X &    ?  \\
- Schema evolution & * & * & X & X &    ?  \\
- API evolution    & * & * & X & X &   ?  \\
- Easily factorized& * & * & X & X &   ?  \\
- Mult DB backends &   &   & X & X &    ?  \\
+      \begin{tabular}{|l|c|c|c|c|c|c|} \hline 
+Criteria/Approach & CGI/Perl & CGI/Python & Tomcat w/ Java &C++ App & Jboss &Ruby\\
+                  & (CSA06)  &            & Servlets      &Hibernate & Server& on Rails \\ \hline
+ Proven           & X & X & X & X & &      \\
+ Modern           &   &   & X & X & &    X  \\
+ Supported        & X & X & X & X & &    ?  \\
+ Flexible         &   &   & X & X & &   ? \\
+ Scalable         & X & X & X & X & & ?    \\
+ Maintainable     & * & X & X & X & &   ?  \\
+ Schema evolution & * & * & X & X & X &   ?  \\
+ API evolution    & * & * & X & X & X &  ?  \\
+ Easily factorized& * & * & X & X & X &  ?  \\
+ Mult DB backends &   &   & X & X & X &   ?  \\
  Accessed via lib 
-     or server    & X & X & X & X &    ? \\
- Performance      & X & ? & X & X & *       \\
- WS Support       &   &   & X & X & ?       \\ \hline
+     or server    & X & X & X & X & X &   ? \\
+ Performance      & X & ? & X & X &   &*       \\
+ WS Support       &   &   & X & X & * & ?       \\ \hline
       \end{tabular}
     \end{center}
   \end{table}  
@@ -660,12 +659,12 @@ We need to be able to provide search capabilities on the data that most interest
 The important parts of bits are in Parameter-Sets that describe how datasets/files are produced.
 
 What we have today in DBS is just a place holder and no real use.
-We need to define how we want to store Parameters-Sets in DBS and keep in mind that they are easily searchable.
+We need to define how we want to store Parameters-Sets in DBS and keep in mind that they are easily search-able.
 We can individually add and describe parameter-set(s) into DBS (for example).
 This is Pre-requisite to search and discovery, if we donÜ¢t have parameters-sets organized somewhere we canÜ¢t index/search them too.
 
 Many interesting ideas/tools exists out in the wild, we need to define the Requirements. 
-I say we need to index the parameter-sets and some Å¥otherÅ° characteristics of datasets to make them searchable. We might need to create some definitions and mappings too.
+I say we need to index the parameter-sets and some Å¥otherÅ° characteristics of datasets to make them search-able. We might need to create some definitions and mappings too.
 Names that comes to mind a Google, LXR, Apache Luceneë°≠.
 We need something that doesnÜ¢t return 10,000ë°≠ pages (google type searches are out), that, specific to our needs could be tailored (Lucene is in), be capable of searching for specific keywords that makes sense to users but are not actually in the files (LXR is out!). [Sort of maps between what files hold and what it means].
 
@@ -728,7 +727,7 @@ Names/paths of files containing event data are untracked parameters, so they are
 
 Each CMSSW production process has a "job configuration" name. The job configuration name is a component of the branch name for objects produced in that job, so branch names will be different for objects where the processing steps differ (e.g., SIM/DIGI/RECO in one job vs. three separate jobs). The framework partially hides this, but it is visible in ROOT, so there is a strong incentive to use an identical sequence of processing steps for all objects of a given type. As of May 2006, there are proposals for aliasing branch names which may change this consideration if every branch has an explicitly configured alias.
 
-EDM fast merge will, in one job, only process files with identical provenannces. Prior to the 0.8.0 release, the CMSSW Framework had the same restriction. Starting with 0.8.0, CMSSW plans to support "fruit salad" processing, where files with different provenance may be processed in the same job if the provenances are compatible. Provenances are considered compatible if the object name to number mappings are the same for all objects in common between the files. The fast merge does not modify any objects, and does not create any provenance--so far as CMSSW is concerned, fastmerge is completely transparent.
+EDM fast merge will, in one job, only process files with identical provenance. Prior to the 0.8.0 release, the CMSSW Framework had the same restriction. Starting with 0.8.0, CMSSW plans to support "fruit salad" processing, where files with different provenance may be processed in the same job if the provenances are compatible. Provenances are considered compatible if the object name to number mappings are the same for all objects in common between the files. The fast merge does not modify any objects, and does not create any provenance--so far as CMSSW is concerned, fastmerge is completely transparent.
 
 \subsubsection{DBS implications}
 
@@ -744,7 +743,7 @@ The framework allows objects of the same type but different provenance if they d
 
 \section{Schema Description and Design}
 
-During the Workshop we started a design for a new schema to superceed the one being used for CSA06. This has been drawn and several modifications added to reflect the entire Workshop discussion and decisions made there. This is shown in  Fig.~\ref{fig:new-dbs-schema-design} and described in this section.
+During the Workshop we started a design for a new schema to supered the one being used for CSA06. This has been drawn and several modifications added to reflect the entire Workshop discussion and decisions made there. This is shown in  Fig.~\ref{fig:new-dbs-schema-design} and described in this section.
 \begin{figure}[hbtp]
   \begin{center}
     \resizebox{15cm}{!}{\includegraphics{figure/schema_07272006.eps}}
@@ -840,7 +839,7 @@ implemented yet).
  spawn multiple DataTiers. If there is a restriction that a
  ProcessedDataset would only have a single DataTier then we would not
  required DataTier linkage with files at all. Also a File can have
- muliple DataTiers also, that iss why all the more reasons to link
+ multiple DataTiers also, that is why all the more reasons to link
  DataTier with File. Note that FileTier is enough for associating and
  determining the DataTier with in a file as well as within a
  ProcessedDataset. So why would we need linkage of DataTier with a
@@ -1141,7 +1140,7 @@ The authorative source of the object ID is always the database.
 \end{verbatim}
 Create a processed dataset and return the same processed dataset back. If
 passed an object with the ID already set it will ignore it. 
-The authorative source of the object ID is always the database.
+The authoritative source of the object ID is always the database.
 What is the significance of "name" for the processed dataset.
 
 \begin{verbatim}
