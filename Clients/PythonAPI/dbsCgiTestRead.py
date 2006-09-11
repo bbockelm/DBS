@@ -12,9 +12,10 @@ DEFAULT_BASE = "/DBS/servlet/DBSServlet"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/DBS/servlet/DBSServlet"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/RequestHeaderExample"
 #DEFAULT_URL = "http://venom.fnal.gov:8080/servlets-examples/servlet/HeaderExample"
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
-DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+DEFAULT_URL = "http://lxgate40.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery"
 #DEFAULT_URL = "exec:../CGIServer/prodquery"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/catout.sh"
 #DEFAULT_URL = "exec:/home/sekhri/cgi/java/test/abc.sh"
@@ -29,7 +30,6 @@ try:
   api = DbsCgiApi(DEFAULT_URL, args)
   #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
-  """ 
   try:
    # List all parameter sets
    print ""
@@ -77,7 +77,7 @@ try:
   except DbsCgiDatabaseError,e:
    print e
 
-  
+  """
   try:
    # Get dataset provenance. It returns list of dataset parents.
    print ""
@@ -108,15 +108,14 @@ try:
    print "Dataset contents for: %s" % otherDatasetPath
    for block in api.getDatasetContents(otherDatasetPath):
      print block.get('blockName')
-     #print "  File block name/id: %s/%d, %d event collections}" % \
-     #  (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')) )
-     #for ev in block.get('eventCollectionList') :
-     #  print "evc ", ev
+     print "  File block name/id: %s/%d, %d event collections}" % \
+       (block.get('blockName'), block.get('objectId'), len(block.get('eventCollectionList')) )
+     for ev in block.get('eventCollectionList') :
+       print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
   
-  """
-  otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
+  #otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   #otherDatasetPath = "/test_primary_anzar/DST/test_process_anzar"
   try:
    # Get dataset contents as a list of blocks with files
@@ -129,7 +128,6 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-  """
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:

@@ -58,7 +58,6 @@
      <element name="collectionId" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
      <element name="collectionIndex" type="xsd:int" minOccurs="1" maxOccurs="1" nillable="false"/>
      <element name="numberOfEvents" type="xsd:int" minOccurs="0" maxOccurs="1" nillable="true"/>
-     <element name="status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
      <element name="collectionName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="datasetPathName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <element name="parent" type="DBS:EventCollection" minOccurs="0" maxOccurs="1" nillable="true"/>
@@ -135,23 +134,6 @@
   </element>
   <!-- operation response element -->
   <element name="insertEventCollectionsResponse">
-   <complexType>
-    <sequence>
-     <element name="result" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-    </sequence>
-   </complexType>
-  </element>
-  <!-- operation request element -->
-  <element name="mergeEventCollections">
-   <complexType>
-    <sequence>
-     <element name="inputEventCollectionList" type="DBS:EventCollection" minOccurs="1" maxOccurs="unbounded" nillable="false"/>
-     <element name="outputEventCollection" type="DBS:EventCollection" minOccurs="0" maxOccurs="1" nillable="true"/>
-    </sequence>
-   </complexType>
-  </element>
-  <!-- operation response element -->
-  <element name="mergeEventCollectionsResponse">
    <complexType>
     <sequence>
      <element name="result" type="xsd:int" minOccurs="1" maxOccurs="1"/>

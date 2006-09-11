@@ -572,6 +572,46 @@ class DbsCgiApi(DbsApi):
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
 
+
+  # ------------------------------------------------------------
+  def getLFNs(self, dataset, blockId):
+    # Check path.
+    path = self._path(dataset)
+    verifyDatasetPathName(path)
+
+    # Invoke cgi script.
+    data = self._call ({ 'api' : 'getLFNs', 'path' : path , 'blockId' : blockId})
+    #print data
+    # Parse the resulting xml output.  The output consits of a list of blocks,
+    # each with its list of event collections.
+    try:
+      blocks = {}
+      class Handler (xml.sax.handler.ContentHandler):
+	def __init__ (self):
+	  self._block = None
+	def startElement(self, name, attrs):
+	  if name == 'block':
+	    if not blocks.has_key (blockId):
+	      blocks[blockId] = DbsFileBlock (objectId=long(blockId),
+                                              blockName=str(attrs['name']))
+            self._block = blocks[blockId]
+          elif name == 'file':
+	    self._block['fileList'].append(DbsFile (
+                                          fileBlockId=long(blockId),
+		    			  logicalFileName=str(attrs['lfn']),
+		    			  fileStatus=str(attrs['status']),
+		    			  fileSize=long(attrs['size'])))
+
+
+      xml.sax.parseString (data, Handler ())
+      #print blocks
+      #print "***************"
+      #print blocks.values ()
+      return blocks.values ()
+    except Exception, ex:
+      raise DbsCgiBadResponse(exception=ex)
+
+
   # ------------------------------------------------------------
   def createPrimaryDataset(self, dataset):
     """
