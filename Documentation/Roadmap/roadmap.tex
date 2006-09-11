@@ -351,8 +351,35 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
   31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
 
 
-  35. (ProdAgent, dbs)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access. 
+  35. (ProdAgent, dbs, Valentin)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access. 
 
+Here are the contact points between ProdAgent and DBS:
+\begin{enumerate}
+\item DBSComponent
+\begin{itemize}
+\item Creates Datasets   (both merge and processing)
+\item Populates Datasets  (both merge and processing)
+\end{itemize}
+
+\item MergeSensor
+\begin{itemize}
+\item  Watches Datasets in polling mode
+\item Retrieves fileblock information, generates merge jobs when sufficient data is present
+\end{itemize}
+
+\item PhEDExComponent
+\begin{itemize}
+\item  Queries DBS for fileblocks for an entire dataset for PhEDEx injection
+\end{itemize}
+
+\end{enumerate}
+
+
+Other uses (not yet implemented but mostl likely will be)
+\begin{itemize}
+\item Remap Merge file parents to processing file parents upon completion of a merge job (DBS Component)
+\item Validation/Invalidation of files in DBS
+\end{itemize}
 note: FJR shows which branches were used. probably want to dump FJR and logs in to archive, could be DBS. 
 
   36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
@@ -616,7 +643,76 @@ Criteria/Approach & CGI/Perl & CGI/Python & Tomcat w/ Java &C++ App & Jboss &Rub
  data, meta-data, luminosity ....
  descriptive criteria
 
+\subsubsection{Data discovery prototype}
+The current DBS Data Discovery prototype has been shown on Figure \ref{fig:dbs-data-discovery}.
+\begin{figure}[hbtp]
+  \begin{center}
+    \resizebox{10cm}{!}{\includegraphics{figure/DBSDataDiscoveryLayers.eps}}
+    \caption{DBS Data Discovery prototype.}
+    \label{fig:dbs-data-discovery}
+  \end{center}
+\end{figure} 
+It based on three external third party packages:
+\begin{itemize}
+\item {\it CherryPy}~\cite{CherryPy} is the a pythonic, object-oriented HTTP framework.
+It has been used as a simple web server for DBS data discovery proptotype.
+\item {\it Cheetah}~\cite{Cheetah} is the template engine and code generation tool, 
+written in Python. It can be used standalone or combined with other tools and frameworks. 
 
+\item {\it SQLAlchemy}~\cite{SQLAlchemy} is the Python SQL toolkit and Object Relational 
+Mapper that gives application developers the full power and flexibility of SQL. 
+It provides a full suite of well known enterprise-level persistence patterns, 
+designed for efficient and high-performing database access, adapted into a simple and 
+Pythonic domain language. It works with well-known DBs, including: ORACLE, MySQL, Postgres, SQLite, 
+etc.
+\end{itemize}
+
+The multi-tier architecture of the server will allow the usage different type of technologies, e.g.
+SQLAlchemy can be replaced with generic Database accesing layer, such as JDBC or Database
+connection pool management, CherryPy with apache web server, etc.~\cite{frontier}.
+
+We try to explore the way how physicists will discover new data within CMS experiment. First,
+we see clear division between our actors. They are:
+\begin{itemize}
+\item {\bf physicists} -- this category includes people whose interests extend to identify
+data avaialable for analysis, e.g. find Higgs sample which pass certain criterias.
+\item {\bf production managers} -- this is a list of actors who are mostly interested in
+data production and deployment.
+\item {\bf site administrators} -- this category of users are interested in monitoring site
+resources, such as disk usage.
+\item ...
+\end{itemize}
+
+In current prototype we mostly address the CSA06 use casses, the {\bf production manager's} 
+point of view to discover data. We start from identifying file blocks based on three 
+main search categories:
+\begin{itemize}
+\item application -- identifies details of software used for data production, e.g. 
+CMSSW\_0\_8\_1, as well as the production step, {\it family}, e.g. RECO, and 
+name of the executable, e.g. cmsRun.
+\item primary dataset -- identifies primary dataset, e.g. CSA06-081-os-minbias.;
+\item data tier -- identifies data tier, e.g. RECO.
+\end{itemize}
+The presentation layer, auto-generated using Cheetah~\cite{Cheetah} templates, represents
+the {\bf physicists} and {\bf experts} (such as {\bf production managers} output.
+Their difference lies in fine-grained details of data, for instance pn {\bf expert} page
+the block/file statuses are shown, while {\bf physicists} output hides such detail and shows
+only valid samples useful for generic analysis.
+
+The following extensions are quite visible to implement:
+\begin{itemize}
+\item list of avialable sites together with details of data on those sites, e.g. for site A we 
+summarize the total disk usage, location of files, etc.
+\item list of run/lumi-sections
+\item list of avaialble datasets with full description of them, e.g.
+electron -- electron trigger signal
+\item list of applications with full description about their configurations, etc., e.g.
+CMSSW\_0\_8\_1 version which includes the following list of config files
+\item form which will allow to find parentage information about particular dataset
+\end{itemize}
+
+The long term plan may includes development of user-freidnly queriable language for 
+data discovery.
 \subsubsection{Data to discover}
 
  we need to discover at least the following items:
@@ -1246,6 +1342,9 @@ Available at http://lynx.fnal.gov/ntier\-wiki/Additional\_20Documentation.}
   \bibitem {squid-accel-mode}{op. cite~\cite{squid}, pp. 302-314.}}
 %last } is a mystry but latex asked for it. 
   \bibitem {squid-objects}{For additional information see http://lynx.fnal.gov/ntier-wiki/Squid\_20performance\_20for\_20big\_20objects}
+  \bibitem{CherryPy} {\it http://www.cherrypy.org}
+  \bibitem{Cheetah} {\it http://www.cheetahtemplate.org}
+  \bibitem{SQLAlchemy} {\it http://www.sqlalchemy.org}
 \end{thebibliography}
 
 \pagebreak
