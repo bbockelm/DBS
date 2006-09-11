@@ -600,6 +600,7 @@ class DbsCgiApi(DbsApi):
                                           fileBlockId=long(blockId),
 		    			  logicalFileName=str(attrs['lfn']),
 		    			  fileStatus=str(attrs['status']),
+		    			  fileType=str(attrs['type']),
 		    			  fileSize=long(attrs['size'])))
 
 
@@ -875,13 +876,18 @@ class DbsCgiApi(DbsApi):
       raise DbsCgiBadResponse(exception=ex)
  
  
-  def listBlocks(self, dataset):
+  def listBlocks(self, dataset, events=None):
     # Check path.
     path = self._path(dataset)
     verifyDatasetPathName(path)
 
     # Invoke cgi script.
-    data = self._call ({ 'api' : 'listBlocks', 'path' : path })
+    if( events == None) :    
+      data = self._call ({ 'api' : 'listBlocks', 'path' : path })
+    else :
+      data = self._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events})
+
+    print data
 
     # Parse the resulting xml output.  The output consits of a list of blocks,
     # each with its list of event collections.
@@ -892,10 +898,14 @@ class DbsCgiApi(DbsApi):
 	  self._block = None
 	def startElement(self, name, attrs):
 	  if name == 'block':
+            evts = ''
 	    id = attrs['id']
 	    if not blocks.has_key (id):
+              if "events" in attrs.keys():
+                 evts = long(attrs['events'])
 	      blocks[id] = DbsFileBlock (objectId=long(id),
-			      		 #blockName=str(attrs['name']),
+			      		 events=evts,
+                                         status=str(attrs['status']),
 					 numberOfFiles=long(attrs['files']),
 					 numberOfBytes=long(attrs['bytes']))
 	    self._block = blocks[id]
