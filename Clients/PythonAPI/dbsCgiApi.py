@@ -586,29 +586,37 @@ class DbsCgiApi(DbsApi):
     # each with its list of event collections.
     try:
       blocks = {}
+      mylist = []
       class Handler (xml.sax.handler.ContentHandler):
 	def __init__ (self):
 	  self._block = None
 	def startElement(self, name, attrs):
+          """
 	  if name == 'block':
 	    if not blocks.has_key (blockId):
 	      blocks[blockId] = DbsFileBlock (objectId=long(blockId),
                                               blockName=str(attrs['name']))
             self._block = blocks[blockId]
-          elif name == 'file':
+          """  
+          if name == 'file':
+            """
 	    self._block['fileList'].append(DbsFile (
                                           fileBlockId=long(blockId),
 		    			  logicalFileName=str(attrs['lfn']),
 		    			  fileStatus=str(attrs['status']),
 		    			  fileType=str(attrs['type']),
 		    			  fileSize=long(attrs['size'])))
+            """
+            mylist.append( (  str(attrs['lfn']), long(attrs['size']), str(attrs['status']), str(attrs['type']) ) )
 
 
       xml.sax.parseString (data, Handler ())
+      print mylist
       #print blocks
       #print "***************"
       #print blocks.values ()
-      return blocks.values ()
+      #return blocks.values ()
+      return mylist
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
 
