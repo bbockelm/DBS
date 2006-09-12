@@ -611,7 +611,7 @@ class DbsCgiApi(DbsApi):
 
 
       xml.sax.parseString (data, Handler ())
-      print mylist
+      #print mylist
       #print blocks
       #print "***************"
       #print blocks.values ()

@@ -18,14 +18,23 @@ try:
   # List all datasets and count of files in all their blocks
   print "Listing datasets blocks/files"
   dataset = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302"
-  for block in api.getLFNs (dataset, "341"):
-      files = block['fileList']
-      name = block['blockName']
-      print "  %s: %d files" % (name, len(files) )
-      for f in files:
-         print f
+  #valentineList = []
+  #for block in api.getLFNs (dataset, "341"):
+  print api.getLFNs (dataset, "341")
+  #for a in api.getLFNs (dataset, "341"):
+      #print a
+      #files = block['fileList']
+      #name = block['blockName']
+      #print "  %s: %d files" % (name, len(files) )
+      #for f in files:
+      #   print f
+      #print files  
+      #print files[0]  
+      #print files[0].values()  
 
-
+      #for i in range(len(block['fileList'])):
+        #valentineList.append( block['fileList'][i].values() )
+  #print valentineList 
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:
