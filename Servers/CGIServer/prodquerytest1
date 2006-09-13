@@ -50,8 +50,8 @@ use Error qw(:try);
 use XML::XSLT;
 $Text::Glob::strict_wildcard_slash = 0;
 
-$file = '/tmp/out.txt';
-open(INFO, ">$file");
+#$file = '/tmp/out.txt';
+#open(INFO, ">$file");
 
 ######################################################################
 # Main program

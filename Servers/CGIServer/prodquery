@@ -50,13 +50,13 @@ use Error qw(:try);
 use XML::XSLT;
 $Text::Glob::strict_wildcard_slash = 0;
 
-$file = '/tmp/out.txt';
-open(INFO, ">$file");
+#$file = '/tmp/out.txt';
+#open(INFO, ">$file");
 
 ######################################################################
 # Main program
 
-my $dbparams = $ENV{DBS_DBPARAM} || "/home/sekhri/sl3-self-built/DBS/Clients/PythonAPI/DBParam";
+my $dbparams = $ENV{DBS_DBPARAM} || "/data/DBSAccessInfo/DBParam";
 my $SAFE_NAME = qr|^[-A-Za-z0-9_.]+$|;
 my $SAFE_PATH = qr|^[-A-Za-z0-9_./]+$|;
 my $SAFE_TIERS = qr|^[-A-Za-z,]+$|;
@@ -71,6 +71,8 @@ my %apis = (
     path => REQUIRED , blockId => OPTIONAL } ],
   'getDatasetFiles' => [ \&getDatasetFiles, {
     path => REQUIRED } ],
+  'getLFNs' => [ \&getLFNs, {
+    path => REQUIRED, blockId => REQUIRED } ],
   'listPrimaryDatasets' => [ \&listPrimaryDatasets, {
     pattern => OPTIONAL } ],
   'listProcessedDatasets' => [ \&listProcessedDatasets, {
@@ -84,7 +86,7 @@ my %apis = (
   'listApplicationConfigs' => [ \&listApplicationConfigs, {
     pattern => OPTIONAL } ],
   'listBlocks' => [ \&listBlocks, {
-    path => REQUIRED } ],
+    path => REQUIRED , events => OPTIONAL} ],
 
 
   # Legacy
@@ -1021,6 +1023,78 @@ sub getDatasetFiles
   }
 }
 
+
+######################################################################
+# Get the files and blocks of a dataset.
+sub getLFNs
+{
+  my ($dbs) = @_;
+
+  # Parse parameters
+  my @path = &getPath ();
+  my $bid = param('blockId');
+  # Translate the dataset path to an id
+  my $id = &datasetFromPath ($dbs, @path);
+
+  # Prepare output.
+  my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
+  my $pathname = "/$path[0]/$path[1]/$path[2]";
+  my $blockbase = "/$path[0]/$path[2]";
+  $out .= "<processed-dataset id='$id' path='$pathname'>";
+
+  # Fetch files by which block they belong to
+  my $q = &dbexec($$dbs{DBH}, qq{
+          select
+          f.logical_name,
+          f.filesize,
+          fs.name,
+          ft.name
+          from t_processed_dataset pd
+          join t_processing p
+          on p.primary_dataset = pd.primary_dataset
+          and p.name = pd.name
+          join t_block b
+          on b.processing = p.id
+          join t_block_status bs
+          on bs.id = b.status
+          left join t_file f
+          on f.inblock = b.id
+          left join t_file_status fs
+          on fs.id = f.status
+          left join t_file_type ft
+          on ft.id = f.type
+          where pd.id= :pid and b.id= :bid},
+    ":pid" => $id,
+    ":bid" => $bid);
+  $out .= "<block name='$blockbase#$bid'>";
+  while (my $row = $q->fetchrow_arrayref())
+  {
+    my ($lfn, $size, $status, $type) = @$row;
+
+    if (defined $lfn)
+    {
+        $status = "" if ! defined $status;
+	if ($status ne "invalid") {
+	      $out .= "<file lfn='$lfn' size='$size' status='$status' type='$type'/>";
+	}
+
+    }
+  }
+  $out .= "</block></processed-dataset></dbs>\n";
+
+  # Spit out the result
+  $$dbs{DBH}->disconnect ();
+  if (defined $html && $html eq 'true') {
+	&reply_html('FileBlock.xsl', $out);
+  } else {
+	&reply_success ($out);
+  }
+}
+
+
+
+
+
 ######################################################################
 # Create a new primary dataset
 sub createPrimaryDataset {
@@ -1653,7 +1727,8 @@ sub remap {
 	@cptlist  = ();#parentage type list of id for child
 	@clist  = ();#child list of id
 	@eclist  = ();#evecent collection list of id
-	my $procds =  ();
+	@proclist  = ();#Processed Dataset list of id
+	#my $procds =  ();
 
 	foreach my $f (@files)	{
 		&reply_failure (300, "Bad data", "Invalid file") if (! defined $$f{lfn} || $$f{lfn} !~ /$SAFE_PATH/o);
@@ -1678,7 +1753,16 @@ sub remap {
 			push(@ptlist, $ptype);	    
 			push(@eclist, $parent);	    
 			$gecid = $ecid;
-			$procds = $prodsid;
+			#$procds = $prodsid;
+			my $found = 0;
+			for ($count = 0; $count != @proclist; $count++) {
+				$found = 1 if ($prodsid == $proclist[$count]) ;
+			}
+			push(@proclist, $prodsid) if $found == 0;
+			#if ($found == 0) {
+			#	print INFO "processed dataset id \n $prodsid";
+			#}
+			
                	}
 	
 		# Get all the child and parentage type of this ECID and push it in the array
@@ -1717,16 +1801,21 @@ sub remap {
 			and f.logical_name = :f_logical_name},
 			":f_logical_name" => $$f{lfn});
 		#print INFO "\necidmerged   $ecidmerged \n";
+		my $ecIndex = 0;
 		while (my ($ecidmerged) = $q->fetchrow()) {
+			
 			#Update the processed Dataset for the output file/evc to the parent processed dataset
+			&reply_failure (300, "Bad data", "Could not find the Processed Dataset for this Event Collection with this file $$f{lfn} . There are more Event Collections than the processed datasets") if ! $ecIndex < @proclist ;
+			&reply_failure (300, "Bad data", "Could not find the Event Collection with this file $$f{lfn}") if ! defined $ecidmerged;
 			&dbexec($$dbs{DBH}, qq{
 				update t_event_collection
 				set processed_dataset = :processed_dataset
 				where id = :id},
 			        ":id" => $ecidmerged,
-				":processed_dataset" => $procds);
+				":processed_dataset" => $proclist[$ecIndex]);
+				#":processed_dataset" => $procds);
+			$ecIndex++;
 
-			&reply_failure (300, "Bad data", "Could not find the Event Collection with this file $$f{lfn}") if ! defined $ecidmerged;
 			#insert all the new parents and child relationships
 			my (%pparams) = ();
 			my $pstmt = &dbprep($$dbs{DBH}, qq{
@@ -2446,12 +2535,13 @@ sub listBlocks {
 	my ($dbs) = @_;
 	# Parse parameters
 	my @path = &getPath ();
+	my $listEvents = param('events');
 	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
 	# Translate the dataset path to an id
 	#my $processid = &datasetFromPath ($dbs, @path);
-	my $processingid = &dbexec($$dbs{DBH}, qq{
+	my ( $processingid , $procDsId ) = &dbexec($$dbs{DBH}, qq{
 		select
-			proc.id
+			proc.id, procds.id
 		from t_processing proc
 		join t_processing_name procname
 			on procname.id = proc.name
@@ -2482,7 +2572,30 @@ sub listBlocks {
 			b.processing = :procid},
 		":procid" => $processingid);
 	while (my ($bid, $bfiles, $bbytes, $status) = $q1->fetchrow()) {
-		$out .= "<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'/>\n";
+		$out .= "<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'";
+		if (defined $listEvents) {
+			$events = &dbexec($$dbs{DBH}, qq{
+			select sum(evc.events) 
+			from t_event_collection evc
+			join t_evcoll_file evf
+				on evf.evcoll = evc.id
+			left join t_evcoll_status evs
+				on evs.id = evc.status
+			join t_file f
+				on f.id = evf.fileid
+			join t_block b
+				on b.id = f.inblock
+			join t_block_status bs
+				on bs.id = b.status
+			left join t_file_status fs
+				on fs.id = f.status
+			where b.id = :bid
+			and evc.processed_dataset = :pid },
+			":bid" => $bid,
+			":pid" => $procDsId)->fetchrow();
+			$out .= " events = '$events'" if defined $events;
+		}
+		$out .= "/>\n";
 	}
 	$out .= "</dbs>";
         $$dbs{DBH}->disconnect ();
@@ -2526,3 +2639,19 @@ sub printProcessing {
 		print INFO "\ncontent  $$aProcessing{content} ";
 	}
 }
+
+sub genGuid {
+	my $uuid_str;
+	eval {
+		require Data::UUID;
+		my $ug = new Data::UUID;
+		$uuid_str = $ug->create_str;
+	};
+	if ($@) {
+		$uuid_str = `uuidgen`;
+		$uuid_str =~ s/\r?\n?$//;
+	}
+	return $uuid_str;
+}
+
+

@@ -574,13 +574,13 @@ class DbsCgiApi(DbsApi):
 
 
   # ------------------------------------------------------------
-  def getLFNs(self, dataset, blockId):
+  def getLFNs(self, dataset, blockName):
     # Check path.
     path = self._path(dataset)
     verifyDatasetPathName(path)
 
     # Invoke cgi script.
-    data = self._call ({ 'api' : 'getLFNs', 'path' : path , 'blockId' : blockId})
+    data = self._call ({ 'api' : 'getLFNs', 'path' : path , 'blockName' : blockName})
     #print data
     # Parse the resulting xml output.  The output consits of a list of blocks,
     # each with its list of event collections.
@@ -701,7 +701,10 @@ class DbsCgiApi(DbsApi):
     pname = "/%s/%s" % \
       (block.get('processing').get('primaryDataset').get('datasetName'),
        block.get('processing').get('processingName'))
-    data = self._call ({ 'api' : 'createFileBlock', 'processing' : pname })
+    if  "blockName" in block.keys():
+       data = self._call ({ 'api' : 'createFileBlock', 'processing' : pname , 'blockName' : block['blockName'] })
+    else :
+       data = self._call ({ 'api' : 'createFileBlock', 'processing' : pname })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
@@ -716,7 +719,7 @@ class DbsCgiApi(DbsApi):
     """
     Closes a file block.  
     """
-    input = "<dbs><block id='%s'/></dbs>" % block.get('objectId').__str__()
+    input = "<dbs><block name='%s'/></dbs>" % block.get('blockName').__str__()
     data = self._call ({ 'api' : 'closeFileBlock', 'xmlinput' : input })
     
   # ------------------------------------------------------------
@@ -826,7 +829,7 @@ class DbsCgiApi(DbsApi):
 
  
   # ------------------------------------------------------------
-  def getDatasetInfo(self, dataset, blockId=None):
+  def getDatasetInfo(self, dataset, blockName=None):
     """
     Retrieve the complete DBS snapshpot of a processed dataset with 
     event collections , files ,processing and blocks
@@ -845,9 +848,9 @@ class DbsCgiApi(DbsApi):
     verifyDatasetPathName(path)
 
     # Invoke cgi script.
-    if(blockId != None) :
-	print "blockId ",blockId
-	return  self._call ({ 'api' : 'getDatasetInfo', 'path' : path , 'blockId' : blockId})
+    if(blockName != None) :
+	print "blockName ",blockName
+	return  self._call ({ 'api' : 'getDatasetInfo', 'path' : path , 'blockName' : blockName})
     else :
     	return  self._call ({ 'api' : 'getDatasetInfo', 'path' : path })
     
@@ -895,7 +898,7 @@ class DbsCgiApi(DbsApi):
     else :
       data = self._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events})
 
-    print data
+    #print data
 
     # Parse the resulting xml output.  The output consits of a list of blocks,
     # each with its list of event collections.
@@ -909,16 +912,21 @@ class DbsCgiApi(DbsApi):
             evts = ''
 	    id = attrs['id']
 	    if not blocks.has_key (id):
-              if "events" in attrs.keys():
-                 evts = long(attrs['events'])
-	      blocks[id] = DbsFileBlock (objectId=long(id),
-			      		 events=evts,
+              if(events == None) :  
+   	         blocks[id] = DbsFileBlock (objectId=long(id),
+                                         blockName=str(attrs['name']),
                                          status=str(attrs['status']),
 					 numberOfFiles=long(attrs['files']),
 					 numberOfBytes=long(attrs['bytes']))
+              else :
+                 if "events" in attrs.keys():
+                    evts = long(attrs['events'])
+                 blocks[id] = [evts, str(attrs['status']), long(attrs['files'])]
+
 	    self._block = blocks[id]
       xml.sax.parseString (data, Handler ())
-      return blocks.values ()
+      #return blocks.values ()
+      return blocks
     except Exception, ex:
       raise DbsCgiBadResponse(exception=ex)
 

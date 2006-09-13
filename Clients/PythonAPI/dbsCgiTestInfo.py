@@ -7,10 +7,10 @@ from dbsCgiApi import DbsCgiApi, DbsCgiDatabaseError
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 #DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
-DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
 
 try:
   args = {}
@@ -34,19 +34,18 @@ try:
    #for Very Large Datasets use Block granulity to publish data
    
    #print "Dataset info for: %s" % otherDatasetPath
-   #blocks = api.listBlocks(otherDatasetPath)
-   
-   #for i in blocks:
-	   #print "Fetching infro for Block %s " % i['objectId']
-	   #print "******************************************"
-           #xmlinput = api.getDatasetInfo(otherDatasetPath, str(i['objectId']))
-	   #print "------------------------------------------------------------"
-           #print "xmlinput %s" % xmlinput
-	   #print "------------------------------------------------------------\n\n"
-           #print api1.insertDatasetInfo(xmlinput)
-	   #print "******************************************"
-	   
-	   
+   """
+   blocks = api.listBlocks(otherDatasetPath)
+   for i in blocks.keys():
+	   print "Fetching infro for Block %s " % blocks[str(i)]['blockName']
+	   print "******************************************"
+           xmlinput = api.getDatasetInfo(otherDatasetPath, blocks[str(i)]['blockName'])
+	   print "------------------------------------------------------------"
+           print "xmlinput %s" % xmlinput
+	   print "------------------------------------------------------------\n\n"
+           print api1.insertDatasetInfo(xmlinput)
+	   print "******************************************"
+   """	   
    # for small dataset use the whole dataset to publish
    #otherDatasetPath = "/CSA06-081-os-minbias/GEN/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302" #for MCLocal_1/Writer
    #otherDatasetPath = "/test_primary_anzar/Hit/test_process_anzar" #for MCLocal/Writer
@@ -80,12 +79,18 @@ try:
         ] # for MCLocal_2/writer and MCLocal_1/Writer
 
 
-
+   #xmlinput = api.getDatasetInfo(otherDatasetPath)
+   #print xmlinput
+   #name = otherDatasetPath.replace('/', '_')
+   #flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
+   #flog.write(api1.insertDatasetInfo(xmlinput))
+   #flog.close()
+   
    for path in pathList:
      print path
      name = path.replace('/', '_')
      xmlinput = api.getDatasetInfo(path)
-     f = open(name +".New.xml", "w");
+     f = open(name +".xml", "w");
      f.write(xmlinput)
      f.close()
 
@@ -93,8 +98,7 @@ try:
      flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
      flog.write(api1.insertDatasetInfo(xmlinput))
      flog.close()
-				   
-
+   
   except DbsCgiDatabaseError,e:
    print e
  
