@@ -38,7 +38,7 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{11 September, 2006}
+   \date{15 September, 2006}
 
   \title{A 2006-07 Roadmap for CMS Dataset Bookkeeping System}
 
@@ -73,7 +73,7 @@
 
 \section{Introduction}
 
-The DBS Workshop held at Cornell July 20-22 of 2006 brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookkeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's long-term needs. Our mission was to bring together experts in data management, work-flow management, CMSSW framework and other CMS areas, to discuss, document and devise a work plan for the dataset bookkeeping system to  follow for the next 6 months. The system discussed will provide the needed function and features for the testing throughout 2007 and the beginning of data taking in Fall of 2007. This document establishes the overall vision, requirements, and scope for the project, and begins to work out implementation details and a work plan.
+The DBS Cornell Workshop~\cite{cornell-ws}, July 20-22 of 2006, brought together 18 people experienced in many areas of CMS software and Computing to discuss the uses and plan for the CMS  Dataset Bookkeeping System. The DBS project has developed over the last year  a prototype architecture,  schema and API that is sufficient for the CSA06 challenge work, but insufficient to meet CMS's long-term needs. Our mission was to bring together experts in data management, work-flow management, CMSSW framework and other CMS areas, to discuss, document and devise a work plan for the dataset bookkeeping system to  follow for the next 6 months. The system discussed will provide the needed function and features for the testing throughout 2007 and the beginning of data taking in Fall of 2007. This document establishes the overall vision, requirements, and scope for the project, and begins to work out implementation details and a work plan.
 
 \section{DBS Workshop Overview}
 
@@ -135,11 +135,11 @@ single major software release version, but may include
 multiple minor versions for small bug fixes and also
 may contain the output of multiple processings of
 some given input event collection" -dm-dbs-v0.85
-Å¥multiple minor versions lost in some versions of the DBS schema
+multiple minor versions lost in some versions of the DBS schema
 \item{Analysis Dataset}- "A subset of Event Collections from a given Processed
 Dataset" -dm-dbs-v0.85
 Adds constraints to processed dataset
-Similar to CLEO EventStore Å¥physics grade--the data physicists should run
+Similar to CLEO EventStore physics grade--the data physicists should run
 on?
 Gone from current schema, no mechanism to create one
 \item{Data Tier}- "2.5.1 Data Tiers" -ctdr
@@ -209,7 +209,7 @@ Data discovery and location: combine DBS and DLS information.
 \subsection{PhEDEx}
 Assignment: Lee Ref to PhEDEx. Ask Lassi for text.)
 \subsection{DBS Context Diagram}
-The DBS system is just one component in the Data Management system, and also has relationships to other sources of information in CMS at large. An overall picture of CMS is illustrated in Fig.~\ref{fig:dbs-context-diagram} with DBS represented in the center. 
+The DBS system is just one component in the Data Management system, and also has relationships to other sources of information in CMS at large. An overall picture of CMS is illustrated in Fig.~\ref{fig:dbs-context-diagram} with DBS represented in the center. Parts of the DBS API/Schema are expanded to more precisely illustrate the relationships with other systems, for example runs and luminosity sections have close associations with many of the data related databases, shown in yellow. Blocks and files have close ties to other parts of the data management system, DLS and PhEDEx, shown in purple. In some cases it may be sufficient for the relationships to be made through the provided APIs for each system. However, it may be much more efficient, i.e. faster, if database links to the various schemas are provided for data that resides in Oracle.
 
 \begin{figure}[hbtp]
   \begin{center}
@@ -344,7 +344,7 @@ One possible approach is to have a Local DBS setup at the site where private dat
 
  new. Status flags for files, what else?
 
-\subsection{Relationship with other subsystem in Technical Project}
+\subsection{Relationship with other subsystems in Technical Project}
    7. (dbs, need more info)support for pileup input datasets/files.
 
   11. (ReqSys?)Need a way to specify and submit processing requests for MC generation, and general data processing.
@@ -355,17 +355,7 @@ One possible approach is to have a Local DBS setup at the site where private dat
 
   20. (?)Naming convention for processed dataset. Can this be automated.
 
-
-\subsection{Relationship within CMS at large}
-   8. (use case-?)data quality information. What level of granularity? run, luminosity block, event?
-
-   9. (dbs, use case-?)Must be able to track luminosity for analysis dataset. Run over N luminosity blocks, some fail, some pass. How to integrate luminosity for all data used.
-
-  29. (?)Need to have LFN naming convention.
-
-  30. (use case, need more input) High level trigger information in DBS based on trigger mask, or trigger object, so can discover data based on trigger.
-
-  31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
+  39. (ReqSys?-Giulio, dbs-fnal)Use cases for the data processing request system for both MC and real physics data processing. What is the overlap between the request system and DBS? DBS and the Request system share discovery of 'applications' (i.e. the configuration). It is assumed this sharing will not be needed for CSA06 but should be understood for the final system.
 
 
   35. (ProdAgent, dbs, Valentin)Need way to track, monitor, record usage patterns of the data access. Way to study history of data access. 
@@ -392,22 +382,34 @@ Here are the contact points between ProdAgent and DBS:
 \end{enumerate}
 
 
-Other uses (not yet implemented but mostl likely will be)
+Other uses (not yet implemented but most likely will be)
 \begin{itemize}
 \item Remap Merge file parents to processing file parents upon completion of a merge job (DBS Component)
 \item Validation/Invalidation of files in DBS
 \end{itemize}
 note: FJR shows which branches were used. probably want to dump FJR and logs in to archive, could be DBS. 
 
-  36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
-
-  38. (use case-?)What is the software environment an analysis user will be using while in the local scope? Who moves data and DBS info about the data from local to public scope and how is it accomplished? What is the software setup, configuration, and what tools are needed? What authentication and authorization is needed for this?
-
-  39. (ReqSys?-Giulio, dbs-fnal)Use cases for the data processing request system for both MC and real physics data processing. What is the overlap between the request system and DBS? DBS and the Request system share discovery of 'applications' (i.e. the configuration). It is assumed this sharing will not be needed for CSA06 but should be understood for the final system.
 
   40. (ReqSys?-Giulio) Confusion about meaning of payload and workflow in MC request system [Guillio needs to make a glossary that synchs up with the DBS jargon].
 
   41. (ReqSys?, dbs Gulio,Pete,Lee)The Request System and DBS are related but Peter thinks should be 'decoupled'. It seems possible and useful to link up the parameter set discovery system of the two in the long term. Not needed for CSA06.
+
+
+\subsection{Relationship within CMS at large}
+   8. (use case-?)data quality information. What level of granularity? run, luminosity block, event?
+
+   9. (dbs, use case-?)Must be able to track luminosity for analysis dataset. Run over N luminosity blocks, some fail, some pass. How to integrate luminosity for all data used.
+
+  29. (?)Need to have LFN naming convention.
+
+  30. (use case, need more input) High level trigger information in DBS based on trigger mask, or trigger object, so can discover data based on trigger.
+
+  31. (use case, need more input)Luminosity information stored in DBS? This information may change with time. Could have lumi block ranges and get luminosity from lumi DB.
+
+
+  36. (dbs, need more input) How is file block name handled when published local to global scope DBS. Are files within the file block rearranged. Are more block attributes needed?
+
+  38. (use case-?)What is the software environment an analysis user will be using while in the local scope? Who moves data and DBS info about the data from local to public scope and how is it accomplished? What is the software setup, configuration, and what tools are needed? What authentication and authorization is needed for this?
 
   48. (Assignment: Ian) (use case, dbs?) DBS/DLS/PheDex know about file/file block sizes
          1. How is this space 'assigned'/'allocated' at Tier-2 sites?
@@ -531,7 +533,7 @@ I don't see anything else to encode.
 
 \subsubsection{Data discovery}
 
- need a clear definition of Ü°dataÜ¢
+ need a clear definition of ``data''
  who are the actors
  versioning
  level of granularity
@@ -653,36 +655,20 @@ The important parts of bits are in Parameter-Sets that describe how datasets/fil
 What we have today in DBS is just a place holder and no real use.
 We need to define how we want to store Parameters-Sets in DBS and keep in mind that they are easily search-able.
 We can individually add and describe parameter-set(s) into DBS (for example).
-This is Pre-requisite to search and discovery, if we donÜ¢t have parameters-sets organized somewhere we canÜ¢t index/search them too.
+This is Pre-requisite to search and discovery, if we don't have parameters-sets organized somewhere we canÜ¢t index/search them too.
 
 Many interesting ideas/tools exists out in the wild, we need to define the Requirements. 
-I say we need to index the parameter-sets and some Å¥otherÅ° characteristics of datasets to make them search-able. We might need to create some definitions and mappings too.
-Names that comes to mind a Google, LXR, Apache Luceneë°≠.
-We need something that doesnÜ¢t return 10,000ë°≠ pages (google type searches are out), that, specific to our needs could be tailored (Lucene is in), be capable of searching for specific keywords that makes sense to users but are not actually in the files (LXR is out!). [Sort of maps between what files hold and what it means].
+I say we need to index the parameter-sets and some other characteristics of datasets to make them search-able. We might need to create some definitions and mappings too.
+Names that comes to mind a Google, LXR, Apache Lucene.
+We need something that doesnÜ¢t return 10,000 pages (google type searches are out), that, specific to our needs could be tailored (Lucene is in), be capable of searching for specific keywords that makes sense to users but are not actually in the files (LXR is out!). [Sort of maps between what files hold and what it means].
 
 
 http://lucene.apache.org/java/docs/index.html
 Lucene is Doug Cutting's wife's middle name, and her maternal grandmother's first name !. 
 Apache Lucene is a high-performance, full-featured text search engine library written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform. 
-open source project 
+open source project.  
 Lucene is 100% pure Java and has no external dependencies. 
-Provides serach and indexing capability, one can write his/her own indexing mechanism and rest is taken care off.
-
-Indexing
-over 20MB/minute on Pentium M 1.5GHz
-small RAM requirements -- only 1MB heap 
-incremental indexing as fast as batch indexing 
-index size roughly 20-30% the size of text indexed 
-
-Searching
-ranked searching -- best results returned first 
-many powerful query types: phrase queries, wildcard queries, proximity queries, range queries and more 
-fielded searching (e.g., title, author, contents) 
-date-range searching 
-sorting by any field 
-multiple-index searching with merged results 
-allows simultaneous update and searching 
-
+Provides search and indexing capability, one can write his/her own indexing mechanism and rest is taken care off.
 This is shown in  Fig.~\ref{fig:dbs-indexing} and described in this section.
 \begin{figure}[hbtp]
   \begin{center}
@@ -691,6 +677,26 @@ This is shown in  Fig.~\ref{fig:dbs-indexing} and described in this section.
     \label{fig:dbs-indexing}
   \end{center}
 \end{figure} 
+
+Indexing Characteristics
+\begin{enumerate}
+\item over 20MB/minute on Pentium M 1.5GHz
+\item small RAM requirements -- only 1MB heap 
+\item incremental indexing as fast as batch indexing 
+\item index size roughly 20-30% the size of text indexed 
+\end{enumerate}
+
+Searching Characteristics
+\begin{enumerate}
+\item ranked searching -- best results returned first 
+\item many powerful query types: phrase queries, wildcard queries, proximity queries, range queries and more 
+\item fielded searching (e.g., title, author, contents) 
+\item date-range searching 
+\item sorting by any field 
+\item multiple-index searching with merged results 
+\item allows simultaneous update and searching 
+\end{enumerate}
+
 
 
 
@@ -967,12 +973,17 @@ API Documentation at,
 
 https://uimon.cern.ch/twiki/bin/view/CMS/CMS-DMS-DBS-API
 
-Currently two type of interactions with DBS, 
+Currently two type of interactions with DBS,Tpdate and manipulate. 
 Update DBS: The key is to understand the insert work flow for each type of information you need to record in DBS. Always a set of API calls in right order will work.
-You need to know quite well what you want to do with DBS. Some advanced operations (Merge/Import/Export) need in-depth knowledge of DBS-API, DBS-Workflow and Dataset organization in DBS.
+You need to know quite well what you want to do with DBS. Some advanced operatio
+ns (Merge/Import/Export) need in-depth knowledge of DBS-API, DBS-Workflow and Da
+taset organization in DBS.
 FWRK and DBS do not map 1-1 when it comes to Dataset organization. (not here!).
-Example: you cannot insert a File Block, before you have inserted Primary Dataset and Processing.
-DBS API is low level API, and calls for an interface layer between client Application(s), like ProdAgent, and DBS for a real work. One example is ProdAgent DBSInterface,
+Example: you cannot insert a File Block, before you have inserted Primary Datase
+t and Processing.
+DBS API is low level API, and calls for an interface layer between client Applic
+ation(s), like ProdAgent, and DBS for a real work. One example is ProdAgent DBSI
+nterface,
 https://uimon.cern.ch/twiki/bin/view/CMS/ProdAgentDBSInterface
 
 Simple use cases are coded in DBS Test cases (part of DBS API code).
@@ -1338,20 +1349,21 @@ A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
     \caption{DBS workplan for the Aug. 2006 through Jan 2007 in detail, rough plan beyond. to July 2007.  }
     \label{tab:dbs-work-plan}
     \begin{center}
-      \begin{tabular}{|l|p{1.5in}|p{1.5in}|p{1.5in}|} \hline 
-Date & CSA06 DBS & 2nd Gen. DBS & Comments \\ \hline
-Aug. 2006 & Updates to API, minimal updates to schema, operation of existing service. Initial discover tools for MC production & Roadmap development  &    \\ \hline
-Sep. 2006 & Operations, global and local relationship field experience.   & Use case development, API and schema review and revisions.  &    \\ \hline
-Oct. 2006 & Maintanence    & Schema, API prototyping. Test development.Discovery tools & \\ \hline
-Nov. 2006 & Migration plan   & Transfer tools CSA to 2G., Production server planning  &    \\ \hline
-Dec. 2006 &     &   &    \\ \hline
-Jan. 2007 &    &   &    \\ \hline
-Feb.-Jul. 2007 &    &   &    \\ \hline
+      \begin{tabular}{|l|p{2.5in}|p{2.5in}|} \hline 
+Date & CSA06 DBS & 2nd Gen. DBS  \\ \hline
+Aug. 2006 & \begin{enumerate} \item Updates to API, minimal updates to schema. \item Operation of existing service. \item Initial discover tools for MC production. \end{enumerate} & Roadmap development, some schema work.     \\ \hline
+Sep. 2006 & \begin{enumerate} \item Operations. \item Global and local relationship field experience.\item Finish merge-remapping work. \item Add GUID for block name. \item Move from test to production server. \end{enumerate}  & \begin{enumerate} \item Use case development. \item Schema review and revisions. \item API object and Calls detailed working list and initial users guide. \item Begin prototype for indexing config files.\end{enumerate}     \\ \hline
+Oct. 2006 & Maintanence    & \begin{enumerate} \item Schema prototype. \item Practice deployment to local (MySQL) and global (Oracle) environments.  \item API prototyping. \item Develop unit tests.  \item  Develop testing and performance benchmarks. \item Discovery tools beyound those used for CSA06, including working with schemas in other domain areas. \end{enumerate} \\ \hline
+Nov. 2006 & Plan for migration to gen 2 system   & \begin{enumerate} \item Transfer tools CSA to 2G. \item Continue development and testing of schema and API. \item Production server planning. \item Integration with ProdAgent and other CMS tools. \end{enumerate}    \\ \hline
+Dec. 2006 &     & \begin{enumerate} \item Continued development and testing. \item Refine production environment.   \end{enumerate}   \\ \hline
+Jan. 2007 & Migrate and discontinue.   & \begin{enumerate} \item Ready for production operation. \item Final documentation and test procedures. \end{enumerate}     \\ \hline
+Feb.-Jul. 2007 &    &      \\ \hline
       \end{tabular}
     \end{center}
   \end{table}  
 \pagebreak
 \begin{thebibliography}{9}
+  \bibitem {cornell-ws} {The DBS Cornell Workshop web site: https://wiki.lepp.cornell.edu/workshops/bin/view/DBSWorkshop/}
   \bibitem {dls-twiki} {DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS}
   \bibitem{CTDR} {\bf ????}, , {\bf CMS Computing Technical Design Report}
   \bibitem{CherryPy} {\it http://www.cherrypy.org}
