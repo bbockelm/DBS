@@ -38,7 +38,7 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{5 September, 2006}
+   \date{11 September, 2006}
 
   \title{A 2006-07 Roadmap for CMS Dataset Bookkeeping System}
 
@@ -47,8 +47,8 @@
 \Instfoot{fnal}{FNAL, Batavia, IL, USA}
 \Instfoot{italy}{Italy}
 \Instfoot{cornell}{Cornell, Ithaca, NY, USA}
-\Instfoot{Princeton}{Princeton, Princeton, NJ, USA}
-\Instfoot{balonia}{Balonia, Balonia, Italy}
+\Instfoot{princeton}{Princeton, Princeton, NJ, USA}
+\Instfoot{balogna}{Balogna, Balogna, Italy}
   \end{Authlist}
 
 % if needed, use the following:
@@ -261,6 +261,22 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 
   27. (Assignment: Anzar)(usecase-?)Private and semi-private data sharing. How can you share data with colleagues at other institutions before it is ready for global scope publication.
 
+
+Usecase: Introducing off-road data into DBS, produced outside official production
+
+
+The main function of DBS will be to register available files and associated meta data. The data should preferably be defined by Framework Job Reports. DBS can provide explicit tools to process FJRs, extract required metadata and register files into DBS database.In case FJRs are not available or possible and it is still desired to register such files, DBS will provide a set of API calls that can be built into a custom tool for registration of such data files. There should be sufficient metadata available for the data to be registered into DBS. The off-road data can only be added by explicit privileges granted to certain people for this purpose. If produced data has parentage relationship to already existing data in DBS, it will be very highly recommended that DBS machinery ((local-global DBS) is used to produce and register such data. Also in this case proper parentage relationships will need to be registered.
+
+We can have a set of DBS standalone tools, that generate "Data catalogs" as part of Data production in private environments, if producing FJRs is impossible, and then use these "Data Catalogs" to populate Local/Global scope DBS instances. Sites/People will be advised to use these cataloging tools as they write their job scripts. In some cases, we can have "translation" mechanisms from existing information to DBS Datacatalog format.
+
+
+Usecase: Publication of Private Data before its Publication into Global scope DBS
+
+One possible approach is to have a Local DBS setup at the site where private data is produced. Or use one of the nearest Local sites publish this data. The Local DBS instances could also have set of discovery tools associated with them. In this way Local DBS instances will have their own visibility. We could add a Status to Datasets/Files as "Promoted" or "Exported to Global" to identify which datasets are known by Global DBS. Secondly for a very short scope data production, Data Catalogs could be generated.
+
+
+
+
   28. (Assignment: Lee)(dbs)Getting runs into DBS, need DBS to have relation to luminosity block information.
 
 
@@ -308,9 +324,9 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 
   51. (dbs) From schema discussion:
          1. Three main concepts (more when have pictures of notes):
-               1. Files
-               2. Processings
-               3. Datasets 
+               a. Files
+               b. Processings
+               c. Datasets 
          2. We see no need to continue the concept of event collections.
          3. Schema was discussed and sketched out at workshop. Anzar will enter and draw using druid. 
 
@@ -318,6 +334,7 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 \subsection{Design requirement}
 
   10. (dbs)All copies of a physical file are lost. Must be able to mark the status as unavailable or lost. Needs to be reported to DLS, and PhEDEx also.
+
   15. (Requirement)(dbs)Group needs a way to specify "official" data sets or analysis datasets.
 
   16. (Requirement)(dbs)Primary datasets must be special and have special meta data or ability to link to other information that characterizes it.
@@ -325,7 +342,7 @@ During the Cornell Workshop we compiled a list of 51 items to be followed up in 
 
   18. (Requirement)(dbs)Authentication and authorization for DBS API
 
- new. Status flags for files, whatelse?
+ new. Status flags for files, what else?
 
 \subsection{Relationship with other subsystem in Technical Project}
    7. (dbs, need more info)support for pileup input datasets/files.
@@ -507,127 +524,6 @@ I don't see anything else to encode.
 \subsubsection{Monte Carlo Production}
 \subsubsection{Physics Data Production}
 \subsubsection{Data Analysis}
-
-\section{DBS client server Architecture}
-\subsection{Requirements}
-
-+ DBS Access What are the avenues through which the DBS information will be accessed?
-
-\subsubsection{Overview of usage}
-
-   1. Production processing
-         1. ProdAgent 
-   2. Group processing
-   3. Individual processing
-   4. Individual and group analysis
-         1. CMSSW
-         2. ROOT
-         3. Other tools, shells, et cetera 
-   5. Interactions and relationships with other CMS databases
-         1. Trigger, Luminosity
-         2. Online Runs
-         3. Conditions, et cetera. 
-
-\subsubsection{Access}
-
-   1. API
-         1. CRAB
-         2. ProdAgent
-         3. Framework (CMSSW) through some wrappers?
-         4. ROOT ?
-         5. Primary language is expected to be Python, but could include C++, Java, et cetera. 
-   2. Command Line Input
-         1. Designed to work conveniently with standard Unix commands
-         2. based on API 
-   3. Web tools
-         1. Initial tools will use API
-         2. May grow beyond API
-         3. Include high level search and discovery features 
-
-\subsection{Options for service architecture technology approaches}
-There are at least two issues here, 1. server technology, and 2. transport and messaging layer. The two can be closely related as the tools provided for the messaging layer are better for some server solutions than others.
-Server options
-
-\begin{enumerate}
-\item  CGI/Perl: Continue to develop CGI w/ Perl scripts
-\item  CGI/Python: Continue to use CGI, but rewrite scripts in Python
-\item  Servlets: Use Tomcat servlet container and implement API in Java servelets.
-\item  Commercial Appserver: Use a commercial application server solution, for example JBOSS and Hibernate.
-\item  C++ DBS AppSrv?: Reuse the DBS App server developed at FNAL under a standard server technology, like Apache, or Tomcat.
-\item  RAD or Agile Web technology: Use one of the recent rapid web development platforms, for example Ruby On Rails (Ruby), or Django (Python), Zope 3. 
-\end{enumerate}
-Transport and messaging layer
-\begin{enumerate}
- \item  Assume the transport layer is HTTP
- \item  Messaging layer can have a couple of choices
-         1. Standard like SOAP, XML-RPC, REST
-         2. We make something that is performant (like the XML messages used now for CGI, or something similar to Frontier). 
-\end{enumerate}
-\subsubsection{Criteria for decision}
-\begin{enumerate}
- \item  Must be proven technology
- \item  Not out dated
- \item  Well supported by existing tools and documentation
- \item  Flexible framework that we can grow to meet future needs
- \item  Provide needed scalability
- \item  Easily maintainable
- \item  Accommodate schema evolution
- \item  Accommodate API evolution
- \item  Server functions must be well factor-able
- \item  Provide "local" and "global" scope functionality. This implies a. using multiple database technologies and a. having access through local library or remote server.
- \item  Meet performance needs. This depends on transport and messaging layer employed.
-\item   Web Services support. This is a desirable, and determines the flexibility for the future. 
-\end{enumerate}
-
-
-
-Decision matrix can be found in Table~\ref{tab:tech-options}.
-\begin{table}[htb]
-    \caption{Features provided by each technology option. X=Yes,*=Maybe, but involves more work, ?=Unknown, or too soon to tell, Blank=No  }
-    \label{tab:tech-options}
-    \begin{center}
-      \begin{tabular}{|l|c|c|c|c|c|c|} \hline 
-Criteria/Approach & CGI/Perl & CGI/Python & Tomcat w/ Java &C++ App & Jboss &Ruby\\
-                  & (CSA06)  &            & Servlets      &Hibernate & Server& on Rails \\ \hline
- Proven           & X & X & X & X & &      \\
- Modern           &   &   & X & X & &    X  \\
- Supported        & X & X & X & X & &    ?  \\
- Flexible         &   &   & X & X & &   ? \\
- Scalable         & X & X & X & X & & ?    \\
- Maintainable     & * & X & X & X & &   ?  \\
- Schema evolution & * & * & X & X & X &   ?  \\
- API evolution    & * & * & X & X & X &  ?  \\
- Easily factorized& * & * & X & X & X &  ?  \\
- Mult DB backends &   &   & X & X & X &   ?  \\
- Accessed via lib 
-     or server    & X & X & X & X & X &   ? \\
- Performance      & X & ? & X & X &   &*       \\
- WS Support       &   &   & X & X & * & ?       \\ \hline
-      \end{tabular}
-    \end{center}
-  \end{table}  
-%put into tablualr format
-%\begin{verbatim}
-%Criteria\Approach 	CGI/Perl 	CGI/Python 	Java Servlets/tomcat 	JBOSS/Hibernate 	C++ DBS AppSrv? 	RUBY on Rails
-%1. Proven technology 	X 	X 	X 	X 	  	 
-%2. Not out dated 	  	  	X 	X 	  	X
-%3. Well supported 	X 	X 	X 	X 	  	?
-%4. Flexible framework 	  	  	X 	X 	  	?
-%5. Scalability 	X 	X 	X 	X 	X 	?
-%6. Maintainable 	* 	X 	X 	X 	  	?
-%7. Schema evolution 	* 	* 	X 	X 	X 	?
-%8. API evolution 	* 	* 	X 	X 	X 	?
-%9. Well factorized 	* 	* 	X 	X 	X 	?
-%10a. Mult DB backends 	  	  	X 	X 	X 	 
-%10b. Access via lib or server 	X 	X 	X 	X 	X 	 
-%11. Performance 	X 	* 	X 	X 	* 	?
-%12. WS Support 	  	  	X 	X 	* 	?
-
-%    * X=Yes
-%    * *=Maybe, but involves more work.
-%    * ?=Unknown, or too soon to tell
-%    * Blank=No 
-%\end{verbatim}
 
 \section{Data discovery needs and options}
 
@@ -1309,6 +1205,133 @@ The block must have an object.
 
 
 \subsection{Extensions and Changes for next generation DBS}
+
+\section{DBS client server Architecture}
+\subsection{Requirements}
+
++ DBS Access What are the avenues through which the DBS information will be accessed?
+
+\subsubsection{Overview of usage}
+
+   1. Production processing
+         1. ProdAgent 
+   2. Group processing
+   3. Individual processing
+   4. Individual and group analysis
+         1. CMSSW
+         2. ROOT
+         3. Other tools, shells, et cetera 
+   5. Interactions and relationships with other CMS databases
+         1. Trigger, Luminosity
+         2. Online Runs
+         3. Conditions, et cetera. 
+
+\subsubsection{Access}
+
+   1. API
+         1. CRAB
+         2. ProdAgent
+         3. Framework (CMSSW) through some wrappers?
+         4. ROOT ?
+         5. Primary language is expected to be Python, but could include C++, Java, et cetera. 
+   2. Command Line Input
+         1. Designed to work conveniently with standard Unix commands
+         2. based on API 
+   3. Web tools
+         1. Initial tools will use API
+         2. May grow beyond API
+         3. Include high level search and discovery features 
+
+\subsection{Options for service architecture technology approaches}
+There are at least two issues here, 1. server technology, and 2. transport and messaging layer. The two can be closely related as the tools provided for the messaging layer are better for some server solutions than others.
+Server options
+
+\begin{enumerate}
+\item  CGI/Perl: Continue to develop CGI w/ Perl scripts
+\item  CGI/Python: Continue to use CGI, but rewrite scripts in Python
+\item  Servlets: Use Tomcat servlet container and implement API in Java servelets.
+\item  Commercial Appserver: Use a commercial application server solution, for example JBOSS and Hibernate.
+\item  C++ DBS AppSrv?: Reuse the DBS App server developed at FNAL under a standard server technology, like Apache, or Tomcat.
+\item  RAD or Agile Web technology: Use one of the recent rapid web development platforms, for example Ruby On Rails (Ruby), or Django (Python), Zope 3. 
+\end{enumerate}
+Transport and messaging layer
+\begin{enumerate}
+ \item  Assume the transport layer is HTTP
+ \item  Messaging layer can have a couple of choices
+         1. Standard like SOAP, XML-RPC, REST
+         2. We make something that is performant (like the XML messages used now for CGI, or something similar to Frontier). 
+\end{enumerate}
+\subsubsection{Criteria for decision}
+\begin{enumerate}
+ \item  Must be proven technology
+ \item  Not out dated
+ \item  Well supported by existing tools and documentation
+ \item  Flexible framework that we can grow to meet future needs
+ \item  Provide needed scalability
+ \item  Easily maintainable
+ \item  Accommodate schema evolution
+ \item  Accommodate API evolution
+ \item  Server functions must be well factor-able
+ \item  Provide "local" and "global" scope functionality. This implies a. using multiple database technologies and a. having access through local library or remote server.
+ \item  Meet performance needs. This depends on transport and messaging layer employed.
+\item   Web Services support. This is a desirable, and determines the flexibility for the future. 
+\end{enumerate}
+
+
+
+The information summary of the areas mentioned above is included in the decision matrix in Table~\ref{tab:tech-options}. Of course this is not completely objective but based on our evaluations and experience we feel that either Tomcat with Java servelets or JBOSS woth Hibernate would be most attractive for long-term development. Of these two we feel that straight Tomcat is quite adequate for our needs and the added features of JBOSS are somewhat overkill for our application. The plan is to use something similar to the existing prototype for the client interface and  xml format for the responses.  Vijay has done some initial testing to verify that the performance is comparable to that measured for the current Perl/CGI prototype. 
+\begin{table}[htb]
+    \caption{Features provided by each technology option. X=Yes,*=Maybe, but involves more work, ?=Unknown, or too soon to tell, Blank=No  }
+    \label{tab:tech-options}
+    \begin{center}
+      \begin{tabular}{|l|c|c|c|c|c|c|} \hline 
+Criteria/Approach & CGI/Perl & CGI/Python & Tomcat w/ Java & Jboss w/&C++ App  &Ruby\\
+                  & (CSA06)  &            & Servlets      &Hibernate & Server& on Rails \\ \hline
+ Proven           & X & X & X & X & &      \\
+ Modern           &   &   & X & X & &    X  \\
+ Supported        & X & X & X & X & &    ?  \\
+ Flexible         &   &   & X & X & &   ? \\
+ Scalable         & X & X & X & X & & ?    \\
+ Maintainable     & * & X & X & X & &   ?  \\
+ Schema evolution & * & * & X & X & X &   ?  \\
+ API evolution    & * & * & X & X & X &  ?  \\
+ Easily factorized& * & * & X & X & X &  ?  \\
+ Mult DB backends &   &   & X & X & X &   ?  \\
+ Accessed via lib 
+     or server    & X & X & X & X & X &   ? \\
+ Performance      & X & ? & X & X &   &*       \\
+ WS Support       &   &   & X & X & * & ?       \\ \hline
+      \end{tabular}
+    \end{center}
+  \end{table}  
+%put into tablualr format
+%\begin{verbatim}
+%Criteria\Approach 	CGI/Perl 	CGI/Python 	Java Servlets/tomcat 	JBOSS/Hibernate 	C++ DBS AppSrv? 	RUBY on Rails
+%1. Proven technology 	X 	X 	X 	X 	  	 
+%2. Not out dated 	  	  	X 	X 	  	X
+%3. Well supported 	X 	X 	X 	X 	  	?
+%4. Flexible framework 	  	  	X 	X 	  	?
+%5. Scalability 	X 	X 	X 	X 	X 	?
+%6. Maintainable 	* 	X 	X 	X 	  	?
+%7. Schema evolution 	* 	* 	X 	X 	X 	?
+%8. API evolution 	* 	* 	X 	X 	X 	?
+%9. Well factorized 	* 	* 	X 	X 	X 	?
+%10a. Mult DB backends 	  	  	X 	X 	X 	 
+%10b. Access via lib or server 	X 	X 	X 	X 	X 	 
+%11. Performance 	X 	* 	X 	X 	* 	?
+%12. WS Support 	  	  	X 	X 	* 	?
+
+%    * X=Yes
+%    * *=Maybe, but involves more work.
+%    * ?=Unknown, or too soon to tell
+%    * Blank=No 
+%\end{verbatim}
+
+
+
+
+
+
 \section{Plan of Work}
 A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
 \begin{table}[htb]
@@ -1331,20 +1354,11 @@ Feb.-Jul. 2007 &    &   &    \\ \hline
 \begin{thebibliography}{9}
   \bibitem {dls-twiki} {DLS twiki: https://twiki.cern.ch/twiki/bin/view/CMS/DLS}
   \bibitem{CTDR} {\bf ????}, , {\bf CMS Computing Technical Design Report}
-  \bibitem {bogus} {all items below are bogus}
-  \bibitem {smtp} {Simple Network Management Protocal}
-  \bibitem {mrtg} {Multi Router Traffic Grapher}
-  \bibitem {pool-ral} {POOL-RAL: POOL Persistence Framework, url{http://pool.cern.ch/ .}
-  \bibitem {frontier}{FroNTier Project, see S. Kosyakov, et. al.,''Frontier: High Performance Database Access Using Standard Web Components,'' Proceedings of the CHEP\,04 Conference, Interlaken Switzerland, 27 September - 1 October, 2004,
-Available at http://lynx.fnal.gov/ntier\-wiki/Additional\_20Documentation.}
-  \bibitem {tomcat}{Tomcat home page: http://tomcat.apache.org}
-  \bibitem {squid}{D. Wessels, Squid: The Definitive Guide, O'Reilly and Associates, 2004. Squid home page: http://www.squid-cache.org.}
-  \bibitem {squid-accel-mode}{op. cite~\cite{squid}, pp. 302-314.}}
-%last } is a mystry but latex asked for it. 
-  \bibitem {squid-objects}{For additional information see http://lynx.fnal.gov/ntier-wiki/Squid\_20performance\_20for\_20big\_20objects}
   \bibitem{CherryPy} {\it http://www.cherrypy.org}
   \bibitem{Cheetah} {\it http://www.cheetahtemplate.org}
   \bibitem{SQLAlchemy} {\it http://www.sqlalchemy.org}
+  \bibitem {tomcat}{Tomcat home page: http://tomcat.apache.org}
+
 \end{thebibliography}
 
 \pagebreak
