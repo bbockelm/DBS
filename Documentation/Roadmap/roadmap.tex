@@ -14,6 +14,8 @@
   \DeclareGraphicsExtensions{.eps}
 %\fi
 
+\newcommand{\phedex}{PhEDEx\xspace}
+
 % Code inline with text
 \newcommand{\code}[1]{\texttt{#1}}
 % Code in its own quotation. Needs \usepackage{verbatim}.
@@ -22,10 +24,92 @@
 
 % Macros for usage narratives
 \newcounter{countnarrative}
-\renewcommand{\thecountnarrative}{N\arabic{countnarrative}}
+\renewcommand{\thecountnarrative}{N\arabic{section}.\arabic{countnarrative}}
 
-\newenvironment{narrative}[1]{\medskip\par\noindent\refstepcounter{countnarrative}%
-\textbf{\thecountnarrative. {#1}}\par}{}
+%\newenvironment{narrative}[1]{\sloppy\medskip\par\noindent\refstepcounter{countnarrative}%
+\newenvironment{narrative}[1]{\sloppy\begin{quote}\refstepcounter{countnarrative}%
+\sloppy\textbf{\thecountnarrative. {#1}}\\}{\end{quote}}
+
+% Use Cases
+% counter
+\newcounter{countuc}
+\renewcommand{\thecountuc}{UC\arabic{section}.\arabic{countuc}}
+\newlength{\uclistraise}
+
+% Want to set something?
+\newcommand{\uctitlestyle}[1]{\textit{#1}} % This is what the name, scope, and level look like.
+\setlength{\uclistraise}{3ex} % This is how high the lists are shifted from normal spacing.
+\newcommand{\ucmaintitle}[1]{\bf #1} % This is the main title style.
+\renewcommand{\arraystretch}{1.5} % Increased line spacing between entries.
+
+% Sample use case.
+%\begin{usecase}\label{uc:analyze}
+%\ucname{Analyze Dataset} \\
+%\ucscope{System} \\
+%\uclevel{Summary} \\
+%\ucstatus{Draft} \\
+%\uccontext{Individual physicist wants to do a computation. There is a lot of context to this use. Man, you wouldn't believe how much context. It's so contextual that it's textual. Know what I mean?} \\
+%\ucactor{Physicist} \\
+%\ucsuccess{
+%\begin{uclist}
+%\item Find a dataset to analyze.
+%\item Configure job.
+%\item Run job. \label{uc:run}
+%\item Examine results.\label{uc:examine}
+%\item Register results.
+%\end{uclist}} \\
+%\ucextensions{\begin{ucextlist}{\ref{uc:run}}
+%\item Datafile does not exist.
+%\begin{enumerate}
+%\item Go to the store.
+%\item Buy another one.
+%\end{enumerate}
+%\item Job fails to run.
+%\end{ucextlist}
+%\begin{ucextlist}{\ref{uc:examine}}
+%\item Resubmit job for failure.
+%\end{ucextlist}} \\
+%\usecaseentry{Success Guarantee} \parbox[t]{\ucvaluelen}{The analysis code chosen to run will run until it completes, with possible failure of the given code.} \\
+%\usecaseentry{Minimal Guarantee} \\
+%
+%\end{usecase}
+
+
+% lengths
+\newlength{\uctitlelen}
+\settowidth{\uctitlelen}{\uctitlestyle{Minimal Guarantee}}
+\newlength{\ucvaluelen}
+\ucvaluelen=\textwidth
+\addtolength{\ucvaluelen}{-\uctitlelen}
+\addtolength{\ucvaluelen}{-4\tabcolsep} % remove column space from total
+\newenvironment{usecase}{\sloppy\par\refstepcounter{countuc}%
+\noindent\begin{tabular}{|rl}
+\hline}{\end{tabular}\renewcommand{\arraystretch}{1}}
+
+\newcommand{\usecaseentry}[1]{\uctitlestyle{#1} & }
+
+% defines key-value line of table
+\newcommand{\ucentry}[2]{\uctitlestyle{#1} & \parbox[t]{\ucvaluelen}{#2}}
+% modifies key-value line to raise it a bit b/c cannot figure out lists spacing
+\newcommand{\uclistentry}[2]{\uctitlestyle{#1} & \raisebox{\uclistraise}{\parbox[t]{\ucvaluelen}{#2}}}
+
+\newcommand{\ucname}[1]{\ucentry{Name}{\ucmaintitle{\thecountuc. #1}}}
+\newcommand{\ucscope}[1]{\ucentry{Scope}{#1}}
+\newcommand{\uclevel}[1]{\ucentry{Level}{#1}}
+\newcommand{\ucdescription}[1]{\ucentry{Description}{#1}}
+\newcommand{\ucstatus}[1]{\ucentry{Status}{#1}}
+\newcommand{\uccontext}[1]{\ucentry{Context of Use}{#1}}
+\newcommand{\ucactor}[1]{\ucentry{Primary Actor}{#1}}
+\newcommand{\ucrevision}[1]{\ucentry{Revision}{#1}}
+\newcommand{\uctrigger}[1]{\ucentry{Trigger}{#1}}
+\newcommand{\ucguarantee}[1]{\ucentry{Success Guarantee}{#1}}
+\newcommand{\ucminimal}[1]{\ucentry{Minimal Guarantee}{#1}}
+\newcommand{\ucsuccess}[1]{\uclistentry{\parbox[t]{\uctitlelen}{\makebox[\uctitlelen][r]{Main Success} \\ \makebox[\uctitlelen][r]{Scenario}}}%
+{#1}}
+\newcommand{\ucextensions}[1]{\uclistentry{Extensions}{#1}}
+\newenvironment{uclist}{\begin{enumerate}\setlength{\itemsep}{0ex}\setlength{\topsep}{0ex}}{\end{enumerate}}
+\newenvironment{ucextlist}[1]{\begin{enumerate}\setlength{\itemsep}{0ex}\setlength{\topsep}{0ex}\renewcommand{\labelenumi}{{#1}\alph{enumi}.}\renewcommand{\labelenumii}{{#1}\alph{enumi}\arabic{enumii}.}}{\end{enumerate}}
+
 
 \begin{document}
 
@@ -117,64 +201,137 @@ Workshop Goals:
 \section{Glossary and Concepts} 
 \subsection{Glossary}
 \begin{description}
-\item{Dataset}-"any set of 'event collections' that would naturally be
-grouped and analyzed together as determined by
-physics attributes" -ctdr
-e.g., common trigger path or MC generator (configuration?)
-e.g., "a particular object model representation of those events" such as
-RAW, RECO, AOD??
-\item{Primary Dataset}-"data at all levels of processing pertaining to a given
-trigger or common MC production criteria" -dm-dbsv0.85
-"For Monte Carlo data 'primary datasets' comprise
-data generated with the same parameters" -dm-dbsv0.85
-Is the set of MC primary datasets bounded? Determinable?
-\item{Processed Dataset}- "a slice of data from a Primary Dataset defined by the
-processing history applied to it" -dm-dbs-v0.85
-"will correspond to a large production of data with a
+\item{Dataset}-a set of files representing a coherent sample.  Datasets are
+defined primarily by processing history and event selection criteria.
+%"any set of 'event collections' that would naturally be
+%grouped and analyzed together as determined by
+%physics attributes" -ctdr
+%e.g., common trigger path or MC generator (configuration?)
+%e.g., "a particular object model representation of those events" such as
+%RAW, RECO, AOD??
+\item{Primary Dataset}-Data at all levels of processing pertaining to a given
+trigger or common MC production criteria.  For data from the experiment, the
+primary dataset is determined by the HLT event classification.
+For Monte Carlo data, 'primary datasets' comprise
+data generated with the same parameters; the granularity of this
+classification has yet to be decided.
+\item{Processed Dataset}-A slice of data from a Primary Dataset defined by the
+processing history applied to it.  A processed dataset
+will correspond to a large production of data with a
 single major software release version, but may include
 multiple minor versions for small bug fixes and also
 may contain the output of multiple processings of
-some given input event collection" -dm-dbs-v0.85
-multiple minor versions lost in some versions of the DBS schema
-\item{Analysis Dataset}- "A subset of Event Collections from a given Processed
-Dataset" -dm-dbs-v0.85
-Adds constraints to processed dataset
-Similar to CLEO EventStore physics grade--the data physicists should run
-on?
-Gone from current schema, no mechanism to create one
-\item{Data Tier}- "2.5.1 Data Tiers" -ctdr
-DAQ-RAW, RAW, RECO, AOD, TAG, FEVT
-"type of content resulting from a degree of processing
-applied to the data" -dm-dbs-v0.85
-What about RECO and AOD?
-Actually defined by the objects contained?
-Then data tier is an attribute of a file or event collection, not processing?
-What about data tier evolution? AOD2, AOD3, ...?
-Or finer grained processing path (not in framework provenance)?
-\item{Event Collection}-The smallest unit that a user is able to select through
-the dataset bookkeeping system" -ctdr
-e.g., event data from a particular trigger selection from one given run
-"a single event collection will give access to data from
-exactly one data tier" -dm-dbs-v0.85
-Currently supporting multiple data tiers, e.g., FEVT
-Relationship to file one-to-many or many-to-many
-many-to-many for old EDM?
-\item{File Block}- "a set of files likely to be accessed together" -dm-dbsv0.85
-data management packaging unit
-"will in general correspond to the same Primary
-Dataset, Data Tier and Processed Dataset" -dm-dbsv0.85
-incorrectly reflected in schema?
-\item{non-event data-Non-event data}: detector configuration, conditions, ...
-Mostly time domain: run, luminosity interval?
-DBS currently knows nothing about this
-so we told Drew not to work on them
-Is this in scope for DBS? If not, what should answer these queries?
+some given input data.
+\item{Analysis Dataset}-A subset of a Processed Dataset representing a
+coherent sample for physics analysis, 
+specified by running an analysis query on a Processed Dataset at
+a particular instant of time.  An Analysis Dataset must not contain
+the output of multiple processings of any given input data.
+\item{Luminosity Section}-''a predefined period of data taking where the
+instantaneous luminosity can be considered constant''.  Files intended
+for physics analysis will begin and end on luminosity section boundaries.
+\item{Data Tier}-A set of objects to be grouped togethered in the output
+files of the processing step producing the objects.  The list of objects
+comprising a Data Tier is determined by the release configuration files.
+Additional objects not part of the Data Tier may be included in the same
+output file.
+\item{Logical File Name (LFN)}-globally unique, site independent
+file specification suitable for use in job configuration.
+\item{Physical File Name (PFN)}-a site-dependent file specification
+which can be used to access a file at a particular site.
+% "2.5.1 Data Tiers" -ctdr
+% DAQ-RAW, RAW, RECO, AOD, TAG, FEVT
+% "type of content resulting from a degree of processing
+% applied to the data" -dm-dbs-v0.85
+% What about RECO and AOD?
+% Actually defined by the objects contained?
+% Then data tier is an attribute of a file or event collection, not processing?
+% What about data tier evolution? AOD2, AOD3, ...?
+% Or finer grained processing path (not in framework provenance)?
+%\item{Event Collection}-The smallest unit that a user is able to select through
+%the dataset bookkeeping system" -ctdr
+%e.g., event data from a particular trigger selection from one given run
+%"a single event collection will give access to data from
+%exactly one data tier" -dm-dbs-v0.85
+%Currently supporting multiple data tiers, e.g., FEVT
+%Relationship to file one-to-many or many-to-many
+%many-to-many for old EDM?
+\item{File Block}-A slicing of a dataset into chunks of files that are
+likely to be accessed together.  The File Block is a
+data management packaging unit for the convenience of the data
+location and transfer services.
+%"will in general correspond to the same Primary
+%Dataset, Data Tier and Processed Dataset" -dm-dbsv0.85
+%incorrectly reflected in schema?
+%\item{non-event data-Non-event data}: detector configuration, conditions, ...
+%Mostly time domain: run, luminosity interval?
+%DBS currently knows nothing about this
+%so we told Drew not to work on them
+%Is this in scope for DBS? If not, what should answer these queries?
 \end{description}
 (Add additional list to appendix of general ``domain'' terms that Drew/Dave Dykstra have)
 \subsection{Concepts in more detail}
 \subsubsection{Analysis Dataset}
 
-(Assignment: Dan will fill this in)
+% (Assignment: Dan will fill this in)
+
+The purpose of the Analysis Dataset is to provide a coherent ``snapshot''
+of a Processed Dataset, suitable for use in physics analysis.  A
+Processed Dataset may contain multiple processings of a given input data
+with minor processing differences, such as minor software bug fixes,
+calibrations/conditions corrections, or corrections for system or site
+issues.  A Processed Data set may also have new data or minor re-processings
+of existing data added to it after it has been created.  An Analysis Dataset
+provides a fixed snapshot that contains at most one processing of a given
+input data.  Once created, an Analysis Dataset may not be changed.
+
+Conceptually, an Analysis Dataset is a list of luminosity sections
+speicified by running an analysis query on a Processed Dataset at a
+particular instaint in time.  However, the CMSSW Framework does not
+currently have the ability to switch back and forth between input
+files at the luminosity section level, and there are no plans to
+implement this capability.  Therefore, in any current Analysis Dataset
+implementation entire files must be selected.  We need to decide if
+this is a fundamental constraint or an implementation detail, as it
+determines the granularity of the representation of the Analysis
+Dataset in the DBS.  (If the Analysis Dataset is represented as a list
+of files, not a list of luminosity sections, do we need the capability
+to skip luminosity sections so that bad sections can be elided without
+creating new files?)
+
+The Framework implements a ``PassID'' string, intended to be
+analogous to the CDF calibration pass number; is this useful
+for implementing Processed Datasets or Analysis Datasets?
+
+Open issues:
+
+\begin{enumerate}
+\item Granularity: luminosity section or file?
+\begin{itemize}
+\item Is selection at the file level acceptable?
+\item If so, is the capability to skip luminosity sections required?
+\end{itemize}
+\item How is an Analysis Dataset selected?
+\begin{itemize}
+\item Can there be more than one Analysis Dataset at a time for a
+Processed Dataset?
+\item Do superceded Analysis Datasets remain accessible?  How persistent
+are the ``snapshots''?
+\end{itemize}
+\item Possible PassID uses:
+\begin{itemize}
+\item Processed Dataset identifier: set so that all processed data for
+a given Processed Dataset have the same PassID
+\item Bumped everytime a distinct ``pass'' over the data is performed
+\begin{itemize}
+\item Potentically useful for identifying which files or luminosity
+sections form an Analysis Dataset
+\item May require gratuitous Parameter Set changes correcting site or
+system issues which would not otherwise require any configuration
+changes
+\end{itemize}
+\end{itemize}
+\end{enumerate}
 
 \section{DBS interaction with other DM, WM areas, and CMS at large}
 The role of DBS in CMS as described in the Computing TDR~\cite{CTDR}.
@@ -419,17 +576,209 @@ note: FJR shows which branches were used. probably want to dump FJR and logs in 
 
 49. (need to present to other cms db players - Lee) Concept map for DBS and how it relates to other event and non-event data repositories. (DLS/DBS, conditions DB, trigger DB, luminosity DB, et cetera.
 
+\section{Datasets and Processing}
+
+\subsection{Physics Model Versus Storage Model}
+This section discusses the CMS data model for real data, stressing the parts relevant to the DBS. The data model is a matter of physics, and we show here how it relates to CMS concepts of file storage.
+
+This experiment will divide the continuous process of taking data into arbitrary runs. During those runs, calibration data for beam luminosity are recorded over time periods called lumi sections, or lumi blocks. We label the measurement made by the readout as an event, and a physicist would think of sets of those events as a lumi section or run. The last use of these names refers to their storage on disk, in bytes. Here we include files and file blocks, but a lumi section refers to the set of bytes which store the event data from a lumi section timespan.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/dataset_contains}
+    \caption{The CMS data management system uses timespans to label storage of sets of events. We expect that a dataset will contain all data from a given run, but the important division for physics is the lumi section. For this discussion, solid lines show the storage model and dotted lines the physics model.}
+    % To make eps from Visio, save as WMF. Open in Illustrator and save eps and pdf.
+    % Include fonts. Use Acrobat full version to trim the pdf page.
+    \label{fig:dscontains}
+  \end{center}
+\end{figure}
+Note in Fig.~\ref{fig:dscontains} that the Dataset contains runs but runs do not necessarily contain file blocks. For data coming from the HLT, it would be natural to break file blocks on run boundaries, so runs may contain datasets in production, but later datasets are not guaranteed to contain runs. Processing under the SW Framework and ROOT does not have a concept of runs. They are just a convenience to mark larger time spans than lumi sections, so this should not affect processing.
+
+A goal of the CMS Data Management System (DMS) is to allow physicists to interact with data in terms of the physics data model and think less about file storage. Let's examine some of what is known about the data management system and how it relates to models of the data and the analysis process.
+
+When a physicist runs a job, the DBS records the files input, the process's application, and tracked parameters (those relevant to what algorithm is run). A simple picture is in Fig.~\ref{fig:dsprocess}.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/process_simple}
+    \caption{The names in this diagram have underscores because it shows the relationship among instances of file blocks and processes instead of showing the relationship among the concepts, as in Fig.~\ref{fig:dscontains}. There can be no quibbling that a job accepts file blocks as input and produces file blocks.}
+    \label{fig:dsprocess}
+  \end{center}
+\end{figure}
+The file blocks into or out of a job can belong to one or more datasets, with this model, unless policy forbids it. Because most jobs for this experiment process data event-by-event, each event is labeled with an event id. Each lumi section also has an id. We refer to the events in the output dataset by the same event id as those in the input. The same goes for lumi sections. You might think of these, instead, as instances of the event or lumi section. How does the data in the dataset correspond to a physics analysis picture of the data model?
+
+If we think of two analysis steps, where the second algorithm uses some of the same input as the first, we might picture it as in Fig.~\ref{fig:dsdoubleinput}. There is no copying of data, but the second algorithm reads two sets of file blocks.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/double_copy}
+    \caption{This is a fictitious example of analysis where there is no copying of data.}
+    \label{fig:dsdoubleinput}
+  \end{center}
+\end{figure}
+This experiment often optimizes this process by copying some or all of the input data into the output, as shown in Fig.~\ref{fig:dscpforward}. There are still times a job will require more than one input dataset, but copying some input increases efficiency.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/copy_forward}
+    \caption{Processes often take all or part of the input dataset and copy it into the output dataset because later jobs will need the data.}
+    \label{fig:dscpforward}
+  \end{center}
+\end{figure}
+There are two ways one could combine data in an output set of file blocks. One is to combine it on the event level
+\begin{quote}
+  evt0 \{ data0, data1 \} evt1 \{ data0, data1\},
+\end{quote}
+and the other is to keep event storage from one processing step separate from event storage for the other processing step
+\begin{quote}
+  data0 \{ evt0, evt1 \} data1 \{ evt0, evt1 \}.
+\end{quote}
+This experiment does both. Data objects within an event define the data tier for that bit of event storage. A file block containing events of a certain data tier is said to have that data tier, but a dataset may contain other file blocks whose events contain a different subset of the analysis result in their events. Fig.~\ref{fig:dsdstiers} shows a dataset which is in three tiers at the same time. Because AOD data objects are stored in separate file blocks, a job can request those files separately without transferring the larger RAW and RECO data objects.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/dataset_tiers}
+    \caption{A dataset is composed of file blocks. All events in a file block must contain the same types of data objects, so we say they have the same data tier. The resulting dataset is therefore in the AOD, RAW, and RECO tiers.}
+    \label{fig:dsdstiers}
+  \end{center}
+\end{figure}
+
+Fig.~\ref{fig:dsalgselect} shows how a physicist might refine the model from Fig.~\ref{fig:dsdoubleinput}. It just shows that selecting a data tier slices a dataset and that analysis steps may copy some data to the output. This poses a small wrinkle
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/algorithm_select}
+    \caption{For CMS DBS, the physicist will choose a processed dataset both by name and by data tier. Selecting a dataset by data tier effectively selects only those file blocks of the dataset that contain events with the desired data objects. In addition, the complication of copying data from input to output makes a slight change in how a physicist might think of the analysis step.}
+    \label{fig:dsalgselect}
+  \end{center}
+\end{figure}
+for questions about whether a particular dataset is a descendant of another dataset. From Fig.~\ref{fig:dsprocess} we have a straightforward way to determine if a file block is a descendant of another file block. Once we copy forward data objects, and possibly whole file blocks, we introduce ancestors to file blocks which are not correct from a physics analysis perspective. It is, however, probably not a big deal.
+
+\subsection{Multiple Processing Steps May Be Done At Once}
+cmsRun is capable of performing several processing steps at once. For instance, sometimes the GEN, SIM, and DIGI steps are done in one job. That means the two graphs in Fig.~\ref{fig:dstwostep} could produce file blocks that are part of the same dataset. Their explicit ancestor tree would differ, but they were processed with the same algorithm. For the purposes of constructing the dataset, this would not matter much. The input configuration file specifies the name of the output dataset, and the DBS will publish the output file blocks from both jobs in the same dataset.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/process_twostep}
+    \caption{Two different processing histories can produce the identical results. The single process on the right is executing the same two algorithms as the one on the left. For whom is it important to identify these histories expressing the same physics?}
+    \label{fig:dstwostep}
+  \end{center}
+\end{figure}
+
+If two people wanted to compare the processing of their results, they would look at the ancestor tree and figure out that the steps used identical physics. As long as that can be done by eye, it should not matter much whether the processing was done in one or two steps, but there are hundreds of possible variations in processing for each step, so we will likely want to automate the comparison of provenance for two analysis results.
+
+The file blocks resulting from one or two processing steps would contain slightly different metadata. cmsRun and ROOT record which process created an event data object, so some event data objects would be marked with only one process name versus two. This could matter for the next analysis step on the output dataset because ROOT uses the process name as part of how it specifies input event data objects. cmsRun, with its EDM, reads back to find the required results, so it would not have difficulties.
+
+\subsection{Datasets May Contain Duplicate Events}\label{duplicate_events}
+If subsequent jobs can add to the same dataset, it is possible for them to add file blocks which duplicate events. Because jobs process data in sets of lumi sections, that means there would be two or more lumi sections with the same id. This is shown in Fig.~\ref{fig:dstwolumi}.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/duplicate_lumi}
+    \caption{Processed datasets can contain duplicate events. There must be some way to find out which ones to use for later analysis.}
+    \label{fig:dstwolumi}
+  \end{center}
+\end{figure}
+There are good reasons to do processing in many steps. If a job tends to die, it can be more efficient to split that job. If one job had error only for a few events, such as a $\sqrt{-1}$ error, a second job might fix that problem without significant change to the algorithm. It is even possible for a job to fail because of hardware errors, in which case the second job will have no algorithmic differences from the first. That means there will be no changes to the tracked parameters or to the application name and version.
+
+How then do you identify which lumi section is which? You could go into the first file block and mark lumi sections as bad, but we tend to think of files as inviolate once written. They may already have been spirited to far shores by \phedex. You cannot mark them by application version. What distinguishes those lumi sections is both the unique operating system process that calculated them and the unique file block in which they are stored. They would have to be tagged with one of these two.
+
+For this experiment, files are inviolate once they are written. We cannot return to a file and mark lumi sections as bad. This information must be stored elsewhere, likely in the DBS.
+
+\subsection{What is a Pass?}
+This experiment would like to introduce to the data model the idea of a pass because it has been useful in previous experiments.
+In order to support this idea in the storage model, we have to decide what similarities among datasets are important.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/run_stream}
+    \caption{Our basic idea of a pass is that we reprocess the same data. We may redo the data because we have improved cmsRun or because we have better conditions, but we would like to associate the new dataset with the old as a recommended substitute.}
+    \label{fig:dsrunstream}
+  \end{center}
+\end{figure}
+\subsubsection{Pass as Re-Running With Newer Algorithm}
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/algorithm_pass}
+    \caption{One idea of a pass is that two jobs executed algorithms similar enough that their resulting data has the same physics intent. The resulting datasets are then called passes of each other. The input data for the second job is either the same or a pass-of the original input data.}
+    \label{fig:dsalgpass}
+  \end{center}
+\end{figure}
+One idea of a pass is that a newer version of cmsRun, using the same input parameters and conditions, would produce a new dataset that is, hopefully, an improvement on the old one. Here, a pass of a dataset is a dataset whose processing history was sufficiently similar that we might substitute the newer for the older when doing further analysis. This is shown in Fig.~\ref{fig:dsalgpass}. If we wanted the physicists' user interface to reflect this concept, then reprocessing a dataset, for instance re-RECO, would produce a new dataset of the same name but different pass id. At least, the DBS could identify that a newer dataset with a different name is a pass of an older one. 
+
+There isn't necessarily a way to automate identifying when two algorithms are passes of each other. Sometimes a change to a tracked parameter is a minor improvement on the algorithm, but other times it is an important modification or an experiment.
+
+Several possible schemas for the DBS have, at times, included entries for application families. These application families group applications as similar. This is not a sufficient way to capture the algorithm family described above because, for ROOT and cmsRun, the algorithm depends upon not only the application but also the configuration file's tracked parameters and the conditions those tracked parameters specify.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/simple_dataset}
+    \caption{An application is not the same thing as an algorithm, especially for cmsRun and ROOT which load different modules depending on their configuration files. Knowing that two jobs were processed by cmsRun does not imply they were processed with the same algorithm.}
+    \label{fig:dssimpleds}
+  \end{center}
+\end{figure}
+
+\subsubsection{Pass as a Conditions Version}
+Another idea of a pass, shown in Fig.~\ref{fig:dscondpass}, is that all datasets processed with the same version of the algorithm but different versions of the conditions database are of the same pass.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/conditions_pass}
+    \caption{This definition of a pass was used in CDF. Every dataset processed with the same algorithm but different conditions was considered to be passes of each other.}
+    \label{fig:dscondpass}
+  \end{center}
+\end{figure}
+This version could be automated. Datasets would not necessarily have consecutive pass ids, but they don't have to be consecutive to label them as passes of each other.
+
+\subsubsection{Pass by Fiat on Analysis Datasets}
+A least idea of a pass could be that an analysis dataset could be a pass of a previous analysis dataset. Analysis datasets are snapshots of processed datasets, and they should never change. That means they are a list of file blocks, specifying which lumi sections to use from those file blocks in order to rule out duplicate events. Because analysis datasets are defined by fiat, by the arbitrary decision of a data quality group, later passes of analysis datasets could be defined the same way. There need be no algorithmic or provenance similarity to the previous analysis dataset as long as the physics intent of the dataset is similar.
+
+For a physicist, whether an analysis dataset is a pass of another analysis dataset has little to do with the processing history. It is an assertion that the newer dataset can be substituted for the older one in further processing.
+
+\subsubsection{Corrections May Not Be a Pass}
+When there is a small algorithm error which affects only a few events, it can be convenient to fix the error and re-run only the affected events, then tuck them into the original dataset. We discussed in section~\ref{duplicate_events} how a dataset might contain two instances of the same lumi section. Is this a new pass, and how might we implement it?
+
+Correcting an algorithm, even by correcting detector conditions for a small set of events, does change the output. The set of events processed with the old algorithm are one pass, and the newer pass is the set of events processed with the new algorithm plus those old ones which would not have changed were they to be processed by the newer algorithm.
+
+What if we want to make both the old and new passes available to the physicist? How does a physicist expect to find a new pass of a dataset? The simplest way is to find the new dataset with a new name. We may, possibly, implement passes such that the new dataset has the same name but different pass id. A further possibility is that the old pass of the data is available within the dataset, accessible as a list of deprecated lumi sections.
+
+If we don't believe physicists will want to access the deprecated lumi sections from the first pass, then only the newer pass of data need be available, and it should be available by default. The deprecated lumi sections could be marked the same way that we mark lumi sections which contained other kinds of failures, such as CPU floating point problems.
+
+\section{Discovery Questions To Fold In With Valentin's Section}
+
+Relationships among datasets
+\begin{itemize}
+    \item ancestor/descendant of
+    \item containment, subset/superset of
+    \item pass-of, for algorithms, conditions, or analysis datasets
+    \item skim-of, which is a special case of descendant
+\end{itemize}
+A skim is a dataset which reads event data and produces event data with no new event data objects.
+
+Questions about a particular dataset
+\begin{itemize}
+    \item Size, luminosity, dates written, when accessed.
+    \item Location of files relative to places where user can do processing.
+    \item What is the HLT of the ancestor?
+    \item What algorithm wrote this data and its ancestors? This may be answered best by both the application name and a list of products in the config file.
+    \item What data objects are in this dataset? From which processing steps?
+    \item What conditions were used as input to this dataset and ancestors?
+    \item Has a data quality group approved any lumi sections in this dataset? or any lumi sections in an ancestor or descendant? Have any lumi sections from this dataset been included in an analysis dataset?
+\end{itemize}
+
 \section{Use Cases}
+The primary actors for these usage narratives and use cases are often applications or services defined in the glossary, but the first round of usage narratives focuses on the actions of people. We define their roles here.
+\begin{description}
+\item[Backup Operator] Ensures DBS can be restored in case of failure.
+\item[Collaboration Manager] Oversees a physics analysis effort at a Tier~1--5 site. Concerned with data integrity and security.
+\item[Detector Expert] On site with the detector, this person is responsible for the quality of raw data.
+\item[Physicist] A physicist analyzes detector data and its products in order to measure physics processes.
+\item[Production Run Manager] This person initiates and monitors the processing of data.
+\end{description}
 
+There are some missing tools, as well. You might even believe these tools already exist, except that they have yet to receive cute names with intercapitalization.
+\begin{description}
+\item[Data Discovery Tool] This tool allows physicists to find which datasets express the physics of interest. It is currently a web page.
+\item[Provenance Tool] This is an application which allows a person to create, modify, or delete data in the DBS.
+\end{description}
 
-\subsection{Use cases for CSA06}
+\subsection{CSA06}
 
 Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:csa06-use-cases-diagram} and described in this section. CSA06 will use Monte Carlo data to simulate real data from the detector. This data will pass through the HLT and all production steps, ending in several steps of physics analysis. The CSA06 test will use a version of the DBS and other tools current as of July 2006.
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{0.8\textwidth}{!}{\includegraphics{figure/CSA06_use_cases_dfd.eps}}
+    \resizebox{0.8\textwidth}{!}{\includegraphics{figure/CSA06_use_cases_dfd}}
     \caption{This data flow diagram for CSA shows processing in yellow
-    and products in green. PhEDeX performs transfers across data tiers
+    and products in green. \phedex performs transfers across data tiers
     and the ``Tier~1 File Exchange" of AOD among Tier~1 storage.}
     % To make eps from Visio, save as WMF. Open in Illustrator and save eps and pdf.
     % Include fonts. Use Acrobat full version to trim the pdf page.
@@ -437,29 +786,25 @@ Several use cases for the upcoming CSA06 work are illustrated in Fig.~\ref{fig:c
   \end{center}
 \end{figure} 
 
+We can write a usage narrative for most of the steps shown in Figure~\ref{fig:csa06-use-cases-diagram}. Because CSA06 is a simulation of what would be done with real data, it starts from the production of DAQ-RAW.
 
 \begin{narrative}{Production Manager Creates Real HLT Data from MC Data}
-
-Production Manager runs the HLT on a large dataset of MC Data. Production Manager uses Y to put that data into the DBS. Only five million events go through the HLT from all of the MC data, and DBS tracks these.
+Production Manager runs the HLT on a large dataset of MC Data. Production Manager uses Provenance Tool to put that data into the DBS. Only five million events go through the HLT from all of the MC data, and the DBS tracks these.
 \end{narrative}
 
 \begin{narrative}{Tony at Tier~0 Presents Raw Data from HLT\label{narr:tony0}}
+Tony uses a set of scripts to process simulated HLT data. He asks a program to make file blocks from that data. He asks Provenance Tool to put that data into the DBS.  Tony gives tool Provenance Tool a list of information, which we will figure out below. Provenance Tool contacts the Global DBS to place correct processing history.
 
-Tony uses a set of scripts to process simulated HLT data. He asks X to make file blocks from that data. He asks Y to put that data into the DBS. \emph{Actually, I think Tony produces RAW, RECO, FEVT, and AOD at one go, right?\/} Tony gives tool Y a list of information, which we will figure out below. Tool Y contacts the Global DBS to place correct processing history.
-
-What tool is used at the Tier~0 to insert RAW data into the DBS? How are the primary datasets for real data managed at the tier0? How are primary datasets for MC handled?
-
-Data discovery requirements: Management of primary dataset IDs at the Tier~0.
+Does Tony know which primary dataset names to use? How are the primary datasets for real data managed at the Tier~0? How are primary datasets for MC handled?
 \end{narrative}
 
-\begin{narrative}{PhEDeX Transfers Data Among Facilities\label{narr:phedex}}
-All of the places that the diagram shows a transfer, it is done by PhEDeX. Someone tells PhEDeX to look for a particular file in the DBS, and it will transfer that file. How does it identify that file? Is there a set of search criteria, so that any file matching a description is transferred?
+\begin{narrative}{\phedex Transfers Data Among Facilities\label{narr:phedex}}
+All of the places that the diagram shows a transfer, it is done by \phedex. Someone tells \phedex to look for a particular file in the DBS, and it will transfer that file. \phedex works by subscriptions, so a site can subscribe to receive every file block belonging to a particular primary dataset. Can \phedex transfer individual skims to Tier~2 sites for further processing?
 \end{narrative}
 
 
-\begin{narrative}{Alignment Person Recalibrates Using Z to $\mu$-$\mu$ to Produce a New Version of Alignment\label{narr:recalib}}
-
-Data Quality Expert polls a tool which shows a list of available datasets. He knows that he is looking for FEVT from CSA06 and that this FEVT data should be straight from the HLT, not reprocessed in any way. (Should be done at CAF, but not for CSA06.)
+\begin{narrative}{Alignment Person Recalibrates Using $Z$ to $\mu$-$\mu$ to Produce a New Version of Alignment\label{narr:recalib}}
+Data Quality Expert polls Data Discovery Tool which shows a list of available datasets. He knows that he is looking for FEVT from CSA06 and that this FEVT data should be straight from the HLT, not reprocessed in any way. (Should be done at CAF, but not for CSA06.)
 
 He submits the alignment job to CRAB or Prodagent. He specifies a subset of the total FEVT dataset. The recalibration job returns new detector conditions. He gives these detector conditions to \emph{someone\/} who places them into alignment database where they will be found by future RECO production. (It could be a job robot that runs this instead of Prodagent or CRAB. How do you insert new detector conditions? Do you need a new version of the software or configuration.)
 
@@ -467,65 +812,228 @@ The Data Quality Expert then asks Prodagent to create RECO and AOD from the RAW 
 \end{narrative}
 
 \begin{narrative}{Physicist Tier~2 Creates Skim of Re-RECO at Tier~1\label{narr:skim2}}
-
 Physicist looks for re-RECO data from a recalibration at Tier~1. (Will there be more than one?)
 Finding that dataset, he asks which Tier~1 has that data. He puts some identifier for the dataset into a Prodagent job, along with the name of the Tier~1 on which to do processing. Prodagent creates the skim and registers it in the Global DBS.
-
-Data discovery requirements:
-\begin{itemize}
-    \item Identify data as CSA06 -- by primary dataset name?
-    \item Identify a skim -- by processed dataset name?
-    \item Locate a dataset -- /primary/tier/processed $\rightarrow$ blocks $\rightarrow$ SE via DLS 
-\end{itemize}
 \end{narrative}
 
-
-
 \begin{narrative}{Physicist Tier~2 Runs Analysis Job}
-Physicist has just created a skim of Tier~1 FEVT data from re-RECO. He needs to tell PhEDeX to transfer that data to his Tier 2 site. Then he tells CRAB to run that job.
+Physicist has just created a skim of Tier~1 FEVT data from re-RECO. He needs to tell \phedex to transfer that data to his Tier 2 site. Then he tells CRAB to run that job.
 \end{narrative}
 
 
 \begin{narrative}{Physicist Tier~2 Runs Skim on One of Six Copies of AOD}
-This is much like narrative~\ref{narr:skim2} except that the file type is AOD. He must perform a skim at a Tier~1, ask PhEDeX to transfer that skim to the Tier~2, and then process it.
+This is much like narrative~\ref{narr:skim2} except that the file type is AOD. He must perform a skim at a Tier~1, ask \phedex to transfer that skim to the Tier~2, and then process it.
 \end{narrative}
 
 
-\begin{narrative}{Production Manager Watches CSA06 Progress}
-Production Manager wants to see what data exists and what file blocks are transferred. They open a web page tailored to CSA06. It queries the DBS for file existence and PhEDEx for file transfer rate. (Can PhEDEx tell you this? Would something else do it, like the DLS?)
-
-Data discovery requirements: Identify a subset of CSA06 MC data injected at the HLT (differnet primary dataset?).
+\begin{narrative}{Production Manager Watches CSA06 Progress}\label{narr:csamanager}
+Production Manager wants to see what data exists and what file blocks are transferred. They open a Data Discovery Tool. It queries the DBS for file existence and \phedex for file transfer rate. (Can \phedex tell you this? Would something else do it, like the DLS?)
 \end{narrative}
 
 \subsection{Data Discovery for CSA06}
 From the usage narratives above, we can compile needs for data discovery.
 \begin{itemize}
-\item PhEDeX identifies a subset CSA06 FEVT data for transfer to Tier~1. (\ref{narr:phedex})
-\item PhEDeX identifies CSA06 AOD data, whether produced by Tier~0 or Tier~1, and transfers it to particular Tier~1 facilities which subscribe to different trigger lines. (\ref{narr:phedex})
-\item PhEDeX identifies a particular skim dataset, created by a Physicist, from Tier~1 to Tier~2. This can be either FEVT or AOD. (\ref{narr:phedex})
+\item \phedex identifies a subset CSA06 FEVT data for transfer to Tier~1. (\ref{narr:phedex})
+\item \phedex identifies CSA06 AOD data, whether produced by Tier~0 or Tier~1, and transfers it to particular Tier~1 facilities which subscribe to different trigger lines. (\ref{narr:phedex})
+\item \phedex identifies a particular skim dataset, created by a Physicist, from Tier~1 to Tier~2. This can be either FEVT or AOD. (\ref{narr:phedex})
 \item Data Quality Expert needs CSA06 FEVT data that is identifiable as coming straight from Tier~0. (\ref{narr:recalib})
 \item Prodagent has to be able to find RAW data within an FEVT dataset. (\ref{narr:recalib})
 \item Physicist must identify re-RECO and find what Tier~1 facility has the data. (\ref{narr:skim2})
+\item Production Manager identifies subset of CSA06 MC data injected at the HLT. (\ref{narr:csamanager})
 \end{itemize}
-Given these requirements, what should Tony-at-Tier-0 put into the DBS? Our working trial is the following:
-\begin{itemize}
-    \item file blocks by LFN,
-    \item application name, family, and version for each step, and
-    \item data set names, such as \\ \code{/csa06-081-os-minbias/DIGI/CMSSW\_0\_8\_1-GEN-sim-digi-1154005302-merged}, \\ where the primary dataset indicates that this is CSA06.
-\end{itemize}
-The primary dataset will start with \code{csa06} for this data. Whether it is RAW, FEVT, RECO, or AOD is encoded in the data tier, as was planned. The software version won't help identify re-RECO because it changes the conditions database, not the software version. We could identify re-RECO by changing the processed dataset name, as is done with \code{merged}.
+Given these requirements, what should Tony-at-Tier-0 put into the DBS? The experiment has decided that dataset names already encode three pieces of information explicitly: primary dataset / data tier / processed dataset. That provides the data tier explicitly. The primary dataset was created to express which HLT generated the dataset and, hence, for which physics analysis the generated data would be relevant. This information isn't crucial to CSA06. The processed dataset name is a note about the physics meaning of an individual dataset.
 
-How would we like do data discovery after CSA06? The dataset name encodes the primary dataset and data tier clearly. We would prefer not to use the processed (or analysis) dataset name to encode something a computer needs to understand. What other qualities do computer programs need to identify?
-\begin{itemize}
-\item When you subscribe to a particular dataset with PhEDeX, it should be able to know that future re-RECO of that dataset, or other reprocessing of that dataset, is associated with the same subscription.
-\end{itemize}
-I don't see anything else to encode.
+\setlength{\leftmargin}{3in}
+\begin{list}{Missing Item}{\settowidth{\labelwidth}{Re-RECO}\setlength{\leftmargin}{\labelwidth}\addtolength{\leftmargin}{\labelsep}}
+\item[CSA06] We need to mark that all data produced is related to CSA06, both for initial HLT data and subsequent processing. This will become the first part of a primary dataset name, so it will stay with datasets from later analysis. 
+\item[Data Tier] This is already explicit in the dataset name, so that is done. 
+\item[Re-RECO] Re-RECO will depend on a new set of conditions. We could either name the processed dataset with a RECO version, or we could allow the Data Discovery Tool to distinguish datasets based on the version of the conditions database. 
+\item[Skims] For CSA06, skim datasets are the only case where no part of a processed dataset is in a different data tier from its immediate ancestor. (Many descendants may have some file blocks in the same data tier as an ancestor, but there will be new output, too.) The Data Discovery Tool might be able to make such a query. Barring that, one would have to specify a skim in the processed dataset name.
+\end{list}
 
-\subsection{Use Cases Long-term Project}
+The working version of dataset names includes more information than suggested above.\sloppy \\
+\code{/csa06-081-os-minbias/DIGI/CMSSW\_0\_8\_1-GEN-sim-digi-1154005302-merged} \\
+The primary dataset additionally encodes the application version. The processed dataset encodes the data tier and application name and version.
 
-\subsubsection{Monte Carlo Production}
-\subsubsection{Physics Data Production}
-\subsubsection{Data Analysis}
+How would we like do data discovery after CSA06? We would prefer not to use the processed (or analysis) dataset name to encode something a computer needs to understand. The same goes for the primary dataset. From the list above, the only piece of information that could not be gleaned from the DBS would be the association with CSA06. There are no plans to add any sort of tag that would mark this association. Assuming that primary dataset names are used for their original intention, to specify a branch of related physics, it might be enough to make a policy that all datasets created specifically for a challenge have CSA06 in the processed dataset name.
+
+\subsection{General Usage Narratives}
+
+The CMS DMS is large and has many tools. We want to concentrate on the DBS, so we will write formal use cases only for those interactions where the tool itself, such as Prodagent or CRAB, interacts directly with the DBS. We begin, therefore, with usage narratives that describe times when people might interact with the DMS in such a way as to affect the DBS.
+
+Data discovery will be covered as a separate topic, so we will not show detailed steps for it here.
+
+\begin{narrative}{Request a Type of Dataset to Be Delivered}
+A physicist at a Tier 2 collaboration knows what kind of physics analyses they would like to do. For some early work, they want to look at the AOD data. While it is usually best to move the computation to the data, this physicist wants the data local. He looks through the primary trigger descriptions to find which kinds of data are relevant to their physics. Choosing one of these primary datasets, he looks for AOD datasets in this primary dataset. They choose one or more of these AOD datasets and notify \phedex that they want them sent to their local system. \phedex estimates when that data will arrive and be ready to process.
+\end{narrative}
+\begin{narrative}{Manager Maintains Data Transfer for Physics Collaboration}
+For someone managing Tier 2 data operations, they know that they will be responsible for processing a subset of the primary datasets. They tell \phedex that they want all data from those datasets. \phedex updates the available data daily, downloading more as it becomes available. The manager at Tier 2 can see what data is coming so that they can make sure there is space for it.
+\end{narrative}
+
+\begin{narrative}{Physicist Offers Data to Off-site Collaborator}
+When collaborating remotely, two physicists may exchange datasets that they have processed with their own analysis. In order to do this, one person must give the other permission to get that dataset. The other asks \phedex to retrieve it.
+\end{narrative}
+The only way to publish a dataset is to make it available on the global scope. A collaboration which does not yet want to make data globally available may want to share that data with a remote collaborator.
+
+\begin{narrative}{Run Analysis as Many Jobs And Combine Results}
+There is an analysis code that takes a while to process only a few events. A physicist runs this on the Grid in several separate runs and then wants to treat the results as a single dataset. Prodagent, which runs the jobs, tracks the history of all of them with the help of the DBS. He specifies all of the file blocks as input to the next job. The job's output is a single dataset.
+\end{narrative}
+If multiple jobs can add files to the same dataset, then they can be specified as a single input to the next job. There may be some difficulty with real data if we need to enforce that events be ordered.
+
+\begin{narrative}{Analyze a Physics Event Whose Signature Does Not Correspond Exactly To One Trigger Stream}
+This experiment is such a target-rich environment that it throws away lots of events. If physicist Denny is looking for a physics event which may be in several triggers, he has to pay close attention to the selection criteria of each trigger. Depending on which trigger you get, it tells you how many events you lost. For instance, you may want to examine events that have more than twelve tracks, but a particular trigger stream has all events with more than thirteen tracks, so you have to account for events with exactly twelve tracks from one or more other trigger streams. If you mistakenly forget to pick a trigger line that includes your events, then the efficiencies will be wrong, so the physics results will be wrong.
+
+Denny would like a fast way to analyze the particular physics events he cares about. He wants to find candidate events with a series of analysis steps. The first step is a rough cut, such as how many tracks exist or whether there is a high pt muon. The next steps are more involved analysis. He would like to be able to do the rough cut quickly by jumping around in event collections somehow. 
+\end{narrative}
+You could put a summary “thumbnail” on each event which holds tags describing basic physics information. You could create an index file for a particular physics event that points to individual events in datasets. You could create a skim, which is a new dataset containing copies of events from other datasets. CMS seems to be using skims and, maybe, TAGS files.
+
+\begin{narrative}{Rerun a Previous Analysis with New Software}
+This is an example of workflow functionality. The Data Quality Group fixed some parameters in the conditions database, and the experiment would now like to run several basic production steps again on real data. The Production Manager starts the process of running the analysis again. He or she specifies to some tool a particular set of analysis steps and tells it, ``Go again, but use the most recent versions of all parameters."
+
+For an analysis user, the same thing should be possible. A physicist selects a set of analysis steps, possibly from the Provenance Tool, and then tells the workflow to run them again on the most recent pass of the input data with the most recent conditions and other parameters.
+\end{narrative}
+This narrative asks that tools be able to inference that a new dataset is a more recent pass of an old one. Workflow functionality is not planned in the near term. Scripts are used at the production level.
+
+\begin{narrative}{Continue a Previous Analysis on New Data}
+Last week, physicist Martha did an analysis run of a sample, and it turned out well. In that sample were events corresponding to a physics process relevant to her research, and those events had been culled from a particular trigger stream. This week, there are more events in that sample, so she wants to analyze those new events. She looks at what she analyzed before, identifying that set of events either by the date of her analysis, by which datasets were in the sample at that time, or by which events were included in the job that she ran (doesn't matter). Then she specifies that the new job should run against the rest of the events in the sample.
+\end{narrative}
+
+\begin{narrative}{Generate Signal Monte Carlo Whose Processing Matches A Given Dataset}
+A physicist wants to analyze a data dataset by running Monte Carlo that matches that dataset. The physicist knows which dataset to analyze. He specifies that particular AOD dataset and asks for a certain luminosity of Monte Carlo to be created and processed to produce AOD Monte Carlo.
+\end{narrative}
+
+\begin{narrative}{Debugging an Analysis}
+Automatic log checkers Job report -\#events, output, exceptions, files open, files written, branches (data objects written) If the job is failing, it is easy to remember to keep logs. If the job ran with weird behavior, may notice months later. Must have breadcrumbs. Capture more debugging information for physicist in standardized way? What filters did you choose? There can be more than one module per configuration.
+\end{narrative}
+
+\begin{narrative}{Check Results of a Running Analysis}
+Physicist Genya is waiting for his job to complete. He sees that a lot of the analysis is complete and data is available. His data is taking a long time to return. Typical GRID jobs will return most data quickly but require much longer times to handle failed jobs, as shown in the heuristic graph, Fig.~\ref{fig:grid-job-completion}.
+\begin{figure}[hbtp]
+  \begin{center}
+    \includegraphics{figure/grid_job_completion}
+    \caption{Grid jobs return most results quickly. Later results tend to take much longer to return. Physicists may with to check data before all results have returned.}
+    \label{fig:grid-job-completion}
+  \end{center}
+\end{figure} 
+He looks at the existing results by hand, meaning that he logs into a machine that has the results and interactively runs a short analysis against the file. Then he wants to run a SW Framework analysis against what parts of the first analysis are complete. He constructs a new analysis specifying the currently available results as input and submits that job to run.
+\end{narrative}
+
+\begin{narrative}{Mark a Block of Runs or Events as Bad}
+Even though events passed validation at the detector and reconstruction, it is possible for them to have a problem that precludes using them. It is possible that the reconstruction was good but that an analysis step later had a problem. For instance, there may be a cluster node with a bad FPU. A physicist tells the data manager that there is a problem. Instead of rerunning the analysis, a data manager wants to exclude certain events in such a way that physicists doing analysis will not accidentally get the bad events when they specify this sample. At the same time, the data manager may not yet be prepared to remove those events from the dataset, possibly because having the bad events around could be crucial to understanding imperfections in earlier analysis.
+\end{narrative}
+
+\begin{narrative}{Compare Why Two Analyses Had Different Results}
+Two scientists are looking for the same type of physics event. Given the same starting base reconstruction, one got sixteen events, and the other got three. They want to find what was different between the two analyses, so they look to see as much as they can about the processing each one did. Which datasets did they use? Which versions of processing did they use along the way? During processing, some subset of the parameters were relevant to the physics of the results. Were those parameters the same, or how were they different? (Elaborate on what parameters to compare.)
+
+One way to compare analyses is to run the three-event analysis on the sixteen events from the other analysis.
+\end{narrative}
+
+\begin{narrative}{Publish a Dataset to Global Scope}
+Physicist Phil runs his own analysis on RECO data. He makes a new skim and publishes it to the local DBS for his group. His group takes a look at it, and they think it's a great skim for their research and for others. The Data Quality Group meets and says it is wonderful. They create an Analysis Dataset from this skim, throwing out only the first and last lumi blocks, just out of habit because they tend to be worse than most others. Then they publish his skim to the world by putting it into global scope.
+\end{narrative}
+What tools would they need? Assuming a Data Quality Group analyzes a dataset using ROOT or cmsRun, they can write a list of good lumi blocks, but then something must accept them to the DBS and verify all information is there. Then a tool must request that the DBS publish data from local to global scope.
+
+\begin{narrative}{Recover Failed DBS}
+If the DBS machine fails, is there failover to take its place? How do you reload a DBS? If the DBS information for a dataset were completely lost, what kind of information exists to reconstruct its provenance? How could you insert such provenance into the DBS?
+\end{narrative}
+
+\begin{narrative}{Troubleshoot Problems with Detector Operation Using Analysis Output}
+At Compute Tier 0, tracking efficiency looks like it fell off in the HLT. Maybe output of the prompt reconstruction will be clearer about whether there is a problem or not, so a detector expert wants to look at prompt reconstruction data. The analysis program could be written in SW Framework or in ROOT. Even though the prompt reconstruction has not yet processed all the data that will become the next reconstruction dataset, the detector expert wants access to the data that has been processed. It may be that it is someone's job to check the first events that the prompt reconstruction produces.
+\end{narrative}
+
+The detector expert may specify a data range by specifying that they want the reconstruction for a set of events within a run, but they will need some earlier knowledge of which events are being written at a particular time.
+
+\begin{narrative}{Validate Reconstruction Production is Working Well}
+A reconstruction expert wants to make sure that the reconstruction is going well, so they check the first few events of the reconstruction at regular time intervals. The reconstruction job is still in process, and there is not yet a complete dataset. The reconstruction expert wants to run a SW Framework or ROOT job against the first events.
+
+If the reconstruction is not working well, this expert has to stop reconstruction, ensure resulting data is not used, and then either restart processing of RAW data or contact the detector expert to troubleshoot. 
+\end{narrative}
+
+\subsection{Use Cases for Data Management Applications Interacting With DBS}
+
+\begin{usecase}\label{uc:generalanalysis}
+\ucname{Conduct a Physics Analysis} \\
+\ucactor{Physicist, Prodagent or CRAB, a DBS} \\
+\uclevel{High Level} \\
+\ucscope{Application Scope} \\
+\ucdescription{This high level use case is a placeholder for the steps involved in submitting a job of any sort, whether a production job or a physicist's analysis job at Tier~5. We will use Prodagent as the name for the job submission tool, but this will be generic.} \\
+\ucrevision{Draft} \\
+\uctrigger{Physicist has an idea for analysis, including the type of physics events of interest and a conceptual view of which analysis products will be necessary, such as tracks or jet reconstruction.} \\
+\ucsuccess{\begin{uclist}
+  \item Data Discovery Tool provides best available dataset.
+  \item Discovery Tool provides summary information about that dataset, suitable for job submission.
+  \item Physicist provides dataset summary information to Prodagent.
+  \item Prodagent requests \phedex data, if required.
+  \item Prodagent runs the job.
+  \item Prodagent provides Physicist with a Local DBS entry containing dataset with correct provenance.
+\end{uclist}} \\
+\end{usecase}
+
+The actual steps entailed in data discovery are largely a matter of the user interface. We describe data discovery in another section because it can be described more concisely than in use cases.
+
+The first detailed use case is about how Prodagent or CRAB works with the DBS. It tries to cover both the case where the input dataset and output dataset are in the Local DBS or Global DBS. Note the Prodagent-Local DBS is an instance of the DBS which lives just for the sake of Prodagent to construct correct provenance information to give later to the correct receiving DBS.
+
+\begin{usecase}\label{uc:generaljob}
+\ucname{Run an Analysis Job} \\
+\ucactor{Prodagent, Prodagent-Local DBS, Global DBS} \\
+\uclevel{Goal Level} \\
+\ucscope{Service Scope} \\
+\ucdescription{This describes how a workflow system, such as Prodagent or CRAB, runs a grid job on behalf of a user. It will read configuration files, generate the appropriate input to SW Framework or ROOT, and then run the job wherever it is told.} \\
+\ucrevision{Draft} \\
+\uctrigger{Physicist provides a configuration file. Foremost in it is the dataset specification which consists of the dataset name, a triple of primary dataset, data tier, and processed dataset or analysis dataset. To this, the physicist may add a further specification of lumi sections for real data or event ranges for MC.} \\
+\ucsuccess{\begin{uclist}
+\item Prodagent checks Global DBS for input dataset file block ids.
+\item DLS tells Prodagent where the LFNs corresponding to those file blocks are located.\label{uc:gen_avail}
+\item Global DBS provides dataset LFNs corresponding to requested lumi sections and the list of lumi sections.
+\item Prodagent records tracked parameters from configuration files in parameter database.
+\item Prodagent creates processed dataset in Prodagent-Local DBS. It provides the input processed or analysis dataset with lumi sections, the application with version and a pointer to the tracked parameters.\label{uc:gen_create_ds}
+\item Prodagent constructs files for grid submission.
+\item Appropriate Grid manager executes job at requested computing site.
+\item As jobs return, Prodagent puts the files into the Prodagent-Local DBS, associating them with the output processed dataset. When there are enough files, it consolidates them into file blocks and registers these with the Prodagent-Local DBS.\label{uc:gen_jobs_return}
+\item Prodagent registers completed job in Global DBS or Local DBS, as requested. It gets this information from the Prodagent-Local DBS.
+\end{uclist}} \\
+\ucextensions{\begin{ucextlist}{\ref{uc:gen_avail}}
+  \item Dataset is not available at processing site.
+    \begin{enumerate}
+    \item \phedex transfers those file blocks, specified by LFN, to the correct site.
+    \item Prodagent checks DLS to see when data arrives.
+    \end{enumerate}
+  \item Dataset is in Local DBS, not the Global DBS.
+\end{ucextlist}
+\begin{ucextlist}{\ref{uc:gen_create_ds}}
+  \item Dataset already exists.
+\end{ucextlist}
+\begin{ucextlist}{\ref{uc:gen_jobs_return}}
+  \item Some jobs fail to return.
+  \begin{enumerate}
+    \item Prodagent registers all files which have returned.
+    \item Prodagent consolidates last files into file blocks when instructed by Physicist to terminate job.
+  \end{enumerate}
+\end{ucextlist}} \\
+\end{usecase}
+
+Who specifies what will be the data tier of the output processed dataset?
+
+
+
+Prodagent Accepts Several Datasets as Input to an Analysis with a Single Output Dataset
+
+Prodagent Configures Monte Carlo Generation to Match Given Data Dataset
+
+Provenance Tool Assembles Metadata on the Processing of a Dataset
+
+Provenance Tool Publishes a Dataset to Local Scope
+
+
+Provenance Tool Compares the Processing of Two Datasets
+
+\phedex Transfers Dataset Files for Tier 2 Production
+
+\phedex Keeps a Dataset Updated with Newly-Produced File Blocks
+
+Workflow Tool Runs Prodagent
+
+Prodagent Runs Tier 0 Production of Monte Carlo and RECO 
 
 \section{Data discovery needs and options}
 
