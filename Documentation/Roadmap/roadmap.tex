@@ -287,7 +287,7 @@ input data.  Once created, an Analysis Dataset may not be changed.
 
 Conceptually, an Analysis Dataset is a list of luminosity sections
 speicified by running an analysis query on a Processed Dataset at a
-particular instaint in time.  However, the CMSSW Framework does not
+particular instant in time.  However, the CMSSW Framework does not
 currently have the ability to switch back and forth between input
 files at the luminosity section level, and there are no plans to
 implement this capability.  Therefore, in any current Analysis Dataset
@@ -324,9 +324,9 @@ are the ``snapshots''?
 a given Processed Dataset have the same PassID
 \item Bumped everytime a distinct ``pass'' over the data is performed
 \begin{itemize}
-\item Potentically useful for identifying which files or luminosity
+\item Potentially useful for identifying which files or luminosity
 sections form an Analysis Dataset
-\item May require gratuitous Parameter Set changes correcting site or
+\item May require gratuitous configuration file changes correcting site or
 system issues which would not otherwise require any configuration
 changes
 \end{itemize}
@@ -1460,9 +1460,18 @@ been using is "a list of luminosity sections which were specified by
 running an analysis query on a processed dataset at a particular
 instant of time".  A processed data set may contain multiple instances
 of a luminosity section processed with different application
-configurations, so an analysis data set is determined by a processed
+configurations, so an analysis data set could be determined by a processed
 data set, a list of luminosity sections, and an AppConfig for each
 luminosity section.
+
+This isn't quite right, as there are scenarios involving system or
+site problems where re-processing would not entail any configuration
+change.  Moreover, as a practical matter, the framework would not be
+able to make use of this representation.  In order to work with the
+current framework capabilities, any reprocessing would have to replace
+entire files, in which case the most useful representation of the
+analysis data set would be a list of files, or possibly a list of
+PassIDs, if the PassID were incremented for every reprocessing.
 
 We haven't discussed how (or if) this maps onto MC data.
 \end{enumerate}
