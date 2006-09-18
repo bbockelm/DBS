@@ -61,7 +61,7 @@ try:
 
   # Attempt to create a file block
   print ""
-  block = DbsFileBlock (processing = processing, blockName = "80c077fd-8568-46f2-b8fc-93b8809adb45")
+  block = DbsFileBlock (processing = processing, blockName = "/test_primary_anzar/test_process_anzar#3f20d482-2f10-47be-8462-401c1eb7212c")
   #block = DbsFileBlock (processing = processing)
   print "Creating file block %s" % block
   try:

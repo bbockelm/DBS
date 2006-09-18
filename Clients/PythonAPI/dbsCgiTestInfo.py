@@ -79,13 +79,13 @@ try:
         ] # for MCLocal_2/writer and MCLocal_1/Writer
 
 
-   #xmlinput = api.getDatasetInfo(otherDatasetPath)
-   #print xmlinput
-   #name = otherDatasetPath.replace('/', '_')
-   #flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
-   #flog.write(api1.insertDatasetInfo(xmlinput))
-   #flog.close()
-   
+   xmlinput = api.getDatasetInfo(otherDatasetPath)
+   print xmlinput
+   name = otherDatasetPath.replace('/', '_')
+   flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
+   flog.write(api1.insertDatasetInfo(xmlinput))
+   flog.close()
+   """
    for path in pathList:
      print path
      name = path.replace('/', '_')
@@ -98,7 +98,7 @@ try:
      flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
      flog.write(api1.insertDatasetInfo(xmlinput))
      flog.close()
-   
+   """
   except DbsCgiDatabaseError,e:
    print e
  
