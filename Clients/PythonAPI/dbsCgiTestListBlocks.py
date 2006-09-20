@@ -17,6 +17,7 @@ try:
 
   dataset = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302"
   print api.listBlocks(dataset,"yes")
+  print "\n\n"
   print api.listBlocks(dataset)
 
 except InvalidDataTier, ex:

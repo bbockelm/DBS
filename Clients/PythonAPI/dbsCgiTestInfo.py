@@ -7,10 +7,10 @@ from dbsCgiApi import DbsCgiApi, DbsCgiDatabaseError
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 #DEFAULT_URL = "exec:../../Servers/CGIServer/prodquery"
-#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
 
 try:
   args = {}
@@ -78,7 +78,7 @@ try:
            "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" 
         ] # for MCLocal_2/writer and MCLocal_1/Writer
 
-
+   """
    xmlinput = api.getDatasetInfo(otherDatasetPath)
    print xmlinput
    name = otherDatasetPath.replace('/', '_')
@@ -86,6 +86,13 @@ try:
    flog.write(api1.insertDatasetInfo(xmlinput))
    flog.close()
    """
+
+
+   pathList = [ "/CSA06-082-os-ZMuMu/GEN/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged",
+                "/CSA06-082-os-ZMuMu/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged",
+                "/CSA06-082-os-ZMuMu/DIGI/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged"  
+   ]
+
    for path in pathList:
      print path
      name = path.replace('/', '_')
@@ -98,7 +105,6 @@ try:
      flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
      flog.write(api1.insertDatasetInfo(xmlinput))
      flog.close()
-   """
   except DbsCgiDatabaseError,e:
    print e
  

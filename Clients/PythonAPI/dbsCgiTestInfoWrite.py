@@ -31,6 +31,10 @@ try:
                 "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" ,
         ] # for MCLocal_3/Writer
 
+   pathList = [ "/CSA06-082-os-ZMuMu/GEN/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged",
+                "/CSA06-082-os-ZMuMu/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged",
+                "/CSA06-082-os-ZMuMu/DIGI/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged"
+   ]
 
 
    for path in pathList:

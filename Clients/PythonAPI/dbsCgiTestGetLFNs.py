@@ -18,10 +18,11 @@ try:
   # List all datasets and count of files in all their blocks
   print "Listing datasets blocks/files"
   #dataset = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302"
-  dataset = "/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
+  #dataset = "/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
+  dataset = "/test_primary_anzar/Hit/test_process_anzar"
   #valentineList = []
   #for block in api.getLFNs (dataset, "341"):
-  print api.getLFNs (dataset, "0ec79c44-59bb-4b1f-a748-4d268d9dd091")
+  print api.getLFNs (dataset, "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785")
   #for a in api.getLFNs (dataset, "341"):
       #print a
       #files = block['fileList']

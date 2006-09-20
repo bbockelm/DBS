@@ -911,9 +911,10 @@ class DbsCgiApi(DbsApi):
 	  if name == 'block':
             evts = ''
 	    id = attrs['id']
+	    name = attrs['name']# CHANGED from id to name
 	    if not blocks.has_key (id):
               if(events == None) :  
-   	         blocks[id] = DbsFileBlock (objectId=long(id),
+   	         blocks[name] = DbsFileBlock (objectId=long(id),
                                          blockName=str(attrs['name']),
                                          status=str(attrs['status']),
 					 numberOfFiles=long(attrs['files']),
@@ -921,9 +922,9 @@ class DbsCgiApi(DbsApi):
               else :
                  if "events" in attrs.keys():
                     evts = long(attrs['events'])
-                 blocks[id] = [evts, str(attrs['status']), long(attrs['files'])]
+                 blocks[name] = [evts, str(attrs['status']), long(attrs['files'])]
 
-	    self._block = blocks[id]
+	    self._block = blocks[name]
       xml.sax.parseString (data, Handler ())
       #return blocks.values ()
       return blocks
