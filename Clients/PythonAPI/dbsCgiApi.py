@@ -321,7 +321,7 @@ class DbsCgiApi(DbsApi):
             app = DbsApplication(executable = str(attrs['app']),
 			    version =  str(attrs['version']),
                             family = str(attrs['family']) )
-	    print "app" , app
+	    #print "app" , app
 	    result.append(DbsProcessedDataset (objectId=long(attrs['id']),
 	    				       datasetPathName=str(attrs['path']),
 					       application = app))
