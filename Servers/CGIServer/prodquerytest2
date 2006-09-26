@@ -72,7 +72,7 @@ my %apis = (
   'getDatasetFiles' => [ \&getDatasetFiles, {
     path => REQUIRED } ],
   'getLFNs' => [ \&getLFNs, {
-    path => REQUIRED, blockName => REQUIRED } ],
+    path => OPTIONAL, blockName => REQUIRED } ],
   'listPrimaryDatasets' => [ \&listPrimaryDatasets, {
     pattern => OPTIONAL } ],
   'listProcessedDatasets' => [ \&listProcessedDatasets, {
@@ -1031,18 +1031,35 @@ sub getLFNs
   my ($dbs) = @_;
 
   # Parse parameters
-  my @path = &getPath ();
+  my @path = &getPath ('path', 1);
   my $bguid = param('blockName');
   # Translate the dataset path to an id
-  my $id = &datasetFromPath ($dbs, @path);
-
+  my $id = "0";
+  $id = &datasetFromPath ($dbs, @path) if(defined $path[0]) ;
+  my $pathname = "/dummy/dummy/dummy";
   # Prepare output.
   my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-  my $pathname = "/$path[0]/$path[1]/$path[2]";
+  $pathname = "/$path[0]/$path[1]/$path[2]" if(defined $path[0]);
   $out .= "<processed-dataset id='$id' path='$pathname'>";
 
   # Fetch files by which block they belong to
-  my $q = &dbexec($$dbs{DBH}, qq{
+    my $q = &dbexec($$dbs{DBH}, qq{
+          select
+          	f.logical_name,
+   	  	f.filesize,
+	        fs.name,
+        	ft.name
+          from t_block b
+	        left join t_file f
+          on f.inblock = b.id
+        	left join t_file_status fs
+          on fs.id = f.status
+	        left join t_file_type ft
+          on ft.id = f.type
+          where b.guid= :bguid},
+         ":bguid" => $bguid);
+
+  $q = &dbexec($$dbs{DBH}, qq{
           select
           f.logical_name,
           f.filesize,
@@ -1054,8 +1071,6 @@ sub getLFNs
           and p.name = pd.name
           join t_block b
           on b.processing = p.id
-          join t_block_status bs
-          on bs.id = b.status
           left join t_file f
           on f.inblock = b.id
           left join t_file_status fs
@@ -1064,7 +1079,7 @@ sub getLFNs
           on ft.id = f.type
           where pd.id= :pid and b.guid= :bguid},
     ":pid" => $id,
-    ":bguid" => $bguid);
+    ":bguid" => $bguid) if(defined $path[0]) ;
   $out .= "<block name='$bguid'>";
   while (my $row = $q->fetchrow_arrayref())
   {

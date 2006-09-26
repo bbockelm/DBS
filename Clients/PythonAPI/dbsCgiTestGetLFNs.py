@@ -17,26 +17,17 @@ try:
 
   # List all datasets and count of files in all their blocks
   print "Listing datasets blocks/files"
-  #dataset = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302"
-  #dataset = "/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
+  # For MCLocal_1/Writer
   dataset = "/test_primary_anzar/Hit/test_process_anzar"
-  #valentineList = []
-  #for block in api.getLFNs (dataset, "341"):
-  print api.getLFNs (dataset, "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785")
-  #for a in api.getLFNs (dataset, "341"):
-      #print a
-      #files = block['fileList']
-      #name = block['blockName']
-      #print "  %s: %d files" % (name, len(files) )
-      #for f in files:
-      #   print f
-      #print files  
-      #print files[0]  
-      #print files[0].values()  
+  print api.getLFNs ( "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785", dataset)
+  print api.getLFNs ( "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785")
 
-      #for i in range(len(block['fileList'])):
-        #valentineList.append( block['fileList'][i].values() )
-  #print valentineList 
+  # For DevMC/Writer
+  """
+  dataset = "/CSA06-083-os-EWKSoup/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged"
+  print api.getLFNs ( "/CSA06-083-os-EWKSoup/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged#502ac997-9a64-4bb3-8279-3c6328f35f54", dataset)
+  print api.getLFNs ( "/CSA06-083-os-EWKSoup/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged#502ac997-9a64-4bb3-8279-3c6328f35f54")
+  """
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:

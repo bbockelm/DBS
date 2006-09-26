@@ -26,7 +26,7 @@ ValidationTable = {
           },
 "DbsProcessing" : {
          "objectId" : { "Comment" : "User may not need to set this variable always", "Validator" : isLongType },
-         "parent" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+         "parent" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "primaryDataset" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
          "processingName" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "applicationConfig" : { "Comment" : "Probably a required variable", "Validator" : isDictType },

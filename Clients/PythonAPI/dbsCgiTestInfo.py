@@ -92,6 +92,21 @@ try:
                 "/CSA06-082-os-ZMuMu/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged",
                 "/CSA06-082-os-ZMuMu/DIGI/CMSSW_0_8_2-GEN-SIM-DIGI-1155826058-merged"  
    ]
+   pathList = [ "/CSA06-083-os-SoftMuon/GEN/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged",
+		"/CSA06-083-os-SoftMuon/SIM/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged",
+		"/CSA06-083-os-SoftMuon/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged",
+		"/CSA06-083-os-SoftMuon/HLT/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged"
+   ]
+   pathList = [	"/CSA06-083-os-ExoticSoup/GEN/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877641-merged",
+		"/CSA06-083-os-ExoticSoup/SIM/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877641-merged",
+		"/CSA06-083-os-ExoticSoup/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877641-merged",
+		"/CSA06-083-os-ExoticSoup/HLT/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877641-merged"
+   ]
+   pathList = [	"/CSA06-083-os-EWKSoup/GEN/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged",
+		"/CSA06-083-os-EWKSoup/SIM/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged",
+		"/CSA06-083-os-EWKSoup/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged",
+		"/CSA06-083-os-EWKSoup/HLT/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged"
+   ]
 
    for path in pathList:
      print path
@@ -102,9 +117,9 @@ try:
      f.close()
 
 
-     flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
-     flog.write(api1.insertDatasetInfo(xmlinput))
-     flog.close()
+     #flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
+     #flog.write(api1.insertDatasetInfo(xmlinput))
+     #flog.close()
   except DbsCgiDatabaseError,e:
    print e
  

@@ -574,13 +574,17 @@ class DbsCgiApi(DbsApi):
 
 
   # ------------------------------------------------------------
-  def getLFNs(self, dataset, blockName):
+  def getLFNs(self, blockName , dataset = None):
     # Check path.
-    path = self._path(dataset)
-    verifyDatasetPathName(path)
+    if(dataset != None) :
+      path = self._path(dataset)
+      verifyDatasetPathName(path)
 
     # Invoke cgi script.
-    data = self._call ({ 'api' : 'getLFNs', 'path' : path , 'blockName' : blockName})
+    if (dataset != None) :
+      data = self._call ({ 'api' : 'getLFNs', 'path' : path , 'blockName' : blockName})
+    else :
+      data = self._call ({ 'api' : 'getLFNs',  'blockName' : blockName})
     #print data
     # Parse the resulting xml output.  The output consits of a list of blocks,
     # each with its list of event collections.
@@ -922,7 +926,7 @@ class DbsCgiApi(DbsApi):
               else :
                  if "events" in attrs.keys():
                     evts = long(attrs['events'])
-                 blocks[name] = [evts, str(attrs['status']), long(attrs['files'])]
+                 blocks[name] = [evts, str(attrs['status']), long(attrs['files']), long(attrs['bytes'])]
 
 	    self._block = blocks[name]
       xml.sax.parseString (data, Handler ())

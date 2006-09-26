@@ -30,7 +30,7 @@ try:
   api = DbsCgiApi(DEFAULT_URL, args)
   #api.setLogLevel(DBS_LOG_LEVEL_ALL_)
   # api.setDebug(1)
-  """
+  
   try:
    # List all parameter sets
    print ""
@@ -78,7 +78,7 @@ try:
   except DbsCgiDatabaseError,e:
    print e
 
-  
+  """
   try:
    # Get dataset provenance. It returns list of dataset parents.
    print ""
@@ -99,8 +99,8 @@ try:
      print "  %s" % parent
   except DbsCgiDatabaseError,e:
    print e
-  
   """
+  
   otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   otherDatasetPath = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged"
   otherDatasetPath = "/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
@@ -117,7 +117,7 @@ try:
      #  print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-  """ 
+   
   #otherDatasetPath = "/PreProdR2Pion10GeV/SIM/GEN-SIM-DIGI"
   #otherDatasetPath = "/test_primary_anzar/DST/test_process_anzar"
   try:
@@ -131,7 +131,7 @@ try:
        print "evc ", ev
   except DbsCgiDatabaseError,e:
    print e
-  """ 
+   
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:
