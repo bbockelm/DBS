@@ -53,14 +53,20 @@ try:
                 "/CSA06-083-os-EWKSoup/HLT/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645-merged"
    ]
 
+   pathList = [ "/CSA06-082-os-TTbar/GEN/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged",
+                "/CSA06-082-os-TTbar/SIM/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged",
+                "/CSA06-082-os-TTbar/DIGI/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
+   ]
+
+
 
    for path in pathList:
      print path
-     name = path.replace('/', '_')
-     f= open(name +".xml");
+     name = args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + path.replace('/', '_')
+     f = open(name +".xml");
      xmlinput = f.read()
      f.close()
-     flog =  open(args['instance'].replace('/','_') + "_" + args1['instance'].replace('/', '_') + name +".log", "w");
+     flog =  open(name +".log", "w");
      flog.write(api1.insertDatasetInfo(xmlinput))
      flog.close()  
   except DbsCgiDatabaseError,e:
