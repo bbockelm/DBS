@@ -576,12 +576,12 @@ class DbsCgiApi(DbsApi):
   # ------------------------------------------------------------
   def getLFNs(self, blockName , dataset = None):
     # Check path.
-    if(dataset != None and dataset != "" ) :
+    if(dataset) :
       path = self._path(dataset)
       verifyDatasetPathName(path)
 
     # Invoke cgi script.
-    if (dataset != None and dataset != "") :
+    if (dataset) :
       data = self._call ({ 'api' : 'getLFNs', 'path' : path , 'blockName' : blockName})
     else :
       data = self._call ({ 'api' : 'getLFNs',  'blockName' : blockName})

@@ -21,6 +21,8 @@ try:
   dataset = "/test_primary_anzar/Hit/test_process_anzar"
   print api.getLFNs ( "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785", dataset)
   print api.getLFNs ( "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785", "")
+  print api.getLFNs ( "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785")
+  print api.getLFNs ( "/test_primary_anzar/test_process_anzar#2eaa3188-9f81-490c-9f20-e10ac49ef785"," ")
 
   # For DevMC/Writer
   """
