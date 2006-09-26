@@ -733,28 +733,6 @@ What if we want to make both the old and new passes available to the physicist? 
 
 If we don't believe physicists will want to access the deprecated lumi sections from the first pass, then only the newer pass of data need be available, and it should be available by default. The deprecated lumi sections could be marked the same way that we mark lumi sections which contained other kinds of failures, such as CPU floating point problems.
 
-\section{Discovery Questions To Fold In With Valentin's Section}
-
-Relationships among datasets
-\begin{itemize}
-    \item ancestor/descendant of
-    \item containment, subset/superset of
-    \item pass-of, for algorithms, conditions, or analysis datasets
-    \item skim-of, which is a special case of descendant
-\end{itemize}
-A skim is a dataset which reads event data and produces event data with no new event data objects.
-
-Questions about a particular dataset
-\begin{itemize}
-    \item Size, luminosity, dates written, when accessed.
-    \item Location of files relative to places where user can do processing.
-    \item What is the HLT of the ancestor?
-    \item What algorithm wrote this data and its ancestors? This may be answered best by both the application name and a list of products in the config file.
-    \item What data objects are in this dataset? From which processing steps?
-    \item What conditions were used as input to this dataset and ancestors?
-    \item Has a data quality group approved any lumi sections in this dataset? or any lumi sections in an ancestor or descendant? Have any lumi sections from this dataset been included in an analysis dataset?
-\end{itemize}
-
 \section{Use Cases}
 The primary actors for these usage narratives and use cases are often applications or services defined in the glossary, but the first round of usage narratives focuses on the actions of people. We define their roles here.
 \begin{description}
@@ -770,6 +748,7 @@ There are some missing tools, as well. You might even believe these tools alread
 \item[Data Discovery Tool] This tool allows physicists to find which datasets express the physics of interest. It is currently a web page.
 \item[Provenance Tool] This is an application which allows a person to create, modify, or delete data in the DBS.
 \end{description}
+
 
 \subsection{CSA06}
 
@@ -1036,18 +1015,123 @@ Workflow Tool Runs Prodagent
 Prodagent Runs Tier 0 Production of Monte Carlo and RECO 
 
 \section{Data discovery needs and options}
-
-\subsection{Needs for Data Discovery}
+This section is dedicated to data discovery within CMS. It defines ``data'' to discover, relevant
+discovery questions, MetaData, discovery tools and models, etc.
 
 \subsubsection{Data discovery}
+A term ``data'' generalize the information physicists are looking for. It encapsulated
+the following items:
+\begin{itemize}
+\item data objects, e.g. RECO, AOD, etc.
+\item event collection (?)
+\item metadata, e.g. runs, trigger stream, 
+\begin{itemize}
+\item data types, e.g. Zee (all Z events with 2e decay), single particle, etc.
+\end{itemize}
+\item files, e.g. LFN and PFN
+\item file blocks
+\item data sets
+\item data tiers
+\item software releases along with job configuration files 
+\end{itemize}
+The following sections identify the ``data'' we plan to discover, actors, data versioning,
+level of granularity in data discovery, the discovery data model, meta-data, etc.
 
- need a clear definition of ``data''
- who are the actors
- versioning
- level of granularity
- push or pull model
- data, meta-data, luminosity ....
- descriptive criteria
+\subsection{Actors}
+It's clear that different actors are looking for different data to discover. Therefore we start with
+actors description and their roles in order to identify what they will look for in DBS.
+
+\begin{itemize}
+\item {\bf physicists} -- this category includes people whose interests extend to identification of
+data avaialable for analysis, e.g. find Higgs sample which pass certain criterias.
+Physicists wants to perform manual discovery at initial step
+of analysis and automate the process later.
+
+\indent
+\begin{center}Discovery questions
+\indent
+\fbox{
+\begin{minipage}[t]{5in}
+Relationships among datasets
+\begin{itemize}
+    \item ancestor/descendant of
+    \item containment, subset/superset of
+    \item pass-of, for algorithms, conditions, or analysis datasets
+    \item skim-of, which is a special case of descendant
+\end{itemize}
+A skim is a dataset which reads event data and produces event data with no new event data objects.
+
+Questions about a particular dataset
+\begin{itemize}
+    \item Size, luminosity, dates written, when accessed.
+    \item Location of files relative to places where user can do processing.
+    \item What is the HLT of the ancestor?
+    \item What algorithm wrote this data and its ancestors? This may be answered best by both the application name and a list of products in the config file.
+    \item What data objects are in this dataset? From which processing steps?
+    \item What conditions were used as input to this dataset and ancestors?
+    \item Has a data quality group approved any lumi sections in this dataset? or any lumi sections in an ancestor or descendant? Have any lumi sections from this dataset been included in an analysis dataset?
+\end{itemize}
+\end{minipage}
+}
+\end{center}
+
+\item {\bf production managers} -- this is a list of actors who are mostly interested in
+data production, deployment and monitoring of those processes.
+This category are interesting in manual and semi-automatic data discovery.
+
+\indent
+\begin{center}Discovery questions
+\indent
+\fbox{
+\begin{minipage}[t]{5in}
+\begin{itemize}
+\item Retrieve a summary information from all sites participating in MC production
+\item Find out file blocks at particular site
+\item Get status of dataset/file block/LFNs for given software release
+\item Identify configuration files for given software release of particular processed dataset
+\item List of processed datasets and their statuses/details
+\end{itemize}
+\end{minipage}
+}
+\end{center}
+
+\item {\bf site administrators} -- this category of users are interested in monitoring site
+resources, such as disk usage. Site administrators or data managers will 
+discover data periodically and may automate discovery process for particular tasks.
+\indent
+\begin{center}
+Discovery questions
+\indent
+\fbox{
+\begin{minipage}[t]{5in}
+\begin{itemize}
+\item Find out data which resides at particular site
+\item Identify PFN at given site
+\item Identify major contributor to particular disk storage element
+\end{itemize}
+\end{minipage}
+}
+\end{center}
+
+\end{itemize}
+
+\subsubsection{Meta data}
+The Meta-data defines a convenient way to identify set of ``data''. Physcists mostly think
+in terms of physics processes, e.g. Z to ee, and would like to search for data based on those
+criterias. Such type of meta-data callsed data types will be mapped to a list of runs (which by
+itself can be considered as meta-data entity) and further to the list of events (event collections).
+The Meta-data can be stored apart from DBS or can be intergrated as a part of DBS. Since
+meta-data definitions may have a certain lifetime and can be added or removed from the system
+we need to provide a set of tools to help physicists to store their meta-data definitions to the DBS.
+As well as, be able to find out data based on meta-data requests.
+
+Questions:
+\begin{itemize}
+\item who i soging to generate meta data?
+\item how meta data will be populated to DBS?
+\item where meta data will be stored?
+\end{itemize}
+
 
 \subsubsection{Data discovery prototype}
 The current DBS Data Discovery prototype has been shown on Figure \ref{fig:dbs-data-discovery}.
@@ -1075,19 +1159,8 @@ etc.
 
 The multi-tier architecture of the server will allow the usage different type of technologies, e.g.
 SQLAlchemy can be replaced with generic Database accesing layer, such as JDBC or Database
-connection pool management, CherryPy with apache web server, etc.~\cite{frontier}.
-
-We try to explore the way how physicists will discover new data within CMS experiment. First,
-we see clear division between our actors. They are:
-\begin{itemize}
-\item {\bf physicists} -- this category includes people whose interests extend to identify
-data avaialable for analysis, e.g. find Higgs sample which pass certain criterias.
-\item {\bf production managers} -- this is a list of actors who are mostly interested in
-data production and deployment.
-\item {\bf site administrators} -- this category of users are interested in monitoring site
-resources, such as disk usage.
-\item ...
-\end{itemize}
+connection pool management or simple CGI scripts which serves DB backends at different sites, 
+CherryPy with apache web server, etc.~\cite{frontier}.
 
 In current prototype we mostly address the CSA06 use casses, the {\bf production manager's} 
 point of view to discover data. We start from identifying file blocks based on three 
@@ -1119,38 +1192,6 @@ CMSSW\_0\_8\_1 version which includes the following list of config files
 
 The long term plan may includes development of user-freidnly queriable language for 
 data discovery.
-\subsubsection{Data to discover}
-
- we need to discover at least the following items:
- files, file blocks, event collections, runs, datasets,
-meta data, data types (e.g. MC/reco)
- But actors have different vision for data discovery:
- Production interested in: files, file blocks, event
-collections, data type
- Physicists interested in: event collections, datasets,
-runs, meta-data, data type
- data managers/site admins: files
-
-
-\subsubsection{Meta data}
-
- Which kind of meta data physicists wants:
- run, dataset, trigger stream, energy, ...
- how they want to express their requests
- who is going to generate meta data
- how meta data will be populated to DBS?
- where meta data will be stored
-
-\subsubsection{Actors behavior}
- we need clear understanding how different actors
-behave
- Physicist wants to perform manual discovery at initial step
-of analysis and automate the process later
- Phedex will/should perform auto discovery
- site admins/data managers will do it periodically and make it
-semi-automatic
- we need a set of tools to support such behavior
-
 \subsubsection{Data indexing}
  All actors mostly interested in fast data access
  DB vs file based indexing
