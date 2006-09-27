@@ -48,6 +48,7 @@ ValidationTable = {
 "DbsFileBlock" : {
          "objectId" : { "Comment" : "User may not need to set this variable always", "Validator" : isLongType },
          "blockName" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+         "blockStatus" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "processing" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "blockStatusName" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "numberOfBytes" : { "Comment" : "Probably a required variable", "Validator" : isLongType },

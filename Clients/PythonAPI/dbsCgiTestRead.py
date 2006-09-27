@@ -127,6 +127,7 @@ try:
    for block in api.getDatasetFileBlocks (otherDatasetPath):
      print "  File block name/id: %s/%d, %d files}" % \
        (block.get('blockName'), block.get('objectId'), len(block.get('fileList')) )
+     print "Status is ", block.get('blockStatus')
      for ev in block.get('eventCollectionList') :
        print "evc ", ev
   except DbsCgiDatabaseError,e:
