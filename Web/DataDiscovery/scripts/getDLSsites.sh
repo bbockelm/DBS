@@ -4,7 +4,12 @@ cd $DDHOME
 
 VO=$DDHOME/vomses
 voms-proxy-init -vomses $VO/cms-lcg-voms.cern.ch -cert $VO/.globus/usercert.pem \
--key $VO/.globus/userkey.pem -voms cms -q
+-key $VO/.globus/userkey.pem -voms cms -q 2> /dev/null
+status=$?
+if [ $status -ne 0 ]; then
+echo "Error, while retrieving grid credentials, status=$status"
+exit 1
+fi
 
 DIR=$DLSHOME/Client/lib
 
