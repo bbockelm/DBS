@@ -1,0 +1,15 @@
+
+{ menuList: ["MCGlobal/Writer"],
+nextObj: {"MCGlobal/Writer":{ menuList: ["/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun","/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun","/CMSSW_0_8_1/GEN-SIM-DIGI/cmsRun"],
+nextObj: {"/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun": { menuList: ["CSA06-083-os-SoftMuon","CSA06-083-os-EWKSoup"],
+ nextObj : {"CSA06-083-os-SoftMuon": { menuList: ["All", "SIM","HLT","GEN","DIGI"], nextObj: null}
+,"CSA06-083-os-EWKSoup": { menuList: ["All", "SIM","HLT","GEN","DIGI"], nextObj: null }}}
+,"/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun": { menuList: ["CSA06-082-os-ZMuMu"],
+ nextObj : {"CSA06-082-os-ZMuMu": { menuList: ["All", "SIM","GEN","DIGI"], nextObj: null }}}
+,"/CMSSW_0_8_1/GEN-SIM-DIGI/cmsRun": { menuList: ["CSA06-081-os-minbias"],
+ nextObj : {"CSA06-081-os-minbias": { menuList: ["All", "SIM","GEN","DIGI"], nextObj: null }}}
+}
+}
+}
+}
+
