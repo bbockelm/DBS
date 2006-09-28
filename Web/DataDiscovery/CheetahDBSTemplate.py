@@ -53,7 +53,7 @@ templateTop = """
 <style type="text/css">div.normalcontent { display:none }</style>
 <!-- if JavaScripts enables, turn visiable content on -->
 <script type="text/javascript" src="js/setcontent.js"></script>
-
+<script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/sorttable.js"></script>
 <script type="text/javascript">
 function popUp(URL) {
@@ -232,7 +232,6 @@ Please make your selection and submit for further processing:
 </b>
 <input type="submit" value="Find" id="submit-button2a"/>
 #end if
-<script type="text/javascript" src="js/updates.js"></script>
 <p><span id="SelectionHandler" name="SelectionHandler"></span></p>
 <script type="text/javascript">UnSelectAll()</script>
 <table id="search1" class="sortable">
