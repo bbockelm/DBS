@@ -105,6 +105,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         p.write("Subject: DBS DD error\n")
         p.write("\n") # blank line separating headers from body
         if msg: p.write("\n"+msg+"\n\n\n")
+        p.write("Request internals:\n")
+        p.write("Request from: %s:%s\n"%(cherrypy.request.remote_host,cherrypy.request.remote_port))
+        p.write("Request url : %s\n"%cherrypy.request.browser_url)
+        p.write("\n\n")
         p.write("DBSDataDiscoveryServer:\n")
         p.write("=======================\n")
         p.write("%s: %s\n"%("DBS Instance   ",self.dbs))
@@ -196,11 +200,28 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
            return self.init()
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in index function\n"+getExcept())
+            t=self.errorReport("Fail in index function")
             pass
             return str(t)
     index.exposed = True 
+
+    def errorReport(self,msg):
+        """
+           Error handle routine.
+           @type msg: string
+           @param msg: input text
+           @rtype: string
+           @rtype: returns HTML code
+        """
+        nameSpace = {
+                     'msg':getExceptionInHTML(),
+                     'port': cherrypy.request.remote_port,
+                     'host': cherrypy.request.remote_host,
+                     'url' : cherrypy.request.browser_url
+                    }
+        t = Template(CheetahDBSTemplate.templateERROR, searchList=[nameSpace])
+        self.sendErrorReport(msg+"\n"+getExcept())
+        return str(t)
 
     def init(self):
         """
@@ -208,7 +229,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @type  self: class object
            @param self: none
            @rtype : string
-           @return: returns HTML coe
+           @return: returns HTML code
         """
         try:
             self.userMode=True
@@ -217,8 +238,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+= self.genBottomHTML()
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in init function\n"+getExcept())
+            t=self.errorReport("Fail in init function")
             pass
             return str(t)
     init.exposed = True
@@ -235,8 +255,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                page+=self.sumPage
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in exert function\n"+getExcept())
+            t=self.errorReport("Fail in summary function")
             pass
             return str(t)
     summary.exposed = True
@@ -259,8 +278,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+= self.genBottomHTML()
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in exert function\n"+getExcept())
+            t=self.errorReport("Fail in expert function")
             pass
             return str(t)
     expert.exposed = True
@@ -560,6 +578,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
+            sys.exit(1) 
             if string.lower(tier)=="all": tier="*"
             if string.lower(site)=="all": site="*"
             self.helperInit(dbsInst)
@@ -577,8 +596,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+= self.genBottomHTML()
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in getData function\n"+getExcept())
+            t=self.errorReport("Fail in getData function")
             pass
             return str(t)
     getData.exposed = True 
@@ -603,13 +621,37 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+= self.genBottomHTML()
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in getLFNlist function\n"+getExcept())
+            t=self.errorReport("Fail in getLFNlist function")
             pass
             return str(t)
     getLFNlist.exposed = True
  
-    def getLFN_cfg(self,dataset,blockName):
+    def getLFN_txt(self,blockName,dataset=""):
+        """
+           Retrieves and represents LFN list in ASCII form
+           @type  dataset: string 
+           @param dataset: dataset name
+           @type blockName: string
+           @param blockName: block name
+           @rtype : string
+           @return: returns HTML code
+        """
+        try:
+            self.htmlInit()
+            page ="""<html><body><pre>\n"""
+            lfnList = self.helper.getLFNs(blockName,dataset)
+            for item in lfnList:
+                lfn=item[0]
+                page+="%s\n"%lfn
+            page+="\n</pre></body></html>"
+            return page
+        except:
+            t=self.errorReport("Fail in getLFN_txt function")
+            pass
+            return str(t)
+    getLFN_txt.exposed = True
+    
+    def getLFN_cfg(self,blockName,dataset=""):
         """
            Retrieves and represents LFN list in 'cff' framework form
            @type  dataset: string 
@@ -633,8 +675,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+="}\n</pre></body></html>"
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in getLFN_cfg function\n"+getExcept())
+            t=self.errorReport("Fail in getLFN_cfg function")
             pass
             return str(t)
     getLFN_cfg.exposed = True
@@ -709,8 +750,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+= self.genBottomHTML()
             return page
         except:
-            t = Template(CheetahDBSTemplate.templateERROR, searchList=[{'msg':getExceptionInHTML()}])
-            self.sendErrorReport("Fail in geBlocksFromSite function\n"+getExcept())
+            t=self.errorReport("Fail in getBlocksFromSite function")
             pass
             return str(t)
     getBlocksFromSite.exposed=True

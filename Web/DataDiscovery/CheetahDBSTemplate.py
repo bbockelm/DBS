@@ -11,7 +11,14 @@ The server encountered an unexpected condition which prevented it from fulfillin
 $msg
 #end if
 <p></p>
-This error has been submitted to <a href="mailto:vk@mail.lns.cornell.edu">maintainer</a> 
+We captured your request
+<p>
+<table>
+<tr><td align="right">Host</td><td>${host}:${port}</td></tr>
+<tr><td align="right">URL</td><td>$url</td></tr>
+</table>
+</p>
+and submitted to the <a href="mailto:vk@mail.lns.cornell.edu">maintainer</a> 
 of this page and to DBS team.
 <p></p>
 We're sorry for inconvenience and 
@@ -75,7 +82,6 @@ Javascript.</h1>
 <table class="small" width="100%">
 <tr>
 <td align="left">
-<a href="$host">Home</a> |
 <a href="https://twiki.cern.ch/twiki/bin/view/CMS/WebHome">CMS Home</a> |
 <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS Home</a> |
 <a href="https://https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS glossary</a> |
@@ -86,11 +92,16 @@ Javascript.</h1>
 <a href="mailto:hn-cms-dmDevelopment@cern.ch">Contact</a>
 </td>
 <td align="right">
+<!--
 #if $userMode
 <a href="$host/expert"><span class="box_red">To Expert page</span></a>
 #else
 <a href="$host"><span class="box_red">To User page</span></a>
 #end if
+-->
+Home page:
+<a href="$host"><span class="box_red">users</span></a>, &nbsp;
+<a href="$host/expert"><span class="box_red">experts</span></a>
 </td>
 </tr>
 </table>
@@ -133,7 +144,7 @@ Any keywords:
 templateLine_OR="""
 <table width="100%">
 <tr align="center">
-<td class="td35"><hr class="dbs" /></td>
+<td class="td34"><hr class="dbs" /></td>
 <td class="td5"><span class="box">OR</span></td>
 <td><hr class="dbs" /></td>
 </tr>
@@ -205,14 +216,19 @@ templateFileBlocksFromSite="""
 <p></p>
 <table id="siteBlocks" class="sortable">
 <tr>
-<th>Block name</th>
+    <th>Block name</th>
+    <th align="center">LFN list</th>
 </tr>
 #for name in $bList
 #set bName=$name.replace('#','%23')
 <tr>
-<td>
-<a href="$host/getLFNlist?blockName=$bName">$name</a>
-</td>
+    <td>
+    <a href="$host/getLFNlist?blockName=$bName">$name</a>
+    </td>
+    <td align="center">
+    <a href="$host/getLFN_cfg?blockName=$bName" alt="cff format">cff</a>, &nbsp;
+    <a href="$host/getLFN_txt?blockName=$bName" alt="file list format">plain</a>
+    </td>
 </tr>
 #end for
 </table>
@@ -605,9 +621,9 @@ contains $nEvents events, $totFiles files, $totSize.
      <td align="right">$size</td>
 #end if ## end of userMode check
 
-     <!-- <td bgcolor="#CCCCFF" align="center"> -->
      <td align="center">
-     <a href="$host/getLFN_cfg?dataset=$path&blockName=$bName">cff</a>
+     <a href="$host/getLFN_cfg?blockName=$bName&dataset=$path" alt="cff format">cff</a>, &nbsp;
+     <a href="$host/getLFN_txt?blockName=$bName&dataset=$path" alt="file list format">plain</a>
      </td>
      <td name="blockInfo" id="blockInfo" class="hide">
      <a href="$host/getLFNlist?blockName=$bName&dataset=$path">$name</a>
@@ -619,112 +635,6 @@ contains $nEvents events, $totFiles files, $totSize.
 <!-- End of Main table -->
 
 <p></p>
-"""
-
-templateLocationFileBlocks = """
-<hr class="dbs" />
-<b>$path</b>
-<!-- Main table -->
-<table class="small">
-
-<tr>
-<td valign="top" bgcolor="#CCCCFF">
-Location
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-# Events
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-Block name
-</td>
-#if not $userMode
-<td valign="top" bgcolor="#CCCCFF">
-status
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-# Files
-</td>
-#end if
-<td valign="top" bgcolor="#CCCCFF">
-cff format
-</td>
-</tr>
-
-#set $colorCode=0
-#for key in $locDict:
-#if $colorCode==0
-<tr bgcolor="#FFFFFF">
-#else
-<tr bgcolor="#FAEBD7">
-#end if
-#set $step = 0
-#for item in $locDict[$key]
-#if $step==0
-<td>$key</td>
-#else:
-</tr>
-#if $colorCode==0
-<tr bgcolor="#FFFFFF">
-#else
-<tr bgcolor="#FAEBD7">
-#end if
-<td></td>
-#end if
-#set nEvt    = $item[0]
-#set name    = $item[1]
-#if $name
-#set bName= $name.replace('#','%23')
-#else
-#set bName= $name
-#end if
-<td>$nEvt</td>
-<td><a href="$host/getLFNlist?blockName=$bName&dataset=$path">$name</a>
-</td>
-#if not $userMode
-#set bStatus = $item[2]
-#if $bStatus!="OPEN"
-<td bgcolor="#DEB0AF">$bStatus</td>
-#else
-<td>$bStatus</td>
-#end if
-#set nFiles  = $item[3]
-<td>$nFiles</td>
-#end if ## end of userMode check
-<td bgcolor="#CCCCFF">
-<a href="$host/getLFN_cfg?dataset=$path&blockName=$bName">cff</a>
-</td>
-#set $step = $step+1
-#end for
-#if $colorCode==0
-#set $colorCode=1
-#else
-#set $colorCode=0
-#end if
-</tr>
-
-#end for
-
-<tr>
-<td valign="top" bgcolor="#CCCCFF">
-<b>Summary:</b>
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-$nEvents
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-in all file block
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-</td>
-<td valign="top" bgcolor="#CCCCFF">
-</td>
-</tr>
-
-</table>
-<!-- End of Main table -->
-<p>
 """
 
 templateBottom="""
