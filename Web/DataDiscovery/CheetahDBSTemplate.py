@@ -232,6 +232,9 @@ Please make your selection and submit for further processing:
 </b>
 <input type="submit" value="Find" id="submit-button2a"/>
 #end if
+<script type="text/javascript" src="js/updates.js"></script>
+<p><span id="SelectionHandler" name="SelectionHandler"></span></p>
+<script type="text/javascript">UnSelectAll()</script>
 <table id="search1" class="sortable">
 <tr>
 <th></th>
@@ -560,12 +563,6 @@ templateLFB = """
 contains $nEvents events, $totFiles files, $totSize. 
 <span name="BlockInfoText" id="BlockInfoText"></span>
 <script type="text/javascript">ShowBlockInfo()</script>
-<!--
-<script type="text/javascript">ShowBlockInfo($tot)</script>
-Block info:
-<a href="javascript:ShowBlockInfo($tot)">show</a>, 
-<a href="javascript:HideBlockInfo($tot)">hide</a>.
--->
 <!-- Main table -->
 <table id="t$tid" class="sortable">
   <tr valign="top" class="sortable_gray">

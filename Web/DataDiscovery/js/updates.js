@@ -129,6 +129,22 @@ function HideBlockInfo(){
       elem[i].style.visibility="visible";
   }
 }
+function UnSelectAll(){
+  var t=document.getElementById("SelectionHandler");
+  t.innerHTML='Select <a href="javascript:SelectAll()">all</a>'
+  var elem=document.getElementsByName("userSelection");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].checked=false;
+  }
+}
+function SelectAll(){
+  var t=document.getElementById("SelectionHandler");
+  t.innerHTML='Clear <a href="javascript:UnSelectAll()">selection</a>'
+  var elem=document.getElementsByName("userSelection");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].checked=true;
+  }
+}
 // PRELOADING IMAGES
 /*
 function Hide() {
