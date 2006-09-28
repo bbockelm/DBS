@@ -42,3 +42,14 @@ To start server someone needs to do (in bash):
 nohup ./DBSDataDiscovery.py 2>&1 1>& /dev/null < /dev/null &
 
 
+To run Cherrpy behind apache web server we need the following lines in http.conf
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} dbsdatadiscoveryserver
+RewriteRule ^(.*) http://cherrypyserver:8000$1 [P]
+
+here dbsdatadiscoveryserver is the one what people will type in their browser and
+cherrypyserver is a server which runs CherryPy on port 8000 elsewhere.
+They can be the same or different nodes. As you can see CherryPy server can runs
+on arbitrary port and can be run behind a firewall with appropriate rules for 
+dbsdatadiscoveryserver.
