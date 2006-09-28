@@ -16,7 +16,7 @@ function HideBlockInfo(){
   }
   var elem=document.getElementsByName("blockInfo");
   for(var i=0;i<elem.length;i++) {
-      elem[i].style.display="inline";
+      elem[i].style.display="block";
       elem[i].style.visibility="visible";
   }
 }
