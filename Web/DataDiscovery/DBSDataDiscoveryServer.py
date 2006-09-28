@@ -578,7 +578,6 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
-            sys.exit(1) 
             if string.lower(tier)=="all": tier="*"
             if string.lower(site)=="all": site="*"
             self.helperInit(dbsInst)
