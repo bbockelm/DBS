@@ -1,12 +1,12 @@
 #!/bin/bash
-cd /data/DBSDataDiscovery/DataDiscoveryDev
-. setup.sh
+cd $DDHOME
+. scripts/setup.sh
 
-VO=/data/DBSDataDiscovery/DataDiscovery/vomses
+VO=$DDHOME/vomses
 voms-proxy-init -vomses $VO/cms-lcg-voms.cern.ch -cert $VO/.globus/usercert.pem \
 -key $VO/.globus/userkey.pem -voms cms -q
 
-DIR=$PWD/COMP/DLS/Client/lib
+DIR=$DLSHOME/Client/lib
 
 rm -f $PWD/dls.all.tmp
 # Global DLS

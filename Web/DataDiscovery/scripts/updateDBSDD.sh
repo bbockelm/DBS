@@ -1,6 +1,6 @@
 #!/bin/sh
-cd /data/DBSDataDiscovery/DataDiscoveryDev
-. setup.sh
+cd $DDHOME
+. scripts/setup.sh
 
 # Generate dict for global DBS instances
 rm -f dbsDict.global.tmp

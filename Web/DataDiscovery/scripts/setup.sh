@@ -10,6 +10,11 @@ if [ -z $DBSHOME ]; then
    exit 1
 fi
 
+if [ -z $DDHOME ]; then
+   echo "Please define DBSHOME environment, e.g. /path/COMP/DBS"
+   exit 1
+fi
+
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 export CVSROOT=:kserver:cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 export PYTHONPATH=/data/DBSDataDiscovery/install/lib/python2.4/site-packages:$PYTHONPATH
