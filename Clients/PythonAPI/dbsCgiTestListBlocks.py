@@ -16,9 +16,10 @@ try:
   api = DbsCgiApi(DEFAULT_URL, args)
 
   dataset = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302"
+  dataset = "/CSA06-083-os-SoftMuon/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged"
   print api.listBlocks(dataset,"yes")
   print "\n\n"
-  print api.listBlocks(dataset)
+  #print api.listBlocks(dataset)
 
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
