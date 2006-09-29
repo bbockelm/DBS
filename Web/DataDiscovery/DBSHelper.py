@@ -14,9 +14,6 @@ import string, sys, time, types, popen2
 
 # import 3d party modules
 import sqlalchemy
-# TMP to test 
-from   Cheetah.Template import Template
-import CheetahDBSTemplate
 
 # import DBS modules
 import dbsException
@@ -830,6 +827,7 @@ class DBSHelper(DBSLogger):
       if string.lower(site)=="all": site="*"
       for blockName in blockInfoDict.keys():
           evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
+          print "blockName",blockName,evts
           if evts:
              nEvts+=evts
           else:
@@ -850,6 +848,7 @@ class DBSHelper(DBSLogger):
                  addToDict(locDict,'N/A',(evts,blockName,bStatus,nFiles,fmt3(bBytes)))
               pass
           # end of DLS query
+      print "total number of events",nEvts
       return locDict,nEvts,totFiles,fmt3(totSize)
 
   def getBlocksFromSite(self,site):
@@ -997,7 +996,7 @@ if __name__ == "__main__":
         empty,prim,tier,app = string.split(dataset,"/")
         if primaryDataset!="*" and prim!=primaryDataset: continue
         if dataTier!="*" and tier!=dataTier: continue
-        locDict, totEvt = helper.getData(dataset)
+        locDict, totEvt, totFiles, totSize = helper.getData(dataset)
         evtLength = len(str(totEvt))
         if not hostField:
            for key in locDict.keys():
@@ -1016,4 +1015,4 @@ if __name__ == "__main__":
                 else:
                    empty = " "*(hostField)
                    print empty,string.ljust(str(evt),evtLength),bName
-        print "Summary %s events in all file blocks"%totEvt
+        print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
