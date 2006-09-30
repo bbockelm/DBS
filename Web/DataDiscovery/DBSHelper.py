@@ -660,7 +660,7 @@ class DBSHelper(DBSLogger):
               found=0
               for p in pList:
                  if  type(i) is types.StringType:
-                     if string.find(i,p)>-1:
+                     if string.find(string.lower(i),string.lower(p))>-1:
                         oList.append((self.dbsInstance,)+tup)
                         found=1
                         break
