@@ -636,7 +636,7 @@ class DBSHelper(DBSLogger):
       tapc = self.alias('t_app_config','tapc')
       tapf = self.alias('t_app_family','tapf')
       tpset= self.alias('t_parameter_set','tpset')
-      sel = sqlalchemy.select([tprd.c.id,tp.c.id,tpm.c.name,tdt.c.name,tapp.c.app_version,
+      sel = sqlalchemy.select([tpm.c.name,tdt.c.name,tapp.c.app_version,
                                tapf.c.name,tapp.c.executable],
                    from_obj=[
                               tprd.outerjoin(tdt,onclause=tdt.c.id==tprd.c.data_tier)

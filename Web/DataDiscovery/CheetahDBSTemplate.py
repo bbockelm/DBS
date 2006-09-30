@@ -264,13 +264,11 @@ Please make your selection and submit for further processing:
 </tr>
 #for item in $oList
 #set dbsInst=$item[0]
-#set datasetId=$item[1]
-#set procId=$item[2]
-#set prim=$item[3]
-#set tier=$item[4]
-#set ver =$item[5]
-#set fam =$item[6]
-#set exe =$item[7]
+#set prim=$item[1]
+#set tier=$item[2]
+#set ver =$item[3]
+#set fam =$item[4]
+#set exe =$item[5]
 <tr>
 <td><input type="checkbox" value=${dbsInst}___${prim}___${tier}___${ver}___${fam}___${exe} name="userSelection"></td>
 #if not $userMode:
