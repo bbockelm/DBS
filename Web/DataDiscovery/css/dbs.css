@@ -75,6 +75,11 @@ body.navlight  {
 .td5 {
   width: 5%;
 }
+.td5_gray {
+  width: 5%;
+  color: #000000;
+  background-color: #F0F0F0;
+}
 .td10 {
   width: 10%;
 }
