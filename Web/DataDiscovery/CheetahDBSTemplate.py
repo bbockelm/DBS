@@ -55,14 +55,14 @@ templateTop = """
 <title>DBS data discovery page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link rel="stylesheet" type="text/css" href="css/dbs.css" />
-<script type="text/javascript" src="js/sorttable.js"></script>
-<script type="text/javascript" src="js/prototype.js"></script>
-<script type="text/javascript" src="js/rico.js"></script>
-<script type="text/javascript" src="js/utils.js"></script>
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
 <!-- if JavaScripts enables, turn visiable content on -->
 <script type="text/javascript" src="js/setcontent.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
+<script type="text/javascript" src="js/sorttable.js"></script>
+<script type="text/javascript" src="js/prototype.js"></script>
+<script type="text/javascript" src="js/rico.js"></script>
 </head>
 <body>
 
@@ -70,7 +70,9 @@ templateTop = """
 <h1>You have disabled Javascript in your browser. This page requires
 Javascript.</h1>
 </noscript>
+<!--
 <div class="normalcontent">
+-->
 
 <table class="small" width="100%">
 <tr>
@@ -173,7 +175,7 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <tr>
 <td>Choose DBS instance</td>
 <td>
-<select name="dbsInst" onChange="updateSites(this)" id="form2_dbsSelector">
+<select name="dbsInst" onchange="updateSites(this)" id="form2_dbsSelector">
 #for dbs in $dbsList
 #if $dbs==$firstDBS
 <option value="$dbs" selected="selected">$dbs</option>
@@ -360,6 +362,7 @@ templateJSForm="""
 <table class="lfn">
 <tr valign="top">
 
+#if $msg
 <td valign="top" class="td35">
 $msg
 </td>
@@ -376,7 +379,7 @@ $msg
 <br></br>
 #end if
 </td>
-
+#end if
 
 <td valign="top">
 
@@ -734,7 +737,6 @@ This page was generated at: $localtime
 </table>
 
 
-</div> <!-- end of noscript check -->
 </body>
 </html>
 """
@@ -743,8 +745,8 @@ templateFrontPage="""
 <table width="100%">
 <tr valign="top">
 <!-- menu -->
-<td class="td5">
-<table class="box_gray" width="100%">
+<td class="td5_gray">
+<table width="100%">
 <tr valign="top">
 <td><a href="javascript:showMenu('Navigator')">Navigator</a></td>
 </tr>
@@ -761,7 +763,7 @@ templateFrontPage="""
 
 <!-- menu content, accordion -->
 <td>
-<div id="Introduction" name="Introduction" class="show">
+<div id="Introduction" class="show">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
 The purpose of this page to help you navigate through CMS data in
@@ -769,96 +771,99 @@ Data Bookeeping System (DBS).
 </p>
 <p>
 At the moment, we provide
-#if #userMode
+#if $userMode
 two
 #else
 three
 #endif
 orthogonal search methods to discovery your favorite data.
+</p>
 <ul>
 <li>Navigator is a menu driven method, where navigator menu guide you in available data hierarchy.
 To use this method please choose 
 <a href="javascript:showMenu('Navigator')">Navigator</a> menu on a left.
+</li>
 <li>Search is a keyword search method, e.g. you provide a set of keywords, for instance
 CMSSW Higgs, and we look up your data. To use this method, please choose
 <a href="javascript:showMenu('Search')">Search</a> menu
 on a left.
+</li>
 #if not $userMode
 <li>Site is a site driven method, where you look for data by choosing specific site.
 To use this method please choose <a href="javascript:showMenu('Site')">Site</a> menu on a left.
+</li>
 #end if
 </ul>
-</p>
 <p>
 The search results are usually presented in a form of sortable tables, where you can
 move your mouse over the column name and click on it to sort entries.
 </p>
 </div>
-<div id="NavigatorDiv" name="NavigatorDiv" class="hide">
-   <div id="Panel1">
-     <div id="Header1">
+<div id="NavigatorDiv" class="hide">
+   <div id="navigationPanel1">
+     <div id="navigationHeader1">
        <span class="dbs_cell">
        Navigator menu
        </span>
       </div>
-      <div id="Content1">
-       ... content navigator ...
+      <div id="navigationContent1">
+      $navigatorForm
       </div>
    </div>
 
-   <div id="Panel2">
-     <div id="Header2">
+   <div id="navigationPanel2">
+     <div id="navigationHeader2">
        <span class="dbs_cell">
        Method description
        </span>
       </div>
-      <div id="Content2">
+      <div id="navigationContent2">
        ... content text navigator...
       </div>
    </div>
 </div>
-<div id="SearchDiv" name="SearchDiv" class="hide">
-   <div id="Panel1">
-     <div id="Header1">
+<div id="SearchDiv" class="hide">
+   <div id="searchPanel1">
+     <div id="searchHeader1">
        <span class="dbs_cell">
        Data keyword search
        </span>
       </div>
-      <div id="Content1">
-       ... content search ...
+      <div id="searchContent1">
+      $searchForm
       </div>
    </div>
 
-   <div id="Panel2">
-     <div id="Header2">
+   <div id="searchPanel2">
+     <div id="searchHeader2">
        <span class="dbs_cell">
        Advanced search
        </span>
       </div>
-      <div id="Content2">
+      <div id="searchContent2">
        ... To be implemented soon ...
       </div>
    </div>
 </div>
-<div id="SiteDiv" name="SiteDiv" class="hide">
-   <div id="Panel1">
-     <div id="Header1">
+<div id="SiteDiv" class="hide">
+   <div id="sitePanel1">
+     <div id="siteHeader1">
        <span class="dbs_cell">
        Site search
        </span>
       </div>
-      <div id="Content1">
-       ... content site ...
+      <div id="siteContent1">
+      $siteForm
       </div>
    </div>
 
-   <div id="Panel2">
-     <div id="Header2">
+   <div id="sitePanel2">
+     <div id="siteHeader2">
        <span class="dbs_cell">
        Description
        </span>
       </div>
-      <div id="Content2">
+      <div id="siteContent2">
        ... content site ...
       </div>
    </div>
@@ -868,9 +873,16 @@ move your mouse over the column name and click on it to sort entries.
 
 </tr>
 </table>
-<script type="text/javascript">new Rico.Accordion( $('NavigatorDiv'), {panelHeight:300} );</script>
-<script type="text/javascript">new Rico.Accordion( $('SearchDiv'), {panelHeight:300} );</script>
-<script type="text/javascript">new Rico.Accordion( $('SiteDiv'), {panelHeight:300} );</script>
+<script type="text/javascript">
+new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:200} );
+new Rico.Accordion( \$('SearchDiv'), {panelHeight:200} );
+new Rico.Accordion( \$('SiteDiv'), {panelHeight:200} );
+</script>
+<!--
+<script type="text/javascript">new Rico.Accordion( $('NavigatorDiv'), {panelHeight:200} );</script>
+<script type="text/javascript">new Rico.Accordion( $('SearchDiv'), {panelHeight:200} );</script>
+<script type="text/javascript">new Rico.Accordion( $('SiteDiv'), {panelHeight:200} );</script>
+-->
 """
 
 #

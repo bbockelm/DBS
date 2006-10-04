@@ -199,7 +199,8 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
-           return self.init()
+            self.userMode=True
+            return self.init()
         except:
             t=self.errorReport("Fail in index function")
             pass
@@ -233,9 +234,17 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
-            self.userMode=True
-            page = self.genTopHTML(intro=True)
-            page+= self.genMenuForm(frontPage=1)
+#            page = self.genTopHTML(intro=True)
+            page = self.genTopHTML(intro=False)
+            nameSpace = {
+                         'userMode'     : self.userMode,
+                         'navigatorForm': self.genMenuForm(),
+                         'searchForm'   : self.searchForm(),
+                         'siteForm'     : self.siteForm()
+                        }
+            t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
+            page+= str(t)
+#            page+= self.genMenuForm(frontPage=1)
             page+= self.genBottomHTML()
             return page
         except:
@@ -244,6 +253,30 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     init.exposed = True
     
+    def expert(self):
+        """
+           Constructs 'expert' service page. The summary, L{getSummary}, has been updated
+           once a day by using internal timer.
+           @type  self: class object
+           @param self: none
+           @rtype : string
+           @return: returns HTML code
+        """
+        try:
+            self.userMode = False
+            return self.init()
+#            page = self.genTopHTML(intro=True)
+#            page+= self.genMenuForm(frontPage=1)
+#            page+= CheetahDBSTemplate.templateLine_OR
+#            page+= self.siteForm()
+#            page+= self.genBottomHTML()
+#            return page
+        except:
+            t=self.errorReport("Fail in expert function")
+            pass
+            return str(t)
+    expert.exposed = True
+
     def summary(self):
         print "userMode",self.userMode
         page=""
@@ -261,29 +294,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     summary.exposed = True
     
-    def expert(self):
-        """
-           Constructs 'expert' service page. The summary, L{getSummary}, has been updated
-           once a day by using internal timer.
-           @type  self: class object
-           @param self: none
-           @rtype : string
-           @return: returns HTML code
-        """
-        try:
-            self.userMode = False
-            page = self.genTopHTML(intro=True)
-            page+= self.genMenuForm(frontPage=1)
-            page+= CheetahDBSTemplate.templateLine_OR
-            page+= self.siteSearch()
-            page+= self.genBottomHTML()
-            return page
-        except:
-            t=self.errorReport("Fail in expert function")
-            pass
-            return str(t)
-    expert.exposed = True
-
     def searchHelper(self,keywords="",restrictDict={}):
         """
            Helper function which invoke L{DBSHelper.search} to find out data based on input keywords.
@@ -344,7 +354,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         restrictDict["app"] =appList
         restrictDict["prim"]=primList
         restrictDict["tier"]=tierList
-        print "## new dbsList",dbsList
         if self.userMode:
            oList=self.searchHelper(keywords,restrictDict)
         else:
@@ -459,8 +468,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                     }
         t = Template(CheetahDBSTemplate.templateJS, searchList=[nameSpace])
         page = str(t)
-        if not msg:
-           msg=self.searchForm()
+#        if not msg:
+#           msg=self.searchForm()
         if self.userMode:
            dbsList=[DBSGLOBAL]
 #           if not msg:
@@ -840,7 +849,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         try:
             page = self.genTopHTML()
-            page+= self.siteSearch(dbsInst,site)
+            page+= self.siteForm(dbsInst,site)
             self.helper.setDBSDLS(dbsInst)
             bList = self.helper.getBlocksFromSite(site)
             nameSpace = {
@@ -880,7 +889,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDatasets.exposed=True
 
-    def siteSearch(self,firstDBS="",firstSite=""):
+    def siteForm(self,firstDBS="",firstSite=""):
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
         nameSpace = {
