@@ -55,21 +55,14 @@ templateTop = """
 <title>DBS data discovery page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link rel="stylesheet" type="text/css" href="css/dbs.css" />
-
+<script type="text/javascript" src="js/sorttable.js"></script>
+<script type="text/javascript" src="js/prototype.js"></script>
+<script type="text/javascript" src="js/rico.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
 <!-- if JavaScripts enables, turn visiable content on -->
 <script type="text/javascript" src="js/setcontent.js"></script>
-<script type="text/javascript" src="js/utils.js"></script>
-<script type="text/javascript" src="js/sorttable.js"></script>
-<script type="text/javascript">
-function popUp(URL) {
-day = new Date();
-id = day.getTime();
-eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=640,height=480,left = 290,top = 220');");
-}
-</script>
-
 </head>
 <body>
 
@@ -570,68 +563,146 @@ all columns are sortable, move your mouse over the column name and click on it.
 <p></p>
 """
 
+templateProcDatasets="""
+<p>
+Processed datasets (plain 
+<a href="$host/showProcDatasets?dbsInst=$dbsInst&site=$site&app=$app&primD=$primD&tier=$tier">
+view</a>):
+</p>
+"""
+
 templateLFB = """
-#set tot=len($locDict.keys())
-<div class="off"><b>$path</b></div>
+#from DBSUtil import fmt3
+#set tot=len($blockDict.keys())
+<div id="procDataset" name="procDataset" class="off"><b>$path</b></div>
 contains $nEvents events, $totFiles files, $totSize. 
-<span name="BlockInfoText" id="BlockInfoText"></span>
-<script type="text/javascript">ShowBlockInfo()</script>
+<!--
+<div id="accordionDiv">
+    <div id="summaryPanel">
+         <div id="summaryHeader">Summary</div>
+         <div id="summaryContent">Summary content</div>
+    </div>
+    <div id="detailPanel">
+         <div id="detailHeader">Deatail view</div>
+         <div id="detailedContent">Detailed content</div>
+    </div>
+    <div id="combinedPanel">
+         <div id="combinedHeader">Combined view</div>
+         <div id="combinedContent">Combined content</div>
+    </div>
+</div>
+<script type="text/javascript">new Rico.Accordion( \$('accordionDiv'), {panelHeight:300} );</script>
+-->
+<table>
+<tr>
+<td><span name="BlockInfoText" id="BlockInfoText"></span></td>
+<td><br></br></td>
+<td><span name="SumInfoText" id="SumInfoText"></span></td>
+</tr>
+</table>
+#set tableId="table_"+str($tid)
 <!-- Main table -->
-<table id="t$tid" class="sortable">
-  <tr valign="top" class="sortable_gray">
-     <th align="center">Location</th>
-     <th align="center"># Events</th>
-#if not $userMode
-     <th align="center"># Files</th>
-     <th align="center">status</th>
-     <th align="center">size</th>
-#end if
-     <th align="center">LFN list</th>
-     <th align="center" valign="top" name="blockInfo" id="blockInfo" class="hide">
+<table id="$tableId" name="$tableId" class="sortable" cellspacing="0" cellpadding="0" border=1>
+  <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
+     <th>row</td>
+     <th>Location</th>
+     <th>Events</th>
+     <th>Files</th>
+     <th>size</th>
+     <th name="blockInfo" id="blockInfo" class="hide">
+     LFN list
+     </th>
+     <th name="blockInfo" id="blockInfo" class="hide">
      Block name
      </th>
   </tr>
+## HERE blockDict[blockName]=(nEvt,blockStatus,nFiles,blockSize,hostList)
+## HERE   locDict[siteName]=blockList
 #set i=0
-#for key in $locDict:
-#set i=$i+1 
-#set id="tdBlockInfo"+str($i)
-#for item in $locDict[$key]
-  <tr>
-     <td>$key</td>
+#set imax=len($locDict.keys())
+#for site in $locDict.keys()
+#set i+=1
+#if $imax<10
+#set print_i="%01d"%$i
+#elif $imax<100
+#set print_i="%02d"%$i
+#elif $imax<1000
+#set print_i="%03d"%$i
+#end if
+#set blockList=$locDict[$site]
+#set siteTotEvt=0
+#set siteTotFiles=0
+#set siteTotSize=0
+##
+## Sum total events,files,size for given site
+##
+#for bName in $blockList
+#set siteTotEvt+=$blockDict[$bName][0]
+#set siteTotFiles+=$blockDict[$bName][2]
+#set siteTotSize+=$blockDict[$bName][3]
+#end for
+  <tr valign="top" bgcolor="#FFFADC" name="row_sumInfo" id="row_sumInfo">
+     <td>$print_i</td>
+     <td><div class="dbs_cell">$site</div></td>
+     <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
+     <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
+     <td align="right"><div class="dbs_cell">$fmt3($siteTotSize)</div></td>
+     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <a href="$host/getLFNsForSite?site=$site">All</a>
+     </td>
+     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <a href="$host/getBlocksForSite?site=$site">All</a>
+     </td>
+  </tr>
+#set j=0
+#set jmax=len($blockList)
+#for name in $blockList
+#set j+=1
+#if $jmax<10
+#set print_j="%s_%01d"%($print_i,$j)
+#elif $jmax<100
+#set print_j="%s_%02d"%($print_i,$j)
+#elif $jmax<1000
+#set print_j="%s_%03d"%($print_i,$j)
+#elif $jmax<10000
+#set print_j="%s_%04d"%($print_i,$j)
+#end if
+#set item    = $blockDict[$name]
+#set bName   = $name.replace('#','%23')
 #set nEvt    = $item[0]
-#set name    = $item[1]
-#if $name
-#set bName= $name.replace('#','%23')
-#else
-#set bName= $name
-#end if
-     <td align="right">$nEvt</td>
-#if not $userMode
-#set nFiles  = $item[3]
-     <td align="right">$nFiles</td>
-#set bStatus = $item[2]
-#if $bStatus!="OPEN"
-     <td bgcolor="#DEB0AF" align="center">$bStatus</td>
-#else
-     <td align="center">$bStatus</td>
-#end if
-#set size    = $item[4]
-     <td align="right">$size</td>
-#end if ## end of userMode check
-
-     <td align="center">
+#set bStatus = $item[1]
+#set nFiles  = $item[2]
+#set size    = $item[3]
+#set hostList= $item[4]
+  <tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0" class="hide">
+     <td>$print_j</td>
+     <td><div class="dbs_cell">$site</div></td>
+     <td align="right"><div class="dbs_cell">$nEvt</div></td>
+     <td align="right"><div class="dbs_cell">$nFiles</div></td>
+     <td align="right"><div class="dbs_cell">$fmt3($size)</div></td>
+     <td align="center"><div class="dbs_cell">
      <a href="$host/getLFN_cfg?blockName=$bName&dataset=$path" alt="cff format">cff</a>, &nbsp;
      <a href="$host/getLFN_txt?blockName=$bName&dataset=$path" alt="file list format">plain</a>
+     </div>
      </td>
-     <td name="blockInfo" id="blockInfo" class="hide">
+     <td align="left">
+     <div class="dbs_cell">
      <a href="$host/getLFNlist?blockName=$bName&dataset=$path">$name</a>
+     </div>
      </td>
+  </tr>
 #end for
-   </tr>
 #end for
 </table>
 <!-- End of Main table -->
-
+<script type="text/javascript">
+ShowBlockInfo("$tableId");HideSumInfo("$tableId");</script>
+<!--
+ShowBlockInfo("$tableId");HideSumInfo("$tableId");MakeSortable("$tableId");</script>
+<script type="text/javascript">ShowBlockInfo("$tableId")</script>
+<script type="text/javascript">HideSumInfo("$tableId")</script>
+<script type="text/javascript">MakeUnSortable("$tableId")</script>
+-->
 <p></p>
 """
 
@@ -666,6 +737,140 @@ This page was generated at: $localtime
 </div> <!-- end of noscript check -->
 </body>
 </html>
+"""
+
+templateFrontPage="""
+<table width="100%">
+<tr valign="top">
+<!-- menu -->
+<td class="td5">
+<table class="box_gray" width="100%">
+<tr valign="top">
+<td><a href="javascript:showMenu('Navigator')">Navigator</a></td>
+</tr>
+<tr>
+<td><a href="javascript:showMenu('Search')">Search</a></td>
+</tr>
+#if not $userMode
+<tr>
+<td><a href="javascript:showMenu('Site')">Site</a></td>
+</tr>
+#end if
+</table>
+</td>
+
+<!-- menu content, accordion -->
+<td>
+<div id="Introduction" name="Introduction" class="show">
+<div class="sectionhead">DATA DISCOVERY PAGE</div>
+<p>
+The purpose of this page to help you navigate through CMS data in
+Data Bookeeping System (DBS).
+</p>
+<p>
+At the moment, we provide
+#if #userMode
+two
+#else
+three
+#endif
+orthogonal search methods to discovery your favorite data.
+<ul>
+<li>Navigator is a menu driven method, where navigator menu guide you in available data hierarchy.
+To use this method please choose 
+<a href="javascript:showMenu('Navigator')">Navigator</a> menu on a left.
+<li>Search is a keyword search method, e.g. you provide a set of keywords, for instance
+CMSSW Higgs, and we look up your data. To use this method, please choose
+<a href="javascript:showMenu('Search')">Search</a> menu
+on a left.
+#if not $userMode
+<li>Site is a site driven method, where you look for data by choosing specific site.
+To use this method please choose <a href="javascript:showMenu('Site')">Site</a> menu on a left.
+#end if
+</ul>
+</p>
+<p>
+The search results are usually presented in a form of sortable tables, where you can
+move your mouse over the column name and click on it to sort entries.
+</p>
+</div>
+<div id="NavigatorDiv" name="NavigatorDiv" class="hide">
+   <div id="Panel1">
+     <div id="Header1">
+       <span class="dbs_cell">
+       Navigator menu
+       </span>
+      </div>
+      <div id="Content1">
+       ... content navigator ...
+      </div>
+   </div>
+
+   <div id="Panel2">
+     <div id="Header2">
+       <span class="dbs_cell">
+       Method description
+       </span>
+      </div>
+      <div id="Content2">
+       ... content text navigator...
+      </div>
+   </div>
+</div>
+<div id="SearchDiv" name="SearchDiv" class="hide">
+   <div id="Panel1">
+     <div id="Header1">
+       <span class="dbs_cell">
+       Data keyword search
+       </span>
+      </div>
+      <div id="Content1">
+       ... content search ...
+      </div>
+   </div>
+
+   <div id="Panel2">
+     <div id="Header2">
+       <span class="dbs_cell">
+       Advanced search
+       </span>
+      </div>
+      <div id="Content2">
+       ... To be implemented soon ...
+      </div>
+   </div>
+</div>
+<div id="SiteDiv" name="SiteDiv" class="hide">
+   <div id="Panel1">
+     <div id="Header1">
+       <span class="dbs_cell">
+       Site search
+       </span>
+      </div>
+      <div id="Content1">
+       ... content site ...
+      </div>
+   </div>
+
+   <div id="Panel2">
+     <div id="Header2">
+       <span class="dbs_cell">
+       Description
+       </span>
+      </div>
+      <div id="Content2">
+       ... content site ...
+      </div>
+   </div>
+</div>
+</td>
+<!--       -->
+
+</tr>
+</table>
+<script type="text/javascript">new Rico.Accordion( $('NavigatorDiv'), {panelHeight:300} );</script>
+<script type="text/javascript">new Rico.Accordion( $('SearchDiv'), {panelHeight:300} );</script>
+<script type="text/javascript">new Rico.Accordion( $('SiteDiv'), {panelHeight:300} );</script>
 """
 
 #

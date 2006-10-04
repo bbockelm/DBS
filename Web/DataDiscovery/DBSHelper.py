@@ -12,9 +12,6 @@ CLI DBS Data discovery toolkit.
 # import system modules
 import string, sys, time, types, popen2
 
-# import 3d party modules
-import sqlalchemy
-
 # import DBS modules
 import dbsException
 import dbsCgiApi
@@ -51,8 +48,12 @@ class DBSHelper(DBSLogger):
       self.datasetPath = "*"# default path to entire content of DBS
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
-      self.dbsDBs      = DBSDB(self.verbose)
-      self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
+      try:
+         self.dbsDBs      = DBSDB(self.verbose)
+         self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
+      except:
+         print "WARNING: some of the functionality will be disable due to missing authentication"
+         pass
       self.api         = "" # dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
       self.dbsApi      = {} #  {'dbsInst': dbsCgiApi.DbsCgiApi(url,dbsInst) }
       self.dbsDLS      = {} #  {'dbsInst': dlsClient.getDlsApi(dlsType,endpoint) }
@@ -63,6 +64,10 @@ class DBSHelper(DBSLogger):
       self.dlsInst     = {} # {(type,epoint): dlsClient.getDlsApi(type,epoint)}
       # set DBS/DLS 
       self.setDBSDLS(dbsInst)
+      self.quiet       = 0
+
+  def setQuiet(self):
+      self.quiet=1
 
   def initJSDict(self,userMode=True):
       """
@@ -604,7 +609,7 @@ class DBSHelper(DBSLogger):
       """
       return self.dbsDBs.getTable(tableName,aliasName)
       
-  def search(self,pList=[]):
+  def search(self,pList=[],rDict={}):
       """
          Retrieves a summary information from DB. It makes join over
          primary Dataset, data tier, application. The idea is simlar to iTunes.
@@ -659,6 +664,8 @@ class DBSHelper(DBSLogger):
           for i in tup:
               found=0
               for p in pList:
+                 # skip keywords which represent conditions, e.g. dbs:MCLocal_1/Writer
+                 if string.find(p,":")>-1: continue
                  if  type(i) is types.StringType:
                      if string.find(string.lower(i),string.lower(p))>-1:
                         oList.append((self.dbsInstance,)+tup)
@@ -809,7 +816,8 @@ class DBSHelper(DBSLogger):
   def getData(self,dataset,site="All"):
       """
          Returns 
-         locDict={'location': [(nEvt,fileBlock)]},
+         blockDict={'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}
+         locDict={'location': [blockName]}
          and total number of events in given dataset
          The 'location'='N/A' when DLS is not responding, in this case exception message is thrown.
          @type  dataset: string 
@@ -817,17 +825,19 @@ class DBSHelper(DBSLogger):
          @type site: string
          @param site: site name, default 'All'
          @rtype : tuple
-         @return: ( {'location': [(nEvt,fileBlock)]}, totalNumberOfEvents )
+         @return: {'location': [blockName]},
+         {'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}, 
+         totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
-      blockInfoDict = self.getBlockInfo(dataset)
-      locDict = {}
-      nEvts   = 0
-      totFiles= 0
-      totSize = 0
+#      blockInfoDict = self.getBlockInfo(dataset)
+      blockInfoDict = self.api.listBlocks(dataset,"yes")
+      locDict  = {}
+      nEvts    = 0
+      totFiles = 0
+      totSize  = 0
       if string.lower(site)=="all": site="*"
       for blockName in blockInfoDict.keys():
           evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
-          print "blockName",blockName,evts
           if evts:
              nEvts+=evts
           else:
@@ -835,21 +845,26 @@ class DBSHelper(DBSLogger):
           totFiles+=nFiles
           totSize+=bBytes
           # query DLS
+          hostList=[]
           try:
               dlsList = self.dlsApi.getLocations(blockName)
               for entry in dlsList:
                   for loc in entry.locations:
                       dlsHost = str(loc.host)
                       if site=="*" or dlsHost==site:
-                         addToDict(locDict,str(loc.host),(evts,blockName,bStatus,nFiles,fmt3(bBytes)))
+                         hostList.append(str(loc.host))
+                         addToDict(locDict,str(loc.host),blockName)
           except:
-              printExcept()
+              if not self.quiet:
+                 printExcept()
               if site=="*":
-                 addToDict(locDict,'N/A',(evts,blockName,bStatus,nFiles,fmt3(bBytes)))
+                 hostList.append('N/A')
+                 addToDict(locDict,'N/A',blockName)
               pass
           # end of DLS query
-      print "total number of events",nEvts
-      return locDict,nEvts,totFiles,fmt3(totSize)
+          blockInfoDict[blockName]+=hostList
+#          addToDict(blockDict,blockName,(hostList,evts,bStatus,nFiles,fmt3(bBytes)))
+      return locDict,blockInfoDict,nEvts,totFiles,fmt3(totSize)
 
   def getBlocksFromSite(self,site):
       """
@@ -926,14 +941,10 @@ if __name__ == "__main__":
        verbose=1
 
     helper = DBSHelper(dbsInst,verbose)
-#    loc = helper.dlsApi.getAllLocations()
-#    sys.exit(0)
     if opts.dict:
        if string.lower(opts.dict)=="global":
-#          print "Generate global dict"
           print helper.initJSDict(True)
        else:
-#          print "Generate dict for all DBS instances"
           print helper.initJSDict(False)
        sys.exit(0)
 
@@ -962,6 +973,8 @@ if __name__ == "__main__":
           dataTier="*"
     if opts.app:
        appPath=formAppPath(opts.app)
+    if opts.quiet:
+       helper.setQuiet()
     if opts.site:
        site=opts.site
        bList = helper.getBlocksFromSite(site)
@@ -970,49 +983,64 @@ if __name__ == "__main__":
            print "      '%s'"%blockName
        sys.exit(0)
        
-#    datasetPath=formDatasetPath(opts.primD)
-#    helper.WhatExists(datasetPath)
-#    print "Search dataset: ",datasetPath   
-    
     if verbose:
        print "appPath",appPath
     appDatasets = helper.getDatasetsFromApp(appPath)
     if verbose:
        print
        printListElements(appDatasets,"appDatasets ")
-#       print "appPath","/CMSSW_0_8_1/*Merged/cmsRun"
-#    appDatasets = helper.getDatasetsFromApp("/CMSSW_0_8_1/*Merged/cmsRun")
-#    if verbose:
-#       print
-#       print "appDatasets ",appDatasets
-#       sys.exit(0)
 
-#    print "for *",helper.getDatasetsFromApp("/CMSSW_0_8_1/Merged/*")
-    
-    print "Pass search critireas:"
+#    print "Pass search critireas:"
+    print
 
     hostField=0
     for dataset in appDatasets:
         empty,prim,tier,app = string.split(dataset,"/")
         if primaryDataset!="*" and prim!=primaryDataset: continue
         if dataTier!="*" and tier!=dataTier: continue
-        locDict, totEvt, totFiles, totSize = helper.getData(dataset)
+        locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset)
+        evtLength = len(str(totEvt))
+        # TMP: redo the following part, since now I got blockDict
+        # parse blockDict={'blockName': (hostList,nEvt,blockStatus,nFiles,blockSize)}
+        #         locDict={'location': [blockName]}
+#        hostField=0
+#        for bName in blockDict.keys():
+#            for item in blockDict[bName]:
+#                siteList = item[0]
+#                for site in siteList:
+#                    if len(site)>hostField: hostField=len(site)
+#        print dataset
+#        for bName in blockDict.keys():
+#            count=0
+#            for item in blockDict[bName]:
+#                siteList = item[0]
+#                evt      = item[1]
+#                bStatus  = item[2]
+
+#                for idx in xrange(0,len(siteList)):
+#                    site=siteList[idx]
+#                    if not idx:
+#                       print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
+#                    else:
+#                       print string.ljust(site,hostField),"replica"
+#        print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
+#        print
+
         evtLength = len(str(totEvt))
         if not hostField:
            for key in locDict.keys():
                if len(key)>hostField: hostField=len(key)
-        print 
         print dataset
-        for loc in locDict.keys():
-            count=0
-            for item in locDict[loc]:
-                evt  = item[0]
-                bName  = item[1]
-        
+        if  not opts.showProcD:
+            for bName in blockDict.keys():
+                count=0
+                evt,bStatus,nFiles,bSize,site = blockDict[bName]
                 if not count:
-                   print string.ljust(loc,hostField),string.ljust(str(evt),evtLength),bName
+                   print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
                    count+=1
                 else:
                    empty = " "*(hostField)
                    print empty,string.ljust(str(evt),evtLength),bName
-        print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
+            print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
+            print
+

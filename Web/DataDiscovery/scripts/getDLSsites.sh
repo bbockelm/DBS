@@ -16,7 +16,7 @@ DIR=$DLSHOME/Client/lib
 rm -f $PWD/dls.all.tmp
 # Global DLS
 $DIR/dls-get-all-locations -i DLS_TYPE_LFC -e prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC \
-    2> /dev/null | sort -u| awk '{print "MCGlobal/Writer "$0""}' > $PWD/dls.all.tmp
+    2> /dev/null | sort -u| awk '{print "MCGlobal/Writer "$0"\nDev/Writer "$0""}' > $PWD/dls.all.tmp
 status=$?
 if [ $status -ne 0 ]; then
 echo "Error, while retrieving DLS sites from DLS Global, status=$status"

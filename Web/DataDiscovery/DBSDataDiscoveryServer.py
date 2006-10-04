@@ -87,6 +87,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.timer      = self.timerForSummary = time.time()
         self.sumPage    = ""
         self.firstSearch=1
+        self.siteDict   = {}
 
     def sendErrorReport(self,msg=""):
         """
@@ -283,7 +284,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     expert.exposed = True
 
-    def searchHelper(self,keywords=""):
+    def searchHelper(self,keywords="",restrictDict={}):
         """
            Helper function which invoke L{DBSHelper.search} to find out data based on input keywords.
            @type keywords: string
@@ -294,7 +295,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         pList=[]
         if len(keywords):
            pList=string.split(keywords)
-        oList = self.helper.search(pList)
+        oList = self.helper.search(pList,restrictDict)
         return oList
         
     def searchForm(self):
@@ -316,10 +317,40 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.firstSearch=0
         page+= self.searchForm()
         oList= []
+        # parse keywords and search for DBSINST
+        dbsList=appList=tierList=siteList=primList=[]
+        pList=[]
+        if len(keywords):
+           pList=string.split(keywords)
+        for word in pList:
+            if string.find(string.lower(word),":")>-1:
+               p,w = string.split(string.lower(word),":")
+               print p,w
+               if p=="dbs":
+                  for dbs in self.dbsList:
+                      if string.lower(dbs)==w:
+                         dbsList.append(dbs)
+               elif p=="app":
+                  appList.append(w)
+               elif p=="tier":
+                  tierList.append(w)
+               elif p=="site":
+                  siteList.append(w)
+               elif p=="prim":
+                  primList.append(w)
+        restrictDict={}
+        restrictDict["dbs"] =dbsList
+        restrictDict["site"]=siteList
+        restrictDict["app"] =appList
+        restrictDict["prim"]=primList
+        restrictDict["tier"]=tierList
+        print "## new dbsList",dbsList
         if self.userMode:
-           oList=self.searchHelper(keywords)
+           oList=self.searchHelper(keywords,restrictDict)
         else:
-           for dbsInst in self.dbsList:
+           if not len(dbsList):
+              dbsList=self.dbsList
+           for dbsInst in dbsList:
                self.helperInit(dbsInst)
                oList+=self.searchHelper(keywords)
         nameSpace = {
@@ -502,6 +533,47 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDataFromSelection.exposed = True 
 
+    def showProcDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*"):
+        try:
+            self.helperInit(dbsInst)
+            self.dbs  = dbsInst
+            self.site = site
+            self.app  = app
+            self.primD= primD
+            self.tier = tier
+            primaryDataset=primD
+            dataTier = tier
+            page = self.genTopHTML()
+            page+= self.genSnapshot(self.dbs,self.site,self.app,self.primD,self.tier)
+            page+="""<hr class="dbs" />"""
+            procList = self.helper.getDatasetsFromApp(app)
+            page+= "<pre>"
+            for procD in procList:
+                empty,prim,tier,app = string.split(procD,"/")
+                if primaryDataset!="*" and prim!=primaryDataset: continue
+                if dataTier!="*" and tier!=dataTier: continue
+                page+=procD+"\n"
+            page+= "</pre>"
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in showProcDatasets function")
+            pass
+            return str(t)
+    showProcDatasets.exposed=True
+
+    def showProcDatasetsHTML(self,dbs,site,app,primD,tier):
+        nameSpace = {
+                     'host'    : DBSDD,
+                     'dbsInst' : dbs, 
+                     'site'    : site,
+                     'app'     : app,
+                     'primD'   : primD,
+                     'tier'    : tier
+                    }
+        t = Template(CheetahDBSTemplate.templateProcDatasets, searchList=[nameSpace])
+        return str(t)
+    
     def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
@@ -529,7 +601,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace={'firstSearch': self.firstSearch}
         t = Template(CheetahDBSTemplate.templateSeparator, searchList=[nameSpace])
         page= str(t)
-        page+="Processed datasets: "
+        
+        page+= self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
+#        page+="Processed datasets: "
 
         primaryDataset=primD
         dataTier = tier
@@ -544,11 +618,11 @@ class DBSDataDiscoveryServer(DBSLogger):
             empty,prim,tier,app = string.split(dataset,"/")
             if primaryDataset!="*" and prim!=primaryDataset: continue
             if dataTier!="*" and tier!=dataTier: continue
-            locDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
+            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
             # new stuff which do not show repeating datasets
-            p = self.dataToHTML(dataset,locDict,totEvt,totFiles,totSize,id)
+            p = self.dataToHTML(dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles:
-               page+="""<div class="off"><b>%s</b></div>"""%oldDataset
+               page+="""<div id="procDataset" name="procDataset" class="off"><b>%s</b></div>"""%oldDataset
             else:
                page+=prevPage
             oldTotEvt=totEvt
@@ -650,6 +724,37 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     getLFN_txt.exposed = True
     
+    def getLFNsForSite(self,site):
+        try:
+            self.htmlInit()
+            page ="""<html><body><pre>\n"""
+            for blockName in self.siteDict[site]:
+                lfnList = self.helper.getLFNs(blockName,"")
+                for item in lfnList:
+                    lfn=item[0]
+                    page+="%s\n"%lfn
+            page+="\n</pre></body></html>"
+            return page
+        except:
+            t=self.errorReport("Fail in getLFNsForSite function")
+            pass
+            return str(t)
+    getLFNsForSite.exposed=True
+    
+    def getBlocksForSite(self,site):
+        try:
+            self.htmlInit()
+            page ="""<html><body><pre>\n"""
+            for blockName in self.siteDict[site]:
+                page+="%s\n"%blockName
+            page+="\n</pre></body></html>"
+            return page
+        except:
+            t=self.errorReport("Fail in getBlocksForSite function")
+            pass
+            return str(t)
+    getBlocksForSite.exposed=True
+    
     def getLFN_cfg(self,blockName,dataset=""):
         """
            Retrieves and represents LFN list in 'cff' framework form
@@ -690,10 +795,6 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         lfnList = self.helper.getLFNs(blockName,dataset)
-#        if dataset:
-#           lfnList = self.helper.getLFNs(blockName,dataset)
-#        else:
-#           lfnList = self.helper.getLFNs(blockName)
         nameSpace = {
                      'blockName' : blockName,
                      'lfnList'   : lfnList
@@ -701,7 +802,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
         return str(t)
         
-    def dataToHTML(self,path,locDict,totEvt,totFiles,totSize,id):
+    def dataToHTML(self,path,locDict,blockDict,totEvt,totFiles,totSize,id):
         """
            Forms output tables.
            @type  path: string 
@@ -710,12 +811,15 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
 
+        # keep in cache locDict
+        self.siteDict=locDict
         page=""
         nameSpace = {
                      'host'       : DBSDD,
                      'path'       : path,
                      'firstSearch': self.firstSearch,
                      'locDict'    : locDict,
+                     'blockDict'  : blockDict,
                      'nEvents'    : totEvt,
                      'totFiles'   : totFiles,
                      'totSize'    : totSize,
@@ -801,4 +905,12 @@ if __name__ == "__main__":
        
     cherrypy.root = DBSDataDiscoveryServer(verbose) 
     cherrypy.config.update(file="CherryServer.conf")
+#    if os.environ.has_key("DDHOME"):
+#       cherrypy.config.update({
+#            'global': {'static_filter.root' : os.environ["DDHOME"] }})
+#    if os.environ.has_key("DBSDD"):
+#       s = string.split(os.environ["DBSDD"],":")
+#       print "Call on port",s[2]
+#       cherrypy.config.update({
+#            'global': {'server.socket_port' : s[2] }})
     cherrypy.server.start()

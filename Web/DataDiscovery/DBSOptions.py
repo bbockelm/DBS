@@ -20,8 +20,8 @@ class DBSOptionParser:
   """
   def __init__(self):
     self.parser = OptionParser()
-    self.parser.add_option("--html",action="store_true", default=False, dest="html",
-         help="generate HTML output")
+    self.parser.add_option("--quiet",action="store_true", default=False, dest="quiet",
+         help="be quiet and don't print exceptions")
     self.parser.add_option("--dict",action="store", type="string", dest="dict",
          help="generate dict, pass Global/All")
     self.parser.add_option("--primaryDataset",action="store", type="string", dest="primD",
@@ -32,6 +32,8 @@ class DBSOptionParser:
          help="specify application keys (version,family,exe), e.g. --app=CMSSW_0_8_1,Merged,cmsRun")
     self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
          help="specify DBS instance to use, e.g. --dbsInst=MCLocal_1/Writer")
+    self.parser.add_option("--showProcDatasets",action="store_true", default=False, dest="showProcD",
+         help="be quiet and show only processed datasets")
     self.parser.add_option("--site",action="store", type="string", dest="site",
          help="specify DLS site you're interesting, e.g. --site=fnal.gov")
     self.parser.add_option("--search",action="store", type="string", dest="search",

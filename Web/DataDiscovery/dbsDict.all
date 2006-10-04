@@ -1,13 +1,103 @@
 
-{ menuList: ["MCGlobal/Writer","MCLocal_1/Writer","MCLocal_2/Writer","MCLocal_3/Writer","MCLocal_4/Writer"],
-nextObj: {"MCGlobal/Writer":{ menuList: ["/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun","/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun","/CMSSW_0_8_1/GEN-SIM-DIGI/cmsRun"],
-nextObj: {"/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun": { menuList: ["CSA06-083-os-SoftMuon","CSA06-083-os-EWKSoup"],
+{ menuList: ["MCGlobal/Writer","Dev/Writer","MCLocal_1/Writer","MCLocal_2/Writer","MCLocal_3/Writer","MCLocal_4/Writer"],
+nextObj: {"MCGlobal/Writer":{ menuList: ["/CMSSW_1_0_2/RECO/cmsRun","/CMSSW_1_0_2/RAW/cmsRun","/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun","/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun","/CMSSW_0_8_1/GEN-SIM-DIGI/cmsRun"],
+nextObj: {"/CMSSW_1_0_2/RECO/cmsRun": { menuList: ["CSA06-102-os-minbias9-0","CSA06-102-os-minbias8-0","CSA06-102-os-minbias7-0","CSA06-102-os-minbias6-0","CSA06-102-os-minbias5-0","CSA06-102-os-minbias4-0","CSA06-102-os-minbias3-0","CSA06-102-os-minbias2-0","CSA06-102-os-minbias19-0","CSA06-102-os-minbias18-0","CSA06-102-os-minbias17-0","CSA06-102-os-minbias16-0","CSA06-102-os-minbias15-0","CSA06-102-os-minbias14-0","CSA06-102-os-minbias13-0","CSA06-102-os-minbias12-0","CSA06-102-os-minbias11-0","CSA06-102-os-minbias10-0","CSA06-102-os-minbias1-0","CSA06-102-os-minbias0-0"],
+ nextObj : {"CSA06-102-os-minbias9-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias8-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias7-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias6-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias5-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias4-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias3-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias2-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias19-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias18-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias17-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias16-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias15-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias14-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias13-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias12-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias11-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias10-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias1-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias0-0": { menuList: ["All", "RECO"], nextObj: null }}}
+,"/CMSSW_1_0_2/RAW/cmsRun": { menuList: ["CSA06-102-os-minbias9-0","CSA06-102-os-minbias8-0","CSA06-102-os-minbias7-0","CSA06-102-os-minbias6-0","CSA06-102-os-minbias5-0","CSA06-102-os-minbias4-0","CSA06-102-os-minbias3-0","CSA06-102-os-minbias2-0","CSA06-102-os-minbias19-0","CSA06-102-os-minbias18-0","CSA06-102-os-minbias17-0","CSA06-102-os-minbias16-0","CSA06-102-os-minbias15-0","CSA06-102-os-minbias14-0","CSA06-102-os-minbias13-0","CSA06-102-os-minbias12-0","CSA06-102-os-minbias11-0","CSA06-102-os-minbias10-0","CSA06-102-os-minbias1-0","CSA06-102-os-minbias0-0"],
+ nextObj : {"CSA06-102-os-minbias9-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias8-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias7-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias6-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias5-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias4-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias3-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias2-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias19-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias18-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias17-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias16-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias15-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias14-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias13-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias12-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias11-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias10-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias1-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias0-0": { menuList: ["All", "RAW"], nextObj: null }}}
+,"/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun": { menuList: ["CSA06-083-os-SoftMuon","CSA06-083-os-ExoticSoup","CSA06-083-os-EWKSoup"],
  nextObj : {"CSA06-083-os-SoftMuon": { menuList: ["All", "SIM","HLT","GEN","DIGI"], nextObj: null}
+,"CSA06-083-os-ExoticSoup": { menuList: ["All", "SIM","HLT","GEN","DIGI"], nextObj: null}
 ,"CSA06-083-os-EWKSoup": { menuList: ["All", "SIM","HLT","GEN","DIGI"], nextObj: null }}}
-,"/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun": { menuList: ["CSA06-082-os-ZMuMu"],
- nextObj : {"CSA06-082-os-ZMuMu": { menuList: ["All", "SIM","GEN","DIGI"], nextObj: null }}}
+,"/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun": { menuList: ["CSA06-082-os-ZMuMu","CSA06-082-os-TTbar"],
+ nextObj : {"CSA06-082-os-ZMuMu": { menuList: ["All", "SIM","GEN","DIGI"], nextObj: null}
+,"CSA06-082-os-TTbar": { menuList: ["All", "SIM","GEN","DIGI"], nextObj: null }}}
 ,"/CMSSW_0_8_1/GEN-SIM-DIGI/cmsRun": { menuList: ["CSA06-081-os-minbias"],
  nextObj : {"CSA06-081-os-minbias": { menuList: ["All", "SIM","GEN","DIGI"], nextObj: null }}}
+}
+}
+,"Dev/Writer": { menuList: ["/CMSSW_1_0_2/RECO/cmsRun","/CMSSW_1_0_2/RAW/cmsRun"],
+nextObj: {"/CMSSW_1_0_2/RECO/cmsRun": { menuList: ["CSA06-102-os-minbias9-0","CSA06-102-os-minbias8-0","CSA06-102-os-minbias7-0","CSA06-102-os-minbias6-0","CSA06-102-os-minbias5-0","CSA06-102-os-minbias4-0","CSA06-102-os-minbias3-0","CSA06-102-os-minbias2-0","CSA06-102-os-minbias19-0","CSA06-102-os-minbias18-0","CSA06-102-os-minbias17-0","CSA06-102-os-minbias16-0","CSA06-102-os-minbias15-0","CSA06-102-os-minbias14-0","CSA06-102-os-minbias13-0","CSA06-102-os-minbias12-0","CSA06-102-os-minbias11-0","CSA06-102-os-minbias10-0","CSA06-102-os-minbias1-0","CSA06-102-os-minbias0-0"],
+ nextObj : {"CSA06-102-os-minbias9-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias8-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias7-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias6-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias5-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias4-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias3-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias2-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias19-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias18-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias17-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias16-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias15-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias14-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias13-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias12-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias11-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias10-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias1-0": { menuList: ["All", "RECO"], nextObj: null}
+,"CSA06-102-os-minbias0-0": { menuList: ["All", "RECO"], nextObj: null }}}
+,"/CMSSW_1_0_2/RAW/cmsRun": { menuList: ["CSA06-test-102-os-minbias18-0","CSA06-102-os-minbias9-0","CSA06-102-os-minbias8-0","CSA06-102-os-minbias7-0","CSA06-102-os-minbias6-0","CSA06-102-os-minbias5-0","CSA06-102-os-minbias4-0","CSA06-102-os-minbias3-0","CSA06-102-os-minbias2-0","CSA06-102-os-minbias19-0","CSA06-102-os-minbias18-0","CSA06-102-os-minbias17-0","CSA06-102-os-minbias16-0","CSA06-102-os-minbias15-0","CSA06-102-os-minbias14-0","CSA06-102-os-minbias13-0","CSA06-102-os-minbias12-0","CSA06-102-os-minbias11-0","CSA06-102-os-minbias10-0","CSA06-102-os-minbias1-0","CSA06-102-os-minbias0-0"],
+ nextObj : {"CSA06-test-102-os-minbias18-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias9-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias8-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias7-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias6-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias5-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias4-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias3-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias2-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias19-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias18-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias17-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias16-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias15-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias14-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias13-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias12-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias11-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias10-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias1-0": { menuList: ["All", "RAW"], nextObj: null}
+,"CSA06-102-os-minbias0-0": { menuList: ["All", "RAW"], nextObj: null }}}
 }
 }
 ,"MCLocal_1/Writer": { menuList: ["/test/test/testexe","/CMSSW_0_8_4/Merged/cmsRun","/CMSSW_0_8_4/GEN-SIM-DIGI-HLT/cmsRun","/CMSSW_0_8_3/Merged/cmsRun","/CMSSW_0_8_3/GEN-SIM-DIGI-HLT/cmsRun","/CMSSW_0_8_2/Merged/cmsRun","/CMSSW_0_8_2/GEN-SIM-DIGI/cmsRun","/CMSSW_0_8_1/Merged/cmsRun","/CMSSW_0_8_1/GEN-SIM-DIGI/cmsRun"],

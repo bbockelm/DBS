@@ -1,6 +1,7 @@
 addEvent(window, "load", sortables_init);
 
 var SORT_COLUMN_INDEX;
+var origTable=null;
 
 function sortables_init() {
     // Find all tables with class sortable and make them sortable
@@ -31,6 +32,25 @@ function ts_makeSortable(table) {
     }
 }
 
+function ts_makeUnSortable(table) {
+    if (table.rows && table.rows.length > 0) {
+        var firstRow = table.rows[0];
+    }
+    if (!firstRow) return;
+    
+    var allspans = document.getElementsByTagName("span");
+    for (var ci=0;ci<allspans.length;ci++) {
+        if (allspans[ci].className == 'sortarrow') {
+                allspans[ci].innerHTML = '&nbsp;';
+        }
+    }
+    // We have a first row: assume it's the header, and make its contents clickable links
+    for (var i=0;i<firstRow.cells.length;i++) {
+        var cell = firstRow.cells[i];
+        var txt = ts_getInnerText(cell);
+        cell.innerHTML = txt;
+    }
+}
 function ts_getInnerText(el) {
 	if (typeof el == "string") return el;
 	if (typeof el == "undefined") { return el };
@@ -71,6 +91,7 @@ function ts_resortTable(lnk,clid) {
     if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d$/)) sortfn = ts_sort_date;
     if (itm.match(/^[£$]/)) sortfn = ts_sort_currency;
     if (itm.match(/^[\d\.]+$/)) sortfn = ts_sort_numeric;
+    if (itm.match(/\d+\.\d[KMGTP]B$/)) sortfn = ts_sort_filesize;
     SORT_COLUMN_INDEX = column;
     var firstRow = new Array();
     var newRows = new Array();
@@ -105,8 +126,43 @@ function ts_resortTable(lnk,clid) {
     }
         
     span.innerHTML = ARROW;
+    // new stuff, VK
+    //highlight(table,clid)
+//    colorize(table);
 }
 
+function colorize(table) {
+    var color=null;
+    for (j=1;j<table.rows.length;j++) {
+        if(j%2) {
+           color="#FFFADC";
+        } else {
+           color="#F0F0F0";
+        }
+        table.rows[j].style.background=color;
+    }
+}
+
+function highlight(table,colId) {
+   // tbls = document.getElementsByTagName("table");
+   // for (ti=0;ti<tbls.length;ti++) {
+   //     table = tbls[ti];
+        for (j=1;j<table.rows.length;j++) {
+            table.rows[j].style.background='#FFFFFF'
+        }
+        for (j=1;j<table.rows.length;j++) {
+            if (j+1<table.rows.length) {
+               var val0 = ts_getInnerText(table.rows[j].cells[colId])
+               var val1 = ts_getInnerText(table.rows[j+1].cells[colId])
+               if(val0==val1) {
+                 table.rows[j].style.background='#ffefd5'
+                 table.rows[j+1].style.background='#ffefd5'
+               }
+            }
+        }
+   // }
+    
+}
 function getParent(el, pTagName) {
 	if (el == null) return null;
 	else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
@@ -166,7 +222,32 @@ function ts_sort_default(a,b) {
     if (aa<bb) return -1;
     return 1;
 }
-
+function convertSize(aa) {
+    var num_a = aa.split('.');
+    var suffix= aa.substring(aa.length-2,aa.length);
+    var a_val = aa.substring(0,aa.length-2);
+    if (suffix=='KB') {
+        return a_val*1024;
+    } else if (suffix=='MB') {
+        return a_val*1024*1024;
+    } else if (suffix=='GB') {
+        return a_val*1024*1024*1024;
+    } else if (suffix=='TB') {
+        return a_val*1024*1024*1024*1024;
+    } else if (suffix=='PB') {
+        return a_val*1024*1024*1024*1024*1024;
+    }
+    return 0;
+}
+function ts_sort_filesize(a,b) {
+    aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]);
+    bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]);
+    var a_val = convertSize(aa);
+    var b_val = convertSize(bb);
+    if (a_val==b_val) return 0;
+    if (a_val<b_val) return -1;
+    return 1;
+}
 
 function addEvent(elm, evType, fn, useCapture)
 // addEvent and removeEvent

@@ -56,6 +56,7 @@ body.navlight  {
   border-top-width : 1px;
 }
 
+
  tr, td.own  {
   font-size: 13px;
   font-weight: bold;
@@ -86,6 +87,13 @@ hr.dbs {
   width: 100%;
   color: #CCCCCC;
   background-color: #CCCCCC;
+  height: 2px;
+}
+hr.dbs_red {
+  border: 0;
+  width: 100%;
+  color: #500000;
+  background-color: #500000;
   height: 2px;
 }
 
@@ -248,15 +256,26 @@ hr.dbs {
 .box_red {
   color: #FF0000;
 }
+.box_darkgreen {
+  color: #666699;
+  background: #666699;
+  background-color: #666699;
+}
 .box_white {
   padding: 10px 1px;
   color: #0000FF;
   background: #ffffff;
 }
 .box_gray {
-  color: #CCCCCC;
-  background: #CCCCCC;
-  background-color: #CCCCCC;
+/*  color: #CCCCCC;*/
+/*  background: #CCCCCC;*/
+/*  background-color: #CCCCCC;*/
+  color: #000000;
+  background-color: #F0F0F0;
+}
+.box_light {
+  color: #000000;
+  background-color: #FFFADC;
 }
 
 
@@ -276,6 +295,15 @@ hr.dbs {
 .show {
   display: inline;
 }
+.show_block {
+  display: block;
+}
+.show_cell {
+  display: table-cell;
+}
+.show_row {
+  display: table-row;
+}
 .off {
 /*        margin: 3em 2px 0.45em 6px;*/
         text-indent: 2cm;
@@ -293,6 +321,18 @@ table.sortable a.sortheader {
     font-weight: bold;
     text-decoration: none;
     display: block;
+    border-width: 1px;
+    border-color: #eee;
+}
+table.nonsortable a.sortheader {
+    background-color:#eee;
+    background:#eee;
+    color:#666666;
+    font-weight: bold;
+    text-decoration: none;
+    display: block;
+    border-width: 1px;
+    border-color: #eee;
 }
 table.sortable span.sortarrow {
     color: black;
@@ -302,3 +342,16 @@ table.sortable span.sortarrow {
     background-color:#eee;
     background:#eee;
 }
+
+.dbs_cell {
+   padding-left: 0.5ex; 
+   padding-right: 0.5ex;
+}
+
+.dbs_cell_u {
+   border: solid 0 #060; 
+   border-bottom-width: 2px; 
+   padding-left: 0.5ex; 
+   padding-right: 0.5ex;
+}
+
