@@ -237,10 +237,13 @@ class DBSDataDiscoveryServer(DBSLogger):
 #            page = self.genTopHTML(intro=True)
             page = self.genTopHTML(intro=False)
             nameSpace = {
+                         'host'         : DBSDD,
                          'userMode'     : self.userMode,
                          'navigatorForm': self.genMenuForm(),
                          'searchForm'   : self.searchForm(),
-                         'siteForm'     : self.siteForm()
+                         'siteForm'     : self.siteForm(),
+                         'summary'      : self.summary(),
+                         'datasets'     : self.getAllPrimaryDatasets()
                         }
             t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
             page+= str(t)
@@ -278,7 +281,6 @@ class DBSDataDiscoveryServer(DBSLogger):
     expert.exposed = True
 
     def summary(self):
-        print "userMode",self.userMode
         page=""
         try:
             if not self.sumPage or (time.time()-self.timerForSummary)>(24*60*60):
@@ -381,18 +383,27 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
-        page = self.genTopHTML()
+#        page = self.genTopHTML()
+        page = """
+<table id="table_summary" class="nonsortable" cellspacing="0" cellpadding="0" border="1">
+<tr>
+<th class="box_gray">DBS instance</th>
+<th class="box_gray"># files</th>
+<th class="box_gray">size</th>
+</tr>
+        """
         if self.userMode:
            dbsList=[DBSGLOBAL]
         else:
            dbsList = self.dbsList
-        page+="""<hr class="dbs" />"""
+#        page+="""<hr class="dbs" />"""
         for dbsInst in dbsList:
             sumDict   = self.helper.getDBSSummary(dbsInst) 
             nameSpace = {'dbsInst':dbsInst,'sumDict':sumDict}
             t = Template(CheetahDBSTemplate.templateSummary, searchList=[nameSpace])
             page+=str(t)
-        page+= self.genBottomHTML()
+#        page+= self.genBottomHTML()
+        page+="</table>"
         return page
 
     def getDBSDict(self):
@@ -866,6 +877,32 @@ class DBSDataDiscoveryServer(DBSLogger):
             pass
             return str(t)
     getBlocksFromSite.exposed=True
+
+    def getAllPrimaryDatasets(self):
+        page=""
+        for dbs in self.dbsList:
+            self.helperInit(dbs)
+            content=self.getDatasetsForDbsInst(dbs)
+            nameSpace = {'dbs':string.replace(dbs,"/","_"),'content':content}
+            t = Template(CheetahDBSTemplate.templateDivEntries, searchList=[nameSpace])
+            page+=str(t)
+        return page
+
+    def getDatasetsForDbsInst(self,dbsInst):
+        """
+           Get list of primary dataset for given DBS instances.
+           @type  dbsInst: string
+           @param dbsInst: DBS instances
+           @rtype : string
+           @return: returns HTML code
+        """
+        dList = self.helper.getPrimaryDatasets()
+        nameSpace = {
+                     'msg'   : "Primary datasets",
+                     'dList' : dList
+                    }
+        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        return str(t)
 
     def getDatasets(self):
         """

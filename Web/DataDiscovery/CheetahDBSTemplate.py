@@ -26,6 +26,15 @@ please try later.
 """
 
 templateSummary="""
+<tr>
+<td align="right" class="box_light">$dbsInst</td>
+#for key in $sumDict
+<td align="right" class="box_light">$sumDict[$key]</td>
+#end for
+</tr>
+"""
+
+templateSummary_old="""
 <div class="sectionhead_tight">$dbsInst</div>
 <table class="small">
 #for key in $sumDict
@@ -35,10 +44,11 @@ templateSummary="""
 #end for
 </table>
 """
-
 templatePrintList="""
+<!--
 <hr class="dbs" />
-<div class="sectionhead">$msg</div>
+-->
+<div class="sectionhead_tight">$msg</div>
 <table class="small">
 #for d in $dList
 <tr>
@@ -397,7 +407,7 @@ $msg
 &nbsp;<a href="javascript:popUp('glossary.html')"><span class="box">?</span></a>
 </td>
 <td>
-<select name="dbsInst" onChange="updateLayer0(this)" id="dbsSelector">
+<select name="dbsInst" onchange="updateLayer0(this)" id="dbsSelector">
 #for dbs in $dbsList:
 #if $dbs==$firstDBS
 <option value="$dbs" selected="selected">$dbs</option>
@@ -479,7 +489,7 @@ $msg
 templateLFN = """
 Block name: <b>$blockName</b>
 <!-- Main table -->
-<table class="lfn" border=1>
+<table class="lfn" border="1">
 <!--
 <table class="sortable" id="table1">
 -->
@@ -605,7 +615,7 @@ contains $nEvents events, $totFiles files, $totSize.
 </table>
 #set tableId="table_"+str($tid)
 <!-- Main table -->
-<table id="$tableId" name="$tableId" class="sortable" cellspacing="0" cellpadding="0" border=1>
+<table id="$tableId" name="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
   <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
      <th>row</td>
      <th>Location</th>
@@ -745,17 +755,28 @@ templateFrontPage="""
 <table width="100%">
 <tr valign="top">
 <!-- menu -->
-<td class="td5_gray">
+<td class="menu_td_gray">
 <table width="100%">
 <tr valign="top">
-<td><a href="javascript:showMenu('Navigator')">Navigator</a></td>
+<td class="td_gray_box"><a href="javascript:showMenu('Navigator')">Navigator</a></td>
 </tr>
 <tr>
-<td><a href="javascript:showMenu('Search')">Search</a></td>
+<td class="td_gray_box"><a href="javascript:showMenu('Search')">Keyword search</a></td>
 </tr>
 #if not $userMode
 <tr>
-<td><a href="javascript:showMenu('Site')">Site</a></td>
+<td class="td_gray_box"><a href="javascript:showMenu('Site')">Site</a></td>
+</tr>
+<tr>
+<td>
+<hr />
+</td>
+</tr>
+<tr>
+<td class="td_gray_box"><a href="javascript:showMenu('Datasets')">Datasets</a></td>
+</tr>
+<tr>
+<td class="td_gray_box"><a href="javascript:showMenu('Summary')">Summary</a></td>
 </tr>
 #end if
 </table>
@@ -785,7 +806,7 @@ To use this method please choose
 </li>
 <li>Search is a keyword search method, e.g. you provide a set of keywords, for instance
 CMSSW Higgs, and we look up your data. To use this method, please choose
-<a href="javascript:showMenu('Search')">Search</a> menu
+<a href="javascript:showMenu('Search')">Keyword search</a> menu
 on a left.
 </li>
 #if not $userMode
@@ -801,8 +822,8 @@ move your mouse over the column name and click on it to sort entries.
 </div>
 <div id="NavigatorDiv" class="hide">
    <div id="navigationPanel1">
-     <div id="navigationHeader1">
-       <span class="dbs_cell">
+     <div id="navigationHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
        Navigator menu
        </span>
       </div>
@@ -812,8 +833,8 @@ move your mouse over the column name and click on it to sort entries.
    </div>
 
    <div id="navigationPanel2">
-     <div id="navigationHeader2">
-       <span class="dbs_cell">
+     <div id="navigationHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
        Method description
        </span>
       </div>
@@ -824,8 +845,8 @@ move your mouse over the column name and click on it to sort entries.
 </div>
 <div id="SearchDiv" class="hide">
    <div id="searchPanel1">
-     <div id="searchHeader1">
-       <span class="dbs_cell">
+     <div id="searchHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
        Data keyword search
        </span>
       </div>
@@ -835,8 +856,8 @@ move your mouse over the column name and click on it to sort entries.
    </div>
 
    <div id="searchPanel2">
-     <div id="searchHeader2">
-       <span class="dbs_cell">
+     <div id="searchHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
        Advanced search
        </span>
       </div>
@@ -847,8 +868,8 @@ move your mouse over the column name and click on it to sort entries.
 </div>
 <div id="SiteDiv" class="hide">
    <div id="sitePanel1">
-     <div id="siteHeader1">
-       <span class="dbs_cell">
+     <div id="siteHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
        Site search
        </span>
       </div>
@@ -858,13 +879,28 @@ move your mouse over the column name and click on it to sort entries.
    </div>
 
    <div id="sitePanel2">
-     <div id="siteHeader2">
-       <span class="dbs_cell">
+     <div id="siteHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
        Description
        </span>
       </div>
       <div id="siteContent2">
        ... content site ...
+      </div>
+   </div>
+</div>
+<div id="DatasetsDiv" class="hide">
+$datasets
+</div>
+<div id="SummaryDiv" class="hide">
+   <div id="summaryPanel1">
+     <div id="summaryHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       DBS summary page
+       </span>
+      </div>
+      <div id="summaryContent1">
+      $summary
       </div>
    </div>
 </div>
@@ -877,12 +913,22 @@ move your mouse over the column name and click on it to sort entries.
 new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:200} );
 new Rico.Accordion( \$('SearchDiv'), {panelHeight:200} );
 new Rico.Accordion( \$('SiteDiv'), {panelHeight:200} );
+new Rico.Accordion( \$('SummaryDiv'), {panelHeight:450} );
+new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:500} );
 </script>
-<!--
-<script type="text/javascript">new Rico.Accordion( $('NavigatorDiv'), {panelHeight:200} );</script>
-<script type="text/javascript">new Rico.Accordion( $('SearchDiv'), {panelHeight:200} );</script>
-<script type="text/javascript">new Rico.Accordion( $('SiteDiv'), {panelHeight:200} );</script>
--->
+"""
+
+templateDivEntries="""
+   <div id="${dbs}Panel">
+     <div id="${dbs}Header" class="accordionTabTitleBar">
+       <span class="menu_title">
+       $dbs
+       </span>
+     </div>
+     <div id="${dbs}Content">
+      $content
+     </div>
+   </div>
 """
 
 #
