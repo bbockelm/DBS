@@ -253,8 +253,8 @@ class DbsCgiApi(DbsApi):
     May raise an DbsCgiApiException.
     """
     # Invoke cgi script.
-    data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
-    #data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  })
+    #data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
+    data = self._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  })
 
     # Parse the resulting xml output.
     try:
@@ -637,8 +637,8 @@ class DbsCgiApi(DbsApi):
     the database, otherwise may raise an DbsCgiApiException.
     """
     data = self._call ({ 'api' : 'createPrimaryDataset',
-		         'name' : dataset.get('datasetName') , 'instance' : 'MCLocal/Writer'  })
-		         #'name' : dataset.get('datasetName') })
+		         #'name' : dataset.get('datasetName') , 'instance' : 'MCLocal/Writer'  })
+		         'name' : dataset.get('datasetName') })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
@@ -680,8 +680,8 @@ class DbsCgiApi(DbsApi):
     input += "</processing></dbs>"
 
     # Call the method and fill in object id
-    #data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
-    data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input , 'instance' : 'MCLocal/Writer' })
+    data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
+    #data = self._call ({ 'api' : 'createProcessing', 'xmlinput' : input , 'instance' : 'MCLocal/Writer' })
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
@@ -744,8 +744,8 @@ class DbsCgiApi(DbsApi):
     """
     # Call the method and fill in object id
     data = self._call ({ 'api' : 'createProcessedDataset',
-		    'path' : self._path(dataset), 'instance' : 'MCLocal/Writer'})
-		    #'path' : self._path(dataset)})
+		    #'path' : self._path(dataset), 'instance' : 'MCLocal/Writer'})
+		    'path' : self._path(dataset)})
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
