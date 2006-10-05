@@ -3,12 +3,16 @@ function showMenu(menu) {
    menuArr[0]='Navigator';
    menuArr[1]='Search';
    menuArr[2]='Site';
+   menuArr[3]='Summary';
+   menuArr[4]='Datasets';
    for(var i=0;i<menuArr.length;i++) {
        var t=document.getElementById(menuArr[i]+'Div');
-       if(menuArr[i]==menu) {
-           t.className="show";
-       } else {
-           t.className="hide";
+       if (t) {
+           if(menuArr[i]==menu) {
+               t.className="show";
+           } else {
+               t.className="hide";
+           }
        }
    }
    var t=document.getElementById("Introduction");
