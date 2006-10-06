@@ -14,9 +14,34 @@ public class DBSSql {
 	}
 
 	public static String getPrimaryDS(String pattern) {
-		String sql = "select id, name from t_primary_dataset ";
+		String sql = "select pd.ID as id, \n" +
+		       "pd.Annotation as annotation, \n" +
+		       "pd.Name as name, \n" +
+		       "tpd.TriggerPathDescription as trigger_path_description, \n" +
+		       "md.MCChannelDescription as mc_channel_description, \n" +
+		       "md.MCProduction as mc_production, \n" +
+		       "md.MCDecayChain as mc_decay_chain, \n" +
+		       "od.Description as other_description, \n" +
+		       "pd.StartDate as start_date, \n"  +
+		       "pd.EndDate as end_date, \n" + 
+		       "pdt.FileType as type, \n" +
+		       "pd.CreatedBy as created_by, \n" +
+		       "pd.CreationDate as creation_date, \n" +
+		       "pd.LastModificationDate as last_modification_by, \n" +
+		       "pd.LastModifiedBy as last_modified_by \n" +
+		       "from PrimaryDataset pd \n" +
+		       "left outer join PrimaryDSType pdt \n" +
+			       "on pdt.id = pd.Type \n" +
+			"left outer join PrimaryDatasetDescription pdd \n" +
+				"on pdd.id = pd.Description \n" +
+			"left outer join TriggerPathDescription tpd \n" +
+				"on tpd.id = pdd.TriggerDescriptionID \n" + 
+			"left outer join MCDescription md \n" +
+				"on md.id = pdd.MCChannelDescriptionID \n" +
+			"left outer join OtherDescription od \n" +
+				"on od.id = pdd.OtherDescriptionID \n";
 		if(pattern != null) {
-			sql += "where name like '" + pattern + "'";
+			sql += "where pd.Name like '" + pattern + "'\n";
 		}
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;

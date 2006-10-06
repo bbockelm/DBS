@@ -41,8 +41,8 @@ public class DBSTest {
 				System.out.println("\n\nDataset Files");
 				api.getDatasetFiles(out, "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI");
 				*/
-				//System.out.println();
-				//out.flush();
+				out.flush();
+				System.out.println();
 			//}
 
 		} catch(Exception e) {

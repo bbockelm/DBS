@@ -16,8 +16,8 @@ public class DBSApiLogic {
 						"Dbs-status-code: 100\n" +
 						"Content-Type: text/plain; charset=ISO-8859-1\n\n" +
 						"<?xml version='1.0' standalone='yes'?><dbs>";
-	 private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?><dbs>";
-	private static String XML_FOOTER = "</dbs>";
+	 private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<dbs>\n";
+	private static String XML_FOOTER = "</dbs>\n";
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
 	//private static String SAFE_PATH = "[-A-Za-z0-9_./\\p{%}]";
 	//private static String SAFE_NAME = "[-A-Za-z0-9_.]";
@@ -45,7 +45,21 @@ public class DBSApiLogic {
 		while(rs.next()) {
 			//for(int i = 0 ; i!= 2; ++i)
 			out.write(((String) "<primary-dataset id='" + rs.getString("id") + 
-						"' name='" + rs.getString("name") + "'/>"));
+						"' annotation='" + rs.getString("annotation") +
+						"' name='" + rs.getString("name") +
+						"' trigger_path_description='" + rs.getString("trigger_path_description") +
+						"' mc_channel_description='" + rs.getString("mc_channel_description") +
+						"' mc_production='" + rs.getString("mc_production") +
+						"' mc_decay_chain='" + rs.getString("mc_decay_chain") +
+						"' other_description='" + rs.getString("other_description") +
+						"' start_date='" + rs.getString("start_date") +
+						"' end_date='" + rs.getString("end_date") +
+						"' type='" + rs.getString("type") +
+						"' created_by='" + rs.getString("created_by") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_by='" + rs.getString("last_modification_by") +
+						"' last_modified_by='" + rs.getString("last_modified_by") +
+						"'/>\n"));
 			//out.flush();
 		}
 		out.write(XML_FOOTER);
