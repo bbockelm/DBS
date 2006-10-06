@@ -68,11 +68,11 @@ my %apis = (
   'getDatasetContents' => [ \&getDatasetContents, {
     path => REQUIRED } ],
   'getDatasetInfo' => [ \&getDatasetInfo, {
-    path => REQUIRED , blockId => OPTIONAL } ],
+    path => REQUIRED , blockName => OPTIONAL } ],
   'getDatasetFiles' => [ \&getDatasetFiles, {
     path => REQUIRED } ],
   'getLFNs' => [ \&getLFNs, {
-    path => REQUIRED, blockId => REQUIRED } ],
+    path => OPTIONAL, blockName => REQUIRED } ],
   'listPrimaryDatasets' => [ \&listPrimaryDatasets, {
     pattern => OPTIONAL } ],
   'listProcessedDatasets' => [ \&listProcessedDatasets, {
@@ -103,7 +103,7 @@ my %apis = (
   'insertDatasetInfo' => [ \&insertDatasetInfo, {
     xmlinput => REQUIRED } ],
   'createFileBlock' => [ \&createFileBlock, {
-    processing => REQUIRED } ],
+    processing => REQUIRED , blockName => OPTIONAL} ],
   'createProcessedDataset' => [ \&createProcessedDataset, {
     path => REQUIRED } ],
   'insertEventCollections' => [ \&insertEventCollections, {
@@ -782,7 +782,6 @@ sub getDatasetContents
   # Prepare output.
   my $outHead = "<?xml version='1.0' standalone='yes'?><dbs>";
   my $pathname = "/$path[0]/$path[1]/$path[2]";
-  my $blockbase = "/$path[0]/$path[2]";
   $outHead .= "<processed-dataset id='$id' path='$pathname'";
   $out = "";
 
@@ -794,6 +793,7 @@ sub getDatasetContents
       evc.events,
       evs.name,
       b.id,
+      b.guid,
       bs.name,
       f.inblock,
       f.guid,
@@ -823,7 +823,7 @@ sub getDatasetContents
   my ($noOfFiles, $noOfEvents) = (0, 0);
   while (my $row = $q->fetchrow_arrayref())
   {
-    my ($id, $name, $events, $status, $block, $bstatus, $inblock, $guid, $lfn, $fstatus, $checksum, $size) = @$row;
+    my ($id, $name, $events, $status, $block, $bguid, $bstatus, $inblock, $guid, $lfn, $fstatus, $checksum, $size) = @$row;
     $bstatus = "" if ! defined $bstatus;
     $status = "" if ! defined $status;
 
@@ -831,7 +831,7 @@ sub getDatasetContents
     if (! defined $prev || $prev != $block)
     {
             #$out .= "<block id='$block' name='$pathname#$block' status='$bstatus'>";
-      $out .= "<block id='$block' name='$blockbase#$block' status='$bstatus'>";
+      $out .= "<block id='$block' name='$bguid' status='$bstatus'>";
       $prev = $block;
     }
     next if $name eq 'EvC_META';
@@ -946,7 +946,6 @@ sub getDatasetFiles
   # Prepare output.
   my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
   my $pathname = "/$path[0]/$path[1]/$path[2]";
-  my $blockbase = "/$path[0]/$path[2]";
   $out .= "<processed-dataset id='$id' path='$pathname'>";
 
   # Fetch files by which block they belong to
@@ -960,6 +959,7 @@ sub getDatasetFiles
       fs.name,
       ft.name,
       b.id,
+      b.guid,
       b.files,
       b.bytes,
       bs.name
@@ -985,7 +985,7 @@ sub getDatasetFiles
   while (my $row = $q->fetchrow_arrayref())
   {
     my ($id, $lfn, $guid, $size, $cksum, $status, $type,
-	$block, $bfiles, $bbytes, $bstatus) = @$row;
+	$block, $bguid, $bfiles, $bbytes, $bstatus) = @$row;
     $bstatus = "" if ! defined $bstatus;
 
     $out .= "</block>" if defined $prev && $prev != $block;
@@ -994,7 +994,7 @@ sub getDatasetFiles
       # FIXME: Should this obtain the block base name from the database
       # data (t_primary_dataset.name, t_processing->t_processing_name.name)
       # instead of building in the assumption the name is correct?
-      $out .= "<block id='$block' name='$blockbase#$block' status='$bstatus'";
+      $out .= "<block id='$block' name='$bguid' status='$bstatus'";
       $out .= " files='$bfiles' bytes='$bbytes'>";
       $prev = $block;
     }
@@ -1031,19 +1031,35 @@ sub getLFNs
   my ($dbs) = @_;
 
   # Parse parameters
-  my @path = &getPath ();
-  my $bid = param('blockId');
+  my @path = &getPath ('path', 1);
+  my $bguid = param('blockName');
   # Translate the dataset path to an id
-  my $id = &datasetFromPath ($dbs, @path);
-
+  my $id = "0";
+  $id = &datasetFromPath ($dbs, @path) if(defined $path[0]) ;
+  my $pathname = "/dummy/dummy/dummy";
   # Prepare output.
   my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-  my $pathname = "/$path[0]/$path[1]/$path[2]";
-  my $blockbase = "/$path[0]/$path[2]";
+  $pathname = "/$path[0]/$path[1]/$path[2]" if(defined $path[0]);
   $out .= "<processed-dataset id='$id' path='$pathname'>";
 
   # Fetch files by which block they belong to
-  my $q = &dbexec($$dbs{DBH}, qq{
+    my $q = &dbexec($$dbs{DBH}, qq{
+          select
+          	f.logical_name,
+   	  	f.filesize,
+	        fs.name,
+        	ft.name
+          from t_block b
+	        left join t_file f
+          on f.inblock = b.id
+        	left join t_file_status fs
+          on fs.id = f.status
+	        left join t_file_type ft
+          on ft.id = f.type
+          where b.guid= :bguid},
+         ":bguid" => $bguid);
+
+  $q = &dbexec($$dbs{DBH}, qq{
           select
           f.logical_name,
           f.filesize,
@@ -1055,18 +1071,16 @@ sub getLFNs
           and p.name = pd.name
           join t_block b
           on b.processing = p.id
-          join t_block_status bs
-          on bs.id = b.status
           left join t_file f
           on f.inblock = b.id
           left join t_file_status fs
           on fs.id = f.status
           left join t_file_type ft
           on ft.id = f.type
-          where pd.id= :pid and b.id= :bid},
+          where pd.id= :pid and b.guid= :bguid},
     ":pid" => $id,
-    ":bid" => $bid);
-  $out .= "<block name='$blockbase#$bid'>";
+    ":bguid" => $bguid) if(defined $path[0]) ;
+  $out .= "<block name='$bguid'>";
   while (my $row = $q->fetchrow_arrayref())
   {
     my ($lfn, $size, $status, $type) = @$row;
@@ -1270,9 +1284,10 @@ sub createFileBlock {
 	my ($dbs) = @_;
 	# Parse parameters
 	my $processing = param('processing');
+	my $blockName = param('blockName');
 	my ($id) = ();
 	try {
-		$id = &createFileBlockLogic ($dbs, $processing);
+		($id, $guid) = &createFileBlockLogic ($dbs, $processing, $blockName);
 	} catch	Error with {
 		my $ex = shift;
 		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
@@ -1286,17 +1301,19 @@ sub createFileBlock {
 
 	# Produce output
 	my $out = "<?xml version='1.0' standalone='yes'?><dbs>";
-	$out .= "<block id='$id' name='$processing#$id'/></dbs>\n";
+	$out .= "<block id='$id' name='$guid'/></dbs>\n";
 	&reply_success ($out);
 }
 
 
 sub createFileBlockLogic {
-	my ($dbs, $processing) = @_;
+	my ($dbs, $processing, $blockName) = @_;
 	&throwException (200, "Bad request", "No processing specified") if (! defined $processing);
 	&throwException (300, "Bad data", "Invalid characters in processing") if ($processing !~ /$SAFE_PATH/o);
 	&throwException (300, "Bad data", "Expecting /PRIMARY/NAME processing name") if ($processing !~ m|^/([^/]+)/([^/]+)$|o);
-
+	if(defined $blockName) {
+		&throwException (300, "Bad data", "Expecting /PRIMARY/NAME#GUID block name") if ($blockName !~ m|^/([^/]+)/([^/]+)$|o);
+	}
 	# First find the processing.  This is required to exist.
 	my ($owner) = &dbexec($$dbs{DBH}, qq{
 		select p.id
@@ -1313,15 +1330,17 @@ sub createFileBlockLogic {
 	&throwException (302, "Missing object", "No such processing $processing") if ! defined $owner;
 
 	# Now create the block.  (FIXME: Do we give this a name?)
+	$blockName = $processing . "#" . &genGuid()  if ! defined $blockName;
 	my $obj = &makeObject($dbs, "block", undef, {
 		'processing' => $owner,
 		'status' => &makeNamed ($dbs, "block_status", "OPEN", 1),
+		'guid' => $blockName,
 		'files' => 0,
-		'bytes' => 0 }, 0);
+		'bytes' => 0 }, 1);
 
 	# Spit out the result
 	$$dbs{DBH}->commit();
-	return ($$obj{id});
+	return ( ($$obj{id} , $$obj{guid}) );
 }
 
 ######################################################################
@@ -1392,18 +1411,17 @@ sub closeFileBlock {
 
 	# Parse the xmlinput.  We expect a structure like this:
 	#   <block id= name=/>
-	my ($id, $name) = ();
+	my ($name) = ();
 	eval {
 		(new XML::Parser (Handlers => { Start => sub {
 		my ($parser, $element, %attrs) = @_;
 		if ($element eq 'block') {
 			$name = $attrs{name};
-			$id = $attrs{id};
 		} } } ))->parse ($xmlinput);
 	};
 	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
 	try {
-		&closeFileBlockLogic ($dbs, $id, $name);
+		&closeFileBlockLogic ($dbs, $name);
 	} catch	Error with {
 		my $ex = shift;
 		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
@@ -1420,21 +1438,20 @@ sub closeFileBlock {
 
 sub closeFileBlockLogic {
 
-	my ($dbs, $id, $name) = @_;
+	my ($dbs, $name) = @_;
 	# Verify the parameters.
 
-	&throwException (300, "Bad data", "Missing or invalid block name or ID")
-		if (! defined $id || $id eq '');
+	&throwException (300, "Bad data", "Missing or invalid block name")
+		if (! defined $name || $name eq '');
 	$statusId = ${&makeNamed($dbs, "block_status", "closed", 1)}{id};
-	#print INFO "id $id\n";
-	#print INFO "statusId $statusId\n";
 	&dbexec($$dbs{DBH}, qq{
 		update t_block
 		set status = :status
 		where id = :id},
-		":id" => $id,
+		":id" => &getBid($dbs, $name),
 		":status" => $statusId);
 
+	&throwException (402, "Execution error", $@) if $@;
 	$$dbs{DBH}->commit();
 
 }
@@ -1463,9 +1480,9 @@ sub insertFiles {
 		} } } ))->parse ($xmlinput);
 	};
 	&reply_failure (300, "Bad data", "Failed to parse XML input: $@") if $@;
-	my ($primary, $processed, $blockid)  = (($name || '') =~ m!^/([^/]+)/([^/]+)\#(\d+)$!o);
+	#my ($primary, $processed, $blockid)  = (($name || '') =~ m!^/([^/]+)/([^/]+)\#(\d+)$!o);
 	try {
-		&insertFilesLogic ($dbs, $name, $primary, $processed, $blockid, @files);
+		&insertFilesLogic ($dbs, $name, @files);
 	} catch	Error with {
 		my $ex = shift;
 		my ($value, $class, $text) = ("402" , "Execution error" , $ex->text());
@@ -1484,14 +1501,10 @@ sub insertFiles {
 
 sub insertFilesLogic {
 
-	my ($dbs, $name, $primary, $processed, $blockid, @files) = @_;
+	my ($dbs, $name, @files) = @_;
 	# Verify the parameters.
 
-	&throwException (300, "Bad data", "Missing or invalid block name")
-	if (! defined $name || $name eq ''
-        || ! defined $primary || $primary eq ''
-	|| ! defined $processed || $processed eq ''
-	|| ! defined $blockid || $blockid eq '');
+	&throwException (300, "Bad data", "Missing or invalid block name") if (! defined $name || $name eq '');
 
 	foreach my $file (@files)  {
 		&throwException (300, "Bad data", "Invalid file definition")
@@ -1504,10 +1517,7 @@ sub insertFilesLogic {
 	}
 
 	# Check the block exists and lock it.
-	my ($blockid2) = &dbexec($$dbs{DBH}, qq{
-		select id from t_block where id = :id for update},
-		":id" => $blockid)->fetchrow ();
-	&throwException (300, "Bad data", "No such block $name") if ! defined $blockid2;
+	my ($blockid) = &getBid($dbs, $name);
 
 	# Insert files into the block.  We do everything in one whopping
 	# array operation, plus update the block in the end.  We do not
@@ -2054,13 +2064,14 @@ sub addHistory
 # Get the snapshot of the complete dataset in xml
 sub getDatasetInfo {
 	my ($dbs) = @_;
-	my $blockId = param('blockId');
+	my $blockName = param('blockName');
 	# Parse parameters
 	my @path = &getPath ();
 
 	# Translate the dataset path to an id
 	my $processid = &datasetFromPath ($dbs, @path);
-
+	my $blockId = undef;
+	$blockId = &getBid($dbs, $blockName) if defined $blockName;
 	# Prepare output.
 	#my $out = "";
 	#print "<?xml version='1.0' standalone='yes'?><dbs>\n";
@@ -2182,7 +2193,7 @@ sub getDatasetInfo {
 
 		#Get all the Blocks inside this Processing
 		my $q4 = &dbexec($$dbs{DBH}, qq{
-			select b.id, b.files, b.bytes, bs.name
+			select b.id, b.guid, b.files, b.bytes, bs.name
 			from t_block b
 			left join t_block_status bs
 				on bs.id = b.status
@@ -2192,7 +2203,7 @@ sub getDatasetInfo {
 		#my $blockCount = 0;
 		#print INFO "blockIndex $blockIndex\n";
 		#close(INFO);
-		while (my ($bid, $bfiles, $bbytes, $status) = $q4->fetchrow()) {
+		while (my ($bid, $bguid, $bfiles, $bbytes, $status) = $q4->fetchrow()) {
 			if(defined $blockId) {
 				if($bid != $blockId) {
 					next;
@@ -2205,7 +2216,7 @@ sub getDatasetInfo {
 			#		next ;
 			#	}
 			#}
-			$out .= "<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'>\n";
+			$out .= "<block id='$bid' name='$bguid' files='$bfiles' bytes='$bbytes' status='$status'>\n";
 			#Fetch all the files inside this block
 			my $q5 = &dbexec($$dbs{DBH}, qq{
 				select f.id, f.guid, f.logical_name, f.checksum,f.filesize, ft.name, fs.name
@@ -2335,20 +2346,23 @@ sub insertDatasetInfoLogic {
 		##########################################################################################################
 		# Insert new Blocks
 		my ($tmpName) = "/$primaryDatasetName/$$aProcessing{name}";
-		my (%blocks) = (); #Array to strore remote and local block id mapping
+		my (%blocks) = (); #Array to strore block id to guid mapping used for inserting files 
+		
+
 		foreach my $aBlock  (@{$$aProcessing{block}}) {
 			try {
-				my ($blockId) =  &createFileBlockLogic ($dbs, $tmpName);
+				$blocks{$$aBlock{id}} = $$aBlock{name};
+				#print INFO "MAP $$aBlock{id} ---- $$aBlock{name}\n";
+				&createFileBlockLogic ($dbs, $tmpName, $$aBlock{name});
 				#$blockId = 178;#For testing only
-				$blocks{$$aBlock{id}} = $blockId;
 				#print INFO "MAP $$aBlock{id} -> $blocks{$$aBlock{id}}";
-				$logTxt .= "<Block " .  $tmpName . "#" . $$aBlock{id} . " --map-- " . $tmpName . "#" . $blockId . " />\n";
+				#$logTxt .= "<Block " .  $tmpName . "#" . $$aBlock{id} . " --map-- " . $tmpName . "#" . $blockId . " />\n";
 			} catch	Error with {
 				my $ex = shift;
 				if (!($exceptionClass eq "Object exists") ) {
 					&throwException ($ex->value(), $exceptionClass, $ex->text());
 				} else {
-					$logTxt .= "<Block " .  $tmpName . " already exists./>\n"
+					$logTxt .= "<Block " .  $$aBlock{name} . " already exists./>\n"
 				}
 			};	
 
@@ -2363,7 +2377,7 @@ sub insertDatasetInfoLogic {
 			push(@files, $aFile);
 			#&printFile(@files);
 			try {
-				&insertFilesLogic ($dbs, "$tmpName/$blocks{$$aFile{inblock}}", $primaryDatasetName, $$aProcessing{name}, $blocks{$$aFile{inblock}}, @files);
+				&insertFilesLogic ($dbs,  $blocks{$$aFile{inblock}}, @files);
 			} catch	Error with {
 				my $ex = shift;
 				if (!($exceptionClass eq "Object exists") ) {
@@ -2564,15 +2578,15 @@ sub listBlocks {
 
 	#Get all the blocks
 	my $q1 = &dbexec($$dbs{DBH}, qq{
-		select b.id, b.files, b.bytes, bs.name
+		select b.id, b.guid, b.files, b.bytes, bs.name
 		from t_block b
 		left join t_block_status bs
 			on bs.id = b.status
 		where 
 			b.processing = :procid},
 		":procid" => $processingid);
-	while (my ($bid, $bfiles, $bbytes, $status) = $q1->fetchrow()) {
-		$out .= "<block id='$bid' files='$bfiles' bytes='$bbytes' status='$status'";
+	while (my ($bid, $bguid, $bfiles, $bbytes, $status) = $q1->fetchrow()) {
+		$out .= "<block id='$bid' name='$bguid' files='$bfiles' bytes='$bbytes' status='$status'";
 		if (defined $listEvents) {
 			$events = &dbexec($$dbs{DBH}, qq{
 			select sum(evc.events) 
@@ -2590,6 +2604,7 @@ sub listBlocks {
 			left join t_file_status fs
 				on fs.id = f.status
 			where b.id = :bid
+			and fs.name <> 'invalid'
 			and evc.processed_dataset = :pid },
 			":bid" => $bid,
 			":pid" => $procDsId)->fetchrow();
@@ -2654,4 +2669,14 @@ sub genGuid {
 	return $uuid_str;
 }
 
+sub getBid {
+	my ($dbs, $name) = @_;
 
+	my ($bid) = &dbexec($$dbs{DBH}, qq{
+		select b.id
+		from t_block b
+		where b.guid = :guid},
+		":guid" => $name)->fetchrow();
+	&throwException (302, "Missing object", "No such block $name") if ! defined $bid;
+	return $bid
+}

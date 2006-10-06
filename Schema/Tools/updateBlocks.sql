@@ -52,3 +52,15 @@ and b.id = $i
 )
 where b1.id = $i; "
 done
+
+
+
+
+update t_file f1
+set f1.LOGICAL_NAME = (
+  select concat ('/store' , f2.LOGICAL_NAME)
+  from t_file f2
+      where
+          f1.LOGICAL_NAME = f2.LOGICAL_NAME )
+where
+f1.LOGICAL_NAME not like '%/store%';

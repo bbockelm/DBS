@@ -209,7 +209,7 @@ sub checkPath
   {
     &reply_failure (300, "Bad data", "Invalid characters in $nameof")
       if ($path !~ /$SAFE_PATH/o);
-    &reply_failure (300, "Bad data", "Expected /DATASET/TIER/OWNER for $nameof")
+    &reply_failure (300, "Bad data", "Expected /DATASET/TIER/OWNER for $nameof $path")
       if ($path !~ m|^/([^/]+)/([^/]+)/([^/]+)$|o);
     return ($1, $2, $3);
   }
@@ -2587,9 +2587,10 @@ sub listBlocks {
 		":procid" => $processingid);
 	while (my ($bid, $bguid, $bfiles, $bbytes, $status) = $q1->fetchrow()) {
 		$out .= "<block id='$bid' name='$bguid' files='$bfiles' bytes='$bbytes' status='$status'";
+		my ($events) =(0);
 		if (defined $listEvents) {
-			$events = &dbexec($$dbs{DBH}, qq{
-			select sum(evc.events) 
+			$q2 = &dbexec($$dbs{DBH}, qq{
+			select evc.events, fs.name 
 			from t_event_collection evc
 			join t_evcoll_file evf
 				on evf.evcoll = evc.id
@@ -2606,7 +2607,11 @@ sub listBlocks {
 			where b.id = :bid
 			and evc.processed_dataset = :pid },
 			":bid" => $bid,
-			":pid" => $procDsId)->fetchrow();
+			":pid" => $procDsId);
+			while( ($tmpEvents, $status) = $q2->fetchrow()) {
+				$status = "" if ! defined $status;
+				$events = $events + $tmpEvents if $status ne "invalid"
+			}
 			$out .= " events = '$events'" if defined $events;
 		}
 		$out .= "/>\n";
