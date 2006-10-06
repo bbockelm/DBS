@@ -43,9 +43,9 @@ public class DBSApiLogic {
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getPrimaryDS(pattern));
 		out.write(XML_HEADER); 
 		while(rs.next()) {
-			for(int i = 0 ; i!= 2; ++i)
-			out.write(((String) "<primary-dataset id='" + rs.getString(1) + 
-						"' name='" + rs.getString(2) + "'/>"));
+			//for(int i = 0 ; i!= 2; ++i)
+			out.write(((String) "<primary-dataset id='" + rs.getString("id") + 
+						"' name='" + rs.getString("name") + "'/>"));
 			//out.flush();
 		}
 		out.write(XML_FOOTER);
@@ -60,8 +60,8 @@ public class DBSApiLogic {
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDS(data[1], data[2], data[3]));
 		out.write(XML_HEADER);
 		while(rs.next()) {
-			String path = "/" + rs.getString(2) + "/" + rs.getString(3) + "/" + rs.getString(4);
-			out.write(((String) "<processed-dataset id='" + rs.getString(1) + 
+			String path = "/" + rs.getString("primary") + "/" + rs.getString("tier") + "/" + rs.getString("processed");
+			out.write(((String) "<processed-dataset id='" + rs.getString("id") + 
 						"' path='" + path + "'/>"));
 		}
 		out.write(XML_FOOTER);
@@ -73,9 +73,9 @@ public class DBSApiLogic {
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getPrameterSets(pattern));
 		out.write(XML_HEADER);
 		while(rs.next()) {
-			out.write(((String) "<parameter-set id='" + rs.getString(1) + 
-						"' hash='" + rs.getString(2) + 
-						"' content='" + rs.getString(3) + "'/>"));
+			out.write(((String) "<parameter-set id='" + rs.getString("id") + 
+						"' hash='" + rs.getString("hash") + 
+						"' content='" + rs.getString("content") + "'/>"));
 		}
 		out.write(XML_FOOTER);
 	}
@@ -86,10 +86,10 @@ public class DBSApiLogic {
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getApplications(pattern));
 		out.write(XML_HEADER);
 		while(rs.next()) {
-			out.write(((String) "<application id='" + rs.getString(1) + 
-						"' family='" + rs.getString(2) + 
-						"' executable='" + rs.getString(3) + 
-						"' version='" +  rs.getString(4) + "'/>"));
+			out.write(((String) "<application id='" + rs.getString("id") + 
+						"' family='" + rs.getString("family") + 
+						"' executable='" + rs.getString("executable") + 
+						"' version='" +  rs.getString("version") + "'/>"));
 		}
 		out.write(XML_FOOTER);
 	}
@@ -100,14 +100,14 @@ public class DBSApiLogic {
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getApplicationConfigs(pattern));
 		out.write(XML_HEADER);
 		while(rs.next()) {
-			out.write(((String) "<application id='" + rs.getString(2) + 
-						"' family='" + rs.getString(3) + 
-						"' executable='" + rs.getString(4) + 
-						"' version='" +  rs.getString(5) + 
-						"'><app-config id='" + rs.getString(1) + 
-						"' psetid='" + rs.getString(6) + 
-						"' hash='" +  rs.getString(7) + 
-						"' content='" +  rs.getString(8) + "'/></application>"));
+			out.write(((String) "<application id='" + rs.getString("application_id") + 
+						"' family='" + rs.getString("family") + 
+						"' executable='" + rs.getString("executable") + 
+						"' version='" +  rs.getString("version") + 
+						"'><app-config id='" + rs.getString("app_config_id") + 
+						"' psetid='" + rs.getString("pset_id") + 
+						"' hash='" +  rs.getString("hash") + 
+						"' content='" +  rs.getString("content") + "'/></application>"));
 		}
 		out.write(XML_FOOTER);
 	}
@@ -125,7 +125,7 @@ public class DBSApiLogic {
 		boolean first = true;
 		String blockBase = "/" + data[1] + "/" +  data[3];
 		while(rs.next()) {
-			String blockID =  rs.getString(5);
+			String blockID =  rs.getString("block_id");
 			if( !prev.equals(blockID) && ! first) {
 				out.write(((String) "</block>" ));
 			}
@@ -133,14 +133,14 @@ public class DBSApiLogic {
 			if( !prev.equals(blockID) || first) {
 				out.write(((String) "<block id ='" + blockID + 
 						"' name='" + blockBase + "#" + blockID +
-						"' status='" +  rs.getString(6) + "'>"));
+						"' status='" +  rs.getString("block_status") + "'>"));
 				first = false;
 				prev = blockID;
 			}
-			out.write(((String) "<event-collection id='" +  rs.getString(1) + 
-						"' name='" + rs.getString(2) + 
-						"' events='" + rs.getString(3) + 
-						"' status='" + rs.getString(4) + "'/>"));
+			out.write(((String) "<event-collection id='" +  rs.getString("evc_id") + 
+						"' name='" + rs.getString("evc_name") + 
+						"' events='" + rs.getString("events") + 
+						"' status='" + rs.getString("evc_status") + "'/>"));
 		}
 		if(!first) {
 			out.write(((String) "</block>" ));
@@ -163,7 +163,7 @@ public class DBSApiLogic {
 		boolean first = true;
 		String blockBase = "/" + data[1] + "/" +  data[3];
 		while(rs.next()) {
-			String blockID =  rs.getString(8);
+			String blockID =  rs.getString("block_id");
 			if( !prev.equals(blockID) && ! first) {
 				out.write(((String) "</block>" ));
 			}
@@ -171,20 +171,20 @@ public class DBSApiLogic {
 			if( !prev.equals(blockID) || first) {
 				out.write(((String) "<block id ='" + blockID + 
 						"' name='" + blockBase + "#" + blockID +
-						"' status='" +  rs.getString(11) + 
-						"' files='" +  rs.getString(9) + 
-						"' bytes='" +  rs.getString(10) +"'>"));
+						"' status='" +  rs.getString("block_status") + 
+						"' files='" +  rs.getString("files") + 
+						"' bytes='" +  rs.getString("bytes") +"'>"));
 				first = false;
 				prev = blockID;
 			}
-			out.write(((String) "<file id='" +  rs.getString(1) + 
+			out.write(((String) "<file id='" +  rs.getString("file_id") + 
 						"' inblock='" + blockID + 
-						"' guid='" + rs.getString(3) + 
-						"' lfn='" + rs.getString(2) + 
-						"' checksum='" + rs.getString(5) + 
-						"' size='" + rs.getString(2) + 
-						"' status='" + rs.getString(6) + 
-						"' type='" + rs.getString(7) + "'/>"));
+						"' guid='" + rs.getString("guid") + 
+						"' lfn='" + rs.getString("lfn") + 
+						"' checksum='" + rs.getString("checksum") + 
+						"' size='" + rs.getString("size") + 
+						"' status='" + rs.getString("file_status") + 
+						"' type='" + rs.getString("type") + "'/>"));
 		}
 		if(!first) {
 			out.write(((String) "</block>" ));
@@ -206,7 +206,7 @@ public class DBSApiLogic {
 		if(!rs.next()) {
 			throw new DBSException("Bad Data", "300", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
 		}
-		return  rs.getString(1);
+		return  rs.getString("id");
 	}
 	
 	private void checkPath(String path) throws Exception {

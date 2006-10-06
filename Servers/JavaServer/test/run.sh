@@ -7,8 +7,10 @@ if [ "${JAVA_HOME}" = "" ]; then
 fi
 savePWD=$PWD
 cd $BASE/lib
-CLASSPATH=.:$PWD/ojdbc14_g.jar
+CLASSPATH=.:$PWD/ojdbc14_g.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
 cd $BASE/bin
+CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
+
 #echo "$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.DBSTest"
 $JAVA_HOME/bin/java -classpath $CLASSPATH dbs.DBSTest
 cd $savePWD

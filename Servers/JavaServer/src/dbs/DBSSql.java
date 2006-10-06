@@ -14,7 +14,7 @@ public class DBSSql {
 	}
 
 	public static String getPrimaryDS(String pattern) {
-		String sql = "select * from t_primary_dataset ";
+		String sql = "select id, name from t_primary_dataset ";
 		if(pattern != null) {
 			sql += "where name like '" + pattern + "'";
 		}
@@ -23,7 +23,7 @@ public class DBSSql {
 	}
 
 	public static String getProcessedDS(String patternPrim, String patternDt, String patternProc) {
-		String sql = "select  procds.id, primds.name, dt.name, procname.name " +
+		String sql = "select  procds.id as id , primds.name as primary, dt.name as tier, procname.name as processed" +
 				"from t_processed_dataset procds " +
 				"join t_primary_dataset primds " +
 				"on primds.id = procds.primary_dataset " +
@@ -54,7 +54,7 @@ public class DBSSql {
 	}
 
 	public static String getApplications(String pattern) {
-		String sql = "select a.id, af.name, a.executable, a.app_version " +
+		String sql = "select a.id as id, af.name as family, a.executable as executable, a.app_version as version" +
 				"from t_application a " +
 				"join t_app_family af on af.id = a.app_family ";
 		if(pattern != null) {
@@ -67,7 +67,7 @@ public class DBSSql {
 	}
 
 	public static String getApplicationConfigs(String pattern) {
-		String sql = " select ac.id, a.id, af.name, a.executable, a.app_version, p.id, p.hash, p.content " +
+		String sql = " select ac.id as app_config_id, application_id as , af.name as family, a.executable as executable, a.app_version as version, p.id as pset_id, p.hash as hash, p.content as content" +
 				"from t_app_config ac " +
 				"join t_application a on a.id = ac.application " +
 				"join t_app_family af on af.id = a.app_family " +
@@ -83,7 +83,7 @@ public class DBSSql {
 	}
 
 	public static String getProcessedDSID(String prim, String dt ,String proc) {
-		String sql = "select procds.id " +
+		String sql = "select procds.id as id" +
 				"from t_processed_dataset procds " +
 				"join t_primary_dataset primds " +
 				"on primds.id = procds.primary_dataset " +
@@ -102,7 +102,7 @@ public class DBSSql {
 	}
 
 	public static String getEventCollections(String procID) {
-		String sql = "select distinct evc.id, evc.name, evc.events, evs.name, b.id, bs.name " +
+		String sql = "select distinct evc.id as evc_id, evc.name as evc_name, evc.events as events, evs.name as evc_status, b.id as block_id, bs.name as block_status" +
 				"from t_event_collection evc " +
 				"join t_evcoll_file evf " +
 				"on evf.evcoll = evc.id " +
@@ -124,7 +124,7 @@ public class DBSSql {
 	}
 
 	public static String getFiles(String procID) {
-		String sql = "select f.id, f.logical_name, f.guid, f.filesize, f.checksum, fs.name, ft.name, b.id, b.files, b.bytes, bs.name " +
+		String sql = "select f.id as file_id, f.logical_name as lfn, f.guid as guid, f.filesize as size, f.checksum as checksum, fs.name as status, ft.name as type, b.id as block_id, b.files files, b.bytes as bytes, bs.name as block_status" +
 				"from t_processed_dataset pd " +
 				"join t_processing p " +
 				"on p.primary_dataset = pd.primary_dataset " +
