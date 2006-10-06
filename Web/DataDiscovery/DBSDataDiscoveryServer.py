@@ -30,6 +30,8 @@ DBSDD="http://localhost:8080"
 if os.environ.has_key('DBSDD'):
    DBSDD=os.environ['DBSDD']
 
+SENDMAIL = "/usr/sbin/sendmail" # sendmail location
+
 class DBSDataDiscoveryServer(DBSLogger): 
     """
        DBS Data discovery server class.
@@ -88,6 +90,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.sumPage    = ""
         self.firstSearch=1
         self.siteDict   = {}
+        self.formDict   = {
+                           'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
+                           'siteForm': ("","") # (dbsInst,site)
+                          }
 
     def sendErrorReport(self,msg=""):
         """
@@ -99,8 +105,6 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : none
            @return: none
         """
-        SENDMAIL = "/usr/sbin/sendmail" # sendmail location
-        import os
         p = os.popen("%s -t" % SENDMAIL, "w")
         p.write("To: vk@mail.lns.cornell.edu\n")
         p.write("Subject: DBS DD error\n")
@@ -225,6 +229,82 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.sendErrorReport(msg+"\n"+getExcept())
         return str(t)
 
+    def genVisiblePanel(self,view):
+        try:
+            nameSpace = {'panel': self.genPanelHelper(), 'view': view}
+            t = Template(CheetahDBSTemplate.templateVisiblePanel, searchList=[nameSpace])
+            page = str(t)
+            return page
+        except:
+            t=self.errorReport("Fail in genVisiblePanel function")
+            pass
+            return str(t)
+    genVisiblePanel.exposed=True
+
+    def genHiddenPanel(self,view):
+        try:
+            nameSpace = {'panel': self.genPanelHelper(), 'view': view}
+            t = Template(CheetahDBSTemplate.templateHiddenPanel, searchList=[nameSpace])
+            page = str(t)
+            return page
+        except:
+            t=self.errorReport("Fail in genHiddenPanel function")
+            pass
+            return str(t)
+    genHiddenPanel.exposed=True
+
+    def glossary(self):
+        nameSpace = {}
+        t = Template(CheetahDBSTemplate.templateGlossary, searchList=[nameSpace])
+        return str(t)
+        
+    def genPanelHelper(self):
+        msg,dbsInst,site,app,primD,tier=self.formDict['menuForm']
+        menuForm=self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
+        dbsInst,site=self.formDict['siteForm']
+        siteForm=self.siteForm(dbsInst,site)
+           
+        nameSpace = {
+                     'host'         : DBSDD,
+                     'userMode'     : self.userMode,
+                     'navigatorForm': menuForm,
+                     'searchForm'   : self.searchForm(),
+                     'siteForm'     : siteForm,
+                     'summary'      : '',
+                     'datasets'     : '',
+                     'glossary'     : self.glossary(),
+                     'frontPage'    : 0
+                    }
+        t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
+        return str(t)
+        
+    def genPanel(self):
+        """
+           Construct Init service page, which includes L{genMenuForm}.
+           @type  self: class object
+           @param self: none
+           @rtype : string
+           @return: returns HTML code
+        """
+        try:
+            nameSpace = {
+                         'host'         : DBSDD,
+                         'userMode'     : self.userMode,
+                         'navigatorForm': self.genMenuForm(),
+                         'searchForm'   : self.searchForm(),
+                         'siteForm'     : self.siteForm(),
+                         'summary'      : self.summary(),
+                         'datasets'     : self.getAllPrimaryDatasets(),
+                         'frontPage'    : 1,
+                         'glossary'     : self.glossary()
+                        }
+            t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
+            return str(t)
+        except:
+            t=self.errorReport("Fail in genPanel function")
+            pass
+            return str(t)
+
     def init(self):
         """
            Construct Init service page, which includes L{genMenuForm}.
@@ -234,20 +314,8 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
-#            page = self.genTopHTML(intro=True)
             page = self.genTopHTML(intro=False)
-            nameSpace = {
-                         'host'         : DBSDD,
-                         'userMode'     : self.userMode,
-                         'navigatorForm': self.genMenuForm(),
-                         'searchForm'   : self.searchForm(),
-                         'siteForm'     : self.siteForm(),
-                         'summary'      : self.summary(),
-                         'datasets'     : self.getAllPrimaryDatasets()
-                        }
-            t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
-            page+= str(t)
-#            page+= self.genMenuForm(frontPage=1)
+            page+= self.genPanel()
             page+= self.genBottomHTML()
             return page
         except:
@@ -268,12 +336,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             self.userMode = False
             return self.init()
-#            page = self.genTopHTML(intro=True)
-#            page+= self.genMenuForm(frontPage=1)
-#            page+= CheetahDBSTemplate.templateLine_OR
-#            page+= self.siteForm()
-#            page+= self.genBottomHTML()
-#            return page
         except:
             t=self.errorReport("Fail in expert function")
             pass
@@ -327,7 +389,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         page = self.genTopHTML()
         self.firstSearch=0
-        page+= self.searchForm()
+#        page+= self.searchForm()
+        page+= self.genVisiblePanel('Search')
         oList= []
         # parse keywords and search for DBSINST
         dbsList=appList=tierList=siteList=primList=[]
@@ -359,8 +422,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         if self.userMode:
            oList=self.searchHelper(keywords,restrictDict)
         else:
-           if not len(dbsList):
-              dbsList=self.dbsList
+           if  not len(dbsList):
+               dbsList=self.dbsList
            for dbsInst in dbsList:
                self.helperInit(dbsInst)
                oList+=self.searchHelper(keywords)
@@ -385,7 +448,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
 #        page = self.genTopHTML()
         page = """
-<table id="table_summary" class="nonsortable" cellspacing="0" cellpadding="0" border="1">
+<table id="table_summary" cellspacing="2" cellpadding="5" border="1">
 <tr>
 <th class="box_gray">DBS instance</th>
 <th class="box_gray"># files</th>
@@ -678,13 +741,17 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             msg="dbsInst='%s', site='%s', app='%s', primD='%s', tier='%s'"%(dbsInst,site,app,primD,tier)
             self.writeLog(msg)
-            if self.userMode:
-               msg=CheetahDBSTemplate.templateUserHelp
-            else:
-               nameSpace={'host':DBSDD}
-               msg = str(Template(CheetahDBSTemplate.templateExpertHelp,searchList=[nameSpace]))
+#            if self.userMode:
+#               msg=CheetahDBSTemplate.templateUserHelp
+#            else:
+#               nameSpace={'host':DBSDD}
+#               msg = str(Template(CheetahDBSTemplate.templateExpertHelp,searchList=[nameSpace]))
             page = self.genTopHTML()
-            page+= self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
+#            page+= self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
+#            msg=CheetahDBSTemplate.templateUserHelp
+            msg=""
+            self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
+            page+= self.genVisiblePanel('Navigator')
             page+= self.getDataHelper(dbsInst,site,app,primD,tier)
             page+= self.genBottomHTML()
             return page
@@ -706,7 +773,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         try:
             self.htmlInit()
-            page = self.topHTML
+            page = self.genTopHTML()
+#            page+= self.genHiddenPanel()
             if dataset:
                page+= self.genSnapshot(self.dbs,self.site,self.app,self.primD,self.tier)
             page+="""<hr class="dbs" />"""
@@ -860,7 +928,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         try:
             page = self.genTopHTML()
-            page+= self.siteForm(dbsInst,site)
+#            page+= self.siteForm(dbsInst,site)
+            self.formDict['siteForm']=(dbsInst,site)
+            page+= self.genVisiblePanel('Site')
             self.helper.setDBSDLS(dbsInst)
             bList = self.helper.getBlocksFromSite(site)
             nameSpace = {
@@ -926,6 +996,24 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDatasets.exposed=True
 
+    def getDatasetProvenanceHelper(self,dataset):
+        parents = self.helper.getDatasetProvenance(dataset)
+        return parents
+        
+    def getDatasetProvenance(self,dataset,**kwargs):
+        # AJAX wants response as "text/xml" type
+        cherrypy.response.headerMap['Content-Type'] = "text/xml"
+        nameSpace={
+                   'host'      : DBSDD, 
+                   'dataset'   : dataset, 
+                   'parentList': self.getDatasetProvenanceHelper(dataset)
+                  }
+        t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
+        page = str(t)
+        print page
+        return page
+    getDatasetProvenance.exposed=True
+    
     def siteForm(self,firstDBS="",firstSite=""):
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
@@ -938,6 +1026,23 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateSiteForm, searchList=[nameSpace])
         page = str(t)
         return page
+    def sendFeedback(self,userEmail,feedbackText):
+        p = os.popen("%s -t" % SENDMAIL, "w")
+        p.write("To: vkuznet@gmail.com\n")
+        p.write("Subject: DBS data discovery user feedback\n")
+        p.write("\n") # blank line separating headers from body
+        p.write("From: %s\n"%userEmail)
+        p.write("\n") # blank line separating headers from body
+        p.write(feedbackText)
+        sts = p.close()
+        if sts != 0:
+            print "mail exit status", sts
+        page = self.genTopHTML()
+        page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to maintainer.</p>"""
+        page+= self.genVisiblePanel('Resources')
+        page+= self.genBottomHTML()
+        return page
+    sendFeedback.exposed=True
 #
 # main
 #

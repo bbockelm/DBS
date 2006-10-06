@@ -1,3 +1,15 @@
+function ShowPanel() {
+   var t=document.getElementById("HiddenPanel");
+   t.innerHTML='<span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel()">PANEL</a></span>'
+   var p=document.getElementById("GlobalPanel");
+   p.className="show";
+}
+function HidePanel() {
+   var t=document.getElementById("HiddenPanel");
+   t.innerHTML='<span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel()">PANEL</a></span>'
+   var p=document.getElementById("GlobalPanel");
+   p.className="hide";
+}
 function showMenu(menu) {
    var menuArr = new Array();
    menuArr[0]='Navigator';
@@ -5,6 +17,7 @@ function showMenu(menu) {
    menuArr[2]='Site';
    menuArr[3]='Summary';
    menuArr[4]='Datasets';
+   menuArr[5]='About';
    for(var i=0;i<menuArr.length;i++) {
        var t=document.getElementById(menuArr[i]+'Div');
        if (t) {
@@ -15,13 +28,13 @@ function showMenu(menu) {
            }
        }
    }
-   var t=document.getElementById("Introduction");
-   t.className="hide"
+//   var t=document.getElementById("Introduction");
+//   t.className="hide"
 }
-function showIntro() {
-   var t=document.getElementById("Introduction");
-   t.className="show"
-}
+//function showIntro() {
+//   var t=document.getElementById("Introduction");
+//   t.className="show"
+//}
 function ShowProcDatasetsText(){
   var t=document.getElementById("ShowAllProcDatasets");
   t.innerHTML='Show all <a href="javascript:ShowProcDatasets()">datasets</a>'
@@ -36,6 +49,39 @@ function ShowProcDatasets(){
   t.innerHTML='<table><tr>'+content+'</tr></table>'
 }
 
+function ShowBlockInfo(tableId){
+  var elem=document.getElementsByName("blockInfo");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].className="show_cell";
+  }
+  var elem=document.getElementsByName("row_blockInfo");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].className="show_row";
+  }
+}
+function HideBlockInfo(tableId){
+  var elem=document.getElementsByName("blockInfo");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].className="hide";
+  }
+  var elem=document.getElementsByName("row_blockInfo");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].className="hide";
+  }
+}
+function ShowSumInfo(tableId) {
+  var elem=document.getElementsByName("row_sumInfo");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].className="show_row";
+  }
+}
+function HideSumInfo(tableId) {
+  var elem=document.getElementsByName("row_sumInfo");
+  for(var i=0;i<elem.length;i++) {
+      elem[i].className="hide";
+  }
+}
+/*
 function ShowBlockInfo(tableId){
   var t=document.getElementsByName("BlockInfoText");
   for(var i=0;i<t.length;i++) {
@@ -84,6 +130,8 @@ function HideSumInfo(tableId) {
       elem[i].className="show_row";
   }
 }
+*/
+
 function MakeUnSortable(tableId) {
   var t=document.getElementsByName("MakeSortableText");
   for(var i=0;i<t.length;i++) {
@@ -128,8 +176,24 @@ function SelectAll(){
       elem[i].checked=true;
   }
 }
-function popUp(URL) {
+function popUp(URL,WIDTH,HEIGHT) {
   day = new Date();
   id = day.getTime();
-  eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=640,height=480,left = 290,top = 220');");
+  var w=640;
+  var h=480;
+  if(WIDTH) {
+     w=WIDTH;
+  }
+  if(HEIGHT) {
+     h=HEIGHT;
+  }
+  // we need to replace in URL the # sign since it's part of blockName
+  var url=URL.replace('#','%23');
+  eval("page" + id + " = window.open(url, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');");
 }
+function getProvenance(dataset) {
+  var id=document.getElementById(dataset);
+  id.className="show_inline";
+  ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
+}
+

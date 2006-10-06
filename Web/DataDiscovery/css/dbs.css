@@ -177,14 +177,23 @@ em.smallbold  {
   color: #000000;
   background-color: #F0F0F0;
 }
+.td_white_box {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+}
 .td_gray_box {
   width: 8%;
   color: #000000;
   background-color: #E0E0E0;
-  border-style: ridge;
+  border-style: solid;
   border-width: 1px 1px 1px 1px;
   padding: 1px 1px 1px 1px;
-  border-style: ridge ridge ridge ridge;
+  border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
 .td10 {
@@ -230,7 +239,7 @@ table.sortable a.sortheader {
 }
 table.sortable a.sortheader:hover { color: #996699; }
 
-table.nonsortable {
+.nonsortable {
   background-color:#eee;
   background:#eee;
   color: #000000;
@@ -250,6 +259,11 @@ table.sortable span.sortarrow {
 .dbs_cell {
   padding-left: 0.5ex; 
   padding-right: 0.5ex;
+}
+.dbs_cell_r {
+  padding-left: 0.5ex; 
+  padding-right: 0.5ex;
+  background-color: #DEB0AF;
 }
 
 .dbs_cell_u {
@@ -294,6 +308,12 @@ table.sortable span.sortarrow {
   display: none;
 }
 .show {
+  display: block;
+  margin-top:6px; 
+  border-top-width:1px; 
+  border-top-style:solid;
+}
+.show_inline {
   display: inline;
 }
 .show_block {

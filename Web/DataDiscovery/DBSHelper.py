@@ -350,6 +350,12 @@ class DBSHelper(DBSLogger):
           oList.append(entry.get('datasetName'))
       return oList
   
+  def getDatasetProvenance(self,dataset):
+      pList=[]
+      for parent in self.api.getDatasetProvenance(dataset):
+          pList.append(parent['parent']['datasetPathName'])
+      return pList
+
   def exeQuery(self,q):
       """
          Set DBS instance and

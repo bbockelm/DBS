@@ -44,18 +44,58 @@ templateSummary_old="""
 #end for
 </table>
 """
+
 templatePrintList="""
 <!--
 <hr class="dbs" />
 -->
-<div class="sectionhead_tight">$msg</div>
 <table class="small">
-#for d in $dList
 <tr>
-<td>$d</td>
+<td class="sectionhead_tight">$msg</td>
+<td><span id="HiddenTitle" class="hide"></span></td>
 </tr>
-#end for
+<tr>
+<td>
+    <table class="small">
+    #for d in $dList
+    <tr>
+    <td>$d</td>
+    </tr>
+    #end for
+    </table>
+</td>
+<td><span id="HiddenContent" class="hide"></span></td>
+</tr>
 </table>
+"""
+
+templateProvenance="""
+<ajax-response>
+ <response type="element" id="$dataset">
+    Test
+    <table class="nonsortable" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+    <th align="left">Parent list</th>
+    </tr>
+    <tr bgcolor="#FFFADC">
+    #if not len($parentList)
+    <td>
+    No parents found
+    </td>
+    #else
+    #for parent in $parentList
+    <td align="left">
+    <!--
+    <img src="images/down_right_arrow.jpg" alt="arrow" />
+    -->
+    $parent
+    </td>
+    #end for
+    #end if
+    </tr>
+    </table>
+  </response>
+</ajax-response>
 """
 
 templateTop = """
@@ -80,36 +120,7 @@ templateTop = """
 <h1>You have disabled Javascript in your browser. This page requires
 Javascript.</h1>
 </noscript>
-<!--
-<div class="normalcontent">
--->
 
-<table class="small" width="100%">
-<tr>
-<td align="left">
-<a href="https://twiki.cern.ch/twiki/bin/view/CMS/WebHome">CMS Home</a> |
-<a href="https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS Home</a> |
-<a href="https://https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS glossary</a> |
-<a href="http://cmsdoc.cern.ch/~sekhri/Html/mc.htm">More info</a> |
-<a href="https://twiki.cern.ch/twiki/bin/view/CMS/DLS">DLS Home</a> |
-<a href="$host/Documentation/index.html">API doc</a> |
-<a href="$host/TODO.html">TODO</a> |
-<a href="mailto:hn-cms-dmDevelopment@cern.ch">Contact</a>
-</td>
-<td align="right">
-<!--
-#if $userMode
-<a href="$host/expert"><span class="box_red">To Expert page</span></a>
-#else
-<a href="$host"><span class="box_red">To User page</span></a>
-#end if
--->
-Home page:
-<a href="$host"><span class="box_red">users</span></a>, &nbsp;
-<a href="$host/expert"><span class="box_red">experts</span></a>
-</td>
-</tr>
-</table>
 <hr class="dbs" />
 """
 
@@ -132,11 +143,6 @@ templateSearchTable="""
 Please specify any keywords for your search, e.g. 
 <span class="box">CMSSW Higgs</span>
 in provided text box.
-<!--
-<span class="box_red">
-Please note, this part is still under development.
-</span>
--->
 </p>
 <p>
 Any keywords:
@@ -404,7 +410,6 @@ $msg
 <table class="small" cellspacing="5">
 <tr valign="top">
 <td align="right">&nbsp;<b>DBS instances</b>
-&nbsp;<a href="javascript:popUp('glossary.html')"><span class="box">?</span></a>
 </td>
 <td>
 <select name="dbsInst" onchange="updateLayer0(this)" id="dbsSelector">
@@ -421,7 +426,6 @@ $msg
 
 <tr valign="top">
 <td align="right">&nbsp;<b>Tier sites</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>
 <select name="site" id="siteSelector">
@@ -434,7 +438,6 @@ $msg
 
 <tr valign="top">
 <td align="right">&nbsp;<b>Application</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>
 <div id="appHolder"></div>
@@ -442,7 +445,6 @@ $msg
 
 <tr valign="top">
 <td align="right">&nbsp;<b>Primary dataset</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>
 <div id="primHolder"></div>
@@ -450,7 +452,6 @@ $msg
 
 <tr valign="top">
 <td align="right">&nbsp;<b>Data tier</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>
 <div id="tierHolder"></div>
@@ -539,25 +540,21 @@ templateSnapshot="""
 #end if
 <tr>
 <td align="right"><b>Tier site:</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>$site</td>
 </tr>
 <tr>
 <td align="right"><b>Application:</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>$app</td>
 </tr>
 <tr>
 <td align="right"><b>Primary dataset:</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>$primD</td>
 </tr>
 <tr>
 <td align="right"><b>Data tier:</b>
-<sup><a href="javascript:popUp('glossary.html')"><span class="box">?</span></a></sup>
 </td>
 <td>$tier</td>
 </tr>
@@ -579,7 +576,7 @@ all columns are sortable, move your mouse over the column name and click on it.
 templateProcDatasets="""
 <p>
 Processed datasets (plain 
-<a href="$host/showProcDatasets?dbsInst=$dbsInst&site=$site&app=$app&primD=$primD&tier=$tier">
+<a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&site=$site&app=$app&primD=$primD&tier=$tier')">
 view</a>):
 </p>
 """
@@ -587,33 +584,41 @@ view</a>):
 templateLFB = """
 #from DBSUtil import fmt3
 #set tot=len($blockDict.keys())
-<div id="procDataset" name="procDataset" class="off"><b>$path</b></div>
-contains $nEvents events, $totFiles files, $totSize. 
-<!--
-<div id="accordionDiv">
-    <div id="summaryPanel">
-         <div id="summaryHeader">Summary</div>
-         <div id="summaryContent">Summary content</div>
-    </div>
-    <div id="detailPanel">
-         <div id="detailHeader">Deatail view</div>
-         <div id="detailedContent">Detailed content</div>
-    </div>
-    <div id="combinedPanel">
-         <div id="combinedHeader">Combined view</div>
-         <div id="combinedContent">Combined content</div>
-    </div>
+<script type="text/javascript">
+function registerAjaxCalls() {
+    ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
+    ajaxEngine.registerAjaxElement('$path')
+}
+</script>
+<div id="procDataset" name="procDataset" class="off">
+<a href="javascript:registerAjaxCalls();getProvenance('$path')">$path</a>
+<br />
+<div id="$path" class="hide"></div>
 </div>
-<script type="text/javascript">new Rico.Accordion( \$('accordionDiv'), {panelHeight:300} );</script>
--->
+contains $nEvents events, $totFiles files, $totSize. 
+#set tableId="table_"+str($tid)
 <table>
 <tr>
-<td><span name="BlockInfoText" id="BlockInfoText"></span></td>
+<td>Show:</td>
+<td>
+<a href="javascript:HideSumInfo('$tableId');ShowBlockInfo('$tableId')">
+Blocks
+</a>
+</td>
 <td><br></br></td>
-<td><span name="SumInfoText" id="SumInfoText"></span></td>
+<td>
+<a href="javascript:HideBlockInfo('$tableId');ShowSumInfo('$tableId');">
+Summary
+</a>
+</td>
+<td><br></br></td>
+<td>
+<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');">
+Both
+</a>
+</td>
 </tr>
 </table>
-#set tableId="table_"+str($tid)
 <!-- Main table -->
 <table id="$tableId" name="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
   <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
@@ -621,6 +626,9 @@ contains $nEvents events, $totFiles files, $totSize.
      <th>Location</th>
      <th>Events</th>
      <th>Files</th>
+     <th name="blockInfo" id="blockInfo" class="hide">
+     status
+     </th>
      <th>size</th>
      <th name="blockInfo" id="blockInfo" class="hide">
      LFN list
@@ -659,12 +667,14 @@ contains $nEvents events, $totFiles files, $totSize.
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
+     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     </td>
      <td align="right"><div class="dbs_cell">$fmt3($siteTotSize)</div></td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <a href="$host/getLFNsForSite?site=$site">All</a>
+     <a href="javascript:popUp($host/getLFNsForSite?site=$site)">All</a>
      </td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <a href="$host/getBlocksForSite?site=$site">All</a>
+     <a href="javascript:popUp($host/getBlocksForSite?site=$site)">All</a>
      </td>
   </tr>
 #set j=0
@@ -682,6 +692,8 @@ contains $nEvents events, $totFiles files, $totSize.
 #end if
 #set item    = $blockDict[$name]
 #set bName   = $name.replace('#','%23')
+#set escName = $name.replace('#','\#')
+#set htmlName = $name.replace('#','&#35;')
 #set nEvt    = $item[0]
 #set bStatus = $item[1]
 #set nFiles  = $item[2]
@@ -692,15 +704,20 @@ contains $nEvents events, $totFiles files, $totSize.
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$nEvt</div></td>
      <td align="right"><div class="dbs_cell">$nFiles</div></td>
+     #if $bStatus!="OPEN"
+     <td align="center" class="dbs_cell_r"><div class="dbs_cell_r">$bStatus</div></td>
+     #else
+     <td align="center"><div class="dbs_cell">$bStatus</div></td>
+     #end if
      <td align="right"><div class="dbs_cell">$fmt3($size)</div></td>
      <td align="center"><div class="dbs_cell">
-     <a href="$host/getLFN_cfg?blockName=$bName&dataset=$path" alt="cff format">cff</a>, &nbsp;
-     <a href="$host/getLFN_txt?blockName=$bName&dataset=$path" alt="file list format">plain</a>
+     <a href="javascript:popUp('$host/getLFN_cfg?blockName=$bName&dataset=$path',1000)" alt="cff format">cff</a>, &nbsp;
+     <a href="javascript:popUp('$host/getLFN_txt?blockName=$bName&dataset=$path',900)" alt="file list format">plain</a>
      </div>
      </td>
      <td align="left">
      <div class="dbs_cell">
-     <a href="$host/getLFNlist?blockName=$bName&dataset=$path">$name</a>
+     <a href="javascript:popUp('$host/getLFNlist?blockName=$bName&dataset=$path',1000)">$name</a>
      </div>
      </td>
   </tr>
@@ -708,13 +725,9 @@ contains $nEvents events, $totFiles files, $totSize.
 #end for
 </table>
 <!-- End of Main table -->
+<!--
 <script type="text/javascript">
 ShowBlockInfo("$tableId");HideSumInfo("$tableId");</script>
-<!--
-ShowBlockInfo("$tableId");HideSumInfo("$tableId");MakeSortable("$tableId");</script>
-<script type="text/javascript">ShowBlockInfo("$tableId")</script>
-<script type="text/javascript">HideSumInfo("$tableId")</script>
-<script type="text/javascript">MakeUnSortable("$tableId")</script>
 -->
 <p></p>
 """
@@ -752,12 +765,26 @@ This page was generated at: $localtime
 """
 
 templateFrontPage="""
+#if $frontPage
+<div class="sectionhead_tight">WELCOME TO DBS DATA DISCOVERY PAGE</div>
+<hr class="dbs" />
+#end if
 <table width="100%">
 <tr valign="top">
 <!-- menu -->
 <td class="menu_td_gray">
 <table width="100%">
-<tr valign="top">
+#if not $userMode
+<tr>
+<td class="td_gray_box"><a href="$host/expert">Home</a></td>
+</tr>
+#else
+<tr>
+<td class="td_gray_box"><a href="$host">Home</a></td>
+</tr>
+#end if
+<tr><td><br /></td></tr>
+<tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Navigator')">Navigator</a></td>
 </tr>
 <tr>
@@ -767,24 +794,140 @@ templateFrontPage="""
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Site')">Site</a></td>
 </tr>
-<tr>
-<td>
-<hr />
-</td>
-</tr>
+#if $datasets
+<tr><td><br /></td></tr>
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Datasets')">Datasets</a></td>
 </tr>
+#end if
+#if $summary
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Summary')">Summary</a></td>
 </tr>
 #end if
+#end if
+<tr><td><br /></td></tr>
+#if $userMode
+<tr>
+<td class="td_gray_box"><a href="$host/expert">Expert page</a></td>
+</tr>
+#else
+<tr>
+<td class="td_gray_box"><a href="$host">User page</a></td>
+</tr>
+#end if
+<tr>
+<td class="td_gray_box"><a href="javascript:showMenu('About')">About...</a></td>
+</tr>
 </table>
 </td>
 
 <!-- menu content, accordion -->
 <td>
-<div id="Introduction" class="show">
+<div id="NavigatorDiv" class="hide">
+   <div id="navigationPanel1">
+     <div id="navigationHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Navigator menu
+       </span>
+      </div>
+      <div id="navigationContent1">
+      $navigatorForm
+      </div>
+   </div>
+   <div id="navigationPanel2">
+     <div id="navigationHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
+       DBS glossary
+       </span>
+      </div>
+      <div id="navigationContent2">
+      $glossary
+      </div>
+   </div>
+</div>
+<div id="SearchDiv" class="hide">
+   <div id="searchPanel1">
+     <div id="searchHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Data keyword search
+       </span>
+      </div>
+      <div id="searchContent1">
+      $searchForm
+      </div>
+   </div>
+
+   <div id="searchPanel2">
+     <div id="searchHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Advanced search
+       </span>
+      </div>
+      <div id="searchContent2">
+       ... To be implemented soon ...
+       <br />
+       We plan to extend search capabilites and allow people specify parameter set search keywords,
+       introduce pattern search keywords, e.g. app:CMSSW for concrete search in application, etc.
+       Your feedback are very appreciated.
+      </div>
+   </div>
+</div>
+<div id="SiteDiv" class="hide">
+   <div id="sitePanel1">
+     <div id="siteHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Site search
+       </span>
+     </div>
+     <div id="siteContent1">
+      $siteForm
+     </div>
+   </div>
+
+   <div id="sitePanel2">
+     <div id="siteHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Description
+       </span>
+     </div>
+     <div id="siteContent2">
+     The site search is mostly dedicated for site admins. Here we a re mostly interesting in
+     information which belong to given site, but not in detailes of data stored there. For last one
+     you need to use either
+     <a href="javascript:showMenu('Navigator')">Navigator</a> or 
+     <a href="javascript:showMenu('Search')">Keyword search</a>.
+     </div>
+   </div>
+</div>
+#if $datasets
+<div id="DatasetsDiv" class="hide"> 
+$datasets
+</div>
+#end if
+#if $summary
+<div id="SummaryDiv" class="hide">
+   <div id="summaryPanel1">
+     <div id="summaryHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       DBS summary page
+       </span>
+      </div>
+      <div id="summaryContent1">
+      $summary
+      </div>
+   </div>
+</div>
+#end if
+
+<div id="AboutDiv" class="hide">
+   <div id="aboutPanel1">
+     <div id="aboutHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Introduction
+       </span>
+     </div>
+     <div id="siteContent1">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
 The purpose of this page to help you navigate through CMS data in
@@ -819,102 +962,152 @@ To use this method please choose <a href="javascript:showMenu('Site')">Site</a> 
 The search results are usually presented in a form of sortable tables, where you can
 move your mouse over the column name and click on it to sort entries.
 </p>
-</div>
-<div id="NavigatorDiv" class="hide">
-   <div id="navigationPanel1">
-     <div id="navigationHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Navigator menu
-       </span>
-      </div>
-      <div id="navigationContent1">
-      $navigatorForm
-      </div>
+     </div>
    </div>
 
-   <div id="navigationPanel2">
-     <div id="navigationHeader2" class="accordionTabTitleBar">
+   <div id="aboutPanel2">
+     <div id="aboutHeader2" class="accordionTabTitleBar">
+       <span class="menu_title">
+       DBS glossary
+       </span>
+     </div>
+     <div id="aboutContent2">
+     $glossary
+     </div>
+   </div>
+   <div id="aboutPanel3">
+     <div id="aboutHeader3" class="accordionTabTitleBar">
+       <span class="menu_title">
+       DBS resources
+       </span>
+     </div>
+     <div id="aboutContent3">
+          <table>
+              <tr><td>&\#187;</td>
+              <td><a href="https://twiki.cern.ch/twiki/bin/view/CMS/WebHome">CMS Home</a>
+              your resource wizard in CMS land.
+              </td>
+              </tr>
+              <tr><td>&\#187;</td>
+              <td><a href="https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS Home</a>
+              provides full description of Data Bookeeping System (DBS) system.
+              </td>
+              </tr>
+              <tr><td>&\#187;</td>
+              <td><a href="https://https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS glossary</a>
+              provides a short term definitions used on DBS discovery page.
+              </td>
+              </tr>
+              <tr><td>&\#187;</td>
+              <td>DBS specific discovery
+              <a href="http://cmsdoc.cern.ch/~sekhri/Html/mc.htm">page</a>
+              The purpose of this page to provide a complete detailed information about
+              data stored in DBS. Please keep in mind that format is mostly for real experts.
+              </td>
+              </tr>
+              <tr><td>&\#187;</td>
+              <td><a href="https://twiki.cern.ch/twiki/bin/view/CMS/DLS">DLS Home</a>
+              provides full description of Data Location Service (DLS) system.
+              </td>
+              </tr>
+              <tr><td>&\#187;</td>
+              <td><a href="$host/Documentation/index.html">API doc</a>
+              describes current API of DBS discovery page
+              </td>
+              </tr>
+              <tr><td>&\#187;</td>
+              <td><a href="$host/TODO.html">TODO</a>
+              is my current list of task.
+              </td>
+              </tr>
+          </table>
+     </div>
+   </div>
+   <div id="aboutPanel4">
+     <div id="aboutHeader4" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Feedback form
+       </span>
+     </div>
+     <div id="aboutContent4">
+         <p></p>
+         <form action="sendFeedback" method="post">
+         <p>
+         Your Email:
+         <input type="text" name="userEmail" />
+         <br />
+         Feedback form:
+         <br />
+         <textarea rows="5" cols="100" name="feedbackText">Put your text here</textarea>
+         <br />
+         <input type="submit" value="Submit" id="submit-button-form"/>
+         </p>
+         </form>
+     </div>
+   </div>
+   <div id="aboutPanel5">
+     <div id="aboutHeader5" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Site resources
+       </span>
+     </div>
+     <div id="aboutContent5">
+       <table>
+         <tr><td>&\#187;</td>
+         <td>The sort capabilities in tables provided by <a href="http://www.kryogenix.org/code/browser/sorttable/">sortable</a> package. I extended this package and include some additions (highlihting, new sort functions, etc.)</td>
+         </tr>
+         <tr><td>&\#187;</td>
+         <td>Ajax functionality provided by <a href="http://www.openrico.org">Rico</a> framework</td>
+         </tr>
+         <tr><td>&\#187;</td>
+         <td>The Rico core itself based on <a href="http://prototype.conio.net/">prototype</a> framework.</td>
+         </tr>
+         <tr><td>&\#187;</td>
+         <td>The entire service is running under <a href="http://www.cherrypy.org/">CherryPy</a> framework</td>
+         </tr>
+         <tr><td>&\#187;</td>
+         <td>It would be impossible to accomplish this task without using 
+         <a href="http://www.cheetahtemplate.org">Cheetah</a> template framework</td>
+         </tr>
+         <tr><td>&\#187;</td>
+         <td>Some of my work inspired by <a href="http://www.ajaxprojects.com/">Ajax</a> projects</td>
+         </tr>
+       </table>
+     </div>
+   </div>
+#if not $userMode
+   <div id="aboutPanel6">
+     <div id="aboutHeader6" class="accordionTabTitleBar">
        <span class="menu_title">
        Method description
        </span>
-      </div>
-      <div id="navigationContent2">
-       ... content text navigator...
-      </div>
+     </div>
+     <div id="aboutContent6">
+      At the moment all all menus are generated up-front and I use CSS tricks to hide/highlight
+      part of the document. The menus entries are generated every 5 minutes for DBS and once an hour 
+      for DLS information. I use AJAX technology in some part of DBS discovery page.
+     </div>
    </div>
-</div>
-<div id="SearchDiv" class="hide">
-   <div id="searchPanel1">
-     <div id="searchHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Data keyword search
-       </span>
-      </div>
-      <div id="searchContent1">
-      $searchForm
-      </div>
-   </div>
-
-   <div id="searchPanel2">
-     <div id="searchHeader2" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Advanced search
-       </span>
-      </div>
-      <div id="searchContent2">
-       ... To be implemented soon ...
-      </div>
-   </div>
-</div>
-<div id="SiteDiv" class="hide">
-   <div id="sitePanel1">
-     <div id="siteHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Site search
-       </span>
-      </div>
-      <div id="siteContent1">
-      $siteForm
-      </div>
-   </div>
-
-   <div id="sitePanel2">
-     <div id="siteHeader2" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Description
-       </span>
-      </div>
-      <div id="siteContent2">
-       ... content site ...
-      </div>
-   </div>
-</div>
-<div id="DatasetsDiv" class="hide">
-$datasets
-</div>
-<div id="SummaryDiv" class="hide">
-   <div id="summaryPanel1">
-     <div id="summaryHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       DBS summary page
-       </span>
-      </div>
-      <div id="summaryContent1">
-      $summary
-      </div>
-   </div>
+#end if
 </div>
 </td>
-<!--       -->
 
 </tr>
 </table>
 <script type="text/javascript">
-new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:200} );
-new Rico.Accordion( \$('SearchDiv'), {panelHeight:200} );
-new Rico.Accordion( \$('SiteDiv'), {panelHeight:200} );
-new Rico.Accordion( \$('SummaryDiv'), {panelHeight:450} );
-new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:500} );
+new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:300} );
+new Rico.Accordion( \$('SearchDiv'), {panelHeight:300} );
+new Rico.Accordion( \$('SiteDiv'), {panelHeight:300} );
+#if $summary
+new Rico.Accordion( \$('SummaryDiv'), {panelHeight:300} );
+#end if
+#if $datasets
+new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:300} );
+#end if
+new Rico.Accordion( \$('AboutDiv'), {panelHeight:300} );
+#if $frontPage
+showMenu('Navigator');
+#end if
 </script>
 """
 
@@ -929,6 +1122,54 @@ templateDivEntries="""
       $content
      </div>
    </div>
+"""
+
+templateHiddenPanel="""
+<p>
+<span id="HiddenPanel"></span>
+</p>
+<span id="GlobalPanel">
+$panel
+</span>
+<script type="text/javascript">HidePanel()</script>
+<script type="text/javascript">
+#if $view
+showMenu('$view')
+#end if
+</script>
+"""
+
+templateVisiblePanel="""
+<p>
+<span id="HiddenPanel"></span>
+</p>
+<span id="GlobalPanel">
+$panel
+</span>
+<script type="text/javascript">ShowPanel()</script>
+<script type="text/javascript">
+#if $view
+showMenu('$view')
+#end if
+</script>
+"""
+
+templateGlossary="""
+<div class="sectionhead">DATA DISCOVERY GLOSSARY PAGE</div>
+<b>Application</b> refers to set of software version, e.g. CMSSW_0_8_1,
+family type, e.g. Merged, RECO, and program used to produce this data, e.g. cmsRun.
+<p></p>
+<b>Primary dataset</b> identifies the data origin, e.g.
+common MC production criteria or trigger line for real data.
+<p></p>
+<b>Data tier</b> is a data type, e.g. RAW, RECO, DIGI, etc.
+<p></p>
+<b>cff</b> is a configuration file fragment
+<p></p>
+The naming conventions used on discovery page are discussed 
+<a href="(https://twiki.cern.ch/twiki/bin/view/CMS/CMST0DataManagement">CMST0DataManagement</a>
+and
+<a href="https://twiki.cern.ch/twiki/bin/view/CMS/ProdForCSA06">ProdForCSA06</a> pages
 """
 
 #
