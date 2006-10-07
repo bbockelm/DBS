@@ -1,5 +1,15 @@
 #!/bin/sh
 
+export DDHOME=$PWD
+echo "Set DDHOME='$DDHOME'"
+if [ -z $DBSHOME] ; then
+   echo "No DBSHOME environment found, will use $DDHOME/../../../DBS"
+   export DBSHOME=$DDHOME/../../../DBS
+fi
+if [ -z $DLSHOME] ; then
+   echo "No DBSHOME environment found, will use $DDHOME/../../../DLS"
+   export DLSHOME=$DDHOME/../../../DLS
+fi
 if [ -z $DLSHOME ]; then
    echo "Please define DLSHOME environment, e.g. /path/COMP/DLS"
    exit
@@ -29,7 +39,10 @@ export DBS_DBPARAM=/data/DBSAccessInfo/DBParam
 . /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh
 # DLS setup
 #. /data/DLS_Server/RPMInstall/slc3_ia32_gcc323/cms/dls/DLS_0_0_8/etc/profile.d/init.sh
-. /data/DLS_Server/CMSRepoRPMInstall/slc3_ia32_gcc323/cms/dls/DLS_0_1_1/etc/profile.d/init.sh
+DLSSERVER='/data/DLS_Server/CMSRepoRPMInstall/slc3_ia32_gcc323/cms/dls/DLS_0_1_1/'
+if [ -d $DLSSERVER/etc/profile.d/ ]; then
+. $DLSSERVER/etc/profile.d/init.sh
+fi
 
 export TNS_ADMIN=$PWD
 

@@ -7,13 +7,10 @@
 
 """
 DBS Data discovery server module.
-DBSDD environment is used in all templates, it defines serer name and port, e.g.
-http://localhost:8000.
-
 """
 
 # system modules
-import os, string, logging, types, time
+import os, string, logging, types, time, socket, socket
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -26,10 +23,6 @@ import CheetahDBSTemplate
 from   DBSHelper import *
 from   DBSUtil   import *
  
-DBSDD="http://localhost:8080"
-if os.environ.has_key('DBSDD'):
-   DBSDD=os.environ['DBSDD']
-
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
 
 class DBSDataDiscoveryServer(DBSLogger): 
@@ -74,7 +67,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.app  = ""
         self.primD= ""
         self.tier = ""
-        print "DBSDataDiscoveryServer uses '%s'"%DBSDD
         self.helper     = DBSHelper(self.dbs,verbose)
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
@@ -90,6 +82,14 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.sumPage    = ""
         self.firstSearch=1
         self.siteDict   = {}
+        self.hostname   = socket.gethostbyaddr(socket.gethostname())[0]
+        self.port       = 8001
+        for line in open('CherryServer.conf').readlines():
+            if string.find(line,'server.socketPort')!=-1:
+               self.port=string.strip(string.split(string.replace(line,'\n',''),'=')[1])
+               break
+        self.dbsdd      = self.hostname+":"+str(self.port)
+        print "DBSDataDiscoveryServer '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("","") # (dbsInst,site)
@@ -177,7 +177,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         nameSpace = {
-                     'host'        : DBSDD,
+                     'host'        : self.dbsdd,
                      'title'       : 'DBS Data Discovery Page',
                      'userMode'    : self.userMode
                     }
@@ -271,7 +271,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         siteForm=self.siteForm(dbsInst,site)
            
         nameSpace = {
-                     'host'         : DBSDD,
+                     'host'         : self.dbsdd,
                      'userMode'     : self.userMode,
                      'navigatorForm': menuForm,
                      'searchForm'   : self.searchForm(),
@@ -294,7 +294,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         try:
             nameSpace = {
-                         'host'         : DBSDD,
+                         'host'         : self.dbsdd,
                          'userMode'     : self.userMode,
                          'navigatorForm': self.genMenuForm(),
                          'searchForm'   : self.searchForm(),
@@ -537,7 +537,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         if firstTier=="*": firstTier="All"
         dbsDict = self.getDBSDict()
         nameSpace = {
-                     'host'     : DBSDD, 
+                     'host'     : self.dbsdd, 
                      'dict'     : dbsDict,
                      'userMode' : self.userMode,
                      'firstDBS' : firstDBS,
@@ -557,7 +557,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            dbsList = self.dbsList
 #           if not msg:
-#              nameSpace={'host':DBSDD}
+#              nameSpace={'host':self.dbsdd}
 #              msg = str(Template(CheetahDBSTemplate.templateExpertHelp,searchList=[nameSpace]))
 
         nameSpace = {
@@ -653,7 +653,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 
     def showProcDatasetsHTML(self,dbs,site,app,primD,tier):
         nameSpace = {
-                     'host'    : DBSDD,
+                     'host'    : self.dbsdd,
                      'dbsInst' : dbs, 
                      'site'    : site,
                      'app'     : app,
@@ -771,7 +771,7 @@ globalAjaxProvenance=1;
 #            if self.userMode:
 #               msg=CheetahDBSTemplate.templateUserHelp
 #            else:
-#               nameSpace={'host':DBSDD}
+#               nameSpace={'host':self.dbsdd}
 #               msg = str(Template(CheetahDBSTemplate.templateExpertHelp,searchList=[nameSpace]))
             page = self.genTopHTML()
 #            page+= self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
@@ -930,7 +930,7 @@ globalAjaxProvenance=1;
         self.siteDict=locDict
         page=""
         nameSpace = {
-                     'host'       : DBSDD,
+                     'host'       : self.dbsdd,
                      'path'       : path,
                      'firstSearch': self.firstSearch,
                      'locDict'    : locDict,
@@ -961,7 +961,7 @@ globalAjaxProvenance=1;
             self.helper.setDBSDLS(dbsInst)
             bList = self.helper.getBlocksFromSite(site)
             nameSpace = {
-                         'host'   : DBSDD,
+                         'host'   : self.dbsdd,
                          'site'   : site,
                          'bList'  : bList
                         }
@@ -1011,7 +1011,7 @@ globalAjaxProvenance=1;
         """
         dList = self.helper.getPrimaryDatasets()
         nameSpace = {
-                     'host'  : DBSDD,
+                     'host'  : self.dbsdd,
                      'msg'   : "Available primary datasets",
                      'dList' : dList
                     }
@@ -1032,7 +1032,7 @@ globalAjaxProvenance=1;
 #        cherrypy.response.headerMap['Content-Type'] = "text/xml"
         self.setContentType('xml')
         nameSpace={
-                   'host'      : DBSDD, 
+                   'host'      : self.dbsdd, 
                    'dataset'   : dataset, 
                    'parentList': self.getDatasetProvenanceHelper(dataset)
                   }
@@ -1084,12 +1084,4 @@ if __name__ == "__main__":
        
     cherrypy.root = DBSDataDiscoveryServer(verbose) 
     cherrypy.config.update(file="CherryServer.conf")
-#    if os.environ.has_key("DDHOME"):
-#       cherrypy.config.update({
-#            'global': {'static_filter.root' : os.environ["DDHOME"] }})
-#    if os.environ.has_key("DBSDD"):
-#       s = string.split(os.environ["DBSDD"],":")
-#       print "Call on port",s[2]
-#       cherrypy.config.update({
-#            'global': {'server.socket_port' : s[2] }})
     cherrypy.server.start()
