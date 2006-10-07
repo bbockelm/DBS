@@ -34,21 +34,7 @@ templateSummary="""
 </tr>
 """
 
-templateSummary_old="""
-<div class="sectionhead_tight">$dbsInst</div>
-<table class="small">
-#for key in $sumDict
-<tr>
-<td align="right">$key</td><td>$sumDict[$key]</td>
-</tr>
-#end for
-</table>
-"""
-
 templatePrintList="""
-<!--
-<hr class="dbs" />
--->
 <table class="small">
 <tr>
 <td class="sectionhead_tight">$msg</td>
@@ -130,16 +116,10 @@ Javascript.</h1>
 templateAjaxInit="""
 <script type="text/javascript">
 function registerAjaxPrimDatasetsCalls() {
-    // second argument is DBSDataDiscoveryServer:getAllPrimaryDatasets method
     ajaxEngine.registerRequest('getPrimDatasets','getAllPrimaryDatasets');
-    ajaxEngine.registerAjaxElement('primDatasets');
-    var dbsInstArr= new Array();
-#for idx in xrange(0,len($dbsNames))
-    dbsInstArr[$idx]='$dbsNames[$idx]';
+#for name in $dbsNames
+    ajaxEngine.registerAjaxElement('datasets'+'$name');
 #end for
-    for(var i=0;i<dbsInstArr.length;i++) {
-        ajaxEngine.registerAjaxElement('datasets'+dbsInstArr[i]);
-    }
 }
 </script>
 """
@@ -511,21 +491,12 @@ templateLFN = """
 Block name: <b>$blockName</b>
 <!-- Main table -->
 <table class="lfn" border="1">
-<!--
-<table class="sortable" id="table1">
--->
 <tr>
 
 <td bgcolor="#CCCCFF">&nbsp; status &nbsp;</td>
 <td bgcolor="#CCCCFF">&nbsp; type &nbsp;</td>
 <td bgcolor="#CCCCFF">&nbsp; size &nbsp;</td>
 <td bgcolor="#CCCCFF">&nbsp; name &nbsp;</td>
-<!--
-<th>status</th>
-<th>type</th>
-<th>size</th>
-<th>name</th>
--->
 </tr>
 #for item in $lfnList:
 #set name=item[0]
@@ -751,23 +722,15 @@ templateBottom="""
 <hr class="dbs" />
 <table>
 <tr align="left">
-<!--
-<td>
-<a href="http://jigsaw.w3.org/css-validator/">
-  <img style="border:0;width:88px;height:31px"
-       src="http://jigsaw.w3.org/css-validator/images/vcss" 
-       alt="Valid CSS!" />
-</a>
-<a href="http://validator.w3.org/check?uri=referer"><img
-        src="http://www.w3.org/Icons/valid-xhtml10"
-        alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
-</td>
--->
 <td>
 <em class="small">
-<!-- Copyright &copy; 2006 CMS. All rights reserved. -->
 CMS data discovery. Author: <a href="mailto:vk@mail.lns.cornell.edu">Valentin Kuznetsov</a>.
-<br></br>
+</em>
+</td>
+</tr>
+<tr>
+<td>
+<em class="small">
 This page was generated at: $localtime 
 </em>
 </td>

@@ -58,7 +58,7 @@ b { font-weight: bold; text-decoration : none; }
 }
 
 .small  {
-  font-size: 11px;
+  font-size: 12px;
   font-family: helvetica, arial, verdana, sans-serif;
   text-decoration: none;
 }
@@ -117,7 +117,7 @@ em.normal  {
 
 em.small  {
   font-family: helvetica, arial, verdana, sans-serif;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: normal;
   font-style: italic;
 }
@@ -336,7 +336,7 @@ table.sortable span.sortarrow {
 .off {
   text-indent: 2cm;
   font-family: helvetica, arial, verdana, sans-serif;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: bold;
   font-style: normal;
 }

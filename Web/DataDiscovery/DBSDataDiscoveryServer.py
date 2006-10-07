@@ -992,9 +992,7 @@ globalAjaxProvenance=1;
     def getAllPrimaryDatasets(self,**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-#        page="""<ajax-response><response type="element" id="primDatasets">"""
         page="<ajax-response>"
-#        page=""
         for dbs in self.dbsList:
             name = "datasets%s"%string.split(dbs,"/")[0]
             page+="""<response type="element" id="%s">"""%name
@@ -1002,7 +1000,7 @@ globalAjaxProvenance=1;
             page+=self.getDatasetsForDbsInst(dbs)
             page+="</response>\n"
         page+="</ajax-response>"
-        print page
+#        print page
         return page
     getAllPrimaryDatasets.exposed=True
 
@@ -1050,7 +1048,6 @@ globalAjaxProvenance=1;
         
     def getDatasetProvenance(self,dataset,**kwargs):
         # AJAX wants response as "text/xml" type
-#        cherrypy.response.headerMap['Content-Type'] = "text/xml"
         self.setContentType('xml')
         nameSpace={
                    'host'      : self.dbsdd, 
@@ -1059,7 +1056,7 @@ globalAjaxProvenance=1;
                   }
         t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
         page = str(t)
-        print page
+#        print page
         return page
     getDatasetProvenance.exposed=True
     
