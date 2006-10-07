@@ -72,12 +72,12 @@ templatePrintList="""
 templateProvenance="""
 <ajax-response>
  <response type="element" id="$dataset">
-    Test
-    <table class="nonsortable" border="1" cellspacing="0" cellpadding="0">
+    <p>
+    <table border="0" cellspacing="0" cellpadding="0" class="off">
     <tr>
-    <th align="left">Parent list</th>
+    <th align="left">Parent list (<a href="javascript:HideParents('$dataset');">hide</a>):</th>
     </tr>
-    <tr bgcolor="#FFFADC">
+    <tr>
     #if not len($parentList)
     <td>
     No parents found
@@ -94,6 +94,8 @@ templateProvenance="""
     #end if
     </tr>
     </table>
+    </p>
+    <p></p>
   </response>
 </ajax-response>
 """
@@ -584,17 +586,20 @@ view</a>):
 templateLFB = """
 #from DBSUtil import fmt3
 #set tot=len($blockDict.keys())
+#*
 <script type="text/javascript">
-function registerAjaxCalls() {
+function registerAjaxProvenanceCalls() {
     ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
     ajaxEngine.registerAjaxElement('$path')
 }
 </script>
+*#
 <div id="procDataset" name="procDataset" class="off">
-<a href="javascript:registerAjaxCalls();getProvenance('$path')">$path</a>
+<a href="javascript:registerAjaxProvenanceCalls();getProvenance('$path')">$path</a>
 <br />
 <div id="$path" class="hide"></div>
 </div>
+<p></p>
 contains $nEvents events, $totFiles files, $totSize. 
 #set tableId="table_"+str($tid)
 <table>

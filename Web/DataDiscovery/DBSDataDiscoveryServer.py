@@ -95,6 +95,12 @@ class DBSDataDiscoveryServer(DBSLogger):
                            'siteForm': ("","") # (dbsInst,site)
                           }
 
+    def setContentType(self,type):
+        if type=="xml":
+           cherrypy.response.headerMap['Content-Type'] = "text/xml"
+        else:
+           cherrypy.response.headerMap['Content-Type'] = "text/html"
+
     def sendErrorReport(self,msg=""):
         """
            Send a complete report with provided msg. Capture internals of
@@ -695,6 +701,23 @@ class DBSDataDiscoveryServer(DBSLogger):
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
         dList = self.helper.getDatasetsFromApp(appPath)
+        regList=[]
+        # construct up-front AJAX registration
+        page+="""
+<script type="text/javascript">
+var globalAjaxProvenance=null;
+function registerAjaxProvenanceCalls() {
+if(!globalAjaxProvenance){
+ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
+        """
+        for dataset in dList:
+            page+="ajaxEngine.registerAjaxElement('%s');\n"%dataset
+        page+="""
+globalAjaxProvenance=1;
+}
+}
+</script>"""
+        # end of AJAX registration
         for dataset in dList:
             id+=1
             self.writeLog(dataset)
@@ -705,7 +728,12 @@ class DBSDataDiscoveryServer(DBSLogger):
             # new stuff which do not show repeating datasets
             p = self.dataToHTML(dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles:
-               page+="""<div id="procDataset" name="procDataset" class="off"><b>%s</b></div>"""%oldDataset
+               page+="""
+<div id="procDataset" name="procDataset" class="off">
+<a href="javascript:registerAjaxProvenanceCalls();getProvenance('%s')">%s</a></div>
+<div id="%s" class="hide">
+</div>
+                     """%(oldDataset,oldDataset,oldDataset)
             else:
                page+=prevPage
             oldTotEvt=totEvt
@@ -715,7 +743,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             prevPage = p
         page+=prevPage # end of new stuff
 
-#            page+= self.dataToHTML(dataset,locDict,totEvt,totFiles,totSize,id)
         return page
 
     def getData(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
@@ -1002,7 +1029,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         
     def getDatasetProvenance(self,dataset,**kwargs):
         # AJAX wants response as "text/xml" type
-        cherrypy.response.headerMap['Content-Type'] = "text/xml"
+#        cherrypy.response.headerMap['Content-Type'] = "text/xml"
+        self.setContentType('xml')
         nameSpace={
                    'host'      : DBSDD, 
                    'dataset'   : dataset, 
