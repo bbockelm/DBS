@@ -1,3 +1,7 @@
+function HideParents(id) {
+   var t=document.getElementById(id);
+   t.className="hide";
+}
 function ShowPanel() {
    var t=document.getElementById("HiddenPanel");
    t.innerHTML='<span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel()">PANEL</a></span>'
@@ -193,7 +197,7 @@ function popUp(URL,WIDTH,HEIGHT) {
 }
 function getProvenance(dataset) {
   var id=document.getElementById(dataset);
-  id.className="show_inline";
+  id.className="show_inline_off";
   ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
 }
 
