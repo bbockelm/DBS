@@ -792,17 +792,22 @@ templateFrontPage="""
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Site')">Site</a></td>
 </tr>
-#if $datasets
+##if $datasets
 <tr><td><br /></td></tr>
 <tr>
+<td class="td_gray_box"><a href="javascript:showMenu('Datasets');registerAjaxPrimDatasetsCalls();getPrimDatasets();">Datasets</a>
+</td>
+<!--
 <td class="td_gray_box"><a href="javascript:showMenu('Datasets')">Datasets</a></td>
+-->
 </tr>
-#end if
+##end if
 
 <tr>
 <td class="td_gray_box">
 <a href="javascript:showMenu('Summary');registerAjaxSummaryCalls();getSummary();">Summary</a>
 </td>
+</tr>
 
 
 #end if
@@ -900,11 +905,24 @@ templateFrontPage="""
      </div>
    </div>
 </div>
-#if $datasets
+###if $datasets
 <div id="DatasetsDiv" class="hide"> 
-$datasets
+   <div id="datasetsPanel0">
+     <div id="datasetsHeader0" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Available datasets
+       </span>
+      </div>
+      <div id="datasetsContent0">
+      <p>
+      <span id="datasets">Please wait while we retrieve this information</span>
+      </p>
+      </div>
+   </div>
+##$datasets
+      <span id="primDatasets"></span>
 </div>
-#end if
+###end if
 <div id="SummaryDiv" class="hide">
    <div id="summaryPanel1">
      <div id="summaryHeader1" class="accordionTabTitleBar">
@@ -927,7 +945,7 @@ $datasets
        Introduction
        </span>
      </div>
-     <div id="siteContent1">
+     <div id="aboutContent1">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
 The purpose of this page to help you navigate through CMS data in
@@ -939,7 +957,7 @@ At the moment, we provide
 two
 #else
 three
-#endif
+#end if
 orthogonal search methods to discovery your favorite data.
 </p>
 <ul>
@@ -1099,9 +1117,9 @@ new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SearchDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SiteDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SummaryDiv'), {panelHeight:300} );
-#if $datasets
+##if $datasets
 new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:300} );
-#end if
+##end if
 new Rico.Accordion( \$('AboutDiv'), {panelHeight:300} );
 #if $frontPage
 showMenu('Navigator');

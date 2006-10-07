@@ -301,7 +301,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'siteForm'     : self.siteForm(),
 #                         'summary'      : self.summary(),
                          'summary'      : '',
-                         'datasets'     : self.getAllPrimaryDatasets(),
+#                         'datasets'     : self.getAllPrimaryDatasets(),
+                         'datasets'     : '',
                          'frontPage'    : 1,
                          'glossary'     : self.glossary()
                         }
@@ -981,14 +982,20 @@ globalAjaxProvenance=1;
     getBlocksFromSite.exposed=True
 
     def getAllPrimaryDatasets(self):
-        page=""
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="primDatasets">"""
+#        page=""
         for dbs in self.dbsList:
             self.helperInit(dbs)
             content=self.getDatasetsForDbsInst(dbs)
             nameSpace = {'dbs':string.replace(dbs,"/","_"),'content':content}
             t = Template(CheetahDBSTemplate.templateDivEntries, searchList=[nameSpace])
             page+=str(t)
+        page+="</response></ajax-response>"
+        print page
         return page
+    getAllPrimaryDatasets.exposed=True
 
     def getDatasetsForDbsInst(self,dbsInst):
         """
