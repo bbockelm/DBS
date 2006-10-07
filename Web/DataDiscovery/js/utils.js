@@ -195,9 +195,3 @@ function popUp(URL,WIDTH,HEIGHT) {
   var url=URL.replace('#','%23');
   eval("page" + id + " = window.open(url, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');");
 }
-function getProvenance(dataset) {
-  var id=document.getElementById(dataset);
-  id.className="show_inline_off";
-  ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
-}
-

@@ -115,6 +115,7 @@ templateTop = """
 <script type="text/javascript" src="js/sorttable.js"></script>
 <script type="text/javascript" src="js/prototype.js"></script>
 <script type="text/javascript" src="js/rico.js"></script>
+<script type="text/javascript" src="js/ajax_init.js"></script>
 </head>
 <body>
 
@@ -586,14 +587,6 @@ view</a>):
 templateLFB = """
 #from DBSUtil import fmt3
 #set tot=len($blockDict.keys())
-#*
-<script type="text/javascript">
-function registerAjaxProvenanceCalls() {
-    ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
-    ajaxEngine.registerAjaxElement('$path')
-}
-</script>
-*#
 <div id="procDataset" name="procDataset" class="off">
 <a href="javascript:registerAjaxProvenanceCalls();getProvenance('$path')">$path</a>
 <br />
@@ -805,11 +798,13 @@ templateFrontPage="""
 <td class="td_gray_box"><a href="javascript:showMenu('Datasets')">Datasets</a></td>
 </tr>
 #end if
-#if $summary
+
 <tr>
-<td class="td_gray_box"><a href="javascript:showMenu('Summary')">Summary</a></td>
-</tr>
-#end if
+<td class="td_gray_box">
+<a href="javascript:showMenu('Summary');registerAjaxSummaryCalls();getSummary();">Summary</a>
+</td>
+
+
 #end if
 <tr><td><br /></td></tr>
 #if $userMode
@@ -910,7 +905,6 @@ templateFrontPage="""
 $datasets
 </div>
 #end if
-#if $summary
 <div id="SummaryDiv" class="hide">
    <div id="summaryPanel1">
      <div id="summaryHeader1" class="accordionTabTitleBar">
@@ -919,11 +913,12 @@ $datasets
        </span>
       </div>
       <div id="summaryContent1">
-      $summary
+      <p>
+      <span id="summary">Please wait while we retrieve this information</span>
+      </p>
       </div>
    </div>
 </div>
-#end if
 
 <div id="AboutDiv" class="hide">
    <div id="aboutPanel1">
@@ -1103,9 +1098,7 @@ move your mouse over the column name and click on it to sort entries.
 new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SearchDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SiteDiv'), {panelHeight:300} );
-#if $summary
 new Rico.Accordion( \$('SummaryDiv'), {panelHeight:300} );
-#end if
 #if $datasets
 new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:300} );
 #end if

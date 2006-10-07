@@ -88,7 +88,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             if string.find(line,'server.socketPort')!=-1:
                self.port=string.strip(string.split(string.replace(line,'\n',''),'=')[1])
                break
-        self.dbsdd      = self.hostname+":"+str(self.port)
+        self.dbsdd      = 'http://'+self.hostname+":"+str(self.port)
         print "DBSDataDiscoveryServer '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
@@ -299,7 +299,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'navigatorForm': self.genMenuForm(),
                          'searchForm'   : self.searchForm(),
                          'siteForm'     : self.siteForm(),
-                         'summary'      : self.summary(),
+#                         'summary'      : self.summary(),
+                         'summary'      : '',
                          'datasets'     : self.getAllPrimaryDatasets(),
                          'frontPage'    : 1,
                          'glossary'     : self.glossary()
@@ -348,15 +349,19 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     expert.exposed = True
 
-    def summary(self):
+    def summary(self,**kwargs):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
         page=""
         try:
+            page="""<ajax-response><response type="element" id="summary">"""
             if not self.sumPage or (time.time()-self.timerForSummary)>(24*60*60):
                self.sumPage=self.getSummary()
                page+=self.sumPage
                self.timerForSummary=time.time()
             else:
                page+=self.sumPage
+            page+="</response></ajax-response>"
             return page
         except:
             t=self.errorReport("Fail in summary function")
