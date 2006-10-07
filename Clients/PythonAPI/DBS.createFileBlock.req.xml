@@ -18,36 +18,42 @@
      <collectionId>0</collectionId>
      <collectionIndex>0</collectionIndex>
      <numberOfEvents>0</numberOfEvents>
+     <status></status>
      <collectionName></collectionName>
      <datasetPathName></datasetPathName>
      <parent>
       <collectionId>0</collectionId>
       <collectionIndex>0</collectionIndex>
       <numberOfEvents>0</numberOfEvents>
+      <status></status>
       <collectionName></collectionName>
       <datasetPathName></datasetPathName>
       <parent>
        <collectionId>0</collectionId>
        <collectionIndex>0</collectionIndex>
        <numberOfEvents>0</numberOfEvents>
+       <status></status>
        <collectionName></collectionName>
        <datasetPathName></datasetPathName>
        <parent>
         <collectionId>0</collectionId>
         <collectionIndex>0</collectionIndex>
         <numberOfEvents>0</numberOfEvents>
+        <status></status>
         <collectionName></collectionName>
         <datasetPathName></datasetPathName>
         <parent>
          <collectionId>0</collectionId>
          <collectionIndex>0</collectionIndex>
          <numberOfEvents>0</numberOfEvents>
+         <status></status>
          <collectionName></collectionName>
          <datasetPathName></datasetPathName>
          <parent>
           <collectionId xsi:nil="true"></collectionId>
           <collectionIndex xsi:nil="true"></collectionIndex>
           <numberOfEvents xsi:nil="true"></numberOfEvents>
+          <status></status>
           <collectionName></collectionName>
           <datasetPathName></datasetPathName>
           <parent xsi:nil="true"></parent>

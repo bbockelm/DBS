@@ -375,6 +375,41 @@ class tempuri_org_DBS_xsd:
             self._result = _result
 
 
+    class mergeEventCollectionsResponse_Dec(ZSI.TCcompound.Struct):
+        schema = 'http://tempuri.org/DBS.xsd'
+        literal = 'mergeEventCollectionsResponse'
+
+        def __init__(self, name=None, ns=None, **kw):
+            name = name or self.__class__.literal
+            ns = ns or self.__class__.schema
+
+            # internal vars
+            self._result = None
+
+            TClist = [ZSI.TCnumbers.Iint(pname="result",aname="_result"), ]
+
+            oname = name
+
+            if name:
+                aname = '_%s' % name
+                if ns:
+                    oname += ' xmlns="%s"' % ns
+                else:
+                    oname += ' xmlns="%s"' % self.__class__.schema
+            else:
+                aname = None
+
+            ZSI.TCcompound.Struct.__init__(self, self.__class__, TClist,
+                                           pname=name, inorder=0,
+                                           aname=aname, oname=oname,
+                                           **kw)
+        def Get_result(self):
+            return self._result
+
+        def Set_result(self,_result):
+            self._result = _result
+
+
     class createFileBlockResponse_Dec(ZSI.TCcompound.Struct):
         schema = 'http://tempuri.org/DBS.xsd'
         literal = 'createFileBlockResponse'
@@ -584,6 +619,7 @@ class tempuri_org_DBS_xsd:
             self._collectionId = None
             self._collectionIndex = None
             self._numberOfEvents = None
+            self._status = None
             self._collectionName = None
             self._datasetPathName = None
             self._parent = None
@@ -591,9 +627,9 @@ class tempuri_org_DBS_xsd:
             self._fileList = None
 
             if "something" not in kw :
-                TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collectionIndex",aname="_collectionIndex", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ns1.EventCollection_Def(name="parent", ns=ns, optional=1, something=""), ZSI.TC.String(pname="parentageType",aname="_parentageType", optional=1), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
+                TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collectionIndex",aname="_collectionIndex", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="status",aname="_status", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ns1.EventCollection_Def(name="parent", ns=ns, optional=1, something=""), ZSI.TC.String(pname="parentageType",aname="_parentageType", optional=1), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
             else:
-               TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collectionIndex",aname="_collectionIndex", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ZSI.TC.String(pname="parentageType",aname="_parentageType", optional=1), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
+               TClist = [ZSI.TCnumbers.Iint(pname="collectionId",aname="_collectionId", optional=1), ZSI.TCnumbers.Iint(pname="collectionIndex",aname="_collectionIndex", optional=1), ZSI.TCnumbers.Iint(pname="numberOfEvents",aname="_numberOfEvents", optional=1), ZSI.TC.String(pname="status",aname="_status", optional=1), ZSI.TC.String(pname="collectionName",aname="_collectionName"), ZSI.TC.String(pname="datasetPathName",aname="_datasetPathName"), ZSI.TC.String(pname="parentageType",aname="_parentageType", optional=1), ns1.File_Def(name="fileList", ns=ns, repeatable=1, optional=1), ]
 
 
             oname = name
@@ -628,6 +664,12 @@ class tempuri_org_DBS_xsd:
 
         def Set_numberOfEvents(self,_numberOfEvents):
             self._numberOfEvents = _numberOfEvents
+
+        def Get_status(self):
+            return self._status
+
+        def Set_status(self,_status):
+            self._status = _status
 
         def Get_collectionName(self):
             return self._collectionName
@@ -820,6 +862,48 @@ class tempuri_org_DBS_xsd:
 
         def Set_eventCollectionList(self,_eventCollectionList):
             self._eventCollectionList = _eventCollectionList
+
+
+    class mergeEventCollections_Dec(ZSI.TCcompound.Struct):
+        schema = 'http://tempuri.org/DBS.xsd'
+        literal = 'mergeEventCollections'
+
+        def __init__(self, name=None, ns=None, **kw):
+            name = name or self.__class__.literal
+            ns = ns or self.__class__.schema
+
+            # internal vars
+            self._inputEventCollectionList = None
+            self._outputEventCollection = None
+
+            TClist = [ns1.EventCollection_Def(name="inputEventCollectionList", ns=ns, repeatable=1, optional=1), ns1.EventCollection_Def(name="outputEventCollection", ns=ns, optional=1), ]
+
+            oname = name
+
+            if name:
+                aname = '_%s' % name
+                if ns:
+                    oname += ' xmlns="%s"' % ns
+                else:
+                    oname += ' xmlns="%s"' % self.__class__.schema
+            else:
+                aname = None
+
+            ZSI.TCcompound.Struct.__init__(self, self.__class__, TClist,
+                                           pname=name, inorder=0,
+                                           aname=aname, oname=oname,
+                                           hasextras=1, **kw)
+        def Get_inputEventCollectionList(self):
+            return self._inputEventCollectionList
+
+        def Set_inputEventCollectionList(self,_inputEventCollectionList):
+            self._inputEventCollectionList = _inputEventCollectionList
+
+        def Get_outputEventCollection(self):
+            return self._outputEventCollection
+
+        def Set_outputEventCollection(self,_outputEventCollection):
+            self._outputEventCollection = _outputEventCollection
 
 
     class createProcessedDataset_Dec(ZSI.TCcompound.Struct):
