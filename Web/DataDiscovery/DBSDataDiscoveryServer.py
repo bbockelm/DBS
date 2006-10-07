@@ -73,6 +73,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.dbsList.sort()
         self.dbsList.remove(DBSGLOBAL)
         self.dbsList = [DBSGLOBAL]+self.dbsList
+        self.dbsShortNames=[]
+        for dbs in self.dbsList:
+            name=string.split(dbs,"/")[0]
+            self.dbsShortNames.append(name)
         self.topHTML    = ""
         self.bottomHTML = ""
         self.verbose    = verbose
@@ -183,6 +187,9 @@ class DBSDataDiscoveryServer(DBSLogger):
                     }
         t = Template(CheetahDBSTemplate.templateTop, searchList=[nameSpace])
         page = str(t)
+        nameSpace = {'dbsNames'    : self.dbsShortNames }
+        t = Template(CheetahDBSTemplate.templateAjaxInit, searchList=[nameSpace])
+        page+= str(t)
         if intro:
            page+=CheetahDBSTemplate.templateIntro
         return page
@@ -276,8 +283,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'navigatorForm': menuForm,
                      'searchForm'   : self.searchForm(),
                      'siteForm'     : siteForm,
-                     'summary'      : '',
-                     'datasets'     : '',
+                     'dbsContent'   : self.dbsContList(),
                      'glossary'     : self.glossary(),
                      'frontPage'    : 0
                     }
@@ -299,10 +305,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'navigatorForm': self.genMenuForm(),
                          'searchForm'   : self.searchForm(),
                          'siteForm'     : self.siteForm(),
-#                         'summary'      : self.summary(),
-                         'summary'      : '',
-#                         'datasets'     : self.getAllPrimaryDatasets(),
-                         'datasets'     : '',
+                         'dbsContent'   : self.dbsContList(),
                          'frontPage'    : 1,
                          'glossary'     : self.glossary()
                         }
@@ -312,6 +315,11 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in genPanel function")
             pass
             return str(t)
+
+    def dbsContList(self):
+        nameSpace={'dbsContList':self.dbsShortNames}
+        t = Template(CheetahDBSTemplate.templateDbsCont, searchList=[nameSpace])
+        return str(t)
 
     def init(self):
         """
@@ -981,18 +989,19 @@ globalAjaxProvenance=1;
             return str(t)
     getBlocksFromSite.exposed=True
 
-    def getAllPrimaryDatasets(self):
+    def getAllPrimaryDatasets(self,**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="primDatasets">"""
+#        page="""<ajax-response><response type="element" id="primDatasets">"""
+        page="<ajax-response>"
 #        page=""
         for dbs in self.dbsList:
+            name = "datasets%s"%string.split(dbs,"/")[0]
+            page+="""<response type="element" id="%s">"""%name
             self.helperInit(dbs)
-            content=self.getDatasetsForDbsInst(dbs)
-            nameSpace = {'dbs':string.replace(dbs,"/","_"),'content':content}
-            t = Template(CheetahDBSTemplate.templateDivEntries, searchList=[nameSpace])
-            page+=str(t)
-        page+="</response></ajax-response>"
+            page+=self.getDatasetsForDbsInst(dbs)
+            page+="</response>\n"
+        page+="</ajax-response>"
         print page
         return page
     getAllPrimaryDatasets.exposed=True

@@ -127,6 +127,23 @@ Javascript.</h1>
 <hr class="dbs" />
 """
 
+templateAjaxInit="""
+<script type="text/javascript">
+function registerAjaxPrimDatasetsCalls() {
+    // second argument is DBSDataDiscoveryServer:getAllPrimaryDatasets method
+    ajaxEngine.registerRequest('getPrimDatasets','getAllPrimaryDatasets');
+    ajaxEngine.registerAjaxElement('primDatasets');
+    var dbsInstArr= new Array();
+#for idx in xrange(0,len($dbsNames))
+    dbsInstArr[$idx]='$dbsNames[$idx]';
+#end for
+    for(var i=0;i<dbsInstArr.length;i++) {
+        ajaxEngine.registerAjaxElement('datasets'+dbsInstArr[i]);
+    }
+}
+</script>
+"""
+
 templateIntro="""
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
@@ -792,24 +809,17 @@ templateFrontPage="""
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Site')">Site</a></td>
 </tr>
-##if $datasets
 <tr><td><br /></td></tr>
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('Datasets');registerAjaxPrimDatasetsCalls();getPrimDatasets();">Datasets</a>
 </td>
-<!--
-<td class="td_gray_box"><a href="javascript:showMenu('Datasets')">Datasets</a></td>
--->
 </tr>
-##end if
 
 <tr>
 <td class="td_gray_box">
 <a href="javascript:showMenu('Summary');registerAjaxSummaryCalls();getSummary();">Summary</a>
 </td>
 </tr>
-
-
 #end if
 <tr><td><br /></td></tr>
 #if $userMode
@@ -905,24 +915,13 @@ templateFrontPage="""
      </div>
    </div>
 </div>
-###if $datasets
+
+
+
 <div id="DatasetsDiv" class="hide"> 
-   <div id="datasetsPanel0">
-     <div id="datasetsHeader0" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Available datasets
-       </span>
-      </div>
-      <div id="datasetsContent0">
-      <p>
-      <span id="datasets">Please wait while we retrieve this information</span>
-      </p>
-      </div>
-   </div>
-##$datasets
-      <span id="primDatasets"></span>
+$dbsContent
 </div>
-###end if
+
 <div id="SummaryDiv" class="hide">
    <div id="summaryPanel1">
      <div id="summaryHeader1" class="accordionTabTitleBar">
@@ -931,9 +930,7 @@ templateFrontPage="""
        </span>
       </div>
       <div id="summaryContent1">
-      <p>
-      <span id="summary">Please wait while we retrieve this information</span>
-      </p>
+      <div id="summary">Please wait while we retrieve this information</div>
       </div>
    </div>
 </div>
@@ -1117,9 +1114,7 @@ new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SearchDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SiteDiv'), {panelHeight:300} );
 new Rico.Accordion( \$('SummaryDiv'), {panelHeight:300} );
-##if $datasets
 new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:300} );
-##end if
 new Rico.Accordion( \$('AboutDiv'), {panelHeight:300} );
 #if $frontPage
 showMenu('Navigator');
@@ -1186,6 +1181,23 @@ The naming conventions used on discovery page are discussed
 <a href="(https://twiki.cern.ch/twiki/bin/view/CMS/CMST0DataManagement">CMST0DataManagement</a>
 and
 <a href="https://twiki.cern.ch/twiki/bin/view/CMS/ProdForCSA06">ProdForCSA06</a> pages
+"""
+
+templateDbsCont="""
+#for name in $dbsContList
+   <div id="datasets${name}Panel">
+     <div id="datasets${name}Header" class="accordionTabTitleBar">
+       <span class="menu_title">
+       ${name}/Writer
+       </span>
+     </div>
+     <div id="datasets${name}Content">
+      <p>
+      <span id="datasets${name}">Please wait while we retrieve this information</span>
+      </p>
+     </div>
+   </div>
+#end for
 """
 
 #
