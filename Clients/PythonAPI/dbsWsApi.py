@@ -52,6 +52,17 @@ class DbsWsApi(dbsApi.DbsApi):
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
 
+   def mergeEventCollections(self, inputEventCollectionList, outputEventCollection):
+
+     try:
+       request = mergeEventCollectionsRequestWrapper()
+       request._inputEventCollectionList = inputEventCollectionList
+       request._outputEventCollection = outputEventCollection
+       response = self.portType.mergeEventCollections(request)
+       return response._result
+     except ZSI.FaultException, ex:
+       raise dbsApi.DbsApiException(exception=ex)
+
    def getDatasetContents(self, datasetPathName, listFiles):
 
      try:
@@ -62,8 +73,6 @@ class DbsWsApi(dbsApi.DbsApi):
        return response._blockList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
-     except ZSI.EvaluateException, ex:
-       return None
 
    def getDatasetFileBlocks(self, datasetPathName):
 
@@ -74,9 +83,6 @@ class DbsWsApi(dbsApi.DbsApi):
        return response._blockList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
-     except ZSI.EvaluateException, ex:
-       return None
-
 
    def listDataset(self, datasetPathName):
 
@@ -87,8 +93,5 @@ class DbsWsApi(dbsApi.DbsApi):
        return response._datasetList
      except ZSI.FaultException, ex:
        raise dbsApi.DbsApiException(exception=ex)
-     except ZSI.EvaluateException, ex:
-       return None
-
 
 

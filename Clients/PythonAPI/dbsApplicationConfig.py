@@ -3,15 +3,14 @@
 import dbsException
 from dbsBaseObject import *
 
-class  DbsProcessingPath(DbsBase):
+class  DbsApplicationConfig(DbsBase):
    """ 
-   Class for ProcessingPath
+   Class for ApplicationConfig
 
    Following input parameters:
-              pathId, User may not need to set this variable always
-              parent, User may not need to set this variable always
+              objectId, User may not need to set this variable always
               application, Probably a required variable
-              dataTier, Probably a required variable
+              parameterSet, Probably a required variable
    """
    def __init__(self, **args):
       DbsBase.__init__(self)

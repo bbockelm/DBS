@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: dbsApi.py,v 1.11 2006/01/28 19:40:26 afanfani Exp $
+# $Id: dbsApi.py,v 1.14 2006/05/04 02:20:54 afaq Exp $
 #
 # Base DBS API class. All implementation should implement interfaces
 # listed here. Logging configuration methods are provided here for convenience
@@ -8,16 +8,16 @@
 #
 
 import dbsException
-import dbsLogManager
+#import dbsLogManager
 
 # Log levels used as masks (defined in dbsLogManager). 
-DBS_LOG_LEVEL_QUIET_ = dbsLogManager.LOG_LEVEL_QUIET_       # no output
-DBS_LOG_LEVEL_INFO_ = dbsLogManager.LOG_LEVEL_INFO_         # info for users
-DBS_LOG_LEVEL_TRACE_ = dbsLogManager.LOG_LEVEL_TRACE_       # execution trace
-DBS_LOG_LEVEL_DEBUG_ = dbsLogManager.LOG_LEVEL_DEBUG_       # debugging
-DBS_LOG_LEVEL_WARNING_ = dbsLogManager.LOG_LEVEL_WARNING_   # warnings
-DBS_LOG_LEVEL_ERROR_ = dbsLogManager.LOG_LEVEL_ERROR_       # errors
-DBS_LOG_LEVEL_ALL_ = dbsLogManager.LOG_LEVEL_ALL_           # all messages
+#DBS_LOG_LEVEL_QUIET_ = dbsLogManager.LOG_LEVEL_QUIET_       # no output
+#DBS_LOG_LEVEL_INFO_ = dbsLogManager.LOG_LEVEL_INFO_         # info for users
+#DBS_LOG_LEVEL_TRACE_ = dbsLogManager.LOG_LEVEL_TRACE_       # execution trace
+#DBS_LOG_LEVEL_DEBUG_ = dbsLogManager.LOG_LEVEL_DEBUG_       # debugging
+#DBS_LOG_LEVEL_WARNING_ = dbsLogManager.LOG_LEVEL_WARNING_   # warnings
+#DBS_LOG_LEVEL_ERROR_ = dbsLogManager.LOG_LEVEL_ERROR_       # errors
+#DBS_LOG_LEVEL_ALL_ = dbsLogManager.LOG_LEVEL_ALL_           # all messages
 
 ##############################################################################
 # DBS API exceptions.
@@ -48,45 +48,69 @@ class DbsApi:
   # No constructor.
   
   # Methods which should be implemented in the derived classes.
-  def listDatasets(self, pattern="*"):
-    """ Retrieve list of datasets matching the pattern. """
+
+  def listPrimaryDatasets(self, pattern="*"):
+    """ Retrieve list of primary datasets matching the pattern. """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def getDatasetContents(self, datasetPathName, listFiles=False):
+  def listProcessedDatasets(self, pattern="*"):
+    """ Retrieve list of processed datasets matching the pattern. """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+  def listParameterSets(self, pattern="*"):
+    """ Retrieve list of parameter sets(s) matching the pattern. """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+  def listApplications(self, pattern="*"):
+    """ Retrieve list of application(s) matching the pattern. """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+  def listApplicationConfigs(self, pattern="*"):
+    """ Retrieve list of application config(s) matching the pattern. """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+  def getDatasetContents(self, dataset):
     """ Retrieve event collections given the dataset path name string. """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def getDatasetProvenance(self, datasetPathName, dataTierList):
+  def getDatasetProvenance(self, dataset, dataTierList):
     """
     Retrieve list of dataset parents for the given dataTiers.
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def createPrimaryDataset(self, primaryDataset):
+  def createPrimaryDataset(self, dataset):
     """
     Create primary dataset.
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def createProcessedDataset(self, processedDataset):
+  def createProcessedDataset(self, dataset):
     """
     Create processed dataset.
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def insertEventCollections(self, processedDataset, eventCollectionList):
+  def createProcessing(self, processing):
+    """
+    Create processing.
+    """
+    raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
+
+
+  def insertEventCollections(self, dataset, eventCollectionList):
     """
     Insert event collections for a given processed dataset.
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def createFileBlock(self, processedDataset, fileBlock):
+  def createFileBlock(self, dataset, fileBlock):
     """
     Insert event collections for a given processed dataset.
     """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")
 
-  def getDatasetFileBlocks(self, processedDataset):
+  def getDatasetFileBlocks(self, dataset):
     """ Retrives list of FileBlocks associated with a Processed Dataset """
     raise dbsException.MethodNotImplemented(args="This method should be overridden in the derived DBS API class.")   
 
@@ -122,7 +146,7 @@ class DbsApi:
 if __name__ == "__main__":
   try:
     api = DbsApi()
-    api.setLogLevel(DBS_LOG_LEVEL_INFO_|DBS_LOG_LEVEL_ERROR_)
+    #api.setLogLevel(DBS_LOG_LEVEL_INFO_|DBS_LOG_LEVEL_ERROR_)
     api.getDatasetContents("myowner/mydataset")
   except dbsException.DbsException, ex:
     print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
