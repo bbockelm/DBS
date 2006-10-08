@@ -94,6 +94,10 @@ SITE_LIST=[
 ]
 ################################################################################################
 def getDictOfSites():
+    """
+       Read DLS_INFO file (default name is dls.all) and construct dictionary of
+       {DBS instance: list of DLS sites}
+    """
     fName = DLS_INFO
     f=open(fName,'r')
     sDict={}
@@ -133,12 +137,9 @@ class DBSDB(DBSLogger):
      http://www.sqlalchemy.org
                                 
   """
-#  def __init__(self,dbsInst,verbose=0):
   def __init__(self,verbose=0):
       """
          DBSDD constructor. 
-         @type  dbsInst: string 
-         @param dbsInst: name of the DBS instance, e.g. MCGlobal/Writer (default)
          @type verbose: boolean or integer
          @param verbose: verbosity level
          @rtype : none

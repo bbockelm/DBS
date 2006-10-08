@@ -440,8 +440,6 @@ class DBSHelper(DBSLogger):
          on ft.id = f.type
          where b.guid= :bid
             
-         @type  dataset: string 
-         @param dataset: dataset name 
          @type blockName: string
          @param blockName: name of the file block
          @rtype : list 

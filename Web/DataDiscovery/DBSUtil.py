@@ -20,6 +20,9 @@ from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 DLS_INFO='dls.all'
 
 def getListOfSites(dbsInst='all'):
+    """
+       Generats list of DLS sites out given DBS instance and DLS_INFO (dls.all) file.
+    """
     fName = DLS_INFO
     f=open(fName,'r')
     sList=[]
@@ -41,6 +44,9 @@ def getListOfSites(dbsInst='all'):
     return sList
 
 def fmt3(i):
+    """
+       Format file size utility, it converts file size into KB, MB, GB, TB, PB units
+    """
     num=long(i)
     for x in ['','KB','MB','GB','TB','PB']:
         if num<1024.:

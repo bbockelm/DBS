@@ -233,7 +233,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @type msg: string
            @param msg: input text
            @rtype: string
-           @rtype: returns HTML code
+           @return: returns HTML code
         """
         nameSpace = {
                      'msg':getExceptionInHTML(),
@@ -710,8 +710,8 @@ class DBSDataDiscoveryServer(DBSLogger):
     def showProcDatasetsHTML(self,dbs,site,app,primD,tier):
         """
            Get all processed datasets for given set of input parameters
-           @type  dbsInst: string
-           @param dbsInst: user selection of DBS menu
+           @type  dbs: string
+           @param dbs: user selection of DBS menu
            @type  site: string
            @param site: user selection of the site, default "All"
            @type  app: string
