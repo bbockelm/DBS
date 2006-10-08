@@ -6,7 +6,7 @@
 # Author:  Valentin Kuznetsov, 2006
 
 """
-DBS Data discovery server module.
+DBS data discovery server module.
 """
 
 # system modules
@@ -100,6 +100,13 @@ class DBSDataDiscoveryServer(DBSLogger):
                           }
 
     def setContentType(self,type):
+        """
+           Set CherryPy Content-Type to provided type
+           @type type: string
+           @param type: type of application, "text/xml" or "text/html"
+           @rtype: none
+           @return: none
+        """
         if type=="xml":
            cherrypy.response.headerMap['Content-Type'] = "text/xml"
         else:
@@ -131,8 +138,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         p.write("%s: %s\n"%("application    ",self.site))
         p.write("%s: %s\n"%("primary dataset",self.primD))
         p.write("%s: %s\n"%("Data tier      ",self.tier))
-#        for key in self.__dict__:
-#            p.write("%s: %s\n"%(key,self.__dict__[key]))
         p.write("\n") # blank line separating headers from body
         p.write("DBSHelper:\n")
         p.write("==========\n")
@@ -142,8 +147,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         p.write("%s: %s\n"%("dbsDLS         ",self.helper.dbsDLS))
         p.write("%s: %s\n"%("dlsType        ",self.helper.dlsType))
         p.write("%s: %s\n"%("dlsEndpoint    ",self.helper.endpoint))
-#        for key in self.__dict__:
-#            p.write("%s: %s\n"%(key,self.__dict__[key]))
         sts = p.close()
         if sts != 0:
             print "mail exit status", sts
@@ -243,6 +246,13 @@ class DBSDataDiscoveryServer(DBSLogger):
         return str(t)
 
     def genVisiblePanel(self,view):
+        """
+           Generate code for Navigation Panel which is visible by default
+           @type view: string
+           @param view: specify view to be visible at front, e.g. keyword search
+           @rtype: string
+           @return: returns HTML code
+        """
         try:
             nameSpace = {'panel': self.genPanelHelper(), 'view': view}
             t = Template(CheetahDBSTemplate.templateVisiblePanel, searchList=[nameSpace])
@@ -255,6 +265,13 @@ class DBSDataDiscoveryServer(DBSLogger):
     genVisiblePanel.exposed=True
 
     def genHiddenPanel(self,view):
+        """
+           Generate code for Navigation Panel which is hidden by default
+           @type view: string
+           @param view: specify view to be visible at front, e.g. keyword search
+           @rtype: string
+           @return: returns HTML code
+        """
         try:
             nameSpace = {'panel': self.genPanelHelper(), 'view': view}
             t = Template(CheetahDBSTemplate.templateHiddenPanel, searchList=[nameSpace])
@@ -267,11 +284,17 @@ class DBSDataDiscoveryServer(DBSLogger):
     genHiddenPanel.exposed=True
 
     def glossary(self):
+        """
+           Generate DBS glossary page
+        """
         nameSpace = {}
         t = Template(CheetahDBSTemplate.templateGlossary, searchList=[nameSpace])
         return str(t)
         
     def genPanelHelper(self):
+        """
+           Navigator Panel helper function which perform all the work
+        """
         msg,dbsInst,site,app,primD,tier=self.formDict['menuForm']
         menuForm=self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
         dbsInst,site=self.formDict['siteForm']
@@ -317,6 +340,9 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
 
     def dbsContList(self):
+        """
+           Generates template code for DBS instances within accordeon (Rico term) menu
+        """
         nameSpace={'dbsContList':self.dbsShortNames}
         t = Template(CheetahDBSTemplate.templateDbsCont, searchList=[nameSpace])
         return str(t)
@@ -359,6 +385,11 @@ class DBSDataDiscoveryServer(DBSLogger):
     expert.exposed = True
 
     def summary(self,**kwargs):
+        """
+           Generates AJAX response to get summary information about DBS. It scans all DBS instances
+           and retrieve all information from there. The information has been cached for 1 day.
+           All the work is done in L{getSummary} method.
+        """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page=""
@@ -409,7 +440,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         page = self.genTopHTML()
         self.firstSearch=0
-#        page+= self.searchForm()
         page+= self.genVisiblePanel('Search')
         oList= []
         # parse keywords and search for DBSINST
@@ -466,7 +496,6 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
-#        page = self.genTopHTML()
         page = """
 <table id="table_summary" cellspacing="2" cellpadding="5" border="1">
 <tr>
@@ -479,13 +508,11 @@ class DBSDataDiscoveryServer(DBSLogger):
            dbsList=[DBSGLOBAL]
         else:
            dbsList = self.dbsList
-#        page+="""<hr class="dbs" />"""
         for dbsInst in dbsList:
             sumDict   = self.helper.getDBSSummary(dbsInst) 
             nameSpace = {'dbsInst':dbsInst,'sumDict':sumDict}
             t = Template(CheetahDBSTemplate.templateSummary, searchList=[nameSpace])
             page+=str(t)
-#        page+= self.genBottomHTML()
         page+="</table>"
         return page
 
@@ -615,7 +642,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         
     def getDataFromSelection(self,userSelection):
         """
-           Retrieve data upon user selection criterias.
+           Retrieves data upon user selection criterias.
         """
         page=self.genTopHTML()
         page+= self.searchForm()
@@ -637,6 +664,21 @@ class DBSDataDiscoveryServer(DBSLogger):
     getDataFromSelection.exposed = True 
 
     def showProcDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*"):
+        """
+           Get all processed datasets for given set of input parameters
+           @type  dbsInst: string
+           @param dbsInst: user selection of DBS menu
+           @type  site: string
+           @param site: user selection of the site, default "All"
+           @type  app: string
+           @param app: user selection of the application, default "*"
+           @type  primD: string
+           @param primD: user selection of the primary dataset, default "*"
+           @type  tier: string
+           @param tier: user selection of the data tier, default "*"
+           @rtype : string
+           @return: returns HTML code
+        """
         try:
             self.helperInit(dbsInst)
             self.dbs  = dbsInst
@@ -666,6 +708,21 @@ class DBSDataDiscoveryServer(DBSLogger):
     showProcDatasets.exposed=True
 
     def showProcDatasetsHTML(self,dbs,site,app,primD,tier):
+        """
+           Get all processed datasets for given set of input parameters
+           @type  dbsInst: string
+           @param dbsInst: user selection of DBS menu
+           @type  site: string
+           @param site: user selection of the site, default "All"
+           @type  app: string
+           @param app: user selection of the application, default "*"
+           @type  primD: string
+           @param primD: user selection of the primary dataset, default "*"
+           @type  tier: string
+           @param tier: user selection of the data tier, default "*"
+           @rtype : string
+           @return: returns HTML code
+        """
         nameSpace = {
                      'host'    : self.dbsdd,
                      'dbsInst' : dbs, 
@@ -854,6 +911,9 @@ globalAjaxProvenance=1;
     getLFN_txt.exposed = True
     
     def getLFNsForSite(self,site):
+        """
+           Generates a list of LFNs for given site
+        """
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
@@ -871,6 +931,9 @@ globalAjaxProvenance=1;
     getLFNsForSite.exposed=True
     
     def getBlocksForSite(self,site):
+        """
+           Generates list of file blocks for given site
+        """
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
@@ -990,6 +1053,9 @@ globalAjaxProvenance=1;
     getBlocksFromSite.exposed=True
 
     def getAllPrimaryDatasets(self,**kwargs):
+        """
+           Generates AJAX response to get all primary datasets available in all DBS instances
+        """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="<ajax-response>"
@@ -1042,17 +1108,16 @@ globalAjaxProvenance=1;
         return page
     getDatasets.exposed=True
 
-    def getDatasetProvenanceHelper(self,dataset):
-        parents = self.helper.getDatasetProvenance(dataset)
-        return parents
-        
     def getDatasetProvenance(self,dataset,**kwargs):
+        """
+           Generates AJAX response to get dataset provenance
+        """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         nameSpace={
                    'host'      : self.dbsdd, 
                    'dataset'   : dataset, 
-                   'parentList': self.getDatasetProvenanceHelper(dataset)
+                   'parentList': self.helper.getDatasetProvenance(dataset)
                   }
         t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
         page = str(t)
@@ -1061,6 +1126,9 @@ globalAjaxProvenance=1;
     getDatasetProvenance.exposed=True
     
     def siteForm(self,firstDBS="",firstSite=""):
+        """
+           Generates site form request
+        """
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
         nameSpace = {
@@ -1072,7 +1140,11 @@ globalAjaxProvenance=1;
         t = Template(CheetahDBSTemplate.templateSiteForm, searchList=[nameSpace])
         page = str(t)
         return page
+
     def sendFeedback(self,userEmail,feedbackText):
+        """
+           Generates feedback form.
+        """
         p = os.popen("%s -t" % SENDMAIL, "w")
         p.write("To: vkuznet@gmail.com\n")
         p.write("Subject: DBS data discovery user feedback\n")
