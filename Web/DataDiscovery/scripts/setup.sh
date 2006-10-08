@@ -1,12 +1,14 @@
 #!/bin/sh
 
-export DDHOME=$PWD
-echo "Set DDHOME='$DDHOME'"
-if [ -z $DBSHOME] ; then
+if [ -z $DDHOME ] ; then
+   export DDHOME=$PWD
+   echo "Set DDHOME='$DDHOME'"
+fi
+if [ -z $DBSHOME ] ; then
    echo "No DBSHOME environment found, will use $DDHOME/../../../DBS"
    export DBSHOME=$DDHOME/../../../DBS
 fi
-if [ -z $DLSHOME] ; then
+if [ -z $DLSHOME ] ; then
    echo "No DBSHOME environment found, will use $DDHOME/../../../DLS"
    export DLSHOME=$DDHOME/../../../DLS
 fi
@@ -44,5 +46,6 @@ if [ -d $DLSSERVER/etc/profile.d/ ]; then
 . $DLSSERVER/etc/profile.d/init.sh
 fi
 
-export TNS_ADMIN=$PWD
+export TNS_ADMIN=$DDHOME
+
 
