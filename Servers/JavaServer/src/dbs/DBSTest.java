@@ -29,7 +29,7 @@ public class DBSTest {
 				api.listPrimaryDatasets(out, "*");
 				
 				//System.out.println("\n\nProcessed Dataset");
-				//api.listProcessedDatasets(out, "/*/*/*");
+				api.listProcessedDatasets(out, "/*/*/*", "/*/*/*");
 				/*System.out.println("\n\nParameter Sets");
 				api.listParameterSets(out, "*");
 				System.out.println("\n\nApplications");

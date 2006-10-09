@@ -16,7 +16,7 @@ public class DBSApiLogic {
 						"Dbs-status-code: 100\n" +
 						"Content-Type: text/plain; charset=ISO-8859-1\n\n" +
 						"<?xml version='1.0' standalone='yes'?><dbs>";
-	 private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<dbs>\n";
+	private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<dbs>\n";
 	private static String XML_FOOTER = "</dbs>\n";
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
 	//private static String SAFE_PATH = "[-A-Za-z0-9_./\\p{%}]";
@@ -46,7 +46,7 @@ public class DBSApiLogic {
 			//for(int i = 0 ; i!= 2; ++i)
 			out.write(((String) "<primary-dataset id='" + rs.getString("id") + 
 						"' annotation='" + rs.getString("annotation") +
-						"' name='" + rs.getString("name") +
+						"' primary_name='" + rs.getString("primary_name") +
 						"' trigger_path_description='" + rs.getString("trigger_path_description") +
 						"' mc_channel_description='" + rs.getString("mc_channel_description") +
 						"' mc_production='" + rs.getString("mc_production") +
@@ -54,7 +54,7 @@ public class DBSApiLogic {
 						"' other_description='" + rs.getString("other_description") +
 						"' start_date='" + rs.getString("start_date") +
 						"' end_date='" + rs.getString("end_date") +
-						"' type='" + rs.getString("type") +
+						"' file_type='" + rs.getString("file_type") +
 						"' created_by='" + rs.getString("created_by") +
 						"' creation_date='" + rs.getString("creation_date") +
 						"' last_modification_by='" + rs.getString("last_modification_by") +
@@ -65,18 +65,36 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
-		pattern = pattern.replace('*','%');
-		checkPath(pattern);
+	public void listProcessedDatasets(Connection conn, Writer out, String patternDs, String patternApp) throws Exception {
+		patternDs = patternDs.replace('*','%');
+		patternApp = patternApp.replace('*','%');
+		checkPath(patternDs);
+		checkPath(patternApp);
 
-		String[] data = pattern.split("/");
+		String[] dataDs = patternDs.split("/");
+		String[] dataApp = patternDs.split("/");
 
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDS(data[1], data[2], data[3]));
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDS(dataDs[1], dataDs[2], dataDs[3], dataApp[1], dataApp[2], dataApp[3]));
 		out.write(XML_HEADER);
 		while(rs.next()) {
-			String path = "/" + rs.getString("primary") + "/" + rs.getString("tier") + "/" + rs.getString("processed");
+			//String path = "/" + rs.getString("primary_name") + "/" + rs.getString("data_tier") + "/" + rs.getString("processed_name");
 			out.write(((String) "<processed-dataset id='" + rs.getString("id") + 
-						"' path='" + path + "'/>"));
+						"' path='" +  rs.getString("path") +
+						"' open_for_writing='" + rs.getString("open_for_writing") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_date='" + rs.getString("last_modification_date") +
+						"' run_number='" + rs.getString("run_number") +
+						"' first_event_number='" + rs.getString("first_event_number") +
+						"' last_event_number='" + rs.getString("last_event_number") +
+						"' start_of_run='" + rs.getString("start_of_run") +
+						"' end_of_run='" + rs.getString("end_of_run") +
+						"' physics_group_name='" + rs.getString("physics_group_name") +
+						"' physics_group_convener='" + rs.getString("physics_group_convener") +
+						"' conditions='" + rs.getString("conditions") +
+						"' app_version='" + rs.getString("app_version") +
+						"' app_family_name='" + rs.getString("app_family_name") +
+						"' app_executable_name='" + rs.getString("app_executable_name") +
+						"'/>\n"));
 		}
 		out.write(XML_FOOTER);
 	}

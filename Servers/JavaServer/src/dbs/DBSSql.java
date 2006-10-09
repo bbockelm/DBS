@@ -15,23 +15,23 @@ public class DBSSql {
 
 	public static String getPrimaryDS(String pattern) {
 		String sql = "select pd.ID as id, \n" +
-		       "pd.Annotation as annotation, \n" +
-		       "pd.Name as name, \n" +
-		       "tpd.TriggerPathDescription as trigger_path_description, \n" +
-		       "md.MCChannelDescription as mc_channel_description, \n" +
-		       "md.MCProduction as mc_production, \n" +
-		       "md.MCDecayChain as mc_decay_chain, \n" +
-		       "od.Description as other_description, \n" +
-		       "pd.StartDate as start_date, \n"  +
-		       "pd.EndDate as end_date, \n" + 
-		       "pdt.FileType as type, \n" +
-		       "pd.CreatedBy as created_by, \n" +
-		       "pd.CreationDate as creation_date, \n" +
-		       "pd.LastModificationDate as last_modification_by, \n" +
-		       "pd.LastModifiedBy as last_modified_by \n" +
-		       "from PrimaryDataset pd \n" +
-		       "left outer join PrimaryDSType pdt \n" +
-			       "on pdt.id = pd.Type \n" +
+			"pd.Annotation as annotation, \n" +
+			"pd.Name as primary_name, \n" +
+			"pd.StartDate as start_date, \n"  +
+			"pd.EndDate as end_date, \n" + 
+			"pd.CreationDate as creation_date, \n" +
+			"pd.LastModificationDate as last_modification_by, \n" +
+			"percb.DistinguishedName as created_by, \n" +
+			"perlm.DistinguishedName as last_modified_by, \n" +
+			"tpd.TriggerPathDescription as trigger_path_description, \n" +
+			"md.MCChannelDescription as mc_channel_description, \n" +
+			"md.MCProduction as mc_production, \n" +
+			"md.MCDecayChain as mc_decay_chain, \n" +
+			"od.Description as other_description, \n" +
+			"pdt.FileType as file_type \n" +
+			"from PrimaryDataset pd \n" +
+			"left outer join PrimaryDSType pdt \n" +
+				"on pdt.id = pd.Type \n" +
 			"left outer join PrimaryDatasetDescription pdd \n" +
 				"on pdd.id = pd.Description \n" +
 			"left outer join TriggerPathDescription tpd \n" +
@@ -39,7 +39,11 @@ public class DBSSql {
 			"left outer join MCDescription md \n" +
 				"on md.id = pdd.MCChannelDescriptionID \n" +
 			"left outer join OtherDescription od \n" +
-				"on od.id = pdd.OtherDescriptionID \n";
+				"on od.id = pdd.OtherDescriptionID \n" +
+			"left outer join Person percb \n" +
+				"on percb.id = pd.CreatedBy \n" +
+			"left outer join Person perlm \n" +
+				"on perlm.id = pd.LastModifiedBy \n";
 		if(pattern != null) {
 			sql += "where pd.Name like '" + pattern + "'\n";
 		}
@@ -47,23 +51,76 @@ public class DBSSql {
 		return sql;
 	}
 
-	public static String getProcessedDS(String patternPrim, String patternDt, String patternProc) {
-		String sql = "select  procds.id as id , primds.name as primary, dt.name as tier, procname.name as processed" +
-				"from t_processed_dataset procds " +
-				"join t_primary_dataset primds " +
-				"on primds.id = procds.primary_dataset " +
-				"join t_processing_name procname " +
-				"on procname.id = procds.name " +
-				"join t_data_tier dt " +
-				"on dt.id = procds.data_tier ";
-
+	public static String getProcessedDS(String patternPrim, String patternDt, String patternProc, String patternVersion, String patternFamily, String patternExe) {
+		String sql = "select procds.id as id, \n" +
+				"concat( \n" +
+					"concat( \n" +
+						"concat( \n" +
+							"concat( \n" +
+								"concat('/', primds.Name \n" +
+								"),'/' \n" +
+							"),dt.Name \n" +
+						"),'/' \n" +
+					"), procds.name \n" +
+				") as path, \n" +
+				"procds.OpenForWriting as open_for_writing, \n" +
+				"procds.CreationDate as creation_date, \n" +
+				"procds.LastModificationDate as last_modification_date, \n" +
+				"run.RunNumber as run_number, \n" +
+				"run.FirstEventNumber as first_event_number, \n" +
+				"run.LastEventNumber as last_event_number, \n" +
+				"run.StartOfRun as start_of_run, \n" +
+				"run.EndOfRun as end_of_run, \n" +
+				"pg.PhysicsGroupName as physics_group_name, \n" +
+				"perpg.DistinguishedName as physics_group_convener, \n" +
+				"cond.Conditions as conditions, \n" +
+				"av.AppVersion as app_version, \n" +
+				"af.ApplicationFamilyName as app_family_name, \n" +
+				"ae.ExecutableName as app_executable_name \n" +
+				"from ProcessedDataset procds \n" +
+				"left outer join PrimaryDataset primds \n" +
+					"on primds.id = procds.PrimaryDataset \n" +
+				"left outer join ProcDSTier pdt \n" +
+					"on pdt.Dataset = procds.id \n" +
+				"left outer join DataTier dt \n" +
+					"on dt.id = pdt.DataTier " +
+				"left outer join Run run \n" +
+					"on run.id = procds.Run \n" +
+				"left outer join PhysicsGroup pg \n" +
+					"on pg.id = procds.PhysicsGroup \n" +
+				"left outer join Person perpg \n" +
+					"on perpg.id = pg.PhysicsGroupConvener \n" +
+				"left outer join Person percb \n" +
+					"on percb.id = procds.CreatedBy \n" +
+				"left outer join Person perlm \n" +
+					"on perlm.id = procds.LastModifiedBy \n" +
+				"left outer join DatasetAppMap dam \n" +
+					"on dam.ProcessedDS = procds.id \n" +
+				"left outer join AlgoritmConfig algo \n" +
+					"on algo.id = dam.AppConfig \n" +
+				"left outer join Condirions cond \n" +
+					"on cond.id = algo.ConditionsID \n" +
+				"left outer join Application app \n" +
+					"on app.id = algo.Application \n" +
+				"left outer join AppVersion av \n" +
+					"on av.id = app.ApplicationVersion \n" +
+				"left outer join ApplicationFamily af \n" +
+					"on af.id = app.ApplicationFamily \n" +
+				"left outer join AppExecutable ae \n" +
+					"on ae.id = app.ExecutableName \n";
 		if(patternPrim == null) patternPrim = "%";
 		if(patternDt == null) patternDt = "%";
 		if(patternProc == null) patternProc = "%";
+		if(patternVersion == null) patternVersion = "%";
+		if(patternFamily == null) patternFamily = "%";
+		if(patternExe == null) patternExe = "%";
 
-		sql += "where primds.name like '" + patternPrim + "' " +
-			"and dt.name like '" + patternDt + "' " +
-			"and procname.name like '" + patternProc + "' ";
+		sql += "where primds.Name like '" + patternPrim + "' " +
+			"and dt.Name like '" + patternDt + "' " +
+			"and procds.name like '" + patternProc + "' " +
+			"and av.AppVersion like '" + patternVersion + "' " +
+			"and af.ApplicationFamilyName like '" + patternFamily + "' " +
+			"and ae.ExecutableName like '" + patternExe + "' ";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}

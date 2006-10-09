@@ -58,7 +58,7 @@ public class DBSServlet extends HttpServlet{
 			} 
 			else if (apiParam.equals("listProcessedDatasets")
 				|| apiParam.equals("listDatasets")) {
-				api.listProcessedDatasets(out, request.getParameter("pattern"));
+				api.listProcessedDatasets(out, request.getParameter("pattern"), "/*/*/*");
 			}
 			else if (apiParam.equals("listParameterSets")) {
 				api.listParameterSets(out, request.getParameter("pattern"));

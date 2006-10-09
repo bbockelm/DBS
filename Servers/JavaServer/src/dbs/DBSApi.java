@@ -43,10 +43,10 @@ public class DBSApi {
 		}
 	}
 
-	public void listProcessedDatasets(Writer out, String pattern) throws Exception {
+	public void listProcessedDatasets(Writer out, String patternDs, String patternApp) throws Exception {
 		Connection conn = getConnection();
 		try {
-			api.listProcessedDatasets(conn, out, pattern);
+			api.listProcessedDatasets(conn, out, patternDs, patternApp);
 		} finally {
 			if(conn != null) conn.close();
 		}
