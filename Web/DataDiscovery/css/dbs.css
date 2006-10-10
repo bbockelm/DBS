@@ -282,6 +282,12 @@ table.sortable span.sortarrow {
 .box_red {
   color: #FF0000;
 }
+.box_blue {
+  color: #0000FF;
+}
+.box_green {
+  color: #00FF00;
+}
 .box_darkgreen {
   color: #666699;
   background: #666699;
