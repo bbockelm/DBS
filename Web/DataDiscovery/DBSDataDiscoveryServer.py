@@ -93,6 +93,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                self.port=string.strip(string.split(string.replace(line,'\n',''),'=')[1])
                break
         self.dbsdd      = 'http://'+self.hostname+":"+str(self.port)
+        if os.environ.has_key('DBSDD'):
+           self.dbsdd = os.environ['DBSDD']
         print "DBSDataDiscoveryServer '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
@@ -922,6 +924,7 @@ globalAjaxProvenance=1;
            Generates a list of LFNs for given site
         """
         try:
+            print "getLFNsForSite",dbsInst,site
             self.htmlInit()
             page ="""<html><body><pre>\n"""
             for blockName in self.siteDict[site]:
@@ -1123,10 +1126,11 @@ globalAjaxProvenance=1;
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
+        parents  = self.helper.getDatasetProvenance(dataset)
         nameSpace={
                    'host'      : self.dbsdd, 
                    'dataset'   : dataset, 
-                   'parentList': self.helper.getDatasetProvenance(dataset)
+                   'parentList': parents
                   }
         t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
         page = str(t)

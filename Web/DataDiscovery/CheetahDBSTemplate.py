@@ -63,22 +63,24 @@ templateProvenance="""
     <tr>
     <th align="left">Parent list (<a href="javascript:HideParents('$dataset');">hide</a>):</th>
     </tr>
-    <tr>
     #if not len($parentList)
+    <tr>
     <td>
     No parents found
     </td>
+    </tr>
     #else
     #for parent in $parentList
+    <tr>
     <td align="left">
     <!--
     <img src="images/down_right_arrow.jpg" alt="arrow" />
     -->
     $parent
     </td>
+    </tr>
     #end for
     #end if
-    </tr>
     </table>
     </p>
     <p></p>
@@ -660,10 +662,10 @@ Both
      </td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <a href="javascript:popUp($host/getLFNsForSite?dbsInst=$dbsInst&site=$site)">All</a>
+     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&site=$site',1000)">All</a>
      </td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <a href="javascript:popUp($host/getBlocksForSite?site=$site)">All</a>
+     <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">All</a>
      </td>
   </tr>
 #set j=0

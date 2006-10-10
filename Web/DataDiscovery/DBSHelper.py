@@ -351,9 +351,20 @@ class DBSHelper(DBSLogger):
       return oList
   
   def getDatasetProvenance(self,dataset):
+#      print "search",dataset
       pList=[]
       for parent in self.api.getDatasetProvenance(dataset):
-          pList.append(parent['parent']['datasetPathName'])
+          p=parent['parent']['datasetPathName']
+#          print "child",p
+          if not p: break
+          pList.append(p)
+          pList+=self.getDatasetProvenance(p)
+#          while 1:
+#             print "in while search",p
+#             pp=self.getDatasetProvenance(p)
+#             if not pp: break
+#             print "in while child",pp
+#             pList+=pp
       return pList
 
   def exeQuery(self,q):
@@ -946,6 +957,12 @@ if __name__ == "__main__":
        verbose=1
 
     helper = DBSHelper(dbsInst,verbose)
+    dataset='/CSA06-083-os-SoftMuon/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged'
+    pList = helper.getDatasetProvenance(dataset)
+    print "for",dataset
+    print pList
+    sys.exit(0)
+    
     if opts.dict:
        if string.lower(opts.dict)=="global":
           print helper.initJSDict(True)
