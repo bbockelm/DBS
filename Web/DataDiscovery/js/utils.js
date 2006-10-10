@@ -195,3 +195,8 @@ function popUp(URL,WIDTH,HEIGHT) {
   var url=URL.replace('#','%23');
   eval("page" + id + " = window.open(url, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');");
 }
+function formPopUpCall(h,f,dbs,site,app,prim,tier) {
+  var url=h+'/'+f+'?dbsInst='+dbs+'&site='+site+'&app='+app+'&primD='+prim+'&tier='+tier;
+  popUp(url);
+}
+
