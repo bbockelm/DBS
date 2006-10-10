@@ -957,11 +957,6 @@ if __name__ == "__main__":
        verbose=1
 
     helper = DBSHelper(dbsInst,verbose)
-    dataset='/CSA06-083-os-SoftMuon/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged'
-    pList = helper.getDatasetProvenance(dataset)
-    print "for",dataset
-    print pList
-    sys.exit(0)
     
     if opts.dict:
        if string.lower(opts.dict)=="global":
