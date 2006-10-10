@@ -76,6 +76,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.dbsShortNames=[]
         for dbs in self.dbsList:
             name=string.split(dbs,"/")[0]
+            if string.find(dbs,'fanfani')!=-1:
+               name+="_fanfani"
             self.dbsShortNames.append(name)
         self.topHTML    = ""
         self.bottomHTML = ""

@@ -1153,10 +1153,14 @@ and
 
 templateDbsCont="""
 #for name in $dbsContList
+#set fullName=$name+"/Writer"
+#if $name=="Dev_fanfani"
+#set fullName="Dev/fanfani"
+#end if
    <div id="datasets${name}Panel">
      <div id="datasets${name}Header" class="accordionTabTitleBar">
        <span class="menu_title">
-       ${name}/Writer
+       $fullName
        </span>
      </div>
      <div id="datasets${name}Content">
