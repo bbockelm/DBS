@@ -749,7 +749,17 @@ This page was generated at: $localtime
 
 templateFrontPage="""
 #if $frontPage
+<table width="100%">
+<tr>
+<td>
 <div class="sectionhead_tight">WELCOME TO DBS DATA DISCOVERY PAGE</div>
+</td>
+<td align="right">
+Home page: <a href="$host">users</a>
+<a href="$host/expert">experts</a>
+</td>
+</tr>
+</table>
 <hr class="dbs" />
 #end if
 <table width="100%">
@@ -757,48 +767,29 @@ templateFrontPage="""
 <!-- menu -->
 <td class="menu_td_gray">
 <table width="100%">
-#if not $userMode
 <tr>
-<td class="td_gray_box"><a href="$host/expert">Home</a></td>
-</tr>
-#else
-<tr>
-<td class="td_gray_box"><a href="$host">Home</a></td>
-</tr>
-#end if
-<tr><td><br /></td></tr>
-<tr>
-<td class="td_gray_box"><a href="javascript:showMenu('Navigator')">Navigator</a></td>
+<td class="td_gray_box" id="Navigator_Menu"><a href="javascript:showMenu('Navigator')">Navigator</a></td>
 </tr>
 <tr>
-<td class="td_gray_box"><a href="javascript:showMenu('Search')">Keyword search</a></td>
+<td class="td_gray_box" id="Search_Menu"><a href="javascript:showMenu('Search')">Keyword search</a></td>
 </tr>
 #if not $userMode
 <tr>
-<td class="td_gray_box"><a href="javascript:showMenu('Site')">Site</a></td>
+<td class="td_gray_box" id="Site_Menu"><a href="javascript:showMenu('Site')">Site</a></td>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
-<td class="td_gray_box"><a href="javascript:showMenu('Datasets');registerAjaxPrimDatasetsCalls();getPrimDatasets();">Datasets</a>
+<td class="td_gray_box" id="Datasets_Menu"><a href="javascript:showMenu('Datasets');registerAjaxPrimDatasetsCalls();getPrimDatasets();">Datasets</a>
 </td>
 </tr>
 
 <tr>
-<td class="td_gray_box">
+<td class="td_gray_box" id="Summary_Menu">
 <a href="javascript:showMenu('Summary');registerAjaxSummaryCalls();getSummary();">Summary</a>
 </td>
 </tr>
 #end if
 <tr><td><br /></td></tr>
-#if $userMode
-<tr>
-<td class="td_gray_box"><a href="$host/expert">Expert page</a></td>
-</tr>
-#else
-<tr>
-<td class="td_gray_box"><a href="$host">User page</a></td>
-</tr>
-#end if
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('About')">About...</a></td>
 </tr>
@@ -1078,12 +1069,13 @@ move your mouse over the column name and click on it to sort entries.
 </tr>
 </table>
 <script type="text/javascript">
-new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:300} );
-new Rico.Accordion( \$('SearchDiv'), {panelHeight:300} );
-new Rico.Accordion( \$('SiteDiv'), {panelHeight:300} );
-new Rico.Accordion( \$('SummaryDiv'), {panelHeight:300} );
-new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:300} );
-new Rico.Accordion( \$('AboutDiv'), {panelHeight:300} );
+var accordionHeight=200;
+new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('SearchDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('SiteDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('AboutDiv'), {panelHeight:accordionHeight} );
 #if $frontPage
 showMenu('Navigator');
 #end if
@@ -1104,13 +1096,11 @@ templateDivEntries="""
 """
 
 templateHiddenPanel="""
-<p>
 <span id="HiddenPanel"></span>
-</p>
 <span id="GlobalPanel">
 $panel
 </span>
-<script type="text/javascript">HidePanel()</script>
+<script type="text/javascript">HidePanel('$host')</script>
 <script type="text/javascript">
 #if $view
 showMenu('$view')
@@ -1119,13 +1109,11 @@ showMenu('$view')
 """
 
 templateVisiblePanel="""
-<p>
 <span id="HiddenPanel"></span>
-</p>
 <span id="GlobalPanel">
 $panel
-</span>
-<script type="text/javascript">ShowPanel()</script>
+</td></tr></table>
+<script type="text/javascript">ShowPanel('$host')</script>
 <script type="text/javascript">
 #if $view
 showMenu('$view')

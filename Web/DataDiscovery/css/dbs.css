@@ -196,6 +196,16 @@ em.smallbold  {
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
+.td_blue_box {
+  width: 8%;
+  color: #000000;
+  background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+/*  border-color: gray gray gray gray; */
+}
 .td10 {
   width: 10%;
 }

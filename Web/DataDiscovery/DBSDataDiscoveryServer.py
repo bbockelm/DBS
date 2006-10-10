@@ -258,7 +258,11 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
-            nameSpace = {'panel': self.genPanelHelper(), 'view': view}
+            nameSpace = {
+                         'host'    : self.dbsdd,
+                         'panel'   : self.genPanelHelper(), 
+                         'view'    : view
+                        }
             t = Template(CheetahDBSTemplate.templateVisiblePanel, searchList=[nameSpace])
             page = str(t)
             return page
@@ -277,7 +281,11 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         try:
-            nameSpace = {'panel': self.genPanelHelper(), 'view': view}
+            nameSpace = {
+                         'host'    : self.dbsdd,
+                         'panel'   : self.genPanelHelper(), 
+                         'view'    : view
+                        }
             t = Template(CheetahDBSTemplate.templateHiddenPanel, searchList=[nameSpace])
             page = str(t)
             return page

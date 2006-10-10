@@ -2,15 +2,19 @@ function HideParents(id) {
    var t=document.getElementById(id);
    t.className="hide";
 }
-function ShowPanel() {
+function ShowPanel(link) {
+   var url='Home page: <a href="'+link+'">users</a>, <a href="'+link+'">experts</a>';
    var t=document.getElementById("HiddenPanel");
-   t.innerHTML='<span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel()">PANEL</a></span>'
+   msg='<table width="100%"><tr><td><span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
+   t.innerHTML=msg;
    var p=document.getElementById("GlobalPanel");
    p.className="show";
 }
-function HidePanel() {
+function HidePanel(link) {
+   var url='Home page: <a href="'+link+'">users</a>, <a href="'+link+'">experts</a>';
    var t=document.getElementById("HiddenPanel");
-   t.innerHTML='<span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel()">PANEL</a></span>'
+   msg='<table width="100%"><tr><td><span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
+   t.innerHTML=msg;
    var p=document.getElementById("GlobalPanel");
    p.className="hide";
 }
@@ -23,6 +27,10 @@ function showMenu(menu) {
    menuArr[4]='Datasets';
    menuArr[5]='About';
    for(var i=0;i<menuArr.length;i++) {
+       var c=document.getElementById(menuArr[i]+'_Menu');
+       if (c) {
+           c.className="td_gray_box";
+       }
        var t=document.getElementById(menuArr[i]+'Div');
        if (t) {
            if(menuArr[i]==menu) {
@@ -32,8 +40,10 @@ function showMenu(menu) {
            }
        }
    }
-//   var t=document.getElementById("Introduction");
-//   t.className="hide"
+   var t=document.getElementById(menu+"_Menu");
+   if (t) {
+       t.className="td_blue_box"
+   }
 }
 //function showIntro() {
 //   var t=document.getElementById("Introduction");
