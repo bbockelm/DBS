@@ -607,7 +607,11 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'sList'    : getListOfSites(), 
                      'userMode' : self.userMode,
                      'msg'      : msg,
-                     'firstDBS' : firstDBS
+                     'firstDBS' : firstDBS,
+                     'firstSite': firstSite,
+                     'firstApp' : firstApp,
+                     'firstPrim': firstPrim,
+                     'firstTier': firstTier
                     }
         t = Template(CheetahDBSTemplate.templateJSForm, searchList=[nameSpace])
         page+= str(t)
@@ -707,7 +711,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     showProcDatasets.exposed=True
 
-    def showProcDatasetsHTML(self,dbs,site,app,primD,tier):
+    def showProcDatasetsHTML(self,dbsInst,site,app,primD,tier):
         """
            Get all processed datasets for given set of input parameters
            @type  dbs: string
@@ -725,7 +729,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         nameSpace = {
                      'host'    : self.dbsdd,
-                     'dbsInst' : dbs, 
+                     'dbsInst' : dbsInst, 
                      'site'    : site,
                      'app'     : app,
                      'primD'   : primD,
@@ -734,7 +738,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateProcDatasets, searchList=[nameSpace])
         return str(t)
     
-    def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
+    def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -751,6 +755,13 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
+        if string.lower(tier)=="all": tier="*"
+        if string.lower(site)=="all": site="*"
+        # AJAX wants response as "text/xml" type
+#        self.setContentType('xml')
+#        page="""<ajax-response><response type="element" id="getDataHelperHandler">"""
+        page=""
+        
         self.helperInit(dbsInst)
         self.dbs  = dbsInst
         self.site = site
@@ -760,10 +771,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         
         nameSpace={'firstSearch': self.firstSearch}
         t = Template(CheetahDBSTemplate.templateSeparator, searchList=[nameSpace])
-        page= str(t)
+        page+= str(t)
         
         page+= self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
-#        page+="Processed datasets: "
 
         primaryDataset=primD
         dataTier = tier
@@ -779,8 +789,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 var globalAjaxProvenance=null;
 function registerAjaxProvenanceCalls() {
 if(!globalAjaxProvenance){
-ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
-        """
+ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');\n"""
         for dataset in dList:
             page+="ajaxEngine.registerAjaxElement('%s');\n"%dataset
         page+="""
@@ -797,7 +806,7 @@ globalAjaxProvenance=1;
             if dataTier!="*" and tier!=dataTier: continue
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
             # new stuff which do not show repeating datasets
-            p = self.dataToHTML(dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
+            p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles:
                page+="""
 <div id="procDataset" name="procDataset" class="off">
@@ -814,7 +823,10 @@ globalAjaxProvenance=1;
             prevPage = p
         page+=prevPage # end of new stuff
 
+#        page+="</response></ajax-response>"
+#        print page
         return page
+    getDataHelper.exposed=True
 
     def getData(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
         """
@@ -839,17 +851,12 @@ globalAjaxProvenance=1;
             self.htmlInit()
             msg="dbsInst='%s', site='%s', app='%s', primD='%s', tier='%s'"%(dbsInst,site,app,primD,tier)
             self.writeLog(msg)
-#            if self.userMode:
-#               msg=CheetahDBSTemplate.templateUserHelp
-#            else:
-#               nameSpace={'host':self.dbsdd}
-#               msg = str(Template(CheetahDBSTemplate.templateExpertHelp,searchList=[nameSpace]))
             page = self.genTopHTML()
-#            page+= self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
-#            msg=CheetahDBSTemplate.templateUserHelp
             msg=""
             self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
             page+= self.genVisiblePanel('Navigator')
+#            page+="""<span id="getDataHelperHandler">Data will appear shortly</span>"""
+#            page+="""<a href="javascript:registerAjaxGetDataCalls();ajaxGetData()">click to get data</a>"""
             page+= self.getDataHelper(dbsInst,site,app,primD,tier)
             page+= self.genBottomHTML()
             return page
@@ -859,7 +866,7 @@ globalAjaxProvenance=1;
             return str(t)
     getData.exposed = True 
 
-    def getLFNlist(self,blockName,dataset=""):
+    def getLFNlist(self,dbsInst,blockName,dataset=""):
         """
            Retrieves and represents LFN list. The list is formed by L{lfnToHTML}.
            @type  dataset: string 
@@ -874,9 +881,9 @@ globalAjaxProvenance=1;
             page = self.genTopHTML()
 #            page+= self.genHiddenPanel()
             if dataset:
-               page+= self.genSnapshot(self.dbs,self.site,self.app,self.primD,self.tier)
+               page+= self.genSnapshot(dbsInst,self.site,self.app,self.primD,self.tier)
             page+="""<hr class="dbs" />"""
-            page+= self.lfnToHTML(blockName,dataset)
+            page+= self.lfnToHTML(dbsInst,blockName,dataset)
             page+= self.genBottomHTML()
             return page
         except:
@@ -885,7 +892,7 @@ globalAjaxProvenance=1;
             return str(t)
     getLFNlist.exposed = True
  
-    def getLFN_txt(self,blockName,dataset=""):
+    def getLFN_txt(self,dbsInst,blockName,dataset=""):
         """
            Retrieves and represents LFN list in ASCII form
            @type  dataset: string 
@@ -898,7 +905,7 @@ globalAjaxProvenance=1;
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
-            lfnList = self.helper.getLFNs(blockName,dataset)
+            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
             for item in lfnList:
                 lfn=item[0]
                 page+="%s\n"%lfn
@@ -910,7 +917,7 @@ globalAjaxProvenance=1;
             return str(t)
     getLFN_txt.exposed = True
     
-    def getLFNsForSite(self,site):
+    def getLFNsForSite(self,dbsInst,site):
         """
            Generates a list of LFNs for given site
         """
@@ -918,7 +925,7 @@ globalAjaxProvenance=1;
             self.htmlInit()
             page ="""<html><body><pre>\n"""
             for blockName in self.siteDict[site]:
-                lfnList = self.helper.getLFNs(blockName,"")
+                lfnList = self.helper.getLFNs(dbsInst,blockName,"")
                 for item in lfnList:
                     lfn=item[0]
                     page+="%s\n"%lfn
@@ -947,7 +954,7 @@ globalAjaxProvenance=1;
             return str(t)
     getBlocksForSite.exposed=True
     
-    def getLFN_cfg(self,blockName,dataset=""):
+    def getLFN_cfg(self,dbsInst,blockName,dataset=""):
         """
            Retrieves and represents LFN list in 'cff' framework form
            @type  dataset: string 
@@ -961,7 +968,7 @@ globalAjaxProvenance=1;
             self.htmlInit()
             page ="""<html><body><pre>\n"""
             page+="replace source.fileNames = {\n"
-            lfnList = self.helper.getLFNs(blockName,dataset)
+            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
             for item in lfnList:
                 lfn=item[0]
                 if lfn==lfnList[-1][0]:
@@ -976,7 +983,7 @@ globalAjaxProvenance=1;
             return str(t)
     getLFN_cfg.exposed = True
 
-    def lfnToHTML(self,blockName,dataset=""):
+    def lfnToHTML(self,dbsInst,blockName,dataset=""):
         """
            Constructs LFN list into table.
            @type  dataset: string
@@ -986,7 +993,7 @@ globalAjaxProvenance=1;
            @rtype : string
            @return: returns HTML code
         """
-        lfnList = self.helper.getLFNs(blockName,dataset)
+        lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
         nameSpace = {
                      'blockName' : blockName,
                      'lfnList'   : lfnList
@@ -994,7 +1001,7 @@ globalAjaxProvenance=1;
         t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
         return str(t)
         
-    def dataToHTML(self,path,locDict,blockDict,totEvt,totFiles,totSize,id):
+    def dataToHTML(self,dbsInst,path,locDict,blockDict,totEvt,totFiles,totSize,id):
         """
            Forms output tables.
            @type  path: string 
@@ -1010,6 +1017,7 @@ globalAjaxProvenance=1;
                      'host'       : self.dbsdd,
                      'path'       : path,
                      'firstSearch': self.firstSearch,
+                     'dbsInst'    : dbsInst,
                      'locDict'    : locDict,
                      'blockDict'  : blockDict,
                      'nEvents'    : totEvt,
@@ -1039,6 +1047,7 @@ globalAjaxProvenance=1;
             bList = self.helper.getBlocksFromSite(site)
             nameSpace = {
                          'host'   : self.dbsdd,
+                         'dbsInst': dbsInst,
                          'site'   : site,
                          'bList'  : bList
                         }

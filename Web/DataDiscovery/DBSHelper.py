@@ -407,7 +407,8 @@ class DBSHelper(DBSLogger):
          pass
       return res
 
-  def getLFNs(self,blockName,dataset):
+  def getLFNs(self,dbsInst,blockName,dataset):
+      self.setDBSDLS(dbsInst)
       res = self.api.getLFNs(blockName,dataset)
       lfnList = []
       for item in res:
@@ -793,7 +794,7 @@ class DBSHelper(DBSLogger):
       sel = sqlalchemy.select([sqlalchemy.func.count(tf.c.logical_name)])
       sumDict['Number of files'] = self.getSQLAlchemyResult(sel).fetchone()[0]
       sel = sqlalchemy.select([sqlalchemy.func.sum(tf.c.filesize)])
-      sumDict['Total file size'] = fmt3(self.getSQLAlchemyResult(sel).fetchone()[0])
+      sumDict['Total file size'] = sizeFormat(self.getSQLAlchemyResult(sel).fetchone()[0])
       return sumDict
 
   def WhatExists(self,datasetPath):
@@ -867,8 +868,8 @@ class DBSHelper(DBSLogger):
               pass
           # end of DLS query
           blockInfoDict[blockName]+=hostList
-#          addToDict(blockDict,blockName,(hostList,evts,bStatus,nFiles,fmt3(bBytes)))
-      return locDict,blockInfoDict,nEvts,totFiles,fmt3(totSize)
+#          addToDict(blockDict,blockName,(hostList,evts,bStatus,nFiles,sizeFormat(bBytes)))
+      return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
 
   def getBlocksFromSite(self,site):
       """

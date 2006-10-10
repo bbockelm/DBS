@@ -43,7 +43,22 @@ def getListOfSites(dbsInst='all'):
     sList.sort()
     return sList
 
-def fmt3(i):
+def colorSizeHTMLFormat(i):
+    n = sizeFormat(i)
+    # PB are in red
+    if string.find(n,'PB')!=-1:
+       return string.replace(n,'PB','<span class="box_red">TB</span>')
+    # TB are in blue
+    elif string.find(n,'TB')!=-1:
+       return string.replace(n,'TB','<span class="box_blue">TB</span>')
+    # GB are in block
+    # MB are in green
+    elif string.find(n,'MB')!=-1:
+       return string.replace(n,'MB','<span class="box_green">TB</span>')
+    else:
+       return n
+    
+def sizeFormat(i):
     """
        Format file size utility, it converts file size into KB, MB, GB, TB, PB units
     """

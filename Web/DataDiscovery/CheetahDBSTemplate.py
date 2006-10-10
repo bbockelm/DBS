@@ -234,11 +234,11 @@ templateFileBlocksFromSite="""
 #set bName=$name.replace('#','%23')
 <tr>
     <td>
-    <a href="$host/getLFNlist?blockName=$bName">$name</a>
+    <a href="$host/getLFNlist?dbsInst=$dbsInst&blockName=$bName">$name</a>
     </td>
     <td align="center">
-    <a href="$host/getLFN_cfg?blockName=$bName" alt="cff format">cff</a>, &nbsp;
-    <a href="$host/getLFN_txt?blockName=$bName" alt="file list format">plain</a>
+    <a href="$host/getLFN_cfg?dbsInst=$dbsInst&blockName=$bName" alt="cff format">cff</a>, &nbsp;
+    <a href="$host/getLFN_txt?dbsInst=$dbsInst&blockName=$bName" alt="file list format">plain</a>
     </td>
 </tr>
 #end for
@@ -463,13 +463,6 @@ $msg
 <tr>
 <td></td>
 <td>
-<input type="submit" value="Find" />
-</td></tr>
-</table>
-<!-- end of menu table -->
-
-</form>
-
 <script type="text/javascript">
   var dbs = document.getElementById("dbsSelector")
 #if $userMode
@@ -478,6 +471,16 @@ $msg
   updateLayer0(dbs)
 #end if
 </script>
+<input type="submit" value="Find" />
+<!--
+<input type="submit" value="Find" onsubmit="registerAjaxGetDataCalls(); ajaxGetData()"/>
+-->
+</td></tr>
+</table>
+<!-- end of menu table -->
+
+</form>
+
 
 </td>
 </tr>
@@ -573,7 +576,7 @@ view</a>):
 """
 
 templateLFB = """
-#from DBSUtil import fmt3
+#from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #set tot=len($blockDict.keys())
 <div id="procDataset" name="procDataset" class="off">
 <a href="javascript:registerAjaxProvenanceCalls();getProvenance('$path')">$path</a>
@@ -608,7 +611,7 @@ Both
 <!-- Main table -->
 <table id="$tableId" name="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
   <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
-     <th>row</td>
+     <th>row</th>
      <th>Location</th>
      <th>Events</th>
      <th>Files</th>
@@ -655,9 +658,9 @@ Both
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
      </td>
-     <td align="right"><div class="dbs_cell">$fmt3($siteTotSize)</div></td>
+     <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <a href="javascript:popUp($host/getLFNsForSite?site=$site)">All</a>
+     <a href="javascript:popUp($host/getLFNsForSite?dbsInst=$dbsInst&site=$site)">All</a>
      </td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
      <a href="javascript:popUp($host/getBlocksForSite?site=$site)">All</a>
@@ -695,15 +698,15 @@ Both
      #else
      <td align="center"><div class="dbs_cell">$bStatus</div></td>
      #end if
-     <td align="right"><div class="dbs_cell">$fmt3($size)</div></td>
+     <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFN_cfg?blockName=$bName&dataset=$path',1000)" alt="cff format">cff</a>, &nbsp;
-     <a href="javascript:popUp('$host/getLFN_txt?blockName=$bName&dataset=$path',900)" alt="file list format">plain</a>
+     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&blockName=$bName&dataset=$path',1000)" alt="cff format">cff</a>, &nbsp;
+     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&blockName=$bName&dataset=$path',900)" alt="file list format">plain</a>
      </div>
      </td>
      <td align="left">
      <div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFNlist?blockName=$bName&dataset=$path',1000)">$name</a>
+     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&blockName=$bName&dataset=$path',1000)">$name</a>
      </div>
      </td>
   </tr>
