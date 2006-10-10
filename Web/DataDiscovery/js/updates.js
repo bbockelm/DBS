@@ -44,6 +44,7 @@ function updateLayer(dbsInst) {
   //selectElement.setAttribute("onChange",'updateLayer1(this)');
   // The following structure seems to work with Firefox, Safari, IE
   selectElement.onchange=new Function("return updateLayer1(this);");
+  selectElement.setAttribute("id",'appSelector');
   selectElement.setAttribute("name",'app');
   updateLayer1(selectElement)
 }
@@ -62,6 +63,7 @@ function updateLayer0(selector) {
   app.appendChild(selectElement)
   //selectElement.setAttribute("onChange",'updateLayer1(this)');
   selectElement.onchange=new Function("return updateLayer1(this);");
+  selectElement.setAttribute("id",'appSelector');
   selectElement.setAttribute("name",'app');
   updateLayer1(selectElement)
 }
@@ -78,6 +80,7 @@ function updateLayer1(selector) {
   prim.appendChild(selectElement)
   //selectElement.setAttribute("onChange",'updateLayer2(this)');
   selectElement.onchange=new Function("return updateLayer2(this);");
+  selectElement.setAttribute("id",'primSelector');
   selectElement.setAttribute("name",'primD');
   updateLayer2(selectElement)
 }
@@ -90,6 +93,7 @@ function updateLayer2(selector) {
 
   tierObj = primObj.nextObj[ selector.options[selector.selectedIndex].value ]
   updateSelection(selectElement, tierObj.menuList,_tier)
+  selectElement.setAttribute("id",'tierSelector');
   selectElement.setAttribute("name",'tier');
   tier.appendChild(selectElement)
   init()
