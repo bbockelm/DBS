@@ -144,15 +144,10 @@ templateSearchTable="""
 <form action="search" method="get">
 <p>
 The search is case insensitive and the following special symbols are supported:
+<span class="box">'(', ')', 'or', 'and'</span>.
 </p>
 <p>
-<span class="box">'(', ')', 'or' and 'and'</span>
-</p>
-<p>
-for instance,
-you may use normal syntax expressions, e.g.
-</p>
-<p>
+You may use boolean expressions, e.g.,
 <span class="box">( word1 or (word3 and word4) )</span>
 </p>
 <p>
