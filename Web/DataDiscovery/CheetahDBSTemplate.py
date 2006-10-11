@@ -143,13 +143,21 @@ move your mouse over the column name and click on it to sort entries.
 templateSearchTable="""
 <form action="search" method="get">
 <p>
-Please specify any keywords for your search, e.g. 
-<span class="box">CMSSW Higgs</span>
-in provided text box.
+The search is case insensitive and the following special symbols are supported:
+</p>
+<p>
+<span class="box">'(', ')', 'or' and 'and'</span>
+</p>
+<p>
+for instance,
+you may use normal syntax expressions, e.g.
+</p>
+<p>
+<span class="box">( word1 or (word3 and word4) )</span>
 </p>
 <p>
 Any keywords:
-<input type="text" name="keywords"/>
+<input type="text" name="keywords" size="100"/>
 <input type="submit" value="Search" id="submit-button"/>
 </p>
 </form>
@@ -249,12 +257,20 @@ templateFileBlocksFromSite="""
 """
 
 templateDataFromSelection="""
+<p><b>
+Upon your search:
+<em>$keywords</em>
+</b>
+</p>
+
 #if len($oList)
 <form action="getDataFromSelection" method="get">
+<!--
 <span class="box">
 NOTE:
 all columns are sortable, move your mouse over the column name and click on it.
 </span>
+-->
 <p>
 #if len($oList)>15
 <b>
@@ -844,6 +860,11 @@ Home page: <a href="$host">users</a>
        </span>
       </div>
       <div id="searchContent2">
+      Some topics I would like to cover in advance search are:
+      <ul>
+      <li>Search for details for given processed dataset</li>
+      <li>search where particular LFN exists</li>
+      </ul>
        ... To be implemented soon ...
        <br />
        We plan to extend search capabilites and allow people specify parameter set search keywords,

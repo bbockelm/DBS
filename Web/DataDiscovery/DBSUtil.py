@@ -198,6 +198,47 @@ def printExcept(msg=""):
        print msg
     sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
 
+def constructExpression(s,listName):
+    """
+       For given string 's' and list name construct the expression statement.
+       For instance,
+       word1 or (word2 and word3)
+       converted to
+       listName.count(word1) or (listName.count(word2) and listName.count(word3))
+       Such expression statement is further used by eval in search method of DBSHelper. 
+    """
+    specialSymbols=["(",")","and","or"]
+    oList = []
+    ss = string.lower(s)
+    for elem in specialSymbols:
+        item = " %s "%elem
+        ss=ss.replace(elem,item)
+#    print "looking for",ss
+    for elem in string.split(ss):
+        if specialSymbols.count(elem):
+           oList.append(elem)
+        else:
+           oList.append("%s.count('%s')"%(listName,elem))
+    result = ' '.join(oList)
+#    print "construct",result
+    return result
+
+def validator(s):
+    """ 
+        Evaluate given string 's' and validate if it has correct number of "(" and ")". 
+        For instance it check if expression
+        (word1 or (test1 and test2) and (w1 or w2) )
+        has correct number of open and cloased brackets.
+    """
+    if  s.count("(")!=s.count(")"):
+        return False
+    open=0
+    for char in s:
+        if char=="(" or char==")":
+           if char=="(": open+=1
+           if char==")": open-=1
+    return (not open)
+
 class DbsPatternError(DbsApiException):
   """
      DBS pattern error handler class
@@ -282,6 +323,24 @@ def formattingDictPrint(iDict):
     s+="\n}\n"
     return s
     
+def toLower(iList):
+    oList=[]
+    for i in iList:
+        if  type(i) is not types.NoneType:
+            try:
+               oList.append(string.lower(str(i)))
+            except:
+               print iList
+               raise "fail at lowering '%s'"%i
+    return oList
+
+def tupleToList(x):
+    """fully copies trees of tuples to a tree of lists.
+       deep_list( (1,2,(3,4)) ) returns [1,2,[3,4]]"""
+    if type(x)!=type( () ):
+        return x
+    return map(tupleToList,x)
+
 def formattingListPrint(iList,n=3):
     """
        print list in formated way, e.g.

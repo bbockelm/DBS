@@ -430,9 +430,10 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: a list of [(primD,tier,App version, App family, App exe)]
         """
         pList=[]
-        if len(keywords):
-           pList=string.split(keywords)
-        oList = self.helper.search(pList,restrictDict)
+#        if len(keywords):
+#           pList=string.split(keywords)
+#        oList = self.helper.search(pList,restrictDict)
+        oList = self.helper.search(keywords,pList,restrictDict)
         return oList
         
     def searchForm(self):
@@ -453,36 +454,44 @@ class DBSDataDiscoveryServer(DBSLogger):
         page = self.genTopHTML()
         self.firstSearch=0
         page+= self.genVisiblePanel('Search')
+        if keywords and not validator(keywords):
+           page+="""
+<hr class="dbs" />
+<div class="show_red_bold">Your search expression <p><em>%s</em></p> is not valid</div>
+"""%keywords
+           page+= self.genBottomHTML()
+           return page
         oList= []
         # parse keywords and search for DBSINST
         dbsList=appList=tierList=siteList=primList=[]
-        pList=[]
-        if len(keywords):
-           pList=string.split(keywords)
-        for word in pList:
-            if string.find(string.lower(word),":")>-1:
-               p,w = string.split(string.lower(word),":")
-               print p,w
-               if p=="dbs":
-                  for dbs in self.dbsList:
-                      if string.lower(dbs)==w:
-                         dbsList.append(dbs)
-               elif p=="app":
-                  appList.append(w)
-               elif p=="tier":
-                  tierList.append(w)
-               elif p=="site":
-                  siteList.append(w)
-               elif p=="prim":
-                  primList.append(w)
-        restrictDict={}
-        restrictDict["dbs"] =dbsList
-        restrictDict["site"]=siteList
-        restrictDict["app"] =appList
-        restrictDict["prim"]=primList
-        restrictDict["tier"]=tierList
+#        pList=[]
+#        if len(keywords):
+#           pList=string.split(keywords)
+#        for word in pList:
+#            if string.find(string.lower(word),":")>-1:
+#               p,w = string.split(string.lower(word),":")
+#               print p,w
+#               if p=="dbs":
+#                  for dbs in self.dbsList:
+#                      if string.lower(dbs)==w:
+#                         dbsList.append(dbs)
+#               elif p=="app":
+#                  appList.append(w)
+#               elif p=="tier":
+#                  tierList.append(w)
+#               elif p=="site":
+#                  siteList.append(w)
+#               elif p=="prim":
+#                  primList.append(w)
+#        restrictDict={}
+#        restrictDict["dbs"] =dbsList
+#        restrictDict["site"]=siteList
+#        restrictDict["app"] =appList
+#        restrictDict["prim"]=primList
+#        restrictDict["tier"]=tierList
         if self.userMode:
-           oList=self.searchHelper(keywords,restrictDict)
+#           oList=self.searchHelper(keywords,restrictDict)
+           oList=self.searchHelper(keywords)
         else:
            if  not len(dbsList):
                dbsList=self.dbsList
@@ -492,7 +501,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace = {
                      'firstSearch': self.firstSearch, 
                      'oList'      : oList, 
-                     'userMode'   : self.userMode
+                     'userMode'   : self.userMode,
+                     'keywords'   : keywords
                     }
         t = Template(CheetahDBSTemplate.templateDataFromSelection, searchList=[nameSpace])
         page+= str(t)

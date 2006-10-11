@@ -625,7 +625,7 @@ class DBSHelper(DBSLogger):
       """
       return self.dbsDBs.getTable(tableName,aliasName)
       
-  def search(self,pList=[],rDict={}):
+  def search(self,searchString,pList=[],rDict={}):
       """
          Retrieves a summary information from DB. It makes join over
          primary Dataset, data tier, application. The idea is simlar to iTunes.
@@ -648,6 +648,9 @@ class DBSHelper(DBSLogger):
          @rtype: list
          @return: a list of [(primD,tier,App version, App family, App exe)]
       """
+      if not validator(searchString):
+         msg = "Wrong expression '%s'"%searchString
+         raise msg
       tprd = self.alias('t_processed_dataset','tprd')
       tpm  = self.alias('t_primary_dataset','tpm')
       tpn  = self.alias('t_processing_name','tpn')
@@ -677,22 +680,28 @@ class DBSHelper(DBSLogger):
       # loop over results and find a match to list of keywords from pList.
       for iTup in result:
           tup = iTup.__dict__['_RowProxy__row'] # get real tuple, rather then instance from SQL object
-          for i in tup:
-              found=0
-              for p in pList:
-                 # skip keywords which represent conditions, e.g. dbs:MCLocal_1/Writer
-                 if string.find(p,":")>-1: continue
-                 if  type(i) is types.StringType:
-                     if string.find(string.lower(i),string.lower(p))>-1:
-                        oList.append((self.dbsInstance,)+tup)
-                        found=1
-                        break
-                 if  type(i) is types.IntType:
-                     if pList.count(i):
-                        oList.append((self.dbsInstance,)+tup)
-                        found=1
-                        break
-              if found: break
+          searchList=toLower(tupleToList(tup))
+#          print searchList
+          if eval(constructExpression(searchString,'searchList')):
+             oList.append((self.dbsInstance,)+tup)
+#
+#
+#          for i in tup:
+#              found=0
+#              for p in pList:
+#                 # skip keywords which represent conditions, e.g. dbs:MCLocal_1/Writer
+#                 if string.find(p,":")>-1: continue
+#                 if  type(i) is types.StringType:
+#                     if string.find(string.lower(i),string.lower(p))>-1:
+#                        oList.append((self.dbsInstance,)+tup)
+#                        found=1
+#                        break
+#                 if  type(i) is types.IntType:
+#                     if pList.count(i):
+#                        oList.append((self.dbsInstance,)+tup)
+#                        found=1
+#                        break
+#              if found: break
       return oList
 
   def getBlockInfo_orig(self,dataset):
@@ -968,7 +977,9 @@ if __name__ == "__main__":
     if opts.search:
        pattern=string.split(opts.search,",")
        print "Search for",pattern
-       oList = helper.search(pattern)
+       oList = helper.search(opts.search)
+#       pattern=string.split(opts.search,",")
+#       oList = helper.search(pattern)
        for item in oList:
            print item
        sys.exit(0)

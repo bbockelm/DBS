@@ -37,7 +37,7 @@ class DBSOptionParser:
     self.parser.add_option("--site",action="store", type="string", dest="site",
          help="specify DLS site you're interesting, e.g. --site=fnal.gov")
     self.parser.add_option("--search",action="store", type="string", dest="search",
-         help="specify any keywords to search your data, e.g. --search=CMSSW_0_8_1,Merged,cmsRun")
+         help="specify any keywords to search your data, e.g. --search='CMSSW_0_8_1 and Merged'")
     self.parser.add_option("-v","--verbose",action="store_true", default=False, dest="verbose",
          help="be verbose")
          
