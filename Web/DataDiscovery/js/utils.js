@@ -49,6 +49,8 @@ function showMenu(menu) {
 //   var t=document.getElementById("Introduction");
 //   t.className="show"
 //}
+/*
+
 function ShowProcDatasetsText(){
   var t=document.getElementById("ShowAllProcDatasets");
   t.innerHTML='Show all <a href="javascript:ShowProcDatasets()">datasets</a>'
@@ -62,7 +64,7 @@ function ShowProcDatasets(){
   }
   t.innerHTML='<table><tr>'+content+'</tr></table>'
 }
-
+*/
 function ShowBlockInfo(tableId){
   var elem=document.getElementsByName("blockInfo");
   for(var i=0;i<elem.length;i++) {
@@ -167,12 +169,14 @@ function MakeSortable(tableId) {
   ts_makeSortable(tbl)
 }
 
+/*
 function ShowProcDatasets() {
   var t=document.getElementsByName("procDataset");
   for(var i=0;i<t.length;i++) {
       t[i].innerHTML=''
   }
 }
+*/
 
 function UnSelectAll(){
   var t=document.getElementById("SelectionHandler");
