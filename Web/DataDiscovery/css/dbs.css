@@ -335,10 +335,11 @@ table.sortable span.sortarrow {
 .show_inline_off {
   display: inline;
   text-indent: 2cm;
+  margin-left: 2cm;
   font-family: helvetica, arial, verdana, sans-serif;
   font-size: 11px;
-  font-weight: bold;
-  font-style: normal;
+/*  font-weight: bold;*/
+/*  font-style: normal;*/
 }
 .show_block {
   display: block;

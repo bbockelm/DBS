@@ -803,7 +803,8 @@ function registerAjaxProvenanceCalls() {
 if(!globalAjaxProvenance){
 ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');\n"""
         for dataset in dList:
-            page+="ajaxEngine.registerAjaxElement('%s');\n"%dataset
+            idPath=string.replace(dataset,"/","___")
+            page+="ajaxEngine.registerAjaxElement('%s');\n"%idPath
         page+="""
 globalAjaxProvenance=1;
 }
@@ -820,12 +821,13 @@ globalAjaxProvenance=1;
             # new stuff which do not show repeating datasets
             p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles:
+               idPath=string.replace(oldDataset,"/","___")
                page+="""
-<div id="procDataset" name="procDataset" class="off">
-<a href="javascript:registerAjaxProvenanceCalls();getProvenance('%s')">%s</a></div>
-<div id="%s" class="hide">
+<div class="off">
+<a href="javascript:registerAjaxProvenanceCalls();getProvenance('%s','%s')">%s</a></div>
+<div id="%s" class="hide"></div>
 </div>
-                     """%(oldDataset,oldDataset,oldDataset)
+                     """%(idPath,oldDataset,oldDataset,idPath)
             else:
                page+=prevPage
             oldTotEvt=totEvt

@@ -56,12 +56,13 @@ templatePrintList="""
 """
 
 templateProvenance="""
+#set idPath=$dataset.replace("/","___")
 <ajax-response>
- <response type="element" id="$dataset">
+ <response type="element" id="$idPath">
     <p>
     <table border="0" cellspacing="0" cellpadding="0" class="off">
     <tr>
-    <th align="left">Parent list (<a href="javascript:HideParents('$dataset');">hide</a>):</th>
+    <th align="left">Parent list (<a href="javascript:HideParents('$idPath');">hide</a>):</th>
     </tr>
     #if not len($parentList)
     <tr>
@@ -236,11 +237,11 @@ templateFileBlocksFromSite="""
 #set bName=$name.replace('#','%23')
 <tr>
     <td>
-    <a href="$host/getLFNlist?dbsInst=$dbsInst&blockName=$bName">$name</a>
+    <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName">$name</a>
     </td>
     <td align="center">
-    <a href="$host/getLFN_cfg?dbsInst=$dbsInst&blockName=$bName" alt="cff format">cff</a>, &nbsp;
-    <a href="$host/getLFN_txt?dbsInst=$dbsInst&blockName=$bName" alt="file list format">plain</a>
+    <a href="$host/getLFN_cfg?dbsInst=$dbsInst&amp;lockName=$bName" alt="cff format">cff</a>, &nbsp;
+    <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName" alt="file list format">plain</a>
     </td>
 </tr>
 #end for
@@ -572,7 +573,7 @@ all columns are sortable, move your mouse over the column name and click on it.
 templateProcDatasets="""
 <p>
 Processed datasets (plain 
-<a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&site=$site&app=$app&primD=$primD&tier=$tier')">
+<a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier')">
 view</a>):
 </p>
 """
@@ -580,13 +581,17 @@ view</a>):
 templateLFB = """
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #set tot=len($blockDict.keys())
-<div id="procDataset" name="procDataset" class="off">
-<a href="javascript:registerAjaxProvenanceCalls();getProvenance('$path')">$path</a>
+#set idPath=$path.replace("/","___")
+<div class="off">
+<a href="javascript:registerAjaxProvenanceCalls();getProvenance('$idPath','$path')" onclick="genTmpParents('$idPath')">$path</a>
 <br />
-<div id="$path" class="hide"></div>
+<div id="tmp$idPath" class="hide"></div>
+<div id="$idPath" class="hide"></div>
 </div>
-<p></p>
+
+<p>
 contains $nEvents events, $totFiles files, $totSize. 
+</p>
 #set tableId="table_"+str($tid)
 <table>
 <tr>
@@ -611,7 +616,7 @@ Both
 </tr>
 </table>
 <!-- Main table -->
-<table id="$tableId" name="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
   <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
      <th>row</th>
      <th>Location</th>
@@ -662,7 +667,7 @@ Both
      </td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&site=$site',1000)">All</a>
+     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site',1000)">All</a>
      </td>
      <td align="center" name="blockInfo" id="blockInfo" class="hide">
      <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">All</a>
@@ -702,13 +707,13 @@ Both
      #end if
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&blockName=$bName&dataset=$path',1000)" alt="cff format">cff</a>, &nbsp;
-     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&blockName=$bName&dataset=$path',900)" alt="file list format">plain</a>
+     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)" alt="cff format">cff</a>, &nbsp;
+     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)" alt="file list format">plain</a>
      </div>
      </td>
      <td align="left">
      <div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&blockName=$bName&dataset=$path',1000)">$name</a>
+     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">$name</a>
      </div>
      </td>
   </tr>
@@ -1096,10 +1101,10 @@ templateDivEntries="""
 """
 
 templateHiddenPanel="""
-<span id="HiddenPanel"></span>
-<span id="GlobalPanel">
+<div id="HiddenPanel"></div>
+<div id="GlobalPanel">
 $panel
-</span>
+</div>
 <script type="text/javascript">HidePanel('$host')</script>
 <script type="text/javascript">
 #if $view
@@ -1109,10 +1114,10 @@ showMenu('$view')
 """
 
 templateVisiblePanel="""
-<span id="HiddenPanel"></span>
-<span id="GlobalPanel">
+<div id="HiddenPanel"></div>
+<div id="GlobalPanel">
 $panel
-</td></tr></table>
+</div>
 <script type="text/javascript">ShowPanel('$host')</script>
 <script type="text/javascript">
 #if $view
