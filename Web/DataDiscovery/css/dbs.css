@@ -344,8 +344,8 @@ table.sortable span.sortarrow {
 .show_red_bold {
   color: red;
   background-color: white;
-  text-indent: 1.4cm;
-  margin-left: 1.4cm;
+/*  text-indent: 1.4cm;*/
+/*  margin-left: 1.4cm;*/
   font-family: helvetica, arial, verdana, sans-serif;
   font-size: 14px;
   font-weight: bold;
