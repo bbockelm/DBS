@@ -13,6 +13,15 @@ public class DBSSql {
 		return "select 1 from dual";
 	}
 
+
+        public static String insertPrimaryDS(String primaryDSName) {
+                String sql = "INSERT INTO PrimaryDataset(Annotation, Name, Description, Type)" +
+                             " VALUES ('Another PrimaryDS in new era', '"+primaryDSName+"'," +
+                                        " 1, 1)";
+                System.out.println("\n\n" + sql + "\n\n");
+                return sql;
+        }
+
 	public static String getPrimaryDS(String pattern) {
 		String sql = "select pd.ID as id, \n" +
 			"pd.Annotation as annotation, \n" +
