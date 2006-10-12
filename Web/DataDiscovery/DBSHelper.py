@@ -856,6 +856,9 @@ class DBSHelper(DBSLogger):
       """
 #      blockInfoDict = self.getBlockInfo(dataset)
       blockInfoDict = self.api.listBlocks(dataset,"yes")
+      for key in blockInfoDict.keys():
+          if not blockInfoDict[key][0]:
+             raise "The '%s' dataset contains no information in DBS '%s'"%(dataset,self.dbsInstance)
       locDict  = {}
       nEvts    = 0
       totFiles = 0
@@ -1062,6 +1065,7 @@ if __name__ == "__main__":
         if  not opts.showProcD:
             for bName in blockDict.keys():
                 count=0
+                print "blockDict",bName,blockDict[bName]
                 evt,bStatus,nFiles,bSize,site = blockDict[bName]
                 if not count:
                    print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
