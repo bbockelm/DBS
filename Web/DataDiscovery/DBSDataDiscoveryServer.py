@@ -1103,7 +1103,8 @@ globalAjaxProvenance=1;
             page+=self.getDatasetsForDbsInst(dbs)
             page+="</response>\n"
         page+="</ajax-response>"
-        print page
+        if self.verbose:
+           print page
         return page
     getAllPrimaryDatasets.exposed=True
 
@@ -1159,7 +1160,8 @@ globalAjaxProvenance=1;
                   }
         t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
         page = str(t)
-#        print page
+        if self.verbose:
+           print page
         return page
     getDatasetProvenance.exposed=True
     
