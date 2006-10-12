@@ -27,4 +27,9 @@ public class DBManagement{
 		return conn.createStatement().executeQuery(query);
 	}
 
+        /** Executes insert queries */
+        public static boolean execute(Connection conn, String query) throws Exception{
+                return conn.createStatement().execute(query);
+        }
+
 }
