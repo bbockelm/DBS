@@ -7,6 +7,11 @@ package dbs;
 import java.sql.Connection;
 import java.io.Writer;
 import db.DBManagement;
+import java.util.Vector;
+import dbsxml.DBSXMLParser;
+import dbsxml.Element;
+import java.util.Hashtable;
+
 public class DBSApi {
 	/**
 	 * 
