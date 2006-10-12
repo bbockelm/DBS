@@ -29,9 +29,9 @@ public class DBSApiLogic {
 		//System.out.println("Constructor DBSApiLogic");
 	}
 
-        public void insertPrimaryDatasets(Connection conn, String primaryDatasetName) throws Exception {
+        public void createPrimaryDataset(Connection conn, String primaryDatasetName) throws Exception {
                 checkName(primaryDatasetName);
-                boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDS(primaryDatasetName));
+                boolean rs =  DBManagement.execute(conn, DBSSql.createPrimaryDataset(primaryDatasetName));
         }
 
 	

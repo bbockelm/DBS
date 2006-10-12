@@ -30,7 +30,7 @@ public class DBSTest {
                                             "<primary-dataset id='1' annotation='First Primary in new era' primary_name='PrimaryDS_ANZAR_01' trigger_path_description='null' mc_channel_description='null' mc_production='null' mc_decay_chain='null' other_description='null' start_date='2006-10-05' end_date='2007-10-05' file_type='null' created_by='null' creation_date='null' last_modification_by='null' last_modified_by='null'/>"+
                                             "</dbs>";
 
-                                            api.insertPrimaryDatasets(xml_string);
+                                            api.createPrimaryDataset(xml_string);
 */
 
 			//while(true) {

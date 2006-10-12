@@ -28,7 +28,7 @@ public class DBSApi {
 		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);
 	}
 	
-        public void insertPrimaryDatasets(String inputXml ) throws Exception {
+        public void createPrimaryDataset(String inputXml ) throws Exception {
                 Connection conn = null;
                 try {
                         //get the primay dataset from the xml
@@ -49,7 +49,7 @@ public class DBSApi {
                         }
 
                         conn = getConnection();
-                        api.insertPrimaryDatasets(conn, primaryDatasetName);
+                        api.createPrimaryDataset(conn, primaryDatasetName);
                 } finally {
                         if(conn != null) conn.close();
                 }

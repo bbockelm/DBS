@@ -75,6 +75,10 @@ public class DBSServlet extends HttpServlet{
 			else if (apiParam.equals("getDatasetFiles")) {
 				api.getDatasetFiles(out, request.getParameter("path"));
 			}
+                        else if (apiParam.equals("createPrimaryDatase")) {
+                                api.createPrimaryDataset(request.getParameter("xmlinput"));
+                        }
+
 			else {
 				setHeader(response, "Invalid API requested", "200", "Api requested is not implemented");
 				return;

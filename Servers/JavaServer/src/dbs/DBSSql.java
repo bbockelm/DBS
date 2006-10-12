@@ -13,8 +13,7 @@ public class DBSSql {
 		return "select 1 from dual";
 	}
 
-
-        public static String insertPrimaryDS(String primaryDSName) {
+        public static String createPrimaryDataset(String primaryDSName) {
                 String sql = "INSERT INTO PrimaryDataset(Annotation, Name, Description, Type)" +
                              " VALUES ('Another PrimaryDS in new era', '"+primaryDSName+"'," +
                                         " 1, 1)";
