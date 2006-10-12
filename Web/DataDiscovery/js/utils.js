@@ -3,7 +3,7 @@ function HideParents(id) {
    t.className="hide";
 }
 function ShowPanel(link) {
-   var url='Home page: <a href="'+link+'">users</a>, <a href="'+link+'/expert">experts</a>';
+   var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
    var t=document.getElementById("HiddenPanel");
    msg='<table width="100%"><tr><td><span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
    t.innerHTML=msg;
@@ -11,7 +11,7 @@ function ShowPanel(link) {
    p.className="show";
 }
 function HidePanel(link) {
-   var url='Home page: <a href="'+link+'">users</a>, <a href="'+link+'/expert">experts</a>';
+   var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
    var t=document.getElementById("HiddenPanel");
    msg='<table width="100%"><tr><td><span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
    t.innerHTML=msg;
