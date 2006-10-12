@@ -23,6 +23,32 @@ public class DBSApi {
 		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);
 	}
 	
+        public void insertPrimaryDatasets(String inputXml ) throws Exception {
+                Connection conn = null;
+                try {
+                        //get the primay dataset from the xml
+                        String primaryDatasetName="";
+
+                        DBSXMLParser dbsParser = new DBSXMLParser();
+                        dbsParser.parseString(inputXml);
+                        Vector allElement = dbsParser.getElements();
+                        for (int i=0; i<allElement.size(); ++i) {
+                            Element e = (Element)allElement.elementAt(i);
+                            String name = e.name;
+                            if (name == "primary-dataset" ) {
+                               System.out.println("Found a primary dataset: "+name);
+                               Hashtable atribs = e.attributes;
+                               primaryDatasetName = (String)atribs.get("primary_name");
+                               System.out.println("Name of primarydataset: "+primaryDatasetName);
+                            }
+                        }
+
+                        conn = getConnection();
+                        api.insertPrimaryDatasets(conn, primaryDatasetName);
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
 	
 	public void getDatasetInfo(Writer out, String dsPath) throws Exception {
 		Connection conn = getConnection();

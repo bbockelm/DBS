@@ -28,6 +28,12 @@ public class DBSApiLogic {
 	public DBSApiLogic() {
 		//System.out.println("Constructor DBSApiLogic");
 	}
+
+        public void insertPrimaryDatasets(Connection conn, String primaryDatasetName) throws Exception {
+                checkName(primaryDatasetName);
+                boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDS(primaryDatasetName));
+        }
+
 	
 	public void getDatasetInfo(Connection conn, Writer out, String dsPath) throws Exception {
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getPrimaryDS(""));
