@@ -1094,13 +1094,16 @@ globalAjaxProvenance=1;
         self.setContentType('xml')
         page="<ajax-response>"
         for dbs in self.dbsList:
-            name = "datasets%s"%string.split(dbs,"/")[0]
+            if string.find(dbs,"fanfani")!=-1:
+               name = "datasetsDev_fanfani"
+            else:
+               name = "datasets%s"%string.split(dbs,"/")[0]
             page+="""<response type="element" id="%s">"""%name
             self.helperInit(dbs)
             page+=self.getDatasetsForDbsInst(dbs)
             page+="</response>\n"
         page+="</ajax-response>"
-#        print page
+        print page
         return page
     getAllPrimaryDatasets.exposed=True
 
