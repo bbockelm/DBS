@@ -30,7 +30,7 @@ class DBSHelper(DBSLogger):
   """
       DBSHelper class
   """
-  def __init__(self,dbsInst=DBSGLOBAL,verbose=0):
+  def __init__(self,dbsInst=DBSGLOBAL,verbose=0,html=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -45,6 +45,7 @@ class DBSHelper(DBSLogger):
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
       self.verbose     = verbose
+      self.html        = html
       self.datasetPath = "*"# default path to entire content of DBS
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
@@ -328,10 +329,13 @@ class DBSHelper(DBSLogger):
       oList = []
       dList = self.api.listPrimaryDatasets(datasetPath)
       for entry in dList:
-          oList.append(entry.get('datasetName'))
+          name = entry.get('datasetName')
+          if self.html:
+             name = """<a href="javascript:showWaitingMessage();registerAjaxGetDetailsForPrimDatasetCalls();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+          oList.append(name)
       return oList
       
-  def getProcessedDatasets(self,datasetPath="*"):
+  def getProcessedDatasets(self,datasetPath="*",app=1):
       """
          DBS data discovery wrapper around dbsCgiApi.listDatasetFromApp/listProcessedDatsets
          First try listDatasetsFromApp, if fail try listProcessedDatasets
@@ -341,13 +345,15 @@ class DBSHelper(DBSLogger):
          @return: a list of processed datasets in the following form, [datasetName]
       """
       oList = []
-      try:
+      if app:
          dList = self.api.listDatasetsFromApp(datasetPath)
-      except:
+      else:
          dList = self.api.listProcessedDatasets(datasetPath)
-         pass
       for entry in dList:
-          oList.append(entry.get('datasetName'))
+          name = entry.get('datasetPathName')
+          if self.html:
+             name="""<a href="">%s</a>"""%name
+          oList.append(name)
       return oList
   
   def getDatasetProvenance(self,dataset):

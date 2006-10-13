@@ -47,6 +47,9 @@ templatePrintList="""
     <tr>
     <td>$d</td>
     </tr>
+    ##<tr>
+    ##<td><span id="primDatasetDetails" class="hide"></span></td>
+    ##</tr>
     #end for
     </table>
 </td>
@@ -58,11 +61,11 @@ templatePrintList="""
 templateProvenance="""
 #set idPath=$dataset.replace("/","___")
 <ajax-response>
- <response type="element" id="$idPath">
+ <response type="element" id="parentGraph">
     <p>
-    <table border="0" cellspacing="0" cellpadding="0" class="off">
+    <table border="0" cellspacing="0" cellpadding="0">
     <tr>
-    <th align="left">Parent list (<a href="javascript:HideParents('$idPath');">hide</a>):</th>
+    <th align="left">Parent list (<a href="javascript:HideParents('parentGraph');">hide</a>):</th>
     </tr>
     #if not len($parentList)
     <tr>
@@ -123,6 +126,10 @@ function registerAjaxPrimDatasetsCalls() {
 #for name in $dbsNames
     ajaxEngine.registerAjaxElement('datasets'+'$name');
 #end for
+}
+function registerAjaxProvenanceCalls() {
+    ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
+    ajaxEngine.registerAjaxElement('parentGraph');
 }
 </script>
 """
@@ -413,7 +420,10 @@ $msg
 
 <td valign="top">
 
+<!-- 
 <form action="getData" method="get">
+-->
+<form action="javascript:registerAjaxGetDataCalls();ajaxGetData();" method="get">
 <!-- menu table -->
 #if $userMode ##---- User menu
 <div>
@@ -485,7 +495,7 @@ $msg
   updateLayer0(dbs)
 #end if
 </script>
-<input type="submit" value="Find" />
+<input type="submit" value="Find" onclick="javascript:showWaitingMessage();" />
 <!--
 <input type="submit" value="Find" onsubmit="registerAjaxGetDataCalls(); ajaxGetData()"/>
 -->
@@ -593,17 +603,19 @@ templateLFB = """
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #set tot=len($blockDict.keys())
 #set idPath=$path.replace("/","___")
-<div class="off">
-<a href="javascript:registerAjaxProvenanceCalls();getProvenance('$idPath','$path')" onclick="genTmpParents('$idPath')">$path</a>
-<br />
-<div id="tmp$idPath" class="hide"></div>
-<div id="$idPath" class="hide"></div>
+<div>
+<a href="javascript:showLoadingMessage('parentGraph');registerAjaxProvenanceCalls();getProvenance('$idPath')">$path</a>
 </div>
+<div id="$idPath"></div>
 
 <p>
 contains $nEvents events, $totFiles files, $totSize. 
 </p>
+<p>
+<span id="parentGraph"></span>
+</p>
 #set tableId="table_"+str($tid)
+<div id="$tableId">
 <table>
 <tr>
 <td>Show:</td>
@@ -718,7 +730,7 @@ Both
      #end if
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)" alt="cff format">cff</a>, &nbsp;
+     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)" alt="cff format">cff</a>, 
      <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)" alt="file list format">plain</a>
      </div>
      </td>
@@ -732,15 +744,13 @@ Both
 #end for
 </table>
 <!-- End of Main table -->
-<!--
-<script type="text/javascript">
-ShowBlockInfo("$tableId");HideSumInfo("$tableId");</script>
--->
-<p></p>
+</div>
 """
 
 templateBottom="""
 <hr class="dbs" />
+<span id="results" class="hide"></span>
+<hr id="results_hr" class="hide" />
 <table>
 <tr align="left">
 <td>
@@ -765,18 +775,20 @@ This page was generated at: $localtime
 
 templateFrontPage="""
 #if $frontPage
+<!--
 <table width="100%">
 <tr>
 <td>
 <div class="sectionhead_tight">WELCOME TO DBS DATA DISCOVERY PAGE</div>
 </td>
 <td align="right">
-Home page: <a href="$host">users</a>
+Home page: <a href="$host/">users</a>
 <a href="$host/expert">experts</a>
 </td>
 </tr>
 </table>
 <hr class="dbs" />
+-->
 #end if
 <table width="100%">
 <tr valign="top">
@@ -910,7 +922,10 @@ $dbsContent
        </span>
       </div>
       <div id="summaryContent1">
+      <!--
       <div id="summary">Please wait while we retrieve this information</div>
+      -->
+      <div id="summary"><script type="text/javascript">showLoadingMessage("summary");</script></div>
       </div>
    </div>
 </div>
@@ -1174,7 +1189,10 @@ templateDbsCont="""
      </div>
      <div id="datasets${name}Content">
       <p>
+      <!--
       <span id="datasets${name}">Please wait while we retrieve this information</span>
+      -->
+      <span id="datasets${name}"><script type="text/javascript">showLoadingMessage("datasets${name}");</script></span>
       </p>
      </div>
    </div>
