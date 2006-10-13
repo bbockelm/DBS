@@ -1,24 +1,79 @@
+function showLoadingMessage(idTag,iMsg) {
+  var tag, msg;
+  if(idTag) {
+    tag=idTag;
+  } else {
+    tag="results";
+  }
+  if(iMsg) {
+    msg=iMsg;
+  } else {
+    msg="Please wait, while we retrieve your data"
+  }
+  var res=document.getElementById(tag);
+  if(res) {
+     res.className="show_table";
+     res.innerHTML='<table><tr><td><img src="images/loading.gif" /></td><td>'+msg+'</td></tr></table>';
+  }
+}
+function showWaitingMessage() {
+  showLoadingMessage("results");
+  var hr=document.getElementById("results_hr");
+  if(hr) {
+     hr.className="dbs";
+  }
+}
+function hideWaitingMessage() {
+  var res=document.getElementById("results");
+  if(res) {
+     res.className="hide";
+  }
+  var hr=document.getElementById("results_hr");
+  if(hr) {
+     hr.className="hide";
+  }
+}
 function HideParents(id) {
-   var t=document.getElementById(id);
-   t.className="hide";
+//   var t=document.getElementById(id);
+   var t=document.getElementById('parentGraph');
+   if(t) {
+      t.className="hide";
+   }
 }
 function ShowPanel(link) {
    var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
-   var t=document.getElementById("HiddenPanel");
    msg='<table width="100%"><tr><td><span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
-   t.innerHTML=msg;
+   var t=document.getElementById("HiddenPanel");
+   if(t) {
+      t.innerHTML=msg;
+   } else {
+      alert("Fail to find HiddenPanel");
+   }
    var p=document.getElementById("GlobalPanel");
-   p.className="show";
+   if(p) {
+      p.className="show";
+   } else {
+      alert("Fail to find GlobalPanel");
+   }
 }
 function HidePanel(link) {
    var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
-   var t=document.getElementById("HiddenPanel");
    msg='<table width="100%"><tr><td><span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
-   t.innerHTML=msg;
+   var t=document.getElementById("HiddenPanel");
+   if(t) {
+      t.innerHTML=msg;
+   } else {
+      alert("Fail to find HiddenPanel");
+   }
    var p=document.getElementById("GlobalPanel");
-   p.className="hide";
+   if(p) {
+      p.className="hide";
+   } else {
+      alert("Fail to find GlobalPanel");
+   }
 }
 function showMenu(menu) {
+   hideWaitingMessage();
    var menuArr = new Array();
    menuArr[0]='Navigator';
    menuArr[1]='Search';
@@ -45,26 +100,6 @@ function showMenu(menu) {
        t.className="td_blue_box"
    }
 }
-//function showIntro() {
-//   var t=document.getElementById("Introduction");
-//   t.className="show"
-//}
-/*
-
-function ShowProcDatasetsText(){
-  var t=document.getElementById("ShowAllProcDatasets");
-  t.innerHTML='Show all <a href="javascript:ShowProcDatasets()">datasets</a>'
-}
-function ShowProcDatasets(){
-  var t=document.getElementById("ShowAllProcDatasets");
-  var content="";
-  var p=document.getElementsByName("procDataset");
-  for(var i=0;i<t.length;i++) {
-      content=content+'<td>'+p.innerHTML+'</td>'
-  }
-  t.innerHTML='<table><tr>'+content+'</tr></table>'
-}
-*/
 function ShowBlockInfo(tableId){
   var elem=document.getElementsByName("blockInfo");
   for(var i=0;i<elem.length;i++) {
@@ -97,57 +132,6 @@ function HideSumInfo(tableId) {
       elem[i].className="hide";
   }
 }
-/*
-function ShowBlockInfo(tableId){
-  var t=document.getElementsByName("BlockInfoText");
-  for(var i=0;i<t.length;i++) {
-      t[i].innerHTML='<span class="box_gray">Show block <a href="javascript:HideBlockInfo(\''+tableId+'\')">info</a></span>';
-  }
-  var elem=document.getElementsByName("blockInfo");
-  for(var i=0;i<elem.length;i++) {
-      elem[i].className="hide";
-  }
-  var elem=document.getElementsByName("row_blockInfo");
-  for(var i=0;i<elem.length;i++) {
-      elem[i].className="hide";
-  }
-}
-function HideBlockInfo(tableId){
-  var t=document.getElementsByName("BlockInfoText");
-  for(var i=0;i<t.length;i++) {
-      t[i].innerHTML='<span class="box_gray">Hide block <a href="javascript:ShowBlockInfo(\''+tableId+'\')">info</a></span>';
-  }
-  var elem=document.getElementsByName("row_blockInfo");
-  for(var i=0;i<elem.length;i++) {
-      elem[i].className="show_row";
-  }
-  var elem=document.getElementsByName("blockInfo");
-  for(var i=0;i<elem.length;i++) {
-      elem[i].className="show_cell";
-  }
-}
-function ShowSumInfo(tableId) {
-  var t=document.getElementsByName("SumInfoText");
-  for(var i=0;i<t.length;i++) {
-      t[i].innerHTML='<span class="box_light">Show summary <a href="javascript:HideSumInfo(\''+tableId+'\')">info</a></span>';
-  }
-  var elem=document.getElementsByName("row_sumInfo");
-  for(var i=0;i<elem.length;i++) {
-      elem[i].className="hide";
-  }
-}
-function HideSumInfo(tableId) {
-  var t=document.getElementsByName("SumInfoText");
-  for(var i=0;i<t.length;i++) {
-      t[i].innerHTML='<span class="box_light">Hide summary <a href="javascript:ShowSumInfo(\''+tableId+'\')">info</a></span>';
-  }
-  var elem=document.getElementsByName("row_sumInfo");
-  for(var i=0;i<elem.length;i++) {
-      elem[i].className="show_row";
-  }
-}
-*/
-
 function MakeUnSortable(tableId) {
   var t=document.getElementsByName("MakeSortableText");
   for(var i=0;i<t.length;i++) {
@@ -168,16 +152,6 @@ function MakeSortable(tableId) {
   tbl_tr.className="sortable_gray"
   ts_makeSortable(tbl)
 }
-
-/*
-function ShowProcDatasets() {
-  var t=document.getElementsByName("procDataset");
-  for(var i=0;i<t.length;i++) {
-      t[i].innerHTML=''
-  }
-}
-*/
-
 function UnSelectAll(){
   var t=document.getElementById("SelectionHandler");
   t.innerHTML='Select <a href="javascript:SelectAll()">all</a>'
