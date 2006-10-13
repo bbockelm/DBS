@@ -20,6 +20,7 @@ public class DBSServlet extends HttpServlet{
 	 * 
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		System.out.println("DN of the user is " + request.getAttribute("org.globus.gsi.authorized.user.dn"));
 		response.setContentType("text/xml");
 		PrintWriter out = response.getWriter();
 		if(! isIn("api", request.getParameterNames())) {
@@ -89,7 +90,10 @@ public class DBSServlet extends HttpServlet{
 			setHeader(response, "Connection Refused", "402", sqlEx.getMessage());
 		} catch (Exception ex) {
 			setHeader(response, "Execution error", "401", ex.getMessage());
-		} 
+		} /*catch(org.xml.sax.SAXException saxEx) {
+			setHeader(response, "Bad Data", "300", saxEx.getMessage());
+		}*/
+
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

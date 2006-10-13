@@ -1,4 +1,4 @@
-package dbsxml;
+package xml;
 
 import java.util.Hashtable;
 

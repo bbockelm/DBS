@@ -16,7 +16,7 @@ public class DBSApiLogic {
 						"Dbs-status-code: 100\n" +
 						"Content-Type: text/plain; charset=ISO-8859-1\n\n" +
 						"<?xml version='1.0' standalone='yes'?><dbs>";
-	private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<dbs>\n";
+	private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
 	private static String XML_FOOTER = "</dbs>\n";
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
 	//private static String SAFE_PATH = "[-A-Za-z0-9_./\\p{%}]";

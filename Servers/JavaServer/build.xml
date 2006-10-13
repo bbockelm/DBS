@@ -5,11 +5,15 @@
     <property name="targetlibdir" value="${basedir}/bin/WEB-INF/lib"/>
     <property name="librarydir" value="${basedir}/lib"/>
     <property name="app.name" value="DBS"/>
-
+    <property environment="env"/>
+    <property name="jredir" value="${env.JAVA_HOME}/jre/lib"/>
     <path id="libraries">
         <fileset dir="${librarydir}">
             <include name="*.jar"/>
-        </fileset>
+    	</fileset>
+	<fileset dir="${jredir}">
+	    <include name="rt.jar"/>
+    	</fileset>
     </path>
 
     <target name="clean">
