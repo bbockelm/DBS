@@ -207,7 +207,7 @@ def constructExpression(s,listName):
        listName.count(word1) or (listName.count(word2) and listName.count(word3))
        Such expression statement is further used by eval in search method of DBSHelper. 
     """
-    specialSymbols=["(",")","and","or"]
+    specialSymbols=["(",")","and","or","not"]
     oList = []
     ss = string.lower(s)
     for elem in specialSymbols:
