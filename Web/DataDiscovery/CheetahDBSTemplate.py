@@ -151,11 +151,11 @@ templateSearchTable="""
 <form action="search" method="get">
 <p>
 The search is case insensitive and the following special symbols are supported:
-<span class="box">'(', ')', 'or', 'and'</span>.
+<span class="box">'(', ')', 'and', 'or' and 'not'</span>.
 </p>
 <p>
 You may use boolean expressions, e.g.,
-<span class="box">( word1 or (word3 and word4) )</span>
+<span class="box">( word1 or (word3 and word4) and not word2 )</span>
 </p>
 <p>
 Any keywords:
@@ -615,7 +615,6 @@ contains $nEvents events, $totFiles files, $totSize.
 <span id="parentGraph"></span>
 </p>
 #set tableId="table_"+str($tid)
-<div id="$tableId">
 <table>
 <tr>
 <td>Show:</td>
@@ -744,12 +743,11 @@ Both
 #end for
 </table>
 <!-- End of Main table -->
-</div>
 """
 
 templateBottom="""
 <hr class="dbs" />
-<span id="results" class="hide"></span>
+<span id="results" style="display:inline"></span>
 <hr id="results_hr" class="hide" />
 <table>
 <tr align="left">

@@ -787,7 +787,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         if string.lower(site)=="all": site="*"
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="results">"""
+#        page="""<ajax-response><response type="element" id="results">"""
+        page="""<ajax-response><response type="object" id="results">"""
 #        page=""
         
         self.helperInit(dbsInst)
@@ -812,20 +813,20 @@ class DBSDataDiscoveryServer(DBSLogger):
         dList = self.helper.getDatasetsFromApp(appPath)
         regList=[]
         # construct up-front AJAX registration
-        page+="""
-<script type="text/javascript">
-var globalAjaxProvenance=null;
-function registerAjaxProvenanceCalls_orig() {
-//if(!globalAjaxProvenance){
-ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');\n"""
-        for dataset in dList:
-            idPath=string.replace(dataset,"/","___")
-            page+="ajaxEngine.registerAjaxElement('%s');\n"%idPath
-        page+="""
-globalAjaxProvenance=1;
-//}
-}
-</script>"""
+#        page+="""
+#<script type="text/javascript">
+#var globalAjaxProvenance=null;
+#function registerAjaxProvenanceCalls_orig() {
+#//if(!globalAjaxProvenance){
+#ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');\n"""
+#        for dataset in dList:
+#            idPath=string.replace(dataset,"/","___")
+#            page+="ajaxEngine.registerAjaxElement('%s');\n"%idPath
+#        page+="""
+#globalAjaxProvenance=1;
+#//}
+#}
+#</script>"""
         page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
         # end of AJAX registration
         for dataset in dList:
