@@ -238,7 +238,6 @@ table.lfn  {
 }
 /* Sortable tables */
 table.sortable a.sortheader {
-  display: table;
   background-color:#eee;
   background:#eee;
   color: #005599;
@@ -261,7 +260,6 @@ table.sortable a.sortheader:hover { color: #996699; }
   border-color: #eee;
 }
 table.sortable span.sortarrow {
-  display: table;
   color: black;
   text-decoration: none;
 }
