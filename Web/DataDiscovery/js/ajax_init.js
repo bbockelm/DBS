@@ -8,8 +8,10 @@ function ajaxGetData() {
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
 }
 function registerAjaxGetDataCalls() {
+  getDataUpdater = new GetDataUpdater();
   ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
-  ajaxEngine.registerAjaxElement('results');
+//  ajaxEngine.registerAjaxElement('results');
+  ajaxEngine.registerAjaxObject('results',getDataUpdater);
 }
 
 function registerAjaxGetBlocksFromSiteCalls() {
@@ -47,5 +49,19 @@ function getProvenance(id) {
   // see http://www.i2d.com.au/members/~benmann/javascriptreplace.html
   dataset=id.replace(/___/g,"/");
   ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
+}
+
+// Class which capture ajax response and handle it. I want to add sorting capability
+// once response arrived. We put our reponse to "results" tag id found on internal HTML.
+var GetDataUpdater=Class.create();
+GetDataUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById("results");
+     t.innerHTML=responseHTML;
+     sortables_init();
+   }
 }
 
