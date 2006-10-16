@@ -1,3 +1,21 @@
+// Class which capture ajax response and handle it. I want to add sorting capability
+// once response arrived. We put our reponse to "results" tag id found on internal HTML.
+var GetDataUpdater=Class.create();
+GetDataUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById("results");
+     t.innerHTML=responseHTML;
+     sortables_init();
+     if(responseHTML.search("checkbox")) {
+        UnSelectAll();
+     }
+   }
+}
+
+// AJAX registration for getDataHelper
 function ajaxGetData() {
   var dbs=document.getElementById('dbsSelector').value;
   var site=document.getElementById('siteSelector').value;
@@ -7,13 +25,35 @@ function ajaxGetData() {
     
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
 }
+/*
 function registerAjaxGetDataCalls() {
   getDataUpdater = new GetDataUpdater();
   ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
 //  ajaxEngine.registerAjaxElement('results');
   ajaxEngine.registerAjaxObject('results',getDataUpdater);
 }
+*/
 
+// AJAX registration for search
+function ajaxSearch() {
+  var keywords=document.getElementById('keywordSelector').value;
+  ajaxEngine.sendRequest('ajaxSearch',"keywords="+keywords);
+}
+/*
+function registerAjaxSearchCalls() {
+  getDataUpdater = new GetDataUpdater();
+  ajaxEngine.registerRequest('ajaxSearch','search');
+//  ajaxEngine.registerAjaxElement('results');
+  ajaxEngine.registerAjaxObject('results',getDataUpdater);
+}
+*/
+
+// AJAX registration for site search
+function ajaxSiteSearch() {
+  var dbsInst=document.getElementById('form2_dbsSelector').value;
+  var site=document.getElementById('form2_siteSelector').value;
+  ajaxEngine.sendRequest('ajaxSiteSearch',"dbsInst="+dbsInst,"site="+site);
+}
 function registerAjaxGetBlocksFromSiteCalls() {
   ajaxEngine.registerRequest('ajaxGetBlocksFromSite','getBlocksFromSiteHelper');
   ajaxEngine.registerAjaxElement('siteBlocksHandler');
@@ -50,18 +90,3 @@ function getProvenance(id) {
   dataset=id.replace(/___/g,"/");
   ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
 }
-
-// Class which capture ajax response and handle it. I want to add sorting capability
-// once response arrived. We put our reponse to "results" tag id found on internal HTML.
-var GetDataUpdater=Class.create();
-GetDataUpdater.prototype = {
-   initialize: function() {
-   },
-   ajaxUpdate: function(ajaxResponse) {
-     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
-     var t=document.getElementById("results");
-     t.innerHTML=responseHTML;
-     sortables_init();
-   }
-}
-
