@@ -131,6 +131,14 @@ function registerAjaxProvenanceCalls() {
     ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
     ajaxEngine.registerAjaxElement('parentGraph');
 }
+function registerAjaxObjectCalls() {
+    getDataUpdater = new GetDataUpdater();
+    ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
+    ajaxEngine.registerRequest('ajaxSearch','search');
+    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
+    ajaxEngine.registerAjaxObject('results',getDataUpdater);
+}
+registerAjaxObjectCalls();
 </script>
 """
 
@@ -148,7 +156,11 @@ move your mouse over the column name and click on it to sort entries.
 """
 
 templateSearchTable="""
+<!--
 <form action="search" method="get">
+<form action="javascript:registerAjaxSearchCalls();ajaxSearch();" method="get">
+-->
+<form action="javascript:ajaxSearch();" method="get">
 <p>
 The search is case insensitive and the following special symbols are supported:
 <span class="box">'(', ')', 'and', 'or' and 'not'</span>.
@@ -159,8 +171,8 @@ You may use boolean expressions, e.g.,
 </p>
 <p>
 Any keywords:
-<input type="text" name="keywords" size="100"/>
-<input type="submit" value="Search" id="submit-button"/>
+<input type="text" name="keywords" size="80" id="keywordSelector" />
+<input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
 </p>
 </form>
 """
@@ -199,7 +211,10 @@ Use this form to show detailed information about particular site.
 NOTE: the DLS queries may take a lot of time, since they go through LFC.
 </span>
 
+<!--
 <form action="getBlocksFromSite" method="get">
+-->
+<form action="javascript:ajaxSiteSearch()" method="get">
 <table>
 <tr>
 <td>Choose DBS instance</td>
@@ -224,7 +239,7 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <div id="form2_siteHolder"></div>
 </td>
 <td>
-<input type="submit" value="Search" id="form2_submit-button"/>
+<input type="submit" value="Search" id="form2_submit-button" onclick="javascript:showWaitingMessage()"/>
 </td>
 </tr>
 </table>
@@ -247,11 +262,11 @@ templateFileBlocksFromSite="""
 #set bName=$name.replace('#','%23')
 <tr>
     <td>
-    <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName">$name</a>
+    <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">$name</a>
     </td>
     <td align="center">
-    <a href="$host/getLFN_cfg?dbsInst=$dbsInst&amp;lockName=$bName" alt="cff format">cff</a>, &nbsp;
-    <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName" alt="file list format">plain</a>
+    <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)">cff</a>,
+    <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',1000)">plain</a>
     </td>
 </tr>
 #end for
@@ -267,13 +282,6 @@ Upon your search:
 
 #if len($oList)
 <form action="getDataFromSelection" method="get">
-<!--
-<span class="box">
-NOTE:
-all columns are sortable, move your mouse over the column name and click on it.
-</span>
--->
-<p>
 #if len($oList)>15
 <b>
 Please make your selection and submit for further processing:
@@ -296,13 +304,14 @@ Please make your selection and submit for further processing:
 </tr>
 #for item in $oList
 #set dbsInst=$item[0]
+#set dbsId=$dbsInst.replace('/','_')
 #set prim=$item[1]
 #set tier=$item[2]
 #set ver =$item[3]
 #set fam =$item[4]
 #set exe =$item[5]
 <tr>
-<td><input type="checkbox" value=${dbsInst}___${prim}___${tier}___${ver}___${fam}___${exe} name="userSelection"></td>
+<td><input type="checkbox" value="${dbsInst}___${prim}___${tier}___${ver}___${fam}___${exe}" name="userSelection" /></td>
 #if not $userMode:
 <td>$dbsInst</td>
 #end if
@@ -322,8 +331,9 @@ Please make your selection and submit for further processing:
 #if not $firstSearch
 No match found for your request, please refine your search.
 #end if
-</form>
+##
 #end if
+</form>
 """
 
 templateUserHelp="""
@@ -422,8 +432,9 @@ $msg
 
 <!-- 
 <form action="getData" method="get">
--->
 <form action="javascript:registerAjaxGetDataCalls();ajaxGetData();" method="get">
+-->
+<form action="javascript:ajaxGetData();" method="get">
 <!-- menu table -->
 #if $userMode ##---- User menu
 <div>
@@ -496,9 +507,6 @@ $msg
 #end if
 </script>
 <input type="submit" value="Find" onclick="javascript:showWaitingMessage();" />
-<!--
-<input type="submit" value="Find" onsubmit="registerAjaxGetDataCalls(); ajaxGetData()"/>
--->
 </td></tr>
 </table>
 <!-- end of menu table -->
