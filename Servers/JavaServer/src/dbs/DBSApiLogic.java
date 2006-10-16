@@ -23,6 +23,7 @@ public class DBSApiLogic {
 	//private static String SAFE_NAME = "[-A-Za-z0-9_.]";
 	private static String SAFE_NAME = "[-\\w_\\.%]+";
 	private static String VALID_PATH = "^/([^/]+)/([^/]+)/([^/]+)";
+	private static String VALID_PATTERN = "^/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)";
 	//private static String SUCCESS_HEADER = "Dbs-status-message: Success\nDbs-status-code: 100\nContent-Type: text/plain; charset=ISO-8859-1\n\n";
 
 	public DBSApiLogic() {
@@ -36,7 +37,7 @@ public class DBSApiLogic {
 
 	
 	public void getDatasetInfo(Connection conn, Writer out, String dsPath) throws Exception {
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getPrimaryDS(""));
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listPrimaryDatasets(""));
 		int col = 2;
 		while(rs.next()) {
 			System.out.println(rs.getString(col));
@@ -46,24 +47,24 @@ public class DBSApiLogic {
 	public void listPrimaryDatasets(Connection conn, Writer out, String pattern) throws Exception {
 		pattern = pattern.replace('*','%');
 		checkName(pattern);
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getPrimaryDS(pattern));
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listPrimaryDatasets(pattern));
 		out.write(XML_HEADER); 
 		while(rs.next()) {
 			//for(int i = 0 ; i!= 2; ++i)
 			out.write(((String) "<primary-dataset id='" + rs.getString("id") + 
 						"' annotation='" + rs.getString("annotation") +
 						"' primary_name='" + rs.getString("primary_name") +
+						"' start_date='" + rs.getString("start_date") +
+						"' end_date='" + rs.getString("end_date") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_date='" + rs.getString("last_modification_date") +
 						"' trigger_path_description='" + rs.getString("trigger_path_description") +
 						"' mc_channel_description='" + rs.getString("mc_channel_description") +
 						"' mc_production='" + rs.getString("mc_production") +
 						"' mc_decay_chain='" + rs.getString("mc_decay_chain") +
 						"' other_description='" + rs.getString("other_description") +
-						"' start_date='" + rs.getString("start_date") +
-						"' end_date='" + rs.getString("end_date") +
-						"' file_type='" + rs.getString("file_type") +
+						"' type='" + rs.getString("type") +
 						"' created_by='" + rs.getString("created_by") +
-						"' creation_date='" + rs.getString("creation_date") +
-						"' last_modification_by='" + rs.getString("last_modification_by") +
 						"' last_modified_by='" + rs.getString("last_modified_by") +
 						"'/>\n"));
 			//out.flush();
@@ -71,16 +72,13 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void listProcessedDatasets(Connection conn, Writer out, String patternDs, String patternApp) throws Exception {
-		patternDs = patternDs.replace('*','%');
-		patternApp = patternApp.replace('*','%');
-		checkPath(patternDs);
-		checkPath(patternApp);
+	public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
+		pattern = pattern.replace('*','%');
+		checkPattern(pattern);
 
-		String[] dataDs = patternDs.split("/");
-		String[] dataApp = patternDs.split("/");
+		String[] data = pattern.split("/");
 
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDS(dataDs[1], dataDs[2], dataDs[3], dataApp[1], dataApp[2], dataApp[3]));
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(data[1], data[2], data[3], data[4], data[5], data[6]));
 		out.write(XML_HEADER);
 		while(rs.next()) {
 			//String path = "/" + rs.getString("primary_name") + "/" + rs.getString("data_tier") + "/" + rs.getString("processed_name");
@@ -89,21 +87,118 @@ public class DBSApiLogic {
 						"' open_for_writing='" + rs.getString("open_for_writing") +
 						"' creation_date='" + rs.getString("creation_date") +
 						"' last_modification_date='" + rs.getString("last_modification_date") +
-						"' run_number='" + rs.getString("run_number") +
-						"' first_event_number='" + rs.getString("first_event_number") +
-						"' last_event_number='" + rs.getString("last_event_number") +
-						"' start_of_run='" + rs.getString("start_of_run") +
-						"' end_of_run='" + rs.getString("end_of_run") +
 						"' physics_group_name='" + rs.getString("physics_group_name") +
 						"' physics_group_convener='" + rs.getString("physics_group_convener") +
-						"' conditions='" + rs.getString("conditions") +
 						"' app_version='" + rs.getString("app_version") +
 						"' app_family_name='" + rs.getString("app_family_name") +
 						"' app_executable_name='" + rs.getString("app_executable_name") +
+						"' created_by='" + rs.getString("created_by") +
+						"' last_modified_by='" + rs.getString("last_modified_by") +
 						"'/>\n"));
 		}
 		out.write(XML_FOOTER);
 	}
+
+	public void listRuns(Connection conn, Writer out, String path) throws Exception {
+		checkPath(path);
+		String[] data = path.split("/");
+		String procDSID = getProcessedDSID(conn, data[1], data[2], data[3]);
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listRuns(procDSID));
+		out.write(XML_HEADER);
+		while(rs.next()) {
+				out.write(((String) "<run id='" + rs.getString("id") +
+						"' run_number='" + rs.getString("run_number") +
+						"' number_of_events='" + rs.getString("number_of_events") +
+						"' number_of_lumi_sections='" + rs.getString("number_of_lumi_sections") +
+						"' total_luminosity='" + rs.getString("total_luminosity") +
+						"' strore_number='" + rs.getString("strore_number") +
+						"' start_of_run='" + rs.getString("start_of_run") +
+						"' end_of_run='" + rs.getString("end_of_run") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_date='" + rs.getString("last_modification_date") +
+						"' created_by='" + rs.getString("created_by") +
+						"' last_modified_by='" + rs.getString("last_modified_by") +
+						"'/>\n"));
+		}
+		out.write(XML_FOOTER);
+	}
+
+	public void listTiers(Connection conn, Writer out, String path) throws Exception {
+		checkPath(path);
+		String[] data = path.split("/");
+		String procDSID = getProcessedDSID(conn, data[1], data[2], data[3]);
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listTiers(procDSID));
+		out.write(XML_HEADER);
+		while(rs.next()) {
+				out.write(((String) "<data_tier id='" + rs.getString("id") +
+						"' name='" + rs.getString("name") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_date='" + rs.getString("last_modification_date") +
+						"' created_by='" + rs.getString("created_by") +
+						"' last_modified_by='" + rs.getString("last_modified_by") +
+						"'/>\n"));
+		}
+		out.write(XML_FOOTER);
+	}
+
+	public void listBlocks(Connection conn, Writer out, String path) throws Exception {
+		checkPath(path);
+		String[] data = path.split("/");
+		String procDSID = getProcessedDSID(conn, data[1], data[2], data[3]);
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listBlocks(procDSID));
+		out.write(XML_HEADER);
+		while(rs.next()) {
+				out.write(((String) "<block id='" + rs.getString("id") +
+						"' name='" + rs.getString("name") +
+						"' size='" + rs.getString("size") +
+						"' number_of_files='" + rs.getString("number_of_files") +
+						"' open_for_writing='" + rs.getString("open_for_writing") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_date='" + rs.getString("last_modification_date") +
+						"' created_by='" + rs.getString("created_by") +
+						"' last_modified_by='" + rs.getString("last_modified_by") +
+						"'/>\n"));
+		}
+		out.write(XML_FOOTER);
+	}
+
+	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN) throws Exception {
+		patternLFN = patternLFN.replace('*','%');
+		checkName(patternLFN);
+		String procDSID = null;
+		String blockID = null;
+		if(path != null) {
+			checkPath(path);
+			String[] data = path.split("/");
+			procDSID = getProcessedDSID(conn, data[1], data[2], data[3]);
+		}
+		if(blockName != null) {
+			checkName(blockName);
+			blockID = getBlockID(conn, blockName);
+		}
+		if(blockID == null && procDSID == null) {
+			throw new DBSException("Bad Data", "300", "Null Fields. Expected either a Processed Dataset or a Block");
+		}
+
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listFiles(procDSID, blockID, patternLFN));
+		out.write(XML_HEADER);
+		while(rs.next()) {
+				out.write(((String) "<file id='" + rs.getString("id") +
+						"' lfn='" + rs.getString("lfn") +
+						"' checksum='" + rs.getString("checksum") +
+						"' size='" + rs.getString("size") +
+						"' queryable_meta_data='" + rs.getString("queryable_meta_data") +
+						"' creation_date='" + rs.getString("creation_date") +
+						"' last_modification_date='" + rs.getString("last_modification_date") +
+						"' created_by='" + rs.getString("created_by") +
+						"' last_modified_by='" + rs.getString("last_modified_by") +
+						"'/>\n"));
+		}
+		out.write(XML_FOOTER);
+	}
+
+
+
 
 	public void listParameterSets(Connection conn, Writer out, String pattern) throws Exception {
 		pattern = pattern.replace('*','%');
@@ -246,13 +341,39 @@ public class DBSApiLogic {
 		}
 		return  rs.getString("id");
 	}
+
+	private String getBlockID(Connection conn, String blockName) throws Exception {
+		if(blockName == null) {
+			throw new DBSException("Bad Data", "300", "Null Fields. Expected a Block Name");
+		}
+		if(blockName.length() < 1 ) {
+			throw new DBSException("Bad Data", "300", "Null Fields. Expected a Block Name");
+		}
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getBlockID(blockName));
+		if(!rs.next()) {
+			throw new DBSException("Bad Data", "300", "No such Block " + blockName );
+		}
+		return  rs.getString("id");
+	}
+
+	private void checkPattern(String pattern) throws Exception {
+		if(pattern == null) {
+			throw new DBSException("Bad Data", "300", "Expected /PRIMARY/TIER/PROCESSED/VERSION/FAMILY/EXECUTABLE");
+		}
+		if (! Pattern.matches(VALID_PATTERN, pattern) ) {
+			throw new DBSException("Bad Data", "300", "Expected /PRIMARY/TIER/PROCESSED/VERSION/FAMILY/EXECUTABLE");
+		}
+		if( ! Pattern.matches(SAFE_PATH, pattern) ) {
+			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " Expected "+ SAFE_PATH);
+		}
+	}
 	
 	private void checkPath(String path) throws Exception {
 		if(path == null) {
-			throw new DBSException("Bad Data", "300", "Expected /DATASET/TIER/OWNER");
+			throw new DBSException("Bad Data", "300", "Expected /PRIMARY/TIER/PROCESSED");
 		}
 		if (! Pattern.matches(VALID_PATH, path) ) {
-			throw new DBSException("Bad Data", "300", "Expected /DATASET/TIER/OWNER");
+			throw new DBSException("Bad Data", "300", "Expected /PRIMARY/TIER/PROCESSED");
 		}
 		if( ! Pattern.matches(SAFE_PATH, path) ) {
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + path + " Expected "+ SAFE_PATH);

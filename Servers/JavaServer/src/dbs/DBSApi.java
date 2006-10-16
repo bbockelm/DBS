@@ -74,10 +74,46 @@ public class DBSApi {
 		}
 	}
 
-	public void listProcessedDatasets(Writer out, String patternDs, String patternApp) throws Exception {
+	public void listProcessedDatasets(Writer out, String pattern) throws Exception {
 		Connection conn = getConnection();
 		try {
-			api.listProcessedDatasets(conn, out, patternDs, patternApp);
+			api.listProcessedDatasets(conn, out, pattern);
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void listRuns(Writer out, String path) throws Exception {
+		Connection conn = getConnection();
+		try {
+			api.listRuns(conn, out, path);
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void listTiers(Writer out, String path) throws Exception {
+		Connection conn = getConnection();
+		try {
+			api.listTiers(conn, out, path);
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void listBlocks(Writer out, String path) throws Exception {
+		Connection conn = getConnection();
+		try {
+			api.listBlocks(conn, out, path);
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void listFiles(Writer out, String path, String blockName, String patternLFN) throws Exception {
+		Connection conn = getConnection();
+		try {
+			api.listFiles(conn, out, path, blockName, patternLFN);
 		} finally {
 			if(conn != null) conn.close();
 		}

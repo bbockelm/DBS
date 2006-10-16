@@ -35,12 +35,22 @@ public class DBSTest {
 
 			//while(true) {
 				//api.getDatasetInfo("jj");
-				//System.out.println("\n\nPrimary Dataset");
+				//System.out.println("\n\nPrimary Datasets");
 				PrintWriter out = new PrintWriter(System.out);
 				api.listPrimaryDatasets(out, "*");
 				
-				//System.out.println("\n\nProcessed Dataset");
-				api.listProcessedDatasets(out, "/*/*/*", "/*/*/*");
+				System.out.println("\n\nProcessed Datasets");
+				api.listProcessedDatasets(out, "/*/*/*/*/*/*");
+				System.out.println("\n\nRuns");
+				api.listRuns(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
+				System.out.println("\n\nTiers");
+				api.listTiers(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
+				System.out.println("\n\nBlocks");
+				api.listBlocks(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
+				System.out.println("\n\nFiles");
+				api.listFiles(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01", null, "*");
+				//api.listFiles(out, null, "Block_001", "*");
+				//api.listFiles(out, null, null, "*");
 				/*System.out.println("\n\nParameter Sets");
 				api.listParameterSets(out, "*");
 				System.out.println("\n\nApplications");

@@ -47,6 +47,7 @@ public class DBSServlet extends HttpServlet{
 
 			if(apiParam.equals("getDatasetFiles")
 				|| apiParam.equals("getDatasetContents")
+				|| apiParam.equals("listRuns")
 			) {
 				if(! isIn("path", request.getParameterNames())) {
 					setHeader(response, "Null path", "200", "path parameter not specified");
@@ -59,7 +60,7 @@ public class DBSServlet extends HttpServlet{
 			} 
 			else if (apiParam.equals("listProcessedDatasets")
 				|| apiParam.equals("listDatasets")) {
-				api.listProcessedDatasets(out, request.getParameter("pattern"), "/*/*/*");
+				api.listProcessedDatasets(out, request.getParameter("pattern"));
 			}
 			else if (apiParam.equals("listParameterSets")) {
 				api.listParameterSets(out, request.getParameter("pattern"));
@@ -74,6 +75,9 @@ public class DBSServlet extends HttpServlet{
 				api.getDatasetContents(out, request.getParameter("path"));
 			}
 			else if (apiParam.equals("getDatasetFiles")) {
+				api.getDatasetFiles(out, request.getParameter("path"));
+			}
+			else if (apiParam.equals("listRuns")) {
 				api.getDatasetFiles(out, request.getParameter("path"));
 			}
                         else if (apiParam.equals("createPrimaryDatase")) {

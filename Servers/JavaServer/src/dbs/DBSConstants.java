@@ -9,7 +9,7 @@ public class DBSConstants {
 	 */
 	
 	public static String DRIVER = "org.gjt.mm.mysql.Driver";
-	public static String URL = "jdbc:mysql://localhost/dbs_new_era";
+	public static String URL = "jdbc:mysql://localhost/dbs_new_era_v01";
 	public static String USERID = "anzar";
 	public static String PASSWORD = "prodagentpass";
 	/*

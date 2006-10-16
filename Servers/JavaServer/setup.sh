@@ -1,3 +1,6 @@
+export JAVA_HOME=/usr/java/jdk1.5.0_06/
+export ANT_HOME=/home/sekhri/apache-ant-1.6.5
+ 
 ret=0
 if [ "${JAVA_HOME}" == "" ]; then
 	echo "Error! Please set your JAVA_HOME variable and source this file again"
