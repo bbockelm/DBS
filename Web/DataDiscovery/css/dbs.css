@@ -177,6 +177,26 @@ em.smallbold  {
   color: #000000;
   background-color: #F0F0F0;
 }
+.td_menu_white_box {
+  width: 100px;
+  color: #000000;
+  background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+}
+.td_menu_gray_box {
+  width: 100px;
+  color: #000000;
+  background-color: #E0E0E0;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+}
 .td_white_box {
   color: #000000;
   background-color: #FFFFFF;

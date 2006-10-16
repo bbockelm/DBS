@@ -755,6 +755,13 @@ Both
 
 templateBottom="""
 <hr class="dbs" />
+<table>
+<tr>
+<td class="td_menu_gray_box" align="center" id="menuResults"><a href="javascript:showResMenu('menuResults')">Results</a></td>
+<td class="td_menu_gray_box" align="center" id="menuValidation"><a href="javascript:showResMenu('menuValidation')">Validation</a></td>
+<td class="td_menu_gray_box" align="center" id="menuParameterSet"><a href="javascript:showResMenu('menuParameterSet')">Parameter Set</a></td>
+</tr>
+</table>
 <span id="results" style="display:inline"></span>
 <hr id="results_hr" class="hide" />
 <table>

@@ -1,3 +1,18 @@
+function showResMenu(id) {
+   var ids = new Array();
+   ids[0]='menuResults';
+   ids[1]='menuValidation';
+   ids[2]='menuParameterSet';
+   for(var i=0;i<ids.length;i++) {
+      if(ids[i]==id) {
+        var t=document.getElementById(id);
+        t.className="td_menu_white_box";
+      } else {
+        var t=document.getElementById(ids[i]);
+        t.className="td_menu_gray_box";
+      }
+   }
+}
 function showLoadingMessage(idTag,iMsg) {
   var tag, msg;
   if(idTag) {
