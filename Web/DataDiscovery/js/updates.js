@@ -107,6 +107,7 @@ function updateSites(selector) {
 
   siteObj = obj2.nextObj[ selector.options[selector.selectedIndex].value ];
   updateSelection(selectElement, siteObj.menuList, _site);
+  selectElement.setAttribute("id",'form2_siteSelector');
   selectElement.setAttribute("name",'site');
   site.appendChild(selectElement);
   init();
