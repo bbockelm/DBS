@@ -14,9 +14,13 @@ Dev/fanfani fakeSEAle
 Dev/fanfani gridka-dcache.fzk.de
 Dev/fanfani polgrid4.in2p3.fr
 Dev/fanfani sc.cr.cnaf.infn.it
+Dev/fanfani SEAF2
 Dev/fanfani srm.cern.ch
 Dev/fanfani t2-srm-01.lnl.infn.it
 Dev/fanfani testA
+Dev/fanfani testAFAFAF
+Dev/fanfani testdirAFAFAF/testAFAFAF
+Dev/fanfani testSEAFnew
 DevMC/Writer castorgrid.cern.ch
 DevMC/Writer castorgrid.cr.cnaf.infn.it
 DevMC/Writer castorsc.grid.sinica.edu.tw
@@ -33,9 +37,13 @@ DevMC/Writer fakeSEAle
 DevMC/Writer gridka-dcache.fzk.de
 DevMC/Writer polgrid4.in2p3.fr
 DevMC/Writer sc.cr.cnaf.infn.it
+DevMC/Writer SEAF2
 DevMC/Writer srm.cern.ch
 DevMC/Writer t2-srm-01.lnl.infn.it
 DevMC/Writer testA
+DevMC/Writer testAFAFAF
+DevMC/Writer testdirAFAFAF/testAFAFAF
+DevMC/Writer testSEAFnew
 Dev/Writer castorsc.grid.sinica.edu.tw
 Dev/Writer castorsrm.ciemat.es
 Dev/Writer castorsrm.pic.es
@@ -55,7 +63,9 @@ Dev/Writer cmssrm.fnal.gov
 Dev/Writer cmssrm.hep.wisc.edu
 Dev/Writer dcache.rcac.purdue.edu
 Dev/Writer dgc-grid-34.brunel.ac.uk
+Dev/Writer dpm01.ifca.es
 Dev/Writer fce01.grid.sinica.edu.tw
+Dev/Writer f-dpm001.grid.sinica.edu.tw
 Dev/Writer gfe02.hep.ph.ic.ac.uk
 Dev/Writer grid100.kfki.hu
 Dev/Writer grid109.kfki.hu
@@ -63,6 +73,7 @@ Dev/Writer gridba2.ba.infn.it
 Dev/Writer gridce.iihe.ac.be
 Dev/Writer gridka-dcache.fzk.de
 Dev/Writer grid-srm.physik.rwth-aachen.de
+Dev/Writer ingrid-se02.cism.ucl.ac.be
 Dev/Writer io.hep.kbfi.ee
 Dev/Writer lcg00125.grid.sinica.edu.tw
 Dev/Writer lcg02.ciemat.es
@@ -72,6 +83,7 @@ Dev/Writer maite.iihe.ac.be
 Dev/Writer osg-gw-2.t2.ucsd.edu
 Dev/Writer osg.rcac.purdue.edu
 Dev/Writer pccms2.cmsfarm1.ba.infn.it
+Dev/Writer polgrid4.in2p3.fr
 Dev/Writer ralsrma.rl.ac.uk
 Dev/Writer red.unl.edu
 Dev/Writer sc.cr.cnaf.infn.it
@@ -80,10 +92,13 @@ Dev/Writer se01-lcg.projects.cscs.ch
 Dev/Writer SEAF
 Dev/Writer SESB
 Dev/Writer SEtestAF1
+Dev/Writer spdc00.if.usp.br
 Dev/Writer spraid.if.usp.br
+Dev/Writer srm1.phys.ufl.edu
 Dev/Writer srm.cern.ch
 Dev/Writer srm-dcache.desy.de
 Dev/Writer t2-ce-02.lnl.infn.it
+Dev/Writer t2data0.t2.ucsd.edu
 Dev/Writer t2data2.t2.ucsd.edu
 Dev/Writer t2-srm-01.lnl.infn.it
 Dev/Writer thpc-1.unl.edu
@@ -107,7 +122,9 @@ MCGlobal/Writer cmssrm.fnal.gov
 MCGlobal/Writer cmssrm.hep.wisc.edu
 MCGlobal/Writer dcache.rcac.purdue.edu
 MCGlobal/Writer dgc-grid-34.brunel.ac.uk
+MCGlobal/Writer dpm01.ifca.es
 MCGlobal/Writer fce01.grid.sinica.edu.tw
+MCGlobal/Writer f-dpm001.grid.sinica.edu.tw
 MCGlobal/Writer gfe02.hep.ph.ic.ac.uk
 MCGlobal/Writer grid100.kfki.hu
 MCGlobal/Writer grid109.kfki.hu
@@ -115,6 +132,7 @@ MCGlobal/Writer gridba2.ba.infn.it
 MCGlobal/Writer gridce.iihe.ac.be
 MCGlobal/Writer gridka-dcache.fzk.de
 MCGlobal/Writer grid-srm.physik.rwth-aachen.de
+MCGlobal/Writer ingrid-se02.cism.ucl.ac.be
 MCGlobal/Writer io.hep.kbfi.ee
 MCGlobal/Writer lcg00125.grid.sinica.edu.tw
 MCGlobal/Writer lcg02.ciemat.es
@@ -124,6 +142,7 @@ MCGlobal/Writer maite.iihe.ac.be
 MCGlobal/Writer osg-gw-2.t2.ucsd.edu
 MCGlobal/Writer osg.rcac.purdue.edu
 MCGlobal/Writer pccms2.cmsfarm1.ba.infn.it
+MCGlobal/Writer polgrid4.in2p3.fr
 MCGlobal/Writer ralsrma.rl.ac.uk
 MCGlobal/Writer red.unl.edu
 MCGlobal/Writer sc.cr.cnaf.infn.it
@@ -132,10 +151,13 @@ MCGlobal/Writer se01-lcg.projects.cscs.ch
 MCGlobal/Writer SEAF
 MCGlobal/Writer SESB
 MCGlobal/Writer SEtestAF1
+MCGlobal/Writer spdc00.if.usp.br
 MCGlobal/Writer spraid.if.usp.br
+MCGlobal/Writer srm1.phys.ufl.edu
 MCGlobal/Writer srm.cern.ch
 MCGlobal/Writer srm-dcache.desy.de
 MCGlobal/Writer t2-ce-02.lnl.infn.it
+MCGlobal/Writer t2data0.t2.ucsd.edu
 MCGlobal/Writer t2data2.t2.ucsd.edu
 MCGlobal/Writer t2-srm-01.lnl.infn.it
 MCGlobal/Writer thpc-1.unl.edu
@@ -236,6 +258,7 @@ MCLocal_2/Writer castorsrm.ciemat.es
 MCLocal_2/Writer castorsrm.pic.es
 MCLocal_2/Writer ccsrm.in2p3.fr
 MCLocal_2/Writer maite.iihe.ac.be
+MCLocal_2/Writer sc.cr.cnaf.infn.it
 MCLocal_2/Writer srm.cern.ch
 MCLocal_3/Writer castorsc.grid.sinica.edu.tw
 MCLocal_3/Writer cluster142.knu.ac.kr
@@ -249,6 +272,10 @@ MCLocal_3/Writer lcg60.sinp.msu.ru
 MCLocal_3/Writer lxfs07.jinr.ru
 MCLocal_3/Writer se01-lcg.projects.cscs.ch
 MCLocal_3/Writer srm-dcache.desy.de
+MCLocal_4/Writer castorsc.grid.sinica.edu.tw
+MCLocal_4/Writer castorsrm.ciemat.es
+MCLocal_4/Writer castorsrm.pic.es
+MCLocal_4/Writer ccsrm.in2p3.fr
 MCLocal_4/Writer cmsdpm.pi.infn.it
 MCLocal_4/Writer cmsrm-se01.roma1.infn.it
 MCLocal_4/Writer dcache.gridpp.rl.ac.uk
@@ -257,6 +284,7 @@ MCLocal_4/Writer gfe02.hep.ph.ic.ac.uk
 MCLocal_4/Writer grid100.kfki.hu
 MCLocal_4/Writer heplnx204.pp.rl.ac.uk
 MCLocal_4/Writer pccms2.cmsfarm1.ba.infn.it
+MCLocal_4/Writer ralsrma.rl.ac.uk
 MCLocal_4/Writer sc.cr.cnaf.infn.it
 MCLocal_4/Writer se01.esc.qmul.ac.uk
 MCLocal_4/Writer t2-srm-01.lnl.infn.it

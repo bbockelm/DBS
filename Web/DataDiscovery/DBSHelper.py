@@ -79,6 +79,11 @@ class DBSHelper(DBSLogger):
          @rtype : dictionary
          @return: { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
       """
+      if userMode:
+         fileName='dbsDict.global.tmp'
+      else:
+         fileName='dbsDict.all.tmp'
+      file=open(fileName,'w')
       # if we're in user mode, we only know about DBSGLOBAL
       # if we're in expert mode, load all DBS instances
       init=time.time()
@@ -90,10 +95,12 @@ class DBSHelper(DBSLogger):
          dbsList.remove(DBSGLOBAL)
          dbsList=[DBSGLOBAL]+dbsList
       s = "\n"
-      s+= "{ menuList: ["
+      s+= "{ menuList: [ "
       for dbs in dbsList:
           s+='\"%s\",'%dbs
       s=s[:-1]+"],\n"
+      file.write(s)
+      s=""
       countIns=0
       for dbs in dbsList:
           if not countIns:
@@ -106,10 +113,12 @@ class DBSHelper(DBSLogger):
           appList = appDict.keys()
           appList.sort()
           appList.reverse()
-          s+= "{ menuList: ["
+          s+= "{ menuList: [ "
           for app in appList:
               s+='\"%s\",'%app
           s=s[:-1]+"],\n"
+          file.write(s)
+          s=""
           countApp=0
           for app in appList:
               if not countApp:
@@ -120,13 +129,15 @@ class DBSHelper(DBSLogger):
               pList = appDict[app]
               pList.sort()
               pList.reverse()
-              s+= "{ menuList: ["
+              s+= "{ menuList: [ "
               oldPrimD=""
               for primD,tier,proc in pList:
                   if oldPrimD!=primD:
                      s+='\"%s\",'%primD
                      oldPrimD=primD
               s=s[:-1]+"],\n"
+              file.write(s)
+              s=""
               count = 0
               oldPrimD = ""
               for primD,tier,proc in pList:
@@ -141,10 +152,17 @@ class DBSHelper(DBSLogger):
                   count+=1
                   s+="\"%s\","%tier
               s=s[:-1]+"], nextObj: null }}}\n"
+              file.write(s)
+              s=""
           s+="}\n}\n"
+          file.write(s)
+          s=""
       s+="}\n}\n"
+      file.write(s)
+      file.close()
       self.writeLog("initJSDict time: %s"%(time.time()-init))
-      return s
+      return
+#      return s
 
   def initJSDict_v1(self,userMode=True):
       """
@@ -979,9 +997,9 @@ if __name__ == "__main__":
     
     if opts.dict:
        if string.lower(opts.dict)=="global":
-          print helper.initJSDict(True)
+          helper.initJSDict(True)
        else:
-          print helper.initJSDict(False)
+          helper.initJSDict(False)
        sys.exit(0)
 
     if opts.search:
