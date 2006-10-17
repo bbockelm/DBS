@@ -6,6 +6,8 @@ GetDataUpdater.prototype = {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var r=document.getElementById("results_menu");
+     r.className="show_inline";
      var t=document.getElementById("results");
      t.innerHTML=responseHTML;
      sortables_init();
@@ -14,7 +16,19 @@ GetDataUpdater.prototype = {
      }
    }
 }
-
+var HistoryUpdater=Class.create();
+HistoryUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById("userHistory");
+     t.innerHTML=t.innerHTML+responseHTML;
+   }
+}
+function ajaxHistory(action) {
+  ajaxEngine.sendRequest('ajaxHistory','actionString='+action);
+}
 // AJAX registration for getDataHelper
 function ajaxGetData() {
   var dbs=document.getElementById('dbsSelector').value;
@@ -24,6 +38,28 @@ function ajaxGetData() {
   var tier=document.getElementById('tierSelector').value;
     
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
+  var action='Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')';
+  ajaxHistory(action);
+}
+function ajaxGetDataFromSelection() {
+  var uSelection=document.getElementsByName('userSelection');
+  var len=0;
+  for(i=0;i<uSelection.length;i++) {
+      if(uSelection[i].checked) {
+         len=len+1;
+      }
+  }
+  var selList = new Array(len);
+  var action = 'Site (';
+  for(i=0;i<uSelection.length;i++) {
+      if(uSelection[i].checked) {
+         selList[i]=uSelection[i].value;
+         action=action+selList[i]+',';
+      }
+  }
+  ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList);
+  var action=action+')';
+  ajaxHistory(action);
 }
 /*
 function registerAjaxGetDataCalls() {
@@ -38,6 +74,8 @@ function registerAjaxGetDataCalls() {
 function ajaxSearch() {
   var keywords=document.getElementById('keywordSelector').value;
   ajaxEngine.sendRequest('ajaxSearch',"keywords="+keywords);
+  var action='Keyword search ('+keywords+')';
+  ajaxHistory(action);
 }
 /*
 function registerAjaxSearchCalls() {
@@ -53,6 +91,8 @@ function ajaxSiteSearch() {
   var dbsInst=document.getElementById('form2_dbsSelector').value;
   var site=document.getElementById('form2_siteSelector').value;
   ajaxEngine.sendRequest('ajaxSiteSearch',"dbsInst="+dbsInst,"site="+site);
+  var action='site search ('+dbsInst+','+site+')';
+  ajaxHistory(action);
 }
 function registerAjaxGetBlocksFromSiteCalls() {
   ajaxEngine.registerRequest('ajaxGetBlocksFromSite','getBlocksFromSiteHelper');
@@ -79,10 +119,12 @@ function getSummary() {
   var id=document.getElementById("summary");
   id.className="show_inline_off";
   ajaxEngine.sendRequest('getSummary');
+  ajaxHistory('Summary');
 }
 
 function getPrimDatasets() {
   ajaxEngine.sendRequest('getPrimDatasets');
+  ajaxHistory('Datasets');
 }
 function getProvenance(id) {
   // in order to replace all occurence of pattern in a string we need to use regular expression

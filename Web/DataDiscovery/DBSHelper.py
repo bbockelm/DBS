@@ -249,7 +249,8 @@ class DBSHelper(DBSLogger):
          dlsType ="DLS_TYPE_LFC"
       if (time.time()-self.voms_timer)>12*60*60: # more then 12 hours
          self.voms_timer=time.time()
-         res = popen2.Popen4("voms-proxy-init -voms cms -q")
+#         res = popen2.Popen4("voms-proxy-init -voms cms -q")
+         res = popen2.Popen4("cat $HOME/.globus/pp.txt | grid-proxy-init -pwstdin -q")
          res.wait()
          result=res.fromchild.read()
          if result:

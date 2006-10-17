@@ -678,10 +678,46 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateSnapshot, searchList=[nameSpace])
         return str(t)
         
-    def getDataFromSelection(self,userSelection):
+    def getDataFromSelection(self,userSelection,**kwargs):
         """
            Retrieves data upon user selection criterias.
         """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results">"""
+        endAjaxMsg="</response></ajax-response>"
+        try:
+            if  not userSelection:
+                page+="No data found"
+            else:
+                # see CheetahDBSTemplate templateSearchTable form
+                sList = string.split(userSelection,",")
+                for item in sList:
+                    if not item: continue
+                    dbsInst,primD,tier,ver,fam,exe=string.split(item,"___")
+                    app="/"+ver+"/"+fam+"/"+exe
+                    site="All"
+                    if not self.userMode:
+                       page+="""<div class="sectionhead_tight">%s instance</div>"""%dbsInst
+                    page+= self.getDataHelper(dbsInst,site,app,primD,tier)
+                    self.firstSearch=0
+        except:
+            t=self.errorReport("Fail in getDataFromSelection function")
+            page+=str(t)
+            pass
+        page+=endAjaxMsg
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getDataFromSelection.exposed = True 
+    
+    def getDataFromSelection_useForm(self,userSelection,**kwargs):
+        """
+           Retrieves data upon user selection criterias.
+        """
+        print "Call getDataFromSelection",userSelection
+        # AJAX wants response as "text/xml" type
         try:
             page=self.genTopHTML()
             page+= self.searchForm()
@@ -704,7 +740,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in getDataFromSelection function")
             pass
             return str(t)
-    getDataFromSelection.exposed = True 
+    getDataFromSelection_useForm.exposed = True 
 
     def showProcDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*"):
         """
@@ -797,10 +833,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         if string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all": site="*"
         # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-#        page="""<ajax-response><response type="element" id="results">"""
-        page="""<ajax-response><response type="object" id="results">"""
-#        page=""
+#        self.setContentType('xml')
+#        page="""<ajax-response><response type="object" id="results">"""
+        page=""
         
         self.helperInit(dbsInst)
         self.dbs  = dbsInst
@@ -808,10 +843,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.app  = app
         self.primD= primD
         self.tier = tier
-        
-#        nameSpace={'firstSearch': self.firstSearch}
-#        t = Template(CheetahDBSTemplate.templateSeparator, searchList=[nameSpace])
-#        page+= str(t)
         
         page+= self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
 
@@ -833,7 +864,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
             # new stuff which do not show repeating datasets
             p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
-            if oldTotEvt==totEvt and oldTotFiles==totFiles:
+            if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                idPath=string.replace(oldDataset,"/","___")
                page+="""
 <div>
@@ -853,13 +884,13 @@ class DBSDataDiscoveryServer(DBSLogger):
             prevPage = p
         page+=prevPage # end of new stuff
 
-        page+="</response></ajax-response>"
-        if self.verbose:
-           print page
+#        page+="</response></ajax-response>"
+#        if self.verbose:
+#           print page
         return page
     getDataHelper.exposed=True
 
-    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
+    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -875,6 +906,9 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results">"""
         try:
             if string.lower(tier)=="all": tier="*"
             if string.lower(site)=="all": site="*"
@@ -882,17 +916,23 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             msg="dbsInst='%s', site='%s', app='%s', primD='%s', tier='%s'"%(dbsInst,site,app,primD,tier)
             self.writeLog(msg)
-            page = self.genTopHTML()
+#            page = self.genTopHTML()
             msg=""
             self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-            page+= self.genVisiblePanel('Navigator')
+#            page+= self.genVisiblePanel('Navigator')
             page+= self.getDataHelper(dbsInst,site,app,primD,tier)
-            page+= self.genBottomHTML()
-            return page
+#            page+= self.genBottomHTML()
+#            return page
         except:
             t=self.errorReport("Fail in getData function")
-            pass
-            return str(t)
+            page+=str(t)
+#            pass
+#            return str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
     getData.exposed = True 
 
     def getLFNlist(self,dbsInst,blockName,dataset=""):
@@ -1116,8 +1156,8 @@ class DBSDataDiscoveryServer(DBSLogger):
 #            return str(t)
         page+= str(t)
         page+="</response></ajax-response>"
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     getBlocksFromSite.exposed=True
@@ -1220,8 +1260,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                   }
         t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
         page = str(t)
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     getDatasetProvenance.exposed=True
@@ -1262,6 +1302,26 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+= self.genBottomHTML()
         return page
     sendFeedback.exposed=True
+
+    def history(self,actionString,**kwargs):
+        """
+            History updater
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        nameSpace={
+                   'time'      : time.asctime(),
+                   'action'    : actionString
+                  }
+        t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
+        page="""<ajax-response><response type="object" id="userHistory">"""
+        page+= str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    history.exposed=True
 #
 # main
 #

@@ -15,7 +15,8 @@ We captured your request
 <p>
 <table>
 <tr><td align="right">Host</td><td>${host}:${port}</td></tr>
-<tr><td align="right">URL</td><td>$url</td></tr>
+#set URL=$url.replace('&','&amp;')
+<tr><td align="right">URL</td><td>$URL</td></tr>
 </table>
 </p>
 and submitted to the <a href="mailto:vk@mail.lns.cornell.edu">maintainer</a> 
@@ -118,6 +119,9 @@ Javascript.</h1>
 
 <hr class="dbs" />
 """
+templateHistory="""
+<table><tr><td>$time</td><td>&#8212;</td><td>$action</td></tr></table>
+"""
 
 templateAjaxInit="""
 <script type="text/javascript">
@@ -127,17 +131,26 @@ function registerAjaxPrimDatasetsCalls() {
     ajaxEngine.registerAjaxElement('datasets'+'$name');
 #end for
 }
+function registerAjaxHistoryCalls() {
+    historyUpdater = new HistoryUpdater();
+    ajaxEngine.registerRequest('ajaxHistory','history');
+    ajaxEngine.registerAjaxObject('userHistory',historyUpdater);
+}
 function registerAjaxProvenanceCalls() {
     ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
     ajaxEngine.registerAjaxElement('parentGraph');
 }
 function registerAjaxObjectCalls() {
     getDataUpdater = new GetDataUpdater();
-    ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
+//    ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
+    ajaxEngine.registerRequest('ajaxGetData','getData');
     ajaxEngine.registerRequest('ajaxSearch','search');
     ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
+    ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
     ajaxEngine.registerAjaxObject('results',getDataUpdater);
 }
+registerAjaxHistoryCalls();
+registerAjaxProvenanceCalls();
 registerAjaxObjectCalls();
 </script>
 """
@@ -280,13 +293,29 @@ Upon your search:
 </b>
 </p>
 
+<!--
+<a href="javascript:ajaxGetDataFromSelection()">Test ajaxGetDataFromSelection</a>
+<b>
+Please make your selection from table below and <a href="javascript:ajaxGetDataFromSelection();showWaitingMessage()">process your request</a>
+</b>
+-->
 #if len($oList)
+<form action="javascript:ajaxGetDataFromSelection();" method="get">
+<!--
 <form action="getDataFromSelection" method="get">
+-->
 #if len($oList)>15
 <b>
+Please make your selection from table below and <a href="javascript:ajaxGetDataFromSelection();showWaitingMessage()">process your request</a>
+</b>
+<!--
+<b>
+Please make your selection from table below and <a href="javascript:showWaitingMessage();ajaxGetDataFromSelection()">process your request</a>
+</b>
 Please make your selection and submit for further processing:
 </b>
-<input type="submit" value="Find" id="submit-button2a"/>
+<input type="submit" value="Find" id="submit-button2a" onclick="javascript:showWaitingMessage();ajaxGetDataFromSelection();" />
+-->
 #end if
 <p><span id="SelectionHandler" name="SelectionHandler"></span></p>
 <script type="text/javascript">UnSelectAll()</script>
@@ -323,17 +352,22 @@ Please make your selection and submit for further processing:
 </tr>
 #end for
 </table>
+<!--
 <b>
 Please make your selection and submit for further processing:
-<input type="submit" value="Find" id="submit-button2"/>
+<input type="submit" value="Find" id="submit-button2" onclick="javascript:showWaitingMessage();ajaxGetDataFromSelection();" />
 </b>
+-->
+<b>
+Please make your selection from table above and <a href="javascript:ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
+</b>
+</form>
 #else
 #if not $firstSearch
 No match found for your request, please refine your search.
 #end if
 ##
 #end if
-</form>
 """
 
 templateUserHelp="""
@@ -432,7 +466,6 @@ $msg
 
 <!-- 
 <form action="getData" method="get">
-<form action="javascript:registerAjaxGetDataCalls();ajaxGetData();" method="get">
 -->
 <form action="javascript:ajaxGetData();" method="get">
 <!-- menu table -->
@@ -755,14 +788,20 @@ Both
 
 templateBottom="""
 <hr class="dbs" />
-<table>
+<table id="results_menu" class="hide" cellspacing="0">
 <tr>
-<td class="td_menu_gray_box" align="center" id="menuResults"><a href="javascript:showResMenu('menuResults')">Results</a></td>
-<td class="td_menu_gray_box" align="center" id="menuValidation"><a href="javascript:showResMenu('menuValidation')">Validation</a></td>
-<td class="td_menu_gray_box" align="center" id="menuParameterSet"><a href="javascript:showResMenu('menuParameterSet')">Parameter Set</a></td>
+<td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>
+<td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
+<td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
+<td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
+<td class="td_menu_gray_box" align="center" id="_userHistory"><a href="javascript:showResMenu('userHistory')">History</a></td>
 </tr>
 </table>
-<span id="results" style="display:inline"></span>
+<span id="results" class="show_inline"></span>
+<span id="parents" class="hide"><br /></span>
+<span id="validation" class="hide"><br />... TODO validation ...</span>
+<span id="parameterSet" class="hide"><br />... TODO parameter set ...</span>
+<span id="userHistory" class="hide"><br /></span>
 <hr id="results_hr" class="hide" />
 <table>
 <tr align="left">

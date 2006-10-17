@@ -1,18 +1,34 @@
+// Menu array
+var ids = new Array();
+ids[0]='results';
+ids[1]='parents';
+ids[2]='validation';
+ids[3]='parameterSet';
+ids[4]='userHistory';
 function showResMenu(id) {
-   var ids = new Array();
-   ids[0]='menuResults';
-   ids[1]='menuValidation';
-   ids[2]='menuParameterSet';
    for(var i=0;i<ids.length;i++) {
       if(ids[i]==id) {
-        var t=document.getElementById(id);
+        var t=document.getElementById("_"+id);
         t.className="td_menu_white_box";
+        var r=document.getElementById(id);
+        r.className="show_inline";
       } else {
-        var t=document.getElementById(ids[i]);
+        var t=document.getElementById("_"+ids[i]);
         t.className="td_menu_gray_box";
+        var r=document.getElementById(ids[i]);
+        r.className="hide";
       }
    }
 }
+function hideResMenu() {
+   for(var i=0;i<ids.length;i++) {
+      var t=document.getLementById("_"+ids[i]);
+      t.className="hide";
+      var r=document.getLementById(ids[i]);
+      r.className="hide";
+   }
+}
+
 function showLoadingMessage(idTag,iMsg) {
   var tag, msg;
   if(idTag) {
@@ -43,10 +59,10 @@ function hideWaitingMessage() {
   if(res) {
      res.className="hide";
   }
-  var hr=document.getElementById("results_hr");
-  if(hr) {
-     hr.className="hide";
-  }
+//  var hr=document.getElementById("results_hr");
+//  if(hr) {
+//     hr.className="hide";
+//  }
 }
 function HideParents(id) {
 //   var t=document.getElementById(id);
@@ -114,6 +130,7 @@ function showMenu(menu) {
    if (t) {
        t.className="td_blue_box"
    }
+//   hideResMenu();
 }
 function ShowBlockInfo(tableId){
   var elem=document.getElementsByName("blockInfo");
