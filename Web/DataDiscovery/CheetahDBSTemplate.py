@@ -798,7 +798,7 @@ templateBottom="""
 </tr>
 </table>
 <span id="results" class="show_inline"></span>
-<span id="parents" class="hide"><br /></span>
+<span id="parents" class="hide"><br />... TODO parentage graph, meanhile click on dataset name to get parents ...</span>
 <span id="validation" class="hide"><br />... TODO validation ...</span>
 <span id="parameterSet" class="hide"><br />... TODO parameter set ...</span>
 <span id="userHistory" class="hide"><br /></span>
