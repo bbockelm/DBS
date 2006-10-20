@@ -784,6 +784,7 @@ Both
 #end for
 </table>
 <!-- End of Main table -->
+<br />
 """
 
 templateBottom="""
@@ -794,6 +795,7 @@ templateBottom="""
 <td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
 <td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
 <td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
+<td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
 <td class="td_menu_gray_box" align="center" id="_userHistory"><a href="javascript:showResMenu('userHistory')">History</a></td>
 </tr>
 </table>
@@ -801,6 +803,9 @@ templateBottom="""
 <span id="parents" class="hide"><br />... TODO parentage graph, meanhile click on dataset name to get parents ...</span>
 <span id="validation" class="hide"><br />... TODO validation ...</span>
 <span id="parameterSet" class="hide"><br />... TODO parameter set ...</span>
+<span id="releaseSpec" class="hide"><br />
+... Once data been choosen by user we may add a link to release description which has been used to produce this data...
+</span>
 <span id="userHistory" class="hide"><br /></span>
 <hr id="results_hr" class="hide" />
 <table>

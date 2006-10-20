@@ -4,7 +4,8 @@ ids[0]='results';
 ids[1]='parents';
 ids[2]='validation';
 ids[3]='parameterSet';
-ids[4]='userHistory';
+ids[4]='releaseSpec';
+ids[5]='userHistory';
 function showResMenu(id) {
    for(var i=0;i<ids.length;i++) {
       if(ids[i]==id) {
