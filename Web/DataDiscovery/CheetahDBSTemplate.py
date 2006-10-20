@@ -655,6 +655,9 @@ contains $nEvents events, $totFiles files, $totSize.
 <p>
 <span id="parentGraph"></span>
 </p>
+##
+#if $nEvents
+##
 #set tableId="table_"+str($tid)
 <table>
 <tr>
@@ -785,6 +788,10 @@ Both
 </table>
 <!-- End of Main table -->
 <br />
+##
+#end if
+##
+<hr class="dbs" />
 """
 
 templateBottom="""
