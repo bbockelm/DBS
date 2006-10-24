@@ -1092,6 +1092,9 @@ if __name__ == "__main__":
             for bName in blockDict.keys():
                 count=0
                 print "blockDict",bName,blockDict[bName]
+                if not blockDict[bName][0]:
+                   print "contains 0 events, 0 files."
+                   continue
                 evt,bStatus,nFiles,bSize,site = blockDict[bName]
                 if not count:
                    print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
