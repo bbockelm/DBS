@@ -74,7 +74,7 @@ function HideParents(id) {
 }
 function ShowPanel(link) {
    var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
-   msg='<table width="100%"><tr><td><span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
+   msg='<table width="100%"><tr><td><span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel(\''+link+'\')">PANEL</a></span></td><td align="center"><span class="sectionhead_tight">DBS/DLS DATA DISCOVERY PAGE</span></td><td align="right">'+url+'</td></tr></table>';
    var t=document.getElementById("HiddenPanel");
    if(t) {
       t.innerHTML=msg;
@@ -90,7 +90,7 @@ function ShowPanel(link) {
 }
 function HidePanel(link) {
    var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
-   msg='<table width="100%"><tr><td><span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel(\''+link+'\')">PANEL</a></span></td><td align="right">'+url+'</td></tr></table>';
+   msg='<table width="100%"><tr><td><span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel(\''+link+'\')">PANEL</a></span></td><td align="center"><span class="sectionhead_tight">DBS/DLS DATA DISCOVERY PAGE</span></td><td align="right">'+url+'</td></tr></table>';
    var t=document.getElementById("HiddenPanel");
    if(t) {
       t.innerHTML=msg;
