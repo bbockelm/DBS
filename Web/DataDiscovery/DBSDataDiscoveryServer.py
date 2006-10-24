@@ -88,7 +88,11 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.sumPage    = ""
         self.firstSearch=1
         self.siteDict   = {}
-        self.hostname   = socket.gethostbyaddr(socket.gethostname())[0]
+        try:
+            self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
+        except:
+            self.hostname = 'localhost'
+            pass
         self.port       = 8001
         for line in open('CherryServer.conf').readlines():
             if string.find(line,'server.socketPort')!=-1:
