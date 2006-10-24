@@ -30,19 +30,48 @@ function ajaxHistory(action) {
   ajaxEngine.sendRequest('ajaxHistory','actionString='+action);
 }
 // AJAX registration for getDataHelper
-function ajaxGetData() {
-  var dbs=document.getElementById('dbsSelector').value;
-  var site=document.getElementById('siteSelector').value;
-  var app=document.getElementById('appSelector').value;
-  var primD=document.getElementById('primSelector').value;
-  var tier=document.getElementById('tierSelector').value;
-    
+function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
+  var dbs;
+  if(_dbs) {
+      dbs=_dbs;
+  } else {
+      dbs=document.getElementById('dbsSelector').value;
+  }
+  var site;
+  if(_site) {
+      site=_site;
+  } else {
+      site=document.getElementById('siteSelector').value;
+  }
+  var app;
+  if(_app) {
+      app=_app;
+  } else {
+      app=document.getElementById('appSelector').value;
+  }
+  var primD;
+  if(_primD) {
+      primD=_primD;
+  } else {
+      primD=document.getElementById('primSelector').value;
+  }
+  var tier;
+  if(_tier) {
+      tier=_tier;
+  } else {
+      tier=document.getElementById('tierSelector').value;
+  }
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
-  var action='Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')';
+  var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
 }
-function ajaxGetDataFromSelection() {
-  var uSelection=document.getElementsByName('userSelection');
+function ajaxGetDataFromSelection(iParamString) {
+  var uSelection;
+  if(iParamString) { // we can pass a string of parameters, e.g. A,B,C
+      uSelection=iParamString.split("'");
+  } else {
+      uSelection=document.getElementsByName('userSelection');
+  }
   var len=0;
   for(i=0;i<uSelection.length;i++) {
       if(uSelection[i].checked) {
@@ -50,7 +79,8 @@ function ajaxGetDataFromSelection() {
       }
   }
   var selList = new Array(len);
-  var action = 'Site (';
+  var action = '';
+  //var action = 'Site (';
   for(i=0;i<uSelection.length;i++) {
       if(uSelection[i].checked) {
          selList[i]=uSelection[i].value;
@@ -58,8 +88,9 @@ function ajaxGetDataFromSelection() {
       }
   }
   ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList);
-  var action=action+')';
-  ajaxHistory(action);
+  //var action=action+')';
+  var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+action+'\')">Site ('+action+')</a>';
+  ajaxHistory(actionHistory);
 }
 /*
 function registerAjaxGetDataCalls() {
@@ -71,10 +102,15 @@ function registerAjaxGetDataCalls() {
 */
 
 // AJAX registration for search
-function ajaxSearch() {
-  var keywords=document.getElementById('keywordSelector').value;
+function ajaxSearch(iWords) {
+  var keywords;
+  if(iWords) {
+      keywords=iWords;
+  } else {
+      keywords=document.getElementById('keywordSelector').value;
+  }
   ajaxEngine.sendRequest('ajaxSearch',"keywords="+keywords);
-  var action='Keyword search ('+keywords+')';
+  var action='<a href="javascript:showWaitingMessage();ajaxSearch(\''+keywords+'\')">Keyword search ('+keywords+')</a>';
   ajaxHistory(action);
 }
 /*
@@ -87,11 +123,21 @@ function registerAjaxSearchCalls() {
 */
 
 // AJAX registration for site search
-function ajaxSiteSearch() {
-  var dbsInst=document.getElementById('form2_dbsSelector').value;
-  var site=document.getElementById('form2_siteSelector').value;
+function ajaxSiteSearch(_dbs,_site) {
+  var dbsInst;
+  if(_dbs) {
+      dbsInst=_dbs;
+  } else {
+      dbsInst=document.getElementById('form2_dbsSelector').value;
+  }
+  var site;
+  if(_site) {
+      site=_site;
+  } else {
+      site=document.getElementById('form2_siteSelector').value;
+  }
   ajaxEngine.sendRequest('ajaxSiteSearch',"dbsInst="+dbsInst,"site="+site);
-  var action='site search ('+dbsInst+','+site+')';
+  var action='<a href="javascript:showWaitingMessage();ajaxSiteSearch(\''+dbsInst+'\',\''+site+'\')">site search ('+dbsInst+','+site+')</a>';
   ajaxHistory(action);
 }
 function registerAjaxGetBlocksFromSiteCalls() {

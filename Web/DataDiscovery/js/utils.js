@@ -5,7 +5,7 @@ ids[1]='parents';
 ids[2]='validation';
 ids[3]='parameterSet';
 ids[4]='releaseSpec';
-ids[5]='userHistory';
+//ids[5]='userHistory';
 function showResMenu(id) {
    for(var i=0;i<ids.length;i++) {
       if(ids[i]==id) {
@@ -112,7 +112,8 @@ function showMenu(menu) {
    menuArr[2]='Site';
    menuArr[3]='Summary';
    menuArr[4]='Datasets';
-   menuArr[5]='About';
+   menuArr[5]='History';
+   menuArr[6]='About';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {

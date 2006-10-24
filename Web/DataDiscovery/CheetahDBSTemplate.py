@@ -469,12 +469,12 @@ $msg
 -->
 <form action="javascript:ajaxGetData();" method="get">
 <!-- menu table -->
-#if $userMode ##---- User menu
+#if $userMode
 <div>
 <input type="hidden" name="dbsInst" value="$dbsList[0]" id="dbsSelector" />
 </div>
 <table class="small" cellspacing="5">
-#else  ##----- Expert menu
+#else 
 <table class="small" cellspacing="5">
 <tr valign="top">
 <td align="right">&nbsp;<b>DBS instances</b>
@@ -803,7 +803,9 @@ templateBottom="""
 <td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
 <td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
 <td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
+<!--
 <td class="td_menu_gray_box" align="center" id="_userHistory"><a href="javascript:showResMenu('userHistory')">History</a></td>
+-->
 </tr>
 </table>
 <span id="results" class="show_inline"></span>
@@ -813,7 +815,9 @@ templateBottom="""
 <span id="releaseSpec" class="hide"><br />
 ... Once data been choosen by user we may add a link to release description which has been used to produce this data...
 </span>
+<!--
 <span id="userHistory" class="hide"><br /></span>
+-->
 <hr id="results_hr" class="hide" />
 <table>
 <tr align="left">
@@ -881,6 +885,9 @@ Home page: <a href="$host/">users</a>
 </tr>
 #end if
 <tr><td><br /></td></tr>
+<tr>
+<td class="td_gray_box"><a href="javascript:showMenu('History')">History</a></td>
+</tr>
 <tr>
 <td class="td_gray_box"><a href="javascript:showMenu('About')">About...</a></td>
 </tr>
@@ -989,6 +996,34 @@ $dbsContent
       <div id="summary">Please wait while we retrieve this information</div>
       -->
       <div id="summary"><script type="text/javascript">showLoadingMessage("summary");</script></div>
+      </div>
+   </div>
+</div>
+
+<!--
+<div id="ReleasesDiv" class="hide">
+   <div id="releasesPanel1">
+     <div id="releasesHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Release specifications
+       </span>
+      </div>
+      <div id="releasesContent1">
+      <span id="releaseSpec"></span>
+      </div>
+   </div>
+</div>
+-->
+
+<div id="HistoryDiv" class="hide">
+   <div id="historyPanel1">
+     <div id="historyHeader1" class="accordionTabTitleBar">
+       <span class="menu_title">
+       Command history
+       </span>
+      </div>
+      <div id="historyContent1">
+      <span id="userHistory"></span>
       </div>
    </div>
 </div>
@@ -1174,6 +1209,8 @@ new Rico.Accordion( \$('SearchDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('SiteDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('ReleasesDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('AboutDiv'), {panelHeight:accordionHeight} );
 #if $frontPage
 showMenu('Navigator');
