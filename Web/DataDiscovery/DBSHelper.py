@@ -54,6 +54,8 @@ class DBSHelper(DBSLogger):
          self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
       except:
          print "WARNING: some of the functionality will be disable due to missing authentication"
+         if self.verbose:
+            printExcept()
          pass
       self.api         = "" # dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
       self.dbsApi      = {} #  {'dbsInst': dbsCgiApi.DbsCgiApi(url,dbsInst) }
