@@ -818,8 +818,8 @@ class DBSHelper(DBSLogger):
           bDict[bName]=(nEvt,bStatus,nFiles)
       return bDict
 
-  def getBlockInfo(self,dataset):
-      blocks = self.api.listBlocks(dataset,"yes")
+  def getBlockInfo(self,dataset,app):
+      blocks = self.api.listBlocks(dataset,app,"yes")
       return blocks
   
   def getDBSSummary(self,dbsInst):
@@ -865,7 +865,7 @@ class DBSHelper(DBSLogger):
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
-  def getData(self,dataset,site="All"):
+  def getData(self,dataset,app,site="All"):
       """
          Returns 
          blockDict={'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}
@@ -885,8 +885,8 @@ class DBSHelper(DBSLogger):
       nEvts    = 0
       totFiles = 0
       totSize  = 0
-#      blockInfoDict = self.getBlockInfo(dataset)
-      blockInfoDict = self.api.listBlocks(dataset,"yes")
+#      blockInfoDict = self.getBlockInfo(dataset,app)
+      blockInfoDict = self.api.listBlocks(dataset,app,"yes")
       for key in blockInfoDict.keys():
           if not blockInfoDict[key][0]:
              return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)

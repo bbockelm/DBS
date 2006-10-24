@@ -865,7 +865,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             empty,prim,tier,app = string.split(dataset,"/")
             if primaryDataset!="*" and prim!=primaryDataset: continue
             if dataTier!="*" and tier!=dataTier: continue
-            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
+            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
             # new stuff which do not show repeating datasets
             p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
