@@ -47,14 +47,14 @@ def colorSizeHTMLFormat(i):
     n = sizeFormat(i)
     # PB are in red
     if string.find(n,'PB')!=-1:
-       return string.replace(n,'PB','<span class="box_red">TB</span>')
+       return string.replace(n,'PB','<span class="box_red">PB</span>')
     # TB are in blue
     elif string.find(n,'TB')!=-1:
        return string.replace(n,'TB','<span class="box_blue">TB</span>')
     # GB are in block
     # MB are in green
     elif string.find(n,'MB')!=-1:
-       return string.replace(n,'MB','<span class="box_green">TB</span>')
+       return string.replace(n,'MB','<span class="box_green">MB</span>')
     else:
        return n
     
