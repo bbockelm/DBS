@@ -7,8 +7,8 @@ from dbsCgiApi import DbsCgiApi
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
-#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest3"
+#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest3"
 
 try:
   args = {}
@@ -17,7 +17,7 @@ try:
 
   #dataset = "/CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302"
   #dataset = "/CSA06-083-os-SoftMuon/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877643-merged"
-  datasets = [
+  datasetsb = [
               "/CSA06-083-os-EWKSoup/GEN/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645",
               "/CSA06-083-os-EWKSoup/DIGI/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645",
               "/CSA06-083-os-EWKSoup/SIM/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877645",
@@ -31,10 +31,19 @@ try:
 		"/CSA06-082-os-TTbar/GEN/CMSSW_0_8_2-GEN-SIM-DIGI-1155826011-merged"
              ]
 
-
+  datasets = ["/CSA06-103-os-Jets0-0/FEVT/CMSSW_1_0_4-su_QCDSKIM_jet_0_15-1161127916"]
   for dataset in datasets:
 	  print dataset
-	  mylist = api.listBlocks(dataset,"yes")
+	  mylist = api.listBlocks(dataset,events="yes")
+          print mylist
+	  mylist = api.listBlocks(dataset)
+          print mylist
+	  mylist = api.listBlocks(dataset,app="/CMSSW_1_0_4/Merged/cmsRun",events="yes")
+	  print mylist
+	  mylist = api.listBlocks(dataset,app="/CMSSW_1_0_4/Skimming/cmsRun")
+	  print mylist
+          
+          """	
 	  events = long(0)
 	  files = long(0)
 	  print "__________________________________________"
@@ -46,6 +55,7 @@ try:
 	  print "EVENTS --> ", events
 	  print "FILES -->  ", files
 	  print "\n"
+          """
   #print api.listBlocks(dataset)
 
 except InvalidDataTier, ex:

@@ -892,16 +892,22 @@ class DbsCgiApi(DbsApi):
       raise DbsCgiBadResponse(exception=ex)
  
  
-  def listBlocks(self, dataset, events=None):
+  def listBlocks(self, dataset, app=None, events=None):
     # Check path.
     path = self._path(dataset)
     verifyDatasetPathName(path)
 
     # Invoke cgi script.
     if( events == None) :    
-      data = self._call ({ 'api' : 'listBlocks', 'path' : path })
+      if ( app == None ):
+         data = self._call ({ 'api' : 'listBlocks', 'path' : path })
+      else :
+         data = self._call ({ 'api' : 'listBlocks', 'path' : path, 'app' : app })
     else :
-      data = self._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events})
+      if ( app == None ):
+         data = self._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events})
+      else :
+         data = self._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events, 'app' : app})
 
     #print data
 
