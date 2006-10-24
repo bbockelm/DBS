@@ -120,7 +120,7 @@ Javascript.</h1>
 <hr class="dbs" />
 """
 templateHistory="""
-<table><tr><td>$time</td><td>&#8212;</td><td>$action</td></tr></table>
+<table width="100%"><tr align="left" valign="top"><td class="td11">$time</td><td class="td1">&#8212;</td><td>$action</td></tr></table>
 """
 
 templateAjaxInit="""
@@ -810,8 +810,8 @@ templateBottom="""
 </table>
 <span id="results" class="show_inline"></span>
 <span id="parents" class="hide"><br />... TODO parentage graph, meanhile click on dataset name to get parents ...</span>
-<span id="validation" class="hide"><br />... TODO validation ...</span>
-<span id="parameterSet" class="hide"><br />... TODO parameter set ...</span>
+<span id="validation" class="hide"><br />... We plan to add some information about found data, e.g. plots, etc. This should be part of validation ...</span>
+<span id="parameterSet" class="hide"><br />... We plan to introduce indexing system and lookup there parameter sets for found dataset ...</span>
 <span id="releaseSpec" class="hide"><br />
 ... Once data been choosen by user we may add a link to release description which has been used to produce this data...
 </span>

@@ -68,38 +68,34 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
 function ajaxGetDataFromSelection(iParamString) {
   var uSelection;
   if(iParamString) { // we can pass a string of parameters, e.g. A,B,C
-      uSelection=iParamString.split("'");
+      uSelection=iParamString.split(",");
   } else {
       uSelection=document.getElementsByName('userSelection');
   }
   var len=0;
   for(i=0;i<uSelection.length;i++) {
-      if(uSelection[i].checked) {
+      if(uSelection[i].checked || iParamString) {
          len=len+1;
       }
   }
   var selList = new Array(len);
   var action = '';
-  //var action = 'Site (';
-  for(i=0;i<uSelection.length;i++) {
-      if(uSelection[i].checked) {
-         selList[i]=uSelection[i].value;
+  for(i=0;i<uSelection.length;++i) {
+      if(uSelection[i].checked || iParamString) {
+         if(iParamString) {
+            selList[i]=uSelection[i];
+         } else {
+            selList[i]=uSelection[i].value;
+         }
          action=action+selList[i]+',';
       }
   }
   ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList);
-  //var action=action+')';
-  var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+action+'\')">Site ('+action+')</a>';
+  var parameters= action.substr(0,action.length-1);
+  var parString = parameters.replace(",",", ");
+  var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+parameters+'\')">data selection ('+parString+')</a>';
   ajaxHistory(actionHistory);
 }
-/*
-function registerAjaxGetDataCalls() {
-  getDataUpdater = new GetDataUpdater();
-  ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
-//  ajaxEngine.registerAjaxElement('results');
-  ajaxEngine.registerAjaxObject('results',getDataUpdater);
-}
-*/
 
 // AJAX registration for search
 function ajaxSearch(iWords) {
@@ -113,14 +109,6 @@ function ajaxSearch(iWords) {
   var action='<a href="javascript:showWaitingMessage();ajaxSearch(\''+keywords+'\')">Keyword search ('+keywords+')</a>';
   ajaxHistory(action);
 }
-/*
-function registerAjaxSearchCalls() {
-  getDataUpdater = new GetDataUpdater();
-  ajaxEngine.registerRequest('ajaxSearch','search');
-//  ajaxEngine.registerAjaxElement('results');
-  ajaxEngine.registerAjaxObject('results',getDataUpdater);
-}
-*/
 
 // AJAX registration for site search
 function ajaxSiteSearch(_dbs,_site) {

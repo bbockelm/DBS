@@ -1314,7 +1314,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         nameSpace={
-                   'time'      : time.asctime(),
+                   'time'      : time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()), #time.asctime(),
                    'action'    : actionString
                   }
         t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])

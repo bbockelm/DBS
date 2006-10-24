@@ -226,8 +226,14 @@ em.smallbold  {
   border-style: solid solid solid solid;
 /*  border-color: gray gray gray gray; */
 }
+.td1 {
+  width: 1%;
+}
 .td10 {
   width: 10%;
+}
+.td11 {
+  width: 11%;
 }
 .td15 {
   width: 15%;
