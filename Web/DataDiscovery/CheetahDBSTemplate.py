@@ -817,18 +817,17 @@ templateBottom="""
 <hr id="results_hr" class="hide" />
 <table>
 <tr align="left">
+<td class="td5"><img src="images/CMSLogo.jpg" alt="CMS Logo" />
+</td>
 <td>
 <em class="small">
 CMS data discovery. Author: <a href="mailto:vk@mail.lns.cornell.edu">Valentin Kuznetsov</a>.
+<br />
+This page was generated at: $localtime 
 </em>
 </td>
 </tr>
 <tr>
-<td>
-<em class="small">
-This page was generated at: $localtime 
-</em>
-</td>
 </tr>
 </table>
 
