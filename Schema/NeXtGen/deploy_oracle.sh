@@ -4,9 +4,9 @@
 #  Written 10/25/2006
 #  M. Anzar Afaq (anzar@fnal[.NOSPAM]gov
 #
-oracle_home=/home/anzar/DBS-ORACLE/oracle-10.2.0.1
-oracle_user=cms_dbs_afaq
-oracle_passwd=MeraMaslaHaina?
+oracle_home=/Tools/DBS-ORACLE/oracle-10.2.0.1
+oracle_user=cms_dbs_????
+oracle_passwd=?????????
 oracle_db=devdb10
 #
 ddl_file=DBS-NeXtGen-Oracle_generated.sql
