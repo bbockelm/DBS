@@ -1,3 +1,10 @@
+/*
+* @author anzar
+ $Revision: 1.2 $"
+ $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
+*
+*/
+
 package xml;
 
 import java.util.Hashtable;
