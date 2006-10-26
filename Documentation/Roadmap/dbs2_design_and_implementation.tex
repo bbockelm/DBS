@@ -12,14 +12,14 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{25 October, 2006}
+   \date{26 October, 2006}
 
-  \title{Design and Implementation Plan for DBS-2 (Cayoga)}
+  \title{Design and Implementation Plan for DBS-2 (Cayuga)}
 
   \begin{Authlist}
   Anzar Afaq,  Lee Lueking,  Vijay Sekhri     
 \Instfoot{fnal}{FNAL, Batavia, IL, USA}
-Andrew Dolgert,  Chris Jones,  Valentin Kuznetsov, Dan Riley,
+Andrew Dolgert,  Chris Jones,  Valentin Kuznetsov, Dan Riley
 \Instfoot{cornell}{Cornell, Ithaca, NY, USA}
 
   \end{Authlist}
@@ -58,7 +58,7 @@ eventual ``publication'' to the global scope DBS where accessibility
 throughout the collaboration is required.  Local scope DBS instances
 use the same API and schema as the global scope DBS.
 
-This document is based on work that was started at the DBS Workshop at Cornell in July of 2006. Many of the things discussed at the workshop~\cite{dbs-workshop},and followup meetings, are included in the DBS Roadmap~\cite{dbs-roadmap}. We sometimes refer to the project as ``Cayoga'' named after the Finger Lake near Ithaca. 
+This document is based on work that was started at the DBS Workshop at Cornell in July of 2006. Many of the things discussed at the workshop~\cite{dbs-workshop},and followup meetings, are included in the DBS Roadmap~\cite{dbs-roadmap}. We sometimes refer to the project as ``Cayuga'' named after the Finger Lake near Ithaca. 
 
 \subsection{CMS Data Management Concepts}
 
@@ -188,7 +188,7 @@ DBS-2 adds support for Primary Dataset descriptions,
 and preliminary support for queryable parameter sets,
 luminosity sections, and Analysis Datasets (ADS). Primary
 datasets can be of types 1. Monte Carlo, 2. Detector Data, 
-and 3. Generic. The schema can be updated to accomodate additioal 
+and 3. Generic. The schema can be updated to accomodate additional 
 types as we identify them. Analysis Datasets will be created based on
 Definitions that use information  such as application, app version, 
 run range, data quality, and other information in the database related 
@@ -288,9 +288,18 @@ There will be a set of deployment scripts and procedures that are used for both 
 \subsubsection{Server}
   Java servlets can be distributed as WAR files for use with Tomcat installations,  or  RPM's for standalone client mode operation. Validation tests that can determine if the system is working once installed and diagnose problems at any time will be provided. The details of the tomcat installation must be clear for local sites such as what ports can be used. A way is needed to monitor the tomcat servers from outside local site. Everything about the local installation needs to be configurable, such as port numbers, oracle or mysql, and so on. Local administrators need to follow the restrictions and policies of the site.
 
- For the CERN installation we will plan for a load-balanced and failover machine configuration similar to that used by the FroNTier system. This will have at least two machines.
+
 \subsubsection{client}
 The client will be distributed through RPMs. Validation tests will be part of the distribution and included in the installation procedure.
+
+\subsection{Global and Local Installations}
+ For the CERN Global installation we will plan for a failover configuration that would use a high availability UPS server  in the event of power outage at CERN.If the load warrents multiple machines can be used with  DNS round robbin set up  similar to that used by the FroNTier system. This system will use the CMS production Oracle database and be a production system with 24/7 hardware support.
+
+Tier-0 should have a so-called ``local'' setup and data will be staged there before it is migrated to the global instance. This instance will be maintained in the CMS production Oracle database at CERN and the system is fully backed up and has 24/7 support.
+
+Local installations at Tier-1 and Tier-N centers are the responsibility of the local site support team. It is believed that these installations, although important, are as critical as the Global instance. The local instances should be operated in such a manor that  if it  is corrupted or lost only a few hours of work would be lost. 
+
+
 
 \subsection{Configuration Management and Version Control}
 Maintaining a functioning system overall requires that the schema and code evolves in a  forward and backward compatible way with the ajoining layer. Since the clients are distributed and installed at many locations it is particularly important that incompatibilities be avoided, or made explicitely clear to the user.
@@ -310,14 +319,67 @@ A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
     \caption{DBS workplan for the Oct. 2006 through Jan 2007 in detail.  }
     \label{tab:dbs-work-plan}
     \begin{center}
-      \begin{tabular}{|l|p{3.5in}|p{1.5in}|} \hline 
+     \begin{tabular}{|l|p{3.5in}|p{1.5in}|} \hline 
 Date & DBS Cayuga & Personnele  \\ \hline
-Sep. 2006 & \begin{enumerate} \item Use case development. \item Schema review and revisions. \item API object and Calls detailed working list and initial users guide. \item Begin prototype for indexing config files.\end{enumerate} & Jones, Riley, Kuznetsov, Lueking, Afaq, Sekhri   \\ \hline
-Oct. 2006  & \begin{enumerate} \item Schema prototype. \item Practice deployment to local (MySQL) and global (Oracle) environments.  \item API prototyping. \item Develop unit tests.  \item  Develop testing and performance benchmarks. \item Discovery tools beyound those used for CSA06, including working with schemas in other domain areas. \end{enumerate}& \\ \hline
-Nov. 2006  & \begin{enumerate} \item Transfer tools CSA to 2G. \item Continue development and testing of schema and API. \item Production server planning. \item Integration with ProdAgent and other CMS tools. \end{enumerate}  &  \\ \hline
-Dec. 2006      & \begin{enumerate} \item Continued development and testing. \item Refine production environment.   \end{enumerate} &  \\ \hline
-Jan. 2007  & \begin{enumerate} \item Ready for production operation. \item Final documentation and test procedures. \end{enumerate}   &  \\ \hline
-Feb.-Jul. 2007 &    &      \\ \hline
+Sep. 2006 & 
+\begin{enumerate}
+ \item Use case development.
+ \item Schema review and revisions.
+ \item API object and Calls detailed working list and initial users guide.
+\end{enumerate} & Jones, Riley, Kuznetsov, Lueking, Afaq, Sekhri   \\ \hline
+Oct. 2006  & 
+\begin{enumerate}
+ \item Schema prototype.
+ \item Practice deployment to local (MySQL) and global (Oracle) environments. 
+ \item API prototyping.
+ \item Develop unit tests. 
+
+\end{enumerate}& \\ \hline
+Nov. 2006  & 
+\begin{enumerate}
+  \item  Oracle and MySql? deployment details worked out
+         a) schema: scripts for schema creation
+         b) server: work out details of the server that are specific to each oracle and mysql
+         c) Testing deployment at Cornell 
+  \item  Unit tests for server
+  \item  Unit tests for existing client calls
+  \item  API calls to do
+         a) create primary datasets
+         b) create processed datasets
+         c) create file block
+         d) create algorithm
+         e) insert file
+         f) list primary DS, Files, Processed datasets 
+   \item  User documentation, installation, API usage.
+         a) JavaDoc? for server
+         b) PyDoc? for client
+         c) Official place for the schema documentation. 
+   \item  Discovery page compatibility tests with DBS-2
+   \item  Analysis DS API will begin Mid November,
+   \item  Review of plans in Mid November 
+ \item Continue development and testing of schema and API.
+ \item Production server planning.
+ \item  Develop testing and performance benchmarks.
+\end{enumerate}  & Riley, Kuznetsov, Lueking, Afaq, Sekhri \\ \hline
+Dec. 2006      & 
+\begin{enumerate}
+  \item have local and global fully functional and working together
+  \ Complete remaining API work
+   a) analysis DS API ready and working
+   b) remap API for merged files
+   c) migration (promotion, publishing) API's
+   d) all other API calls 
+ \item Integration and testing with Discovery tools
+ \item Integration with ProdAgent, CRAB, Tier-0 and other CMS tools and Framework. 
+ \item Continued development and testing.
+ \item Refine production environment.   
+\end{enumerate} &  Riley, Kuznetsov, Lueking, Afaq, Sekhri \\ \hline
+Jan. 2007  & 
+\begin{enumerate} 
+ \item Continued stress testing w/ full load
+\item Ready for production operation.
+ \item Final documentation and test procedures.
+ \end{enumerate}   &  \\ \hline
       \end{tabular}
     \end{center}
   \end{table}  
