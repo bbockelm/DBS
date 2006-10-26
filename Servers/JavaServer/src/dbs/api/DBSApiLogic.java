@@ -1,5 +1,7 @@
 /**
  * @author sekhri
+ $Revision: 1.2 $"
+ $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
  *
  */
 
@@ -213,11 +215,31 @@ public class DBSApiLogic {
 		boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDataset(primaryDatasetName));
 	}
 
+
+       public void insertBlock(Connection conn, Hashtable block_atribs) throws Exception {
+           //Verify here that the block name is in right format  
+           String name = (String)block_atribs.get("Name");
+           boolean rs =  DBManagement.execute(conn, DBSSql.insertBlock(block_atribs));
+                     
+       }
+
+       public void closeBlock(Connection conn, Hashtable block_atribs) throws Exception {
+           //Verify here that the block name is in right format  
+           String name = (String)block_atribs.get("Name");
+           boolean rs =  DBManagement.execute(conn, DBSSql.closeBlock(block_atribs));
+
+       }
+
+       public void insertProcessedDataset(Connection conn, Hashtable dataset_atribs) throws Exception {
+           //Verify here that the dataset name is in right format  
+           String name = (String)dataset_atribs.get("Name");
+           checkName(name);
+           boolean rs =  DBManagement.execute(conn, DBSSql.insertProcessedDataset(dataset_atribs));
+       }
+
+
 	public void insertPerson(Connection conn, Hashtable dbsUser) throws Exception {
 	}
-
-
-
 
 	private String getProcessedDSID(Connection conn, String prim, String dt, String proc) throws Exception {
 		if(prim == null || dt == null || proc == null) {

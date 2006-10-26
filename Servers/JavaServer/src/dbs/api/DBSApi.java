@@ -2,7 +2,7 @@
  * @author sekhri
  
  $Revision: 1.2 $"
- $Id: DBSSql.java,v 1.2 2006/10/26 17:09:32 afaq Exp $"
+ $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
  
  *
  */
@@ -30,7 +30,8 @@ public class DBSApi {
 	}
 
 	private Connection getConnection() throws Exception {
-		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);
+		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,
+                                                            DBSConstants.USERID ,DBSConstants.PASSWORD);
 	}
 	
         public void insertPrimaryDataset(String inputXml, Hashtable dbsUser) throws Exception {
@@ -69,9 +70,9 @@ public class DBSApi {
                         for (int i=0; i<allElement.size(); ++i) {
                             Element e = (Element)allElement.elementAt(i);
                             String name = e.name;
-                            if (name == "primary-dataset" ) {
+                            if ( name == "block" ) {
                                 System.out.println("Found a block");
-                                block_atribs = e.attributes;
+                                Hashtable block_atribs = e.attributes;
                                 conn = getConnection();
                                 api.insertBlock(conn, block_atribs);       
                                 break;
@@ -82,8 +83,49 @@ public class DBSApi {
                 }
         }
 
+        public void closeBlock(String inputXml) throws Exception {
+                Connection conn = null;
+                try {
+                        DBSXMLParser dbsParser = new DBSXMLParser();
+                        dbsParser.parseString(inputXml);
+                        Vector allElement = dbsParser.getElements();
+                        for (int i=0; i<allElement.size(); ++i) {
+                            Element e = (Element)allElement.elementAt(i);
+                            String name = e.name;
+                            if (name == "block" ) {
+                                System.out.println("Found a processed-dataset");
+                                Hashtable block_atribs = e.attributes;
+                                conn = getConnection();
+                                api.insertProcessedDataset(conn, block_atribs);
+                                break;
+                            }
+                        }
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
 
-
+        public void insertProcessedDataset(String inputXml) throws Exception {
+                Connection conn = null;
+                try {
+                        DBSXMLParser dbsParser = new DBSXMLParser();
+                        dbsParser.parseString(inputXml);
+                        Vector allElement = dbsParser.getElements();
+                        for (int i=0; i<allElement.size(); ++i) {
+                            Element e = (Element)allElement.elementAt(i);
+                            String name = e.name;
+                            if (name == "processed-dataset" ) {
+                                System.out.println("Found a processed-dataset");
+                                Hashtable dataset_atribs = e.attributes;
+                                conn = getConnection();
+                                api.insertProcessedDataset(conn, dataset_atribs);
+                                break;
+                            }
+                        }                        
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
 
 	public void listPrimaryDatasets(Writer out, String pattern) throws Exception {
 		Connection conn = null;

@@ -1,12 +1,12 @@
-
 /**
  * @author sekhri
  * 
-   $Revision: 1.10 $"
-   $Id: DBSSql.java,v 1.10 2006/10/26 19:19:17 afaq Exp $"
-
+ $Revision: 1.2 $"
+ $Id: DBSSql.java,v 1.2 2006/10/26 17:09:32 afaq Exp $"
  */
 package dbs.sql;
+import java.util.Hashtable;
+
 public class DBSSql {
 	/**
 	 * 
@@ -24,15 +24,37 @@ public class DBSSql {
                 return sql;
         }
 
-        public void insertBlock(Connection conn, Hashtable atribs) throws Exception {
+        public static String insertBlock(Hashtable atribs) throws Exception {
 
             String size = (String)atribs.get("BlockSize");
             String name = (String)atribs.get("Name");
             String dataset = (String)atribs.get("Dataset");
             String files = (String)atribs.get("NumberOfFiles");
+
             String sql = "INSERT INTO Block (BlockSize, Name, Dataset, NumberOfFiles, OpenForWriting, CreationDate)" + 
-                         " VALUES ("+size+", "+name+", "+dataset+", "+files+", 'y', NOW()";
+                         " VALUES ("+size+", '"+name+"', "+dataset+", "+files+", 'y', NOW()";
+            System.out.println("\n\n" + sql + "\n\n");
             return sql; 
+        }
+
+        public static String closeBlock(Hashtable atribs) throws Exception {
+
+            String name = (String)atribs.get("Name");
+
+            String sql = "UPDATE Block SET OpenForWriting='n'"; 
+            System.out.println("\n\n" + sql + "\n\n");
+            return sql;
+        }
+
+        public static String insertProcessedDataset(Hashtable atribs) throws Exception {
+
+            String name = (String)atribs.get("Name");
+            String primary = (String)atribs.get("PrimaryDataset");
+ 
+            String sql = "INSERT INTO ProcessedDataset(Name, PrimaryDataset, OpenForWriting, CreationDate)"+
+                         " VALUES ('"+name+"', "+primary+", 'y', NOW())";
+            System.out.println("\n\n" + sql + "\n\n");
+            return sql;
         }
 
 	public static String listPrimaryDatasets(String pattern) {
