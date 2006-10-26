@@ -3,8 +3,8 @@
  * @author sekhri
  *
  */
-package dbs;
-//import dbs.DBSServlet;
+package dbs.test;
+import dbs.api.DBSApi;
 import java.io.PrintWriter;
 public class DBSTest {
 
@@ -41,6 +41,8 @@ public class DBSTest {
 				
 				System.out.println("\n\nProcessed Datasets");
 				api.listProcessedDatasets(out, "/*/*/*/*/*/*");
+				System.out.println("\n\nProcessed Datasets");
+				api.listApplications(out, "/*/*/*");
 				System.out.println("\n\nRuns");
 				api.listRuns(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
 				System.out.println("\n\nTiers");

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
-import dbs.DBSApi;
+import dbs.api.DBSApi;
 /**
  * @author sekhri
  *
@@ -62,26 +62,26 @@ public class DBSServlet extends HttpServlet{
 				|| apiParam.equals("listDatasets")) {
 				api.listProcessedDatasets(out, request.getParameter("pattern"));
 			}
-			else if (apiParam.equals("listParameterSets")) {
-				api.listParameterSets(out, request.getParameter("pattern"));
-			}
 			else if (apiParam.equals("listApplications")) {
 				api.listApplications(out, request.getParameter("pattern"));
 			}
-			else if (apiParam.equals("listApplicationConfigs")) {
-				api.listApplicationConfigs(out, request.getParameter("pattern"));
-			}
-			else if (apiParam.equals("getDatasetContents")) {
-				api.getDatasetContents(out, request.getParameter("path"));
-			}
-			else if (apiParam.equals("getDatasetFiles")) {
-				api.getDatasetFiles(out, request.getParameter("path"));
-			}
 			else if (apiParam.equals("listRuns")) {
-				api.getDatasetFiles(out, request.getParameter("path"));
+				api.listRuns(out, request.getParameter("path"));
 			}
-                        else if (apiParam.equals("createPrimaryDatase")) {
-                                api.createPrimaryDataset(request.getParameter("xmlinput"));
+			else if (apiParam.equals("listTiers")) {
+				api.listTiers(out, request.getParameter("path"));
+			}
+			else if (apiParam.equals("listBlocks")) {
+				api.listBlocks(out, request.getParameter("path"));
+			}
+			else if (apiParam.equals("listFiles")) {
+				api.listFiles(out, request.getParameter("path"),
+							request.getParameter("blockName"), 
+							request.getParameter("patternLFN"));
+			}
+                        else if (apiParam.equals("insertPrimaryDataset")) {
+				//Make a hastable of the user
+                                api.insertPrimaryDataset(request.getParameter("xmlinput"), null);
                         }
 
 			else {

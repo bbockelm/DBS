@@ -3,7 +3,7 @@
  *
  */
 
-package dbs;
+package dbs.api;
 import java.sql.Connection;
 import java.io.Writer;
 import java.util.Vector;
@@ -11,6 +11,7 @@ import java.util.Hashtable;
 import xml.DBSXMLParser;
 import xml.Element;
 import db.DBManagement;
+import dbs.DBSConstants;
 
 public class DBSApi {
 	/**
@@ -28,7 +29,7 @@ public class DBSApi {
 		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);
 	}
 	
-        public void createPrimaryDataset(String inputXml ) throws Exception {
+        public void insertPrimaryDataset(String inputXml, Hashtable dbsUser) throws Exception {
                 Connection conn = null;
                 try {
                         //get the primay dataset from the xml
@@ -49,20 +50,12 @@ public class DBSApi {
                         }
 
                         conn = getConnection();
-                        api.createPrimaryDataset(conn, primaryDatasetName);
+                        api.insertPrimaryDataset(conn, primaryDatasetName, dbsUser);
                 } finally {
                         if(conn != null) conn.close();
                 }
         }
 	
-	public void getDatasetInfo(Writer out, String dsPath) throws Exception {
-		Connection conn = getConnection();
-		try {
-			api.getDatasetInfo(conn, out, dsPath);
-		} finally {
-			conn.close();
-		}
-	}
 
 	public void listPrimaryDatasets(Writer out, String pattern) throws Exception {
 		Connection conn = null;
@@ -78,6 +71,15 @@ public class DBSApi {
 		Connection conn = getConnection();
 		try {
 			api.listProcessedDatasets(conn, out, pattern);
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void listApplications(Writer out, String pattern) throws Exception {
+		Connection conn = getConnection();
+		try {
+			api.listApplications(conn, out, pattern);
 		} finally {
 			if(conn != null) conn.close();
 		}
@@ -119,49 +121,6 @@ public class DBSApi {
 		}
 	}
 
-	public void listParameterSets(Writer out, String pattern) throws Exception {
-		Connection conn = getConnection();
-		try {
-			api.listParameterSets(conn, out, pattern);
-		} finally {
-			if(conn != null) conn.close();
-		}
-	}
-	
-	public void listApplications(Writer out, String pattern) throws Exception {
-		Connection conn = getConnection();
-		try {
-			api.listApplications(conn, out, pattern);
-		} finally {
-			if(conn != null) conn.close();
-		}
-	}
 
-	public void listApplicationConfigs(Writer out, String pattern) throws Exception {
-		Connection conn = getConnection();
-		try {
-			api.listApplicationConfigs(conn, out, pattern);
-		} finally {
-			if(conn != null) conn.close();
-		}
-	}
-	
-	public void getDatasetContents(Writer out, String dsPath) throws Exception {
-		Connection conn = getConnection();
-		try {
-			api.getDatasetContents(conn, out, dsPath);
-		} finally {
-			if(conn != null) conn.close();
-		}
-	}
-
-	public void getDatasetFiles(Writer out, String dsPath) throws Exception {
-		Connection conn = getConnection();
-		try {
-			api.getDatasetFiles(conn, out, dsPath);
-		} finally {
-			if(conn != null) conn.close();
-		}
-	}
 
 }
