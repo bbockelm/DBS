@@ -1,5 +1,9 @@
 /**
  * @author sekhri
+ 
+ $Revision: 1.2 $"
+ $Id: DBSSql.java,v 1.2 2006/10/26 17:09:32 afaq Exp $"
+ 
  *
  */
 
@@ -56,6 +60,30 @@ public class DBSApi {
                 }
         }
 	
+        public void insertBlock(String inputXml) throws Exception {
+                Connection conn = null;
+                try {
+                        DBSXMLParser dbsParser = new DBSXMLParser();
+                        dbsParser.parseString(inputXml);
+                        Vector allElement = dbsParser.getElements();
+                        for (int i=0; i<allElement.size(); ++i) {
+                            Element e = (Element)allElement.elementAt(i);
+                            String name = e.name;
+                            if (name == "primary-dataset" ) {
+                                System.out.println("Found a block");
+                                block_atribs = e.attributes;
+                                conn = getConnection();
+                                api.insertBlock(conn, block_atribs);       
+                                break;
+                            }
+                        }                        
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
+
+
+
 
 	public void listPrimaryDatasets(Writer out, String pattern) throws Exception {
 		Connection conn = null;
