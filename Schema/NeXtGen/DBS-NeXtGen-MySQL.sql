@@ -1,10 +1,10 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 439
+-- === Build : 440
 -- ======================================================================
 
-use dbs_new_era_v01;
+use dbs_new_era_v03;
 -- ======================================================================
 
 DROP TABLE ProcAlgoMap;
@@ -58,7 +58,10 @@ CREATE TABLE Person
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(Name,DistinguishedName)
+    unique(Name,DistinguishedName),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -73,7 +76,10 @@ CREATE TABLE Role
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -89,7 +95,12 @@ CREATE TABLE AssignedRole
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(PersonID,RoleID)
+    unique(PersonID,RoleID),
+
+    foreign key(PersonID) references Person(ID) on update CASCADE on delete CASCADE,
+    foreign key(RoleID) references Role(ID) on update CASCADE on delete CASCADE,
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -104,7 +115,11 @@ CREATE TABLE PhysicsGroup
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(PhysicsGroupConvener) references Person(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -118,7 +133,10 @@ CREATE TABLE SchemaVersion
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -137,7 +155,14 @@ CREATE TABLE AnalysisDataset
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(ProcessedDS) references ProcessedDataset(ID),
+    foreign key(Type) references Type(ID) on update SET NULL on delete SET NULL,
+    foreign key(Status) references Status(ID) on update SET NULL on delete SET NULL,
+    foreign key(Parent) references AnalysisDataset(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -160,7 +185,15 @@ CREATE TABLE Files
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(Dataset) references ProcessedDataset(ID),
+    foreign key(Block) references Block(ID),
+    foreign key(Status) references Status(ID),
+    foreign key(FileType) references Type(ID),
+    foreign key(ValidationStatus) references Status(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -181,6 +214,12 @@ CREATE TABLE ProcessedDataset
     primary key(ID),
     unique(Name,PrimaryDataset),
 
+    foreign key(PrimaryDataset) references PrimaryDataset(ID) on update CASCADE on delete CASCADE,
+    foreign key(PhysicsGroup) references PhysicsGroup(ID),
+    foreign key(Status) references Status(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID),
+
     CHECK(OpenForWriting IN ('y', 'n'))
   );
 
@@ -200,7 +239,12 @@ CREATE TABLE PrimaryDataset
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(Description) references PrimaryDatasetDescription(ID),
+    foreign key(Type) references Type(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -220,7 +264,10 @@ CREATE TABLE Runs
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -234,7 +281,10 @@ CREATE TABLE DataTier
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(LastModifiedBy) references Person(ID),
+    foreign key(CreatedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -254,7 +304,11 @@ CREATE TABLE LumiSection
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
-    unique(LumiSectionNumber,RunNumber)
+    unique(LumiSectionNumber,RunNumber),
+
+    foreign key(RunNumber) references Runs(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -274,6 +328,10 @@ CREATE TABLE Block
 
     primary key(ID),
 
+    foreign key(Dataset) references ProcessedDataset(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID),
+
     CHECK(OpenForWriting IN ('y', 'n'))
   );
 
@@ -288,7 +346,10 @@ CREATE TABLE Status
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -302,7 +363,10 @@ CREATE TABLE Type
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -316,7 +380,10 @@ CREATE TABLE Description
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -331,7 +398,12 @@ CREATE TABLE AnalysisDatasetLumi
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(AnalysisDataset) references AnalysisDataset(ID),
+    foreign key(Lumi) references LumiSection(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -345,7 +417,10 @@ CREATE TABLE TimeLog
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -363,7 +438,14 @@ CREATE TABLE AlgorithmConfig
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID)
+    unique(ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID),
+
+    foreign key(ExecutableName) references AppExecutable(ID),
+    foreign key(ApplicationVersion) references AppVersion(ID),
+    foreign key(ApplicationFamily) references AppFamily(ID),
+    foreign key(ParameterSetID) references QueryableParameterSet(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -377,7 +459,10 @@ CREATE TABLE AppFamily
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -391,7 +476,10 @@ CREATE TABLE AppVersion
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -405,7 +493,10 @@ CREATE TABLE AppExecutable
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -424,7 +515,10 @@ CREATE TABLE QueryableParameterSet
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -440,7 +534,12 @@ CREATE TABLE ParameterBinding
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
-    unique(Self,Contains)
+    unique(Self,Contains),
+
+    foreign key(Self) references QueryableParameterSet(ID),
+    foreign key(Contains) references QueryableParameterSet(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -456,7 +555,13 @@ CREATE TABLE PrimaryDatasetDescription
     LastModifiedBy          int,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(TriggerDescriptionID) references TriggerPathDescription(ID),
+    foreign key(MCChannelDescriptionID) references MCDescription(ID),
+    foreign key(OtherDescriptionID) references OtherDescription(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -470,7 +575,10 @@ CREATE TABLE TriggerPathDescription
     LastModifiedBy          int,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -487,7 +595,10 @@ CREATE TABLE MCDescription
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
-    unique(MCChannelDescription,MCProduction,MCDecayChain)
+    unique(MCChannelDescription,MCProduction,MCDecayChain),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -501,7 +612,10 @@ CREATE TABLE OtherDescription
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -517,7 +631,12 @@ CREATE TABLE FileTier
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(Fileid,DataTier)
+    unique(Fileid,DataTier),
+
+    foreign key(Fileid) references Files(ID),
+    foreign key(DataTier) references DataTier(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -531,7 +650,12 @@ CREATE TABLE FileParentage
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ThisFile,ItsParent)
+    primary key(ThisFile,ItsParent),
+
+    foreign key(ThisFile) references Files(ID) on update SET NULL on delete SET NULL,
+    foreign key(ItsParent) references Files(ID) on update CASCADE on delete CASCADE,
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -547,7 +671,12 @@ CREATE TABLE FileLumi
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(Fileid,Lumi)
+    unique(Fileid,Lumi),
+
+    foreign key(Fileid) references Files(ID),
+    foreign key(Lumi) references LumiSection(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -562,7 +691,12 @@ CREATE TABLE FileAlgoMap
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(Fileid) references Files(ID),
+    foreign key(Algorithm) references AlgorithmConfig(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -578,7 +712,12 @@ CREATE TABLE ProcDSRuns
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(Dataset,Run)
+    unique(Dataset,Run),
+
+    foreign key(Dataset) references ProcessedDataset(ID),
+    foreign key(Run) references Runs(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -594,7 +733,12 @@ CREATE TABLE ProcDSTier
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(Dataset,DataTier)
+    unique(Dataset,DataTier),
+
+    foreign key(Dataset) references ProcessedDataset(ID),
+    foreign key(DataTier) references DataTier(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -608,7 +752,12 @@ CREATE TABLE DatasetParentage
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ThisDataset,ItsParent)
+    primary key(ThisDataset,ItsParent),
+
+    foreign key(ThisDataset) references ProcessedDataset(ID) on update SET NULL on delete SET NULL,
+    foreign key(ItsParent) references ProcessedDataset(ID) on update CASCADE on delete CASCADE,
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
@@ -623,398 +772,13 @@ CREATE TABLE ProcAlgoMap
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+
+    foreign key(Dataset) references ProcessedDataset(ID),
+    foreign key(Algorithm) references AlgorithmConfig(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
   );
 
 -- ======================================================================
-
-ALTER TABLE Person ADD CONSTRAINT 
-    Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Person ADD CONSTRAINT 
-    Person_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Role ADD CONSTRAINT 
-    Role_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Role ADD CONSTRAINT 
-    Role_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AssignedRole ADD CONSTRAINT 
-    AssignedRole_PersonID_FK foreign key(PersonID) references Person(ID) on update CASCADE on delete CASCADE
-/
-ALTER TABLE AssignedRole ADD CONSTRAINT 
-    AssignedRole_RoleID_FK foreign key(RoleID) references Role(ID) on update CASCADE on delete CASCADE
-/
-ALTER TABLE AssignedRole ADD CONSTRAINT 
-    AssignedRole_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AssignedRole ADD CONSTRAINT 
-    AssignedRole_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE PhysicsGroup ADD CONSTRAINT 
-    PhysicsGroupPhysicsGroupCon_FK foreign key(PhysicsGroupConvener) references Person(ID)
-/
-ALTER TABLE PhysicsGroup ADD CONSTRAINT 
-    PhysicsGroup_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE PhysicsGroup ADD CONSTRAINT 
-    PhysicsGroup_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE SchemaVersion ADD CONSTRAINT 
-    SchemaVersion_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE SchemaVersion ADD CONSTRAINT 
-    SchemaVersionLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Type_FK foreign key(Type) references Type(ID) on update SET NULL on delete SET NULL
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Status_FK foreign key(Status) references Status(ID) on update SET NULL on delete SET NULL
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Parent_FK foreign key(Parent) references AnalysisDataset(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_Block_FK foreign key(Block) references Block(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_Status_FK foreign key(Status) references Status(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_FileType_FK foreign key(FileType) references Type(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_ValidationStatus_FK foreign key(ValidationStatus) references Status(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
-    Files_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDatasetPrimaryData_FK foreign key(PrimaryDataset) references PrimaryDataset(ID) on update CASCADE on delete CASCADE
-/
-ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDatasetPhysicsGrou_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
-/
-ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDataset_Status_FK foreign key(Status) references Status(ID)
-/
-ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDatasetLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE PrimaryDataset ADD CONSTRAINT 
-    PrimaryDataset_Description_FK foreign key(Description) references PrimaryDatasetDescription(ID)
-/
-ALTER TABLE PrimaryDataset ADD CONSTRAINT 
-    PrimaryDataset_Type_FK foreign key(Type) references Type(ID)
-/
-ALTER TABLE PrimaryDataset ADD CONSTRAINT 
-    PrimaryDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE PrimaryDataset ADD CONSTRAINT 
-    PrimaryDatasetLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Runs ADD CONSTRAINT 
-    Runs_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Runs ADD CONSTRAINT 
-    Runs_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE DataTier ADD CONSTRAINT 
-    DataTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-ALTER TABLE DataTier ADD CONSTRAINT 
-    DataTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-
-ALTER TABLE LumiSection ADD CONSTRAINT 
-    LumiSection_RunNumber_FK foreign key(RunNumber) references Runs(ID)
-/
-ALTER TABLE LumiSection ADD CONSTRAINT 
-    LumiSection_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE LumiSection ADD CONSTRAINT 
-    LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Block ADD CONSTRAINT 
-    Block_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
-/
-ALTER TABLE Block ADD CONSTRAINT 
-    Block_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Block ADD CONSTRAINT 
-    Block_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Status ADD CONSTRAINT 
-    Status_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Status ADD CONSTRAINT 
-    Status_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Type ADD CONSTRAINT 
-    Type_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Type ADD CONSTRAINT 
-    Type_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE Description ADD CONSTRAINT 
-    Description_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Description ADD CONSTRAINT 
-    Description_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE TimeLog ADD CONSTRAINT 
-    TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE TimeLog ADD CONSTRAINT 
-    TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
-    AlgorithmConfigExecutableNa_FK foreign key(ExecutableName) references AppExecutable(ID)
-/
-ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
-    AlgorithmConfigApplicationV_FK foreign key(ApplicationVersion) references AppVersion(ID)
-/
-ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
-    AlgorithmConfigApplicationF_FK foreign key(ApplicationFamily) references AppFamily(ID)
-/
-ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
-    AlgorithmConfigParameterSet_FK foreign key(ParameterSetID) references QueryableParameterSet(ID)
-/
-ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
-    AlgorithmConfig_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
-    AlgorithmConfigLastModified_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AppFamily ADD CONSTRAINT 
-    AppFamily_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AppFamily ADD CONSTRAINT 
-    AppFamily_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AppVersion ADD CONSTRAINT 
-    AppVersion_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AppVersion ADD CONSTRAINT 
-    AppVersion_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AppExecutable ADD CONSTRAINT 
-    AppExecutable_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AppExecutable ADD CONSTRAINT 
-    AppExecutableLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE QueryableParameterSet ADD CONSTRAINT 
-    QueryableParameterSetCreate_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE QueryableParameterSet ADD CONSTRAINT 
-    QueryableParameterSetLastMo_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ParameterBinding ADD CONSTRAINT 
-    ParameterBinding_Self_FK foreign key(Self) references QueryableParameterSet(ID)
-/
-ALTER TABLE ParameterBinding ADD CONSTRAINT 
-    ParameterBinding_Contains_FK foreign key(Contains) references QueryableParameterSet(ID)
-/
-ALTER TABLE ParameterBinding ADD CONSTRAINT 
-    ParameterBinding_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ParameterBinding ADD CONSTRAINT 
-    ParameterBindingLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE PrimaryDatasetDescription ADD CONSTRAINT 
-    PrimaryDatasetDescriptionTr_FK foreign key(TriggerDescriptionID) references TriggerPathDescription(ID)
-/
-ALTER TABLE PrimaryDatasetDescription ADD CONSTRAINT 
-    PrimaryDatasetDescriptionMC_FK foreign key(MCChannelDescriptionID) references MCDescription(ID)
-/
-ALTER TABLE PrimaryDatasetDescription ADD CONSTRAINT 
-    PrimaryDatasetDescriptionOt_FK foreign key(OtherDescriptionID) references OtherDescription(ID)
-/
-ALTER TABLE PrimaryDatasetDescription ADD CONSTRAINT 
-    PrimaryDatasetDescriptionCr_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE PrimaryDatasetDescription ADD CONSTRAINT 
-    PrimaryDatasetDescriptionLa_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE TriggerPathDescription ADD CONSTRAINT 
-    TriggerPathDescriptionCreat_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE TriggerPathDescription ADD CONSTRAINT 
-    TriggerPathDescriptionLastM_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE MCDescription ADD CONSTRAINT 
-    MCDescription_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE MCDescription ADD CONSTRAINT 
-    MCDescriptionLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE OtherDescription ADD CONSTRAINT 
-    OtherDescription_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE OtherDescription ADD CONSTRAINT 
-    OtherDescriptionLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_Fileid_FK foreign key(Fileid) references Files(ID)
-/
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-/
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE FileParentage ADD CONSTRAINT 
-    FileParentage_ThisFile_FK foreign key(ThisFile) references Files(ID) on update SET NULL on delete SET NULL
-/
-ALTER TABLE FileParentage ADD CONSTRAINT 
-    FileParentage_ItsParent_FK foreign key(ItsParent) references Files(ID) on update CASCADE on delete CASCADE
-/
-ALTER TABLE FileParentage ADD CONSTRAINT 
-    FileParentage_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE FileParentage ADD CONSTRAINT 
-    FileParentageLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_Fileid_FK foreign key(Fileid) references Files(ID)
-/
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
-/
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_Fileid_FK foreign key(Fileid) references Files(ID)
-/
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
-/
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
-/
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_Run_FK foreign key(Run) references Runs(ID)
-/
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentageThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on update SET NULL on delete SET NULL
-/
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentage_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID) on update CASCADE on delete CASCADE
-/
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentage_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentageLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
-/
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
-/
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
 
