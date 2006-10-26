@@ -1,13 +1,17 @@
 
 /**
  * @author sekhri
- *
+ * 
+   $Revision: 1.10 $"
+   $Id: DBSSql.java,v 1.10 2006/10/26 19:19:17 afaq Exp $"
+
  */
 package dbs.sql;
 public class DBSSql {
 	/**
 	 * 
 	 */
+
 	public static String getDual() {
 		return "select 1 from dual";
 	}
@@ -18,6 +22,17 @@ public class DBSSql {
                                         " 1, 1)";
                 System.out.println("\n\n" + sql + "\n\n");
                 return sql;
+        }
+
+        public void insertBlock(Connection conn, Hashtable atribs) throws Exception {
+
+            String size = (String)atribs.get("BlockSize");
+            String name = (String)atribs.get("Name");
+            String dataset = (String)atribs.get("Dataset");
+            String files = (String)atribs.get("NumberOfFiles");
+            String sql = "INSERT INTO Block (BlockSize, Name, Dataset, NumberOfFiles, OpenForWriting, CreationDate)" + 
+                         " VALUES ("+size+", "+name+", "+dataset+", "+files+", 'y', NOW()";
+            return sql; 
         }
 
 	public static String listPrimaryDatasets(String pattern) {
