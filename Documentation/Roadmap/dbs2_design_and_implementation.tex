@@ -12,9 +12,9 @@
 %   \cmsnote{2005/000}
   \internalnote{2006/000}
 %  \conferencereport{2005/000}
-   \date{26 October, 2006}
+   \date{27 October, 2006}
 
-  \title{Design and Implementation Plan for DBS-2 (Cayuga)}
+  \title{Design and Implementation Plan for DBS-2}
 
   \begin{Authlist}
   Anzar Afaq,  Lee Lueking,  Vijay Sekhri     
@@ -32,7 +32,7 @@ Andrew Dolgert,  Chris Jones,  Valentin Kuznetsov, Dan Riley
 %  \Anotfoot{b}{Now at the Moon}
 
   \begin{abstract}
-    This is the plan for design and implementation for the second generation DBS system (DBS-2) to replace the existing prototype (DBS-1). It is based on the discussion and material presented at the DBS Workshop held at Cornell in July 2006, and on subsequent work. This document describes the differneces between DBS-1 and DBS-2, and describes the schema, API, architecture, and deployment of the new system. A schedule and set of milestones is also included.
+    This is the plan for design and implementation for the second generation DBS system (DBS-2) to replace the existing prototype (DBS-1). It is based on the discussion and material presented at the DBS Workshop held at Cornell in July 2006, and on subsequent work. This document describes the differences between DBS-1 and DBS-2, and describes the schema, API, architecture, and deployment of the new system. A schedule and set of milestones is also included.
  
   \end{abstract} 
   
@@ -86,7 +86,7 @@ the output of multiple processings of any given input data.
 \item{Luminosity Section}-''a predefined period of data taking where the
 instantaneous luminosity can be considered constant''.  Files intended
 for physics analysis will begin and end on luminosity section boundaries.
-\item{Data Tier}-A set of objects to be grouped togethered in the output
+\item{Data Tier}-A set of objects to be grouped together in the output
 files of the processing step producing the objects.  The list of objects
 comprising a Data Tier is determined by the release configuration files.
 Additional objects not part of the Data Tier may be included in the same
@@ -128,7 +128,7 @@ location of the constituent files at the sites.
 The EDM Framework does not directly interact with the DBS--all
 DBS/Framework interactions are mediated by one of the workflow
 management tools.  Workflow management is responsible for
-configuring the intput and output LFNs, which the Framework
+configuring the input and output LFNs, which the Framework
 maps to PFNs using the LFC.  Information about the output
 files is recorded in the Framework Job Report (FJR); the
 workflow management system is responsible for registering
@@ -185,17 +185,17 @@ with a more general relationship between Algorithm Configuration
 and Processed Dataset.
 
 DBS-2 adds support for Primary Dataset descriptions,
-and preliminary support for queryable parameter sets,
+and preliminary support for query-able parameter sets,
 luminosity sections, and Analysis Datasets (ADS). Primary
 datasets can be of types 1. Monte Carlo, 2. Detector Data, 
-and 3. Generic. The schema can be updated to accomodate additional 
+and 3. Generic. The schema can be updated to accommodate additional 
 types as we identify them. Analysis Datasets will be created based on
 Definitions that use information  such as application, app version, 
 run range, data quality, and other information in the database related 
 to lumi blocks and files. ADS Definitions (ADSD) can include or exclude 
 data based on these criterion.
 A snapshot is provided to insure that an ADS defined at a particular 
-time is always reproducable and a warning issued if, for whatever 
+time is always reproducible and a warning issued if, for whatever 
 reason, this is not the case(e.g. lost files) when it is used. 
 % --> add descriptions 
 
@@ -205,13 +205,16 @@ system will be deployable with Oracle or MySQL, and  data
 served to clients in either server or stand-alone modes. 
 For the short term, we will not include SQLite but if this 
 is needed would consider it when everything else is working. 
-The server is a Java package and will run as a servlet under 
+The server is written as a Java package and will run as a servlet under 
 tomcat with the possibility of using JBOSS if the environment 
-it provides is useful down the road.   
+it provides is useful down the road. JDBC is used for the database connection
+and Tomcat provides connection pooling and management.
+ In the stand-alone mode the python client communicates directly with the 
+database interface layer (server package).    
 
 \section{DBS Schema}
 
-The complete schema is shown in  Fig.~\ref{fig:new-dbs-schema-design} and described in this section. The up-to-date schema is always availabel on the web~\cite{dbs-schema}
+The complete schema is shown in  Fig.~\ref{fig:new-dbs-schema-design} and described in this section. The up-to-date schema is always available on the web~\cite{dbs-schema}
 \begin{figure}[hbtp]
   \begin{center}
     \resizebox{15cm}{!}{\includegraphics{figure/whole_schema_20061025.eps}}
@@ -255,8 +258,8 @@ The DBS also records:
 
 The following is a list of API calls being prepared for the Cayuga (DBS-2) server. The details of the client API are presented in Appendix A for reference. We will maintain backward compatibility with existing CRAB, PhEDEx, API functionality. 
 \begin{itemize}
-   \item {\bf listPrimaryDatasets} will take pattern as an input that can be matched against primary dataset name. It will list all the primary datasets along with thier descriptions.
-   \item {\bf listProcessedDatasets} will take dictionary as an input. The dictionary may contain pattern for path, appVersion, appFamily or appExe. It will list all the processed datasets along with thier algorithm information that match either the path and/or application information.
+   \item {\bf listPrimaryDatasets} will take pattern as an input that can be matched against primary dataset name. It will list all the primary datasets along with their descriptions.
+   \item {\bf listProcessedDatasets} will take dictionary as an input. The dictionary may contain pattern for path, appVersion, appFamily or appExe. It will list all the processed datasets along with their algorithm information that match either the path and/or application information.
    \item {\bf listApplications} will take dictionary as an input. The dictionary may contain pattern for appVersion, appFamily or appExe. It will list all the applications that match the input pattern
    \item {\bf listRuns} will take path as in input. It will list all the runs within a processed dataset.
    \item {\bf listTiers} will take path as in input. It will list all the tiers within a processed dataset.
@@ -275,7 +278,7 @@ The following is a list of API calls being prepared for the Cayuga (DBS-2) serve
    \item {\bf remapMergedFiles} will take list of lfn and a single lfn as an input.
 \end{itemize}
 
-Several analysisDataset api calls are needed, and are not fully worked out but we can sumarize the general needs.
+Several analysisDataset api calls are needed, and are not fully worked out but we can summarize the general needs. An XML format which includes the data payload is used for client to server communication and is similar to that used in the DBS-1 prototype.
 
 
 
@@ -283,7 +286,7 @@ Several analysisDataset api calls are needed, and are not fully worked out but w
 \subsection{Deployment Issues}
 We consider deployment issues for each component of the system, specifically the schema, server and client. 
 \subsubsection{Schema}
-There will be a set of deployment scripts and procedures that are used for both Oracle and MySQL installations. A sql script is needed for both the Oracle and MySQL schema generation. Should share basic schema description and only have technology specific parts seperate.
+There will be a set of deployment scripts and procedures that are used for both Oracle and MySQL installations. A sql script is needed for both the Oracle and MySQL schema generation. Should share basic schema description and only have technology specific parts separate.
    
 \subsubsection{Server}
   Java servlets can be distributed as WAR files for use with Tomcat installations,  or  RPM's for standalone client mode operation. Validation tests that can determine if the system is working once installed and diagnose problems at any time will be provided. The details of the tomcat installation must be clear for local sites such as what ports can be used. A way is needed to monitor the tomcat servers from outside local site. Everything about the local installation needs to be configurable, such as port numbers, oracle or mysql, and so on. Local administrators need to follow the restrictions and policies of the site.
@@ -293,17 +296,17 @@ There will be a set of deployment scripts and procedures that are used for both 
 The client will be distributed through RPMs. Validation tests will be part of the distribution and included in the installation procedure.
 
 \subsection{Global and Local Installations}
- For the CERN Global installation we will plan for a failover configuration that would use a high availability UPS server  in the event of power outage at CERN.If the load warrents multiple machines can be used with  DNS round robbin set up  similar to that used by the FroNTier system. This system will use the CMS production Oracle database and be a production system with 24/7 hardware support.
+ For the CERN Global installation we will plan for a failover configuration that would use at least one high availability server on interruptible power (UPS).If the load warrants multiple machines can be used to scale up with  DNS round robin  set up  similar to that used by the FroNTier system. This system will use the CMS production Oracle database and be a production system with 24/7 hardware support.
 
 Tier-0 should have a so-called ``local'' setup and data will be staged there before it is migrated to the global instance. This instance will be maintained in the CMS production Oracle database at CERN and the system is fully backed up and has 24/7 support.
 
-Local installations at Tier-1 and Tier-N centers are the responsibility of the local site support team. It is believed that these installations, although important, are as critical as the Global instance. The local instances should be operated in such a manor that  if it  is corrupted or lost only a few hours of work would be lost. 
+Local installations at Tier-1 and Tier-N centers are the responsibility of the local site support team. It is believed that these installations, although important, are not as critical as the Global instance. The local instance should be operated in such a manor that  if it  is corrupted or lost only a few hours of work would be lost. Instances where local instances are more critical should be considered on a case-by-case basis and proper attention will be given. 
 
 
 
 \subsection{Configuration Management and Version Control}
-Maintaining a functioning system overall requires that the schema and code evolves in a  forward and backward compatible way with the ajoining layer. Since the clients are distributed and installed at many locations it is particularly important that incompatibilities be avoided, or made explicitely clear to the user.
-We must have an operational matrix of interoperable versions for schema, server, and client.  Each active layer (server and client) will use the version that is actively used by the ajoining layer to determine the proper action or response. The server checks the schema version and is able to deal with minor schema changes.  The client sends it's version with each request and the server is able to deal with each client version, or fail and return a message indicating that the client is incompatible and which minimal version is needed.
+Maintaining a functioning system overall requires that the schema and code evolves in a  forward and backward compatible way with the adjoining layer. Since the clients are distributed and installed at many locations it is particularly important that incompatibilities be avoided, or made explicitly clear to the user.
+We must have an operational matrix of interoperable versions for schema, server, and client.  Each active layer (server and client) will use the version that is actively used by the adjoining layer to determine the proper action or response. The server checks the schema version and is able to deal with minor schema changes.  The client sends it's version with each request and the server is able to deal with each client version, or fail and return a message indicating that the client is incompatible and which minimal version is needed.
 
    \subsection{Authentication and Authorization}
 Authentication and authorization will be provided through Grid Certificates.
@@ -312,6 +315,8 @@ Authentication and authorization will be provided through Grid Certificates.
       \item There will be authorizations for inserting new data, modifying certain status fields, and modifying existing data.
       \item Read only access should not require authentication.
 \end{itemize}
+   \subsection{Monitoring}
+  Monitoring tools similar to those used for the existing prototype will be employed. These include a log analyzer and statistics collector and heartbeat pinger. 
 \section{Plan of Work}
 The overall plan is to have a working system for Oracle and MySQL by the end of November with full unit tests for the server and client API. In December and the first  part of January we will include additional function for analysis datasets, integrate with ProdAgent and CRAB,  and do performance and stress testing. The system  is expected to be ready for production operation in February 2007.
 A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
@@ -319,22 +324,22 @@ A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
     \caption{DBS workplan for the Oct. 2006 through Jan 2007 in detail.  }
     \label{tab:dbs-work-plan}
     \begin{center}
-     \begin{tabular}{|l|p{3.5in}|p{1.5in}|} \hline 
-Date & DBS Cayuga & Personnele  \\ \hline
+     \begin{tabular}{|l|p{4.5in}|p{1.0in}|} \hline 
+Date & DBS Cayuga & Personnel  \\ \hline
 Sep. 2006 & 
 \begin{enumerate}
  \item Use case development.
  \item Schema review and revisions.
  \item API object and Calls detailed working list and initial users guide.
-\end{enumerate} & Jones, Riley, Kuznetsov, Lueking, Afaq, Sekhri   \\ \hline
+\end{enumerate} & Jones, Riley, Kuznetsov,Dolgert,  Lueking, Afaq, Sekhri  \\ \hline
 Oct. 2006  & 
 \begin{enumerate}
  \item Schema prototype.
  \item Practice deployment to local (MySQL) and global (Oracle) environments. 
  \item API prototyping.
  \item Develop unit tests. 
-
-\end{enumerate}& \\ \hline
+ \item complete design and implementation plan
+\end{enumerate}& Jones, Riley, Kuznetsov, Dolgert,  Lueking, Afaq, Sekhri \\ \hline
 Nov. 2006  & 
 \begin{enumerate}
   \item  Oracle and MySql? deployment details worked out
@@ -360,11 +365,11 @@ Nov. 2006  &
  \item Continue development and testing of schema and API.
  \item Production server planning.
  \item  Develop testing and performance benchmarks.
-\end{enumerate}  & Riley, Kuznetsov, Lueking, Afaq, Sekhri \\ \hline
+\end{enumerate}  & Riley, Kuznetsov, Dolgert, Lueking, Afaq, Sekhri  \\ \hline
 Dec. 2006      & 
 \begin{enumerate}
-  \item have local and global fully functional and working together
-  \ Complete remaining API work
+ \item have local and global fully functional and working together
+ \ Complete remaining API work
    a) analysis DS API ready and working
    b) remap API for merged files
    c) migration (promotion, publishing) API's
@@ -373,12 +378,15 @@ Dec. 2006      &
  \item Integration with ProdAgent, CRAB, Tier-0 and other CMS tools and Framework. 
  \item Continued development and testing.
  \item Refine production environment.   
-\end{enumerate} &  Riley, Kuznetsov, Lueking, Afaq, Sekhri \\ \hline
+\end{enumerate} &  Riley, Kuznetsov, Dolgert, Lueking, Afaq, Sekhri \\ \hline
 Jan. 2007  & 
 \begin{enumerate} 
- \item Continued stress testing w/ full load
-\item Ready for production operation.
+ \item Logging and monitoring details implemented.
+ \item Continued stress testing w/ full estimated load and 2 years datasets
+ \item Ready for production operation.
+ \item Develop procedure for migrating data from DBS-1 as needed.
  \item Final documentation and test procedures.
+ \item Additional discovery and integration with CMS DB areas.
  \end{enumerate}   &  \\ \hline
       \end{tabular}
     \end{center}
