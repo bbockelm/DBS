@@ -58,7 +58,7 @@ eventual ``publication'' to the global scope DBS where accessibility
 throughout the collaboration is required.  Local scope DBS instances
 use the same API and schema as the global scope DBS.
 
-This document is based on work that was started at the DBS Workshop at Cornell in July of 2006. Many of the things discussed at the workshop~\cite{dbs-workshop},and followup meetings, are included in the DBS Roadmap~\cite{dbs-roadmap}. We sometimes refer to the project as ``Cayuga'' named after the Finger Lake near Ithaca. 
+This document is based on work that was started at the DBS Workshop at Cornell in July of 2006. Many of the things discussed at the workshop~\cite{dbs-workshop},and followup meetings, are included in the DBS Roadmap~\cite{dbs-roadmap} and it should be consulted for additional information.This plan does not include the data discovery work described in a seperate document. We refer to the project asDBS-2 or ``Cayuga'', named after the Finger Lake near Ithaca. 
 
 \subsection{CMS Data Management Concepts}
 
@@ -256,29 +256,31 @@ The DBS also records:
 
 \section{DBS API}
 
-The following is a list of API calls being prepared for the Cayuga (DBS-2) server. The details of the client API are presented in Appendix A for reference. We will maintain backward compatibility with existing CRAB, PhEDEx, API functionality. 
-\begin{itemize}
-   \item {\bf listPrimaryDatasets} will take pattern as an input that can be matched against primary dataset name. It will list all the primary datasets along with their descriptions.
-   \item {\bf listProcessedDatasets} will take dictionary as an input. The dictionary may contain pattern for path, appVersion, appFamily or appExe. It will list all the processed datasets along with their algorithm information that match either the path and/or application information.
-   \item {\bf listApplications} will take dictionary as an input. The dictionary may contain pattern for appVersion, appFamily or appExe. It will list all the applications that match the input pattern
-   \item {\bf listRuns} will take path as in input. It will list all the runs within a processed dataset.
-   \item {\bf listTiers} will take path as in input. It will list all the tiers within a processed dataset.
-   \item {\bf listBlocks} will take path as in input. It will list all the blocks within a processed dataset.
-   \item {\bf listFiles} will take dictionary as in input.The dictionary may contain path and/or blockName and/or pattern for lfn.  It will list all the files either in a processed dataset or in a block or in both that match the lfn pattern.
-   \item {\bf listDatasetProvenance} needs to be discussed further to understand the logic.
-   \item {\bf listDatasetInfo} will take dictionary as an input. The dictionary will contain path for the processed dataset and may or may not contain blockName. It will return a snapshot of the dataset which may be restricted only a single block.
-   \item {\bf insertPrimaryDataset} will take dictionary as an input.
-   \item {\bf insertApplication} will take dictionary as an input.
-   \item {\bf insertBlock} will take dictionary as an input.
-   \item {\bf insertProcessedDataset} will take dictionary as an input.
-   \item {\bf insertFiles} will take dictionary as an input. The dictionary will include the run information also.
-   \item {\bf insertDatasetInfo} will take dictionary as an input.
-   \item {\bf closeBlock} will take blockName as in input.
-   \item {\bf setFileStatus} will take lfn as an input.
-   \item {\bf remapMergedFiles} will take list of lfn and a single lfn as an input.
-\end{itemize}
+The following is a list of API calls being prepared for the Cayuga (DBS-2) server. We will maintain backward compatibility with existing CRAB, PhEDEx, API functionality. An XML format which includes the data payload is used for client to server communication and is similar to that used in the DBS-1 prototype.
+\begin{description}
+   \item{listPrimaryDatasets} will take pattern as an input that can be matched against primary dataset name. It will list all the primary datasets along with their descriptions.
+   \item{listProcessedDatasets} will take dictionary as an input. The dictionary may contain pattern for path, appVersion, appFamily or appExe. It will list all the processed datasets along with their algorithm information that match either the path and/or application information.
+   \item{listApplications} will take dictionary as an input. The dictionary may contain pattern for appVersion, appFamily or appExe. It will list all the applications that match the input pattern
+   \item{listRuns} will take path as in input. It will list all the runs within a processed dataset.
+   \item{listTiers} will take path as in input. It will list all the tiers within a processed dataset.
+   \item{listBlocks} will take path as in input. It will list all the blocks within a processed dataset.
+   \item{listFiles} will take dictionary as in input.The dictionary may contain path and/or blockName and/or pattern for lfn.  It will list all the files either in a processed dataset or in a block or in both that match the lfn pattern.
+   \item{listDatasetProvenance} needs to be discussed further to understand the logic.
+   \item{listDatasetInfo} will take dictionary as an input. The dictionary will contain path for the processed dataset and may or may not contain blockName. It will return a snapshot of the dataset which may be restricted only a single block.
+   \item{insertPrimaryDataset} will take dictionary as an input.
+   \item{insertApplication} will take dictionary as an input.
+   \item{insertBlock} will take dictionary as an input.
+   \item{insertProcessedDataset} will take dictionary as an input.
+   \item{insertFiles} will take dictionary as an input. The dictionary will include the run information also.
+   \item{insertDatasetInfo} will take dictionary as an input.
+   \item{closeBlock} will take blockName as in input.
+   \item{setFileStatus} will take lfn as an input.
+   \item{remapMergedFiles} will take list of lfn and a single lfn as an input.
+\end{description}
 
-Several analysisDataset api calls are needed, and are not fully worked out but we can summarize the general needs. An XML format which includes the data payload is used for client to server communication and is similar to that used in the DBS-1 prototype.
+Several analysisDataset api calls are needed, and are not fully worked out but we can summarize the general needs. The API for ADS will include ability to create the definition, create the timestamped "snapshot", compare two definitionss, or two snapshots, clone and/or modify and validate that all files in an exisitng ADS are calid.
+
+
 
 
 
@@ -309,7 +311,7 @@ Maintaining a functioning system overall requires that the schema and code evolv
 We must have an operational matrix of interoperable versions for schema, server, and client.  Each active layer (server and client) will use the version that is actively used by the adjoining layer to determine the proper action or response. The server checks the schema version and is able to deal with minor schema changes.  The client sends it's version with each request and the server is able to deal with each client version, or fail and return a message indicating that the client is incompatible and which minimal version is needed.
 
    \subsection{Authentication and Authorization}
-Authentication and authorization will be provided through Grid Certificates.
+Authentication and authorization will be provided through Grid Certificates, VOMS and GUMS.
 \begin{itemize}
       \item Will use x.509 certificates from the client . A Part of the Globus GSI is used on the server for the authentication.
       \item There will be authorizations for inserting new data, modifying certain status fields, and modifying existing data.
@@ -319,75 +321,74 @@ Authentication and authorization will be provided through Grid Certificates.
   Monitoring tools similar to those used for the existing prototype will be employed. These include a log analyzer and statistics collector and heartbeat pinger. 
 \section{Plan of Work}
 The overall plan is to have a working system for Oracle and MySQL by the end of November with full unit tests for the server and client API. In December and the first  part of January we will include additional function for analysis datasets, integrate with ProdAgent and CRAB,  and do performance and stress testing. The system  is expected to be ready for production operation in February 2007.
-A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}.
+A time table for the DBS work is shown in Table~\ref{tab:dbs-work-plan}. The manpower includes \~4 FTE from Riley, Kuznetsov, Dolgert, Jones,  Lueking, Afaq, Sekhri. 
 \begin{table}[htb]
-    \caption{DBS workplan for the Oct. 2006 through Jan 2007 in detail.  }
+    \caption{DBS workplan for the Sept. 2006 through Jan. 2007 in detail.  }
     \label{tab:dbs-work-plan}
     \begin{center}
-     \begin{tabular}{|l|p{4.5in}|p{1.0in}|} \hline 
-Date & DBS Cayuga & Personnel  \\ \hline
+     \begin{tabular}{|l|p{5.5in}|} \hline 
+Date & DBS Cayuga  \\ \hline
 Sep. 2006 & 
-\begin{enumerate}
- \item Use case development.
- \item Schema review and revisions.
- \item API object and Calls detailed working list and initial users guide.
-\end{enumerate} & Jones, Riley, Kuznetsov,Dolgert,  Lueking, Afaq, Sekhri  \\ \hline
+\begin{flushleft} 
+1. Use case development.\\ 
+2. Schema review and revisions.\\
+3. API object and Calls detailed working list and initial users guide.
+\end{flushleft} \\ \hline
 Oct. 2006  & 
-\begin{enumerate}
- \item Schema prototype.
- \item Practice deployment to local (MySQL) and global (Oracle) environments. 
- \item API prototyping.
- \item Develop unit tests. 
- \item complete design and implementation plan
-\end{enumerate}& Jones, Riley, Kuznetsov, Dolgert,  Lueking, Afaq, Sekhri \\ \hline
+\begin{flushleft}
+ 1. Schema prototype.\\
+ 2. Practice deployment to local (MySQL) and global (Oracle) environments.\\ 
+ 3. API prototyping.\\
+ 4. Develop unit tests.\\ 
+ 5. complete design and implementation plan.\\
+\end{flushleft}  \\ \hline
 Nov. 2006  & 
-\begin{enumerate}
-  \item  Oracle and MySql? deployment details worked out
-         a) schema: scripts for schema creation
-         b) server: work out details of the server that are specific to each oracle and mysql
-         c) Testing deployment at Cornell 
-  \item  Unit tests for server
-  \item  Unit tests for existing client calls
-  \item  API calls to do
-         a) create primary datasets
-         b) create processed datasets
-         c) create file block
-         d) create algorithm
-         e) insert file
-         f) list primary DS, Files, Processed datasets 
-   \item  User documentation, installation, API usage.
-         a) JavaDoc? for server
-         b) PyDoc? for client
-         c) Official place for the schema documentation. 
-   \item  Discovery page compatibility tests with DBS-2
-   \item  Analysis DS API will begin Mid November,
-   \item  Review of plans in Mid November 
- \item Continue development and testing of schema and API.
- \item Production server planning.
- \item  Develop testing and performance benchmarks.
-\end{enumerate}  & Riley, Kuznetsov, Dolgert, Lueking, Afaq, Sekhri  \\ \hline
+\begin{flushleft}
+ 1. Oracle and MySQL deployment details worked out
+         a) schema: scripts for schema creation,
+         b) server: work out details of the server that are specific to each oracle and mysql,
+         c) Testing deployment at Cornell.\\
+ 2. Unit tests for server.\\
+ 3. Unit tests for existing client calls.\\
+ 4. API calls to do:
+         a) create primary datasets,
+         b) create processed datasets,
+         c) create file block,
+         d) create algorithm,
+         e) insert file,
+         f) list primary DS, Files, Processed datasets.\\ 
+ 5. User documentation, installation, API usage:
+         a) JavaDoc? for server,
+         b) PyDoc? for client,
+         c) Official place for the schema documentation.\\ 
+ 6. Discovery page compatibility tests with DBS-2.\\
+ 7. Analysis DS API will begin Mid November.\\
+ 8. Review of plans in Mid November.\\
+ 9. Continue development and testing of schema and API.\\
+ 10.Production server planning.\\
+ 11.Develop testing and performance benchmarks.\\
+\end{flushleft}   \\ \hline
 Dec. 2006      & 
-\begin{enumerate}
- \item have local and global fully functional and working together
- \ Complete remaining API work
-   a) analysis DS API ready and working
-   b) remap API for merged files
-   c) migration (promotion, publishing) API's
-   d) all other API calls 
- \item Integration and testing with Discovery tools
- \item Integration with ProdAgent, CRAB, Tier-0 and other CMS tools and Framework. 
- \item Continued development and testing.
- \item Refine production environment.   
-\end{enumerate} &  Riley, Kuznetsov, Dolgert, Lueking, Afaq, Sekhri \\ \hline
+\begin{flushleft}
+ 1. Have local and global fully functional and working together.\\
+ 2. Complete remaining API work: a) Analysis DS API ready and working,
+   b) remap API for merged files,
+   c) migration (promotion, publishing) API's,
+   d) all other API calls\\
+ 3. Integration and testing with Discovery tools.\\
+ 4. Integration with ProdAgent, CRAB, Tier-0 and other CMS tools and Framework. \\
+ 5. Continued development and testing.\\
+ 6. Refine production environment.\\  
+\end{flushleft} \\ \hline
 Jan. 2007  & 
-\begin{enumerate} 
- \item Logging and monitoring details implemented.
- \item Continued stress testing w/ full estimated load and 2 years datasets
- \item Ready for production operation.
- \item Develop procedure for migrating data from DBS-1 as needed.
- \item Final documentation and test procedures.
- \item Additional discovery and integration with CMS DB areas.
- \end{enumerate}   &  \\ \hline
+\begin{flushleft} 
+ 1. Logging and monitoring details implemented.\\
+ 2. Continued stress testing w/ full estimated load and 2 years datasets.\\
+ 3. Ready for production operation.\\
+ 4. Develop procedure for migrating data from DBS-1 as needed.\\
+ 5. Final documentation and test procedures.\\
+ 6. Additional discovery and integration with CMS DB areas.\\
+ \end{flushleft}    \\ \hline
       \end{tabular}
     \end{center}
   \end{table}  
