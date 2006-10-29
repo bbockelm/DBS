@@ -324,7 +324,7 @@ Upon your search:
 <!--
 <a href="javascript:ajaxGetDataFromSelection()">Test ajaxGetDataFromSelection</a>
 <b>
-Please make your selection from table below and <a href="javascript:ajaxGetDataFromSelection();showWaitingMessage()">process your request</a>
+Please make your selection from table below and <a href="javascript:ajaxGenParentsGraph();ajaxGetDataFromSelection();showWaitingMessage()">process your request</a>
 </b>
 -->
 #if len($oList)
@@ -387,7 +387,7 @@ Please make your selection and submit for further processing:
 </b>
 -->
 <b>
-Please make your selection from table above and <a href="javascript:ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
+Please make your selection from table above and <a href="javascript:ajaxGenParentsGraph();ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
 </b>
 </form>
 #else
