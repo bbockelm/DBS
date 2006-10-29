@@ -26,6 +26,11 @@ HistoryUpdater.prototype = {
      t.innerHTML=t.innerHTML+responseHTML;
    }
 }
+function registerAjaxHistoryCalls() {
+    historyUpdater = new HistoryUpdater();
+    ajaxEngine.registerRequest('ajaxHistory','history');
+    ajaxEngine.registerAjaxObject('userHistory',historyUpdater);
+}
 function ajaxHistory(action) {
   ajaxEngine.sendRequest('ajaxHistory','actionString='+action);
 }
@@ -128,6 +133,15 @@ function ajaxSiteSearch(_dbs,_site) {
   var action='<a href="javascript:showWaitingMessage();ajaxSiteSearch(\''+dbsInst+'\',\''+site+'\')">site search ('+dbsInst+','+site+')</a>';
   ajaxHistory(action);
 }
+function registerAjaxObjectCalls() {
+    getDataUpdater = new GetDataUpdater();
+    ajaxEngine.registerRequest('ajaxGetData','getData');
+    ajaxEngine.registerRequest('ajaxSearch','search');
+    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
+    ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
+    ajaxEngine.registerAjaxObject('results',getDataUpdater);
+}
+
 function registerAjaxGetBlocksFromSiteCalls() {
   ajaxEngine.registerRequest('ajaxGetBlocksFromSite','getBlocksFromSiteHelper');
   ajaxEngine.registerAjaxElement('siteBlocksHandler');
@@ -165,4 +179,114 @@ function getProvenance(id) {
   // see http://www.i2d.com.au/members/~benmann/javascriptreplace.html
   dataset=id.replace(/___/g,"/");
   ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
+}
+
+var NavigatorMenuDictUpdater=Class.create();
+NavigatorMenuDictUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById("navigatorDict");
+     eval(responseHTML);
+     var dbs = document.getElementById("dbsSelector");
+     updateLayer(dbs);
+   }
+}
+function registerAjaxGenNavigatorMenuDictCalls() {
+  navigatorUpdater = new NavigatorMenuDictUpdater();
+  ajaxEngine.registerRequest('ajaxGenNavigatorMenuDict','genNavigatorMenuDict');
+  ajaxEngine.registerAjaxObject('navigatorDict',navigatorUpdater);
+}
+function ajaxGenNavigatorMenuDict() {
+  ajaxEngine.sendRequest('ajaxGenNavigatorMenuDict');
+}
+var SiteMenuDictUpdater=Class.create();
+SiteMenuDictUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById("siteMenuDict");
+     eval(responseHTML);
+     var dbs = document.getElementById("form2_dbsSelector");
+     updateSites(dbs);
+   }
+}
+function registerAjaxGenSiteMenuDictCalls() {
+  siteDictUpdater = new SiteMenuDictUpdater();
+  ajaxEngine.registerRequest('ajaxGenSiteMenuDict','genSiteMenuDict');
+  ajaxEngine.registerAjaxObject('siteMenuDict',siteDictUpdater);
+}
+function ajaxGenSiteMenuDict() {
+  ajaxEngine.sendRequest('ajaxGenSiteMenuDict');
+}
+
+// method which should be called on page load, to initialize all AJAX calls
+function ajaxInit() {
+  registerAjaxGenNavigatorMenuDictCalls();
+  ajaxGenNavigatorMenuDict();
+//  registerAjaxGenSiteMenuDictCalls();
+//  ajaxGenSiteMenuDict();
+}
+
+// Class which capture ajax response and handle it. 
+// We put our reponse to "parents" tag id found on internal HTML.
+var ParentsGraphUpdater=Class.create();
+ParentsGraphUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var r=document.getElementById("_parents");
+     r.className="td_menu_lavender_box";
+     var t=document.getElementById("parents");
+     t.innerHTML=responseHTML;
+     // additional action can come here
+   }
+}
+function registerAjaxProvenanceGraphCalls() {
+  parentsGraphUpdater = new ParentsGraphUpdater();
+  ajaxEngine.registerRequest('ajaxGenParentsGraph','getProvenanceForAllDatasets');
+  ajaxEngine.registerAjaxObject('parents',parentsGraphUpdater);
+}
+function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
+  var dbs;
+  if(_dbs) {
+      dbs=_dbs;
+  } else {
+      dbs=document.getElementById('dbsSelector').value;
+  }
+  var site;
+  if(_site) {
+      site=_site;
+  } else {
+      site=document.getElementById('siteSelector').value;
+  }
+  var app;
+  if(_app) {
+      app=_app;
+  } else {
+      app=document.getElementById('appSelector').value;
+  }
+  var primD;
+  if(_primD) {
+      primD=_primD;
+  } else {
+      primD=document.getElementById('primSelector').value;
+  }
+  var tier;
+  if(_tier) {
+      tier=_tier;
+  } else {
+      tier=document.getElementById('tierSelector').value;
+  }
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
+  var action='<a href="javascript:showWaitingMessage();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  ajaxHistory(action);
+}
+// keep this for first implementation of provenance calls
+function registerAjaxProvenanceCalls() {
+    ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
+    ajaxEngine.registerAjaxElement('parentGraph');
 }

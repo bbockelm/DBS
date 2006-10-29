@@ -73,6 +73,36 @@ function HideParents(id) {
    }
 }
 function ShowPanel(link) {
+   var t=document.getElementById("HiddenPanel");
+   if(t) {
+      t.className="hide";
+   } else {
+      alert("Fail to find HiddenPanel");
+   }
+   var p=document.getElementById("GlobalPanel");
+   if(p) {
+      p.className="show";
+   } else {
+      alert("Fail to find GlobalPanel");
+   }
+}
+function HidePanel(link) {
+   msg='<table width="100%"><tr><td class="menu_td_gray"><table><tr><td class="td_gray_box"><span class="sectionhead_tight"><a href="javascript:ShowPanel(\''+link+'\')">show panel</a></span></td><td></td></tr></table> </td></tr></table>';
+   var t=document.getElementById("HiddenPanel");
+   if(t) {
+      t.className="show";
+      t.innerHTML=msg;
+   } else {
+      alert("Fail to find HiddenPanel");
+   }
+   var p=document.getElementById("GlobalPanel");
+   if(p) {
+      p.className="hide";
+   } else {
+      alert("Fail to find GlobalPanel");
+   }
+}
+function ShowPanel_old(link) {
    var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
    msg='<table width="100%"><tr><td><span class="sectionhead_tight">HIDE NAVIGATION <a href="javascript:HidePanel(\''+link+'\')">PANEL</a></span></td><td align="center"><span class="sectionhead_tight">DBS/DLS DATA DISCOVERY PAGE</span></td><td align="right">'+url+'</td></tr></table>';
    var t=document.getElementById("HiddenPanel");
@@ -88,7 +118,7 @@ function ShowPanel(link) {
       alert("Fail to find GlobalPanel");
    }
 }
-function HidePanel(link) {
+function HidePanel_old(link) {
    var url='Home page: <a href="'+link+'/">users</a>, <a href="'+link+'/expert">experts</a>';
    msg='<table width="100%"><tr><td><span class="sectionhead_tight">SHOW NAVIGATION <a href="javascript:ShowPanel(\''+link+'\')">PANEL</a></span></td><td align="center"><span class="sectionhead_tight">DBS/DLS DATA DISCOVERY PAGE</span></td><td align="right">'+url+'</td></tr></table>';
    var t=document.getElementById("HiddenPanel");
@@ -114,6 +144,7 @@ function showMenu(menu) {
    menuArr[4]='Datasets';
    menuArr[5]='History';
    menuArr[6]='About';
+   menuArr[7]='Hide';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {

@@ -885,8 +885,11 @@ class DBSHelper(DBSLogger):
       nEvts    = 0
       totFiles = 0
       totSize  = 0
-#      blockInfoDict = self.getBlockInfo(dataset,app)
+      # IMPORTANT: I think we need to replace listBlocks(dataset) to listBlocksFromApp(app)
+#      t1 = time.time()
       blockInfoDict = self.api.listBlocks(dataset,app,"yes")
+#      t2 = time.time()
+#      print "DBS time:",(t2-t1)
       for key in blockInfoDict.keys():
           if not blockInfoDict[key][0]:
              return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
@@ -903,7 +906,10 @@ class DBSHelper(DBSLogger):
           # query DLS
           hostList=[]
           try:
+#              t3 = time.time()
               dlsList = self.dlsApi.getLocations(blockName)
+#              t4 = time.time()
+#              print "DLS time:",(t4-t3)
               for entry in dlsList:
                   for loc in entry.locations:
                       dlsHost = str(loc.host)
@@ -919,7 +925,6 @@ class DBSHelper(DBSLogger):
               pass
           # end of DLS query
           blockInfoDict[blockName]+=hostList
-#          addToDict(blockDict,blockName,(hostList,evts,bStatus,nFiles,sizeFormat(bBytes)))
       return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
 
   def getBlocksFromSite(self,site):

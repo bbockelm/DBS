@@ -374,7 +374,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             page = self.genTopHTML(intro=False)
             page+= self.genVisiblePanel('Navigator')
-#            page+= self.genPanel()
             page+= self.genBottomHTML()
             return page
         except:
@@ -460,6 +459,50 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results">"""
         endAjaxMsg="</response></ajax-response>"
+        self.firstSearch=0
+        if keywords and not validator(keywords):
+           page+="""
+<hr class="dbs" />
+<div class="show_red_bold">Your search expression <p><em>%s</em></p> is not valid</div>
+"""%keywords
+           page+=endAjaxMsg
+           return page
+        oList= []
+        # parse keywords and search for DBSINST
+        dbsList=appList=tierList=siteList=primList=[]
+        if self.userMode:
+           self.helperInit(DBSGLOBAL)
+           oList=self.searchHelper(keywords)
+        else:
+           if  not len(dbsList):
+               dbsList=self.dbsList
+           for dbsInst in dbsList:
+               print "dbs",dbsInst
+               self.helperInit(dbsInst)
+               oList+=self.searchHelper(keywords)
+        nameSpace = {
+                     'firstSearch': self.firstSearch, 
+                     'oList'      : oList, 
+                     'userMode'   : self.userMode,
+                     'keywords'   : keywords
+                    }
+        t = Template(CheetahDBSTemplate.templateDataFromSelection, searchList=[nameSpace])
+        page+= str(t)
+        page+=endAjaxMsg
+        if self.verbose:
+           print page
+        return page
+    search.exposed = True
+
+    def advancedSearch(self,keywords="",**kwargs):
+        """
+           Search any match in DB for given keywords. The search done over
+           meta-data tables.
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results">"""
+        endAjaxMsg="</response></ajax-response>"
 #        page = self.genTopHTML()
         self.firstSearch=0
 #        page+= self.genVisiblePanel('Search')
@@ -524,7 +567,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         if 1:
            print page
         return page
-    search.exposed = True
+    advancedSearch.exposed = True
 
     def getSummary(self):
         """
@@ -560,10 +603,10 @@ class DBSDataDiscoveryServer(DBSLogger):
             a JS dictionary for pull down menu.
         """
         f = open('dbsDict.global','r')
-        self.dbsUser = f.read()
+        self.dbsUser = string.strip(f.read())
         f.close()
         f = open('dbsDict.all','r')
-        self.dbsDict = f.read()
+        self.dbsDict = string.strip(f.read())
         f.close()
         if self.userMode:
            return self.dbsUser
@@ -592,6 +635,23 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            return self.dbsDict
         
+    def genNavigatorMenuDict(self):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="navigatorDict">"""
+        endAjaxMsg="</response></ajax-response>"
+        try:
+            page+="navDict="+self.getDBSDict()
+        except:
+            t=self.errorReport("Fail in genNavigatorMenuDict function")
+            page+=str(t)
+            pass
+        page+=endAjaxMsg
+        if self.verbose:
+           print page
+        return page
+    genNavigatorMenuDict.exposed = True
+        
     def genMenuForm(self,frontPage=0,msg="",firstDBS="",firstSite="",firstApp="",firstPrim="",firstTier=""):
         """
            Constructs menus. It caches user selections and pass then to HTML form.
@@ -614,10 +674,12 @@ class DBSDataDiscoveryServer(DBSLogger):
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
         if firstTier=="*": firstTier="All"
-        dbsDict = self.getDBSDict()
+        # IMPORTANT: here I commented out load of dictionary, since now I obtained it from AJAX
+        # I also commented out obj=$dict in CheetahDBSTemplate.templateJS 
+#        dbsDict = self.getDBSDict()
         nameSpace = {
                      'host'     : self.dbsdd, 
-                     'dict'     : dbsDict,
+#                     'dict'     : dbsDict,
                      'userMode' : self.userMode,
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
@@ -627,18 +689,10 @@ class DBSDataDiscoveryServer(DBSLogger):
                     }
         t = Template(CheetahDBSTemplate.templateJS, searchList=[nameSpace])
         page = str(t)
-#        if not msg:
-#           msg=self.searchForm()
         if self.userMode:
            dbsList=[DBSGLOBAL]
-#           if not msg:
-#              msg=CheetahDBSTemplate.templateUserHelp
         else:
            dbsList = self.dbsList
-#           if not msg:
-#              nameSpace={'host':self.dbsdd}
-#              msg = str(Template(CheetahDBSTemplate.templateExpertHelp,searchList=[nameSpace]))
-
         nameSpace = {
                      'dbsList'  : dbsList,
                      'frontPage': frontPage,
@@ -711,7 +765,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             pass
         page+=endAjaxMsg
         if self.verbose:
-#        if 1:
            print page
         return page
     getDataFromSelection.exposed = True 
@@ -836,9 +889,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         if string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all": site="*"
-        # AJAX wants response as "text/xml" type
-#        self.setContentType('xml')
-#        page="""<ajax-response><response type="object" id="results">"""
         page=""
         
         self.helperInit(dbsInst)
@@ -858,6 +908,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
         dList = self.helper.getDatasetsFromApp(appPath)
         regList=[]
+        last=0
         page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
         for dataset in dList:
             id+=1
@@ -867,7 +918,9 @@ class DBSDataDiscoveryServer(DBSLogger):
             if dataTier!="*" and tier!=dataTier: continue
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
             # new stuff which do not show repeating datasets
-            p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
+            if id>=len(dList):
+               last=1
+            p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                idPath=string.replace(oldDataset,"/","___")
                page+="""
@@ -887,10 +940,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             oldDataset=dataset
             prevPage = p
         page+=prevPage # end of new stuff
-
-#        page+="</response></ajax-response>"
-#        if self.verbose:
-#           print page
         return page
     getDataHelper.exposed=True
 
@@ -920,21 +969,14 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             msg="dbsInst='%s', site='%s', app='%s', primD='%s', tier='%s'"%(dbsInst,site,app,primD,tier)
             self.writeLog(msg)
-#            page = self.genTopHTML()
             msg=""
             self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-#            page+= self.genVisiblePanel('Navigator')
             page+= self.getDataHelper(dbsInst,site,app,primD,tier)
-#            page+= self.genBottomHTML()
-#            return page
         except:
             t=self.errorReport("Fail in getData function")
             page+=str(t)
-#            pass
-#            return str(t)
         page+="</response></ajax-response>"
         if self.verbose:
-#        if 1:
            print page
         return page
     getData.exposed = True 
@@ -952,7 +994,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             self.htmlInit()
             page = self.genTopHTML()
-#            page+= self.genHiddenPanel()
             if dataset:
                page+= self.genSnapshot(dbsInst,self.site,self.app,self.primD,self.tier)
             page+="""<hr class="dbs" />"""
@@ -1075,7 +1116,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
         return str(t)
         
-    def dataToHTML(self,dbsInst,path,locDict,blockDict,totEvt,totFiles,totSize,id):
+    def dataToHTML(self,dbsInst,path,locDict,blockDict,totEvt,totFiles,totSize,id,last=0):
         """
            Forms output tables.
            @type  path: string 
@@ -1098,7 +1139,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'totFiles'   : totFiles,
                      'totSize'    : totSize,
                      'userMode'   : self.userMode,
-                     'tid'        : id
+                     'tid'        : id,
+                     'last'       : last
                     }
         t = Template(CheetahDBSTemplate.templateLFB, searchList=[nameSpace])
 	page+=str(t)
@@ -1136,12 +1178,11 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
+        # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results">"""
         try:
-#            page = self.genTopHTML()
             self.formDict['siteForm']=(dbsInst,site)
-#            page+= self.genVisiblePanel('Site')
             self.helper.setDBSDLS(dbsInst)
             bList = self.helper.getBlocksFromSite(site)
             nameSpace = {
@@ -1151,17 +1192,12 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'bList'  : bList
                         }
             t = Template(CheetahDBSTemplate.templateFileBlocksFromSite, searchList=[nameSpace])
-#            page+= str(t)
-#            page+= self.genBottomHTML()
-#            return page
         except:
             t=self.errorReport("Fail in getBlocksFromSite function")
             pass
-#            return str(t)
         page+= str(t)
         page+="</response></ajax-response>"
         if self.verbose:
-#        if 1:
            print page
         return page
     getBlocksFromSite.exposed=True
@@ -1213,7 +1249,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.setContentType('xml')
         self.helperInit(dbsInst)
         dList=self.helper.getProcessedDatasets("/"+primDataset+"/*/*",app=0)
-#        page="""<ajax-response><response type="element" id="primDatasetDetails">"""
         page="""<ajax-response><response type="element" id="results">"""
         nameSpace = {
                      'msg'     : 'Processed datasets (<a href="javascript:hideWaitingMessage()">hide</a>)',
@@ -1250,32 +1285,117 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDatasets.exposed=True
 
+    def getDatasetProvenanceHelper(self,dataset,**kwargs):
+        """
+           Get dataset provenance
+           @type  dataset: string
+           @param dataset: dataset name
+           @rtype: string
+           @return: returns parents fro given datasets in HTML form 
+        """
+        try:
+            parents  = self.helper.getDatasetProvenance(dataset)
+            nameSpace={
+                       'host'      : self.dbsdd, 
+                       'dataset'   : dataset, 
+                       'parentList': parents
+                      }
+            t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
+            page = str(t)
+        except:
+            page="No provenance information found at this time"
+        return page
+
     def getDatasetProvenance(self,dataset,**kwargs):
         """
            Generates AJAX response to get dataset provenance
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        parents  = self.helper.getDatasetProvenance(dataset)
-        nameSpace={
-                   'host'      : self.dbsdd, 
-                   'dataset'   : dataset, 
-                   'parentList': parents
-                  }
-        t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
-        page = str(t)
+        page ="""<ajax-response><response type="element" id="parentGraph">"""
+        page+=self.getDatasetProvenanceHelper(dataset)
+#        parents  = self.helper.getDatasetProvenance(dataset)
+#        nameSpace={
+#                   'host'      : self.dbsdd, 
+#                   'dataset'   : dataset, 
+#                   'parentList': parents
+#                  }
+#        t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
+#        page = str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+           print page
+        return page
+    getDatasetProvenance.exposed=True
+
+    def getProvenanceForAllDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
+        """
+           AJAX method to retrieve/build provenance graph once user made a choice to lookup
+           data for given input parameters.
+           @type  dbsInst: string
+           @param dbsInst: user selection of DBS menu
+           @type  site: string
+           @param site: user selection of the site, default "All"
+           @type  app: string
+           @param app: user selection of the application, default "*"
+           @type  primD: string
+           @param primD: user selection of the primary dataset, default "*"
+           @type  tier: string
+           @param tier: user selection of the data tier, default "*"
+           @rtype : string
+           @return: returns HTML snippet in AJAX wrapper
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="parents">"""
+        if string.lower(tier)=="all": tier="*"
+        if string.lower(site)=="all": site="*"
+        self.helperInit(dbsInst)
+        self.dbs  = dbsInst
+        self.site = site
+        self.app  = app
+        self.primD= primD
+        self.tier = tier
+        primaryDataset=primD
+        dataTier = tier
+        dList = self.helper.getDatasetsFromApp(app)
+        for dataset in dList:
+            empty,prim,tier,app = string.split(dataset,"/")
+            if primaryDataset!="*" and prim!=primaryDataset: continue
+            if dataTier!="*" and tier!=dataTier: continue
+            page+=self.getDatasetProvenanceHelper(dataset)
+        page+="</response></ajax-response>"
+#        if self.verbose:
+        if 1:
+           print page
+        return page
+    getProvenanceForAllDatasets.exposed = True 
+    
+    def genSiteMenuDict(self):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="navigatorDict">"""
+        endAjaxMsg="</response></ajax-response>"
+        try:
+            page+="siteDict="+getDictOfSites()
+        except:
+            t=self.errorReport("Fail in genSiteMenuDict function")
+            page+=str(t)
+            pass
+        page+=endAjaxMsg
         if self.verbose:
 #        if 1:
            print page
         return page
-    getDatasetProvenance.exposed=True
-    
+    genSiteMenuDict.exposed = True
+        
     def siteForm(self,firstDBS="",firstSite=""):
         """
            Generates site form request
         """
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
+        # IMPORTANT: we removed here siteDict, since it's replaced by AJAX call genSiteMenuDict
         nameSpace = {
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
@@ -1322,7 +1442,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+= str(t)
         page+="</response></ajax-response>"
         if self.verbose:
-#        if 1:
            print page
         return page
     history.exposed=True

@@ -1,11 +1,11 @@
 function init() {
   if(!first) {
-      first = 1
-      _dbs  = null
-      _app  = null
-      _prim = null
-      _tier = null
-      _site = null
+      first = 1;
+      _dbs  = null;
+      _app  = null;
+      _prim = null;
+      _tier = null;
+      _site = null;
   }
 }
 function updateSelection(selector, newOptions, firstElement) {
@@ -36,7 +36,7 @@ function updateLayer(dbsInst) {
   var selectElement = document.createElement("select")
 
   //get the choice made
-  appObj = obj.nextObj[ dbsInst.value ]
+  appObj = navDict.nextObj[ dbsInst.value ]
 
   //redraw the menu for layer1
   updateSelection(selectElement, appObj.menuList, _app )
@@ -56,7 +56,7 @@ function updateLayer0(selector) {
   var selectElement = document.createElement("select")
 
   //get the choice made
-  appObj = obj.nextObj[ selector.options[selector.selectedIndex].value ]
+  appObj = navDict.nextObj[ selector.options[selector.selectedIndex].value ]
 
   //redraw the menu for layer1
   updateSelection(selectElement, appObj.menuList, _app)
@@ -105,10 +105,10 @@ function updateSites(selector) {
   }
   var selectElement = document.createElement("select");
 
-  siteObj = obj2.nextObj[ selector.options[selector.selectedIndex].value ];
+  siteObj = siteDict.nextObj[ selector.options[selector.selectedIndex].value ];
   updateSelection(selectElement, siteObj.menuList, _site);
+  site.appendChild(selectElement);
   selectElement.setAttribute("id",'form2_siteSelector');
   selectElement.setAttribute("name",'site');
-  site.appendChild(selectElement);
   init();
 }

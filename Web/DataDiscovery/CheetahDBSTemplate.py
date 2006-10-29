@@ -61,8 +61,35 @@ templatePrintList="""
 
 templateProvenance="""
 #set idPath=$dataset.replace("/","___")
-<ajax-response>
- <response type="element" id="parentGraph">
+    <p>
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tr>
+    <th align="left">$dataset</th>
+    </tr>
+    #if not len($parentList)
+    <tr>
+    <td>
+    No parents found
+    </td>
+    </tr>
+    #else
+    #for parent in $parentList
+    <tr>
+    <td align="left">
+    <div class="indent">
+    <img src="images/down_right_arrow.gif" alt="down_right_arrow" align="left" />
+    $parent
+    </div>
+    </td>
+    </tr>
+    #end for
+    #end if
+    </table>
+    </p>
+"""
+
+templateProvenance_orig="""
+#set idPath=$dataset.replace("/","___")
     <p>
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -78,9 +105,6 @@ templateProvenance="""
     #for parent in $parentList
     <tr>
     <td align="left">
-    <!--
-    <img src="images/down_right_arrow.jpg" alt="arrow" />
-    -->
     $parent
     </td>
     </tr>
@@ -89,8 +113,6 @@ templateProvenance="""
     </table>
     </p>
     <p></p>
-  </response>
-</ajax-response>
 """
 
 templateTop = """
@@ -110,17 +132,36 @@ templateTop = """
 <script type="text/javascript" src="js/rico.js"></script>
 <script type="text/javascript" src="js/ajax_init.js"></script>
 </head>
-<body>
+<body onload="ajaxInit();">
 
 <noscript>
 <h1>You have disabled Javascript in your browser. This page requires
-Javascript.</h1>
+Javascript in order to work properly.</h1>
 </noscript>
 
 <hr class="dbs" />
+<table width="100%">
+<tr>
+<td align="left" class="td3">
+<img src="images/CMSLogo.jpg" alt="CMS logo" />
+</td>
+<td align="left" valign="center">
+<span class="sectionhead_tight">
+DBS/DLS DATA DISCOVERY PAGE
+</span>
+</td>
+<td align="right" valign="center">
+Home page: <a href="$host/">users</a>
+<a href="$host/expert">experts</a>
+</td>
+</tr>
+</table>
+<hr class="dbs" />
+
 """
+
 templateHistory="""
-<table width="100%"><tr align="left" valign="top"><td class="td11">$time</td><td class="td1">&#8212;</td><td>$action</td></tr></table>
+<table width="100%"><tr align="left" valign="top"><td class="td12">$time</td><td class="td1">&#8212;</td><td>$action</td></tr></table>
 """
 
 templateAjaxInit="""
@@ -131,27 +172,11 @@ function registerAjaxPrimDatasetsCalls() {
     ajaxEngine.registerAjaxElement('datasets'+'$name');
 #end for
 }
-function registerAjaxHistoryCalls() {
-    historyUpdater = new HistoryUpdater();
-    ajaxEngine.registerRequest('ajaxHistory','history');
-    ajaxEngine.registerAjaxObject('userHistory',historyUpdater);
-}
-function registerAjaxProvenanceCalls() {
-    ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
-    ajaxEngine.registerAjaxElement('parentGraph');
-}
-function registerAjaxObjectCalls() {
-    getDataUpdater = new GetDataUpdater();
-//    ajaxEngine.registerRequest('ajaxGetData','getDataHelper');
-    ajaxEngine.registerRequest('ajaxGetData','getData');
-    ajaxEngine.registerRequest('ajaxSearch','search');
-    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
-    ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
-    ajaxEngine.registerAjaxObject('results',getDataUpdater);
-}
+// put all AJAX registration calls here
 registerAjaxHistoryCalls();
 registerAjaxProvenanceCalls();
 registerAjaxObjectCalls();
+registerAjaxProvenanceGraphCalls();
 </script>
 """
 
@@ -184,7 +209,7 @@ You may use boolean expressions, e.g.,
 </p>
 <p>
 Any keywords:
-<input type="text" name="keywords" size="80" id="keywordSelector" />
+<input type="text" name="keywords" size="60" id="keywordSelector" />
 <input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
 </p>
 </form>
@@ -202,7 +227,9 @@ templateLine_OR="""
 
 templateSiteForm="""
 <script type="text/javascript">
-obj2=$siteDict
+// siteDict = { DBSInst: { siteDict={ site:null } } }, } }
+// it's going to be inserted here by AJAX call
+siteDict=$siteDict
 var siteObj = null
 var first   = null
 #if $firstDBS
@@ -257,6 +284,7 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 </tr>
 </table>
 </form>
+
 <script type="text/javascript">
   var dbs = document.getElementById("form2_dbsSelector")
   updateSites(dbs)
@@ -407,33 +435,32 @@ If more information needed please send request to
 #templateJS=templateTop+"""
 templateJS="""
 <script type="text/javascript">
-
-// pythonDict = { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
-
-obj=$dict
-var appObj  = null
-var primObj = null
-var tierObj = null
-var first   = null
+// navDict = { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
+// it's going to be inserted here by AJAX call
+####var navDict=$dict;
+var appObj  = null;
+var primObj = null;
+var tierObj = null;
+var first   = null;
 #if $firstDBS
-  var _dbs  = "$firstDBS"
+  var _dbs  = "$firstDBS";
 #else
-  var _dbs  = null
+  var _dbs  = null;
 #end if
 #if $firstApp
-  var _app  = "$firstApp"
+  var _app  = "$firstApp";
 #else
-  var _app  = null
+  var _app  = null;
 #end if
 #if $firstPrim
-  var _prim = "$firstPrim"
+  var _prim = "$firstPrim";
 #else
-  var _prim = null
+  var _prim = null;
 #end if
 #if $firstTier
-  var _tier = "$firstTier"
+  var _tier = "$firstTier";
 #else
-  var _tier = null
+  var _tier = null;
 #end if
 </script>
 <script type="text/javascript" src="js/updates.js"></script>
@@ -467,7 +494,7 @@ $msg
 <!-- 
 <form action="getData" method="get">
 -->
-<form action="javascript:ajaxGetData();" method="get">
+<form action="javascript:ajaxGetData();ajaxGenParentsGraph();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -493,7 +520,7 @@ $msg
 #end if
 
 <tr valign="top">
-<td align="right">&nbsp;<b>Tier sites</b>
+<td align="right"><b>Tier sites</b>
 </td>
 <td>
 <select name="site" id="siteSelector">
@@ -505,21 +532,21 @@ $msg
 </td></tr>
 
 <tr valign="top">
-<td align="right">&nbsp;<b>Application</b>
+<td align="right"><b>Application</b>
 </td>
 <td>
 <div id="appHolder"></div>
 </td></tr>
 
 <tr valign="top">
-<td align="right">&nbsp;<b>Primary dataset</b>
+<td align="right"><b>Primary dataset</b>
 </td>
 <td>
 <div id="primHolder"></div>
 </td></tr>
 
 <tr valign="top">
-<td align="right">&nbsp;<b>Data tier</b>
+<td align="right"><b>Data tier</b>
 </td>
 <td>
 <div id="tierHolder"></div>
@@ -531,6 +558,7 @@ $msg
 <tr>
 <td></td>
 <td>
+#*
 <script type="text/javascript">
   var dbs = document.getElementById("dbsSelector")
 #if $userMode
@@ -539,7 +567,8 @@ $msg
   updateLayer0(dbs)
 #end if
 </script>
-<input type="submit" value="Find" onclick="javascript:showWaitingMessage();" />
+*#
+<input type="submit" value="Find" onclick="javascript:showResMenu('results');showWaitingMessage();" />
 </td></tr>
 </table>
 <!-- end of menu table -->
@@ -645,7 +674,10 @@ templateLFB = """
 #set tot=len($blockDict.keys())
 #set idPath=$path.replace("/","___")
 <div>
+<a href="javascript:showResMenu('parents')">$path</a>
+<!--
 <a href="javascript:showLoadingMessage('parentGraph');registerAjaxProvenanceCalls();getProvenance('$idPath')">$path</a>
+-->
 </div>
 <div id="$idPath"></div>
 
@@ -791,7 +823,9 @@ Both
 ##
 #end if
 ##
+#if not $last
 <hr class="dbs" />
+#end if
 """
 
 templateBottom="""
@@ -821,8 +855,10 @@ templateBottom="""
 <hr id="results_hr" class="hide" />
 <table>
 <tr align="left">
-<td class="td5"><img src="images/CMSLogo.jpg" alt="CMS Logo" />
+<!--
+<td class="td5"><img src="images/CMSLogo.jpg" alt="CMS logo" />
 </td>
+-->
 <td>
 <em class="small">
 CMS data discovery. Author: <a href="mailto:vk@mail.lns.cornell.edu">Valentin Kuznetsov</a>.
@@ -857,6 +893,7 @@ Home page: <a href="$host/">users</a>
 <hr class="dbs" />
 -->
 #end if
+
 <table width="100%">
 <tr valign="top">
 <!-- menu -->
@@ -886,10 +923,14 @@ Home page: <a href="$host/">users</a>
 #end if
 <tr><td><br /></td></tr>
 <tr>
-<td class="td_gray_box"><a href="javascript:showMenu('History')">History</a></td>
+<td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History')">History</a></td>
 </tr>
 <tr>
-<td class="td_gray_box"><a href="javascript:showMenu('About')">About...</a></td>
+<td class="td_gray_box" id="About_Menu"><a href="javascript:showMenu('About')">About...</a></td>
+</tr>
+<tr><td><br /></td></tr>
+<tr>
+<td class="td_gray_box" id="Hide_Menu"><a href="javascript:HidePanel('$host')">Hide panel</a></td>
 </tr>
 </table>
 </td>
@@ -905,6 +946,7 @@ Home page: <a href="$host/">users</a>
       </div>
       <div id="navigationContent1">
       $navigatorForm
+      <div id="navigatorDict"></div>
       </div>
    </div>
    <div id="navigationPanel2">
@@ -959,6 +1001,7 @@ Home page: <a href="$host/">users</a>
      </div>
      <div id="siteContent1">
       $siteForm
+      <div id="siteMenuDict"></div>
      </div>
    </div>
 
@@ -1232,11 +1275,13 @@ templateDivEntries="""
 """
 
 templateHiddenPanel="""
-<div id="HiddenPanel"></div>
 <div id="GlobalPanel">
 $panel
 </div>
+<div id="HiddenPanel"></div>
+<--
 <script type="text/javascript">HidePanel('$host')</script>
+-->
 <script type="text/javascript">
 #if $view
 showMenu('$view')
@@ -1245,11 +1290,13 @@ showMenu('$view')
 """
 
 templateVisiblePanel="""
-<div id="HiddenPanel"></div>
 <div id="GlobalPanel">
 $panel
 </div>
+<div id="HiddenPanel"></div>
+<!--
 <script type="text/javascript">ShowPanel('$host')</script>
+-->
 <script type="text/javascript">
 #if $view
 showMenu('$view')
@@ -1259,6 +1306,7 @@ showMenu('$view')
 
 templateGlossary="""
 <div class="sectionhead">DATA DISCOVERY GLOSSARY PAGE</div>
+#*
 <b>Application</b> refers to set of software version, e.g. CMSSW_0_8_1,
 family type, e.g. Merged, RECO, and program used to produce this data, e.g. cmsRun.
 <p></p>
@@ -1269,10 +1317,122 @@ common MC production criteria or trigger line for real data.
 <p></p>
 <b>cff</b> is a configuration file fragment
 <p></p>
-The naming conventions used on discovery page are discussed 
-<a href="(https://twiki.cern.ch/twiki/bin/view/CMS/CMST0DataManagement">CMST0DataManagement</a>
+*#
+<p>
+The naming conventions used on discovery page are discussed
+<a href="https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR/">DBS roadmap</a> as well as in 
+<a href="https://twiki.cern.ch/twiki/bin/view/CMS/CMST0DataManagement">CMST0DataManagement</a>
 and
 <a href="https://twiki.cern.ch/twiki/bin/view/CMS/ProdForCSA06">ProdForCSA06</a> pages
+</p>
+
+<div class="indent">
+<table width="80%" class="intro">
+<tr valign="top">
+<td class="box_gray">
+Dataset
+</td>
+<td class="box_gray">
+a set of files representing a coherent sample. Datasets are defined primarily by processing 
+history and event selection criteria. 
+</td>
+</tr>
+
+<tr><td colspan="2"><hr class="dbs" /></td></tr>
+
+<tr valign="top">
+<td>
+Primary Dataset
+</td>
+<td>
+Data at all levels of processing pertaining to a given trigger or common MC production 
+criteria. For data from the experiment, the primary dataset is determined by the HLT event 
+classification. For Monte Carlo data, primary datasets comprise data generated with the same 
+parameters; the granularity of this classification has yet to be decided. 
+</td>
+</tr>
+
+<tr><td colspan="2"><hr class="dbs" /></td></tr>
+
+<tr valign="top">
+<td>
+Processed Dataset
+</td>
+<td>
+A slice of data from a Primary Dataset defined by the processing history applied to 
+it. A processed dataset will correspond to a large production of data with a single ma jor software 
+release version, but may include multiple minor versions for small bug fixes and also may contain 
+the output of multiple processings of some given input data. 
+</td>
+</tr>
+
+<tr><td colspan="2"><hr class="dbs" /></td></tr>
+
+<tr valign="top">
+<td>
+Analysis Dataset
+</td>
+<td>
+A subset of a Processed Dataset representing a coherent sample for physics analysis, 
+specified (conceptually) by running an analysis query on a Processed Dataset at a particular instant 
+of time. An Analysis Dataset must not contain the output of multiple processings of any given input 
+data.
+</td>
+</tr>
+
+<tr><td colspan="2"><hr class="dbs" /></td></tr>
+
+<tr valign="top">
+<td> 
+Luminosity Section
+</td>
+<td>
+a predefined period of data taking where the instantaneous luminosity can be 
+considered constant. Files intended for physics analysis will begin and end on luminosity section 
+boundaries.
+</td>
+</tr>
+
+<tr valign="top">
+<td> 
+Data Tier
+</td>
+<td>
+A set of ob jects to be grouped togethered in the output files of the processing step producing 
+the ob jects. The list of ob jects comprising a Data Tier is determined by the release configuration 
+files. Additional ob jects not part of the Data Tier may be included in the same output file. 
+</td>
+</tr>
+
+<tr><td colspan="2"><hr class="dbs" /></td></tr>
+
+<tr valign="top">
+<td>
+File Block
+</td>
+<td>
+A slicing of a dataset into chunks of files likely to be accessed together. The File Block is a 
+data management packaging unit for the convenience of the data location and transfer services. 
+Logical File Name (LFN)-globally unique, site independent file specification suitable for use in job 
+configuration. 
+</td>
+</tr>
+
+<tr><td colspan="2"><hr class="dbs" /></td></tr>
+
+<tr valign="top">
+<td>
+Physical File Name (PFN)
+</td>
+<td>
+a site-dependent file specification which can be used to access a file at a 
+particular site.
+</td>
+</tr>
+</table>
+
+</div>
+
 """
 
 templateDbsCont="""
