@@ -23,7 +23,7 @@ class DBSOptionParser:
     self.parser.add_option("--quiet",action="store_true", default=False, dest="quiet",
          help="be quiet and don't print exceptions")
     self.parser.add_option("--dict",action="store", type="string", dest="dict",
-         help="generate dict, pass Global/All")
+         help="use to generate JavaScript dictionary, pass Global/All")
     self.parser.add_option("--primaryDataset",action="store", type="string", dest="primD",
          help="specify primary dataset, e.g. --primaryDataset=CSA06-081-os-minbias")
     self.parser.add_option("--dataTier",action="store", type="string", dest="DT",
