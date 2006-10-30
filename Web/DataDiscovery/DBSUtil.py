@@ -218,7 +218,8 @@ def constructExpression(s,listName):
         if specialSymbols.count(elem):
            oList.append(elem)
         else:
-           oList.append("%s.count('%s')"%(listName,elem))
+#           oList.append("%s.count('%s')"%(listName,elem))
+           oList.append("[s for s in %s if s.find('%s')!=-1]"%(listName,elem))
     result = ' '.join(oList)
 #    print "construct",result
     return result

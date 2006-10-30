@@ -708,7 +708,7 @@ class DBSHelper(DBSLogger):
       for iTup in result:
           tup = iTup.__dict__['_RowProxy__row'] # get real tuple, rather then instance from SQL object
           searchList=toLower(tupleToList(tup))
-#          print searchList
+#          print searchList,searchString,constructExpression(searchString,'searchList')
           if eval(constructExpression(searchString,'searchList')):
              oList.append((self.dbsInstance,)+tup)
 #
