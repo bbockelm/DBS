@@ -1062,7 +1062,7 @@ if __name__ == "__main__":
         empty,prim,tier,app = string.split(dataset,"/")
         if primaryDataset!="*" and prim!=primaryDataset: continue
         if dataTier!="*" and tier!=dataTier: continue
-        locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset)
+        locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset,appPath)
         evtLength = len(str(totEvt))
         # TMP: redo the following part, since now I got blockDict
         # parse blockDict={'blockName': (hostList,nEvt,blockStatus,nFiles,blockSize)}
