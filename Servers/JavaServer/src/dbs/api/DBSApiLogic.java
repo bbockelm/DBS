@@ -1,7 +1,7 @@
 /**
  * @author sekhri
  $Revision: 1.2 $"
- $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
+ $Id: DBSApiLogic.java,v 1.2 2006/10/26 21:49:07 afaq Exp $"
  *
  */
 
@@ -218,25 +218,40 @@ public class DBSApiLogic {
 
        public void insertBlock(Connection conn, Hashtable block_atribs) throws Exception {
            //Verify here that the block name is in right format  
-           String name = (String)block_atribs.get("Name");
+           String name = (String)block_atribs.get("block_name");
            boolean rs =  DBManagement.execute(conn, DBSSql.insertBlock(block_atribs));
                      
        }
 
        public void closeBlock(Connection conn, Hashtable block_atribs) throws Exception {
            //Verify here that the block name is in right format  
-           String name = (String)block_atribs.get("Name");
+           String name = (String)block_atribs.get("block_name");
            boolean rs =  DBManagement.execute(conn, DBSSql.closeBlock(block_atribs));
 
        }
 
        public void insertProcessedDataset(Connection conn, Hashtable dataset_atribs) throws Exception {
            //Verify here that the dataset name is in right format  
-           String name = (String)dataset_atribs.get("Name");
-           checkName(name);
-           boolean rs =  DBManagement.execute(conn, DBSSql.insertProcessedDataset(dataset_atribs));
-       }
+           String name = (String)dataset_atribs.get("proceseed_name");
+           String  tier = (String)dataset_atribs.get("tier_name");
+           //checkName(name);
 
+           boolean rs =  DBManagement.execute(conn, DBSSql.insertProcessedDataset(dataset_atribs));
+
+           rs =  DBManagement.execute(conn, DBSSql.insertProcAlgoMap(dataset_atribs));
+           
+           //Check if already exists, if not insert DataTier
+           if ( ! (DBManagement.executeQuery(conn, DBSSql.listDataTiers(dataset_atribs))).next() ) {
+               rs =  DBManagement.execute(conn, DBSSql.insertDataTier(dataset_atribs));  
+           }
+
+           System.out.println("\n\n After listDataTiers \n\n"); 
+           //Check if entry already exists in ProcDSTier, if not insert
+           if ( ! ( DBManagement.executeQuery(conn, DBSSql.listProcDSTiers(dataset_atribs))).next() ) {
+             rs = DBManagement.execute(conn, DBSSql.insertProcDSTiers(dataset_atribs));  
+           } 
+           
+       }
 
 	public void insertPerson(Connection conn, Hashtable dbsUser) throws Exception {
 	}

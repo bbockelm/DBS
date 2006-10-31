@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  * 
- $Revision: 1.2 $"
- $Id: DBSSql.java,v 1.2 2006/10/26 17:09:32 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSSql.java,v 1.3 2006/10/26 21:49:07 afaq Exp $"
  */
 package dbs.sql;
 import java.util.Hashtable;
@@ -13,46 +13,127 @@ public class DBSSql {
 	 */
 
 	public static String getDual() {
-		return "select 1 from dual";
+	   return "select 1 from dual";
 	}
 
         public static String insertPrimaryDataset(String primaryDSName) {
-                String sql = "INSERT INTO PrimaryDataset(Annotation, Name, Description, Type)" +
-                             " VALUES ('Another PrimaryDS in new era', '"+primaryDSName+"'," +
+           String sql = "INSERT INTO PrimaryDataset(Annotation, Name, Description, Type)" +
+                        " VALUES ('Another PrimaryDS in new era', '"+primaryDSName+"'," +
                                         " 1, 1)";
-                System.out.println("\n\n" + sql + "\n\n");
-                return sql;
+           System.out.println("\n\n" + sql + "\n\n");
+           return sql;
+        }
+
+        public static String insertProcessedDataset(Hashtable atribs) throws Exception {
+
+           String name = (String)atribs.get("processed_name");
+           String primary = (String)atribs.get("primary_name");
+
+           String sql = "INSERT INTO ProcessedDataset(Name, PrimaryDataset, \n"+
+                        " OpenForWriting, Status, CreationDate)"+
+                        " VALUES ('"+name+"', (select id from PrimaryDataset \n"+
+                        " where Name='"+primary+"'), 'y', "+
+                        " (select id from Status where Status='Valid'), NOW())";
+           System.out.println("\n\n" + sql + "\n\n");
+           return sql;
+        }
+
+        public static String insertProcAlgoMap(Hashtable atribs) throws Exception {
+           
+            String procds = (String)atribs.get("processed_name");
+            String primary = (String)atribs.get("primary_name");
+            String appversion = (String)atribs.get("app_version");  
+            String appfam = (String)atribs.get("app_family_name");  
+            String appexe = (String)atribs.get("app_executable_name");  
+
+            String sql = "INSERT INTO ProcAlgoMap(Dataset, Algorithm, CreationDate) "+
+                         " VALUES( (select id from ProcessedDataset \n"+
+                         " where Name='"+procds+"'\n"+
+                         " and PrimaryDataset=(select id from PrimaryDataset \n"+
+                         " where Name='"+primary+"')), \n"+
+                         "(select algo.id from AlgorithmConfig algo \n" +
+                         " join AppVersion av \n" +
+                         "    on av.id = algo.ApplicationVersion \n" + 
+                         " join AppFamily af \n" +
+                         "   on af.id = algo.ApplicationFamily \n" +
+                         " join AppExecutable ae \n" +
+                         "    on ae.id = algo.ExecutableName \n" +
+                         " where av.Version='"+appversion+"' \n" +
+                         " and af.FamilyName='"+appfam+"' \n" +
+                         " and ae.ExecutableName='"+appexe+"' \n" +
+                         "),NOW()) \n";
+           System.out.println("\n\n" + sql + "\n\n");
+            return sql;
         }
 
         public static String insertBlock(Hashtable atribs) throws Exception {
 
-            String size = (String)atribs.get("BlockSize");
-            String name = (String)atribs.get("Name");
-            String dataset = (String)atribs.get("Dataset");
-            String files = (String)atribs.get("NumberOfFiles");
+            String size = (String)atribs.get("block_size");
+            String name = (String)atribs.get("block_name");
+            String dataset = (String)atribs.get("processed_name");
+            String files = (String)atribs.get("number_of_files");
 
-            String sql = "INSERT INTO Block (BlockSize, Name, Dataset, NumberOfFiles, OpenForWriting, CreationDate)" + 
-                         " VALUES ("+size+", '"+name+"', "+dataset+", "+files+", 'y', NOW()";
+            String sql = "INSERT INTO Block (BlockSize, Name, Dataset, \n"+
+                         " NumberOfFiles, OpenForWriting, CreationDate) \n" + 
+                         " VALUES ("+size+", '"+name+"', "+dataset+", \n"+
+                         files+", 'y', NOW()";
             System.out.println("\n\n" + sql + "\n\n");
             return sql; 
         }
 
         public static String closeBlock(Hashtable atribs) throws Exception {
 
-            String name = (String)atribs.get("Name");
+            String name = (String)atribs.get("block_name");
 
             String sql = "UPDATE Block SET OpenForWriting='n'"; 
             System.out.println("\n\n" + sql + "\n\n");
             return sql;
         }
 
-        public static String insertProcessedDataset(Hashtable atribs) throws Exception {
+        public static String listDataTiers(Hashtable atribs) {
+            String tier = (String)atribs.get("tier_name");
+            String sql = "select dt.id as id \n"+
+                         " from DataTier dt "+
+                         " where Name='"+tier+"'";
+            System.out.println("\n\n" + sql + "\n\n");
+            return sql;
+        }
 
-            String name = (String)atribs.get("Name");
-            String primary = (String)atribs.get("PrimaryDataset");
- 
-            String sql = "INSERT INTO ProcessedDataset(Name, PrimaryDataset, OpenForWriting, CreationDate)"+
-                         " VALUES ('"+name+"', "+primary+", 'y', NOW())";
+        public static String insertDataTier(Hashtable atribs) {
+            String tier = (String)atribs.get("tier_name");
+            String sql = "insert into DataTier (Name, CreationDate) \n"+
+                         " VALUES('"+tier+"', NOW())";
+            System.out.println("\n\n" + sql + "\n\n");
+            return sql;        
+        }
+
+        public static String listProcDSTiers(Hashtable atribs) {
+            String processed = (String)atribs.get("processed_name");
+            String tier = (String)atribs.get("tier_name");
+            String primary = (String)atribs.get("primary_name");
+
+            String sql = "select id from ProcDSTier \n"+
+                         " where Dataset=(select id from ProcessedDataset \n" +
+                         " where Name='"+processed+"' and PrimaryDataset=(select id from PrimaryDataset \n"+
+                         " where Name='"+primary+"')\n"+
+                         " ) AND DataTier=(select id from DataTier where Name='"+tier+"')\n";
+            System.out.println("\n\n" + sql + "\n\n");
+            return sql;
+        }
+
+        public static String insertProcDSTiers(Hashtable atribs) {
+
+            String processed = (String)atribs.get("processed_name");
+            String tier = (String)atribs.get("tier_name");
+            String primary = (String)atribs.get("primary_name");
+
+            String sql = "insert into ProcDSTier (Dataset, DataTier, CreationDate) "+
+                         " values(" +
+                         " (select id from ProcessedDataset " +
+                         " where Name='"+processed+"' and PrimaryDataset=(select id from PrimaryDataset "+
+                         " where Name='"+primary+"')),"+
+                         " (select id from DataTier where Name='"+tier+"')"+
+                         ", NOW())";
             System.out.println("\n\n" + sql + "\n\n");
             return sql;
         }
@@ -96,7 +177,11 @@ public class DBSSql {
 		return sql;
 	}
 
-	public static String listProcessedDatasets(String patternPrim, String patternDt, String patternProc, String patternVersion, String patternFamily, String patternExe) {
+	public static String listProcessedDatasets(String patternPrim, String patternDt, 
+                                                   String patternProc, 
+                                                   String patternVersion, 
+                                                   String patternFamily, 
+                                                   String patternExe) {
 		String sql = "select procds.id as id, \n" +
 			"concat( \n" +
 				"concat( \n" +

@@ -12,5 +12,5 @@ cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 
 #echo "$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.DBSTest"
-$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.DBSTest
+$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 cd $savePWD

@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.3 $"
- $Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSConstants.java,v 1.4 2006/10/26 21:49:06 afaq Exp $"
  *
  */
 package dbs;
@@ -11,7 +11,7 @@ public class DBSConstants {
 	 */
 	
 	public static String DRIVER = "org.gjt.mm.mysql.Driver";
-	public static String URL = "jdbc:mysql://localhost/dbs_new_era_v01";
+	public static String URL = "jdbc:mysql://localhost/dbs_new_era_v03";
 	public static String USERID = "anzar";
 	public static String PASSWORD = "prodagentpass";
 	/*

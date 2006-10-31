@@ -1,9 +1,10 @@
 /**
  * @author sekhri
  $Revision: 1.2 $"
- $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
+ $Id: DBSTest.java,v 1.2 2006/10/26 21:49:08 afaq Exp $"
  *
  */
+
 package dbs.test;
 import dbs.api.DBSApi;
 import java.io.PrintWriter;
@@ -28,16 +29,21 @@ public class DBSTest {
         }
 
         public void insertPrimary() {
-            //INSERT TEST
+            /**
+            Insert Primary Dataset Test 
+            */
             try {
-                  String xml_string = "<?xml version='1.0' standalone='yes'?>" +
-                                "<dbs> <primary-dataset id='1' annotation='First Primary in new era' "+
-                                "primary_name='PrimaryDS_ANZAR_01' trigger_path_description='null' "+
-                                "mc_channel_description='null' mc_production='null' mc_decay_chain='null' "+
-                                "other_description='null' start_date='2006-10-05' end_date='2007-10-05' "+
-                                "file_type='null' created_by='null' creation_date='null' "+
-                                "last_modification_by='null' last_modified_by='null'/> </dbs>";
+                 String xml_string= "<?xml version='1.0' standalone='yes'?>" +
+                                    "<dbs> <primary-dataset id='1' annotation='First Primary in new era' "+
+                                    "primary_name='PrimaryDS_ANZAR_01' trigger_path_description='null' "+
+                                    " mc_channel_description='null' mc_production='null' "+
+                                    " mc_decay_chain='null' "+
+                                    "other_description='null' start_date='2006-10-05' end_date='2007-10-05' "+
+                                    "file_type='null' created_by='null' creation_date='null' "+
+                                    "last_modification_by='null' last_modified_by='null'/> </dbs>";
+
                 api.insertPrimaryDataset(xml_string, null);
+
            } catch(Exception e) {
                System.out.println(e.getMessage());
                e.printStackTrace();
@@ -45,7 +51,34 @@ public class DBSTest {
 
         }
 
+        public void insertProcessedDataset() {
+           /**
+           INSERT ProcessedDataset test
+           */
+           try {
+                 String xml_string= "<?xml version='1.0' standalone='yes'?>"+
+                                    "<!-- DBS Version 1 --> <dbs> "+
+                                    " <processed-dataset processed_name='anzar-procds-07' "+
+                                    " primary_name='PrimaryDS_ANZAR_01'"+
+                                    " app_version='cmssw_1_0_0_pre1' "+ 
+                                    " app_family_name='CMSSW' " +
+                                    " app_executable_name='CMSSW' "+
+                                    " tier_name='test-tier-02' /> " +
+                                    " </dbs>";
+
+                 api.insertProcessedDataset(xml_string); 
+
+           } catch(Exception e) {
+               System.out.println(e.getMessage());
+               e.printStackTrace();
+           }
+
+        } 
+
         public void runListAPIs() {
+        /**
+          Run all list API calls
+        */
             try {
                     api.listPrimaryDatasets(out, "*");
                     System.out.println("\n\nProcessed Datasets");
@@ -82,19 +115,19 @@ public class DBSTest {
 
         }
 
-        static void main(String[] args) {
+        static public void main(String[] args) {
 		//DBSServlet serv = new DBSServlet();
                 try {
                      DBSTest test= new DBSTest();
-                     test.insertPrimary();
-                     test.runListAPIs(); 
 
+                     test.insertPrimary();
+                     test.insertProcessedDataset(); 
+                     test.runListAPIs(); 
 
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}
-
 }
 
