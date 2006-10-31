@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  * 
- $Revision: 1.5 $"
- $Id: DBSSql.java,v 1.5 2006/10/31 18:27:53 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSSql.java,v 1.6 2006/10/31 18:34:57 afaq Exp $"
  */
 package dbs.sql;
 import java.util.Hashtable;
@@ -105,15 +105,58 @@ public class DBSSql {
                          " from DataTier dt "+
                          " where Name='"+tier+"'";
             System.out.println("\n\n" + sql + "\n\n");
+
             return sql;
         }
 
         public static String insertDataTier(Hashtable atribs) {
+
             String tier = (String)atribs.get("tier_name");
             String sql = "insert into DataTier (Name, CreationDate) \n"+
                          " VALUES('"+tier+"', NOW())";
             System.out.println("\n\n" + sql + "\n\n");
+
             return sql;        
+        }
+
+
+        public static String insertRun(Hashtable atribs)  {
+
+          String run = (String)atribs.get("run_number");
+          String evts = (String)atribs.get("number_of_events");
+          String lumis = (String)atribs.get("number_of_lumi_sections");
+          String lumitotal = (String)atribs.get("total_luminosity");
+          String store = (String)atribs.get("store_number");
+          String starttime = (String)atribs.get("start_of_run");
+          String endtime = (String)atribs.get("end_of_run");
+
+          String sql = "INSERT INTO Runs (RunNumber, NumberOfEvents, "+
+                       "NumberOfLumiSections, TotalLuminosity, StoreNumber, "+
+                       "StartOfRun, EndOfRun, CreationDate) VALUES ("+
+                       run+", "+evts+", "+lumis+", "+lumitotal+", "+
+                       store+", '"+starttime+"', '"+endtime+"', NOW())";
+
+          System.out.println("\n\n" + sql + "\n\n");
+          return sql;
+        }
+
+        public static String insertLumiSection(Hashtable atribs)  {
+
+          String lumi = (String)atribs.get("lumi_number");
+          String run = (String)atribs.get("run_number");
+          String startevt = (String)atribs.get("start_event");
+          String endend =(String)atribs.get("end_event");
+          String starttime =(String)atribs.get("start_time");
+          String endtime =(String)atribs.get("end_time");
+
+          String sql = "INSERT INTO LumiSection (LumiSectionNumber, "+
+                       "RunNumber, StartEventNumber, EndEventNumber, "+
+                       "LumiStartTime, LumiEndTime, CreationDate) VALUES ("+
+                       lumi+", (select id from Runs where RunNumber="+run+"),"+
+                       startevt+", "+endend+", '"+starttime+"', '"+endtime+"', NOW())";
+
+          System.out.println("\n\n" + sql + "\n\n");
+          return sql;
         }
 
         public static String listProcDSTiers(Hashtable atribs) {

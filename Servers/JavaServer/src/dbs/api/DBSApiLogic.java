@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.4 $"
- $Id: DBSApiLogic.java,v 1.4 2006/10/31 18:27:53 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiLogic.java,v 1.5 2006/10/31 18:34:56 afaq Exp $"
  *
  */
 
@@ -252,10 +252,20 @@ public class DBSApiLogic {
            
        }
 
+       public void insertRun(Connection conn, Hashtable run_atribs) throws Exception {
+             boolean rs =  DBManagement.execute(conn, DBSSql.insertRun(run_atribs));
+       }
+
+       public void insertLumiSection(Connection conn, Hashtable lumi_atribs) throws Exception {
+             boolean rs =  DBManagement.execute(conn, DBSSql.insertLumiSection(lumi_atribs));
+       }
+
 	public void insertPerson(Connection conn, Hashtable dbsUser) throws Exception {
+
 	}
 
-	private String getProcessedDSID(Connection conn, String prim, String dt, String proc) throws Exception {
+	private String getProcessedDSID(Connection conn, String prim, 
+                                             String dt, String proc) throws Exception {
 		if(prim == null || dt == null || proc == null) {
 			throw new DBSException("Bad Data", "300", "Null Fields. Expected /DATASET/TIER/OWNER");
 		}

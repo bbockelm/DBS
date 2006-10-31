@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  
- $Revision: 1.3 $"
- $Id: DBSApi.java,v 1.3 2006/10/26 21:49:07 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApi.java,v 1.4 2006/10/31 18:34:56 afaq Exp $"
  
  *
  */
@@ -79,6 +79,53 @@ public class DBSApi {
                                 break;
                             }
                         }                        
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
+
+
+        public void insertRun(String inputXml) throws Exception {
+                Connection conn = null;
+                try {
+                        DBSXMLParser dbsParser = new DBSXMLParser();
+                        dbsParser.parseString(inputXml);
+                        Vector allElement = dbsParser.getElements();
+                        for (int i=0; i<allElement.size(); ++i) {
+                            Element e = (Element)allElement.elementAt(i);
+                            String name = e.name;
+                            if ( name == "run" ) {
+                                System.out.println("Found a run");
+                                Hashtable run_atribs = e.attributes;
+                                conn = getConnection();
+                                api.insertRun(conn, run_atribs);
+                                break;
+                            }
+                        }
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
+
+
+
+        public void insertLumiSection(String inputXml) throws Exception {
+                Connection conn = null;
+                try {
+                        DBSXMLParser dbsParser = new DBSXMLParser();
+                        dbsParser.parseString(inputXml);
+                        Vector allElement = dbsParser.getElements();
+                        for (int i=0; i<allElement.size(); ++i) {
+                            Element e = (Element)allElement.elementAt(i);
+                            String name = e.name;
+                            if ( name == "lumi_section" ) {
+                                System.out.println("Found a lumi-section");
+                                Hashtable lumi_atribs = e.attributes;
+                                conn = getConnection();
+                                api.insertLumiSection(conn, lumi_atribs);
+                                break;
+                            }
+                        }
                 } finally {
                         if(conn != null) conn.close();
                 }
