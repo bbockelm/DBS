@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.3 $"
- $Id: DBSTest.java,v 1.3 2006/10/31 17:38:41 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSTest.java,v 1.4 2006/10/31 18:27:54 afaq Exp $"
  *
  */
 
@@ -34,7 +34,7 @@ public class DBSTest {
             try {
                  String xml_string= "<?xml version='1.0' standalone='yes'?>" +
                                     "<dbs> <primary-dataset id='1' annotation='First Primary in new era' "+
-                                    "primary_name='PrimaryDS_ANZAR_01' trigger_path_description='null' "+
+                                    "primary_name='PrimaryDS_ANZAR_22' trigger_path_description='null' "+
                                     " mc_channel_description='null' mc_production='null' "+
                                     " mc_decay_chain='null' "+
                                     "other_description='null' start_date='2006-10-05' end_date='2007-10-05' "+
@@ -136,7 +136,6 @@ public class DBSTest {
                             System.out.println(e.getMessage());
                             e.printStackTrace();
                     }
-
         }
 
         static public void main(String[] args) {
@@ -144,9 +143,9 @@ public class DBSTest {
                 try {
                      DBSTest test= new DBSTest();
 
-                     //test.insertPrimary();
+                     test.insertPrimary();
                      //test.insertProcessedDataset(); 
-                     test.insertBlock();
+                     //test.insertBlock();
  
                      //test.runListAPIs(); 
 

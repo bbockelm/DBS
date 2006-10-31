@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  
- $Revision: 1.2 $"
- $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApi.java,v 1.3 2006/10/26 21:49:07 afaq Exp $"
  
  *
  */
@@ -51,11 +51,12 @@ public class DBSApi {
                                Hashtable atribs = e.attributes;
                                primaryDatasetName = (String)atribs.get("primary_name");
                                System.out.println("Name of primarydataset: "+primaryDatasetName);
+                               conn = getConnection();
+                               api.insertPrimaryDataset(conn, atribs);
+                               break;
                             }
                         }
 
-                        conn = getConnection();
-                        api.insertPrimaryDataset(conn, primaryDatasetName, dbsUser);
                 } finally {
                         if(conn != null) conn.close();
                 }

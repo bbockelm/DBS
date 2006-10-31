@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  * 
- $Revision: 1.4 $"
- $Id: DBSSql.java,v 1.4 2006/10/31 17:38:41 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSSql.java,v 1.5 2006/10/31 18:27:53 afaq Exp $"
  */
 package dbs.sql;
 import java.util.Hashtable;
@@ -16,9 +16,14 @@ public class DBSSql {
 	   return "select 1 from dual";
 	}
 
-        public static String insertPrimaryDataset(String primaryDSName) {
+        public static String insertPrimaryDataset(Hashtable atribs) {
+
+           String primary = (String)atribs.get("primary_name");
+
+           //We will need to add to Description Tables as well.
+
            String sql = "INSERT INTO PrimaryDataset(Annotation, Name, Description, Type)" +
-                        " VALUES ('Another PrimaryDS in new era', '"+primaryDSName+"'," +
+                        " VALUES ('Another PrimaryDS in new era', '"+primary+"'," +
                                         " 1, 1)";
            System.out.println("\n\n" + sql + "\n\n");
            return sql;

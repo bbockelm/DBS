@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.3 $"
- $Id: DBSApiLogic.java,v 1.3 2006/10/31 17:38:40 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiLogic.java,v 1.4 2006/10/31 18:27:53 afaq Exp $"
  *
  */
 
@@ -211,10 +211,8 @@ public class DBSApiLogic {
 	}
 
 	public void insertPrimaryDataset(Connection conn, 
-                                         String primaryDatasetName, 
-                                         Hashtable dbsUser) throws Exception {
-		checkName(primaryDatasetName);
-		boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDataset(primaryDatasetName));
+                                         Hashtable primry_atribs) throws Exception {
+		boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDataset(primry_atribs));
 	}
 
        public void insertBlock(Connection conn, Hashtable block_atribs) throws Exception {
