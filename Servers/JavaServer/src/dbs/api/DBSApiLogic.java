@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.2 $"
- $Id: DBSApiLogic.java,v 1.2 2006/10/26 21:49:07 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiLogic.java,v 1.3 2006/10/31 17:38:40 afaq Exp $"
  *
  */
 
@@ -210,11 +210,12 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void insertPrimaryDataset(Connection conn, String primaryDatasetName, Hashtable dbsUser) throws Exception {
+	public void insertPrimaryDataset(Connection conn, 
+                                         String primaryDatasetName, 
+                                         Hashtable dbsUser) throws Exception {
 		checkName(primaryDatasetName);
 		boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDataset(primaryDatasetName));
 	}
-
 
        public void insertBlock(Connection conn, Hashtable block_atribs) throws Exception {
            //Verify here that the block name is in right format  

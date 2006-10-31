@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  * 
- $Revision: 1.3 $"
- $Id: DBSSql.java,v 1.3 2006/10/26 21:49:07 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSSql.java,v 1.4 2006/10/31 17:38:41 afaq Exp $"
  */
 package dbs.sql;
 import java.util.Hashtable;
@@ -71,12 +71,16 @@ public class DBSSql {
             String size = (String)atribs.get("block_size");
             String name = (String)atribs.get("block_name");
             String dataset = (String)atribs.get("processed_name");
+            String primary = (String)atribs.get("primary_name");
             String files = (String)atribs.get("number_of_files");
 
             String sql = "INSERT INTO Block (BlockSize, Name, Dataset, \n"+
                          " NumberOfFiles, OpenForWriting, CreationDate) \n" + 
-                         " VALUES ("+size+", '"+name+"', "+dataset+", \n"+
-                         files+", 'y', NOW()";
+                         " VALUES ("+size+", '"+name+"', (select id from ProcessedDataset \n" +
+                         " where Name='"+dataset+"' and "+
+                         " PrimaryDataset=(select id from PrimaryDataset \n"+
+                         " where Name='"+primary+"')), \n"+
+                         files+", 'y', NOW())";
             System.out.println("\n\n" + sql + "\n\n");
             return sql; 
         }

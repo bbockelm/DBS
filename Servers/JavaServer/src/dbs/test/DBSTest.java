@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.2 $"
- $Id: DBSTest.java,v 1.2 2006/10/26 21:49:08 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSTest.java,v 1.3 2006/10/31 17:38:41 afaq Exp $"
  *
  */
 
@@ -25,7 +25,6 @@ public class DBSTest {
                System.out.println(e.getMessage());
                e.printStackTrace();
            }
-
         }
 
         public void insertPrimary() {
@@ -72,27 +71,52 @@ public class DBSTest {
                System.out.println(e.getMessage());
                e.printStackTrace();
            }
-
         } 
+
+        public void insertBlock() {
+           /**
+           INSERT ProcessedDataset test
+           */
+
+           try {
+                 String xml_string= "<?xml version='1.0' standalone='yes'?>" +
+                                    "<!-- DBS Version 1 -->" +
+                                    "<dbs>" +
+                                    "<block id='1' block_name='0001-0002-0031-0065' block_size='20' "+
+                                    " number_of_files='2' " +
+                                    " open_for_writing='y' creation_date='2006-10-13 14:57:19.0' " +
+                                    " last_modification_date='2006-10-13 14:57:19.0' " +
+                                    " created_by='null' last_modified_by='null' " +
+                                    " processed_name='anzar-procds-07' "+
+                                    " primary_name='PrimaryDS_ANZAR_01' "+ 
+                                    " />" + 
+                                    "</dbs>";
+
+                 api.insertBlock(xml_string);
+           } catch(Exception e) {
+               System.out.println(e.getMessage());
+               e.printStackTrace();
+           }
+        }
 
         public void runListAPIs() {
         /**
           Run all list API calls
         */
             try {
-                    api.listPrimaryDatasets(out, "*");
-                    System.out.println("\n\nProcessed Datasets");
-                    api.listProcessedDatasets(out, "/*/*/*/*/*/*");
-                    System.out.println("\n\nProcessed Datasets");
-                    api.listApplications(out, "/*/*/*");
-                    System.out.println("\n\nRuns");
-                    api.listRuns(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
-                    System.out.println("\n\nTiers");
-                    api.listTiers(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
-                    System.out.println("\n\nBlocks");
+                    //api.listPrimaryDatasets(out, "*");
+                    //System.out.println("\n\nProcessed Datasets");
+                    //api.listProcessedDatasets(out, "/*/*/*/*/*/*");
+                    //System.out.println("\n\nProcessed Datasets");
+                    //api.listApplications(out, "/*/*/*");
+                    //System.out.println("\n\nRuns");
+                    //api.listRuns(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
+                    //System.out.println("\n\nTiers");
+                    //api.listTiers(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
+                    //System.out.println("\n\nBlocks");
                     api.listBlocks(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
                     System.out.println("\n\nFiles");
-                    api.listFiles(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01", null, "*");
+                    //api.listFiles(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01", null, "*");
                     //api.listFiles(out, null, "Block_001", "*");
                     //api.listFiles(out, null, null, "*");
                     /*System.out.println("\n\nParameter Sets");
@@ -120,9 +144,11 @@ public class DBSTest {
                 try {
                      DBSTest test= new DBSTest();
 
-                     test.insertPrimary();
-                     test.insertProcessedDataset(); 
-                     test.runListAPIs(); 
+                     //test.insertPrimary();
+                     //test.insertProcessedDataset(); 
+                     test.insertBlock();
+ 
+                     //test.runListAPIs(); 
 
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
