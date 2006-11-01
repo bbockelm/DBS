@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.5 $"
- $Id: DBSTest.java,v 1.5 2006/10/31 18:34:57 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSTest.java,v 1.6 2006/10/31 22:20:41 afaq Exp $"
  *
  */
 
@@ -112,7 +112,9 @@ public class DBSTest {
                  String xml_string= "<?xml version='1.0' standalone='yes'?>"+
                                     "<!-- DBS Version 1 -->"+
                                     "<dbs>"+
-                                    "<run run_number='3' "+
+                                    "<run run_number='5' "+
+                                    "primary_name='PrimaryDS_ANZAR_01' "+
+                                    "processed_name='anzar-procds-07' "+
                                     "number_of_events='100' number_of_lumi_sections='2' "+
                                     "total_luminosity='233' strore_number='2' "+
                                     "start_of_run='NOW' end_of_run='NEVER' "+

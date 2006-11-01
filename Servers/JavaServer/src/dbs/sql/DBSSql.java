@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  * 
- $Revision: 1.6 $"
- $Id: DBSSql.java,v 1.6 2006/10/31 18:34:57 afaq Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSSql.java,v 1.7 2006/10/31 22:20:41 afaq Exp $"
  */
 package dbs.sql;
 import java.util.Hashtable;
@@ -119,7 +119,6 @@ public class DBSSql {
             return sql;        
         }
 
-
         public static String insertRun(Hashtable atribs)  {
 
           String run = (String)atribs.get("run_number");
@@ -135,6 +134,24 @@ public class DBSSql {
                        "StartOfRun, EndOfRun, CreationDate) VALUES ("+
                        run+", "+evts+", "+lumis+", "+lumitotal+", "+
                        store+", '"+starttime+"', '"+endtime+"', NOW())";
+
+          System.out.println("\n\n" + sql + "\n\n");
+          return sql;
+        }
+
+       public static String insertProcDSRuns(Hashtable atribs)  {
+
+          String run = (String)atribs.get("run_number");
+          String dataset = (String)atribs.get("processed_name");
+          String primary = (String)atribs.get("primary_name");
+
+          String sql = "INSERT INTO ProcDSRuns(Dataset, Run, CreationDate) \n"+
+                       " VALUES ("+
+                       " (select id from Runs where RunNumber="+run+"),\n"+
+                       " (select id from ProcessedDataset \n" +
+                       " where Name='"+dataset+"' and "+
+                       " PrimaryDataset=(select id from PrimaryDataset \n"+
+                       " where Name='"+primary+"')), NOW())";
 
           System.out.println("\n\n" + sql + "\n\n");
           return sql;
@@ -169,6 +186,7 @@ public class DBSSql {
                          " where Name='"+processed+"' and PrimaryDataset=(select id from PrimaryDataset \n"+
                          " where Name='"+primary+"')\n"+
                          " ) AND DataTier=(select id from DataTier where Name='"+tier+"')\n";
+
             System.out.println("\n\n" + sql + "\n\n");
             return sql;
         }

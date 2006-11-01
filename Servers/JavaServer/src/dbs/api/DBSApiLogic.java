@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.5 $"
- $Id: DBSApiLogic.java,v 1.5 2006/10/31 18:34:56 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiLogic.java,v 1.6 2006/10/31 22:20:40 afaq Exp $"
  *
  */
 
@@ -254,6 +254,7 @@ public class DBSApiLogic {
 
        public void insertRun(Connection conn, Hashtable run_atribs) throws Exception {
              boolean rs =  DBManagement.execute(conn, DBSSql.insertRun(run_atribs));
+             rs = DBManagement.execute(conn, DBSSql.insertProcDSRuns(run_atribs));
        }
 
        public void insertLumiSection(Connection conn, Hashtable lumi_atribs) throws Exception {
