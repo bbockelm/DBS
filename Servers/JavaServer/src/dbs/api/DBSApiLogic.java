@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.6 $"
- $Id: DBSApiLogic.java,v 1.6 2006/10/31 22:20:40 afaq Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiLogic.java,v 1.7 2006/11/01 15:52:03 afaq Exp $"
  *
  */
 
@@ -218,15 +218,15 @@ public class DBSApiLogic {
        public void insertBlock(Connection conn, Hashtable block_atribs) throws Exception {
            //Verify here that the block name is in right format  
            String name = (String)block_atribs.get("block_name");
+           /////////////////checkName(name);
            boolean rs =  DBManagement.execute(conn, DBSSql.insertBlock(block_atribs));
-                     
        }
 
-       public void closeBlock(Connection conn, Hashtable block_atribs) throws Exception {
+       public void closeBlock(Connection conn, String name) throws Exception {
            //Verify here that the block name is in right format  
-           String name = (String)block_atribs.get("block_name");
-           boolean rs =  DBManagement.execute(conn, DBSSql.closeBlock(block_atribs));
-
+           ////////////checkName(name);
+           int rs =  DBManagement.executeUpdate(conn, DBSSql.closeBlock(name));
+           System.out.println("\n\n After executeUpdate \n\n");
        }
 
        public void insertProcessedDataset(Connection conn, Hashtable dataset_atribs) throws Exception {

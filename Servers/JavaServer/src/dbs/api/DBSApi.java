@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  
- $Revision: 1.4 $"
- $Id: DBSApi.java,v 1.4 2006/10/31 18:34:56 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApi.java,v 1.5 2006/10/31 22:20:40 afaq Exp $"
  
  *
  */
@@ -131,23 +131,11 @@ public class DBSApi {
                 }
         }
 
-        public void closeBlock(String inputXml) throws Exception {
+        public void closeBlock(String block_name) throws Exception {
                 Connection conn = null;
                 try {
-                        DBSXMLParser dbsParser = new DBSXMLParser();
-                        dbsParser.parseString(inputXml);
-                        Vector allElement = dbsParser.getElements();
-                        for (int i=0; i<allElement.size(); ++i) {
-                            Element e = (Element)allElement.elementAt(i);
-                            String name = e.name;
-                            if (name == "block" ) {
-                                System.out.println("Found a processed-dataset");
-                                Hashtable block_atribs = e.attributes;
-                                conn = getConnection();
-                                api.insertProcessedDataset(conn, block_atribs);
-                                break;
-                            }
-                        }
+                   conn = getConnection();
+                   api.closeBlock(conn, block_name);
                 } finally {
                         if(conn != null) conn.close();
                 }

@@ -1,7 +1,7 @@
 /**
  * @author sekhri
  $Revision: 1.3 $"
- $Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+ $Id: DBManagement.java,v 1.3 2006/10/26 21:49:06 afaq Exp $"
 
  *
  */
@@ -33,6 +33,11 @@ public class DBManagement{
         /** Executes insert queries */
         public static boolean execute(Connection conn, String query) throws Exception{
                 return conn.createStatement().execute(query);
+        }
+
+        /** Executes insert queries */
+        public static int executeUpdate(Connection conn, String query) throws Exception{
+                return conn.createStatement().executeUpdate(query);
         }
 
 }

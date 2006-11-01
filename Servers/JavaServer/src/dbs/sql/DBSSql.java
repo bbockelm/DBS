@@ -1,8 +1,8 @@
 /**
  * @author sekhri
  * 
- $Revision: 1.7 $"
- $Id: DBSSql.java,v 1.7 2006/10/31 22:20:41 afaq Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSSql.java,v 1.8 2006/11/01 15:52:04 afaq Exp $"
  */
 package dbs.sql;
 import java.util.Hashtable;
@@ -90,11 +90,14 @@ public class DBSSql {
             return sql; 
         }
 
-        public static String closeBlock(Hashtable atribs) throws Exception {
 
-            String name = (String)atribs.get("block_name");
+        //public static String closeBlock(Hashtable atribs) throws Exception {
+        public static String closeBlock(String name) throws Exception {
 
-            String sql = "UPDATE Block SET OpenForWriting='n'"; 
+            //String name = (String)atribs.get("block_name");
+
+            String sql = "UPDATE Block SET OpenForWriting='n' where Name='"+name+"'"; 
+
             System.out.println("\n\n" + sql + "\n\n");
             return sql;
         }

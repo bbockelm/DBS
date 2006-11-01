@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.6 $"
- $Id: DBSTest.java,v 1.6 2006/10/31 22:20:41 afaq Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSTest.java,v 1.7 2006/11/01 15:52:04 afaq Exp $"
  *
  */
 
@@ -85,7 +85,7 @@ public class DBSTest {
                  String xml_string= "<?xml version='1.0' standalone='yes'?>" +
                                     "<!-- DBS Version 1 -->" +
                                     "<dbs>" +
-                                    "<block id='1' block_name='0001-0002-0031-0065' block_size='20' "+
+                                    "<block block_name='/pri/proc#0001-0002-0031-0065' block_size='20' "+
                                     " number_of_files='2' " +
                                     " open_for_writing='y' creation_date='2006-10-13 14:57:19.0' " +
                                     " last_modification_date='2006-10-13 14:57:19.0' " +
@@ -102,6 +102,21 @@ public class DBSTest {
            }
         }
 
+        public void closeBlock() {
+           /**
+           INSERT ProcessedDataset test
+           */
+
+           try {
+                 String block_name = "/pri/proc#0001-0002-0031-0065";
+
+                 api.closeBlock(block_name);
+
+           } catch(Exception e) {
+               System.out.println(e.getMessage());
+               e.printStackTrace();
+           }
+        }
 
         public void insertRun() {
            /**
@@ -127,8 +142,6 @@ public class DBSTest {
                e.printStackTrace();
            }
         }
-
-
 
         public void insertLumiSection() {
            /**
@@ -201,7 +214,8 @@ public class DBSTest {
                      //test.insertProcessedDataset(); 
                      //test.insertBlock();
                      //test.insertLumiSection();
-                     test.insertRun();
+                     //test.insertRun();
+                     test.closeBlock();
  
                      //test.runListAPIs(); 
 
