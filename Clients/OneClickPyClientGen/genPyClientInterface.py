@@ -285,6 +285,12 @@ def writeIntoFile(output, outFile, outPath=os.getcwd()) :
       """ Write the contents of output into a file""" 
       filepath = os.path.join(outPath, outFile)
       outfile = open(filepath, 'w')
+      # CVS Tag info auto maintained by CVS, after check ins 
+      cvs_info+='#'
+      cvs_info+='\n# Revision: 1.3 $"'
+      cvs_info+='\n# Id: '+outFile+',v 0.0 2006/1/1 18:26:04 afaq Exp $"'
+      cvs_info+='\n#'
+   
       message1='\n\""" This file is generated on %s \""" \n\n' % time.asctime()
       message2 = """\"""SERIOUS WARNING:\n
          This file is a generated file,
@@ -296,6 +302,7 @@ def writeIntoFile(output, outFile, outPath=os.getcwd()) :
          Either make changes to generator, or carefully
          preserve the manual changes. 
 \"""\n"""
+      outfile.write(cvs_info)
       outfile.write(message1)
       outfile.write(message2)
       outfile.writelines(output)
