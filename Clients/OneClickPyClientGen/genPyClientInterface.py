@@ -1,3 +1,7 @@
+#
+# Revision: 0.0 $"
+# Id: dbsPrimaryDataset.py,v 0.0 2006/1/1 18:26:04 afaq Exp $"
+#
 import string
 import pdb
 import os
@@ -286,8 +290,8 @@ def writeIntoFile(output, outFile, outPath=os.getcwd()) :
       filepath = os.path.join(outPath, outFile)
       outfile = open(filepath, 'w')
       # CVS Tag info auto maintained by CVS, after check ins 
-      cvs_info+='#'
-      cvs_info+='\n# Revision: 1.3 $"'
+      cvs_info ='#'
+      cvs_info+='\n# Revision: 0.0 $"'
       cvs_info+='\n# Id: '+outFile+',v 0.0 2006/1/1 18:26:04 afaq Exp $"'
       cvs_info+='\n#'
    
