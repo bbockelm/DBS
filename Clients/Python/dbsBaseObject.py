@@ -25,7 +25,7 @@ class DbsBase(dict):
                      if validator != None:
                          if not validator(self[key]) :
 			    raise dbsException.DbsException(args=
-i                               "Validation Error: Check the required data type for %s.%s " \
+                               "Validation Error: Check the required data type for %s.%s " \
 					%(objName, key) )
 		     else:
 		         raise dbsException.DbsException(args=

@@ -27,29 +27,35 @@ from dbsApplication import DbsApplication
 
 from dbsParent import DbsParent
 
-DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
+############################################################################
+
+DBS_HOST_URL="cmssrv17.fnal.gov"
+DBS_PORT=8989
+DBS_SERVLET="/DBS/servlet/DBSServlet"
+
+#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
 
 # API Version needs to be updated, each time a change is made to API
 # Sever will recive this API version and it might not work 
 # if proper API version is not supplied
 API_VERSION= "v00_00_01"
 
-##############################################################################
+#############################################################################
 
 class DbsApi:
 
   def __init__(self, Url=None, Args={}):
     """ Constructor. """
-    if Url is None:
-       Url = DEFAULT_URL
+    #if Url is None:
+    #   Url = DEFAULT_URL
     # API Version needs to be updated, each time a change is made to API
     # Sever will recive this API version and it might not work 
     # if proper API version is not supplied
-    sel._api_version = API_VERSION
+    self._api_version = API_VERSION
     #
     # Create the Server proxy
     #
-    self._server = DbsHttpService(sel._api_version, Url, Args)
+    self._server = DbsHttpService(DBS_HOST_URL, DBS_PORT, DBS_SERVLET, self._api_version, Args)
     #
     # 
 
@@ -93,9 +99,10 @@ class DbsApi:
 
     May raise an DbsApiException.
     """
+ 
     # Invoke Server.    
     #data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
-    data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  })
+    data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -103,8 +110,8 @@ class DbsApi:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if name == 'primary-dataset':
-	    result.append(DbsPrimaryDataset (objectId=long(attrs['id']),
-					     datasetName=str(attrs['name'])))
+	    result.append(DbsPrimaryDataset (datasetName=str(attrs['primary_name'])))
+
       xml.sax.parseString (data, Handler ())
       return result
     except Exception, ex:

@@ -10,23 +10,18 @@ from dbsExecHandler import DbsExecHandler
 class DbsHttpService:
 
   """Provides Server connectivity through HTTP"""
-  def __init__(self, ApiVersion, Url=None, Args={}):
+  def __init__(self, Host, Port, Applet, ApiVersion, Args={}):
     """ Constructor. """
+    
+    self.Host = Host
+    self.Port = Port
+    #if type(Port) ==  type(int(1)):
+    #   raise DbsException(args=
+    #         "Validation Error: Port must be a integer type, give type is %s " \
+    #                        %type(Port) )
+    self.Applet = Applet
     self.ApiVersion = ApiVersion
-    print "\n\n\n******API VERSION NEEDS TO BE MADE PART OF CALLS TO SERVER*****\n\n\n"
-    self._Url = Url
-    self._Args = Args 
-    if Url is None:
-      self._Url = DEFAULT_URL
-
-  def setUrl(self, Url):
-    """ Set  script url. """
-    self._Url = Url
-
-  def setArgs(self, args):
-    """ Set  script url. """
-    self._Args = args
-
+    
   def setDebug(self, on=1):
     """ Set low-level debugging. """
     httplib.HTTPConnection.debuglevel = on
@@ -62,7 +57,7 @@ class DbsHttpService:
     #print "body ", body
 
 
-  def _call (self, args):
+  def _call (self, args, type):
     """
     Make a call to the server, either a remote HTTP request (the
     URL is of the form http:*), or invoke as a local executable
@@ -79,49 +74,51 @@ class DbsHttpService:
     script.  The output isn't compressed.  (FIXME: Not implemented!)
     """
 
-    # First apply forced options
-    for k, v in self._Args.items(): args[k] = v
-    # Fetch result from the CGI server
     try:
-      #request = urllib2.Request (self._Url, urllib.urlencode(args))
-      request = urllib2.Request (self._Url)
-      request.add_header ('Accept-encoding', 'gzip')
-      #print "args ",args
-      self._marshall (args, request)
-      #print "request ",request
-      result = urllib2.build_opener (DbsExecHandler).open (request)
-      #print "\n\nresult ->>>>>>>>", result
-      #import pdb
-      #pdb.set_trace()
-      data = result.read()
-      #f = open("out.txt", "w")
-      #print "\n\ndata ->>>>>>>>", data
-      if result.headers.get ('Content-encoding', '') == 'gzip':
-        data = gzip.GzipFile (fileobj=StringIO(data)).read ()
-      #f.write(data);
-      #f.close();
+       request_string = self.Applet+'?apiversion='+self.ApiVersion
 
-      statusCode = int(result.headers.get ('Dbs-status-code'))
-      statusMessage = result.headers.get ('Dbs-status-message')
-      statusDetail = result.headers.get ('Dbs-status-detail')
-      #print "statusCode ", statusCode
-      #print "statusMessage ", statusMessage 
-      #print "statusDetail ", statusDetail
-      # If there was a server-side error, raise an appropriate exception
-      if statusCode != 100:
-        exmsg = "Status message: '%s', Status detail: '%s'" % (statusMessage, statusDetail)
-	if statusCode == 200: raise DbsBadRequest (args=exmsg)
-        elif statusCode == 300: raise DbsBadData (args=exmsg)
-        elif statusCode == 301: raise InvalidDataTier (args=exmsg)
-        elif statusCode == 302: raise DbsNoObject (args=exmsg)
-        elif statusCode == 303: raise DbsObjectExists (args=exmsg)
-        elif statusCode == 400: raise DbsExecutionError (args=exmsg)
-        elif statusCode == 401: raise DbsConnectionError (args=exmsg)
-        elif statusCode == 402: raise DbsDatabaseError (args=exmsg)
-        else: raise DbsToolError (args=exmsg)
+       for key, value in args.items():
+          request_string += '&'+key+'='+value
+    
+       print request_string  
+       conn = httplib.HTTPConnection(self.Host, self.Port)
 
-      # All is ok, return the data
-      return data
+       result = conn.request(type, request_string)
+       response = conn.getresponse() 
+      
+       # See if HTTP call succeeded 
+       if int(response.status) != 200:
+          raise DbsToolError (args = response.reason)
+ 
+       statusCode = int(response.getheader('Dbs-status-code'))
+       statusMessage = response.getheader('Dbs-status-message')
+       statusDetail = response.getheader('Dbs-status-detail')
+       print "statusCode ", statusCode
+       print "statusMessage ", statusMessage 
+       print "statusDetail ", statusDetail
+       # If there was a server-side error, raise an appropriate exception
+       if statusCode != 100:
+         exmsg = "Status message: '%s', Status detail: '%s'" % (statusMessage, statusDetail)
+	 if statusCode == 200: raise DbsBadRequest (args=exmsg)
+         elif statusCode == 300: raise DbsBadData (args=exmsg)
+         elif statusCode == 301: raise InvalidDataTier (args=exmsg)
+         elif statusCode == 302: raise DbsNoObject (args=exmsg)
+         elif statusCode == 303: raise DbsObjectExists (args=exmsg)
+         elif statusCode == 400: raise DbsExecutionError (args=exmsg)
+         elif statusCode == 401: raise DbsConnectionError (args=exmsg)
+         elif statusCode == 402: raise DbsDatabaseError (args=exmsg)
+         else: raise DbsToolError (args=exmsg)
+
+       data = response.read()
+       #f = open("out.txt", "w")
+       #print "\n\ndata ->>>>>>>>", data
+       if response.getheader ('Content-encoding', '') == 'gzip':
+         data = gzip.GzipFile (fileobj=StringIO(data)).read ()
+       #f.write(data);
+       #f.close();
+
+       # All is ok, return the data
+       return data
 
     except DbsException, ex:
       # One of our own errors, re-raise
