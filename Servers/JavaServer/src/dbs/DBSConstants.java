@@ -1,7 +1,5 @@
 /**
  * @author sekhri
- $Revision: 1.4 $"
- $Id: DBSConstants.java,v 1.4 2006/10/26 21:49:06 afaq Exp $"
  *
  */
 package dbs;

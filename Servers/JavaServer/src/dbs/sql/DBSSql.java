@@ -1,218 +1,323 @@
+
 /**
  * @author sekhri
- * 
- $Revision: 1.8 $"
- $Id: DBSSql.java,v 1.8 2006/11/01 15:52:04 afaq Exp $"
+ *
  */
 package dbs.sql;
 import java.util.Hashtable;
+import dbs.util.DBSUtil;
 
 public class DBSSql {
 	/**
 	 * 
 	 */
-
 	public static String getDual() {
-	   return "select 1 from dual";
+		return "SELECT 1 FROM dual";
 	}
 
-        public static String insertPrimaryDataset(Hashtable atribs) {
+       	public static String insertName(String table, String key, String value, String userID) {
+		String sql = "INSERT INTO " + table + " ( \n" +
+				         key + ", \n" +
+			        	"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + value + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
+	public static String insertMap(String table, String key1, String key2, String value1, String value2, String userID) {
+		String sql = "INSERT INTO " + table + " ( \n" +
+					key1 + ", \n" +
+					key2 + ", \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + value1 + "', \n" +
+					"'" + value2 + "' , \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
 
-           String primary = (String)atribs.get("primary_name");
+	public static String insertPrimaryDataset(String ann, String name, String descID, String startDate, String endDate, String typeID , String userID) {
+		String sql = "INSERT INTO PrimaryDataset ( \n" +
+				        "Annotation, \n" +
+				        "Name, \n" +
+				        "Description, \n" +
+				        "StartDate, \n" +
+				        "EndDate, \n" +
+				        "Type, \n" +
+			        	"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + ann + "', \n" +
+					"'" + name + "', \n" +
+					"'" + descID + "', \n" +
+					"'" + startDate + "', \n" +
+					"'" + endDate + "', \n" +
+					"'" + typeID + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 
-           //We will need to add to Description Tables as well.
+	public static String insertRun(String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String storeNumber, String startOfRun, String endOfRun, String userID) {
+		String sql = "INSERT INTO Runs ( \n" +
+				        "RunNumber, \n" +
+				        "NumberOfEvents, \n" +
+				        "NumberOfLumiSections, \n" +
+				        "TotalLuminosity, \n" +
+				        "StoreNumber, \n" +
+				        "StartOfRun, \n" +
+				        "EndOfRun, \n" +
+			        	"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + runNumber + "', \n" +
+					"'" + nOfEvents + "', \n" +
+					"'" + nOfLumiSections + "', \n" +
+					"'" + totalLumi + "', \n" +
+					"'" + storeNumber + "', \n" +
+					"'" + startOfRun + "', \n" +
+					"'" + endOfRun + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 
-           String sql = "INSERT INTO PrimaryDataset(Annotation, Name, Description, Type)" +
-                        " VALUES ('Another PrimaryDS in new era', '"+primary+"'," +
-                                        " 1, 1)";
-           System.out.println("\n\n" + sql + "\n\n");
-           return sql;
-        }
+	public static String insertBlock(String size, String name, String procDSID, String nOfFiles, String openForWriting, String userID) {
+		String sql = "INSERT INTO Block ( \n" +
+				        "BlockSize, \n" +
+				        "Name, \n" +
+				        "Dataset, \n" +
+				        "NumberOfFiles, \n" +
+				        "OpenForWriting, \n" +
+			        	"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + size + "', \n" +
+					"'" + name + "', \n" +
+					"'" + procDSID + "', \n" +
+					"'" + nOfFiles + "', \n" +
+					"'" + openForWriting + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 
-        public static String insertProcessedDataset(Hashtable atribs) throws Exception {
-
-           String name = (String)atribs.get("processed_name");
-           String primary = (String)atribs.get("primary_name");
-
-           String sql = "INSERT INTO ProcessedDataset(Name, PrimaryDataset, \n"+
-                        " OpenForWriting, Status, CreationDate)"+
-                        " VALUES ('"+name+"', (select id from PrimaryDataset \n"+
-                        " where Name='"+primary+"'), 'y', "+
-                        " (select id from Status where Status='Valid'), NOW())";
-           System.out.println("\n\n" + sql + "\n\n");
-           return sql;
-        }
-
-        public static String insertProcAlgoMap(Hashtable atribs) throws Exception {
-           
-            String procds = (String)atribs.get("processed_name");
-            String primary = (String)atribs.get("primary_name");
-            String appversion = (String)atribs.get("app_version");  
-            String appfam = (String)atribs.get("app_family_name");  
-            String appexe = (String)atribs.get("app_executable_name");  
-
-            String sql = "INSERT INTO ProcAlgoMap(Dataset, Algorithm, CreationDate) "+
-                         " VALUES( (select id from ProcessedDataset \n"+
-                         " where Name='"+procds+"'\n"+
-                         " and PrimaryDataset=(select id from PrimaryDataset \n"+
-                         " where Name='"+primary+"')), \n"+
-                         "(select algo.id from AlgorithmConfig algo \n" +
-                         " join AppVersion av \n" +
-                         "    on av.id = algo.ApplicationVersion \n" + 
-                         " join AppFamily af \n" +
-                         "   on af.id = algo.ApplicationFamily \n" +
-                         " join AppExecutable ae \n" +
-                         "    on ae.id = algo.ExecutableName \n" +
-                         " where av.Version='"+appversion+"' \n" +
-                         " and af.FamilyName='"+appfam+"' \n" +
-                         " and ae.ExecutableName='"+appexe+"' \n" +
-                         "),NOW()) \n";
-           System.out.println("\n\n" + sql + "\n\n");
-            return sql;
-        }
-
-        public static String insertBlock(Hashtable atribs) throws Exception {
-
-            String size = (String)atribs.get("block_size");
-            String name = (String)atribs.get("block_name");
-            String dataset = (String)atribs.get("processed_name");
-            String primary = (String)atribs.get("primary_name");
-            String files = (String)atribs.get("number_of_files");
-
-            String sql = "INSERT INTO Block (BlockSize, Name, Dataset, \n"+
-                         " NumberOfFiles, OpenForWriting, CreationDate) \n" + 
-                         " VALUES ("+size+", '"+name+"', (select id from ProcessedDataset \n" +
-                         " where Name='"+dataset+"' and "+
-                         " PrimaryDataset=(select id from PrimaryDataset \n"+
-                         " where Name='"+primary+"')), \n"+
-                         files+", 'y', NOW())";
-            System.out.println("\n\n" + sql + "\n\n");
-            return sql; 
-        }
+	public static String insertLumiSection(String lsNumber, String runID, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String userID) {
+		String sql = "INSERT INTO LumiSection ( \n" +
+				        "LumiSectionNumber, \n" +
+				        "RunNumber, \n" +
+				        "StartEventNumber, \n" +
+				        "EndEventNumber, \n" +
+				        "LumiStartTime, \n" +
+				        "LumiEndTime, \n" +
+			        	"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + lsNumber + "', \n" +
+					"'" + runID + "', \n" +
+					"'" + startEvNumber + "', \n" +
+					"'" + endEvNumber + "', \n" +
+					"'" + lStartTime + "', \n" +
+					"'" + lEndTime + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+		       
+        public static String insertPerson(String userName, String userDN, String contactInfo, String userID) {
+		String sql = "INSERT INTO Pserson ( \n" +
+					"Name, \n" +
+				        "DistinguishedName, \n" +
+					"ContactInfo, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + userName + "', \n" +
+					"'" + userDN + "', \n" +
+					"'" + contactInfo + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 
 
-        //public static String closeBlock(Hashtable atribs) throws Exception {
-        public static String closeBlock(String name) throws Exception {
 
-            //String name = (String)atribs.get("block_name");
+	public static String insertParameterSet(String hash, String name, String version, String type, String annotation, String content, String userID) {
+		String sql = "INSERT INTO QueryableParameterSet ( \n" +
+				        "Hash, \n" +
+				        "Name, \n" +
+				        "Version, \n" +
+				        "Type, \n" +
+				        "Annotation, \n" +
+				        "Content, \n" +
+			        	"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + hash + "', \n" +
+					"'" + name + "', \n" +
+					"'" + version + "', \n" +
+					"'" + type + "', \n" +
+					"'" + annotation + "', \n" +
+					"'" + content + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+				       
+        public static String insertApplication(String exeID, String versionID, String familyID, String psID, String userID) {
+		String sql = "INSERT INTO AlgorithmConfig ( \n" +
+					"ExecutableName, \n" +
+				        "ApplicationVersion, \n" +
+					"ApplicationFamily, \n" +
+					"ParameterSetID, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + exeID + "', \n" +
+					"'" + versionID + "', \n" +
+					"'" + familyID + "', \n" +
+					"'" + psID + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 
-            String sql = "UPDATE Block SET OpenForWriting='n' where Name='"+name+"'"; 
+	// SQL for inserting ProcessedDatatset and its related tables.
+	// ____________________________________________________
 
-            System.out.println("\n\n" + sql + "\n\n");
-            return sql;
-        }
+	public static String insertProcessedDatatset(String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String userID) {
+		String sql = "INSERT INTO ProcessedDataset ( \n" +
+					"Name, \n" +
+					"PrimaryDataset, \n" +
+					"OpenForWriting, \n" +
+					"PhysicsGroup, \n" +
+					"Status, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + name + "', \n" +
+					"'" + primDSID + "', \n" +
+					"'" + openForWriting + "', \n" +
+					"'" + phyGroupID + "', \n" +
+					"'" + statusID + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
+	public static String insertPhysicsGroup(String name, String conID, String userID) {
+		String sql = "INSERT INTO PhysicsGroup ( \n" +
+					"PhysicsGroupName, \n" +
+					"PhysicsGroupConvener, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + name + "', \n" +
+					"'" + conID + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 
-        public static String listDataTiers(Hashtable atribs) {
-            String tier = (String)atribs.get("tier_name");
-            String sql = "select dt.id as id \n"+
-                         " from DataTier dt "+
-                         " where Name='"+tier+"'";
-            System.out.println("\n\n" + sql + "\n\n");
 
-            return sql;
-        }
+	// SQL for inserting File and its related tables.
+	// ____________________________________________________
+	
+	public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) {
+		String sql = "INSERT INTO Files ( \n" +
+					"LogicalFileName, \n" +
+					"Dataset, \n" +
+					"Block, \n" +
+					"Checksum, \n" +
+					"NumberOfEvents, \n" +
+					"FileSize, \n" +
+					"Status, \n" +
+					"FileType, \n" +
+					"ValidationStatus, \n" +
+					"QueryableMetadata, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + lfn + "', \n" +
+					"'" + procDSID + "', \n" +
+					"'" + blockID + "', \n" +
+					"'" + checksum + "', \n" +
+					"'" + nOfEvents + "', \n" +
+					"'" + size + "', \n" +
+					"'" + fileStatusID + "', \n" +
+					"'" + typeID + "', \n" +
+					"'" + valStatusID + "', \n" +
+					"'" + qMetaData + "', \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
 
-        public static String insertDataTier(Hashtable atribs) {
+	// ____________________________________________________
+	
+	
+	
 
-            String tier = (String)atribs.get("tier_name");
-            String sql = "insert into DataTier (Name, CreationDate) \n"+
-                         " VALUES('"+tier+"', NOW())";
-            System.out.println("\n\n" + sql + "\n\n");
-
-            return sql;        
-        }
-
-        public static String insertRun(Hashtable atribs)  {
-
-          String run = (String)atribs.get("run_number");
-          String evts = (String)atribs.get("number_of_events");
-          String lumis = (String)atribs.get("number_of_lumi_sections");
-          String lumitotal = (String)atribs.get("total_luminosity");
-          String store = (String)atribs.get("store_number");
-          String starttime = (String)atribs.get("start_of_run");
-          String endtime = (String)atribs.get("end_of_run");
-
-          String sql = "INSERT INTO Runs (RunNumber, NumberOfEvents, "+
-                       "NumberOfLumiSections, TotalLuminosity, StoreNumber, "+
-                       "StartOfRun, EndOfRun, CreationDate) VALUES ("+
-                       run+", "+evts+", "+lumis+", "+lumitotal+", "+
-                       store+", '"+starttime+"', '"+endtime+"', NOW())";
-
-          System.out.println("\n\n" + sql + "\n\n");
-          return sql;
-        }
-
-       public static String insertProcDSRuns(Hashtable atribs)  {
-
-          String run = (String)atribs.get("run_number");
-          String dataset = (String)atribs.get("processed_name");
-          String primary = (String)atribs.get("primary_name");
-
-          String sql = "INSERT INTO ProcDSRuns(Dataset, Run, CreationDate) \n"+
-                       " VALUES ("+
-                       " (select id from Runs where RunNumber="+run+"),\n"+
-                       " (select id from ProcessedDataset \n" +
-                       " where Name='"+dataset+"' and "+
-                       " PrimaryDataset=(select id from PrimaryDataset \n"+
-                       " where Name='"+primary+"')), NOW())";
-
-          System.out.println("\n\n" + sql + "\n\n");
-          return sql;
-        }
-
-        public static String insertLumiSection(Hashtable atribs)  {
-
-          String lumi = (String)atribs.get("lumi_number");
-          String run = (String)atribs.get("run_number");
-          String startevt = (String)atribs.get("start_event");
-          String endend =(String)atribs.get("end_event");
-          String starttime =(String)atribs.get("start_time");
-          String endtime =(String)atribs.get("end_time");
-
-          String sql = "INSERT INTO LumiSection (LumiSectionNumber, "+
-                       "RunNumber, StartEventNumber, EndEventNumber, "+
-                       "LumiStartTime, LumiEndTime, CreationDate) VALUES ("+
-                       lumi+", (select id from Runs where RunNumber="+run+"),"+
-                       startevt+", "+endend+", '"+starttime+"', '"+endtime+"', NOW())";
-
-          System.out.println("\n\n" + sql + "\n\n");
-          return sql;
-        }
-
-        public static String listProcDSTiers(Hashtable atribs) {
-            String processed = (String)atribs.get("processed_name");
-            String tier = (String)atribs.get("tier_name");
-            String primary = (String)atribs.get("primary_name");
-
-            String sql = "select id from ProcDSTier \n"+
-                         " where Dataset=(select id from ProcessedDataset \n" +
-                         " where Name='"+processed+"' and PrimaryDataset=(select id from PrimaryDataset \n"+
-                         " where Name='"+primary+"')\n"+
-                         " ) AND DataTier=(select id from DataTier where Name='"+tier+"')\n";
-
-            System.out.println("\n\n" + sql + "\n\n");
-            return sql;
-        }
-
-        public static String insertProcDSTiers(Hashtable atribs) {
-
-            String processed = (String)atribs.get("processed_name");
-            String tier = (String)atribs.get("tier_name");
-            String primary = (String)atribs.get("primary_name");
-
-            String sql = "insert into ProcDSTier (Dataset, DataTier, CreationDate) "+
-                         " values(" +
-                         " (select id from ProcessedDataset " +
-                         " where Name='"+processed+"' and PrimaryDataset=(select id from PrimaryDataset "+
-                         " where Name='"+primary+"')),"+
-                         " (select id from DataTier where Name='"+tier+"')"+
-                         ", NOW())";
-            System.out.println("\n\n" + sql + "\n\n");
-            return sql;
-        }
-
+	
+	
+	
 	public static String listPrimaryDatasets(String pattern) {
-		String sql = "select pd.ID as id, \n" +
+		String sql = "SELECT pd.ID as id, \n" +
 			"pd.Annotation as annotation, \n" +
 			"pd.Name as primary_name, \n" +
 			"pd.StartDate as start_date, \n"  +
@@ -227,35 +332,31 @@ public class DBSSql {
 			"ty.Type as type, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from PrimaryDataset pd \n" +
-			"left outer join Type ty \n" +
-				"on ty.id = pd.Type \n" +
-			"left outer join PrimaryDatasetDescription pdd \n" +
-				"on pdd.id = pd.Description \n" +
-			"left outer join TriggerPathDescription tpd \n" +
-				"on tpd.id = pdd.TriggerDescriptionID \n" + 
-			"left outer join MCDescription md \n" +
-				"on md.id = pdd.MCChannelDescriptionID \n" +
-			"left outer join OtherDescription od \n" +
-				"on od.id = pdd.OtherDescriptionID \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = pd.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = pd.LastModifiedBy \n";
+			"FROM PrimaryDataset pd \n" +
+			"LEFT OUTER JOIN Type ty \n" +
+				"ON ty.id = pd.Type \n" +
+			"LEFT OUTER JOIN PrimaryDatasetDescription pdd \n" +
+				"ON pdd.id = pd.Description \n" +
+			"LEFT OUTER JOIN TriggerPathDescription tpd \n" +
+				"ON tpd.id = pdd.TriggerDescriptionID \n" + 
+			"LEFT OUTER JOIN MCDescription md \n" +
+				"ON md.id = pdd.MCChannelDescriptionID \n" +
+			"LEFT OUTER JOIN OtherDescription od \n" +
+				"ON od.id = pdd.OtherDescriptionID \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = pd.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = pd.LastModifiedBy \n";
 		if(pattern != null) {
-			sql += "where pd.Name like '" + pattern + "'\n" +
-				"order by primary_name";
+			sql += "WHERE pd.Name like '" + pattern + "'\n" +
+				"ORDER BY primary_name";
 		}
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
-	public static String listProcessedDatasets(String patternPrim, String patternDt, 
-                                                   String patternProc, 
-                                                   String patternVersion, 
-                                                   String patternFamily, 
-                                                   String patternExe) {
-		String sql = "select procds.id as id, \n" +
+	public static String listProcessedDatasets(String patternPrim, String patternDt, String patternProc, String patternVersion, String patternFamily, String patternExe) {
+		String sql = "SELECT procds.id as id, \n" +
 			"concat( \n" +
 				"concat( \n" +
 					"concat( \n" +
@@ -271,36 +372,36 @@ public class DBSSql {
 			"procds.LastModificationDate as last_modification_date, \n" +
 			"pg.PhysicsGroupName as physics_group_name, \n" +
 			"perpg.DistinguishedName as physics_group_convener, \n" +
-			"av.AppVersion as app_version, \n" +
-			"af.ApplicationFamilyName as app_family_name, \n" +
+			"av.Version as app_version, \n" +
+			"af.FamilyName as app_family_name, \n" +
 			"ae.ExecutableName as app_executable_name, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from ProcessedDataset procds \n" +
-			"left outer join PrimaryDataset primds \n" +
-				"on primds.id = procds.PrimaryDataset \n" +
-			"left outer join ProcDSTier pdst \n" +
-				"on pdst.Dataset = procds.id \n" +
-			"left outer join DataTier dt \n" +
-				"on dt.id = pdst.DataTier " +
-			"left outer join PhysicsGroup pg \n" +
-				"on pg.id = procds.PhysicsGroup \n" +
-			"left outer join Person perpg \n" +
-				"on perpg.id = pg.PhysicsGroupConvener \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = procds.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = procds.LastModifiedBy \n" +
-			"left outer join ProcAlgoMap pam \n" +
-				"on pam.Dataset = procds.id \n" +
-			"left outer join AlgorithmConfig algo \n" +
-				"on algo.id = pam.Algorithm \n" +
-			"left outer join AppVersion av \n" +
-				"on av.id = algo.ApplicationVersion \n" +
-			"left outer join ApplicationFamily af \n" +
-				"on af.id = algo.ApplicationFamily \n" +
-			"left outer join AppExecutable ae \n" +
-				"on ae.id = algo.ExecutableName \n";
+			"FROM ProcessedDataset procds \n" +
+			"LEFT OUTER JOIN PrimaryDataset primds \n" +
+				"ON primds.id = procds.PrimaryDataset \n" +
+			"LEFT OUTER JOIN ProcDSTier pdst \n" +
+				"ON pdst.Dataset = procds.id \n" +
+			"LEFT OUTER JOIN DataTier dt \n" +
+				"ON dt.id = pdst.DataTier " +
+			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+				"ON pg.id = procds.PhysicsGroup \n" +
+			"LEFT OUTER JOIN Person perpg \n" +
+				"ON perpg.id = pg.PhysicsGroupConvener \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = procds.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = procds.LastModifiedBy \n" +
+			"LEFT OUTER JOIN ProcAlgoMap pam \n" +
+				"ON pam.Dataset = procds.id \n" +
+			"LEFT OUTER JOIN AlgorithmConfig algo \n" +
+				"ON algo.id = pam.Algorithm \n" +
+			"LEFT OUTER JOIN AppVersion av \n" +
+				"ON av.id = algo.ApplicationVersion \n" +
+			"LEFT OUTER JOIN AppFamily af \n" +
+				"ON af.id = algo.ApplicationFamily \n" +
+			"LEFT OUTER JOIN AppExecutable ae \n" +
+				"ON ae.id = algo.ExecutableName \n";
 
 		if(patternPrim == null) patternPrim = "%";
 		if(patternDt == null) patternDt = "%";
@@ -309,52 +410,52 @@ public class DBSSql {
 		if(patternFamily == null) patternFamily = "%";
 		if(patternExe == null) patternExe = "%";
 
-		sql += "where primds.Name like '" + patternPrim + "' \n" +
+		sql += "WHERE primds.Name like '" + patternPrim + "' \n" +
 			"and dt.Name like '" + patternDt + "' \n" +
 			"and procds.name like '" + patternProc + "' \n" +
-			"and av.AppVersion like '" + patternVersion + "' \n" +
-			"and af.ApplicationFamilyName like '" + patternFamily + "' \n" +
+			"and av.Version like '" + patternVersion + "' \n" +
+			"and af.FamilyName like '" + patternFamily + "' \n" +
 			"and ae.ExecutableName like '" + patternExe + "' \n" +
-			"order by path";
+			"ORDER BY path";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 	public static String listApplications(String patternVersion, String patternFamily, String patternExe) {
-		String sql = "select algo.id as id, \n" +
-			"av.AppVersion as app_version, \n" +
-			"af.ApplicationFamilyName as app_family_name, \n" +
+		String sql = "SELECT algo.id as id, \n" +
+			"av.Version as app_version, \n" +
+			"af.FamilyName as app_family_name, \n" +
 			"ae.ExecutableName as app_executable_name, \n" +
 			"algo.CreationDate as creation_date, \n" +
 			"algo.LastModificationDate as last_modification_date, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from AlgorithmConfig algo \n" +
-			"join AppVersion av \n" +
-				"on av.id = algo.ApplicationVersion \n" +
-			"join ApplicationFamily af \n" +
-				"on af.id = algo.ApplicationFamily \n" +
-			"join AppExecutable ae \n" +
-				"on ae.id = algo.ExecutableName \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = algo.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = algo.LastModifiedBy \n";
+			"FROM AlgorithmConfig algo \n" +
+			"JOIN AppVersion av \n" +
+				"ON av.id = algo.ApplicationVersion \n" +
+			"JOIN AppFamily af \n" +
+				"ON af.id = algo.ApplicationFamily \n" +
+			"JOIN AppExecutable ae \n" +
+				"ON ae.id = algo.ExecutableName \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = algo.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = algo.LastModifiedBy \n";
 
 		if(patternVersion == null) patternVersion = "%";
 		if(patternFamily == null) patternFamily = "%";
 		if(patternExe == null) patternExe = "%";
 
-		sql += "where av.AppVersion like '" + patternVersion + "' \n" +
-			"and af.ApplicationFamilyName like '" + patternFamily + "' \n" +
+		sql += "WHERE av.Version like '" + patternVersion + "' \n" +
+			"and af.FamilyName like '" + patternFamily + "' \n" +
 			"and ae.ExecutableName like '" + patternExe + "' \n" +
-			"order by app_family_name, app_executable_name, app_version";
+			"ORDER BY app_family_name, app_executable_name, app_version";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 	public static String listRuns(String procDSID) {
-		String sql = "select run.ID as id, \n " +
+		String sql = "SELECT run.ID as id, \n " +
 			"run.RunNumber as run_number, \n" +
 			"run.NumberOfEvents as number_of_events, \n" +
 			"run.NumberOfLumiSections as number_of_lumi_sections, \n" +
@@ -366,47 +467,47 @@ public class DBSSql {
 			"run.LastModificationDate as last_modification_date, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from Runs run \n" +
-			"join ProcDSRuns pdsr \n" +
-				"on pdsr.Run = run.id \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = run.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = run.LastModifiedBy \n";
+			"FROM Runs run \n" +
+			"JOIN ProcDSRuns pdsr \n" +
+				"ON pdsr.Run = run.id \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = run.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = run.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "where pdsr.Dataset = " + procDSID + " \n";
+			sql += "WHERE pdsr.Dataset = " + procDSID + " \n";
 		}
-		sql +=	"order by run_number";
+		sql +=	"ORDER BY run_number";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 	public static String listTiers(String procDSID) {
-		String sql = "select dt.ID as id, \n " +
+		String sql = "SELECT dt.ID as id, \n " +
 			"dt.Name as name, \n" +
 			"dt.CreationDate as creation_date, \n" +
 			"dt.LastModificationDate as last_modification_date, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from DataTier dt \n" +
-			"join ProcDSTier pdst \n" +
-				"on pdst.DataTier = dt.id \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = dt.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = dt.LastModifiedBy \n";
+			"FROM DataTier dt \n" +
+			"JOIN ProcDSTier pdst \n" +
+				"ON pdst.DataTier = dt.id \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = dt.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = dt.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "where pdst.Dataset = " + procDSID + " \n";
+			sql += "WHERE pdst.Dataset = " + procDSID + " \n";
 		}
-		sql +=	"order by name";
+		sql +=	"ORDER BY name";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 	public static String listBlocks(String procDSID) {
-		String sql = "select b.ID as id, \n " +
+		String sql = "SELECT b.ID as id, \n " +
 			"b.Name as name, \n" +
 			"b.Size as size, \n" +
 			"b.NumberOfFiles as number_of_files, \n" +
@@ -415,22 +516,22 @@ public class DBSSql {
 			"b.LastModificationDate as last_modification_date, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from Block b \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = b.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = b.LastModifiedBy \n";
+			"FROM Block b \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = b.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = b.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "where b.ProcessedDataset = " + procDSID + " \n";
+			sql += "WHERE b.ProcessedDataset = " + procDSID + " \n";
 		}
-		sql +=	"order by name";
+		sql +=	"ORDER BY name";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 	public static String listFiles(String procDSID, String blockID, String patternLFN) {
-		String sql = "select f.ID as id, \n " +
+		String sql = "SELECT f.ID as id, \n " +
 			"f.LogicalFileName as lfn, \n" +
 			"f.Checksum as checksum, \n" +
 			"f.Size as size, \n" +
@@ -441,70 +542,256 @@ public class DBSSql {
 			"ty.Type as type, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"from File f \n" +
-			"left outer join Type ty \n" +
-				"on ty.id = f.FileType \n" +
-			"left outer join Status st \n" +
-				"on st.id = f.FileStatus \n" +
-			"left outer join Person percb \n" +
-				"on percb.id = f.CreatedBy \n" +
-			"left outer join Person perlm \n" +
-				"on perlm.id = f.LastModifiedBy \n";
+			"FROM File f \n" +
+			"LEFT OUTER JOIN Type ty \n" +
+				"ON ty.id = f.FileType \n" +
+			"LEFT OUTER JOIN Status st \n" +
+				"ON st.id = f.FileStatus \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = f.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = f.LastModifiedBy \n";
 
 		if(patternLFN == null) patternLFN = "%";
-		sql += "where f.LogicalFileName like '" + patternLFN + "' \n" ;
+		sql += "WHERE f.LogicalFileName like '" + patternLFN + "' \n" ;
 		if(procDSID != null) {
 			sql += "and f.ProcessedDataset = " + procDSID + " \n";
 		}
 		if(blockID != null) {
 			sql += "and f.Block = " + blockID + " \n";
 		}
-		sql +=	"order by lfn";
+		sql +=	"ORDER BY lfn";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 	public static String getPrameterSets(String pattern) {
-		String sql = "select id, hash, content from t_parameter_set ";
+		String sql = "SELECT id, hash, content FROM t_parameter_set ";
 		if(pattern != null) {
-			sql += "where content like '" + pattern + "' " +
+			sql += "WHERE content like '" + pattern + "' " +
 				"or hash like '" + pattern + "' " ;
 		}
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
+	public static String getID(String table, String key, String value) {
+		System.out.println("\n\n" + "SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'" + "\n\n");
+		return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
+	}
 
+	public static String getMapID(String table, String key1, String key2, String value1, String value2) {
+		System.out.println((String)("SELECT ID AS id FROM " + table + " WHERE " + key1 + " = '" + value1 + "' AND " + key2 + " = '" + value2 + "'"));
+		return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key1 + " = '" + value1 + "' AND " + key2 + " = '" + value2 + "'"));
+	}
 	public static String getProcessedDSID(String prim, String dt ,String proc) {
-		String sql = "select procds.id as id \n" +
-				"from ProcessedDataset procds \n" +
-				"join PrimaryDataset primds \n" +
-					"on primds.id = procds.PrimaryDataset \n" +
-				"join ProcDSTier pdst \n" +
-					"on pdst.Dataset = procds.id \n" +
-				"join DataTier dt \n" +
-					"on dt.id = pdst.DataTier \n";
+		String sql = "SELECT procds.ID as id \n" +
+				"FROM ProcessedDataset procds \n" +
+				"JOIN PrimaryDataset primds \n" +
+					"ON primds.id = procds.PrimaryDataset \n" +
+				"JOIN ProcDSTier pdst \n" +
+					"ON pdst.Dataset = procds.id \n" +
+				"JOIN DataTier dt \n" +
+					"ON dt.id = pdst.DataTier \n";
 		if(prim == null || dt == null || proc == null) {
 			return sql;
 		}
-		sql += "where primds.Name = '" + prim + "' " +
+		sql += "WHERE primds.Name = '" + prim + "' " +
 			"and dt.Name = '" + dt + "' " +
 			"and procds.Name = '" + proc + "' ";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
-	public static String getBlockID(String blockName) {
-		String sql = "select b.id as id \n" +
-				"from Block b \n";
-		if(blockName == null) {
-			return sql;
-		}
-		sql += "where b.Name = '" + blockName + "' ";
+
+	public static String getApplicationID(String version, String family, String exe) {
+		String sql = "SELECT algo.id \n" +
+			"FROM AlgorithmConfig algo \n" +
+			"JOIN AppVersion av \n" +
+				"ON av.id = algo.ApplicationVersion \n" +
+			"JOIN AppFamily af \n" +
+				"ON af.id = algo.ApplicationFamily \n" +
+			"JOIN AppExecutable ae \n" +
+				"ON ae.id = algo.ExecutableName \n" +
+			"WHERE av.Version = '" + version + "' \n" +
+			"and af.FamilyName = '" + family + "' \n" +
+			"and ae.ExecutableName = '" + exe + "' \n" ;
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
 
+	/*
+	public static String getAppVersionID(String version) {
+		String sql = getID("AppVersion", "Version", version);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
+	public static String getAppExecutableID(String exe) {
+		String sql = getID("AppExecutable", "ExecutableName", exe);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
+	public static String getAppFamilyID(String family) {
+		String sql = getID("AppFamily", "FamilyName", family);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getParameterSetID(String psName) {
+		String sql = getID("QueryableParameterSet", "Name", psName);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getPersonID(String userDN) {
+		String sql = getID("Person", "DistinguishedName", userDN);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getBlockID(String blockName) {
+		String sql = getID("Block", "Name", blockName);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getDataTierID(String tierName) {
+		String sql = getID("DataTier", "Name", tierName);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getLumiSectionID(String lsNumber) {
+		String sql = getID("LumiSection", "LumiSectionNumber", lsNumber);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getFileID(String lfn) {
+		String sql = getID("Files", "LogicalFileName", lfn);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getStatusID(String status) {
+		String sql = getID("Status", "Status", status);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String getTypeID(String type) {
+		String sql = getID("Type", "Type", type);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String insertFileTier(String fileID, String tierID, String userID) {
+		String sql = "INSERT INTO FileTier ( \n" +
+					"Fileid, \n" +
+				        "DataTier, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + fileID + "', \n" +
+					"'" + tierID + "' , \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String insertFileLumi(String fileID, String lumiID, String userID) {
+		String sql = "INSERT INTO FileLumi ( \n" +
+					"Fileid, \n" +
+				        "Lumi, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + fileID + "', \n" +
+					"'" + lumiID + "' , \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	
+	public static String insertFileAlgo(String fileID, String appID, String userID) {
+		String sql = "INSERT INTO FileAlgoMap ( \n" +
+					"Fileid, \n" +
+				        "Algorithm, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + fileID + "', \n" +
+					"'" + appID + "' , \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String insertFileParentage(String fileID, String parentID, String userID) {
+		String sql = "INSERT INTO FileParentage ( \n" +
+					"ThisFile, \n" +
+				        "itsParent, \n" +
+					"CreatedBy, \n" +
+			        	"CreationDate, \n" +
+				        "LastModifiedBy \n" +
+				") VALUES ( \n" +
+					"'" + fileID + "', \n" +
+					"'" + parentID + "' , \n" +
+					"'" + userID + "', \n" +
+					"'" + DBSUtil.getDate() + "', \n" +
+					"'" + userID + "' \n" +
+				") \n";
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+	public static String insertStatus(String status, String userID) {
+		String sql = insertName("Status", "Status", status, userID);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String insertType(String type, String userID) {
+		String sql = insertName("Type", "Type", type, userID);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+
+	// SQL for inserting Application and its related tables.
+	// ____________________________________________________
+        public static String insertAppVersion(String version, String userID) {
+		String sql = insertName("AppVersion", "Version", version, userID);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String insertAppFamily(String family, String userID) {
+		String sql = insertName("AppFamily", "FamilyName", family, userID);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
+
+	public static String insertAppExecutable(String exe, String userID) {
+		String sql = insertName("AppExecutable", "ExecutableName", exe, userID);
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}*/
+
+	
 
 }

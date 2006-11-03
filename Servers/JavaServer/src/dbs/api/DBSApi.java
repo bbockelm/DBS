@@ -1,9 +1,5 @@
 /**
  * @author sekhri
- 
- $Revision: 1.5 $"
- $Id: DBSApi.java,v 1.5 2006/10/31 22:20:40 afaq Exp $"
- 
  *
  */
 
@@ -30,139 +26,161 @@ public class DBSApi {
 	}
 
 	private Connection getConnection() throws Exception {
-		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,
-                                                            DBSConstants.USERID ,DBSConstants.PASSWORD);
+		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);
 	}
 	
         public void insertPrimaryDataset(String inputXml, Hashtable dbsUser) throws Exception {
-                Connection conn = null;
-                try {
-                        //get the primay dataset from the xml
-                        String primaryDatasetName="";
-
-                        DBSXMLParser dbsParser = new DBSXMLParser();
-                        dbsParser.parseString(inputXml);
-                        Vector allElement = dbsParser.getElements();
-                        for (int i=0; i<allElement.size(); ++i) {
-                            Element e = (Element)allElement.elementAt(i);
-                            String name = e.name;
-                            if (name == "primary-dataset" ) {
-                               System.out.println("Found a primary dataset: "+name);
-                               Hashtable atribs = e.attributes;
-                               primaryDatasetName = (String)atribs.get("primary_name");
-                               System.out.println("Name of primarydataset: "+primaryDatasetName);
-                               conn = getConnection();
-                               api.insertPrimaryDataset(conn, atribs);
-                               break;
-                            }
-                        }
-
-                } finally {
-                        if(conn != null) conn.close();
-                }
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertPrimaryDataset(conn, parse(inputXml, "primary-dataset") , dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
         }
 	
-        public void insertBlock(String inputXml) throws Exception {
-                Connection conn = null;
-                try {
-                        DBSXMLParser dbsParser = new DBSXMLParser();
-                        dbsParser.parseString(inputXml);
-                        Vector allElement = dbsParser.getElements();
-                        for (int i=0; i<allElement.size(); ++i) {
-                            Element e = (Element)allElement.elementAt(i);
-                            String name = e.name;
-                            if ( name == "block" ) {
-                                System.out.println("Found a block");
-                                Hashtable block_atribs = e.attributes;
-                                conn = getConnection();
-                                api.insertBlock(conn, block_atribs);       
-                                break;
-                            }
-                        }                        
-                } finally {
-                        if(conn != null) conn.close();
-                }
-        }
+	public void insertApplication(String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertApplication(conn, parse(inputXml, "algorithm") , dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertRun(String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertRun(conn, parse(inputXml, "run") , dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertBlock(String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertBlock(conn, parse(inputXml, "block") , dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
 
 
-        public void insertRun(String inputXml) throws Exception {
-                Connection conn = null;
-                try {
-                        DBSXMLParser dbsParser = new DBSXMLParser();
-                        dbsParser.parseString(inputXml);
-                        Vector allElement = dbsParser.getElements();
-                        for (int i=0; i<allElement.size(); ++i) {
-                            Element e = (Element)allElement.elementAt(i);
-                            String name = e.name;
-                            if ( name == "run" ) {
-                                System.out.println("Found a run");
-                                Hashtable run_atribs = e.attributes;
-                                conn = getConnection();
-                                api.insertRun(conn, run_atribs);
-                                break;
-                            }
-                        }
-                } finally {
-                        if(conn != null) conn.close();
-                }
-        }
+	public void insertFiles(String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			Vector topLevel = new Vector();
+			int index = -1;
+			DBSXMLParser dbsParser = new DBSXMLParser();
+			dbsParser.parseString(inputXml); 
+    			Vector allElement = dbsParser.getElements();
+			for (int i=0; i<allElement.size(); ++i) {
+				Element e = (Element)allElement.elementAt(i);
+				String name = e.name;
+				if (name.equals("file") ) {
+					System.out.println("Found a file: " + name);  
+					Hashtable file = e.attributes;
+					file.put("lumi_section", new Vector());
+					file.put("data_tier", new Vector());
+					file.put("parent", new Vector());
+					file.put("algorithm", new Vector());
+					topLevel.add(file);
+					++index;
+				} 
+				if (name.equals("lumi_section") ) 
+					((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
+				if (name.equals("data_tier") ) 
+					((Vector)(((Hashtable)topLevel.get(index)).get("data_tier"))).add(e.attributes);
+				if (name.equals("parent") ) 
+					((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
+				if (name.equals("algorithm") ) 
+					((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
+			}
+			//try catch for rollback
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			//try {
+				api.insertFiles(conn, topLevel, dbsUser);
+			/*} catch (Exception e) {
+				conn.rollback();
+				throw e;
+			}*/
+			conn.commit();
 
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
 
+	public void insertProcessedDataset(String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			DBSXMLParser dbsParser = new DBSXMLParser();
+			dbsParser.parseString(inputXml); 
+    			Vector allElement = dbsParser.getElements();
+			Hashtable psDS = null;
+			for (int i=0; i<allElement.size(); ++i) {
+				Element e = (Element)allElement.elementAt(i);
+				String name = e.name;
+				if (name.equals("processed-dataset") ) {
+					System.out.println("Found a processed-dataset: " + name);  
+					psDS = e.attributes;
+					psDS.put("data_tier", new Vector());
+					psDS.put("parent", new Vector());
+					psDS.put("algorithm", new Vector());
+				} 
+				if (name.equals("data_tier") ) 
+					((Vector)(psDS.get("data_tier"))).add(e.attributes);
+				if (name.equals("parent") ) 
+					((Vector)(psDS.get("parent"))).add(e.attributes);
+				if (name.equals("algorithm") ) 
+					((Vector)(psDS.get("algorithm"))).add(e.attributes);
+				//System.out.println("Algorithm hashtable "+ (e.attributes).toString());
+			}
+			//try catch for rollback
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			//try {
+				api.insertProcessedDatatset(conn, psDS, dbsUser);
+			/*} catch (Exception e) {
+				conn.rollback();
+				throw e;
+			}*/
+			conn.commit();
 
-        public void insertLumiSection(String inputXml) throws Exception {
-                Connection conn = null;
-                try {
-                        DBSXMLParser dbsParser = new DBSXMLParser();
-                        dbsParser.parseString(inputXml);
-                        Vector allElement = dbsParser.getElements();
-                        for (int i=0; i<allElement.size(); ++i) {
-                            Element e = (Element)allElement.elementAt(i);
-                            String name = e.name;
-                            if ( name == "lumi_section" ) {
-                                System.out.println("Found a lumi-section");
-                                Hashtable lumi_atribs = e.attributes;
-                                conn = getConnection();
-                                api.insertLumiSection(conn, lumi_atribs);
-                                break;
-                            }
-                        }
-                } finally {
-                        if(conn != null) conn.close();
-                }
-        }
-
-        public void closeBlock(String block_name) throws Exception {
-                Connection conn = null;
-                try {
-                   conn = getConnection();
-                   api.closeBlock(conn, block_name);
-                } finally {
-                        if(conn != null) conn.close();
-                }
-        }
-
-        public void insertProcessedDataset(String inputXml) throws Exception {
-                Connection conn = null;
-                try {
-                        DBSXMLParser dbsParser = new DBSXMLParser();
-                        dbsParser.parseString(inputXml);
-                        Vector allElement = dbsParser.getElements();
-                        for (int i=0; i<allElement.size(); ++i) {
-                            Element e = (Element)allElement.elementAt(i);
-                            String name = e.name;
-                            if (name == "processed-dataset" ) {
-                                System.out.println("Found a processed-dataset");
-                                Hashtable dataset_atribs = e.attributes;
-                                conn = getConnection();
-                                api.insertProcessedDataset(conn, dataset_atribs);
-                                break;
-                            }
-                        }                        
-                } finally {
-                        if(conn != null) conn.close();
-                }
-        }
-
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+	
+	public Hashtable parse(String inputXml, String key) throws Exception {
+		DBSXMLParser dbsParser = new DBSXMLParser();
+		dbsParser.parseString(inputXml); 
+ 		Vector allElement = dbsParser.getElements();
+		Hashtable table = null;
+		for (int i=0; i<allElement.size(); ++i) {
+			Element e = (Element)allElement.elementAt(i);
+			String name = e.name;
+			if (name.equals(key) ) {
+				System.out.println("Found a " + key + " : " + name);  
+				table = e.attributes;
+			} 
+		}
+		return table;
+	}
+	
 	public void listPrimaryDatasets(Writer out, String pattern) throws Exception {
 		Connection conn = null;
 		try {
