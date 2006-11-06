@@ -1459,7 +1459,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
             Application configs retriever
         """
-        print "### call getAppConfigs",appPath
+#        print "### call getAppConfigs",appPath
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         nameSpace={
