@@ -228,6 +228,16 @@ table.intro td {
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
+.td_menu_green_box {
+  width: 100px;
+  color: #000000;
+  background-color: #66CDAA;
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+}
 .td_menu_gray_box {
   width: 100px;
   color: #000000;

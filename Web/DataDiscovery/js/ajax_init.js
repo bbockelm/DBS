@@ -244,7 +244,7 @@ ParentsGraphUpdater.prototype = {
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var r=document.getElementById("_parents");
-     r.className="td_menu_lavender_box";
+     r.className="td_menu_green_box";
      var t=document.getElementById("parents");
      t.innerHTML=responseHTML;
      // additional action can come here
@@ -343,7 +343,7 @@ AppConfigsUpdater.prototype = {
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var r=document.getElementById("_appConfigs");
-     r.className="td_menu_lavender_box";
+     r.className="td_menu_green_box";
      var t=document.getElementById("appConfigs");
      t.innerHTML=responseHTML;
      // additional action can come here
