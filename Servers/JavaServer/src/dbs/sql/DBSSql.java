@@ -1,6 +1,7 @@
 
 /**
- * @author sekhri
+ $Revision: 1.3 $"
+ $Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -11,9 +12,9 @@ public class DBSSql {
 	/**
 	 * 
 	 */
-	public static String getDual() {
-		return "SELECT 1 FROM dual";
-	}
+	//public static String getDual() {
+	//	return "SELECT 1 FROM dual";
+	//}
 
        	public static String insertName(String table, String key, String value, String userID) {
 		String sql = "INSERT INTO " + table + " ( \n" +
