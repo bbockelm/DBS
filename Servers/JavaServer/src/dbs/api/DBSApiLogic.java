@@ -223,7 +223,7 @@ public class DBSApiLogic {
 		String tpDesc = get(dataset, "trigger_path_description", false);
 		
 		//Insert a Dataset Type if it does not exists
-		insertName(conn, "Type", "Type", type , userID);
+		//insertName(conn, "Type", "Type", type , userID);
 		
 		//Insert a Dataset Trigger Desc if it does not exists
 		insertName(conn, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
@@ -244,7 +244,7 @@ public class DBSApiLogic {
 							"0",//FIXME Should not be in the schema
 							startDate,
 							endDate,
-							getID(conn, "Type", "Type", type, false), 
+							getID(conn, "PrimaryDatasetType", "Type", type, false), 
 							userID));
 		} else {
 			//Append Warnning message that run eixts
