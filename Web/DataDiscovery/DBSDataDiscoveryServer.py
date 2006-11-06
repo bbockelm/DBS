@@ -1249,14 +1249,23 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.setContentType('xml')
         self.helperInit(dbsInst)
         dList=self.helper.getProcessedDatasets("/"+primDataset+"/*/*",app=0)
+        pSum=""
+        last=id=0
+        for dataset in dList:
+            id+=1
+            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+            if id>=len(dList):
+               last=1
+            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
         page="""<ajax-response><response type="element" id="results">"""
-        nameSpace = {
-                     'msg'     : 'Processed datasets (<a href="javascript:hideWaitingMessage()">hide</a>)',
-                     'dbsInst' : dbsInst,
-                     'dList'   : dList
-                    }
-        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
-        page+=str(t)
+#        nameSpace = {
+#                     'msg'     : 'Processed datasets:',
+#                     'dbsInst' : dbsInst,
+#                     'dList'   : dList
+#                    }
+#        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+#        page+=str(t)
+        page+=pSum
         page+="</response></ajax-response>"
         if self.verbose:
            print page
@@ -1445,6 +1454,27 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     history.exposed=True
+
+    def getAppConfigs(self,appPath,**kwargs):
+        """
+            Application configs retriever
+        """
+        print "### call getAppConfigs",appPath
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        nameSpace={
+                   'appPath'   : appPath,
+                   'configList': self.helper.api.listApplicationConfigs(appPath)
+                  }
+        t = Template(CheetahDBSTemplate.templateAppConfigs, searchList=[nameSpace])
+        page="""<ajax-response><response type="object" id="appConfigs">"""
+        page+= str(t)
+        page+="</response></ajax-response>"
+#        if self.verbose:
+        if 1:
+           print page
+        return page
+    getAppConfigs.exposed=True
 #
 # main
 #

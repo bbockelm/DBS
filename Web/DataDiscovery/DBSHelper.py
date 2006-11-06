@@ -372,8 +372,8 @@ class DBSHelper(DBSLogger):
          dList = self.api.listProcessedDatasets(datasetPath)
       for entry in dList:
           name = entry.get('datasetPathName')
-          if self.html:
-             name="""<a href="">%s</a>"""%name
+#          if self.html:
+#             name="""<a href="">%s</a>"""%name
           oList.append(name)
       return oList
   

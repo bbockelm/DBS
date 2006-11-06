@@ -155,6 +155,8 @@ function registerAjaxGetDetailsForPrimDatasetCalls() {
   ajaxEngine.registerAjaxElement('results');
 }
 function ajaxGetDetailsForPrimDataset(dbsInst,primDataset) {
+  var r=document.getElementById("results_menu");
+  r.className="show_inline";
   var id=document.getElementById("results");
   id.className="show_cell";
   ajaxEngine.sendRequest('ajaxGetDetailsForPrimDataset',"dbsInst="+dbsInst,"primDataset="+primDataset);
@@ -168,11 +170,14 @@ function getSummary() {
   id.className="show_inline_off";
   ajaxEngine.sendRequest('getSummary');
   ajaxHistory('Summary');
+  var action='<a href="javascript:showMenu(\'Summary\');getSummary()">Summary</a>';
+  ajaxHistory(action);
 }
 
 function getPrimDatasets() {
   ajaxEngine.sendRequest('getPrimDatasets');
-  ajaxHistory('Datasets');
+  var action='<a href="javascript:showMenu(\'Datasets\');getPrimDatasets()">Get all primary datasets</a>';
+  ajaxHistory(action);
 }
 function getProvenance(id) {
   // in order to replace all occurence of pattern in a string we need to use regular expression
@@ -250,7 +255,46 @@ function registerAjaxProvenanceGraphCalls() {
   ajaxEngine.registerRequest('ajaxGenParentsGraph','getProvenanceForAllDatasets');
   ajaxEngine.registerAjaxObject('parents',parentsGraphUpdater);
 }
-function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
+function ajaxGenParentsGraph(iParam) {
+  var dbs, _dbs, site, _site, app, _app, primD, _primD, tier, _tier;
+  if(iParam) {
+     uSelection=iParam.split(",");
+     _dbs  = uSelection[0];
+     _primD= uSelection[1];
+     _tier = uSelection[2];
+     _app  = "/"+uSelection[4]+"/"+uSelection[5]+"/"+uSelection[3]; // /family/exe/ver
+     _site = "*";
+  }
+  if(_dbs) {
+      dbs=_dbs;
+  } else {
+      dbs=document.getElementById('dbsSelector').value;
+  }
+  if(_site) {
+      site=_site;
+  } else {
+      site=document.getElementById('siteSelector').value;
+  }
+  if(_app) {
+      app=_app;
+  } else {
+      app=document.getElementById('appSelector').value;
+  }
+  if(_primD) {
+      primD=_primD;
+  } else {
+      primD=document.getElementById('primSelector').value;
+  }
+  if(_tier) {
+      tier=_tier;
+  } else {
+      tier=document.getElementById('tierSelector').value;
+  }
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
+  var action='<a href="javascript:showWaitingMessage();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  ajaxHistory(action);
+}
+function ajaxGenParentsGraph_orig(_dbs,_site,_app,_primD,_tier) {
   var dbs;
   if(_dbs) {
       dbs=_dbs;
@@ -289,4 +333,38 @@ function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
 function registerAjaxProvenanceCalls() {
     ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
     ajaxEngine.registerAjaxElement('parentGraph');
+}
+// Class which capture ajax response and handle it. 
+// We put our reponse to "appConfigs" tag id found on internal HTML.
+var AppConfigsUpdater=Class.create();
+AppConfigsUpdater.prototype = {
+   initialize: function() {
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var r=document.getElementById("_appConfigs");
+     r.className="td_menu_lavender_box";
+     var t=document.getElementById("appConfigs");
+     t.innerHTML=responseHTML;
+     // additional action can come here
+   }
+}
+function registerAjaxAppConfigsCalls() {
+  appConfigsUpdater = new AppConfigsUpdater();
+  ajaxEngine.registerRequest('ajaxGenAppConfigs','getAppConfigs');
+  ajaxEngine.registerAjaxObject('appConfigs',appConfigsUpdater);
+}
+function ajaxGenAppConfigs(_app) {
+  var app;
+  if(_app) {
+      app=_app;
+  } else {
+      app=document.getElementById('appSelector').value;
+      // now we need to convert app to /family/executable/version
+      parts = app.split('/'); // we got back /family/version/executable
+      app='/'+parts[2]+'/'+parts[3]+'/'+parts[1];
+  }
+  ajaxEngine.sendRequest('ajaxGenAppConfigs',"appPath="+app);
+  var action='<a href="javascript:showWaitingMessage();ajaxGenAppConfigs(\''+app+'\')">AppConfigs ('+app+')</a>';
+  ajaxHistory(action);
 }

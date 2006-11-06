@@ -2,10 +2,10 @@
 var ids = new Array();
 ids[0]='results';
 ids[1]='parents';
-ids[2]='validation';
-ids[3]='parameterSet';
-ids[4]='releaseSpec';
-//ids[5]='userHistory';
+ids[2]='appConfigs';
+ids[3]='validation';
+ids[4]='parameterSet';
+ids[5]='releaseSpec';
 function showResMenu(id) {
    for(var i=0;i<ids.length;i++) {
       if(ids[i]==id) {
@@ -143,7 +143,7 @@ function showMenu(menu) {
    menuArr[3]='Summary';
    menuArr[4]='Datasets';
    menuArr[5]='History';
-   menuArr[6]='About';
+   menuArr[6]='Help';
    menuArr[7]='Hide';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');

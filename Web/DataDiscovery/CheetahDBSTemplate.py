@@ -19,7 +19,7 @@ We captured your request
 <tr><td align="right">URL</td><td>$URL</td></tr>
 </table>
 </p>
-and submitted to the <a href="mailto:vk@mail.lns.cornell.edu">maintainer</a> 
+and submitted to the <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">maintainer</a> 
 of this page and to DBS team.
 <p></p>
 We're sorry for inconvenience and 
@@ -173,10 +173,13 @@ function registerAjaxPrimDatasetsCalls() {
 #end for
 }
 // put all AJAX registration calls here
+registerAjaxPrimDatasetsCalls();
+registerAjaxSummaryCalls();
 registerAjaxHistoryCalls();
 registerAjaxProvenanceCalls();
 registerAjaxObjectCalls();
 registerAjaxProvenanceGraphCalls();
+registerAjaxAppConfigsCalls();
 </script>
 """
 
@@ -491,10 +494,7 @@ $msg
 
 <td valign="top">
 
-<!-- 
-<form action="getData" method="get">
--->
-<form action="javascript:ajaxGetData();ajaxGenParentsGraph();" method="get">
+<form action="javascript:ajaxGetData();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -834,34 +834,26 @@ templateBottom="""
 <tr>
 <td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>
 <td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
+<td class="td_menu_gray_box" align="center" id="_appConfigs"><a href="javascript:showResMenu('appConfigs')">App configs</a></td>
 <td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
 <td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
 <td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
-<!--
-<td class="td_menu_gray_box" align="center" id="_userHistory"><a href="javascript:showResMenu('userHistory')">History</a></td>
--->
 </tr>
 </table>
 <span id="results" class="show_inline"></span>
-<span id="parents" class="hide"><br />... TODO parentage graph, meanhile click on dataset name to get parents ...</span>
+<span id="parents" class="hide"><br /></span>
+<span id="appConfigs" class="hide"><br /></span>
 <span id="validation" class="hide"><br />... We plan to add some information about found data, e.g. plots, etc. This should be part of validation ...</span>
 <span id="parameterSet" class="hide"><br />... We plan to introduce indexing system and lookup there parameter sets for found dataset ...</span>
 <span id="releaseSpec" class="hide"><br />
 ... Once data been choosen by user we may add a link to release description which has been used to produce this data...
 </span>
-<!--
-<span id="userHistory" class="hide"><br /></span>
--->
 <hr id="results_hr" class="hide" />
 <table>
 <tr align="left">
-<!--
-<td class="td5"><img src="images/CMSLogo.jpg" alt="CMS logo" />
-</td>
--->
 <td>
 <em class="small">
-CMS data discovery. Author: <a href="mailto:vk@mail.lns.cornell.edu">Valentin Kuznetsov</a>.
+CMS data discovery. Author: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
 <br />
 This page was generated at: $localtime 
 </em>
@@ -926,7 +918,7 @@ Home page: <a href="$host/">users</a>
 <td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History')">History</a></td>
 </tr>
 <tr>
-<td class="td_gray_box" id="About_Menu"><a href="javascript:showMenu('About')">About...</a></td>
+<td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help')">Help</a></td>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
@@ -1071,14 +1063,14 @@ $dbsContent
    </div>
 </div>
 
-<div id="AboutDiv" class="hide">
-   <div id="aboutPanel1">
-     <div id="aboutHeader1" class="accordionTabTitleBar">
+<div id="HelpDiv" class="hide">
+   <div id="helpPanel1">
+     <div id="helpHeader1" class="accordionTabTitleBar">
        <span class="menu_title">
        Introduction
        </span>
      </div>
-     <div id="aboutContent1">
+     <div id="helpContent1">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
 The purpose of this page to help you navigate through CMS data in
@@ -1113,26 +1105,29 @@ To use this method please choose <a href="javascript:showMenu('Site')">Site</a> 
 The search results are usually presented in a form of sortable tables, where you can
 move your mouse over the column name and click on it to sort entries.
 </p>
+<p>
+All terms used on discovery page are defined in DBS glossary.
+</p>
      </div>
    </div>
 
-   <div id="aboutPanel2">
-     <div id="aboutHeader2" class="accordionTabTitleBar">
+   <div id="helpPanel2">
+     <div id="helpHeader2" class="accordionTabTitleBar">
        <span class="menu_title">
        DBS glossary
        </span>
      </div>
-     <div id="aboutContent2">
+     <div id="helpContent2">
      $glossary
      </div>
    </div>
-   <div id="aboutPanel3">
-     <div id="aboutHeader3" class="accordionTabTitleBar">
+   <div id="helpPanel3">
+     <div id="helpHeader3" class="accordionTabTitleBar">
        <span class="menu_title">
        DBS resources
        </span>
      </div>
-     <div id="aboutContent3">
+     <div id="helpContent3">
           <table>
               <tr><td>&\#187;</td>
               <td><a href="https://twiki.cern.ch/twiki/bin/view/CMS/WebHome">CMS Home</a>
@@ -1174,13 +1169,13 @@ move your mouse over the column name and click on it to sort entries.
           </table>
      </div>
    </div>
-   <div id="aboutPanel4">
-     <div id="aboutHeader4" class="accordionTabTitleBar">
+   <div id="helpPanel4">
+     <div id="helpHeader4" class="accordionTabTitleBar">
        <span class="menu_title">
        Feedback form
        </span>
      </div>
-     <div id="aboutContent4">
+     <div id="helpContent4">
          <p></p>
          <form action="sendFeedback" method="post">
          <p>
@@ -1196,13 +1191,13 @@ move your mouse over the column name and click on it to sort entries.
          </form>
      </div>
    </div>
-   <div id="aboutPanel5">
-     <div id="aboutHeader5" class="accordionTabTitleBar">
+   <div id="helpPanel5">
+     <div id="helpHeader5" class="accordionTabTitleBar">
        <span class="menu_title">
        Site resources
        </span>
      </div>
-     <div id="aboutContent5">
+     <div id="helpContent5">
        <table>
          <tr><td>&\#187;</td>
          <td>The sort capabilities in tables provided by <a href="http://www.kryogenix.org/code/browser/sorttable/">sortable</a> package. I extended this package and include some additions (highlihting, new sort functions, etc.)</td>
@@ -1227,13 +1222,13 @@ move your mouse over the column name and click on it to sort entries.
      </div>
    </div>
 #if not $userMode
-   <div id="aboutPanel6">
-     <div id="aboutHeader6" class="accordionTabTitleBar">
+   <div id="helpPanel6">
+     <div id="helpHeader6" class="accordionTabTitleBar">
        <span class="menu_title">
        Method description
        </span>
      </div>
-     <div id="aboutContent6">
+     <div id="helpContent6">
       At the moment all all menus are generated up-front and I use CSS tricks to hide/highlight
       part of the document. The menus entries are generated every 5 minutes for DBS and once an hour 
       for DLS information. I use AJAX technology in some part of DBS discovery page.
@@ -1254,7 +1249,7 @@ new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('ReleasesDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('AboutDiv'), {panelHeight:accordionHeight} );
+new Rico.Accordion( \$('HelpDiv'), {panelHeight:accordionHeight} );
 #if $frontPage
 showMenu('Navigator');
 #end if
@@ -1457,6 +1452,47 @@ templateDbsCont="""
      </div>
    </div>
 #end for
+"""
+
+templateCRAB="""
+[CRAB]
+
+jobtype                 = cmssw
+scheduler               = glitecoll
+
+[CMSSW]
+
+datasetpath             = /CSA06-105-os-minbias19-0/RECO/CMSSW_1_0_5-RECO_H746ee88eddaa52306cd016b2f689e370
+pset                    = robot.cfg
+total_number_of_events  = 500000
+events_per_job          = 1000
+output_file             = FrameworkJobReport.xml
+
+[USER]
+return_data             = 1
+use_central_bossDB      = 0
+use_boss_rt             = 0
+
+[EDG]
+rb                      = CERN 
+proxy_server            = myproxy.cern.ch 
+virtual_organization    = cms
+retry_count             = 0
+lcg_catalog_type        = lfc
+lfc_host                = lfc-cms-test.cern.ch
+lfc_home                = /grid/cms
+"""
+
+templateAppConfigs="""
+<p>
+For given application: $appPath we got
+<table>
+#for config in $configList
+#set content=$config['parameterSet']['content']
+<tr><td>$content</td></tr>
+#end for
+</table>
+</p>
 """
 
 #
