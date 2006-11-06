@@ -1,36 +1,58 @@
 /**
  * 
+ $Revision: 1.7 $"
+ $Id: DBSServlet.java,v 1.7 2006/10/26 21:49:06 afaq Exp $"
+
  */
 package dbs;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import dbs.api.DBSApi;
-/**
- * @author sekhri
- *
- */
+
 public class DBSServlet extends HttpServlet{
 	/**
 	 * 
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		System.out.println("DN of the user is " + request.getAttribute("org.globus.gsi.authorized.user.dn"));
+
 		response.setContentType("text/xml");
+
 		PrintWriter out = response.getWriter();
 		if(! isIn("api", request.getParameterNames())) {
-			addHeader(response, "Null api", "200", "api parameter not specified");
+			addHeader(response, "api parameter missing", "200", "No API call specified");
 			return;
 		}
+
 		String apiParam = request.getParameter("api");
-		System.out.println("api = "+apiParam);
 		DBSApi api = new DBSApi();
+
+                if(! isIn("apiversion", request.getParameterNames())) {
+                        addHeader(response, "No Api Version", "200", "API version not specified");
+                        return;
+                }
+
+                Enumeration verEnum = api.getApiVersions().elements();
+                String msg = "Incorrect API version specified, \nSupported version are:";
+                      
+                for (Enumeration e = api.getApiVersions().elements() ; e.hasMoreElements() ;) {
+                    msg += " "+(String)e.nextElement();
+                }
+
+                if ( ! isIn(request.getParameter("apiversion"), verEnum ) ) {
+                        addHeader(response, "Wrong Api Version", "200", msg );
+                        return;
+                }
+
 		addHeader(response, "Success", "100", "");
+
 		try {
 			if(apiParam.equals("listPrimaryDatasets")
 				|| apiParam.equals("listProcessedDatasets")
@@ -88,6 +110,9 @@ public class DBSServlet extends HttpServlet{
 				setHeader(response, "Invalid API requested", "200", "Api requested is not implemented");
 				return;
 			}
+
+                out.flush();
+
 		} catch (DBSException dbsEx) {
 			setHeader(response, dbsEx.getMessage(), dbsEx.getCode(), dbsEx.getDetail());
 		} catch (SQLException sqlEx) {
