@@ -1,7 +1,8 @@
 /**
- * @author sekhri
+ $Revision: 1.6 $"
+ $Id: DBSApi.java,v 1.6 2006/11/01 16:59:44 afaq Exp $"
  *
- */
+*/
 
 package dbs.api;
 import java.sql.Connection;
@@ -19,6 +20,14 @@ public class DBSApi {
 	 */
 	private DBSApiLogic api;
 	
+        public Vector getApiVersions() {
+              Vector supported_version_list  = new Vector();
+              supported_version_list.add("v00_00_01");
+              supported_version_list.add("v00_00_02");
+
+              return supported_version_list;
+
+        }
 
 	public DBSApi() {
 		api = new DBSApiLogic();
