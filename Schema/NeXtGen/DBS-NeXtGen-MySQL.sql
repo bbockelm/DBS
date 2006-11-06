@@ -1,17 +1,19 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 440
+-- === Build : 447
 -- ======================================================================
 
 use dbs_new_era_v03;
 -- ======================================================================
 
-DROP TABLE ProcAlgoMap;
+DROP TABLE ProcAlgo;
 DROP TABLE DatasetParentage;
 DROP TABLE ProcDSTier;
 DROP TABLE ProcDSRuns;
-DROP TABLE FileAlgoMap;
+DROP TABLE FileType;
+DROP TABLE FileStatus;
+DROP TABLE FileAlgo;
 DROP TABLE FileLumi;
 DROP TABLE FileParentage;
 DROP TABLE FileTier;
@@ -25,11 +27,13 @@ DROP TABLE AppExecutable;
 DROP TABLE AppVersion;
 DROP TABLE AppFamily;
 DROP TABLE AlgorithmConfig;
+DROP TABLE ProcDSStatus;
+DROP TABLE PrimaryDSType;
 DROP TABLE TimeLog;
 DROP TABLE AnalysisDatasetLumi;
 DROP TABLE Description;
-DROP TABLE Type;
-DROP TABLE Status;
+DROP TABLE AnalysisDSType;
+DROP TABLE AnalysisDSStatus;
 DROP TABLE Block;
 DROP TABLE LumiSection;
 DROP TABLE DataTier;
@@ -148,6 +152,7 @@ CREATE TABLE AnalysisDataset
     Query                 varchar(1000)                                                     not null,
     ProcessedDS           int                                                               not null,
     Type                  int                                                               not null,
+    PhysicsGroup          int,
     Status                int                                                               not null,
     Parent                int,
     CreatedBy             int,
@@ -158,8 +163,9 @@ CREATE TABLE AnalysisDataset
     primary key(ID),
 
     foreign key(ProcessedDS) references ProcessedDataset(ID),
-    foreign key(Type) references Type(ID) on update SET NULL on delete SET NULL,
-    foreign key(Status) references Status(ID) on update SET NULL on delete SET NULL,
+    foreign key(Type) references AnalysisDSType(ID) on update SET NULL on delete SET NULL,
+    foreign key(PhysicsGroup) references PhysicsGroup(ID),
+    foreign key(Status) references AnalysisDSStatus(ID) on update SET NULL on delete SET NULL,
     foreign key(Parent) references AnalysisDataset(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
@@ -176,7 +182,7 @@ CREATE TABLE Files
     Checksum              varchar(100)                                                      not null,
     NumberOfEvents        smallint                                                          not null,
     FileSize              int                                                               not null,
-    Status                int                                                               not null,
+    FileStatus            int                                                               not null,
     FileType              int                                                               not null,
     ValidationStatus      int,
     QueryableMetadata     varchar(1000),
@@ -189,9 +195,9 @@ CREATE TABLE Files
 
     foreign key(Dataset) references ProcessedDataset(ID),
     foreign key(Block) references Block(ID),
-    foreign key(Status) references Status(ID),
-    foreign key(FileType) references Type(ID),
-    foreign key(ValidationStatus) references Status(ID),
+    foreign key(FileStatus) references FileStatus(ID),
+    foreign key(FileType) references FileType(ID),
+    foreign key(ValidationStatus) references AnalysisDSStatus(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -216,7 +222,7 @@ CREATE TABLE ProcessedDataset
 
     foreign key(PrimaryDataset) references PrimaryDataset(ID) on update CASCADE on delete CASCADE,
     foreign key(PhysicsGroup) references PhysicsGroup(ID),
-    foreign key(Status) references Status(ID),
+    foreign key(Status) references ProcDSStatus(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID),
 
@@ -242,7 +248,7 @@ CREATE TABLE PrimaryDataset
     primary key(ID),
 
     foreign key(Description) references PrimaryDatasetDescription(ID),
-    foreign key(Type) references Type(ID),
+    foreign key(Type) references PrimaryDSType(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -337,7 +343,7 @@ CREATE TABLE Block
 
 -- ======================================================================
 
-CREATE TABLE Status
+CREATE TABLE AnalysisDSStatus
   (
     ID                    int not null auto_increment,
     Status                varchar(100)                                                      unique not null,
@@ -354,7 +360,7 @@ CREATE TABLE Status
 
 -- ======================================================================
 
-CREATE TABLE Type
+CREATE TABLE AnalysisDSType
   (
     ID                    int not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
@@ -412,6 +418,40 @@ CREATE TABLE TimeLog
   (
     ID                    int not null auto_increment,
     LogEntry              varchar(1000)                                                     unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE PrimaryDSType
+  (
+    ID                    int not null auto_increment,
+    Type                  varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE ProcDSStatus
+  (
+    ID                    int not null auto_increment,
+    Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -643,14 +683,16 @@ CREATE TABLE FileTier
 
 CREATE TABLE FileParentage
   (
-    ThisFile              int                                                               not null,
-    ItsParent             int                                                               not null,
+    ID                    int not null auto_increment,
+    ThisFile              int,
+    ItsParent             int,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ThisFile,ItsParent),
+    primary key(ID),
+    unique(ThisFile,ItsParent),
 
     foreign key(ThisFile) references Files(ID) on update SET NULL on delete SET NULL,
     foreign key(ItsParent) references Files(ID) on update CASCADE on delete CASCADE,
@@ -681,7 +723,7 @@ CREATE TABLE FileLumi
 
 -- ======================================================================
 
-CREATE TABLE FileAlgoMap
+CREATE TABLE FileAlgo
   (
     ID                    int not null auto_increment,
     Fileid                int                                                               not null,
@@ -695,6 +737,40 @@ CREATE TABLE FileAlgoMap
 
     foreign key(Fileid) references Files(ID),
     foreign key(Algorithm) references AlgorithmConfig(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE FileStatus
+  (
+    ID                    int not null auto_increment,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE FileType
+  (
+    ID                    int not null auto_increment,
+    Type                  varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -745,14 +821,16 @@ CREATE TABLE ProcDSTier
 
 CREATE TABLE DatasetParentage
   (
-    ThisDataset           int                                                               not null,
-    ItsParent             int                                                               not null,
+    ID                    int not null auto_increment,
+    ThisDataset           int,
+    ItsParent             int,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    primary key(ThisDataset,ItsParent),
+    primary key(ID),
+    unique(ThisDataset,ItsParent),
 
     foreign key(ThisDataset) references ProcessedDataset(ID) on update SET NULL on delete SET NULL,
     foreign key(ItsParent) references ProcessedDataset(ID) on update CASCADE on delete CASCADE,
@@ -762,7 +840,7 @@ CREATE TABLE DatasetParentage
 
 -- ======================================================================
 
-CREATE TABLE ProcAlgoMap
+CREATE TABLE ProcAlgo
   (
     ID                    int not null auto_increment,
     Dataset               int                                                               not null,
