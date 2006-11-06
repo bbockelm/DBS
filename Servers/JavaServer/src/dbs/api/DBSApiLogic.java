@@ -205,127 +205,32 @@ public class DBSApiLogic {
 	}
 
 	
-	public void insertPrimaryDataset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
-		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
-		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-		
-		String ann = get(dataset, "annotation", true);
-		String name = get(dataset, "primary_name", true);
-		String startDate = get(dataset, "start_date", true);
-		String endDate = get(dataset, "end_date", false);
-		String type = get(dataset, "type", false);
-		String mcDesc = get(dataset, "mc_channel_description", false);
-		String mcPro = get(dataset, "mc_production", false);
-		String mcDecay = get(dataset, "mc_decay_chain", false);
-		String oDesc = get(dataset, "other_description", false);
-		String tpDesc = get(dataset, "trigger_path_description", false);
-		
-		//Insert a Dataset Type if it does not exists
-		//insertName(conn, "Type", "Type", type , userID);
-		
-		//Insert a Dataset Trigger Desc if it does not exists
-		insertName(conn, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
-		
-		//Insert a Dataset Other Desc if it does not exists
-		insertName(conn, "OtherDescription", "Description", oDesc , userID);
+        public void insertPrimaryDataset(Connection conn,
+                                         Hashtable primry_atribs, Hashtable dbsUser) throws Exception {
+                boolean rs =  DBManagement.execute(conn, DBSSql.insertPrimaryDataset(primry_atribs));
+        }
 
-		//TODO Insert MCDesc
-		//FIXME The schemna should be changed so that PrimaryDatasetDescription should have PrimarYdataset ID as forign key. 
-		//Not the other way around
+       public void insertRun(Connection conn, Hashtable run_atribs, Hashtable dbsUser) throws Exception {
+             boolean rs =  DBManagement.execute(conn, DBSSql.insertRun(run_atribs));
+             //Just have to do this even if above call fails, or has a duplicate.
+             rs = DBManagement.execute(conn, DBSSql.insertProcDSRuns(run_atribs));
+       }
 
-		//TODO Insert PrimaryDatasetDescription table also
-		String primDSID;
-		if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
-			DBManagement.execute(conn, DBSSql.insertPrimaryDataset(
-							ann,
-							name,
-							"0",//FIXME Should not be in the schema
-							startDate,
-							endDate,
-							getID(conn, "PrimaryDatasetType", "Type", type, false), 
-							userID));
-		} else {
-			//Append Warnning message that run eixts
-		}
+       public void insertBlock(Connection conn, Hashtable block_atribs, Hashtable dbsUser) throws Exception {
+           //Verify here that the block name is in right format
+           String name = (String)block_atribs.get("block_name");
+           /////////////////checkName(name);
+           boolean rs =  DBManagement.execute(conn, DBSSql.insertBlock(block_atribs));
+       }
 
-	}
 
-	public void insertRun(Connection conn, Hashtable run, Hashtable dbsUser) throws Exception {
-		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
-		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-		
-		String path = get(run, "path");
-		String runNumber = get(run, "run_number", true);
-		String nOfEvents = get(run, "number_of_events", false);
-		String nOfLumiSections = get(run, "number_of_lumi_sections", false);
-		String totalLumi = get(run, "total_luminosity", false);
-		String storeNumber = get(run, "store_number", false);
-		String startOfRun = get(run, "start_of_run", false);
-		String endOfRun = get(run, "end_of_run", false);
-	
+       public void closeBlock(Connection conn, String name) throws Exception {
+           //Verify here that the block name is in right format
+           ////////////checkName(name);
+           int rs =  DBManagement.executeUpdate(conn, DBSSql.closeBlock(name));
+           System.out.println("\n\n After executeUpdate \n\n");
+       }
 
-		//Get Processed Datatset ID		
-		String procDSID = getProcessedDSID(conn, path);
-		String runID;
-		if( (runID = getID(conn, "Runs", "RunNumber", runNumber, false)) == null ) {
-			DBManagement.execute(conn, DBSSql.insertRun(
-							runNumber,
-							nOfEvents,
-							nOfLumiSections,
-							totalLumi,
-							storeNumber,
-							startOfRun,
-							endOfRun,
-							userID));
-		} else {
-			//Append Warnning message that run eixts
-		}
-
-		if(isNull(runID)) runID = getID(conn, "Runs", "RunNumber", runNumber , true);
-		
-		//Insert ProcDSRuns table by fetching run ID that just got inserted. 
-		insertMap(conn, "ProcDSRuns", "Dataset", "Run", procDSID, runID, userID);
-
-	}
-
-	public void insertBlock(Connection conn, Hashtable block, Hashtable dbsUser) throws Exception {
-		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
-		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-		
-		String path = get(block, "path");
-		String size = get(block, "size", false);
-		String name = get(block, "name");//FIXME Generate name via GUIDs
-		String nOfFiles = get(block, "number_of_files", false);
-		String openForWriting = get(block, "open_for_writing", false);
-	
-		//Set defaults Values
-		if (isNull(name)) name = "/abd/def#guid";//FIXME Generate this
-		if (isNull(size)) size = "0";
-		if (isNull(nOfFiles)) nOfFiles = "0";
-		if (isNull(openForWriting)) openForWriting = "1";
-		//Get Processed Datatset ID		
-		String procDSID = getProcessedDSID(conn, path);
-		if( getBlockID(conn,  name, false) == null ) {
-			DBManagement.execute(conn, DBSSql.insertBlock(
-							size,
-							name,
-							procDSID,
-							nOfFiles,
-							openForWriting,
-							userID));
-		} else {
-			//Append Warnning message that block eixts
-		}
-
-		//FIXME Return blockNameback to the user
-
-	}
 
 		public void insertApplication(Connection conn, Hashtable app, Hashtable dbsUser) throws Exception {
 		/*for (Enumeration e = app.elements() ; e.hasMoreElements() ;) {
