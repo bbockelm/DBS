@@ -890,10 +890,11 @@ class DBSHelper(DBSLogger):
       blockInfoDict = self.api.listBlocks(dataset,app,"yes")
 #      t2 = time.time()
 #      print "DBS time:",(t2-t1)
-      for key in blockInfoDict.keys():
-          if not blockInfoDict[key][0]:
-             return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
-#             raise "The '%s' dataset registered in '%s' DBS instance, but no information (e.g. no events) found about it"%(dataset,self.dbsInstance)
+
+#      for key in blockInfoDict.keys():
+#          if not blockInfoDict[key][0]:
+#             print "######",key,blockInfoDict[key]
+#             return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
       if string.lower(site)=="all": site="*"
       for blockName in blockInfoDict.keys():
           evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
