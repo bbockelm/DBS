@@ -563,8 +563,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+= str(t)
 #        page+= self.genBottomHTML()
         page+=endAjaxMsg
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     advancedSearch.exposed = True
@@ -1082,7 +1082,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
-            page+="replace source.fileNames = {\n"
+            page+="replace PoolSource.fileNames = {\n"
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
             for item in lfnList:
                 lfn=item[0]
@@ -1374,8 +1374,8 @@ class DBSDataDiscoveryServer(DBSLogger):
             if dataTier!="*" and tier!=dataTier: continue
             page+=self.getDatasetProvenanceHelper(dataset)
         page+="</response></ajax-response>"
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     getProvenanceForAllDatasets.exposed = True 
@@ -1470,8 +1470,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         page="""<ajax-response><response type="object" id="appConfigs">"""
         page+= str(t)
         page+="</response></ajax-response>"
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     getAppConfigs.exposed=True
