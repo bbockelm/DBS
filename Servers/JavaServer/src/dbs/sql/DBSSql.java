@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.3 $"
- $Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSSql.java,v 1.11 2006/11/06 17:03:21 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -510,7 +510,7 @@ public class DBSSql {
 	public static String listBlocks(String procDSID) {
 		String sql = "SELECT b.ID as id, \n " +
 			"b.Name as name, \n" +
-			"b.Size as size, \n" +
+			"b.BlockSize as size, \n" +
 			"b.NumberOfFiles as number_of_files, \n" +
 			"b.OpenForWriting as open_for_writing, \n" +
 			"b.CreationDate as creation_date, \n" +
@@ -524,7 +524,7 @@ public class DBSSql {
 				"ON perlm.id = b.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "WHERE b.ProcessedDataset = " + procDSID + " \n";
+			sql += "WHERE b.Dataset = " + procDSID + " \n";
 		}
 		sql +=	"ORDER BY name";
 		System.out.println("\n\n" + sql + "\n\n");
@@ -535,7 +535,7 @@ public class DBSSql {
 		String sql = "SELECT f.ID as id, \n " +
 			"f.LogicalFileName as lfn, \n" +
 			"f.Checksum as checksum, \n" +
-			"f.Size as size, \n" +
+			"f.FileSize as size, \n" +
 			"f.QueryableMetaData as queryable_meta_data, \n" +
 			"f.CreationDate as creation_date, \n" +
 			"f.LastModificationDate as last_modification_date, \n" +
@@ -543,11 +543,11 @@ public class DBSSql {
 			"ty.Type as type, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
-			"FROM File f \n" +
+			"FROM Files f \n" +
 			"LEFT OUTER JOIN Type ty \n" +
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN Status st \n" +
-				"ON st.id = f.FileStatus \n" +
+				"ON st.id = f.Status \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
@@ -556,7 +556,7 @@ public class DBSSql {
 		if(patternLFN == null) patternLFN = "%";
 		sql += "WHERE f.LogicalFileName like '" + patternLFN + "' \n" ;
 		if(procDSID != null) {
-			sql += "and f.ProcessedDataset = " + procDSID + " \n";
+			sql += "and f.Dataset = " + procDSID + " \n";
 		}
 		if(blockID != null) {
 			sql += "and f.Block = " + blockID + " \n";

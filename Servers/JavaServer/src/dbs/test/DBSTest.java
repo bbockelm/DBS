@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.7 $"
- $Id: DBSTest.java,v 1.7 2006/11/01 15:52:04 afaq Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSTest.java,v 1.8 2006/11/01 16:59:46 afaq Exp $"
  *
  */
 
@@ -9,16 +9,21 @@ package dbs.test;
 import dbs.api.DBSApi;
 import java.io.PrintWriter;
 import java.util.Hashtable;
+import java.sql.SQLException;
+import dbs.DBSException;
+import dbs.api.DBSApi;
 
 
 public class DBSTest {
 
         public DBSApi api;
         public PrintWriter out;
-
+	Hashtable user = new Hashtable();
+						
         public DBSTest() {
            try { 
                api = new DBSApi();
+		user.put("user_dn", "ANZARDN");
                out = new PrintWriter(System.out);
  
            } catch(Exception e) {
@@ -27,128 +32,84 @@ public class DBSTest {
            }
         }
 
-        public void insertPrimary() {
+        public void insertPrimary() throws Exception {
             /**
             Insert Primary Dataset Test 
             */
-            try {
-                 String xml_string= "<?xml version='1.0' standalone='yes'?>" +
-                                    "<dbs> "+
-                                    "<primary-dataset id='1' annotation='First Primary in new era' "+
-                                    "primary_name='PrimaryDS_ANZAR_22' trigger_path_description='null' "+
-                                    " mc_channel_description='null' mc_production='null' "+
-                                    " mc_decay_chain='null' "+
-                                    "other_description='null' start_date='2006-10-05' end_date='2007-10-05' "+
-                                    "file_type='null' created_by='null' creation_date='null' "+
-                                    "last_modification_by='null' last_modified_by='null'i "+
-                                    "/> </dbs>";
-
-                api.insertPrimaryDataset(xml_string, null);
-
-           } catch(Exception e) {
-               System.out.println(e.getMessage());
-               e.printStackTrace();
-           }
-
+		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+					"<dbs>" +
+					"<primary-dataset annotation='aaaa' primary_name='PrimaryDS_VIJAY_01' start_date='NOV' end_date='DEC' trigger_path_description='anyTD' mc_channel_description='MCDesc' mc_production='MCProd' mc_decay_chain='DC' other_description='OD' type='PDS'>" +
+					"</primary-dataset>" +
+					"</dbs>";
+					    
+		api.insertPrimaryDataset(xmlString, user);
         }
 
-        public void insertProcessedDataset() {
+        public void insertProcessedDataset() throws Exception {
            /**
            INSERT ProcessedDataset test
            */
-           try {
-                 String xml_string= "<?xml version='1.0' standalone='yes'?>"+
-                                    "<!-- DBS Version 1 --> <dbs> "+
-                                    " <processed-dataset processed_name='anzar-procds-07' "+
-                                    " primary_name='PrimaryDS_ANZAR_01'"+
-                                    " app_version='cmssw_1_0_0_pre1' "+ 
-                                    " app_family_name='CMSSW' " +
-                                    " app_executable_name='CMSSW' "+
-                                    " tier_name='test-tier-02' "+
-                                    " /> " +
-                                    " </dbs>";
+		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+				"<processed-dataset primary_datatset_name='PrimaryDS_ANZAR_01' processed_datatset_name='anzar-procds-117' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='NEW'>" +
+					"<data_tier name='HIT'/>" +
+					"<data_tier name='DIGI'/>" +
+					"<data_tier name='GEN'/>" +
+					"<parent path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05'/>" +
+					"<parent path='/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06'/>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1'/>" +
+					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2'/>" +
+				"</processed-dataset>" +
+				"</dbs>";
 
-                 api.insertProcessedDataset(xml_string); 
+		api.insertProcessedDataset(xmlString, user); 
 
-           } catch(Exception e) {
-               System.out.println(e.getMessage());
-               e.printStackTrace();
-           }
         } 
 
-        public void insertBlock() {
+        public void insertBlock() throws Exception {
            /**
            INSERT ProcessedDataset test
            */
 
-           try {
-                 String xml_string= "<?xml version='1.0' standalone='yes'?>" +
-                                    "<!-- DBS Version 1 -->" +
-                                    "<dbs>" +
-                                    "<block block_name='/pri/proc#0001-0002-0031-0065' block_size='20' "+
-                                    " number_of_files='2' " +
-                                    " open_for_writing='y' creation_date='2006-10-13 14:57:19.0' " +
-                                    " last_modification_date='2006-10-13 14:57:19.0' " +
-                                    " created_by='null' last_modified_by='null' " +
-                                    " processed_name='anzar-procds-07' "+
-                                    " primary_name='PrimaryDS_ANZAR_01' "+ 
-                                    " />" + 
-                                    "</dbs>";
+		   String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+				"<block path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' name='/sdf/sf#8487' size='2' number_of_files='32' open_for_writing='1'>" +
+				"</block>" +
+				"</dbs>";
 
-                 api.insertBlock(xml_string);
-           } catch(Exception e) {
-               System.out.println(e.getMessage());
-               e.printStackTrace();
-           }
+		api.insertBlock(xmlString, user);
         }
 
-        public void closeBlock() {
+/*        public void closeBlock() {
            /**
            INSERT ProcessedDataset test
            */
-
-           try {
+/*
                  String block_name = "/pri/proc#0001-0002-0031-0065";
 
                  api.closeBlock(block_name);
 
-           } catch(Exception e) {
-               System.out.println(e.getMessage());
-               e.printStackTrace();
-           }
         }
-
-        public void insertRun() {
+*/
+        public void insertRun() throws Exception {
            /**
            INSERT Run
            */
 
-           try {
-                 String xml_string= "<?xml version='1.0' standalone='yes'?>"+
-                                    "<!-- DBS Version 1 -->"+
-                                    "<dbs>"+
-                                    "<run run_number='5' "+
-                                    "primary_name='PrimaryDS_ANZAR_01' "+
-                                    "processed_name='anzar-procds-07' "+
-                                    "number_of_events='100' number_of_lumi_sections='2' "+
-                                    "total_luminosity='233' strore_number='2' "+
-                                    "start_of_run='NOW' end_of_run='NEVER' "+
-                                    " />" +
-                                    "</dbs>";
+		   String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+				"<run path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' run_number='50' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'>" +
+				"</run>" +
+				"</dbs>";
 
-                 api.insertRun(xml_string);
-           } catch(Exception e) {
-               System.out.println(e.getMessage());
-               e.printStackTrace();
-           }
+		api.insertRun(xmlString, user);
         }
 
-        public void insertLumiSection() {
+/*        public void insertLumiSection() throws Exception {
            /**
            INSERT Lumi Section test
            */
-
-           try {
+/*
                  String xml_string= "<?xml version='1.0' standalone='yes'?>" +
                                     "<!-- DBS Version 1 -->" +
                                     "<dbs>" +
@@ -160,30 +121,25 @@ public class DBSTest {
                                     "</dbs>";
 
                  api.insertLumiSection(xml_string);
-           } catch(Exception e) {
-               System.out.println(e.getMessage());
-               e.printStackTrace();
-           }
         }
-
-        public void runListAPIs() {
+*/
+        public void runListAPIs() throws Exception {
         /**
           Run all list API calls
         */
-            try {
-                    //api.listPrimaryDatasets(out, "*");
-                    //System.out.println("\n\nProcessed Datasets");
-                    //api.listProcessedDatasets(out, "/*/*/*/*/*/*");
-                    //System.out.println("\n\nProcessed Datasets");
-                    //api.listApplications(out, "/*/*/*");
+                    api.listPrimaryDatasets(out, "*");
+                    System.out.println("\n\nProcessed Datasets");
+                    api.listProcessedDatasets(out, "/*/*/*/*/*/*");
+                    System.out.println("\n\nProcessed Datasets");
+                    api.listApplications(out, "/*/*/*");
                     System.out.println("\n\nRuns");
-                    api.listRuns(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
-                    //System.out.println("\n\nTiers");
-                    //api.listTiers(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
-                    //System.out.println("\n\nBlocks");
-                    //api.listBlocks(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01");
-                    //System.out.println("\n\nFiles");
-                    //api.listFiles(out, "/PrimaryDS_ANZAR_01/No-Reco/anzar-procds-01", null, "*");
+                    api.listRuns(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+                    System.out.println("\n\nTiers");
+                    api.listTiers(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+                    System.out.println("\n\nBlocks");
+                    api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+                    System.out.println("\n\nFiles");
+                    api.listFiles(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117", null, "*");
                     //api.listFiles(out, null, "Block_001", "*");
                     //api.listFiles(out, null, null, "*");
                     /*System.out.println("\n\nParameter Sets");
@@ -199,10 +155,6 @@ public class DBSTest {
                                 */
                     out.flush();
                     System.out.println();
-                    } catch(Exception e) {
-                            System.out.println(e.getMessage());
-                            e.printStackTrace();
-                    }
         }
 
         static public void main(String[] args) {
@@ -215,14 +167,20 @@ public class DBSTest {
                      //test.insertBlock();
                      //test.insertLumiSection();
                      //test.insertRun();
-                     test.closeBlock();
+                     //test.closeBlock();
  
-                     //test.runListAPIs(); 
-
+                     test.runListAPIs(); 
+		} catch (DBSException dbsEx) {
+			System.out.println("message: " + dbsEx.getMessage() + " code: " + dbsEx.getCode() + " detail: " + dbsEx.getDetail());
+			dbsEx.printStackTrace();
+		} catch (SQLException sqlEx) {
+			System.out.println("message: Connection Refused code: 402 detail : " + sqlEx.getMessage());
+			sqlEx.printStackTrace();
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+
 	}
 }
 
