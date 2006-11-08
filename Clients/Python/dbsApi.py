@@ -205,6 +205,7 @@ class DbsApi:
     pattern.
 
     May raise an DbsApiException.
+
     """
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listParameterSets', 'pattern' : pattern })
@@ -215,8 +216,8 @@ class DbsApi:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if name == 'parameter-set':
-	    result.append(DbsParameterSet (objectId=long(attrs['id']),
-					   hash=str(attrs['hash']),
+	    result.append(DbsQueryableParameterSet (
+					   Hash=str(attrs['parameterset_hash']),
 					   content=str(attrs['content'])))
       xml.sax.parseString (data, Handler ())
       return result
@@ -249,6 +250,49 @@ class DbsApi:
                                                          ApplicationFamily=str(attrs['app_family_name']),
                                                          ParameterSetID=DbsQueryableParameterSet(hash=str(attrs['parameterset_hash']))
                                                         ) )
+      xml.sax.parseString (data, Handler ())
+      return result
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+  # ------------------------------------------------------------
+  def listRuns(self, pattern="*"):
+    """
+    Retrieve list of runs matching a shell glob pattern.
+    Returns a list of DbsParameterSet objects.  If the pattern is
+    given, it will be matched against the content as a shell glob
+    pattern.
+
+    May raise an DbsApiException.
+
+    """
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listRuns', 'pattern' : pattern }, 'GET')
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'run':
+               self.currRun= DbsRun (
+                                   RunNumber=int(attrs['run_number']),
+                                   NumberOfEvents=int(attrs['number_of_events']),
+                                   NumberOfLumiSections=int(attrs['number_of_lumi_sections']),
+                                   TotalLuminosity=int(attrs['total_luminosity']),
+                                   StoreNumber=int(attrs['store_number']),
+                                   StartOfRun=str(attrs['start_of_run']),
+                                   EndOfRun=str(attrs['end_of_run']))
+          if name =='processed-dataset':
+               self.currRun['Dataset'].append(DbsProcessedDataset (
+                                            Name=str(attrs['processed_datatset_name']),
+                                            PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name']))
+                                            ) )
+
+        def endElement(self, name):
+            if name == 'run':
+               result.append(self.currRun)
       xml.sax.parseString (data, Handler ())
       return result
     except Exception, ex:

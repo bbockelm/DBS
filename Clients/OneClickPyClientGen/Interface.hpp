@@ -75,25 +75,25 @@ class DBS__DataTier {
 
 class DBS__Run {
          public:
-                   int   RunNumber 0;
+                   int   RunNumber 1;
                    int   NumberOfEvents 0;
                    int   NumberOfLumiSections 0;
                    int   TotalLuminosity 0;
                    int   StoreNumber 0;
                    std::string   StartOfRun 0;
                    std::string   EndOfRun 0;
-                   DBS__ProcessedDataset* Dataset 1;
+                   std::vector<DBS__ProcessedDataset*> Dataset 1;
 };
 
 class DBS__LumiSection {
          public:
-                   int   LumiSectionNumber 0;
-                   #int   RunNumber 0;
+                   int   LumiSectionNumber 1;
+                   #int   RunNumber 1;
                    int   StartEventNumber 0;
                    int   EndEventNumber 0;
                    std::string   LumiStartTime 0;
                    std::string   LumiEndTime 0;
-                   DBS__Run* RunNumber 0;
+                   DBS__Run* RunNumber 1;
 };
 
 int DBS__createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, std::string& primaryDatasetResult);

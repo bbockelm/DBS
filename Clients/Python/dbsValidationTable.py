@@ -84,7 +84,7 @@ ValidationTable = {
          "StoreNumber" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
          "StartOfRun" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "EndOfRun" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
-         "Dataset" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
+         "Dataset" : { "Comment" : "Probably a required variable", "Validator" : isListType },
           },
 "DbsLumiSection" : {
          "LumiSectionNumber" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },

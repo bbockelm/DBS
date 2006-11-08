@@ -39,6 +39,8 @@ class  DbsRun(DbsBase):
       self.update(args)
       # Verifying that data types of user provide parameters is correct
       # Validating the data using ValidationTable(.py)
+      self.setdefault('Dataset', [])
+      #
       self.validate()
 
 
