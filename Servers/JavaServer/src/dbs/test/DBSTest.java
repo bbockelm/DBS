@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.8 $"
- $Id: DBSTest.java,v 1.8 2006/11/01 16:59:46 afaq Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSTest.java,v 1.9 2006/11/07 20:17:03 sekhri Exp $"
  *
  */
 
@@ -57,14 +57,47 @@ public class DBSTest {
 					"<data_tier name='GEN'/>" +
 					"<parent path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05'/>" +
 					"<parent path='/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06'/>" +
-					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1'/>" +
-					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2'/>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
+					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2'/>" +
 				"</processed-dataset>" +
 				"</dbs>";
 
 		api.insertProcessedDataset(xmlString, user); 
 
         } 
+
+        public void insertFiles() throws Exception {
+		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+				"<processed_datatset path='/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-07' block_name='/pri/proc#0001-0002-0031-0065'>" +
+				"<file lfn='LFN40' checksum='CHKSUM' number_of_events='200' size='200' file_status='MERGED' type= 'EVD' validation_status='' queryable_meta_data=''>" +
+					"<lumi_section lumi_section_number='200' run_number='2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>" +
+					"<lumi_section lumi_section_number='201' run_number='2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>" +
+					"<lumi_section lumi_section_number='202' run_number='2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>" +
+					"<data_tier name='HIT'/>" +
+					"<data_tier name='DIGI'/>" +
+					"<data_tier name='GEN'/>" +
+					"<parent lfn='ParentLFN1'/>" +
+					"<parent lfn='ParentLFN2'/>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
+					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2'/>" +
+				"</file>" +
+				"<file lfn='LFN39' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='MERGED' type= 'EVD' validation_status='' queryable_meta_data=''>" +
+					"<lumi_section lumi_section_number='1006' run_number='3' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>" +
+					"<lumi_section lumi_section_number='1017' run_number='3' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>" +
+					"<lumi_section lumi_section_number='1028' run_number='3' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>" +
+					"<data_tier name='HIT'/>" +
+					"<data_tier name='DIGI'/>" +
+					"<data_tier name='GEN'/>" +
+					"<parent lfn='ParentLFN13'/>" +
+					"<parent lfn='ParentLFN22'/>" +
+					"<algorithm app_version='MyVersion12' app_family_name='MyFamily12' app_executable_name='MyExe12' ps_name='DUMMY_ps_name2'/>" +
+					"<algorithm app_version='MyVersion22' app_family_name='MyFamily22' app_executable_name='MyExe22' ps_name='DUMMY_ps_name2'/>" +
+				"</file>" +
+				"</processed_datatset>" +
+				"</dbs>";
+		api.insertFiles(xmlString, user); 
+	}
 
         public void insertBlock() throws Exception {
            /**
@@ -73,7 +106,8 @@ public class DBSTest {
 
 		   String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
-				"<block path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' name='/sdf/sf#8487' size='2' number_of_files='32' open_for_writing='1'>" +
+				//"<block path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' name='/sdf/sf#8487' size='2' number_of_files='32' open_for_writing='1'>" +
+				"<block path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' open_for_writing='1'>" +
 				"</block>" +
 				"</dbs>";
 
@@ -98,7 +132,7 @@ public class DBSTest {
 
 		   String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
-				"<run path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' run_number='50' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'>" +
+				"<run path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' run_number='52' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'>" +
 				"</run>" +
 				"</dbs>";
 
@@ -127,21 +161,22 @@ public class DBSTest {
         /**
           Run all list API calls
         */
-                    api.listPrimaryDatasets(out, "*");
-                    System.out.println("\n\nProcessed Datasets");
-                    api.listProcessedDatasets(out, "/*/*/*/*/*/*");
-                    System.out.println("\n\nProcessed Datasets");
-                    api.listApplications(out, "/*/*/*");
-                    System.out.println("\n\nRuns");
-                    api.listRuns(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
-                    System.out.println("\n\nTiers");
-                    api.listTiers(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
-                    System.out.println("\n\nBlocks");
-                    api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
-                    System.out.println("\n\nFiles");
-                    api.listFiles(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117", null, "*");
-                    //api.listFiles(out, null, "Block_001", "*");
-                    //api.listFiles(out, null, null, "*");
+		System.out.println("\n\nPrimary Datasets");
+		api.listPrimaryDatasets(out, "*");
+		System.out.println("\n\nProcessed Datasets");
+		api.listProcessedDatasets(out, "*","*","*","*","*","*","*");
+		System.out.println("\n\nAlgorithms");
+		api.listAlgorithms(out, "*", "*", "*", "*");
+		System.out.println("\n\nRuns");
+		api.listRuns(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		System.out.println("\n\nTiers");
+		api.listTiers(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		System.out.println("\n\nBlocks");
+		api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		System.out.println("\n\nFiles");
+		api.listFiles(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117", null, "*");
+		//api.listFiles(out, null, "Block_001", "*");
+		//api.listFiles(out, null, null, "*");
                     /*System.out.println("\n\nParameter Sets");
                     api.listParameterSets(out, "*");
                     System.out.println("\n\nApplications");
@@ -157,19 +192,20 @@ public class DBSTest {
                     System.out.println();
         }
 
-        static public void main(String[] args) {
+	static public void main(String[] args) {
 		//DBSServlet serv = new DBSServlet();
-                try {
-                     DBSTest test= new DBSTest();
+		try {
+			DBSTest test= new DBSTest();
 
-                     //test.insertPrimary();
-                     //test.insertProcessedDataset(); 
-                     //test.insertBlock();
-                     //test.insertLumiSection();
-                     //test.insertRun();
-                     //test.closeBlock();
+			test.runListAPIs(); 
+			//test.insertPrimary();
+			test.insertProcessedDataset(); 
+			test.insertFiles(); 
+			test.insertBlock();
+			//test.insertLumiSection();
+			test.insertRun();
+			//test.closeBlock();
  
-                     test.runListAPIs(); 
 		} catch (DBSException dbsEx) {
 			System.out.println("message: " + dbsEx.getMessage() + " code: " + dbsEx.getCode() + " detail: " + dbsEx.getDetail());
 			dbsEx.printStackTrace();

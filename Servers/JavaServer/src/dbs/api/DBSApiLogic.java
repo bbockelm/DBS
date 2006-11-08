@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.UUID;
 import db.DBManagement;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
@@ -32,7 +33,7 @@ public class DBSApiLogic {
 	private static String SAFE_BLOCK = "[-\\w_\\.%#/]+";
 	private static String VALID_PATH = "^/([^/]+)/([^/]+)/([^/]+)";
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
-	private static String VALID_PATTERN = "^/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)";
+	//private static String VALID_PATTERN = "^/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)";
 	//private String userDN;
 	//private static String SUCCESS_HEADER = "Dbs-status-message: Success\nDbs-status-code: 100\nContent-Type: text/plain; charset=ISO-8859-1\n\n";
 
@@ -69,42 +70,89 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
-		pattern = pattern.replace('*','%');
-		checkPattern(pattern);
-		String[] data = pattern.split("/");
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(data[1], data[2], data[3], data[4], data[5], data[6]));
+	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+
+		patternPrim 	= getPattern(patternPrim, "primary_datatset_name_pattern");
+		patternDT 	= getPattern(patternDT, "data_tier_name_pattern");
+		patternProc 	= getPattern(patternProc, "processed_datatset_name_pattern");
+		patternVer	= getPattern(patternVer, "app_version");
+		patternFam	= getPattern(patternFam, "app_family_name");
+		patternExe	= getPattern(patternExe, "app_executable_name");
+		patternPS 	= getPattern(patternPS, "parameterset_name");
+
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
 		out.write(XML_HEADER);
+		String prevDS = "";
+		String prevTier = "";
+		String prevExe = "";
+		String prevFam = "";
+		String prevVer = "";
+		String prevPS = "";
+		Vector dtVec = null;
+		boolean first = true;
 		while(rs.next()) {
 			//String path = "/" + rs.getString("primary_name") + "/" + rs.getString("data_tier") + "/" + rs.getString("processed_name");
-			out.write(((String) "<processed-dataset id='" + rs.getString("id") + 
-						"' path='" +  rs.getString("path") +
+			String procDSID = rs.getString("id");
+			String tier = rs.getString("data_tier");
+			String fam = rs.getString("app_family_name");
+			String exe = rs.getString("app_executable_name");
+			String ver = rs.getString("app_version");
+			String ps = rs.getString("ps_name");
+
+			if( !prevDS.equals(procDSID) && ! first) {
+				out.write(((String) "</processed-dataset>\n")); 
+			}
+			if( !prevDS.equals(procDSID) || first) {
+				out.write(((String) "<processed-dataset id='" + rs.getString("id") + 
+						//"' path='" +  rs.getString("path") +
+						"' primary_datatset_name='" +  rs.getString("primary_datatset_name") +
+						"' processed_datatset_name='" +  rs.getString("processed_datatset_name") +
 						"' open_for_writing='" + rs.getString("open_for_writing") +
 						"' creation_date='" + rs.getString("creation_date") +
 						"' last_modification_date='" + rs.getString("last_modification_date") +
 						"' physics_group_name='" + rs.getString("physics_group_name") +
 						"' physics_group_convener='" + rs.getString("physics_group_convener") +
-						"' app_version='" + rs.getString("app_version") +
-						"' app_family_name='" + rs.getString("app_family_name") +
-						"' app_executable_name='" + rs.getString("app_executable_name") +
+						//"' app_version='" + rs.getString("app_version") +
+						//"' app_family_name='" + rs.getString("app_family_name") +
+						//"' app_executable_name='" + rs.getString("app_executable_name") +
 						"' created_by='" + rs.getString("created_by") +
 						"' last_modified_by='" + rs.getString("last_modified_by") +
 						"'/>\n"));
+				first = false;
+				prevDS = procDSID;
+				dtVec = new Vector();// Or dtVec.removeAllElements();
+			}
+			if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
+				out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
+				dtVec.add(tier);
+				prevTier = tier;
+			}
+			if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(ps) || first) {
+				out.write(((String) "\t<algorithm app_version='" + ver + "' app_family_name='" + fam + "' app_executable_name='" + exe + "' ps_name='" + ps + "'/>\n"));
+				prevExe = exe;
+				prevFam = fam;
+				prevVer = ver;
+				prevPS = ps;
+			}
 		}
 		out.write(XML_FOOTER);
 	}
 
-	public void listApplications(Connection conn, Writer out, String pattern) throws Exception {
-		pattern = pattern.replace('*','%');
-		checkPath(pattern);
-		String[] data = pattern.split("/");
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listApplications(data[1], data[2], data[3]));
+	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+		//name should be changed to hash
+		patternVer	= getPattern(patternVer, "app_version");
+		patternFam	= getPattern(patternFam, "app_family_name");
+		patternExe	= getPattern(patternExe, "app_executable_name");
+		patternPS 	= getPattern(patternPS, "parameterset_name");
+
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
 		out.write(XML_HEADER);
 		while(rs.next()) {
 			out.write(((String) "<algorithm id='" + rs.getString("id") + 
 						"' app_version='" + rs.getString("app_version") +
 						"' app_family_name='" + rs.getString("app_family_name") +
 						"' app_executable_name='" + rs.getString("app_executable_name") +
+						"' ps_name='" + rs.getString("ps_name") +
 						"' creation_date='" + rs.getString("creation_date") +
 						"' last_modification_date='" + rs.getString("last_modification_date") +
 						"' created_by='" + rs.getString("created_by") +
@@ -211,7 +259,7 @@ public class DBSApiLogic {
 		//Get the User ID from USERDN
 		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
 		
-		String ann = get(dataset, "annotation", true);
+		String ann = get(dataset, "annotation", false);
 		String name = get(dataset, "primary_name", true);
 		String startDate = get(dataset, "start_date", true);
 		String endDate = get(dataset, "end_date", false);
@@ -226,19 +274,20 @@ public class DBSApiLogic {
 		//insertName(conn, "Type", "Type", type , userID);
 		
 		//Insert a Dataset Trigger Desc if it does not exists
-		insertName(conn, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
+		//FIXME some problem with this table while insertng rows
+		//insertName(conn, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
 		
 		//Insert a Dataset Other Desc if it does not exists
-		insertName(conn, "OtherDescription", "Description", oDesc , userID);
+		//insertName(conn, "OtherDescription", "Description", oDesc , userID);
 
-		//TODO Insert MCDesc
+		//TODO Insert MCDesc . Change in the schema is required.
 		//FIXME The schemna should be changed so that PrimaryDatasetDescription should have PrimarYdataset ID as forign key. 
 		//Not the other way around
 
 		//TODO Insert PrimaryDatasetDescription table also
-		String primDSID;
-		if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
-			DBManagement.execute(conn, DBSSql.insertPrimaryDataset(
+		//String primDSID;
+		//if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
+		DBManagement.execute(conn, DBSSql.insertPrimaryDataset(
 							ann,
 							name,
 							"0",//FIXME Should not be in the schema
@@ -246,9 +295,9 @@ public class DBSApiLogic {
 							endDate,
 							getID(conn, "PrimaryDatasetType", "Type", type, false), 
 							userID));
-		} else {
+		//} else {
 			//Append Warnning message that run eixts
-		}
+		//}
 
 	}
 
@@ -270,9 +319,9 @@ public class DBSApiLogic {
 
 		//Get Processed Datatset ID		
 		String procDSID = getProcessedDSID(conn, path);
-		String runID;
-		if( (runID = getID(conn, "Runs", "RunNumber", runNumber, false)) == null ) {
-			DBManagement.execute(conn, DBSSql.insertRun(
+		//String runID;
+		//if( (runID = getID(conn, "Runs", "RunNumber", runNumber, false)) == null ) {
+		DBManagement.execute(conn, DBSSql.insertRun(
 							runNumber,
 							nOfEvents,
 							nOfLumiSections,
@@ -281,14 +330,15 @@ public class DBSApiLogic {
 							startOfRun,
 							endOfRun,
 							userID));
-		} else {
+		//} else {
 			//Append Warnning message that run eixts
-		}
+		//}
 
-		if(isNull(runID)) runID = getID(conn, "Runs", "RunNumber", runNumber , true);
-		
 		//Insert ProcDSRuns table by fetching run ID that just got inserted. 
-		insertMap(conn, "ProcDSRuns", "Dataset", "Run", procDSID, runID, userID);
+		insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
+				getProcessedDSID(conn, path), 
+				getID(conn, "Runs", "RunNumber", runNumber , true), 
+				userID);
 
 	}
 
@@ -299,35 +349,36 @@ public class DBSApiLogic {
 		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
 		
 		String path = get(block, "path");
-		String size = get(block, "size", false);
+		//String size = get(block, "size", false);//This filed should not be used from the user
 		String name = get(block, "name");//FIXME Generate name via GUIDs
-		String nOfFiles = get(block, "number_of_files", false);
+		//String nOfFiles = get(block, "number_of_files", false);// This filed should not be used from the user
 		String openForWriting = get(block, "open_for_writing", false);
 	
 		//Set defaults Values
-		if (isNull(name)) name = "/abd/def#guid";//FIXME Generate this
-		if (isNull(size)) size = "0";
-		if (isNull(nOfFiles)) nOfFiles = "0";
+		checkPath(path);
+		String[] data = path.split("/");
+		if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
-		//Get Processed Datatset ID		
-		String procDSID = getProcessedDSID(conn, path);
-		if( getBlockID(conn,  name, false) == null ) {
-			DBManagement.execute(conn, DBSSql.insertBlock(
-							size,
+		//if (isNull(size)) size = "0";
+		//if (isNull(nOfFiles)) nOfFiles = "0";
+
+		//if( getBlockID(conn,  name, false) == null ) {
+		DBManagement.execute(conn, DBSSql.insertBlock(
+							"0",// A new block should always have 0 size
 							name,
-							procDSID,
-							nOfFiles,
+							getProcessedDSID(conn, path),
+							"0",// A new block should always have 0 files
 							openForWriting,
 							userID));
-		} else {
+		//} else {
 			//Append Warnning message that block eixts
-		}
+		//}
 
 		//FIXME Return blockNameback to the user
 
 	}
 
-		public void insertApplication(Connection conn, Hashtable app, Hashtable dbsUser) throws Exception {
+	public void insertApplication(Connection conn, Hashtable app, Hashtable dbsUser) throws Exception {
 		/*for (Enumeration e = app.elements() ; e.hasMoreElements() ;) {
 			checkName((String)e.nextElement());
 		}*/
@@ -365,16 +416,32 @@ public class DBSApiLogic {
 									userID));
 	}
 
-	public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
+	//public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
+	public void insertFiles(Connection conn, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
 		String userDN = get(dbsUser, "user_dn", true);
+		
 		//Get the User ID from USERDN
 		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
+		/*//Check if all the path is in the files are same.
+		if(files.size() > 0) {
+			String path = get((Hashtable)files.get(0), "path");
+			for (int i = 1; i < files.size() ; ++i) {
+				String tmpPath = get((Hashtable)files.get(i), "path");
+				if(!tmpPath.equals(path)) {
+					throw new DBSException("Bad Data", "300", "Different Processed Datatsets. All files in the list should belong to same processed datatset. Dataset1 " + path + " Datatset2 " + tmpPath);
+				}
+			
+			}
+		}*/
+		String procDSID = getProcessedDSID(conn, path);
+		String blockID = getBlockID(conn, blockName, true);
 
+		
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
 		
-			String path = get(file, "path");
-			String blockName = get(file, "block_name");
+			//String path = get(file, "path");
+			//String blockName = get(file, "block_name");
 			String lfn = get(file, "lfn", true);
 			String checksum = get(file, "checksum", false);
 			String nOfEvents = get(file, "number_of_events", false);
@@ -388,8 +455,6 @@ public class DBSApiLogic {
 			Vector parentVector = DBSUtil.getVector(file,"parent");
 			Vector algoVector = DBSUtil.getVector(file,"algorithm");
 		
-			String procDSID = getProcessedDSID(conn, path);
-			String blockID = getBlockID(conn, blockName, true);
 			//FIXME Update block information at the end of this api call
 			//
 			//Set defaults Values
@@ -398,63 +463,79 @@ public class DBSApiLogic {
 			if (isNull(valStatus)) valStatus = "NOTVALIDATED";
 			
 			//Insert a File status if it does not exists
-			insertName(conn, "Status", "Status", fileStatus , userID);
+			//insertName(conn, "Status", "Status", fileStatus , userID);
 
 			//Insert a File Validation status if it does not exists
-			insertName(conn, "Status", "Status", valStatus , userID);
+			//insertName(conn, "Status", "Status", valStatus , userID);
 
 			//Insert a File Type if it does not exists
-			insertName(conn, "Type", "Type", type , userID);
-
+			//insertName(conn, "Type", "Type", type , userID);
+			checkName(fileStatus, "FileStatus");
+			checkName(type, "FileType");
+			checkName(valStatus, "ValidationStatus");
 			//Insert a File by fetching the fileStatus, type and validationStatus
-			String fileID;
-			if( (fileID = getID(conn, "Files", "LogicalFileName", lfn, false)) == null ) {
-				DBManagement.execute(conn, DBSSql.insertFile(procDSID, blockID, lfn, checksum, nOfEvents,  size, 
-								getID(conn, "Status", "Status", fileStatus, false), 
-								getID(conn, "Type", "Type", type, false), 
-								getID(conn, "Status", "Status", valStatus, false), 
-								qMetaData, userID));
-			}
+			//if( (fileID = getID(conn, "Files", "LogicalFileName", lfn, false)) == null ) {
+			//TODO Exception of null status or type should be catched and parsed and 
+			//a proper message should be returned back to the user. Different Database can have different error message YUK
+			//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
+			//User will never know about this YUK
+			DBManagement.execute(conn, DBSSql.insertFile(procDSID, blockID, lfn, checksum, nOfEvents, size, fileStatus, type, valStatus, qMetaData, userID));
+			//}
 
-			//Fetch the File ID that was just inseted to be used for subsequent insert of other tables.
-			if(isNull(fileID)) fileID = getID(conn, "Files", "LogicalFileName", lfn, true);
+			//if(isNull(fileID)) fileID = getID(conn, "Files", "LogicalFileName", lfn, true);
+			//Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
+			//FileID is needed if any of the other table information is provided i.e the vector size is > 0
+			String fileID = "";
+			if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0) 
+				fileID = getID(conn, "Files", "LogicalFileName", lfn, true);
 
 			//Insert FileAlgo table by fetching application ID. 
 			//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
 			for (int j = 0; j < algoVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)algoVector.get(j);
-				String appID = getApplicationID(conn, get(hashTable, "app_version"), 
+				insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", 
+						fileID, 
+						getAlgorithmID(conn, get(hashTable, "app_version"), 
 								get(hashTable, "app_family_name"), 
-								get(hashTable, "app_executable_name"));
-
-				insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", fileID, appID, userID);
+								get(hashTable, "app_executable_name"),
+								get(hashTable, "ps_name")), 
+						userID);
 			}
 
 			//Insert FileTier table by fetching data tier ID
 			for (int j = 0; j < tierVector.size(); ++j) {
-				Hashtable hashTable = (Hashtable)tierVector.get(j);
-				String tierID = getID(conn, "DataTier", "Name", get(hashTable, "name") , true);
-				insertMap(conn, "FileTier", "Fileid", "DataTier", fileID, tierID, userID);
+				insertMap(conn,	"FileTier", "Fileid", "DataTier", 
+					fileID, 
+					getID(conn, "DataTier", "Name", 
+						get((Hashtable)tierVector.get(j), "name") , 
+						true), 
+					userID);
 			}
-
+			
+			//Insert FileParentage table by fetching parent File ID
+			for (int j = 0; j < parentVector.size(); ++j) {
+				insertMap(conn, "FileParentage", "ThisFile", "itsParent", 
+						fileID, 
+						getID(conn, "Files", "LogicalFileName", 
+							get((Hashtable)parentVector.get(j), "lfn") , 
+							true), 
+						userID);
+			}
+			//TODO Discussion about Lumi section is needed
 			//Insert FileLumi table by first inserting and then fetching Lumi Section ID
 			for (int j = 0; j < lumiVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
 				insertLumiSection(conn, hashTable, userID);
-				String lsID = getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true);
-				insertMap(conn, "FileLumi", "Fileid", "Lumi", fileID, lsID, userID);
-			}
-
-
-			//Insert FileParentage table by fetching parent File ID
-			for (int j = 0; j < parentVector.size(); ++j) {
-				Hashtable hashTable = (Hashtable)parentVector.get(j);
-				String parentFileID = getID(conn, "Files", "LogicalFileName", get(hashTable, "lfn") , true);
-				insertMap(conn, "FileParentage", "ThisFile", "itsParent", fileID, parentFileID, userID);
+				insertMap(conn, "FileLumi", "Fileid", "Lumi", 
+						fileID, 
+						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
+						userID);
 			}
 		
 		}//For loop
+		//Update Block numberOfFiles and Size
+		DBManagement.executeUpdate(conn, DBSSql.updateBlock(blockID));
 	}
 
 
@@ -481,37 +562,42 @@ public class DBSApiLogic {
 		if (isNull(phyGroupCon)) phyGroupCon = "ANZARDN";//FIXME Some default convenor name should be used
 		
 		//Insert a Processed Dataset status if it does not exists
-		insertName(conn, "Status", "Status", status , userID);
+		//insertName(conn, "Status", "Status", status , userID);
 		
 		//Insert a Physics Group if it does not exists
 		insertPhysicsGroup(conn, phyGroupName, phyGroupCon, userID);
 		
-		//Insert a Processed Datatset if it does not exits before by fetching the primDSID, status
-		String procDSID;
-		if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
-			DBManagement.execute(conn, DBSSql.insertProcessedDatatset(
+		//Insert a Processed Datatset before by fetching the primDSID, status
+		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
+		DBManagement.execute(conn, DBSSql.insertProcessedDatatset(
 							procDSName,
 							getID(conn, "PrimaryDataset", "Name", primDSName, true),
 							openForWriting,
 							getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 							getID(conn, "Status", "Status", status, false), 
 							userID));
-		} else {
+		//} else {
 			//warMsg =+ (String)"ProcessedDataset Name " + procDSName + " already exists but ignored.\n";
-		}
+		//}
 
 
 		//Fetch the Processed Datatset ID that was just inseted or fetched , to be used for subsequent insert of other tables.
 		//FIXME this might use processed datatset with primary datatset combination instead of just proDSName
-		if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
+		//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
+		String procDSID = "";
+		if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0) 
+			procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
 		
 		//Insert ProcAlgoMap table by fetching application ID. 
 		for (int j = 0; j < algoVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
-			String appID = getApplicationID(conn, get(hashTable, "app_version"), 
+			insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", 
+					procDSID, 
+					getAlgorithmID(conn, get(hashTable, "app_version"), 
 							get(hashTable, "app_family_name"), 
-							get(hashTable, "app_executable_name"));
-			insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", procDSID, appID, userID);
+							get(hashTable, "app_executable_name"),
+							get(hashTable, "ps_name")), 
+					userID);
 		}
 
 		//Insert FileTier table by fetching data tier ID
@@ -520,15 +606,18 @@ public class DBSApiLogic {
 			String tierName = get(hashTable, "name", true);
 			//Insert DataTier if it does not exists
 			insertName(conn, "DataTier", "Name", tierName , userID);
-			String tierID = getID(conn, "DataTier", "Name", tierName , true);
-			insertMap(conn, "ProcDSTier", "Dataset", "DataTier", procDSID, tierID, userID);
+			insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
+					procDSID, 
+					getID(conn, "DataTier", "Name", tierName , true), 
+					userID);
 		}
 
 		//Insert FileParentage table by fetching parent File ID
 		for (int j = 0; j < parentVector.size(); ++j) {
-			Hashtable hashTable = (Hashtable)parentVector.get(j);
-			String parentProcDSID = getProcessedDSID(conn,  get(hashTable, "path"));
-			insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", procDSID, parentProcDSID, userID);
+			insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
+					procDSID, 
+					getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path")), 
+					userID);
 		}
 
 	}
@@ -549,6 +638,17 @@ public class DBSApiLogic {
 		}
 	}
 
+	/*TODO more information needed and change in the schema required,
+	 * private void insertMCDesc(Connection conn, Hashtable table, String userID) throws Exception {
+		String mcDesc = get(table, "mc_channel_description", true);
+		String mcProd = get(table, "mc_production", false);
+		String mcChain = get(table, "mc_decay_chain", false);
+
+		//Insert a new Lumi Section by feting the run ID 
+		if( getMCDescID(conn, mcDesc, mcProd, mcChain) == null ) {
+			DBManagement.execute(conn, DBSSql.insertMCDesc(mcDesc, mcProd, mcChain,	userID));
+		}
+	}*/
 
 	private void insertName(Connection conn, String table, String key, String value, String userID) throws Exception {
 		if(isNull(table) || isNull(key) || isNull(value) || isNull(userID) ) return;
@@ -590,9 +690,6 @@ public class DBSApiLogic {
 
 
 	private String getProcessedDSID(Connection conn, String path) throws Exception {
-		if(path == null) {
-			throw new DBSException("Bad Data", "300", "Null path. Expected /PRIMARY/TIER/PROCESSED");
-		}
 		checkPath(path);
 		String[] data = path.split("/");
 		if(data.length != 4) {
@@ -612,16 +709,30 @@ public class DBSApiLogic {
 		return  rs.getString("id");
 	}
 
-	private String getApplicationID(Connection conn, String version, String family, String exe) throws Exception {
-		checkName(version, "app_version");
-		checkName(family, "app_family_name");
+	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String ps) throws Exception {
+		checkName(ver, "app_version");
+		checkName(fam, "app_family_name");
 		checkName(exe, "app_executable_name");
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getApplicationID(version, family, exe));
+		checkName(ps, "ps_name");
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getAlgorithmID(ver, fam, exe, ps));
 		if(!rs.next()) {
-			throw new DBSException("Bad Data", "300", "No such Application " + version + " " + family + " " + exe );
+			throw new DBSException("Bad Data", "300", "No such Application " + ver + " " + fam + " " + exe + " " + ps);
 		}
 		return  rs.getString("id");
 	}
+
+	/*private String getMCDescID(Connection conn, String des, String prod, String chain, boolean excep) throws Exception {
+		if(excep) checkName(des, "mc_channel_description");
+		else if(!isNull(des) checkName(des, "mc_channel_description");
+		if(!isNull(prod)) checkName(prod, "mc_production");
+		if(!isNull(chain)) checkName(chain, "mc_decay_chain");
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getMCDescID(des, prod, chain));
+		if(!rs.next()) {
+			if(excep) throw new DBSException("Bad Data", "300", "No such MCDescription " + des + " " + prod + " " + chain);
+			else return null;
+		}
+		return  rs.getString("id");
+	}*/
 
 	private String getBlockID(Connection conn, String name, boolean excep) throws Exception {
 		checkBlock(name);
@@ -664,24 +775,13 @@ public class DBSApiLogic {
 		return  rs.getString("id");
 	}
 
-	private void checkPattern(String pattern) throws Exception {
-		if(pattern == null) {
-			throw new DBSException("Bad Data", "300", "Null pattern. Expected /PRIMARY/TIER/PROCESSED/VERSION/FAMILY/EXECUTABLE");
-		}
-		if (! Pattern.matches(VALID_PATTERN, pattern) ) {
-			throw new DBSException("Bad Data", "300", "Invalid pattern. Expected /PRIMARY/TIER/PROCESSED/VERSION/FAMILY/EXECUTABLE in format " + VALID_PATTERN);
-		}
-		if( ! Pattern.matches(SAFE_PATH, pattern) ) {
-			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " Expected /PRIMARY/TIER/PROCESSED/VERSION/FAMILY/EXECUTABLE in fortmat "+ SAFE_PATH);
-		}
-	}
 	
 	private void checkPath(String path) throws Exception {
 		if(path == null) {
 			throw new DBSException("Bad Data", "300", "Null path. Expected /PRIMARY/TIER/PROCESSED");
 		}
 		if (! Pattern.matches(VALID_PATH, path) ) {
-			throw new DBSException("Bad Data", "300", "Invalid path. Expected /PRIMARY/TIER/PROCESSED in format " + VALID_PATH);
+			throw new DBSException("Bad Data", "300", "Invalid path " + path + ". Expected /PRIMARY/TIER/PROCESSED in format " + VALID_PATH);
 		}
 		if( ! Pattern.matches(SAFE_PATH, path) ) {
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + path + " Expected /PRIMARY/TIER/PROCESSED in format "+ SAFE_PATH);
@@ -693,7 +793,7 @@ public class DBSApiLogic {
 			throw new DBSException("Bad Data", "300", "Null blockName. Expected /PRIMARY/PROCESSED#GUID");
 		}
 		if (! Pattern.matches(VALID_BLOCK, blockName) ) {
-			throw new DBSException("Bad Data", "300", "Invalid path. Expected /PRIMARY/PROCESSED#GUID in format " + VALID_BLOCK);
+			throw new DBSException("Bad Data", "300", "Invalid blockName " + blockName + ". Expected /PRIMARY/PROCESSED#GUID in format " + VALID_BLOCK);
 		}
 		if( ! Pattern.matches(SAFE_BLOCK, blockName) ) {
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + blockName + " Expected /PRIMARY/PROCESSED#GUID in format "+ SAFE_BLOCK);
@@ -711,6 +811,7 @@ public class DBSApiLogic {
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_NAME);
 		}
 	}
+	
 	
 	private boolean isNull(String pattern) {
 		if(pattern == null) {
@@ -734,4 +835,12 @@ public class DBSApiLogic {
 		//System.out.println(key);
 		return DBSUtil.get(table, key);
 	}
+	
+	private String getPattern(String pattern, String key) throws Exception {
+		if(isNull(pattern)) pattern = "%";
+		pattern = pattern.replace('*','%');
+		checkName(pattern, key);
+		return pattern;
+	}
+
 }

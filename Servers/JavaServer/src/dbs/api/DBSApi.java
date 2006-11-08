@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApi.java,v 1.6 2006/11/01 16:59:44 afaq Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApi.java,v 1.8 2006/11/06 16:59:04 afaq Exp $"
  *
 */
 
@@ -13,6 +13,7 @@ import xml.DBSXMLParser;
 import xml.Element;
 import db.DBManagement;
 import dbs.DBSConstants;
+import dbs.util.DBSUtil;
 
 public class DBSApi {
 	/**
@@ -95,6 +96,7 @@ public class DBSApi {
 			DBSXMLParser dbsParser = new DBSXMLParser();
 			dbsParser.parseString(inputXml); 
     			Vector allElement = dbsParser.getElements();
+			Hashtable psDS = null;
 			for (int i=0; i<allElement.size(); ++i) {
 				Element e = (Element)allElement.elementAt(i);
 				String name = e.name;
@@ -116,12 +118,15 @@ public class DBSApi {
 					((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
 				if (name.equals("algorithm") ) 
 					((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
+				if (name.equals("processed_datatset") ) {
+					psDS = e.attributes;
+				}
 			}
 			//try catch for rollback
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			//try {
-				api.insertFiles(conn, topLevel, dbsUser);
+				api.insertFiles(conn, DBSUtil.get(psDS, "path"), DBSUtil.get(psDS, "block_name"), topLevel, dbsUser);
 			/*} catch (Exception e) {
 				conn.rollback();
 				throw e;
@@ -200,19 +205,19 @@ public class DBSApi {
 		}
 	}
 
-	public void listProcessedDatasets(Writer out, String pattern) throws Exception {
+	public void listProcessedDatasets(Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		Connection conn = getConnection();
 		try {
-			api.listProcessedDatasets(conn, out, pattern);
+			api.listProcessedDatasets(conn, out, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS);
 		} finally {
 			if(conn != null) conn.close();
 		}
 	}
 
-	public void listApplications(Writer out, String pattern) throws Exception {
+	public void listAlgorithms(Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		Connection conn = getConnection();
 		try {
-			api.listApplications(conn, out, pattern);
+			api.listAlgorithms(conn, out, patternVer, patternFam, patternExe, patternPS);
 		} finally {
 			if(conn != null) conn.close();
 		}

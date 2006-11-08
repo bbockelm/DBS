@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.11 $"
- $Id: DBSSql.java,v 1.11 2006/11/06 17:03:21 afaq Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSSql.java,v 1.12 2006/11/07 20:17:03 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -274,7 +274,8 @@ public class DBSSql {
 	// SQL for inserting File and its related tables.
 	// ____________________________________________________
 	
-	public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) {
+	//public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) {
+	public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatus, String type, String valStatus, String qMetaData, String userID) {
 		String sql = "INSERT INTO Files ( \n" +
 					"LogicalFileName, \n" +
 					"Dataset, \n" +
@@ -296,9 +297,9 @@ public class DBSSql {
 					"'" + checksum + "', \n" +
 					"'" + nOfEvents + "', \n" +
 					"'" + size + "', \n" +
-					"'" + fileStatusID + "', \n" +
-					"'" + typeID + "', \n" +
-					"'" + valStatusID + "', \n" +
+					"(" + getID("Status", "Status", fileStatus) + "), \n" +
+					"(" + getID("Type", "Type", type) + "), \n" +
+					"(" + getID("Status", "Status", valStatus) + "), \n" +
 					"'" + qMetaData + "', \n" +
 					"'" + userID + "', \n" +
 					"'" + DBSUtil.getDate() + "', \n" +
@@ -309,6 +310,14 @@ public class DBSSql {
 	}
 	
 
+	public static String updateBlock(String blockID) {
+		String sql = "UPDATE Block \n" +
+			"SET BlockSize = (SELECT SUM(FileSize) FROM Files f WHERE f.Block = " + blockID + ") , \n" +
+			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = " + blockID + ") \n" +
+			"WHERE ID = " + blockID ;
+		System.out.println("\n\n" + sql + "\n\n");
+		return sql;
+	}
 	// ____________________________________________________
 	
 	
@@ -356,9 +365,9 @@ public class DBSSql {
 		return sql;
 	}
 
-	public static String listProcessedDatasets(String patternPrim, String patternDt, String patternProc, String patternVersion, String patternFamily, String patternExe) {
+	public static String listProcessedDatasets(String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) {
 		String sql = "SELECT procds.id as id, \n" +
-			"concat( \n" +
+			/*"concat( \n" +
 				"concat( \n" +
 					"concat( \n" +
 						"concat( \n" +
@@ -367,7 +376,10 @@ public class DBSSql {
 						"),dt.Name \n" +
 					"),'/' \n" +
 				"), procds.name \n" +
-			") as path, \n" +
+			") as path, \n" +*/
+			"primds.Name as primary_datatset_name, \n" +
+			"dt.Name as data_tier, \n" +
+			"procds.name as processed_datatset_name, \n" +
 			"procds.OpenForWriting as open_for_writing, \n" +
 			"procds.CreationDate as creation_date, \n" +
 			"procds.LastModificationDate as last_modification_date, \n" +
@@ -376,10 +388,11 @@ public class DBSSql {
 			"av.Version as app_version, \n" +
 			"af.FamilyName as app_family_name, \n" +
 			"ae.ExecutableName as app_executable_name, \n" +
+			"ps.Name as ps_name, \n" +
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
 			"FROM ProcessedDataset procds \n" +
-			"LEFT OUTER JOIN PrimaryDataset primds \n" +
+			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
 			"LEFT OUTER JOIN ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
@@ -389,10 +402,6 @@ public class DBSSql {
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"LEFT OUTER JOIN Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
-			"LEFT OUTER JOIN Person percb \n" +
-				"ON percb.id = procds.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
-				"ON perlm.id = procds.LastModifiedBy \n" +
 			"LEFT OUTER JOIN ProcAlgoMap pam \n" +
 				"ON pam.Dataset = procds.id \n" +
 			"LEFT OUTER JOIN AlgorithmConfig algo \n" +
@@ -402,31 +411,42 @@ public class DBSSql {
 			"LEFT OUTER JOIN AppFamily af \n" +
 				"ON af.id = algo.ApplicationFamily \n" +
 			"LEFT OUTER JOIN AppExecutable ae \n" +
-				"ON ae.id = algo.ExecutableName \n";
+				"ON ae.id = algo.ExecutableName \n" +
+			"LEFT OUTER JOIN QueryableParameterSet ps \n" +
+				"ON ps.id = algo.ParameterSetID \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = procds.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = procds.LastModifiedBy \n";
+
 
 		if(patternPrim == null) patternPrim = "%";
-		if(patternDt == null) patternDt = "%";
+		if(patternDT == null) patternDT = "%";
 		if(patternProc == null) patternProc = "%";
-		if(patternVersion == null) patternVersion = "%";
-		if(patternFamily == null) patternFamily = "%";
+		if(patternVer == null) patternVer = "%";
+		if(patternFam == null) patternFam = "%";
 		if(patternExe == null) patternExe = "%";
+		if(patternPS == null) patternPS = "%";
 
 		sql += "WHERE primds.Name like '" + patternPrim + "' \n" +
-			"and dt.Name like '" + patternDt + "' \n" +
+			"and dt.Name like '" + patternDT + "' \n" +
 			"and procds.name like '" + patternProc + "' \n" +
-			"and av.Version like '" + patternVersion + "' \n" +
-			"and af.FamilyName like '" + patternFamily + "' \n" +
+			"and av.Version like '" + patternVer + "' \n" +
+			"and af.FamilyName like '" + patternFam + "' \n" +
 			"and ae.ExecutableName like '" + patternExe + "' \n" +
-			"ORDER BY path";
+			"and ps.Name like '" + patternPS + "' \n" +
+			//"ORDER BY path";
+			"ORDER BY id, app_version, app_family_name, app_executable_name, ps_name, data_tier";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
 
-	public static String listApplications(String patternVersion, String patternFamily, String patternExe) {
+	public static String listAlgorithms(String patternVer, String patternFam, String patternExe, String patternPS) {
 		String sql = "SELECT algo.id as id, \n" +
 			"av.Version as app_version, \n" +
 			"af.FamilyName as app_family_name, \n" +
 			"ae.ExecutableName as app_executable_name, \n" +
+			"ps.Name as ps_name, \n" +
 			"algo.CreationDate as creation_date, \n" +
 			"algo.LastModificationDate as last_modification_date, \n" +
 			"percb.DistinguishedName as created_by, \n" +
@@ -438,19 +458,23 @@ public class DBSSql {
 				"ON af.id = algo.ApplicationFamily \n" +
 			"JOIN AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
+			"JOIN QueryableParameterSet ps \n" +
+				"ON ps.id = algo.ParameterSetID \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = algo.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
 
-		if(patternVersion == null) patternVersion = "%";
-		if(patternFamily == null) patternFamily = "%";
+		if(patternVer == null) patternVer = "%";
+		if(patternFam == null) patternFam = "%";
 		if(patternExe == null) patternExe = "%";
+		if(patternPS == null) patternPS = "%";
 
-		sql += "WHERE av.Version like '" + patternVersion + "' \n" +
-			"and af.FamilyName like '" + patternFamily + "' \n" +
+		sql += "WHERE av.Version like '" + patternVer + "' \n" +
+			"and af.FamilyName like '" + patternFam + "' \n" +
 			"and ae.ExecutableName like '" + patternExe + "' \n" +
-			"ORDER BY app_family_name, app_executable_name, app_version";
+			"and ps.Name like '" + patternPS + "' \n" +
+			"ORDER BY app_family_name, app_executable_name, app_version, ps_name";
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
@@ -605,7 +629,7 @@ public class DBSSql {
 	}
 
 
-	public static String getApplicationID(String version, String family, String exe) {
+	public static String getAlgorithmID(String ver, String fam, String exe, String ps) {
 		String sql = "SELECT algo.id \n" +
 			"FROM AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
@@ -614,9 +638,12 @@ public class DBSSql {
 				"ON af.id = algo.ApplicationFamily \n" +
 			"JOIN AppExecutable ae \n" +
 				"ON ae.id = algo.ExecutableName \n" +
-			"WHERE av.Version = '" + version + "' \n" +
-			"and af.FamilyName = '" + family + "' \n" +
-			"and ae.ExecutableName = '" + exe + "' \n" ;
+			"JOIN QueryableParameterSet ps \n" +
+				"ON ps.id = algo.ParameterSetID \n" +
+			"WHERE av.Version = '" + ver + "' \n" +
+			"and af.FamilyName = '" + fam + "' \n" +
+			"and ae.ExecutableName = '" + exe + "' \n" +
+			"and ps.Name = '" + ps + "' \n" ;
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;
 	}
