@@ -10,7 +10,7 @@ class DBS__PrimaryDataset {
                    DBS__PrimaryDatasetDescription* Description 0;
 };
 
-class DBS__Application {
+class DBS__Algorithm {
          public:
                   std::string ExecutableName 1;
                   std::string ApplicationVersion 1;
@@ -22,7 +22,7 @@ class DBS__Application {
 class DBS__QueryableParameterSet {
          public:
                    std::string   Hash 1;
-                   std::string   Name 1;
+                   std::string   Name 0;
                    std::string   Version 0;
                    std::string   Type 0;
                    std::string   Annotation 0;
@@ -34,9 +34,9 @@ class DBS__ProcessedDataset {
                    std::string   Name 1;
                    std::string  PhysicsGroup 0;
                    std::string Status 0;
-                   bool  OpenForWriting 0;
+                   std::string OpenForWriting 0;
                    DBS__PrimaryDataset* PrimaryDataset 1;
-                   std::vector<DBS__Application*> AppConfigList 0;
+                   std::vector<DBS__Algorithm*> AlgoList 0;
                    std::vector<DBS__DataTier*> tierList 0;
 };
 

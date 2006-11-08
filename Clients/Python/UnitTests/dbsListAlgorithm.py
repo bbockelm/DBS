@@ -22,12 +22,9 @@ try:
   try:
    # List all parameter sets
    print ""
-   print "Processed Datasets"
-   print "This API's parameters MUST Change"
-   print "**********\n\n\n"
-   for proc in api.listProcessedDatasets("/*/*/*/*/*/*"):
-   #for primary in api.listProcessedDatasets("*"):
-     print "  %s" % proc
+   print "Algorithms...."
+   for app in api.listAlgorithms("/*/*/*"):
+     print "  %s" % app
   except DbsDatabaseError,e:
    print e
   

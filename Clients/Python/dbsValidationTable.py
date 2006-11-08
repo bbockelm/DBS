@@ -1,9 +1,8 @@
 #
-# Revision: 1.3 $"
-# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+# Revision: 0.0 $"
+# Id: dbsValidationTable.py,v 0.0 2006/1/1 18:26:04 afaq Exp $"
 #
-
-""" This file is generated on Wed Nov  1 15:22:43 2006 """ 
+""" This file is generated on Wed Nov  8 13:50:06 2006 """ 
 
 """SERIOUS WARNING:
 
@@ -28,7 +27,7 @@ ValidationTable = {
          "Type" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "Description" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
           },
-"DbsApplication" : {
+"DbsAlgorithm" : {
          "ExecutableName" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "ApplicationVersion" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "ApplicationFamily" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
@@ -36,7 +35,7 @@ ValidationTable = {
           },
 "DbsQueryableParameterSet" : {
          "Hash" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
-         "Name" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
+         "Name" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Version" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Type" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Annotation" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
@@ -44,12 +43,11 @@ ValidationTable = {
           },
 "DbsProcessedDataset" : {
          "Name" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
-         #"dataTier" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "PhysicsGroup" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Status" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "OpenForWriting" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "PrimaryDataset" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
-         "AppConfigList" : { "Comment" : "Probably a required variable", "Validator" : isListType },
+         "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "tierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
           },
 "DbsFileBlock" : {
@@ -95,10 +93,6 @@ ValidationTable = {
          "LumiStartTime" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "LumiEndTime" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "RunNumber" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
-          },
-"DbsParent" : {
-         "parent" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
-         "type" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
           },
 }
 

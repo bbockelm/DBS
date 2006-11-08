@@ -23,7 +23,7 @@ from dbsLumiSection import DbsLumiSection
 from dbsFile import DbsFile
 from dbsFileBlock import DbsFileBlock
 from dbsDataTier import DbsDataTier 
-from dbsApplication import DbsApplication
+from dbsAlgorithm import DbsAlgorithm
 
 from dbsParent import DbsParent
 
@@ -48,6 +48,9 @@ class DbsApi:
     """ Constructor. """
     #if Url is None:
     #   Url = DEFAULT_URL
+
+    print "WARNING I have to make use of Url !!!!! ANZAR !!!!!"
+    print "What about DB Instance and Configuration file ????"
     # API Version needs to be updated, each time a change is made to API
     # Sever will recive this API version and it might not work 
     # if proper API version is not supplied
@@ -103,7 +106,7 @@ class DbsApi:
     # Invoke Server.    
     #data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
-
+    print data
     # Parse the resulting xml output.
     try:
       result = []
@@ -145,7 +148,7 @@ class DbsApi:
           if name == 'data_tier':
             self.currDataset['tierList'].append(str(attrs['name']))
           if name == 'algorithm':
-            self.currDataset['AppConfig'].append(DbsApplication( ExecutableName=str(attrs['app_executable_name']),
+            self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name'])
                                                         ) )
@@ -221,7 +224,7 @@ class DbsApi:
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listApplications(self, pattern="*"):
+  def listAlgorithms(self, pattern="*"):
     """
     Retrieve list of applications matching a shell glob pattern.
     Returns a list of DbsApplication objects.  If the pattern is
@@ -231,18 +234,21 @@ class DbsApi:
     May raise an DbsApiException.
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listApplications', 'pattern' : pattern })
+    print "\n\n\nlistApplications must change to listAlgorithm on SERVER side\n\n\n"
+    #data = self._server._call ({ 'api' : 'listApplications', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listApplications', 'pattern' : pattern }, 'GET')
 
     # Parse the resulting xml output.
     try:
       result = []
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
-	  if name == 'application':
-	    result.append(DbsApplication(objectId=long(attrs['id']),
-					 executable=str(attrs['executable']),
-					 version=str(attrs['version']),
-					 family=str(attrs['family'])))
+	  if name == 'algorithm':
+            result.append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
+                                                         ApplicationVersion=str(attrs['app_version']),
+                                                         ApplicationFamily=str(attrs['app_family_name']),
+                                                         ParameterSetID=DbsQueryableParameterSet(hash=str(attrs['parameterset_hash']))
+                                                        ) )
       xml.sax.parseString (data, Handler ())
       return result
     except Exception, ex:

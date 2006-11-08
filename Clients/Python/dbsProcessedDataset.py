@@ -1,9 +1,8 @@
 #
-# Revision: 1.3 $"
-# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+# Revision: 0.0 $"
+# Id: dbsProcessedDataset.py,v 0.0 2006/1/1 18:26:04 afaq Exp $"
 #
-
-""" This file is generated on Wed Nov  1 15:22:43 2006 """ 
+""" This file is generated on Wed Nov  8 13:38:46 2006 """ 
 
 """SERIOUS WARNING:
 
@@ -26,20 +25,21 @@ class  DbsProcessedDataset(DbsBase):
    Following input parameters:
 
               Name, Probably a required variable
-              dataTier, Probably a required variable
               PhysicsGroup, User may not need to set this variable always
               Status, User may not need to set this variable always
               OpenForWriting, User may not need to set this variable always
               PrimaryDataset, Probably a required variable
-              AppConfig, Probably a required variable
+              AlgoList, User may not need to set this variable always
               tierList, User may not need to set this variable always
    """
    def __init__(self, **args):
       DbsBase.__init__(self)
+      # List type object AlgoList needs to be initialized
+      # to avoid return "None" instead of empty list []
+      self.setdefault('AlgoList', [])
       # List type object tierList needs to be initialized
       # to avoid return "None" instead of empty list []
       self.setdefault('tierList', [])
-      self.setdefault('AppConfig', [])
       # Read in all User provided values
       self.update(args)
       # Verifying that data types of user provide parameters is correct
