@@ -126,25 +126,38 @@ class DbsApi:
     pattern.
 
     May raise an DbsApiException.
+
     """
+
     # Invoke Server.    
-    # data = self._server._call ({ 'api' : 'listProcessedDatasets', 'pattern' : pattern })
-    data = self._server._call ({ 'api' : 'listDatasets', 'pattern' : pattern })
+    data = self._server._call ({ 'api' : 'listDatasets', 'pattern' : pattern }, 'GET')
     # Parse the resulting xml output.
     try:
       result = []
       class Handler (xml.sax.handler.ContentHandler):
+        
 	def startElement(self, name, attrs):
 	  if name == 'processed-dataset':
-	    result.append(DbsProcessedDataset (objectId=long(attrs['id']),
-	    				       datasetPathName=str(attrs['path'])))
+            self.currDataset = DbsProcessedDataset ( Name=str(attrs['processed_datatset_name']),     
+                                                OpenForWriting=str(attrs['open_for_writing']), 
+                                                PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name']))
+                                              )
+          if name == 'data_tier':
+            self.currDataset['tierList'].append(str(attrs['name']))
+          if name == 'algorithm':
+            self.currDataset['AppConfig'].append(DbsApplication( ExecutableName=str(attrs['app_executable_name']),
+                                                         ApplicationVersion=str(attrs['app_version']),
+                                                         ApplicationFamily=str(attrs['app_family_name'])
+                                                        ) )
+        def endElement(self, name):
+          if name == 'processed-dataset':
+             result.append(self.currDataset)
       xml.sax.parseString (data, Handler ())
       return result
     except DbsException, ex:
 	raise DbsBadResponse(exception=ex)
     except Exception, ex:
 	raise DbsBadResponse(exception=ex)
-
 
   # ------------------------------------------------------------
   def listDatasetsFromApp(self, pattern="*"):

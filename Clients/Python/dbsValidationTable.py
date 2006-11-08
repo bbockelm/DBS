@@ -44,12 +44,12 @@ ValidationTable = {
           },
 "DbsProcessedDataset" : {
          "Name" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
-         "dataTier" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
+         #"dataTier" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "PhysicsGroup" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Status" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
-         "OpenForWriting" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
+         "OpenForWriting" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "PrimaryDataset" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
-         "AppConfig" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
+         "AppConfigList" : { "Comment" : "Probably a required variable", "Validator" : isListType },
          "tierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
           },
 "DbsFileBlock" : {

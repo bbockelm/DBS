@@ -1,100 +1,100 @@
 #import "stlvector.h"
 
 class DBS__PrimaryDataset {
-	public:
-		long* objectId 0;
-		std::string datasetName 1;
-
+         public:
+                   std::string   Annotation 0;
+                   std::string   Name 1;
+                   std::string   StartDate 0;
+                   std::string   EndDate 0;
+                   DBS__Type*   Type 0;
+                   DBS__PrimaryDatasetDescription* Description 0;
 };
 
 class DBS__Application {
-	public:
-		long* objectId 0;
-		std::string executable 1;
-		std::string version 1;
-		std::string family 1;
-		//std::string parameterSet 1;
+         public:
+                  std::string ExecutableName 1;
+                  std::string ApplicationVersion 1;
+                  std::string ApplicationFamily 1;
+                  DBS__QueryableParameterSet* ParameterSetID 1;
 };
 
-class DBS__ParameterSet {
-	public:
-		long* objectId 0;
-		std::string hash 1;
-		std::string content 1;
-};
 
-class DBS__ApplicationConfig {
-	public:
-		long* objectId 0;
-		DBS__Application* application 1;
-		DBS__ParameterSet* parameterSet 1;
-};
-
-class DBS__Processing {
-	public:
-		long* objectId 0;
-		std::string parent 0;
-		DBS__PrimaryDataset* primaryDataset 1;
-		std::string processingName 1;
-		DBS__ApplicationConfig* applicationConfig 1;
-		bool isOpen 1;
+class DBS__QueryableParameterSet {
+         public:
+                   std::string   Hash 1;
+                   std::string   Name 1;
+                   std::string   Version 0;
+                   std::string   Type 0;
+                   std::string   Annotation 0;
+                   std::string   Content 0;
 };
 
 class DBS__ProcessedDataset {
-	public:
-		long* objectId 0;
-		DBS__PrimaryDataset* primaryDataset 1;
-		DBS__Processing* processing 1;
-		std::string datasetName 1;
-		std::string dataTier 1;
-		std::string datasetPathName 0;
-		bool isDatasetOpen 1;
+         public:
+                   std::string   Name 1;
+                   std::string  PhysicsGroup 0;
+                   std::string Status 0;
+                   bool  OpenForWriting 0;
+                   DBS__PrimaryDataset* PrimaryDataset 1;
+                   std::vector<DBS__Application*> AppConfigList 0;
+                   std::vector<DBS__DataTier*> tierList 0;
 };
-class DBS__EventCollection;
-class DBS__Parent {
-	public:
-		DBS__EventCollection* parent 1;
-		std::string type 1;
-};
-class DBS__File;
+
 class DBS__FileBlock {
-	public:
-		long* objectId 0;
-		std::string blockName 0;
-		DBS__Processing* processing 0;
-		std::string blockStatusName 1;
-		int* numberOfBytes 1;
-		int* numberOfFiles 1;
-		std::vector<DBS__File*> fileList 0;
-		std::vector<DBS__EventCollection*> eventCollectionList 0;
-		
+         public:
+                   std::string   Name 0;
+                   std::string Status 0;
+                   int   BlockSize 0;
+                   int   NumberOfFiles 0;
+                   bool   OpenForWriting 0;
+                   DBS__ProcessedDataset* Dataset 0;
+                   std::vector<DBS__File*> fileList 0;
 };
 
 class DBS__File {
-	public:
-		long* objectId 0;
-		std::string logicalFileName 1;
-		std::string guid 0;
-		std::string checkSum 0;
-		std::string fileType 1;
-		std::string fileStatus 1;
-		int* fileSize 0;
-		DBS__FileBlock* block 1;
+         public:
+                   std::string   Checksum 0;
+                   std::string   LogicalFileName 0;
+                   std::string   QueryableMetadata 0;
+                   int   NumberOfEvents 0;
+                   int   FileSize 0;
+                   int   Status 0;
+                   int   FileType 0;
+                   int   ValidationStatus 0;
+                   DBS__ProcessedDataset* Dataset 0;
+                   DBS__FileBlock* Block 0;
+                   std::vector<DBS__LumiSection*> lumiList 0;
+                   std::vector<DBS__DataTier*> tierList 0;
 };
 
 
-
-class DBS__EventCollection {
-	public:
-		long* objectId 0;
-		std::string collectionName 1;
-		int* numberOfEvents 0;
-		std::string collectionStatus 0;
-		std::string datasetPathName 1;
-		std::vector<DBS__Parent*> parentageList 0;
-		std::vector<DBS__File*> fileList 0;
+class DBS__DataTier {
+         public:
+                   std::string   Name 0;
 };
 
+class DBS__Run {
+         public:
+                   int   RunNumber 0;
+                   int   NumberOfEvents 0;
+                   int   NumberOfLumiSections 0;
+                   int   TotalLuminosity 0;
+                   int   StoreNumber 0;
+                   std::string   StartOfRun 0;
+                   std::string   EndOfRun 0;
+                   DBS__ProcessedDataset* Dataset 1;
+};
+
+class DBS__LumiSection {
+         public:
+                   int   LumiSectionNumber 0;
+                   #int   RunNumber 0;
+                   int   StartEventNumber 0;
+                   int   EndEventNumber 0;
+                   std::string   LumiStartTime 0;
+                   std::string   LumiEndTime 0;
+                   DBS__Run* RunNumber 0;
+};
 
 int DBS__createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, std::string& primaryDatasetResult);
 int DBS__createProcessedDataset(DBS__ProcessedDataset* processedDataset, std::string& processedDatasetResult);
