@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.12 $"
- $Id: DBSSql.java,v 1.12 2006/11/07 20:17:03 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSSql.java,v 1.13 2006/11/08 22:50:04 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -447,6 +447,7 @@ public class DBSSql {
 			"af.FamilyName as app_family_name, \n" +
 			"ae.ExecutableName as app_executable_name, \n" +
 			"ps.Name as ps_name, \n" +
+			"ps.Hash as ps_hash, \n" +
 			"algo.CreationDate as creation_date, \n" +
 			"algo.LastModificationDate as last_modification_date, \n" +
 			"percb.DistinguishedName as created_by, \n" +

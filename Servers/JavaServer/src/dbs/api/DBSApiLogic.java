@@ -70,15 +70,17 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+	public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
 
-		patternPrim 	= getPattern(patternPrim, "primary_datatset_name_pattern");
-		patternDT 	= getPattern(patternDT, "data_tier_name_pattern");
-		patternProc 	= getPattern(patternProc, "processed_datatset_name_pattern");
-		patternVer	= getPattern(patternVer, "app_version");
-		patternFam	= getPattern(patternFam, "app_family_name");
-		patternExe	= getPattern(patternExe, "app_executable_name");
-		patternPS 	= getPattern(patternPS, "parameterset_name");
+
+
+		String patternPrim 	= getPattern(pattern, 1, "primary_datatset_name_pattern");
+                String patternDT       = getPattern(pattern, 2, "data_tier_name_pattern");
+                String patternProc     = getPattern(pattern, 3, "processed_datatset_name_pattern");
+                String patternVer      = getPattern(pattern, 4, "app_version");
+                String patternFam      = getPattern(pattern, 5, "app_family_name");
+                String patternExe      = getPattern(pattern, 6, "app_executable_name");
+                String patternPS       = getPattern(pattern, 7, "parameterset_name");
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
 		out.write(XML_HEADER);
@@ -90,6 +92,7 @@ public class DBSApiLogic {
 		String prevPS = "";
 		Vector dtVec = null;
 		boolean first = true;
+                
 		while(rs.next()) {
 			//String path = "/" + rs.getString("primary_name") + "/" + rs.getString("data_tier") + "/" + rs.getString("processed_name");
 			String procDSID = rs.getString("id");
@@ -117,7 +120,8 @@ public class DBSApiLogic {
 						//"' app_executable_name='" + rs.getString("app_executable_name") +
 						"' created_by='" + rs.getString("created_by") +
 						"' last_modified_by='" + rs.getString("last_modified_by") +
-						"'/>\n"));
+						"'>\n"));
+						//"'/>\n"));
 				first = false;
 				prevDS = procDSID;
 				dtVec = new Vector();// Or dtVec.removeAllElements();
@@ -135,15 +139,17 @@ public class DBSApiLogic {
 				prevPS = ps;
 			}
 		}
+
+                if (!first) out.write(((String) "</processed-dataset>\n")); 
 		out.write(XML_FOOTER);
 	}
 
-	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+	public void listAlgorithms(Connection conn, Writer out, String pattern) throws Exception {
 		//name should be changed to hash
-		patternVer	= getPattern(patternVer, "app_version");
-		patternFam	= getPattern(patternFam, "app_family_name");
-		patternExe	= getPattern(patternExe, "app_executable_name");
-		patternPS 	= getPattern(patternPS, "parameterset_name");
+		String patternVer	= getPattern(pattern, 1, "app_version");
+		String patternFam	= getPattern(pattern, 2, "app_family_name");
+		String patternExe	= getPattern(pattern, 3, "app_executable_name");
+		String patternPS 	= getPattern(pattern, 4, "parameterset_name");
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
 		out.write(XML_HEADER);
@@ -153,6 +159,7 @@ public class DBSApiLogic {
 						"' app_family_name='" + rs.getString("app_family_name") +
 						"' app_executable_name='" + rs.getString("app_executable_name") +
 						"' ps_name='" + rs.getString("ps_name") +
+						"' ps_hash='" + rs.getString("ps_hash") +
 						"' creation_date='" + rs.getString("creation_date") +
 						"' last_modification_date='" + rs.getString("last_modification_date") +
 						"' created_by='" + rs.getString("created_by") +
@@ -690,7 +697,8 @@ public class DBSApiLogic {
 
 
 	private String getProcessedDSID(Connection conn, String path) throws Exception {
-		checkPath(path);
+                System.out.println("PATH: "+path);
+		//checkPath(path);
 		String[] data = path.split("/");
 		if(data.length != 4) {
 			throw new DBSException("Bad Data", "300", "Invalid Format. Expected /PRIMARY/TIER/PROCESSED");
@@ -836,11 +844,40 @@ public class DBSApiLogic {
 		return DBSUtil.get(table, key);
 	}
 	
+
 	private String getPattern(String pattern, String key) throws Exception {
-		if(isNull(pattern)) pattern = "%";
-		pattern = pattern.replace('*','%');
-		checkName(pattern, key);
-		return pattern;
+              return "%";
+        }
+	private String getPattern(String pattern, int index, String key) throws Exception {
+                // Gets the pattern string, checks if indexed key is possible,
+                // 
+                // if yes, check for its validity
+                // else returns %
+                // index starts at 1  
+                // I suspect there is double check, here and then when writing SQL
+
+                System.out.println("Index: "+index);  
+                System.out.println("\n\n\npattern:"+pattern+"Thats");
+                if ( isNull(pattern)) { System.out.println("Returning B");  return "%";}
+                if ( pattern.equals("*") ) { System.out.println("Returning A"); return "%";}
+
+                String ret_value="%";
+                String[] pattern_toks = pattern.split("/");
+                System.out.println("pattern_toks_length: "+pattern_toks.length);
+                if (pattern_toks.length == 0)
+                   ret_value = "%";
+ 
+                if ( pattern_toks.length-1 >= index ) {
+                    
+                   ret_value = pattern_toks[index];          
+		   ret_value = ret_value.replace('*','%');
+                   System.out.println("Returning A"+ret_value);
+                   checkName(ret_value, key);
+                   
+                }
+
+                System.out.println("ret_value: "+ret_value); 
+                return ret_value;
 	}
 
 }
