@@ -55,7 +55,7 @@ ValidationTable = {
          "Status" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "BlockSize" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
          "NumberOfFiles" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
-         "OpenForWriting" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
+         "OpenForWriting" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Dataset" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "fileList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
           },

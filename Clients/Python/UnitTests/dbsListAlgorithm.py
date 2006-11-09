@@ -23,8 +23,8 @@ try:
    # List all parameter sets
    print ""
    print "Algorithms...."
-   for app in api.listAlgorithms("/*/*/*"):
-     print "  %s" % app
+   for app in api.listAlgorithms("*"):
+     print " %s" % app
   except DbsDatabaseError,e:
    print e
   

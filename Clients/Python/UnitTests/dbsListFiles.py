@@ -22,15 +22,9 @@ try:
   try:
    # List all parameter sets
    print ""
-   print "Processed Datasets"
-   print "This API's parameters MUST Change"
-   print "**********\n\n\n"
-   #for proc in api.listProcessedDatasets("/PrimaryDS_ANZAR_01/*/anzar-procds-05/*/*/*/*"):
-   #for proc in api.listProcessedDatasets("/*/*/anzar-procds-05/*/*/*/*"):
-   #for proc in api.listProcessedDatasets("/*/*/anzar-procds-05"):
-   for proc in api.listProcessedDatasets("/*/*/anzar-procds-05/*"):
-   #for proc in api.listProcessedDatasets("*"):
-     print "  %s" % proc
+   print "Blocks...."
+   for file in api.listFiles("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
+     print "  %s" % file
   except DbsDatabaseError,e:
    print e
   

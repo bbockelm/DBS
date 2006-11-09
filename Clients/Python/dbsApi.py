@@ -106,7 +106,7 @@ class DbsApi:
     # Invoke Server.    
     #data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
-    print data
+
     # Parse the resulting xml output.
     try:
       result = []
@@ -134,6 +134,7 @@ class DbsApi:
 
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listDatasets', 'pattern' : pattern }, 'GET')
+ 
     # Parse the resulting xml output.
     try:
       result = []
@@ -143,10 +144,11 @@ class DbsApi:
 	  if name == 'processed-dataset':
             self.currDataset = DbsProcessedDataset ( Name=str(attrs['processed_datatset_name']),     
                                                 OpenForWriting=str(attrs['open_for_writing']), 
-                                                PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name']))
-                                              )
+                                                PrimaryDataset=DbsPrimaryDataset(
+                                                        Name=str(attrs['primary_datatset_name'])) )
           if name == 'data_tier':
             self.currDataset['tierList'].append(str(attrs['name']))
+
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
@@ -155,8 +157,10 @@ class DbsApi:
         def endElement(self, name):
           if name == 'processed-dataset':
              result.append(self.currDataset)
+
       xml.sax.parseString (data, Handler ())
       return result
+
     except DbsException, ex:
 	raise DbsBadResponse(exception=ex)
     except Exception, ex:
@@ -201,8 +205,7 @@ class DbsApi:
     May raise an DbsApiException.
     """
     # Invoke Server.
-    print "\n\n\nlistApplications must change to listAlgorithm on SERVER side\n\n\n"
-    data = self._server._call ({ 'api' : 'listApplications', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listAlgorithms', 'pattern' : pattern }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -214,9 +217,9 @@ class DbsApi:
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name']),
                                                          ParameterSetID=DbsQueryableParameterSet
-                                                                                 (
-                                                                                    hash=str(attrs['parameterset_hash'])
-                                                                                 )
+                                                                           (
+                                                                             hash=str(attrs['ps_hash'])
+                                                                           )
                                                         ) )
       xml.sax.parseString (data, Handler ())
       return result
@@ -225,7 +228,7 @@ class DbsApi:
 
 
   # ------------------------------------------------------------
-  def listRuns(self, pattern="*"):
+  def listRuns(self, path="*"):
     """
     Retrieve list of runs matching a shell glob pattern.
     Returns a list of DbsParameterSet objects.  If the pattern is
@@ -236,7 +239,8 @@ class DbsApi:
 
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listRuns', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listRuns', 'path' : path }, 'GET')
+    print data
 
     # Parse the resulting xml output.
     try:
@@ -268,7 +272,7 @@ class DbsApi:
 
   # ------------------------------------------------------------
 
-  def listTiers(self, pattern="*"):
+  def listTiers(self, path="*"):
 
     """
     Retrieve list of runs matching a shell glob pattern.
@@ -281,7 +285,7 @@ class DbsApi:
     """
 
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listTiers', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listTiers', 'path' : path }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -299,9 +303,9 @@ class DbsApi:
 
   #-------------------------------------------------------------------
 
-  def listBlocks(self, pattern="*"):
+  def listBlocks(self, path="*"):
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listBlocks', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listBlocks', 'path' : path }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -309,11 +313,10 @@ class DbsApi:
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'block':
-               result.append(DbsBlock (
+               result.append(DbsFileBlock(
                                        Name=str(attrs['name']), 
                                        BlockSize=int(attrs['size']),
                                        NumberOfFiles=int(attrs['number_of_files']),
-                                       Status=str(attrs['status']), 
                                        OpenForWriting=str(attrs['open_for_writing'])
                                        )
                              )
@@ -327,7 +330,7 @@ class DbsApi:
 
   # ------------------------------------------------------------
 
-  def listFiles(self, pattern="*"):
+  def listFiles(self, path="*"):
     """
     Retrieve list of runs matching a shell glob pattern.
     Returns a list of DbsParameterSet objects.  If the pattern is
@@ -338,7 +341,7 @@ class DbsApi:
 
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listBlocks', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listFiles', 'path' : path }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -745,55 +748,5 @@ class DbsApi:
       raise DbsBadResponse(exception=ex)
  
  
-  def listBlocksOLD(self, dataset, app=None, events=None):
-    # Check path.
-    path = self._path(dataset)
-    verifyDatasetPathName(path)
-
-    # Invoke Server.
-    if( events == None) :    
-      if ( app == None ):
-         data = self._server._call ({ 'api' : 'listBlocks', 'path' : path })
-      else :
-         data = self._server._call ({ 'api' : 'listBlocks', 'path' : path, 'app' : app })
-    else :
-      if ( app == None ):
-         data = self._server._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events})
-      else :
-         data = self._server._call ({ 'api' : 'listBlocks', 'path' : path , 'events' : events, 'app' : app})
-
-    #print data
-
-    # Parse the resulting xml output.  The output consits of a list of blocks,
-    # each with its list of event collections.
-    try:
-      blocks = {}
-      class Handler (xml.sax.handler.ContentHandler):
-	def __init__ (self):
-	  self._block = None
-	def startElement(self, name, attrs):
-	  if name == 'block':
-            evts = ''
-	    id = attrs['id']
-	    name = attrs['name']# CHANGED from id to name
-	    if not blocks.has_key (id):
-              if(events == None) :  
-   	         blocks[name] = DbsFileBlock (objectId=long(id),
-                                         blockName=str(attrs['name']),
-                                         status=str(attrs['status']),
-					 numberOfFiles=long(attrs['files']),
-					 numberOfBytes=long(attrs['bytes']))
-              else :
-                 if "events" in attrs.keys():
-                    evts = long(attrs['events'])
-                 blocks[name] = [evts, str(attrs['status']), long(attrs['files']), long(attrs['bytes'])]
-
-	    self._block = blocks[name]
-      xml.sax.parseString (data, Handler ())
-      #return blocks.values ()
-      return blocks
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
 ##############################################################################
 # Unit testing: see $PWD/UnitTests

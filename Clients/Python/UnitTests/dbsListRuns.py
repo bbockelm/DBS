@@ -23,7 +23,10 @@ try:
    # List all parameter sets
    print ""
    print "RUNS...."
-   for app in api.listRuns("/*/*/*"):
+   #for app in api.listRuns("/PrimaryDS_ANZAR_01/KIM/anzar-procds-01"):
+   #for app in api.listRuns("/PrimaryDS_ANZAR_01/DIGI/anzar-procds-01"):
+   for app in api.listRuns("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
+   #for app in api.listRuns("/*/*/*"):
      print "  %s" % app
   except DbsDatabaseError,e:
    print e

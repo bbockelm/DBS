@@ -42,13 +42,13 @@ class DBS__ProcessedDataset {
 
 class DBS__FileBlock {
          public:
-                   std::string   Name 0;
+                   std::string   Name 1;
                    std::string Status 0;
                    int   BlockSize 0;
                    int   NumberOfFiles 0;
-                   bool   OpenForWriting 0;
+                   std::string   OpenForWriting 0;
                    DBS__ProcessedDataset* Dataset 0;
-                   std::vector<DBS__File*> fileList 0;
+                   std::vector<DBS__File*> fileList;
 };
 
 class DBS__File {

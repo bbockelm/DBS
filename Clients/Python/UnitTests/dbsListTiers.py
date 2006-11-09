@@ -23,7 +23,7 @@ try:
    # List all parameter sets
    print ""
    print "TIERS...."
-   for tier in api.listTiers("/*/*/*"):
+   for tier in api.listTiers("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
      print "  %s" % tier
   except DbsDatabaseError,e:
    print e

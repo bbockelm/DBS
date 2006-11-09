@@ -23,8 +23,10 @@ try:
    # List all parameter sets
    print ""
    print "Blocks...."
-   for file in api.listFiles("/*/*/*"):
-     print "  %s" % file
+   #for block in api.listBlocks("/*/*/anzar-procds-01"):
+   for block in api.listBlocks("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
+   #for block in api.listBlocks("/PrimaryDS_ANZAR_01/SIM/doNotExist"):
+     print "  %s" % block
   except DbsDatabaseError,e:
    print e
   
