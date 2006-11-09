@@ -163,40 +163,6 @@ class DbsApi:
 	raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listDatasetsFromApp(self, pattern="*"):
-    """
-    Retrieve list of processed datasets matching a shell glob pattern against 
-    application executable or version or family.
-    Returns a list of DbsProcessedDataset objects.  If the pattern is
-    given, it will be matched against the dataset path as a shell glob
-    pattern.
-
-    May raise an DbsApiException.
-    """
-    # Invoke Server.    
-    # data = self._server._call ({ 'api' : 'listProcessedDatasets', 'pattern' : pattern })
-    data = self._server._call ({ 'api' : 'listDatasetsFromApp', 'pattern' : pattern })
-    # Parse the resulting xml output.
-    try:
-      result = []
-      class Handler (xml.sax.handler.ContentHandler):
-	def startElement(self, name, attrs):
-	  if name == 'processed-dataset':
-            app = DbsApplication(executable = str(attrs['app']),
-			    version =  str(attrs['version']),
-                            family = str(attrs['family']) )
-	    #print "app" , app
-	    result.append(DbsProcessedDataset (objectId=long(attrs['id']),
-	    				       datasetPathName=str(attrs['path']),
-					       application = app))
-      xml.sax.parseString (data, Handler ())
-      return result
-    except DbsException, ex:
-	raise DbsBadResponse(exception=ex)
-    except Exception, ex:
-	raise DbsBadResponse(exception=ex)
-
-  # ------------------------------------------------------------
   def listParameterSets(self, pattern="*"):
     """
     Retrieve list of parameter sets matching a shell glob pattern.
@@ -208,7 +174,7 @@ class DbsApi:
 
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listParameterSets', 'pattern' : pattern })
+    data = self._server._call ({ 'api' : 'listParameterSets', 'pattern' : pattern }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -236,7 +202,6 @@ class DbsApi:
     """
     # Invoke Server.
     print "\n\n\nlistApplications must change to listAlgorithm on SERVER side\n\n\n"
-    #data = self._server._call ({ 'api' : 'listApplications', 'pattern' : pattern }, 'GET')
     data = self._server._call ({ 'api' : 'listApplications', 'pattern' : pattern }, 'GET')
 
     # Parse the resulting xml output.
@@ -248,7 +213,10 @@ class DbsApi:
             result.append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name']),
-                                                         ParameterSetID=DbsQueryableParameterSet(hash=str(attrs['parameterset_hash']))
+                                                         ParameterSetID=DbsQueryableParameterSet
+                                                                                 (
+                                                                                    hash=str(attrs['parameterset_hash'])
+                                                                                 )
                                                         ) )
       xml.sax.parseString (data, Handler ())
       return result
@@ -299,42 +267,125 @@ class DbsApi:
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listApplicationConfigs(self, pattern="*"):
+
+  def listTiers(self, pattern="*"):
+
     """
-    Retrieve list of application configurations matching a shell glob
-    pattern.  Returns a list of DbsApplicationConfig objects.  If the
-    pattern is given, it will be matched against the application label
-    as /family/executable/version as a shell glob pattern; all the
-    parameter sets used with that application will be returned.
+    Retrieve list of runs matching a shell glob pattern.
+    Returns a list of DbsParameterSet objects.  If the pattern is
+    given, it will be matched against the content as a shell glob
+    pattern.
 
     May raise an DbsApiException.
+
     """
+
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listApplicationConfigs', 'pattern' : pattern })
+    data = self._server._call ({ 'api' : 'listTiers', 'pattern' : pattern }, 'GET')
 
     # Parse the resulting xml output.
     try:
       result = []
       class Handler (xml.sax.handler.ContentHandler):
-	def startElement(self, name, attrs):
-	  if name == 'application':
-	    self.app = DbsApplication(executable=str(attrs['executable']),
-			              version=str(attrs['version']),
-			              family=str(attrs['family']))
-            
-	  elif name == 'app-config':
-	    pset = DbsParameterSet(objectId=long(attrs['psetid']),
-				   hash=str(attrs['hash']),
-				   content=str(attrs['content']))
-	    result.append(DbsApplicationConfig(objectId=long(attrs['id']),
-					       application = self.app,
-					       parameterSet = pset))
+        def startElement(self, name, attrs):
+          if name == 'data_tier':
+               result.append(DbsDataTier(Name=str(attrs['name'])))
+
       xml.sax.parseString (data, Handler ())
       return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+  #-------------------------------------------------------------------
+
+  def listBlocks(self, pattern="*"):
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listBlocks', 'pattern' : pattern }, 'GET')
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'block':
+               result.append(DbsBlock (
+                                       Name=str(attrs['name']), 
+                                       BlockSize=int(attrs['size']),
+                                       NumberOfFiles=int(attrs['number_of_files']),
+                                       Status=str(attrs['status']), 
+                                       OpenForWriting=str(attrs['open_for_writing'])
+                                       )
+                             )
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+  # ------------------------------------------------------------
+
+  def listFiles(self, pattern="*"):
+    """
+    Retrieve list of runs matching a shell glob pattern.
+    Returns a list of DbsParameterSet objects.  If the pattern is
+    given, it will be matched against the content as a shell glob
+    pattern.
+
+    May raise an DbsApiException.
+
+    """
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listBlocks', 'pattern' : pattern }, 'GET')
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'file':
+             self.currFile = DbsFile (
+                                       LogicalFileName=str(attrs['lfn']),
+                                       FileSize=int(attrs['size']),
+                                       NumberOfEvents=int(attrs['number_of_events']),
+                                       Status=str(attrs['status']),
+                                       Block=str(attrs['open_for_writing']),
+                                       FileType=str(attrs['type']),
+                                       Checksum=str(attrs['checksum']),
+                                       QueryableMetadata=str(attrs['meta_data']) 
+                                       )
+
+          if name == 'data_tier':
+            self.currFile['tierList'].append(str(attrs['name']))
+
+          if name == 'lumi_section':
+             self.currFile['lumiList'].append(DbsLumiSection(
+                                                   LumiSectionNumber=int(attrs['lumi_section_number']),
+                                                   StartEventNumber=int(attrs['start_event']),
+                                                   EndEventNumber=int(attrs['end_event']),   
+                                                   LumiStartTime=str(attrs['lumi_start']),
+                                                   LumiEndTime=str(attrs['lumi_end']),
+                                                   RunNumber=int(attrs['run_number']) 
+                                              ))
+          if name == 'algorithm':
+            self.currFile['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
+                                                         ApplicationVersion=str(attrs['app_version']),
+                                                         ApplicationFamily=str(attrs['app_family_name'])
+                                              )) 
+        def endElement(self, name):
+          if name == 'file':
+             result.append(self.currFile)
+  
+      xml.sax.parseString (data, Handler ())
+      return result
+
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
+
   def getDatasetProvenance(self, dataset, tiers=[]):
     """
     Retrieve the dataset parents of the dataset.  If tiers is an
@@ -372,6 +423,7 @@ class DbsApi:
 	    parents.append(DbsParent(parent=p, type=str(attrs['type'])))
       xml.sax.parseString (data, Handler ())
       return parents
+
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
@@ -426,116 +478,6 @@ class DbsApi:
       return fileBlocks.values ()
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
-
-  # ------------------------------------------------------------
-  def getDatasetFileBlocks(self, dataset):
-    """
-    Retrieve the files related to the dataset, organised by file
-    block.  Returns a list of DbsFileBlock objects, each with the
-    file list filled with DbsFile objects.  Note that the files
-    may contain data for other datasets.
-
-    The input dataset should be an DbsProcessedDataset with path set,
-    or a DbsProcessedDataset with primary dataset, tier and processed
-    dataset name filled in.  For backwards compatibility a simple
-    dataset path name string is also accepted.
-
-    Raises InvalidDatasetPathName if the path is invalid, otherwise
-    may raise an DbsApiException.
-
-    See getDatasetContents() for a version that returns event
-    collections.
-    """
-    # Check path.
-    path = self._path(dataset)
-    verifyDatasetPathName(path)
-
-    # Invoke Server.
-    data = self._server._call ({ 'api' : 'getDatasetFiles', 'path' : path })
-
-    # Parse the resulting xml output.  The output consits of a list of blocks,
-    # each with its list of event collections.
-    try:
-      blocks = {}
-      class Handler (xml.sax.handler.ContentHandler):
-	def __init__ (self):
-	  self._block = None
-	def startElement(self, name, attrs):
-	  if name == 'block':
-	    id = attrs['id']
-	    if not blocks.has_key (id):
-	      blocks[id] = DbsFileBlock (objectId=long(id),
-			      		 blockName=str(attrs['name']),
-					 numberOfFiles=long(attrs['files']),
-					 numberOfBytes=long(attrs['bytes']),
-					 blockStatus=str(attrs['status']))
-	    self._block = blocks[id]
-          elif name == 'file':
-	    self._block['fileList'].append(DbsFile (objectId=long(attrs['id']),
-		    			  fileBlockId=long(attrs['inblock']),
-		    			  guid=str(attrs['guid']),
-		    			  logicalFileName=str(attrs['lfn']),
-		    			  fileStatus=str(attrs['status']),
-		    			  checkSum=str(attrs['checksum']),
-		    			  fileSize=long(attrs['size'])))
-
-      xml.sax.parseString (data, Handler ())
-      return blocks.values ()
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
-
-  # ------------------------------------------------------------
-  def getLFNs(self, blockName , dataset = None):
-    # Check path.
-    if(dataset) :
-      path = self._path(dataset)
-      verifyDatasetPathName(path)
-
-    # Invoke Server.
-    if (dataset) :
-      data = self._server._call ({ 'api' : 'getLFNs', 'path' : path , 'blockName' : blockName})
-    else :
-      data = self._server._call ({ 'api' : 'getLFNs',  'blockName' : blockName})
-    #print data
-    # Parse the resulting xml output.  The output consits of a list of blocks,
-    # each with its list of event collections.
-    try:
-      blocks = {}
-      mylist = []
-      class Handler (xml.sax.handler.ContentHandler):
-	def __init__ (self):
-	  self._block = None
-	def startElement(self, name, attrs):
-          """
-	  if name == 'block':
-	    if not blocks.has_key (blockId):
-	      blocks[blockId] = DbsFileBlock (objectId=long(blockId),
-                                              blockName=str(attrs['name']))
-            self._block = blocks[blockId]
-          """  
-          if name == 'file':
-            """
-	    self._block['fileList'].append(DbsFile (
-                                          fileBlockId=long(blockId),
-		    			  logicalFileName=str(attrs['lfn']),
-		    			  fileStatus=str(attrs['status']),
-		    			  fileType=str(attrs['type']),
-		    			  fileSize=long(attrs['size'])))
-            """
-            mylist.append( (  str(attrs['lfn']), long(attrs['size']), str(attrs['status']), str(attrs['type']) ) )
-
-
-      xml.sax.parseString (data, Handler ())
-      #print mylist
-      #print blocks
-      #print "***************"
-      #print blocks.values ()
-      #return blocks.values ()
-      return mylist
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
 
   # ------------------------------------------------------------
   def createPrimaryDataset(self, dataset):
@@ -803,7 +745,7 @@ class DbsApi:
       raise DbsBadResponse(exception=ex)
  
  
-  def listBlocks(self, dataset, app=None, events=None):
+  def listBlocksOLD(self, dataset, app=None, events=None):
     # Check path.
     path = self._path(dataset)
     verifyDatasetPathName(path)
