@@ -1,8 +1,8 @@
 /**
- * @author sekhri
+ $Revision: 1.14 $"
+ $Id: DBSSql.java,v 1.14 2006/11/09 23:16:25 afaq Exp $"
  *
  */
-
 
 package dbs.api;
 import java.sql.Connection;
@@ -228,8 +228,17 @@ public class DBSApiLogic {
 	}
 
 	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN) throws Exception {
-		patternLFN = patternLFN.replace('*','%');
-		checkName(patternLFN, "lfn");
+
+                String prevTier = "";
+		Vector dtVec = null;
+		boolean first = true;
+
+		String prevfileid = "";
+
+		if ( patternLFN != null) {
+                   patternLFN = patternLFN.replace('*','%');
+		   checkName(patternLFN, "lfn");
+                }
 		String procDSID = null;
 		String blockID = null;
 		if(path != null) {
@@ -244,18 +253,53 @@ public class DBSApiLogic {
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listFiles(procDSID, blockID, patternLFN));
 		out.write(XML_HEADER);
+
 		while(rs.next()) {
+                        String tier = rs.getString("data_tier");
+                        String fileid = rs.getString("id");
+
+                        if( ! first) {  
+                        //This is stupid, I need to look at its more ANZAR: FIXME
+                        //if( !prevfileid.equals(fileid) && ! first) {  
+                             out.write( (String) "</file> \n");
+                        }   
+                         
+                        if( !prevfileid.equals(fileid) || ! first) {  
 				out.write(((String) "<file id='" + rs.getString("id") +
-						"' lfn='" + rs.getString("lfn") +
-						"' checksum='" + rs.getString("checksum") +
-						"' size='" + rs.getString("size") +
-						"' queryable_meta_data='" + rs.getString("queryable_meta_data") +
-						"' creation_date='" + rs.getString("creation_date") +
-						"' last_modification_date='" + rs.getString("last_modification_date") +
-						"' created_by='" + rs.getString("created_by") +
-						"' last_modified_by='" + rs.getString("last_modified_by") +
-						"'/>\n"));
+					"' lfn='" + rs.getString("lfn") +
+					"' checksum='" + rs.getString("checksum") +
+					"' size='" + rs.getString("size") +
+					"' queryable_meta_data='" + rs.getString("queryable_meta_data") +
+					"' number_of_events='" + rs.getString("number_of_events") +
+					"' validation_status='" + rs.getString("validation_status") +
+					"' type='" + rs.getString("type") +
+					"' status='" + rs.getString("status") +
+					"' block_name='" + rs.getString("block_name") +
+					"' creation_date='" + rs.getString("creation_date") +
+					"' last_modification_date='" + rs.getString("last_modification_date") +
+					"' created_by='" + rs.getString("created_by") +
+					"' last_modified_by='" + rs.getString("last_modified_by") +
+					"'>\n"));
+					//"'/>\n"));
+                                  first = false;
+                                  prevfileid=fileid;
+                                  dtVec = new Vector();// Or dtVec.removeAllElements();
+                           }
+                       
+                        System.out.println("DONE 1"); 
+ 
+                        if (tier != null) {
+                           System.out.println("DONE 2: "+tier); 
+                           if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
+                                System.out.println("DONE 3"); 
+                                out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
+                                dtVec.add(tier);
+                                prevTier = tier;
+                           }
+                         }
+
 		}
+                if (!first) out.write(((String) "</file>\n"));
 		out.write(XML_FOOTER);
 	}
 

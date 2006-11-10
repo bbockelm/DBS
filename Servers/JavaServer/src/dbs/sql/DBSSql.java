@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.13 $"
- $Id: DBSSql.java,v 1.13 2006/11/08 22:50:04 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSSql.java,v 1.14 2006/11/09 23:16:25 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -564,11 +564,21 @@ public class DBSSql {
 			"f.QueryableMetaData as queryable_meta_data, \n" +
 			"f.CreationDate as creation_date, \n" +
 			"f.LastModificationDate as last_modification_date, \n" +
+			"f.NumberOfEvents as number_of_events, \n" +
+			"f.ValidationStatus as validation_status, \n" +
 			"st.Status as status, \n" +
 			"ty.Type as type, \n" +
 			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+			"perlm.DistinguishedName as last_modified_by, \n" +
+                        "b.Name as block_name, \n"+ 
+                        "dt.Name as data_tier \n"+ 
 			"FROM Files f \n" +
+                        "LEFT OUTER JOIN Block b \n" +
+                                "ON b.id = f.Block \n "+  
+                        "LEFT OUTER JOIN FileTier fdt \n" +
+                                "ON fdt.Fileid = f.id \n" +
+                        "LEFT OUTER JOIN DataTier dt \n" +
+                                "ON dt.id = fdt.DataTier " +
 			"LEFT OUTER JOIN Type ty \n" +
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN Status st \n" +
