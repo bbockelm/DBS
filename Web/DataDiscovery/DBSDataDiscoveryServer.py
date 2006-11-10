@@ -150,7 +150,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         p.write("DBSHelper:\n")
         p.write("==========\n")
         p.write("%s: %s\n"%("DBS Instance   ",self.helper.dbsInstance))
-        p.write("%s: %s\n"%("engine         ",self.helper.dbsDB))
+        try:
+           p.write("%s: %s\n"%("engine         ",self.helper.dbsDB))
+        except:
+           pass
         p.write("%s: %s\n"%("dbsApi         ",self.helper.dbsApi))
         p.write("%s: %s\n"%("dbsDLS         ",self.helper.dbsDLS))
         p.write("%s: %s\n"%("dlsType        ",self.helper.dlsType))
@@ -323,6 +326,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'searchForm'   : self.searchForm(),
                      'siteForm'     : siteForm,
                      'dbsContent'   : self.dbsContList(),
+                     'dbsShortNames': self.dbsShortNames,
                      'glossary'     : self.glossary(),
                      'frontPage'    : 0
                     }
@@ -345,6 +349,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'searchForm'   : self.searchForm(),
                          'siteForm'     : self.siteForm(),
                          'dbsContent'   : self.dbsContList(),
+                         'dbsShortNames': self.dbsShortNames,
                          'frontPage'    : 1,
                          'glossary'     : self.glossary()
                         }
@@ -1215,8 +1220,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             else:
                name = "datasets%s"%string.split(dbs,"/")[0]
             page+="""<response type="element" id="%s">"""%name
-            self.helperInit(dbs)
-            page+=self.getDatasetsForDbsInst(dbs)
+            page+=self.getPrimaryDatasetsHelper(dbs)
             page+="</response>\n"
         page+="</ajax-response>"
         if self.verbose:
@@ -1224,7 +1228,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getAllPrimaryDatasets.exposed=True
 
-    def getDatasetsForDbsInst(self,dbsInst):
+    def getPrimaryDatasetsHelper(self,dbsInst):
         """
            Get list of primary dataset for given DBS instances.
            @type  dbsInst: string
@@ -1232,14 +1236,31 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
+        self.helperInit(dbsInst)
         dList = self.helper.getPrimaryDatasets()
         nameSpace = {
-                     'msg'     : "Primary datasets",
+                     'msg'     : "%s: primary datasets"%dbsInst,
                      'dbsInst' : dbsInst,
                      'dList'   : dList
                     }
         t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
         return str(t)
+
+    def getPrimaryDatasets(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get primary datasets for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="<ajax-response>"
+        page+="""<response type="element" id="dbs_prim">"""
+        page+="""<div class="div_scroll">"""+self.getPrimaryDatasetsHelper(dbsInst)+"</div>"
+        page+="</response>\n"
+        page+="</ajax-response>"
+        if self.verbose:
+           print page
+        return page
+    getPrimaryDatasets.exposed=True
 
     def getDetailsForPrimDataset(self,dbsInst,primDataset,**kwargs):
         """
@@ -1257,20 +1278,106 @@ class DBSDataDiscoveryServer(DBSLogger):
             if id>=len(dList):
                last=1
             pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
-        page="""<ajax-response><response type="element" id="results">"""
-#        nameSpace = {
-#                     'msg'     : 'Processed datasets:',
-#                     'dbsInst' : dbsInst,
-#                     'dList'   : dList
-#                    }
-#        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
-#        page+=str(t)
+        page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
         page+="</response></ajax-response>"
         if self.verbose:
            print page
         return page
     getDetailsForPrimDataset.exposed=True
+
+    def getProcessedDatasetsHelper(self,dbsInst):
+        """
+           Get list of processed dataset for given DBS instances.
+           @type  dbsInst: string
+           @param dbsInst: DBS instances
+           @rtype : string
+           @return: returns HTML code
+        """
+        self.helperInit(dbsInst)
+        dList = self.helper.getProcessedDatasets(datasetPath="*",app=0,html=1)
+        nameSpace = {
+                     'msg'     : "%s: processed datasets"%dbsInst,
+                     'dbsInst' : dbsInst,
+                     'dList'   : dList
+                    }
+        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        return str(t)
+
+    def getProcessedDatasets(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get processed datasets for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="<ajax-response>"
+        page+="""<response type="object" id="dbs_proc">"""
+        page+="""<div class="div_scroll">"""+self.getProcessedDatasetsHelper(dbsInst)+"</div>"
+        page+="</response>\n"
+        page+="</ajax-response>"
+        if self.verbose:
+           print page
+        return page
+    getProcessedDatasets.exposed=True
+
+    def getApplicationsHelper(self,dbsInst):
+        """
+           Get list of applications for given DBS instances.
+           @type  dbsInst: string
+           @param dbsInst: DBS instances
+           @rtype : string
+           @return: returns HTML code
+        """
+        self.helperInit(dbsInst)
+        dList = self.helper.getApplications()
+        nameSpace = {
+                     'msg'     : "%s: processed datasets"%dbsInst,
+                     'dbsInst' : dbsInst,
+                     'dList'   : dList
+                    }
+        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        return str(t)
+
+    def getApplications(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get applications for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="<ajax-response>"
+        page+="""<response type="object" id="dbs_apps">"""
+        page+="""<div class="div_scroll">"""+self.getApplicationsHelper(dbsInst)+"</div>"
+        page+="</response>\n"
+        page+="</ajax-response>"
+        if self.verbose:
+           print page
+        return page
+    getApplications.exposed=True
+
+    def getDatasetsFromApplication(self,dbsInst,appPath,**kwargs):
+        """
+           Generates AJAX response to get datasets available for given application
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        self.helperInit(dbsInst)
+        dList=self.helper.getProcessedDatasets(appPath,app=1)
+        pSum=""
+        last=id=0
+        for dataset in dList:
+            id+=1
+            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+            if id>=len(dList):
+               last=1
+            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
+        page="""<ajax-response><response type="object" id="results">"""
+        page+=pSum
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getDatasetsFromApplication.exposed=True
 
     def getDatasets(self):
         """
@@ -1293,6 +1400,38 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+= self.genBottomHTML()
         return page
     getDatasets.exposed=True
+
+    def getDatasetContentHelper(self,dbsInst,dataset,**kwargs):
+        """
+           Get dataset content
+           @type  dbsInst: string
+           @param dbsInst: dbs instance
+           @type  dataset: string
+           @param dataset: dataset name
+           @rtype: string
+           @return: returns parents fro given datasets in HTML form 
+        """
+        try:
+            self.helperInit(dbsInst)
+            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+            page= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id=0,last=1)
+        except:
+            page="No information found for dataset '%s' in DBS='%s'"%(dataset,dbsInst)
+        return page
+
+    def getDatasetContent(self,dbsInst,dataset,**kwargs):
+        """
+           Generates AJAX response to get dataset content
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page ="""<ajax-response><response type="object" id="results">"""
+        page+=self.getDatasetContentHelper(dbsInst,dataset)
+        page+="</response></ajax-response>"
+        if self.verbose:
+           print page
+        return page
+    getDatasetContent.exposed=True
 
     def getDatasetProvenanceHelper(self,dataset,**kwargs):
         """
@@ -1323,14 +1462,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.setContentType('xml')
         page ="""<ajax-response><response type="element" id="parentGraph">"""
         page+=self.getDatasetProvenanceHelper(dataset)
-#        parents  = self.helper.getDatasetProvenance(dataset)
-#        nameSpace={
-#                   'host'      : self.dbsdd, 
-#                   'dataset'   : dataset, 
-#                   'parentList': parents
-#                  }
-#        t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
-#        page = str(t)
         page+="</response></ajax-response>"
         if self.verbose:
            print page

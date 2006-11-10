@@ -173,7 +173,8 @@ function registerAjaxPrimDatasetsCalls() {
 #end for
 }
 // put all AJAX registration calls here
-registerAjaxPrimDatasetsCalls();
+registerAjaxPrimaryDatasetsCalls();
+//registerAjaxGetDetailsForPrimDatasetCalls();
 registerAjaxSummaryCalls();
 registerAjaxHistoryCalls();
 registerAjaxProvenanceCalls();
@@ -694,20 +695,20 @@ contains $nEvents events, $totFiles files, $totSize.
 <table>
 <tr>
 <td>Show:</td>
-<td>
+<td id="td_Blocks" name="td_Blocks" class="td_plain">
 <a href="javascript:HideSumInfo('$tableId');ShowBlockInfo('$tableId')">
 Blocks
 </a>
 </td>
-<td><br></br></td>
-<td>
+###<td><br></br></td>
+<td id="td_Summary" name="td_Summary" class="td_plain">
 <a href="javascript:HideBlockInfo('$tableId');ShowSumInfo('$tableId');">
 Summary
 </a>
 </td>
-<td><br></br></td>
-<td>
-<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');">
+###<td><br></br></td>
+<td id="td_Both" name="td_Both" class="td_plain">
+<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');underlineLink('Both')">
 Both
 </a>
 </td>
@@ -830,7 +831,7 @@ Both
 
 templateBottom="""
 <hr class="dbs" />
-<table id="results_menu" class="hide" cellspacing="0">
+<table id="results_menu" class="hide" cellspacing="1" width="70%">
 <tr>
 <td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>
 <td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
@@ -903,7 +904,19 @@ Home page: <a href="$host/">users</a>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
+<!--
 <td class="td_gray_box" id="Datasets_Menu"><a href="javascript:showMenu('Datasets');registerAjaxPrimDatasetsCalls();getPrimDatasets();">Datasets</a>
+-->
+<td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('MCGlobal/Writer',$dbsShortNames);">DBS info</a>
+  <table id="dbsInst_table" class="hide">
+#for name in $dbsShortNames
+#set fullName=$name+"/Writer"
+#if $name=="Dev_fanfani"
+#set fullName="Dev/fanfani"
+#end if
+      <tr><td>&\#187;</td><td id="dbsInst_$name"><a href="javascript:getDbsInfo('$fullName',$dbsShortNames);">$fullName</a></td></tr>
+#end for
+  </table>       
 </td>
 </tr>
 
@@ -928,7 +941,7 @@ Home page: <a href="$host/">users</a>
 </td>
 
 <!-- menu content, accordion -->
-<td>
+<td valign="top">
 <div id="NavigatorDiv" class="hide">
    <div id="navigationPanel1">
      <div id="navigationHeader1" class="accordionTabTitleBar">
@@ -1014,10 +1027,26 @@ Home page: <a href="$host/">users</a>
 </div>
 
 
-
+#*
 <div id="DatasetsDiv" class="hide"> 
 $dbsContent
 </div>
+*#
+###### Replacement for accordion datasets
+#set menuArr=['dbs_prim','dbs_proc','dbs_apps']
+<div id="DBSinfoDiv" class="hide"> 
+<table id="dbs_info" class="hide" cellspacing="1" width="50%">
+<tr>
+<td class="td_menu_white_box" align="center" id="_dbs_prim"><a href="javascript:showResMenu('dbs_prim',$menuArr)">Primary datasets</a></td>
+<td class="td_menu_gray_box" align="center" id="_dbs_proc"><a href="javascript:showResMenu('dbs_proc',$menuArr)">Processed datasets</a></td>
+<td class="td_menu_gray_box" align="center" id="_dbs_apps"><a href="javascript:showResMenu('dbs_apps',$menuArr)">Applications</a></td>
+</tr>
+</table>
+<span id="dbs_prim" class="hide"><br /></span>
+<span id="dbs_proc" class="hide"><br /></span>
+<span id="dbs_apps" class="hide"><br /></span>
+</div>
+########################
 
 <div id="SummaryDiv" class="hide">
    <div id="summaryPanel1">
@@ -1246,7 +1275,7 @@ new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('SearchDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('SiteDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('ReleasesDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('HelpDiv'), {panelHeight:accordionHeight} );

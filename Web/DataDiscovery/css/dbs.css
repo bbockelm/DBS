@@ -93,6 +93,11 @@ a:hover  {
   font-weight: bold;
   text-decoration: none;
 }
+a:active  {
+  color: lime;
+  font-weight: bold;
+  text-decoration: none;
+}
 
 em.itbold  {
   font-family: helvetica, arial, verdana, sans-serif;
@@ -145,10 +150,18 @@ em.smallbold  {
   letter-spacing: 3px;
   clear: left;
 }
+/*
+ * Misc settings
+ */
+.div_scroll {
+ border: 1px solid; 
+ height: 400px; 
+ overflow:auto;
+}
 
 /*
  * Table settings
-*/
+ */
 table.intro {
   border-width: thin thin thin thin;
   border-spacing: 4px;
@@ -203,48 +216,73 @@ table.intro td {
   background-color: #F0F0F0;
 }
 .menu_td_gray {
-  width: 8%;
+  width: 12%;
   color: #000000;
   background-color: #F0F0F0;
 }
+.td_right {
+/*  width: 100px;*/
+  display: table-cell;
+  color: #000000;
+  background-color: #E0E0E0;
+  border-style: solid;
+  border-width: 0px 4px 0px 0px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+}
+.td_menu_white_underline {
+  color: #000000;
+  background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  padding: 3px 1px 3px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+}
 .td_menu_white_box {
-  width: 100px;
+/*  width: 100px;*/
+  width: 10%;
   color: #000000;
   background-color: #FFFFFF;
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  padding: 1px 1px 1px 1px;
+  padding: 3px 1px 3px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
 .td_menu_lavender_box {
-  width: 100px;
+/*  width: 100px;*/
+  width: 10%;
   color: #000000;
 /*  background-color: #FAEBD7;*/
-  background-color: #E6E6FA;
+/*  background-color: #E6E6FA;*/ /* light-blue */
+  background-color: #CCCCFF;
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  padding: 1px 1px 1px 1px;
+  padding: 3px 1px 3px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
 .td_menu_green_box {
-  width: 100px;
+/*  width: 100px;*/
+  width: 10%;
   color: #000000;
   background-color: #66CDAA;
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  padding: 1px 1px 1px 1px;
+  padding: 3px 1px 3px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
 .td_menu_gray_box {
-  width: 100px;
+/*  width: 100px;*/
+  width: 10%;
   color: #000000;
   background-color: #E0E0E0;
   border-style: solid;
   border-width: 1px 1px 1px 1px;
-  padding: 1px 1px 1px 1px;
+  padding: 3px 1px 3px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 }
@@ -276,6 +314,16 @@ table.intro td {
   padding: 1px 1px 1px 1px;
   border-style: solid solid solid solid;
 /*  border-color: gray gray gray gray; */
+}
+.td_plain {
+  padding: 1px 5px 1px 5px;
+  color: #000000;
+  background-color: #FFFFFF;
+}
+.td_underline {
+  padding: 1px 5px 1px 5px;
+  color: #000000;
+  background-color: #E0E0E0;
 }
 .td1 {
   width: 1%;
@@ -438,6 +486,9 @@ table.sortable span.sortarrow {
   font-style: normal;
 }
 .show_block {
+  display: block;
+}
+.show_table {
   display: block;
 }
 .show_cell {

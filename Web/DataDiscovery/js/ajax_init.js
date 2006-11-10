@@ -7,10 +7,11 @@ GetDataUpdater.prototype = {
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var r=document.getElementById("results_menu");
-     r.className="show_inline";
+     r.className="show_table";
      var t=document.getElementById("results");
      t.innerHTML=responseHTML;
      sortables_init();
+     underlineLink('Summary');
      if(responseHTML.search("checkbox")) {
         UnSelectAll();
      }
@@ -139,6 +140,12 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxSearch','search');
     ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
     ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
+
+    // new stuff
+    ajaxEngine.registerRequest('ajaxGetDetailsForPrimDataset','getDetailsForPrimDataset');
+    ajaxEngine.registerRequest('ajaxGetDatasetContent','getDatasetContent');
+    ajaxEngine.registerRequest('ajaxGetDatasetsFromApplication','getDatasetsFromApplication');
+
     ajaxEngine.registerAjaxObject('results',getDataUpdater);
 }
 
@@ -150,10 +157,10 @@ function ajaxGetBlocksFromSite() {
   ajaxEngine.sendRequest('ajaxGetBlocksFromSite');
 }
 
-function registerAjaxGetDetailsForPrimDatasetCalls() {
-  ajaxEngine.registerRequest('ajaxGetDetailsForPrimDataset','getDetailsForPrimDataset');
-  ajaxEngine.registerAjaxElement('results');
-}
+//function registerAjaxGetDetailsForPrimDatasetCalls() {
+//  ajaxEngine.registerRequest('ajaxGetDetailsForPrimDataset','getDetailsForPrimDataset');
+//  ajaxEngine.registerAjaxElement('results');
+//}
 function ajaxGetDetailsForPrimDataset(dbsInst,primDataset) {
   var r=document.getElementById("results_menu");
   r.className="show_inline";
@@ -174,11 +181,111 @@ function getSummary() {
   ajaxHistory(action);
 }
 
-function getPrimDatasets() {
+function getPrimDatasets_old() {
   ajaxEngine.sendRequest('getPrimDatasets');
   var action='<a href="javascript:showMenu(\'Datasets\');getPrimDatasets()">Get all primary datasets</a>';
   ajaxHistory(action);
 }
+var DBSInfoUpdater=Class.create();
+DBSInfoUpdater.prototype = {
+   initialize: function(tag) {
+     this.tag=tag;
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var r=document.getElementById("_"+this.tag);
+     r.className="td_menu_lavender_box";
+     var t=document.getElementById(this.tag);
+     t.innerHTML=responseHTML;
+     // additional action can come here
+   }
+}
+function getDbsInfo(dbsInst,dbsArr) {
+  var arr = new Array();
+  arr[0]='dbs_prim';
+  arr[1]='dbs_proc';
+  arr[2]='dbs_apps';
+  for(i=0;i<arr.length;i++) {
+      var id=document.getElementById(arr[i]);
+      id.className="hide";
+  }
+  showResMenu('dbs_prim',arr);
+  showLoadingMessage('dbs_prim');
+  registerAjaxPrimaryDatasetsCalls();
+  registerAjaxProcessedDatasetsCalls();
+  registerAjaxApplicationsCalls();
+  // get short name for dbs instance
+  var shortName=dbsInst.split("/")[0];
+  if(dbsInst.match('fanfani')) {
+    shortName = shortName+'_fanfani';
+  }
+  for(i=0;i<dbsArr.length;i++) {
+      if (dbsArr[i]==shortName) {
+          var id=document.getElementById('dbsInst_'+shortName);
+          id.className="td_right";
+      } else {
+          var id=document.getElementById('dbsInst_'+dbsArr[i]);
+          id.className="show_cell";
+      }
+  }
+  var id=document.getElementById("dbsInst_table");
+  id.className="show_inline";
+  var id=document.getElementById("dbs_info");
+  id.className="show_table";
+  ajaxGetPrimaryDatasets(dbsInst);
+  ajaxGetProcessedDatasets(dbsInst);
+  ajaxGetApplications(dbsInst);
+}
+function ajaxGetPrimaryDatasets(dbsInst) {
+  ajaxEngine.sendRequest('ajaxGetPrimaryDatasets',"dbsInst="+dbsInst);
+  var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetPrimaryDatasets(\''+dbsInst+'\')">Get all primary datasets (\''+dbsInst+'\')</a>';
+  ajaxHistory(action);
+}
+function registerAjaxPrimaryDatasetsCalls() {
+    ajaxEngine.registerRequest('ajaxGetPrimaryDatasets','getPrimaryDatasets');
+    ajaxEngine.registerAjaxElement('dbs_prim');
+}
+function ajaxGetProcessedDatasets(dbsInst) {
+    ajaxEngine.sendRequest('ajaxGetProcessedDatasets',"dbsInst="+dbsInst);
+    var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetProcessedDatasets(\''+dbsInst+'\')">Get all processed datasets (\''+dbsInst+'\')</a>';
+    ajaxHistory(action);
+}
+function registerAjaxProcessedDatasetsCalls() {
+    dbsInfoUpdater = new DBSInfoUpdater("dbs_proc");
+    ajaxEngine.registerRequest('ajaxGetProcessedDatasets','getProcessedDatasets');
+    ajaxEngine.registerAjaxObject('dbs_proc',dbsInfoUpdater);
+}
+function ajaxGetApplications(dbsInst) {
+    ajaxEngine.sendRequest('ajaxGetApplications',"dbsInst="+dbsInst);
+    var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetApplications(\''+dbsInst+'\')">Get all applications (\''+dbsInst+'\')</a>';
+    ajaxHistory(action);
+}
+function registerAjaxApplicationsCalls() {
+    dbsInfoUpdater = new DBSInfoUpdater("dbs_apps");
+    ajaxEngine.registerRequest('ajaxGetApplications','getApplications');
+    ajaxEngine.registerAjaxObject('dbs_apps',dbsInfoUpdater);
+}
+function ajaxGetDatasetContent(dbsInst,dataset) {
+    ajaxEngine.sendRequest('ajaxGetDatasetContent',"dbsInst="+dbsInst,"dataset="+dataset);
+    var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetDatasetContent(\''+dbsInst+'\')">Get dataset content (\''+dbsInst+'\',\''+dataset+'\')</a>';
+    ajaxHistory(action);
+}
+//function registerAjaxDatasetContentCalls() {
+//    ajaxEngine.registerRequest('ajaxGetDatasetContent','getDatasetContent');
+//    ajaxEngine.registerAjaxElement('results');
+//}
+//function registerAjaxGetDatasetsFromApplicationCalls() {
+//  ajaxEngine.registerRequest('ajaxGetDatasetsFromApplication','getDatasetsFromApplication');
+//  ajaxEngine.registerAjaxElement('results');
+//}
+function ajaxGetDatasetsFromApplication(dbsInst,appPath) {
+  var r=document.getElementById("results_menu");
+  r.className="show_inline";
+  var id=document.getElementById("results");
+  id.className="show_cell";
+  ajaxEngine.sendRequest('ajaxGetDatasetsFromApplication',"dbsInst="+dbsInst,"appPath="+appPath);
+}
+
 function getProvenance(id) {
   // in order to replace all occurence of pattern in a string we need to use regular expression
   // see http://www.i2d.com.au/members/~benmann/javascriptreplace.html
@@ -244,7 +351,7 @@ ParentsGraphUpdater.prototype = {
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var r=document.getElementById("_parents");
-     r.className="td_menu_green_box";
+     r.className="td_menu_lavender_box";
      var t=document.getElementById("parents");
      t.innerHTML=responseHTML;
      // additional action can come here
@@ -343,7 +450,7 @@ AppConfigsUpdater.prototype = {
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var r=document.getElementById("_appConfigs");
-     r.className="td_menu_green_box";
+     r.className="td_menu_lavender_box";
      var t=document.getElementById("appConfigs");
      t.innerHTML=responseHTML;
      // additional action can come here

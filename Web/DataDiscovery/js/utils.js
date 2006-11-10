@@ -1,12 +1,15 @@
 // Menu array
-var ids = new Array();
-ids[0]='results';
-ids[1]='parents';
-ids[2]='appConfigs';
-ids[3]='validation';
-ids[4]='parameterSet';
-ids[5]='releaseSpec';
-function showResMenu(id) {
+var _ids = new Array();
+_ids[0]='results';
+_ids[1]='parents';
+_ids[2]='appConfigs';
+_ids[3]='validation';
+_ids[4]='parameterSet';
+_ids[5]='releaseSpec';
+function showResMenu(id,ids) {
+   if(!ids) {
+      ids=_ids;
+   }
    for(var i=0;i<ids.length;i++) {
       if(ids[i]==id) {
         var t=document.getElementById("_"+id);
@@ -21,7 +24,10 @@ function showResMenu(id) {
       }
    }
 }
-function hideResMenu() {
+function hideResMenu(ids) {
+   if(!ids) {
+      ids=_ids;
+   }
    for(var i=0;i<ids.length;i++) {
       var t=document.getLementById("_"+ids[i]);
       t.className="hide";
@@ -141,7 +147,8 @@ function showMenu(menu) {
    menuArr[1]='Search';
    menuArr[2]='Site';
    menuArr[3]='Summary';
-   menuArr[4]='Datasets';
+//   menuArr[4]='Datasets';
+   menuArr[4]='DBSinfo';
    menuArr[5]='History';
    menuArr[6]='Help';
    menuArr[7]='Hide';
@@ -149,6 +156,10 @@ function showMenu(menu) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
            c.className="td_gray_box";
+           if(menuArr[i]=='DBSinfo') {
+              var id=document.getElementById("dbsInst_table");
+              id.className="hide";
+           }
        }
        var t=document.getElementById(menuArr[i]+'Div');
        if (t) {
@@ -165,7 +176,24 @@ function showMenu(menu) {
    }
 //   hideResMenu();
 }
+function underlineLink(tag) {
+  var tagArr = new Array();
+  tagArr[0]="Blocks";
+  tagArr[1]="Summary";
+  tagArr[2]="Both";
+  for(i=0;i<tagArr.length; i++) {
+      var id=document.getElementsByName("td_"+tagArr[i]);
+      for(var j=0;j<id.length;j++) {
+          if(tagArr[i]==tag) {
+             id[j].className="td_underline";
+          } else {
+             id[j].className="td_plain"
+          }
+      }
+  }
+}
 function ShowBlockInfo(tableId){
+  underlineLink("Blocks");
   var elem=document.getElementsByName("blockInfo");
   for(var i=0;i<elem.length;i++) {
       elem[i].className="show_cell";
@@ -186,6 +214,7 @@ function HideBlockInfo(tableId){
   }
 }
 function ShowSumInfo(tableId) {
+  underlineLink("Summary");
   var elem=document.getElementsByName("row_sumInfo");
   for(var i=0;i<elem.length;i++) {
       elem[i].className="show_row";

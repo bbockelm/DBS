@@ -320,6 +320,9 @@ class DBSHelper(DBSLogger):
           ver    = item.get('version')
           exe    = item.get('executable')
           path=formDatasetPath(ver,family,exe)
+          if self.html:
+#             path = """<a href="javascript:showWaitingMessage();registerAjaxGetDatasetsFromApplicationCalls();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
+             path = """<a href="javascript:showWaitingMessage();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
           aList.append(path)
       aList.sort()
       aList.reverse()
@@ -352,11 +355,12 @@ class DBSHelper(DBSLogger):
       for entry in dList:
           name = entry.get('datasetName')
           if self.html:
-             name = """<a href="javascript:showWaitingMessage();registerAjaxGetDetailsForPrimDatasetCalls();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+#             name = """<a href="javascript:showWaitingMessage();registerAjaxGetDetailsForPrimDatasetCalls();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+             name = """<a href="javascript:showWaitingMessage();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
           oList.append(name)
       return oList
       
-  def getProcessedDatasets(self,datasetPath="*",app=1):
+  def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
       """
          DBS data discovery wrapper around dbsCgiApi.listDatasetFromApp/listProcessedDatsets
          First try listDatasetsFromApp, if fail try listProcessedDatasets
@@ -370,13 +374,19 @@ class DBSHelper(DBSLogger):
          dList = self.api.listDatasetsFromApp(datasetPath)
       else:
          dList = self.api.listProcessedDatasets(datasetPath)
+      dList.sort()
       for entry in dList:
           name = entry.get('datasetPathName')
-#          if self.html:
-#             name="""<a href="">%s</a>"""%name
+          if html:
+#             name = """<a href="javascript:showWaitingMessage();registerAjaxDatasetContentCalls();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+             name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
           oList.append(name)
       return oList
   
+  def getDatasetContent(self,dataset):
+      content = self.api.getDatasetContents(dataset)
+      return content
+
   def getDatasetProvenance(self,dataset):
 #      print "search",dataset
       pList=[]
