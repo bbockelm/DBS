@@ -54,12 +54,12 @@ class DBS__FileBlock {
 class DBS__File {
          public:
                    std::string   Checksum 0;
-                   std::string   LogicalFileName 0;
+                   std::string   LogicalFileName 1;
                    std::string   QueryableMetadata 0;
                    int   NumberOfEvents 0;
                    int   FileSize 0;
-                   int   Status 0;
-                   int   FileType 0;
+                   std::string   Status 1;
+                   std::string   FileType 1;
                    int   ValidationStatus 0;
                    DBS__ProcessedDataset* Dataset 0;
                    DBS__FileBlock* Block 0;
