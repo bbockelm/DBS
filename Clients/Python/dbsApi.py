@@ -342,6 +342,7 @@ class DbsApi:
     """
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listFiles', 'path' : path }, 'GET')
+    print data
 
     # Parse the resulting xml output.
     try:
@@ -354,10 +355,10 @@ class DbsApi:
                                        FileSize=int(attrs['size']),
                                        NumberOfEvents=int(attrs['number_of_events']),
                                        Status=str(attrs['status']),
-                                       Block=str(attrs['open_for_writing']),
+                                       Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
-                                       QueryableMetadata=str(attrs['meta_data']) 
+                                       QueryableMetadata=str(attrs['queryable_meta_data']) 
                                        )
 
           if name == 'data_tier':
