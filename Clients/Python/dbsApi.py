@@ -342,7 +342,6 @@ class DbsApi:
     """
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listFiles', 'path' : path }, 'GET')
-    print data
 
     # Parse the resulting xml output.
     try:
