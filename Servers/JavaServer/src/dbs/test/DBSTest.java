@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.10 $"
- $Id: DBSTest.java,v 1.10 2006/11/08 22:50:04 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSTest.java,v 1.11 2006/11/09 23:16:25 afaq Exp $"
  *
  */
 
@@ -59,6 +59,8 @@ public class DBSTest {
 					"<parent path='/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06'/>" +
 					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
 					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2'/>" +
+					"<run run_number='52' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'/>" +
+					"<run run_number='51' number_of_events='500' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'/>" +
 				"</processed-dataset>" +
 				"</dbs>";
 
@@ -132,7 +134,8 @@ public class DBSTest {
 
 		   String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
-				"<run path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' run_number='52' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'>" +
+				//"<run path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' run_number='52' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'>" +
+				"<run run_number='52' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'>" +
 				"</run>" +
 				"</dbs>";
 

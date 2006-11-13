@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.10 $"
- $Id: DBSServlet.java,v 1.10 2006/11/08 22:50:03 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSServlet.java,v 1.11 2006/11/09 23:16:24 afaq Exp $"
 
  */
 package dbs;
@@ -116,7 +116,7 @@ public class DBSServlet extends HttpServlet{
 		} catch (DBSException dbsEx) {
 			setHeader(response, dbsEx.getMessage(), dbsEx.getCode(), dbsEx.getDetail());
 		} catch (SQLException sqlEx) {
-			setHeader(response, "Connection Refused", "402", sqlEx.getMessage());
+			setHeader(response, "Database exception", "402", sqlEx.getMessage());
 		} catch (Exception ex) {
 			setHeader(response, "Execution error", "401", ex.getMessage());
 		} /*catch(org.xml.sax.SAXException saxEx) {

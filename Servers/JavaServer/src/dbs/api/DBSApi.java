@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApi.java,v 1.9 2006/11/08 22:50:03 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApi.java,v 1.10 2006/11/09 23:16:24 afaq Exp $"
  *
 */
 
@@ -87,6 +87,114 @@ public class DBSApi {
 		}
 	}
 
+	public void insertTier(String tierName, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertTier(conn, tierName, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertTierInPD(String path, String tierName, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertTierInPD(conn, path, tierName, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+	
+	public void insertParentInPD(String path, String parentPath, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertParentInPD(conn, path, parentPath, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertAlgoInPD(String path, String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertAlgoInPD(conn, path, parse(inputXml, "algorithm"), dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertRunInPD(String path, String runNumber, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertRunInPD(conn, path, runNumber, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+
+	public void insertTierInFile(String lfn, String tierName, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertTierInFile(conn, lfn, tierName, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertParentInFile(String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertParentInFile(conn, lfn, parentLFN, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertAlgoInFile(String lfn, String inputXml, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertAlgoInFile(conn, lfn, parse(inputXml, "algorithm"), dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
+
+	public void insertLumiInFile(String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			api.insertLumiInFile(conn, lfn, lsNumber, dbsUser);
+			conn.commit();
+		} finally {
+			if(conn != null) conn.close();
+		}
+	}
 
 	public void insertFiles(String inputXml, Hashtable dbsUser) throws Exception {
 		Connection conn = null;
@@ -154,6 +262,7 @@ public class DBSApi {
 					psDS.put("data_tier", new Vector());
 					psDS.put("parent", new Vector());
 					psDS.put("algorithm", new Vector());
+					psDS.put("run", new Vector());
 				} 
 				if (name.equals("data_tier") ) 
 					((Vector)(psDS.get("data_tier"))).add(e.attributes);
@@ -161,6 +270,9 @@ public class DBSApi {
 					((Vector)(psDS.get("parent"))).add(e.attributes);
 				if (name.equals("algorithm") ) 
 					((Vector)(psDS.get("algorithm"))).add(e.attributes);
+				if (name.equals("run") ) 
+					((Vector)(psDS.get("run"))).add(e.attributes);
+
 				//System.out.println("Algorithm hashtable "+ (e.attributes).toString());
 			}
 			//try catch for rollback

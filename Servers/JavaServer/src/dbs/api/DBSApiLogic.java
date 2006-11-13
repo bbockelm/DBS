@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSSql.java,v 1.14 2006/11/09 23:16:25 afaq Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiLogic.java,v 1.16 2006/11/10 18:05:41 afaq Exp $"
  *
  */
 
@@ -306,9 +306,8 @@ public class DBSApiLogic {
 	
 	public void insertPrimaryDataset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
 		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
+		String userID = getUserID(conn, dbsUser); 
 		
 		String ann = get(dataset, "annotation", false);
 		String name = get(dataset, "primary_name", true);
@@ -353,100 +352,54 @@ public class DBSApiLogic {
 	}
 
 	public void insertRun(Connection conn, Hashtable run, Hashtable dbsUser) throws Exception {
-		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
-		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-		
-		String path = get(run, "path");
-		String runNumber = get(run, "run_number", true);
-		String nOfEvents = get(run, "number_of_events", false);
-		String nOfLumiSections = get(run, "number_of_lumi_sections", false);
-		String totalLumi = get(run, "total_luminosity", false);
-		String storeNumber = get(run, "store_number", false);
-		String startOfRun = get(run, "start_of_run", false);
-		String endOfRun = get(run, "end_of_run", false);
-	
-
-		//Get Processed Datatset ID		
-		String procDSID = getProcessedDSID(conn, path);
-		//String runID;
-		//if( (runID = getID(conn, "Runs", "RunNumber", runNumber, false)) == null ) {
 		DBManagement.execute(conn, DBSSql.insertRun(
-							runNumber,
-							nOfEvents,
-							nOfLumiSections,
-							totalLumi,
-							storeNumber,
-							startOfRun,
-							endOfRun,
-							userID));
-		//} else {
-			//Append Warnning message that run eixts
-		//}
-
-		//Insert ProcDSRuns table by fetching run ID that just got inserted. 
-		insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
-				getProcessedDSID(conn, path), 
-				getID(conn, "Runs", "RunNumber", runNumber , true), 
-				userID);
+							get(run, "run_number", true),
+							get(run, "number_of_events", false),
+							get(run, "number_of_lumi_sections", false),
+							get(run, "total_luminosity", false),
+							get(run, "store_number", false),
+							get(run, "start_of_run", false),
+							get(run, "end_of_run", false),
+							getUserID(conn, dbsUser)));
 
 	}
 
+	public void insertTier(Connection conn, String tierName, Hashtable dbsUser) throws Exception {
+		insertName(conn, "DataTier", "Name", tierName , getUserID(conn, dbsUser));
+	}
+
 	public void insertBlock(Connection conn, Hashtable block, Hashtable dbsUser) throws Exception {
-		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
-		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-		
 		String path = get(block, "path");
-		//String size = get(block, "size", false);//This filed should not be used from the user
-		String name = get(block, "name");//FIXME Generate name via GUIDs
-		//String nOfFiles = get(block, "number_of_files", false);// This filed should not be used from the user
+		String name = get(block, "name");
 		String openForWriting = get(block, "open_for_writing", false);
 	
+		String procDSID = getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
 		//Set defaults Values
-		checkPath(path);
 		String[] data = path.split("/");
 		if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
-		//if (isNull(size)) size = "0";
-		//if (isNull(nOfFiles)) nOfFiles = "0";
-
-		//if( getBlockID(conn,  name, false) == null ) {
+		checkBlock(name);
 		DBManagement.execute(conn, DBSSql.insertBlock(
 							"0",// A new block should always have 0 size
 							name,
-							getProcessedDSID(conn, path),
+							procDSID,
 							"0",// A new block should always have 0 files
 							openForWriting,
-							userID));
-		//} else {
-			//Append Warnning message that block eixts
-		//}
+							getUserID(conn, dbsUser)));
 
 		//FIXME Return blockNameback to the user
 
 	}
 
+
 	public void insertApplication(Connection conn, Hashtable app, Hashtable dbsUser) throws Exception {
-		/*for (Enumeration e = app.elements() ; e.hasMoreElements() ;) {
-			checkName((String)e.nextElement());
-		}*/
 		String version = get(app, "app_version", true);
 		String family = get(app, "app_family_name", true);
 		String exe = get(app, "app_executable_name", true);
-		String psHash = get(app, "ps_hash", false);
 		String psName = get(app, "ps_name", true);
-		String psVersion = get(app, "ps_version", false);
-		String psType = get(app, "ps_type", false);
-		String psAnnotation = get(app, "ps_annotation", false);
-		String psContent = get(app, "ps_content", false);
-		String userDN = get(dbsUser, "user_dn", true);
 		
 		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-
+		String userID = getUserID(conn, dbsUser);
 		//Insert the application version if it does not exists
 		insertName(conn, "AppVersion", "Version", version, userID);
 		
@@ -457,7 +410,8 @@ public class DBSApiLogic {
 		insertName(conn, "AppExecutable", "ExecutableName", exe, userID);
 
 		//Insert the ParameterSet if it does not exists
-		insertParameterSet(conn, psHash, psName, psVersion, psType, psAnnotation, psContent, userID);
+		//insertParameterSet(conn, psHash, psName, psVersion, psType, psAnnotation, psContent, userID);
+		insertParameterSet(conn, app, userID);
 		
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
 		DBManagement.execute(conn, DBSSql.insertApplication(getID(conn, "AppExecutable", "ExecutableName", exe, true), 
@@ -469,10 +423,9 @@ public class DBSApiLogic {
 
 	//public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
 	public void insertFiles(Connection conn, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
-		String userDN = get(dbsUser, "user_dn", true);
 		
 		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
+		String userID = getUserID(conn, dbsUser);
 		/*//Check if all the path is in the files are same.
 		if(files.size() > 0) {
 			String path = get((Hashtable)files.get(0), "path");
@@ -592,10 +545,9 @@ public class DBSApiLogic {
 
 	public void insertProcessedDatatset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
-		String userDN = get(dbsUser, "user_dn", true);
 		//Get the User ID from USERDN
-		String userID = getID(conn, "Person", "DistinguishedName", userDN, true);
-		
+		String userID = getUserID(conn, dbsUser);
+
 		String primDSName = get(dataset, "primary_datatset_name", true);
 		String procDSName = get(dataset, "processed_datatset_name", true);
 		String openForWriting = get(dataset, "open_for_writing", false);
@@ -605,6 +557,7 @@ public class DBSApiLogic {
 		Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
 		Vector parentVector = DBSUtil.getVector(dataset,"parent");
 		Vector algoVector = DBSUtil.getVector(dataset,"algorithm");
+		Vector runVector = DBSUtil.getVector(dataset,"run");
 	
 
 		//Set defaults Values
@@ -651,7 +604,7 @@ public class DBSApiLogic {
 					userID);
 		}
 
-		//Insert FileTier table by fetching data tier ID
+		//Insert ProcDSTier table by fetching data tier ID
 		for (int j = 0; j < tierVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)tierVector.get(j);
 			String tierName = get(hashTable, "name", true);
@@ -663,7 +616,7 @@ public class DBSApiLogic {
 					userID);
 		}
 
-		//Insert FileParentage table by fetching parent File ID
+		//Insert DatasetParentage table by fetching parent File ID
 		for (int j = 0; j < parentVector.size(); ++j) {
 			insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
 					procDSID, 
@@ -671,21 +624,97 @@ public class DBSApiLogic {
 					userID);
 		}
 
+		//Insert ProcDSRun table by fetching Run ID
+		for (int j = 0; j < runVector.size(); ++j) {
+			insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
+					procDSID, 
+					getID(conn, "Runs", "RunNumber", get((Hashtable)runVector.get(j), "run_number") , true), 
+					userID);
+		}
+
 	}
 
-	private void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
-		String lsNumber = get(table, "lumi_section_number");
-		String runNumber = get(table, "run_number", true);
-		String startEvNumber = get(table, "start_event_number", false);
-		String endEvNumber = get(table, "end_event_number", false);
-		String lStartTime = get(table, "lumi_start_time", false);
-		String lEndTime = get(table, "lumi_end_time", false);
+	
 
+	public void insertTierInPD(Connection conn, String path, String tierName, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
+				getProcessedDSID(conn, path), 
+				getID(conn, "DataTier", "Name", tierName , true), 
+				getUserID(conn, dbsUser));
+	}
+
+	public void insertParentInPD(Connection conn, String path, String parentPath, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
+					getProcessedDSID(conn, path), 
+					getProcessedDSID(conn, parentPath), 
+					getUserID(conn, dbsUser));
+	}
+
+	public void insertAlgoInPD(Connection conn, String path, Hashtable app, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", 
+					getProcessedDSID(conn, path), 
+					getAlgorithmID(conn, get(app, "app_version"), 
+							get(app, "app_family_name"), 
+							get(app, "app_executable_name"),
+							get(app, "ps_name")), 
+					getUserID(conn, dbsUser));
+	}
+
+	public void insertRunInPD(Connection conn, String path, String runNumber, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
+				getProcessedDSID(conn, path), 
+				getID(conn, "Runs", "RunNumber", runNumber , true), 
+				getUserID(conn, dbsUser));
+	}
+
+	public void insertTierInFile(Connection conn, String lfn, String tierName, Hashtable dbsUser) throws Exception {
+		insertMap(conn,	"FileTier", "Fileid", "DataTier", 
+				getID(conn, "Files", "LogicalFileName", lfn, true), 
+				getID(conn, "DataTier", "Name", tierName , true), 
+				getUserID(conn, dbsUser));
+
+	}
+	
+	public void insertParentInFile(Connection conn, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "FileParentage", "ThisFile", "itsParent", 
+				getID(conn, "Files", "LogicalFileName", lfn, true),
+			 	getID(conn, "Files", "LogicalFileName", parentLFN, true),
+				getUserID(conn, dbsUser));
+	}
+
+	public void insertAlgoInFile(Connection conn, String lfn, Hashtable app, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", 
+				getID(conn, "Files", "LogicalFileName", lfn, true), 
+				getAlgorithmID(conn, get(app, "app_version"), 
+						get(app, "app_family_name"), 
+						get(app, "app_executable_name"),
+						get(app, "ps_name")), 
+				getUserID(conn, dbsUser));
+	}
+
+	public void insertLumiInFile(Connection conn, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
+		insertMap(conn, "FileLumi", "Fileid", "Lumi", 
+				getID(conn, "Files", "LogicalFileName", lfn, true), 
+				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
+				getUserID(conn, dbsUser));
+	}
+
+
+
+
+	public void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
+		String lsNumber = get(table, "lumi_section_number");
 		//Insert a new Lumi Section by feting the run ID 
 		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 			DBManagement.execute(conn, DBSSql.insertLumiSection(lsNumber, 
-									getID(conn, "Runs", "RunNumber", runNumber, true),
-									startEvNumber, endEvNumber, lStartTime, lEndTime, userID));
+									getID(conn, "Runs", "RunNumber", 
+										get(table, "run_number", true), 
+										true),
+									get(table, "start_event_number", false), 
+									get(table, "end_event_number", false), 
+									get(table, "lumi_start_time", false), 
+									get(table, "lumi_end_time", false), 
+									userID));
 		}
 	}
 
@@ -716,9 +745,18 @@ public class DBSApiLogic {
 	}
 
 
-	private void insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws Exception {
-		if( getID(conn, "QueryableParameterSet", "Name", name, false) == null ) {
-			DBManagement.execute(conn, DBSSql.insertParameterSet(hash, name, version, type, annotation, content, userID));
+	//private void insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws Exception {
+	private void insertParameterSet(Connection conn, Hashtable app, String userID) throws Exception {
+		String psName = get(app, "ps_name", true);
+		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
+			DBManagement.execute(conn, DBSSql.insertParameterSet(
+									get(app, "ps_hash", false), 
+									psName, 
+									get(app, "ps_version", false), 
+									get(app, "ps_type", false), 
+									get(app, "ps_annotation", false), 
+									get(app, "ps_content", false), 
+									userID));
 		}
 	}
 
@@ -827,7 +865,13 @@ public class DBSApiLogic {
 		return  rs.getString("id");
 	}
 
+	private String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
+		return (getID(conn, "Person", "DistinguishedName", 
+					get(dbsUser, "user_dn", true), 
+					true));
 	
+	}
+
 	private void checkPath(String path) throws Exception {
 		if(path == null) {
 			throw new DBSException("Bad Data", "300", "Null path. Expected /PRIMARY/TIER/PROCESSED");
