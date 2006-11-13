@@ -5,10 +5,13 @@
 #
 # DBS API class. Interfacing to Server using http/https or local
 #
+
+# system modules
 import os, re, string, xml.sax, xml.sax.handler
 from xml.sax.saxutils import escape
 from cStringIO import StringIO
 
+# DBS specific modules
 from dbsHttpService import DbsHttpService
 
 from dbsException import DbsException
@@ -26,39 +29,17 @@ from dbsDataTier import DbsDataTier
 from dbsAlgorithm import DbsAlgorithm
 
 from dbsParent import DbsParent
+from dbsConfig import DbsConfig
 
-############################################################################
+class DbsApi(DbsConfig):
 
-DBS_HOST_URL="cmssrv17.fnal.gov"
-DBS_PORT=8989
-DBS_SERVLET="/DBS/servlet/DBSServlet"
-
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/aprom/DBS/CGIServer/dbsxml"
-
-# API Version needs to be updated, each time a change is made to API
-# Sever will recive this API version and it might not work 
-# if proper API version is not supplied
-API_VERSION= "v00_00_01"
-
-#############################################################################
-
-class DbsApi:
-
-  def __init__(self, Url=None, Args={}):
+  def __init__(self, Args={}):
     """ Constructor. """
-    #if Url is None:
-    #   Url = DEFAULT_URL
-
-    print "WARNING I have to make use of Url !!!!! ANZAR !!!!!"
-    print "What about DB Instance and Configuration file ????"
-    # API Version needs to be updated, each time a change is made to API
-    # Sever will recive this API version and it might not work 
-    # if proper API version is not supplied
-    self._api_version = API_VERSION
+    DbsConfig.__init__(self,Args)
     #
     # Create the Server proxy
     #
-    self._server = DbsHttpService(DBS_HOST_URL, DBS_PORT, DBS_SERVLET, self._api_version, Args)
+    self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
     #
     # 
 
@@ -66,7 +47,7 @@ class DbsApi:
     """
     Returns the API version of the API
     """
-    return sel._api_version
+    return sel.version()
 
   def _path (self, dataset):
     """

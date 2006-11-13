@@ -10,16 +10,12 @@ import sys
 from dbsApi import DbsApi
 from dbsException import *
 from dbsApiException import *
-
-#DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
-DEFAULT_URL = "http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
-#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+from dbsOptions import DbsOptionParser
 
 try:
-  args = {}
-  if len(sys.argv) == 2: args['instance'] = sys.argv[1]
-  print args
-  api = DbsApi(DEFAULT_URL, args)
+  optManager  = DbsOptionParser()
+  (opts,args) = optManager.getOpt()
+  api = DbsApi(opts.__dict__)
   
   try:
    # List all parameter sets
