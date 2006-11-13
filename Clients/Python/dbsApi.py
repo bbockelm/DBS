@@ -463,8 +463,10 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+
   # ------------------------------------------------------------
-  def createPrimaryDataset(self, dataset):
+
+  def insertPrimaryDataset(self, dataset):
     """
     Create a new primary dataset.  Instantiates a database entity for
     the dataset, and updates input object for the id of the new row.
@@ -473,14 +475,24 @@ class DbsApi(DbsConfig):
     Raises DbsObjectExists if a primary dataset already exists in
     the database, otherwise may raise an DbsApiException.
     """
-    data = self._server._call ({ 'api' : 'createPrimaryDataset',
-		         #'name' : dataset.get('datasetName') , 'instance' : 'MCLocal/Writer'  })
-		         'name' : dataset.get('datasetName') })
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<primary-dataset annotation='aaaa' "
+    xmlinput += "primary_name='"+dataset.get('datasetName')+"' "
+    xmlinput += "start_date='NOV' end_date='DEC' trigger_path_description='anyTD' "
+    xmlinput += "mc_channel_description='MCDesc' mc_production='MCProd' "
+    xmlinput += "mc_decay_chain='DC' other_description='OD' type='PDS'>"
+    xmlinput += "</primary-dataset>"
+    xmlinput += "</dbs>"
+
+    data = self._server._call ({ 'api' : 'insertPrimaryDataset',
+                         'xmlinput' : xmlinput }, 'POST')
     try:
       class Handler (xml.sax.handler.ContentHandler):
-	def startElement(self, name, attrs):
-	  if (name == 'primary-dataset'):
-	    dataset['objectId'] = long(attrs['id'])
+        def startElement(self, name, attrs):
+          if (name == 'primary-dataset'):
+            dataset['objectId'] = long(attrs['id'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsBadResponse(exception=ex)

@@ -7,6 +7,7 @@ from dbsException import DbsException
 from dbsApiException import *
 from dbsExecHandler import DbsExecHandler
 
+
 class DbsHttpService:
 
   """Provides Server connectivity through HTTP"""
@@ -75,15 +76,22 @@ class DbsHttpService:
     """
 
     try:
+
        request_string = self.Applet+'?apiversion='+self.ApiVersion
 
        for key, value in args.items():
+          if key=='xmlinput': 
+              xmlinput = value 
+              continue 
           request_string += '&'+key+'='+value
     
        print request_string  
        conn = httplib.HTTPConnection(self.Host, self.Port)
 
-       result = conn.request(type, request_string)
+       if type == 'POST':
+          result = conn.request(type, request_string, xmlinput)  
+       else:
+          result = conn.request(type, request_string)
        response = conn.getresponse() 
       
        # See if HTTP call succeeded 
