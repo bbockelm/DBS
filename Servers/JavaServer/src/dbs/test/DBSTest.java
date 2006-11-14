@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.13 $"
- $Id: DBSTest.java,v 1.13 2006/11/14 18:17:48 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSTest.java,v 1.14 2006/11/14 19:14:36 sekhri Exp $"
  *
  */
 
@@ -65,7 +65,8 @@ public class DBSTest {
 				"</processed-dataset>" +
 				"</dbs>";
 
-		api.insertProcessedDataset(xmlString, user); 
+		//api.insertProcessedDataset(xmlString, user); 
+		api.insertProcessedDataset(" ", user); 
 
         } 
 
@@ -226,7 +227,7 @@ public class DBSTest {
 		System.out.println("\n\nBlocks");
 		api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
 		System.out.println("\n\nFiles");
-		api.listFiles(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117", null, "*");
+		api.listFiles(out, "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-07", null, "*");
 		//api.listFiles(out, null, "Block_001", "*");
 		//api.listFiles(out, null, null, "*");
                     /*System.out.println("\n\nParameter Sets");
@@ -249,7 +250,7 @@ public class DBSTest {
 		try {
 			DBSTest test= new DBSTest();
 
-			//test.runListAPIs(); 
+			test.runListAPIs(); 
 			//test.insertPrimary();
 			//test.insertProcessedDataset(); 
 			//test.insertFiles(); 
@@ -266,7 +267,7 @@ public class DBSTest {
 			//test.insertParentInFile();
 			//test.insertAlgoInFile();
 			//test.insertLumiInFile();
-			test.insertAlgorithm();
+			//test.insertAlgorithm();
  
 		} catch (DBSException dbsEx) {
 			System.out.println("message: " + dbsEx.getMessage() + " code: " + dbsEx.getCode() + " detail: " + dbsEx.getDetail());
