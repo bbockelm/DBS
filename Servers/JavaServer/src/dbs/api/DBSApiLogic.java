@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiLogic.java,v 1.18 2006/11/14 18:17:47 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiLogic.java,v 1.20 2006/11/14 21:21:44 sekhri Exp $"
  *
  */
 
@@ -175,7 +175,7 @@ public class DBSApiLogic {
 						"' number_of_events='" + get(rs, "number_of_events") +
 						"' number_of_lumi_sections='" + get(rs, "number_of_lumi_sections") +
 						"' total_luminosity='" + get(rs, "total_luminosity") +
-						"' strore_number='" + get(rs, "strore_number") +
+						"' store_number='" + get(rs, "strore_number") +
 						"' start_of_run='" + get(rs, "start_of_run") +
 						"' end_of_run='" + get(rs, "end_of_run") +
 						"' creation_date='" + get(rs, "creation_date") +
@@ -321,7 +321,7 @@ public class DBSApiLogic {
 							"0",//FIXME Should not be in the schema
 							startDate,
 							endDate,
-							getID(conn, "PrimaryDatasetType", "Type", type, false), 
+							getID(conn, "Type", "Type", type, false), 
 							userID));
 		//} else {
 			//Append Warnning message that run eixts
@@ -519,7 +519,7 @@ public class DBSApiLogic {
 	}
 
 
-	public void insertProcessedDatatset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
+	public void insertProcessedDataset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);

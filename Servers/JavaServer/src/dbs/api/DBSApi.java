@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApi.java,v 1.12 2006/11/14 18:17:47 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApi.java,v 1.13 2006/11/14 19:14:36 sekhri Exp $"
  *
 */
 
@@ -280,7 +280,7 @@ public class DBSApi {
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			//try {
-				api.insertProcessedDatatset(conn, psDS, dbsUser);
+				api.insertProcessedDataset(conn, psDS, dbsUser);
 			/*} catch (Exception e) {
 				conn.rollback();
 				throw e;

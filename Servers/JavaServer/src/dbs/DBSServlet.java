@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.12 $"
- $Id: DBSServlet.java,v 1.12 2006/11/13 22:54:50 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSServlet.java,v 1.13 2006/11/14 18:17:47 sekhri Exp $"
 
  */
 package dbs;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Hashtable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +22,19 @@ public class DBSServlet extends HttpServlet{
 	/**
 	 * 
 	 */
+
+         //We must have a better way of responding in XML    ANZAR
+         //following is interim solution
+         private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
+         private static String XML_FOOTER = "</dbs>\n";
+
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+                //Another interim solution no user DN so make one up, 
+                //will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
+                Hashtable userDN = new Hashtable();
+                userDN.put("user_dn", "ANZARDN");
+
 		System.out.println("DN of the user is " + request.getAttribute("org.globus.gsi.authorized.user.dn"));
 
 		response.setContentType("text/xml");
@@ -102,9 +115,35 @@ public class DBSServlet extends HttpServlet{
 							request.getParameter("blockName"), 
 							request.getParameter("patternLFN"));
 			}
+
                         else if (apiParam.equals("insertPrimaryDataset")) {
-				//Make a hastable of the user
-                                api.insertPrimaryDataset(request.getParameter("xmlinput"), null);
+                                //Make a hastable of the user
+                                //System.out.println(request.getParameter("xmlinput"));
+                                api.insertPrimaryDataset(request.getParameter("xmlinput"), userDN);
+                                //api.insertPrimaryDataset(request.getReader().readLine(), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+
+                        }
+
+                        else if (apiParam.equals("insertAlgorithm")) {
+                                //Make a hastable of the user
+                                api.insertAlgorithm(request.getParameter("xmlinput"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+                        }
+
+                        else if (apiParam.equals("insertProcessedDataset")) {
+                                //Make a hastable of the user
+                                api.insertProcessedDataset(request.getParameter("xmlinput"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
                         }
 
 			else {
