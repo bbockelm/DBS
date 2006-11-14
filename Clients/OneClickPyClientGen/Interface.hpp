@@ -37,7 +37,8 @@ class DBS__ProcessedDataset {
                    std::string OpenForWriting 0;
                    DBS__PrimaryDataset* PrimaryDataset 1;
                    std::vector<DBS__Algorithm*> AlgoList 0;
-                   std::vector<DBS__DataTier*> tierList 0;
+                   std::vector<DBS__DataTier*> TierList 0;
+                   std::vector<DBS__ProcessedDataset*> ParentList 0;
 };
 
 class DBS__FileBlock {

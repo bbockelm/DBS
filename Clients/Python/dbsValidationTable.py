@@ -48,7 +48,8 @@ ValidationTable = {
          "OpenForWriting" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "PrimaryDataset" : { "Comment" : "Probably a required variable", "Validator" : isDictType },
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
-         "tierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "ParentList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
           },
 "DbsFileBlock" : {
          "Name" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },

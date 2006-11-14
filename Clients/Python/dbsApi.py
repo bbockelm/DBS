@@ -492,13 +492,15 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if (name == 'primary-dataset'):
+            #This is just useless now 
             dataset['objectId'] = long(attrs['id'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def createProcessing(self, processing):
+  def insertAlgorithm(self, algorithm):
+
     """
     Create a new processing.  Instantiates a database entity for the
     processing, and updates input object for the id of the new row.
@@ -513,71 +515,39 @@ class DbsApi(DbsConfig):
     may raise an DbsApiException.
     """
     # Prepare XML description of the input
-    appc = processing.get('applicationConfig')
-    app = appc.get('application')
-    pname = ""
-    if processing.get('parent', None) is not None:
-      pname = processing.get('parent').get('processingName')
-    input = "<dbs><processing name='%s' primary='%s' parent='%s'>" % (
-      escape (processing.get('processingName')),
-      escape (processing.get('primaryDataset').get('datasetName')),
-      escape (pname))
-    input += "<application executable='%s' version='%s' family='%s'/>" % (
-      escape (app.get('executable')), escape (app.get('version')), escape (app.get('family')))
-    input += "<parameter-set hash='%s' content='%s'/>" % (
-      escape (appc.get('parameterSet').get('hash')), escape (appc.get('parameterSet').get('content')))
-    input += "</processing></dbs>"
 
-    # Call the method and fill in object id
-    data = self._server._call ({ 'api' : 'createProcessing', 'xmlinput' : input })
-    #data = self._server._call ({ 'api' : 'createProcessing', 'xmlinput' : input , 'instance' : 'MCLocal/Writer' })
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
+    xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
+    xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
+    pset = algorithm.get('ParameterSetID')
+
+    if pset != None: 
+       xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
+       xmlinput += " ps_name='"+pset.get('Name', "")+"'"
+       xmlinput += " ps_version='"+pset.get('Version', "")+"'"
+       xmlinput += " ps_type='"+pset.get('Type', "")+"'"
+       xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
+       xmlinput += " ps_content='"+pset.get('Content', "")+"'"
+    xmlinput += "/>"
+    xmlinput += "</dbs>"
+
+    data = self._server._call ({ 'api' : 'insertAlgorithm',
+                         'xmlinput' : xmlinput }, 'POST')
     try:
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
-	  if (name == 'processing'):
+	  if (name == 'algorithm'):
+            #This is useless for now
 	    processing['objectId'] = long(attrs['id'])
       xml.sax.parseString (data, Handler())
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def createFileBlock(self, block):
-    """
-    Create a new file block.  Instantiates a database entity for the
-    block, and updates input object for the id of the new row.  The
-    input object should be a DbsFileBlock duly filled in, referring
-    to a DbsProcessing.  On successful return the block's id and name
-    will have been updated; the block will be open.
 
-    Raises DbsNoObject if the processing does not exist in the
-    database, otherwise may raise an DbsApiException.
-    """
-    pname = "/%s/%s" % \
-      (block.get('processing').get('primaryDataset').get('datasetName'),
-       block.get('processing').get('processingName'))
-    if  "blockName" in block.keys():
-       data = self._server._call ({ 'api' : 'createFileBlock', 'processing' : pname , 'blockName' : block['blockName'] })
-    else :
-       data = self._server._call ({ 'api' : 'createFileBlock', 'processing' : pname })
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-	def startElement (self, name, attrs):
-	  if (name == 'block'):
-	    block['objectId'] = long(attrs['id'])
-	    block['blockName'] = str(attrs['name'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
- 
-  def closeFileBlock(self, block):
-    """
-    Closes a file block.  
-    """
-    input = "<dbs><block name='%s'/></dbs>" % block.get('blockName').__str__()
-    data = self._server._call ({ 'api' : 'closeFileBlock', 'xmlinput' : input })
-    
-  # ------------------------------------------------------------
-  def createProcessedDataset(self, dataset):
+  def insertProcessedDataset(self, dataset):
     """
     Create a new processed dataset.  Instantiates a database entity
     for the dataset, and updates input object for the id of the new
@@ -591,11 +561,52 @@ class DbsApi(DbsConfig):
     not exist in the database; otherwise may raise an
     DbsApiException.
     """
-    # Call the method and fill in object id
-    data = self._server._call ({ 'api' : 'createProcessedDataset',
-		    #'path' : self._path(dataset), 'instance' : 'MCLocal/Writer'})
-		    'path' : self._path(dataset)})
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>" 
+    xmlinput += "<dbs>" 
+    xmlinput += "<processed-dataset "
+    primary = dataset.get('PrimaryDataset')
+    if primary == None: 
+       raise DbsApiException(ErrorMsg="Serious Error Primary Dataset not specified")
+    xmlinput += " primary_datatset_name='"+primary.get('Name', "")+"'" 
+    xmlinput += " processed_datatset_name='"+dataset.get('Name', "")+"'"
+    xmlinput += " open_for_writing='y'"
+    xmlinput += " physics_group_name='"+dataset.get('PhysicsGroup', "")+"'"
+    xmlinput += " physics_group_convener='"+dataset.get('Convener', "")+"'"
+    xmlinput += " status='"+dataset.get('Status', "")+"'>" 
+    
+    for tier in dataset.get('TierList',[]):
+        xmlinput += "<data_tier name='"+tier+"'/>"
+ 
+    # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
+    for parentPath in dataset.get('ParentList',[]):
+        xmlinput += "<parent path='"+parentPath+"'/>"
+
+    for algorithm in dataset.get('AlgoList',[]):
+        xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
+        xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
+        xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
+        pset = algorithm.get('ParameterSetID')
+        # Server expects a ps_name, it should expect a ps_hash instead 
+        if pset != None:
+           xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
+           xmlinput += " ps_name='"+pset.get('Name', "")+"'"
+           xmlinput += " ps_version='"+pset.get('Version', "")+"'"
+           xmlinput += " ps_type='"+pset.get('Type', "")+"'"
+           xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
+           xmlinput += " ps_content='"+pset.get('Content', "")+"'"
+           xmlinput += "/>"
+    xmlinput += "</processed-dataset>"
+    xmlinput += "</dbs>"
+
+    print xmlinput
+
+    # Call the method
+    data = self._server._call ({ 'api' : 'insertProcessedDataset',
+                         'xmlinput' : xmlinput }, 'POST')
+
     try:
+      # Following code is useless so far !!!!!!!!!
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement (self, name, attrs):
 	  if (name == 'processed-dataset'):

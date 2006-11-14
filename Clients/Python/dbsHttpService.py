@@ -80,20 +80,28 @@ class DbsHttpService:
        request_string = self.Applet+'?apiversion='+self.ApiVersion
 
        for key, value in args.items():
-          if key=='xmlinput': 
-              xmlinput = value 
-              continue 
-          request_string += '&'+key+'='+value
-    
+          if key == 'api':
+             request_string += '&'+key+'='+value
+          else: 
+             if type != 'POST':
+               request_string += '&'+key+'='+value 
+             continue 
+           
        print request_string  
+
+       params = urllib.urlencode(args)
+       headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
+
        conn = httplib.HTTPConnection(self.Host, self.Port)
 
        if type == 'POST':
-          result = conn.request(type, request_string, xmlinput)  
+          result = conn.request(type, request_string, params, headers)  
+          #result = conn.request(type, request_string, xmlinput)  
        else:
           result = conn.request(type, request_string)
+
        response = conn.getresponse() 
-      
+       
        # See if HTTP call succeeded 
        if int(response.status) != 200:
           raise DbsToolError (args = response.reason)
