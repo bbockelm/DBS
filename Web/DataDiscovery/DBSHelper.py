@@ -30,7 +30,7 @@ class DBSHelper(DBSLogger):
   """
       DBSHelper class
   """
-  def __init__(self,dbsInst=DBSGLOBAL,verbose=0,html=0):
+  def __init__(self,dbsInst=DBSGLOBAL,verbose=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -45,7 +45,6 @@ class DBSHelper(DBSLogger):
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
       self.verbose     = verbose
-      self.html        = html
       self.datasetPath = "*"# default path to entire content of DBS
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
@@ -54,8 +53,6 @@ class DBSHelper(DBSLogger):
          self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
       except:
          print "WARNING: some of the functionality will be disable due to missing authentication"
-         if self.verbose:
-            printExcept()
          pass
       self.api         = "" # dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
       self.dbsApi      = {} #  {'dbsInst': dbsCgiApi.DbsCgiApi(url,dbsInst) }
@@ -81,11 +78,6 @@ class DBSHelper(DBSLogger):
          @rtype : dictionary
          @return: { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
       """
-      if userMode:
-         fileName='dbsDict.global.tmp'
-      else:
-         fileName='dbsDict.all.tmp'
-      file=open(fileName,'w')
       # if we're in user mode, we only know about DBSGLOBAL
       # if we're in expert mode, load all DBS instances
       init=time.time()
@@ -97,12 +89,10 @@ class DBSHelper(DBSLogger):
          dbsList.remove(DBSGLOBAL)
          dbsList=[DBSGLOBAL]+dbsList
       s = "\n"
-      s+= "{ menuList: [ "
+      s+= "{ menuList: ["
       for dbs in dbsList:
           s+='\"%s\",'%dbs
       s=s[:-1]+"],\n"
-      file.write(s)
-      s=""
       countIns=0
       for dbs in dbsList:
           if not countIns:
@@ -115,12 +105,10 @@ class DBSHelper(DBSLogger):
           appList = appDict.keys()
           appList.sort()
           appList.reverse()
-          s+= "{ menuList: [ "
+          s+= "{ menuList: ["
           for app in appList:
               s+='\"%s\",'%app
           s=s[:-1]+"],\n"
-          file.write(s)
-          s=""
           countApp=0
           for app in appList:
               if not countApp:
@@ -131,15 +119,13 @@ class DBSHelper(DBSLogger):
               pList = appDict[app]
               pList.sort()
               pList.reverse()
-              s+= "{ menuList: [ "
+              s+= "{ menuList: ["
               oldPrimD=""
               for primD,tier,proc in pList:
                   if oldPrimD!=primD:
                      s+='\"%s\",'%primD
                      oldPrimD=primD
               s=s[:-1]+"],\n"
-              file.write(s)
-              s=""
               count = 0
               oldPrimD = ""
               for primD,tier,proc in pList:
@@ -154,17 +140,10 @@ class DBSHelper(DBSLogger):
                   count+=1
                   s+="\"%s\","%tier
               s=s[:-1]+"], nextObj: null }}}\n"
-              file.write(s)
-              s=""
           s+="}\n}\n"
-          file.write(s)
-          s=""
       s+="}\n}\n"
-      file.write(s)
-      file.close()
       self.writeLog("initJSDict time: %s"%(time.time()-init))
-      return
-#      return s
+      return s
 
   def initJSDict_v1(self,userMode=True):
       """
@@ -269,8 +248,7 @@ class DBSHelper(DBSLogger):
          dlsType ="DLS_TYPE_LFC"
       if (time.time()-self.voms_timer)>12*60*60: # more then 12 hours
          self.voms_timer=time.time()
-#         res = popen2.Popen4("voms-proxy-init -voms cms -q")
-         res = popen2.Popen4("cat $HOME/.globus/pp.txt | grid-proxy-init -pwstdin -q")
+         res = popen2.Popen4("voms-proxy-init -voms cms -q")
          res.wait()
          result=res.fromchild.read()
          if result:
@@ -320,9 +298,6 @@ class DBSHelper(DBSLogger):
           ver    = item.get('version')
           exe    = item.get('executable')
           path=formDatasetPath(ver,family,exe)
-          if self.html:
-#             path = """<a href="javascript:showWaitingMessage();registerAjaxGetDatasetsFromApplicationCalls();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
-             path = """<a href="javascript:showWaitingMessage();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
           aList.append(path)
       aList.sort()
       aList.reverse()
@@ -353,14 +328,10 @@ class DBSHelper(DBSLogger):
       oList = []
       dList = self.api.listPrimaryDatasets(datasetPath)
       for entry in dList:
-          name = entry.get('datasetName')
-          if self.html:
-#             name = """<a href="javascript:showWaitingMessage();registerAjaxGetDetailsForPrimDatasetCalls();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-             name = """<a href="javascript:showWaitingMessage();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-          oList.append(name)
+          oList.append(entry.get('datasetName'))
       return oList
       
-  def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
+  def getProcessedDatasets(self,datasetPath="*"):
       """
          DBS data discovery wrapper around dbsCgiApi.listDatasetFromApp/listProcessedDatsets
          First try listDatasetsFromApp, if fail try listProcessedDatasets
@@ -370,40 +341,15 @@ class DBSHelper(DBSLogger):
          @return: a list of processed datasets in the following form, [datasetName]
       """
       oList = []
-      if app:
+      try:
          dList = self.api.listDatasetsFromApp(datasetPath)
-      else:
+      except:
          dList = self.api.listProcessedDatasets(datasetPath)
-      dList.sort()
+         pass
       for entry in dList:
-          name = entry.get('datasetPathName')
-          if html:
-#             name = """<a href="javascript:showWaitingMessage();registerAjaxDatasetContentCalls();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-             name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-          oList.append(name)
+          oList.append(entry.get('datasetName'))
       return oList
   
-  def getDatasetContent(self,dataset):
-      content = self.api.getDatasetContents(dataset)
-      return content
-
-  def getDatasetProvenance(self,dataset):
-#      print "search",dataset
-      pList=[]
-      for parent in self.api.getDatasetProvenance(dataset):
-          p=parent['parent']['datasetPathName']
-#          print "child",p
-          if not p: break
-          pList.append(p)
-          pList+=self.getDatasetProvenance(p)
-#          while 1:
-#             print "in while search",p
-#             pp=self.getDatasetProvenance(p)
-#             if not pp: break
-#             print "in while child",pp
-#             pList+=pp
-      return pList
-
   def exeQuery(self,q):
       """
          Set DBS instance and
@@ -455,8 +401,7 @@ class DBSHelper(DBSLogger):
          pass
       return res
 
-  def getLFNs(self,dbsInst,blockName,dataset):
-      self.setDBSDLS(dbsInst)
+  def getLFNs(self,blockName,dataset):
       res = self.api.getLFNs(blockName,dataset)
       lfnList = []
       for item in res:
@@ -489,6 +434,8 @@ class DBSHelper(DBSLogger):
          on ft.id = f.type
          where b.guid= :bid
             
+         @type  dataset: string 
+         @param dataset: dataset name 
          @type blockName: string
          @param blockName: name of the file block
          @rtype : list 
@@ -662,7 +609,7 @@ class DBSHelper(DBSLogger):
       """
       return self.dbsDBs.getTable(tableName,aliasName)
       
-  def search(self,searchString,pList=[],rDict={}):
+  def search(self,pList=[],rDict={}):
       """
          Retrieves a summary information from DB. It makes join over
          primary Dataset, data tier, application. The idea is simlar to iTunes.
@@ -685,9 +632,6 @@ class DBSHelper(DBSLogger):
          @rtype: list
          @return: a list of [(primD,tier,App version, App family, App exe)]
       """
-      if not validator(searchString):
-         msg = "Wrong expression '%s'"%searchString
-         raise msg
       tprd = self.alias('t_processed_dataset','tprd')
       tpm  = self.alias('t_primary_dataset','tpm')
       tpn  = self.alias('t_processing_name','tpn')
@@ -717,28 +661,22 @@ class DBSHelper(DBSLogger):
       # loop over results and find a match to list of keywords from pList.
       for iTup in result:
           tup = iTup.__dict__['_RowProxy__row'] # get real tuple, rather then instance from SQL object
-          searchList=toLower(tupleToList(tup))
-#          print searchList,searchString,constructExpression(searchString,'searchList')
-          if eval(constructExpression(searchString,'searchList')):
-             oList.append((self.dbsInstance,)+tup)
-#
-#
-#          for i in tup:
-#              found=0
-#              for p in pList:
-#                 # skip keywords which represent conditions, e.g. dbs:MCLocal_1/Writer
-#                 if string.find(p,":")>-1: continue
-#                 if  type(i) is types.StringType:
-#                     if string.find(string.lower(i),string.lower(p))>-1:
-#                        oList.append((self.dbsInstance,)+tup)
-#                        found=1
-#                        break
-#                 if  type(i) is types.IntType:
-#                     if pList.count(i):
-#                        oList.append((self.dbsInstance,)+tup)
-#                        found=1
-#                        break
-#              if found: break
+          for i in tup:
+              found=0
+              for p in pList:
+                 # skip keywords which represent conditions, e.g. dbs:MCLocal_1/Writer
+                 if string.find(p,":")>-1: continue
+                 if  type(i) is types.StringType:
+                     if string.find(string.lower(i),string.lower(p))>-1:
+                        oList.append((self.dbsInstance,)+tup)
+                        found=1
+                        break
+                 if  type(i) is types.IntType:
+                     if pList.count(i):
+                        oList.append((self.dbsInstance,)+tup)
+                        found=1
+                        break
+              if found: break
       return oList
 
   def getBlockInfo_orig(self,dataset):
@@ -828,8 +766,8 @@ class DBSHelper(DBSLogger):
           bDict[bName]=(nEvt,bStatus,nFiles)
       return bDict
 
-  def getBlockInfo(self,dataset,app):
-      blocks = self.api.listBlocks(dataset,app,"yes")
+  def getBlockInfo(self,dataset):
+      blocks = self.api.listBlocks(dataset,"yes")
       return blocks
   
   def getDBSSummary(self,dbsInst):
@@ -851,7 +789,7 @@ class DBSHelper(DBSLogger):
       sel = sqlalchemy.select([sqlalchemy.func.count(tf.c.logical_name)])
       sumDict['Number of files'] = self.getSQLAlchemyResult(sel).fetchone()[0]
       sel = sqlalchemy.select([sqlalchemy.func.sum(tf.c.filesize)])
-      sumDict['Total file size'] = sizeFormat(self.getSQLAlchemyResult(sel).fetchone()[0])
+      sumDict['Total file size'] = fmt3(self.getSQLAlchemyResult(sel).fetchone()[0])
       return sumDict
 
   def WhatExists(self,datasetPath):
@@ -875,7 +813,7 @@ class DBSHelper(DBSLogger):
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
-  def getData(self,dataset,app,site="All"):
+  def getData(self,dataset,site="All"):
       """
          Returns 
          blockDict={'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}
@@ -891,20 +829,12 @@ class DBSHelper(DBSLogger):
          {'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}, 
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
+#      blockInfoDict = self.getBlockInfo(dataset)
+      blockInfoDict = self.api.listBlocks(dataset,"yes")
       locDict  = {}
       nEvts    = 0
       totFiles = 0
       totSize  = 0
-      # IMPORTANT: I think we need to replace listBlocks(dataset) to listBlocksFromApp(app)
-#      t1 = time.time()
-      blockInfoDict = self.api.listBlocks(dataset,app,"yes")
-#      t2 = time.time()
-#      print "DBS time:",(t2-t1)
-
-#      for key in blockInfoDict.keys():
-#          if not blockInfoDict[key][0]:
-#             print "######",key,blockInfoDict[key]
-#             return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
       if string.lower(site)=="all": site="*"
       for blockName in blockInfoDict.keys():
           evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
@@ -917,10 +847,7 @@ class DBSHelper(DBSLogger):
           # query DLS
           hostList=[]
           try:
-#              t3 = time.time()
               dlsList = self.dlsApi.getLocations(blockName)
-#              t4 = time.time()
-#              print "DLS time:",(t4-t3)
               for entry in dlsList:
                   for loc in entry.locations:
                       dlsHost = str(loc.host)
@@ -936,7 +863,8 @@ class DBSHelper(DBSLogger):
               pass
           # end of DLS query
           blockInfoDict[blockName]+=hostList
-      return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
+#          addToDict(blockDict,blockName,(hostList,evts,bStatus,nFiles,fmt3(bBytes)))
+      return locDict,blockInfoDict,nEvts,totFiles,fmt3(totSize)
 
   def getBlocksFromSite(self,site):
       """
@@ -1013,20 +941,17 @@ if __name__ == "__main__":
        verbose=1
 
     helper = DBSHelper(dbsInst,verbose)
-    
     if opts.dict:
        if string.lower(opts.dict)=="global":
-          helper.initJSDict(True)
+          print helper.initJSDict(True)
        else:
-          helper.initJSDict(False)
+          print helper.initJSDict(False)
        sys.exit(0)
 
     if opts.search:
        pattern=string.split(opts.search,",")
        print "Search for",pattern
-       oList = helper.search(opts.search)
-#       pattern=string.split(opts.search,",")
-#       oList = helper.search(pattern)
+       oList = helper.search(pattern)
        for item in oList:
            print item
        sys.exit(0)
@@ -1073,7 +998,7 @@ if __name__ == "__main__":
         empty,prim,tier,app = string.split(dataset,"/")
         if primaryDataset!="*" and prim!=primaryDataset: continue
         if dataTier!="*" and tier!=dataTier: continue
-        locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset,appPath)
+        locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset)
         evtLength = len(str(totEvt))
         # TMP: redo the following part, since now I got blockDict
         # parse blockDict={'blockName': (hostList,nEvt,blockStatus,nFiles,blockSize)}
@@ -1109,10 +1034,6 @@ if __name__ == "__main__":
         if  not opts.showProcD:
             for bName in blockDict.keys():
                 count=0
-                print "blockDict",bName,blockDict[bName]
-                if not blockDict[bName][0]:
-                   print "contains 0 events, 0 files."
-                   continue
                 evt,bStatus,nFiles,bSize,site = blockDict[bName]
                 if not count:
                    print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName

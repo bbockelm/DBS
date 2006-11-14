@@ -20,9 +20,6 @@ from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 DLS_INFO='dls.all'
 
 def getListOfSites(dbsInst='all'):
-    """
-       Generats list of DLS sites out given DBS instance and DLS_INFO (dls.all) file.
-    """
     fName = DLS_INFO
     f=open(fName,'r')
     sList=[]
@@ -43,25 +40,7 @@ def getListOfSites(dbsInst='all'):
     sList.sort()
     return sList
 
-def colorSizeHTMLFormat(i):
-    n = sizeFormat(i)
-    # PB are in red
-    if string.find(n,'PB')!=-1:
-       return string.replace(n,'PB','<span class="box_red">PB</span>')
-    # TB are in blue
-    elif string.find(n,'TB')!=-1:
-       return string.replace(n,'TB','<span class="box_blue">TB</span>')
-    # GB are in block
-    # MB are in green
-    elif string.find(n,'MB')!=-1:
-       return string.replace(n,'MB','<span class="box_green">MB</span>')
-    else:
-       return n
-    
-def sizeFormat(i):
-    """
-       Format file size utility, it converts file size into KB, MB, GB, TB, PB units
-    """
+def fmt3(i):
     num=long(i)
     for x in ['','KB','MB','GB','TB','PB']:
         if num<1024.:
@@ -198,48 +177,6 @@ def printExcept(msg=""):
        print msg
     sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
 
-def constructExpression(s,listName):
-    """
-       For given string 's' and list name construct the expression statement.
-       For instance,
-       word1 or (word2 and word3)
-       converted to
-       listName.count(word1) or (listName.count(word2) and listName.count(word3))
-       Such expression statement is further used by eval in search method of DBSHelper. 
-    """
-    specialSymbols=["(",")","and","or","not"]
-    oList = []
-    ss = string.lower(s)
-    for elem in specialSymbols:
-        item = " %s "%elem
-        ss=ss.replace(elem,item)
-#    print "looking for",ss
-    for elem in string.split(ss):
-        if specialSymbols.count(elem):
-           oList.append(elem)
-        else:
-#           oList.append("%s.count('%s')"%(listName,elem))
-           oList.append("[s for s in %s if s.find('%s')!=-1]"%(listName,elem))
-    result = ' '.join(oList)
-#    print "construct",result
-    return result
-
-def validator(s):
-    """ 
-        Evaluate given string 's' and validate if it has correct number of "(" and ")". 
-        For instance it check if expression
-        (word1 or (test1 and test2) and (w1 or w2) )
-        has correct number of open and cloased brackets.
-    """
-    if  s.count("(")!=s.count(")"):
-        return False
-    open=0
-    for char in s:
-        if char=="(" or char==")":
-           if char=="(": open+=1
-           if char==")": open-=1
-    return (not open)
-
 class DbsPatternError(DbsApiException):
   """
      DBS pattern error handler class
@@ -324,24 +261,6 @@ def formattingDictPrint(iDict):
     s+="\n}\n"
     return s
     
-def toLower(iList):
-    oList=[]
-    for i in iList:
-        if  type(i) is not types.NoneType:
-            try:
-               oList.append(string.lower(str(i)))
-            except:
-               print iList
-               raise "fail at lowering '%s'"%i
-    return oList
-
-def tupleToList(x):
-    """fully copies trees of tuples to a tree of lists.
-       deep_list( (1,2,(3,4)) ) returns [1,2,[3,4]]"""
-    if type(x)!=type( () ):
-        return x
-    return map(tupleToList,x)
-
 def formattingListPrint(iList,n=3):
     """
        print list in formated way, e.g.
