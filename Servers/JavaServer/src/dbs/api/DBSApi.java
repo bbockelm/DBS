@@ -1,6 +1,6 @@
 /**
- $Revision: 1.11 $"
- $Id: DBSApi.java,v 1.11 2006/11/13 22:54:51 sekhri Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApi.java,v 1.12 2006/11/14 18:17:47 sekhri Exp $"
  *
 */
 
@@ -52,12 +52,12 @@ public class DBSApi {
 		}
         }
 	
-	public void insertApplication(String inputXml, Hashtable dbsUser) throws Exception {
+	public void insertAlgorithm(String inputXml, Hashtable dbsUser) throws Exception {
 		Connection conn = null;
 		try {
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			api.insertApplication(conn, parse(inputXml, "algorithm") , dbsUser);
+			api.insertAlgorithm(conn, parse(inputXml, "algorithm") , dbsUser);
 			conn.commit();
 		} finally {
 			if(conn != null) conn.close();

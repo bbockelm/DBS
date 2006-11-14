@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.12 $"
- $Id: DBSTest.java,v 1.12 2006/11/13 22:54:51 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSTest.java,v 1.13 2006/11/14 18:17:48 sekhri Exp $"
  *
  */
 
@@ -140,8 +140,8 @@ public class DBSTest {
 				"</run>" +
 				"</dbs>";
 
-		//api.insertRun(xmlString, user);
-		api.insertRun(null, user);
+		api.insertRun(xmlString, user);
+		//api.insertRun(null, user);
         }
 
 /*        public void insertLumiSection() throws Exception {
@@ -165,6 +165,48 @@ public class DBSTest {
 
 	public void insertTier() throws Exception {
 		api.insertTier("MY-TIER", user);
+        }
+	public void insertParentInPD() throws Exception {
+		api.insertParentInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06",  user);
+        }
+	public void insertRunInPD() throws Exception {
+		api.insertRunInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "52",  user);
+        }
+	public void insertTierInPD() throws Exception {
+		api.insertTierInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "MY-TIER",  user);
+        }
+	public void insertAlgoInPD() throws Exception {
+		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
+				"</dbs>";
+
+		api.insertAlgoInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", xmlString,  user);
+        }
+
+	public void insertTierInFile() throws Exception {
+		api.insertTierInFile("LFN40", "MY-TIER",  user);
+        }
+	public void insertParentInFile() throws Exception {
+		api.insertParentInFile("LFN40", "LFN39",  user);
+        }
+	public void insertLumiInFile() throws Exception {
+		api.insertLumiInFile("LFN40", "1028",  user);
+        }
+	public void insertAlgoInFile() throws Exception {
+		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
+				"</dbs>";
+		api.insertAlgoInFile("LFN40", xmlString,  user);
+        }
+
+	public void insertAlgorithm() throws Exception {
+		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps1_name2' ps_hash='DUMMY_HASH'/>" +
+				"</dbs>";
+		api.insertAlgorithm(xmlString,  user);
         }
 
         public void runListAPIs() throws Exception {
@@ -213,9 +255,18 @@ public class DBSTest {
 			//test.insertFiles(); 
 			//test.insertBlock();
 			//test.insertLumiSection();
-			test.insertRun();
+			//test.insertRun();
 			//test.closeBlock();
 			//test.insertTier();
+			//test.insertTierInPD();
+			//test.insertParentInPD();
+			//test.insertAlgoInPD();
+			//test.insertRunInPD();
+			//test.insertTierInFile();
+			//test.insertParentInFile();
+			//test.insertAlgoInFile();
+			//test.insertLumiInFile();
+			test.insertAlgorithm();
  
 		} catch (DBSException dbsEx) {
 			System.out.println("message: " + dbsEx.getMessage() + " code: " + dbsEx.getCode() + " detail: " + dbsEx.getDetail());

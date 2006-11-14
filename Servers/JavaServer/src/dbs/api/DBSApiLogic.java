@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApiLogic.java,v 1.17 2006/11/13 22:54:51 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApiLogic.java,v 1.18 2006/11/14 18:17:47 sekhri Exp $"
  *
  */
 
@@ -72,8 +72,6 @@ public class DBSApiLogic {
 
 	public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
 
-
-
 		String patternPrim 	= getPattern(pattern, 1, "primary_datatset_name_pattern");
                 String patternDT       = getPattern(pattern, 2, "data_tier_name_pattern");
                 String patternProc     = getPattern(pattern, 3, "processed_datatset_name_pattern");
@@ -81,9 +79,6 @@ public class DBSApiLogic {
                 String patternFam      = getPattern(pattern, 5, "app_family_name");
                 String patternExe      = getPattern(pattern, 6, "app_executable_name");
                 String patternPS       = getPattern(pattern, 7, "parameterset_name");
-
-		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
-		out.write(XML_HEADER);
 		String prevDS = "";
 		String prevTier = "";
 		String prevExe = "";
@@ -92,7 +87,10 @@ public class DBSApiLogic {
 		String prevPS = "";
 		Vector dtVec = null;
 		boolean first = true;
-                
+
+		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
+		out.write(XML_HEADER);
+		                
 		while(rs.next()) {
 			//String path = "/" + rs.getString("primary_name") + "/" + rs.getString("data_tier") + "/" + rs.getString("processed_name");
 			String procDSID = rs.getString("id");
@@ -392,11 +390,11 @@ public class DBSApiLogic {
 	}
 
 
-	public void insertApplication(Connection conn, Hashtable app, Hashtable dbsUser) throws Exception {
-		String version = get(app, "app_version", true);
-		String family = get(app, "app_family_name", true);
-		String exe = get(app, "app_executable_name", true);
-		String psName = get(app, "ps_name", true);
+	public void insertAlgorithm(Connection conn, Hashtable algo, Hashtable dbsUser) throws Exception {
+		String version = get(algo, "app_version", true);
+		String family = get(algo, "app_family_name", true);
+		String exe = get(algo, "app_executable_name", true);
+		String psName = get(algo, "ps_name", true);
 		
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);
@@ -411,7 +409,7 @@ public class DBSApiLogic {
 
 		//Insert the ParameterSet if it does not exists
 		//insertParameterSet(conn, psHash, psName, psVersion, psType, psAnnotation, psContent, userID);
-		insertParameterSet(conn, app, userID);
+		insertParameterSet(conn, algo, userID);
 		
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
 		DBManagement.execute(conn, DBSSql.insertApplication(getID(conn, "AppExecutable", "ExecutableName", exe, true), 
@@ -650,13 +648,13 @@ public class DBSApiLogic {
 					getUserID(conn, dbsUser));
 	}
 
-	public void insertAlgoInPD(Connection conn, String path, Hashtable app, Hashtable dbsUser) throws Exception {
+	public void insertAlgoInPD(Connection conn, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", 
 					getProcessedDSID(conn, path), 
-					getAlgorithmID(conn, get(app, "app_version"), 
-							get(app, "app_family_name"), 
-							get(app, "app_executable_name"),
-							get(app, "ps_name")), 
+					getAlgorithmID(conn, get(algo, "app_version"), 
+							get(algo, "app_family_name"), 
+							get(algo, "app_executable_name"),
+							get(algo, "ps_name")), 
 					getUserID(conn, dbsUser));
 	}
 
@@ -682,13 +680,13 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 	}
 
-	public void insertAlgoInFile(Connection conn, String lfn, Hashtable app, Hashtable dbsUser) throws Exception {
+	public void insertAlgoInFile(Connection conn, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
-				getAlgorithmID(conn, get(app, "app_version"), 
-						get(app, "app_family_name"), 
-						get(app, "app_executable_name"),
-						get(app, "ps_name")), 
+				getAlgorithmID(conn, get(algo, "app_version"), 
+						get(algo, "app_family_name"), 
+						get(algo, "app_executable_name"),
+						get(algo, "ps_name")), 
 				getUserID(conn, dbsUser));
 	}
 
@@ -746,16 +744,16 @@ public class DBSApiLogic {
 
 
 	//private void insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws Exception {
-	private void insertParameterSet(Connection conn, Hashtable app, String userID) throws Exception {
-		String psName = get(app, "ps_name", true);
+	private void insertParameterSet(Connection conn, Hashtable algo, String userID) throws Exception {
+		String psName = get(algo, "ps_name", true);
 		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
 			DBManagement.execute(conn, DBSSql.insertParameterSet(
-									get(app, "ps_hash", false), 
+									get(algo, "ps_hash", false), 
 									psName, 
-									get(app, "ps_version", false), 
-									get(app, "ps_type", false), 
-									get(app, "ps_annotation", false), 
-									get(app, "ps_content", false), 
+									get(algo, "ps_version", false), 
+									get(algo, "ps_type", false), 
+									get(algo, "ps_annotation", false), 
+									get(algo, "ps_content", false), 
 									userID));
 		}
 	}
