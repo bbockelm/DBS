@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.11 $"
- $Id: DBSTest.java,v 1.11 2006/11/09 23:16:25 afaq Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSTest.java,v 1.12 2006/11/13 22:54:51 sekhri Exp $"
  *
  */
 
@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.sql.SQLException;
 import dbs.DBSException;
+import xml.XMLException;
 import dbs.api.DBSApi;
 
 
@@ -51,7 +52,7 @@ public class DBSTest {
            */
 		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
-				"<processed-dataset primary_datatset_name='PrimaryDS_ANZAR_01' processed_datatset_name='anzar-procds-117' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='NEW'>" +
+				"<processed-dataset primary_datatset_name='PrimaryDS_ANZAR_01' processed_datatset_name='anzar-procds-218' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='NEW'>" +
 					"<data_tier name='HIT'/>" +
 					"<data_tier name='DIGI'/>" +
 					"<data_tier name='GEN'/>" +
@@ -59,8 +60,8 @@ public class DBSTest {
 					"<parent path='/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06'/>" +
 					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
 					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2'/>" +
-					"<run run_number='52' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'/>" +
-					"<run run_number='51' number_of_events='500' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'/>" +
+					"<run run_number='52'/>" +
+					"<run run_number='3'/>" +
 				"</processed-dataset>" +
 				"</dbs>";
 
@@ -139,7 +140,8 @@ public class DBSTest {
 				"</run>" +
 				"</dbs>";
 
-		api.insertRun(xmlString, user);
+		//api.insertRun(xmlString, user);
+		api.insertRun(null, user);
         }
 
 /*        public void insertLumiSection() throws Exception {
@@ -160,6 +162,11 @@ public class DBSTest {
                  api.insertLumiSection(xml_string);
         }
 */
+
+	public void insertTier() throws Exception {
+		api.insertTier("MY-TIER", user);
+        }
+
         public void runListAPIs() throws Exception {
         /**
           Run all list API calls
@@ -200,23 +207,27 @@ public class DBSTest {
 		try {
 			DBSTest test= new DBSTest();
 
-			test.runListAPIs(); 
+			//test.runListAPIs(); 
 			//test.insertPrimary();
-			test.insertProcessedDataset(); 
-			test.insertFiles(); 
-			test.insertBlock();
+			//test.insertProcessedDataset(); 
+			//test.insertFiles(); 
+			//test.insertBlock();
 			//test.insertLumiSection();
 			test.insertRun();
 			//test.closeBlock();
+			//test.insertTier();
  
 		} catch (DBSException dbsEx) {
 			System.out.println("message: " + dbsEx.getMessage() + " code: " + dbsEx.getCode() + " detail: " + dbsEx.getDetail());
 			dbsEx.printStackTrace();
+		} catch (XMLException xmlEx) {
+			System.out.println("message: " + xmlEx.getMessage() + " code: " + xmlEx.getCode() + " detail: " + xmlEx.getDetail());
+			xmlEx.printStackTrace();
 		} catch (SQLException sqlEx) {
-			System.out.println("message: Connection Refused code: 402 detail : " + sqlEx.getMessage());
+			System.out.println("message: Database Exception code: 402 detail : " + sqlEx.getMessage());
 			sqlEx.printStackTrace();
 		} catch(Exception e) {
-			System.out.println(e.getMessage());
+			System.out.println("message: " +e.getMessage());
 			e.printStackTrace();
 		}
 

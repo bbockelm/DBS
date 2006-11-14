@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.2 $"
- $Id: DBSApi.java,v 1.2 2006/10/26 17:11:35 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 *
 */
 
@@ -94,6 +94,10 @@ public class DBSXMLParser extends DefaultHandler {
 
 	//Parse a String
 	public void parseString(String xmlcontent) throws Exception {
+		if (xmlcontent == null) 
+			throw new XMLException("Invalid XML", "800", "Null inputXml. Expected inputXml in XML format");
+		if (xmlcontent.length() < 1)
+			throw new XMLException("Invalid XML", "800", "Null inputXml. Expected inputXml in XML format");
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
 		StringReader reader = new StringReader(xmlcontent);

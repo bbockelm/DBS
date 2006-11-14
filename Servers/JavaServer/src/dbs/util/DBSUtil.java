@@ -71,4 +71,15 @@ public class DBSUtil {
 	public static String getDate() {
 		return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()) ;
 	}
+	
+	public static boolean isNull(String pattern) {
+		if(pattern == null) {
+			return true;
+		}
+		if(pattern.length() < 1 ) {
+			return true;
+		}
+		return false;
+	}
+
 }

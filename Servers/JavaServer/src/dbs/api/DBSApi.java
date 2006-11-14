@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApi.java,v 1.10 2006/11/09 23:16:24 afaq Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApi.java,v 1.11 2006/11/13 22:54:51 sekhri Exp $"
  *
 */
 
@@ -13,6 +13,7 @@ import xml.DBSXMLParser;
 import xml.Element;
 import db.DBManagement;
 import dbs.DBSConstants;
+import dbs.DBSException;
 import dbs.util.DBSUtil;
 
 public class DBSApi {
@@ -292,6 +293,7 @@ public class DBSApi {
 	}
 	
 	public Hashtable parse(String inputXml, String key) throws Exception {
+		//	checkXML(inputXml);
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
  		Vector allElement = dbsParser.getElements();
@@ -371,6 +373,13 @@ public class DBSApi {
 		}
 	}
 
+	/*private void checkXML(String xml) throws Exception {
+		if(isNull(xml))
+			throw new DBSException("Bad Data", "300", "Null Fields. Expected a xmlInput in XML format");
+	}
 
+	private boolean isNull(String pattern) {
+		return DBSUtil.isNull(pattern);
+	}*/
 
 }

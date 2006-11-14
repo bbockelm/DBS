@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.11 $"
- $Id: DBSServlet.java,v 1.11 2006/11/09 23:16:24 afaq Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSServlet.java,v 1.12 2006/11/13 22:54:50 sekhri Exp $"
 
  */
 package dbs;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import dbs.api.DBSApi;
+import xml.XMLException;
 
 public class DBSServlet extends HttpServlet{
 	/**
@@ -115,6 +116,8 @@ public class DBSServlet extends HttpServlet{
 
 		} catch (DBSException dbsEx) {
 			setHeader(response, dbsEx.getMessage(), dbsEx.getCode(), dbsEx.getDetail());
+		} catch (XMLException xmlEx) {
+			setHeader(response, xmlEx.getMessage(), xmlEx.getCode(), xmlEx.getDetail());
 		} catch (SQLException sqlEx) {
 			setHeader(response, "Database exception", "402", sqlEx.getMessage());
 		} catch (Exception ex) {
@@ -140,6 +143,10 @@ public class DBSServlet extends HttpServlet{
 	}
 
 	private void setHeader(HttpServletResponse response , String message, String code, String detail) {
+		if(message == null) message = "NULL";
+		if(code == null) code = "NULL";
+		if(detail == null) detail = "NULL";
+
 		response.setHeader("Dbs-status-code", code);
 		response.setHeader("Dbs-status-message", message.replace('\n', ' '));
 		response.setHeader("Dbs-status-detail", detail.replace('\n', ' '));

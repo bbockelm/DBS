@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiLogic.java,v 1.16 2006/11/10 18:05:41 afaq Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiLogic.java,v 1.17 2006/11/13 22:54:51 sekhri Exp $"
  *
  */
 
@@ -873,50 +873,40 @@ public class DBSApiLogic {
 	}
 
 	private void checkPath(String path) throws Exception {
-		if(path == null) {
+		if(isNull(path)) 
 			throw new DBSException("Bad Data", "300", "Null path. Expected /PRIMARY/TIER/PROCESSED");
-		}
-		if (! Pattern.matches(VALID_PATH, path) ) {
+		if (! Pattern.matches(VALID_PATH, path) ) 
 			throw new DBSException("Bad Data", "300", "Invalid path " + path + ". Expected /PRIMARY/TIER/PROCESSED in format " + VALID_PATH);
-		}
-		if( ! Pattern.matches(SAFE_PATH, path) ) {
+		if( ! Pattern.matches(SAFE_PATH, path) ) 
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + path + " Expected /PRIMARY/TIER/PROCESSED in format "+ SAFE_PATH);
-		}
 	}
 	
 	private void checkBlock(String blockName) throws Exception {
-		if(blockName == null) {
+		if(isNull(blockName)) 
 			throw new DBSException("Bad Data", "300", "Null blockName. Expected /PRIMARY/PROCESSED#GUID");
-		}
-		if (! Pattern.matches(VALID_BLOCK, blockName) ) {
+		if (! Pattern.matches(VALID_BLOCK, blockName) ) 
 			throw new DBSException("Bad Data", "300", "Invalid blockName " + blockName + ". Expected /PRIMARY/PROCESSED#GUID in format " + VALID_BLOCK);
-		}
-		if( ! Pattern.matches(SAFE_BLOCK, blockName) ) {
+		if( ! Pattern.matches(SAFE_BLOCK, blockName) ) 
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + blockName + " Expected /PRIMARY/PROCESSED#GUID in format "+ SAFE_BLOCK);
-		}
 	}
 	
 	private void checkName(String pattern, String key) throws Exception {
-		if(pattern == null) {
+		if(isNull(pattern))
 			throw new DBSException("Bad Data", "300", "Null Fields. Expected a " + key);
-		}
-		if(pattern.length() < 1 ) {
-			throw new DBSException("Bad Data", "300", "Null Fields. Expected a " + key);
-		}
-		if (! Pattern.matches(SAFE_NAME, pattern)) {
+		if (! Pattern.matches(SAFE_NAME, pattern)) 
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_NAME);
-		}
 	}
 	
 	
 	private boolean isNull(String pattern) {
-		if(pattern == null) {
+		return DBSUtil.isNull(pattern);
+		/*if(pattern == null) {
 			return true;
 		}
 		if(pattern.length() < 1 ) {
 			return true;
 		}
-		return false;
+		return false;*/
 	}
 	
 	private String get(Hashtable table, String key, boolean excep) throws Exception{
