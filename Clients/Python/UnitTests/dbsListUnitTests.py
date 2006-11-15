@@ -16,25 +16,27 @@ apiObj = ""
 	
 def run(*listArgs, **dictArgs):
 	try:
-		info = "Test Case with params " + str(listArgs)
+		#import pdb
+		#pdb.set_trace()
+		info = "TEST CASE  " + str(apiObj.im_func.func_name) + str(listArgs)
 		excep = dictArgs['excep']
 		apiObj(*listArgs)
 		#for data in apiObj(*listArgs):
 			#print "  %s" % data
 		if excep:
-			f.write("\nFAILED. " + info + " without any exception that was expected")
+			f.write("\nFAILED. " + info + " AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED")
 		else:
-			f.write("\nPASSED. " + info + " without any exception ")
+			f.write("\nPASSED. " + info + " AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED ")
 	except:
 		exception =  str(sys.exc_info()[0]) + " : " +  str(sys.exc_info()[1])
 		print exception
 		if excep:
-			f.write("\nPASSED. " + info + " with expected exception " + exception)
+			f.write("\nPASSED. " + info + " AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS : " + exception)
 		else:
-			f.write("\nFAILED. " + info + " with unexpected exception " + exception)
+			f.write("\nFAILED. " + info + " AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS : " + exception)
 
 apiObj = api.listPrimaryDatasets
-f.write("\n\n***********************\tlistPrimaryDatasets API tests***************************")
+f.write("\n\n***********************listPrimaryDatasets API tests***************************")
 run("*", excep = False)
 run("*test*", excep = False)
 run(excep = False)
@@ -45,11 +47,11 @@ run("ab/bc", excep = True)
 run("//*/ab/bc", excep = True)
 run("abc bc", excep = True)
 run("","", excep = True)
-f.write("\n***********************\tlistPrimaryDatasets API tests***************************")
+f.write("\n***********************listPrimaryDatasets API tests***************************")
 
 
 apiObj = api.listAlgorithms
-f.write("\n\n***********************\tlistAlgorithm API tests***************************")
+f.write("\n\n***********************listAlgorithm API tests***************************")
 run("*","*", excep = False)
 run(excep = False)
 run("MyVersion22","sss", excep = False)
@@ -62,7 +64,7 @@ run("ab","s;", excep = True)
 run("/*", excep = True)
 run("*","abcd/jdg", excep = True)
 run("*","*","","","", excep = True)
-f.write("\n***********************\tlistAlgorithm API tests***************************")
+f.write("\n***********************listAlgorithm API tests***************************")
 
 
 apiObj = api.listProcessedDatasets
@@ -95,7 +97,7 @@ f.write("\n***********************listBlock API tests***************************
 
 
 apiObj = api.listRuns
-f.write("\n\n***********************\tlistRuns API tests***************************")
+f.write("\n\n***********************listRuns API tests***************************")
 run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01",excep = False)
 run("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", excep = False)
 run(excep = True)
@@ -106,11 +108,11 @@ run("/*/sssjd/slkdscds-05", excep = True)
 run("/abd def/sssjd/slkdscds-05", excep = True)
 run("/Primary;DS_ANZAR_01/test-tier-01/anzar-procds-05", excep = True)
 run("/sjh","", excep = True)
-f.write("\n\n***********************\tlistRuns API tests***************************")
+f.write("\n\n***********************listRuns API tests***************************")
 
 
 apiObj = api.listTiers
-f.write("\n\n***********************\tlistTiers API tests***************************")
+f.write("\n\n***********************listTiers API tests***************************")
 run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01",excep = False)
 run("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", excep = False)
 run(excep = True)
@@ -121,12 +123,12 @@ run("/*/sssjd/slkdscds-05", excep = True)
 run("/abd def/sssjd/slkdscds-05", excep = True)
 run("/Primary;DS_ANZAR_01/test-tier-01/anzar-procds-05", excep = True)
 run("/sjh","", excep = True)
-f.write("\n\n***********************\tlistTiers API tests***************************")
+f.write("\n\n***********************listTiers API tests***************************")
 
 
 
 apiObj = api.listFiles
-f.write("\n\n***********************\tlistFiles API tests***************************")
+f.write("\n\n***********************listFiles API tests***************************")
 run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01","","",excep = False)
 run("","/PrimaryDS_ANZAR_01/anzar-procds-05#4219afa9-0608-4222-a995-714bab16fc81","",excep = False)
 run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01","/PrimaryDS_ANZAR_01/anzar-procds-05#4219afa9-0608-4222-a995-714bab16fc81","*",excep = False)
@@ -141,6 +143,6 @@ run("","","*",excep = True)
 run("","","*",excep = True)
 run("","","",excep = True)
 run("","","","", excep = True)
-f.write("\n\n***********************\tlistFiles API tests***************************")
+f.write("\n\n***********************listFiles API tests***************************")
 
 f.close()
