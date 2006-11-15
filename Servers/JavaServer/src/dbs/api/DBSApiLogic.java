@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiLogic.java,v 1.22 2006/11/15 18:04:08 sekhri Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiLogic.java,v 1.23 2006/11/15 20:19:04 sekhri Exp $"
  *
  */
 
@@ -248,7 +248,7 @@ public class DBSApiLogic {
 		if(!isNull(path)) {
 			procDSID = getProcessedDSID(conn, path);
 		}
-		if(!isNull(blockName) {
+		if(!isNull(blockName)) {
 			blockID = getBlockID(conn, blockName, true);
 		}
 		if(blockID == null && procDSID == null) {
@@ -520,7 +520,8 @@ public class DBSApiLogic {
 			for (int j = 0; j < lumiVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
-				insertLumiSection(conn, hashTable, userID);
+				insertLumiSection(conn, hashTable, dbsUser);
+				//insertLumiSection(conn, hashTable, userID);
 				insertMap(conn, "FileLumi", "Fileid", "Lumi", 
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
@@ -690,10 +691,14 @@ public class DBSApiLogic {
 	}
 
 
+	public void insertLumiSection(Connection conn, Hashtable table, Hashtable dbsUser) throws Exception {
+	//public void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
+        //For separate insert API i need to make this change
 
-
-	public void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
 		String lsNumber = get(table, "lumi_section_number");
+
+                System.out.println("lsNumber: "+lsNumber);
+
 		//Insert a new Lumi Section by feting the run ID 
 		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 			DBManagement.execute(conn, DBSSql.insertLumiSection(lsNumber, 
@@ -704,7 +709,7 @@ public class DBSApiLogic {
 									get(table, "end_event_number", false), 
 									get(table, "lumi_start_time", false), 
 									get(table, "lumi_end_time", false), 
-									userID));
+									getUserID(conn, dbsUser)));
 		}
 	}
 

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.18 $"
- $Id: DBSServlet.java,v 1.18 2006/11/15 18:24:48 afaq Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSServlet.java,v 1.19 2006/11/15 20:19:03 sekhri Exp $"
 
  */
 package dbs;
@@ -57,19 +57,6 @@ public class DBSServlet extends HttpServlet{
 		try {
 
 		DBSApi api = new DBSApi(request.getParameter("apiversion"));
-
-			if(apiParam.equals("listPrimaryDatasets")
-				//|| apiParam.equals("listProcessedDatasets")
-				|| apiParam.equals("listDatasets")
-				|| apiParam.equals("listParameterSets")
-				|| apiParam.equals("listApplications")
-				|| apiParam.equals("listApplicationConfigs")
-			) {
-				if(! isIn("pattern", request.getParameterNames())) {
-					setHeader(response, "Null pattern", "200", "pattern parameter not specified");
-					return;
-				}
-			}
 
 			if(apiParam.equals("getDatasetFiles")
 				|| apiParam.equals("getDatasetContents")
@@ -166,6 +153,36 @@ public class DBSServlet extends HttpServlet{
                                 out.write("<SUCCESS/>");
                                 out.write(XML_FOOTER);
                         }
+
+                       else if (apiParam.equals("insertRun")) {
+                                //Make a hastable of the user
+                                api.insertRun(request.getParameter("xmlinput"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+                        }
+
+
+                       else if (apiParam.equals("insertTier")) {
+                                //Make a hastable of the user
+                                api.insertTier(request.getParameter("tier_name"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+                        }
+
+
+                       else if (apiParam.equals("insertLumiSection")) {
+                                //Make a hastable of the user
+                                api.insertLumiSection(request.getParameter("xmlinput"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+                        }
+
 
 
 			else {

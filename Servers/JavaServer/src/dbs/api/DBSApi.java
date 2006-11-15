@@ -1,6 +1,6 @@
 /**
- $Revision: 1.15 $"
- $Id: DBSApi.java,v 1.15 2006/11/15 18:04:08 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApi.java,v 1.16 2006/11/15 18:24:48 afaq Exp $"
  *
 */
 
@@ -121,6 +121,18 @@ public class DBSApi {
 			if(conn != null) conn.close();
 		}
 	}
+
+        public void insertLumiSection(String inputXml, Hashtable dbsUser) throws Exception {
+                Connection conn = null;
+                try {
+                        conn = getConnection();
+                        conn.setAutoCommit(false);
+                        api.insertLumiSection(conn, parse(inputXml, "lumi") , dbsUser);
+                        conn.commit();
+                } finally {
+                        if(conn != null) conn.close();
+                }
+        }
 
 	public void insertTier(String tierName, Hashtable dbsUser) throws Exception {
 		Connection conn = null;
