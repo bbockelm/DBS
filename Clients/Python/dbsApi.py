@@ -91,7 +91,7 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if name == 'primary-dataset':
-	    result.append(DbsPrimaryDataset (datasetName=str(attrs['primary_name'])))
+	    result.append(DbsPrimaryDataset (Name=str(attrs['primary_name'])))
 
       xml.sax.parseString (data, Handler ())
       return result
@@ -476,7 +476,7 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<primary-dataset annotation='aaaa' "
-    xmlinput += "primary_name='"+dataset.get('datasetName')+"' "
+    xmlinput += "primary_name='"+dataset.get('Name')+"' "
     xmlinput += "start_date='NOV' end_date='DEC' trigger_path_description='anyTD' "
     xmlinput += "mc_channel_description='MCDesc' mc_production='MCProd' "
     xmlinput += "mc_decay_chain='DC' other_description='OD' type='PDS'>"
@@ -688,40 +688,37 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
 
   # ------------------------------------------------------------
-  def insertEventCollections(self, dataset, eventCollections):
-    """
-    Insert event collections to a processed dataset.  Instantiates a
-    database row for each element of the event collection list.  The
-    objects are *not* updated for database id on return.  The dataset
-    should be a DbsProcessedDataset.  The event collections should
-    be DbsEventCollection objects fully described, including name and
-    number of events, event collection parentage referring to other
-    DbsEventCollection objects, and the list of files as DbsFile the
-    collections are mapped to.  The files must have their logical
-    names names set, and are assumed to already exist in the database.
 
-    Raises DbsObjectExists if any event collection already exists,
-    or DbsNoObject if the processed dataset, parent collections or
-    the files do not exist in the database; otherwise may raise an
-    DbsApiException.
+  def insertBlock(self, block):
     """
-    # Prepare XML description of the input
-    input = "<dbs><processed-dataset path='%s'>" % escape (self._path(dataset))
-    for evc in eventCollections:
-      input += "<event-collection name='%s' events='%d' status='%s'>" % (
-	escape (evc.get('collectionName')), evc.get('numberOfEvents'),
-	escape (evc.get('collectionStatus', '')))
-      for p in evc.get('parentageList'):
-        input += "<parent name='%s' type='%s'/>" % (
-	  escape (p.get('parent').get('collectionName')), escape (p.get('type')))
-      for f in evc.get('fileList'):
-        input += "<file lfn='%s'/>" % escape (f.get('logicalFileName'))
-      input += "</event-collection>"
-    input += "</processed-dataset></dbs>"
+    Create a new primary dataset.  Instantiates a database entity for
+    the dataset, and updates input object for the id of the new row.
+    The input object should be a DbsPrimaryDataset with the name set.
 
-    # Call the method and parse output to fill in object id into each
-    # event collection we passed in
-    data = self._server._call ({ 'api' : 'insertEventCollections', 'xmlinput' : input })
+    Raises DbsObjectExists if a primary dataset already exists in
+    the database, otherwise may raise an DbsApiException.
+    """
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<block name='"+block.get('Name', '')+"'"
+    procdataset = block.get('Dataset') 
+    xmlinput += " path='"+self._path(procdataset)+"'/>"
+    xmlinput += "</dbs>"
+
+    print xmlinput
+
+    data = self._server._call ({ 'api' : 'insertBlock',
+                         'xmlinput' : xmlinput }, 'POST')
+    try:
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if (name == 'primary-dataset'):
+            #This is just useless now 
+            dataset['objectId'] = long(attrs['id'])
+      xml.sax.parseString (data, Handler())
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
   #def remap(self, eventCollections, outEventCollection, dataset):
