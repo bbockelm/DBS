@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.14 $"
- $Id: DBSServlet.java,v 1.14 2006/11/14 22:08:17 afaq Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSServlet.java,v 1.15 2006/11/15 16:28:23 afaq Exp $"
 
  */
 package dbs;
@@ -154,6 +154,16 @@ public class DBSServlet extends HttpServlet{
                                 out.write("<SUCCESS/>");
                                 out.write(XML_FOOTER);
                         }
+
+                       else if (apiParam.equals("insertBlock")) {
+                                //Make a hastable of the user
+                                api.insertBlock(request.getParameter("xmlinput"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+                        }
+
 
 			else {
 				setHeader(response, "Invalid API requested", "200", "Api requested is not implemented");
