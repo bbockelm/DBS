@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.13 $"
- $Id: DBSServlet.java,v 1.13 2006/11/14 18:17:47 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSServlet.java,v 1.14 2006/11/14 22:08:17 afaq Exp $"
 
  */
 package dbs;
@@ -140,6 +140,15 @@ public class DBSServlet extends HttpServlet{
                         else if (apiParam.equals("insertProcessedDataset")) {
                                 //Make a hastable of the user
                                 api.insertProcessedDataset(request.getParameter("xmlinput"), userDN);
+                                //Without returning valid XML, Client complaints, Check this, ANZAR
+                                out.write(XML_HEADER);
+                                out.write("<SUCCESS/>");
+                                out.write(XML_FOOTER);
+                        }
+
+                       else if (apiParam.equals("insertFiles")) {
+                                //Make a hastable of the user
+                                api.insertFiles(request.getParameter("xmlinput"), userDN);
                                 //Without returning valid XML, Client complaints, Check this, ANZAR
                                 out.write(XML_HEADER);
                                 out.write("<SUCCESS/>");
