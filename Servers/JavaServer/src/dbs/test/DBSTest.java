@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.15 $"
- $Id: DBSTest.java,v 1.15 2006/11/14 21:21:45 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSTest.java,v 1.16 2006/11/15 18:04:08 sekhri Exp $"
  *
  */
 
@@ -23,7 +23,7 @@ public class DBSTest {
 						
         public DBSTest() {
            try { 
-               api = new DBSApi();
+               api = new DBSApi("v00_00_01");
 		user.put("user_dn", "ANZARDN");
                out = new PrintWriter(System.out);
  

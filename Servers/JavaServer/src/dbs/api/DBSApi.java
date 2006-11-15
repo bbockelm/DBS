@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSApi.java,v 1.14 2006/11/14 22:08:18 afaq Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSApi.java,v 1.15 2006/11/15 18:04:08 sekhri Exp $"
  *
 */
 
@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.io.Writer;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import xml.DBSXMLParser;
 import xml.Element;
 import db.DBManagement;
@@ -22,7 +23,7 @@ public class DBSApi {
 	 */
 	private DBSApiLogic api;
 	
-        public Vector getApiVersions() {
+        public Vector supportedClientApiVersions() {
               Vector supported_version_list  = new Vector();
               supported_version_list.add("v00_00_01");
               supported_version_list.add("v00_00_02");
@@ -31,10 +32,43 @@ public class DBSApi {
 
         }
 
-	public DBSApi() {
-		api = new DBSApiLogic();
-		//System.out.println("Constructor DBSApi");
-	}
+        public String supportedSchemaVersions() {
+
+           return "v00_00_01";
+        }
+
+        //This func must move to Utility
+        private boolean isIn(String param, Enumeration e) {
+                while (e.hasMoreElements()) {
+                        if( param.equals((String)e.nextElement()) ) {
+                                return true;
+                        }
+                }
+                return false;
+        }
+
+        public DBSApi(String apiversion) throws Exception {
+
+                Enumeration verEnum = supportedClientApiVersions().elements();
+                String msg  = "Incorrect API version specified '"+apiversion+"'";
+                       msg += " Supported versions are: ";
+
+                for (Enumeration e = supportedClientApiVersions().elements() ; 
+                                 e.hasMoreElements() ;) {
+                    msg += " "+(String)e.nextElement();
+                }
+
+                if ( ! isIn(apiversion, verEnum ) ) {
+                        throw new Exception("BAD Api Version: "+ msg);
+                        //return;
+                }
+
+
+                //Now lets check the Schema version too !!!!!!!!!!!!
+
+                api = new DBSApiLogic();
+                //System.out.println("Constructor DBSApi");
+        }
 
 	private Connection getConnection() throws Exception {
 		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);

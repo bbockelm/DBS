@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.16 $"
- $Id: DBSServlet.java,v 1.16 2006/11/15 17:14:18 afaq Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSServlet.java,v 1.17 2006/11/15 18:04:07 sekhri Exp $"
 
  */
 package dbs;
@@ -46,28 +46,18 @@ public class DBSServlet extends HttpServlet{
 		}
 
 		String apiParam = request.getParameter("api");
-		DBSApi api = new DBSApi();
 
                 if(! isIn("apiversion", request.getParameterNames())) {
                         addHeader(response, "No Api Version", "200", "API version not specified");
                         return;
                 }
 
-                Enumeration verEnum = api.getApiVersions().elements();
-                String msg = "Incorrect API version specified, \nSupported version are:";
-                      
-                for (Enumeration e = api.getApiVersions().elements() ; e.hasMoreElements() ;) {
-                    msg += " "+(String)e.nextElement();
-                }
-
-                if ( ! isIn(request.getParameter("apiversion"), verEnum ) ) {
-                        addHeader(response, "Wrong Api Version", "200", msg );
-                        return;
-                }
-
 		addHeader(response, "Success", "100", "");
 
 		try {
+
+		DBSApi api = new DBSApi(request.getParameter("apiversion"));
+
 			if(apiParam.equals("listPrimaryDatasets")
 				|| apiParam.equals("listProcessedDatasets")
 				|| apiParam.equals("listDatasets")
