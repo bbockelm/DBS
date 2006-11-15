@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiLogic.java,v 1.20 2006/11/14 21:21:44 sekhri Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiLogic.java,v 1.21 2006/11/14 22:08:18 afaq Exp $"
  *
  */
 
@@ -67,15 +67,23 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
+	//public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
+	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+		patternPrim 	= getPattern(patternPrim, "primary_datatset_name_pattern");
+		patternDT 	= getPattern(patternDT, "data_tier_name_pattern");
+		patternProc 	= getPattern(patternProc, "processed_datatset_name_pattern");
+		patternVer	= getPattern(patternVer, "app_version");
+		patternFam	= getPattern(patternFam, "app_family_name");
+		patternExe	= getPattern(patternExe, "app_executable_name");
+		patternPS 	= getPattern(patternPS, "parameterset_name");
 
-		String patternPrim 	= getPattern(pattern, "primary_datatset_name_pattern", 1);
+		/*String patternPrim 	= getPattern(pattern, "primary_datatset_name_pattern", 1);
                 String patternDT	= getPattern(pattern, "data_tier_name_pattern", 2);
                 String patternProc	= getPattern(pattern, "processed_datatset_name_pattern", 3);
                 String patternVer	= getPattern(pattern, "app_version", 4);
                 String patternFam	= getPattern(pattern, "app_family_name", 5);
                 String patternExe	= getPattern(pattern, "app_executable_name", 6);
-                String patternPS	= getPattern(pattern, "parameterset_name", 7);
+                String patternPS	= getPattern(pattern, "parameterset_name", 7);*/
 		String prevDS = "";
 		String prevTier = "";
 		String prevExe = "";
@@ -139,12 +147,18 @@ public class DBSApiLogic {
 		out.write(XML_FOOTER);
 	}
 
-	public void listAlgorithms(Connection conn, Writer out, String pattern) throws Exception {
-		//name should be changed to hash
+	/*public void listAlgorithms(Connection conn, Writer out, String pattern) throws Exception {
+		//FIXME name should be changed to hash
 		String patternVer	= getPattern(pattern, "app_version", 1);
 		String patternFam	= getPattern(pattern, "app_family_name", 2);
 		String patternExe	= getPattern(pattern, "app_executable_name", 3);
-		String patternPS 	= getPattern(pattern, "parameterset_name", 4);
+		String patternPS 	= getPattern(pattern, "parameterset_name", 4);*/
+	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+		//name should be changed to hash
+		patternVer	= getPattern(patternVer, "app_version");
+		patternFam	= getPattern(patternFam, "app_family_name");
+		patternExe	= getPattern(patternExe, "app_executable_name");
+		patternPS 	= getPattern(patternPS, "parameterset_name");
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
 		out.write(XML_HEADER);

@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.15 $"
- $Id: DBSServlet.java,v 1.15 2006/11/15 16:28:23 afaq Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSServlet.java,v 1.16 2006/11/15 17:14:18 afaq Exp $"
 
  */
 package dbs;
@@ -96,10 +96,23 @@ public class DBSServlet extends HttpServlet{
 			} 
 			else if (apiParam.equals("listProcessedDatasets")
 				|| apiParam.equals("listDatasets")) {
-				api.listProcessedDatasets(out, request.getParameter("pattern"));
+				api.listProcessedDatasets(out, request.getParameter("primary_datatset_name_pattern"),
+							request.getParameter("data_tier_name_pattern"),
+							request.getParameter("processed_datatset_name_pattern"),
+							request.getParameter("app_version"),
+							request.getParameter("app_family_name"),
+							request.getParameter("app_executable_name"),
+							request.getParameter("parameterset_name")
+							);
+
 			}
 			else if (apiParam.equals("listAlgorithms")) {
-				api.listAlgorithms(out, request.getParameter("pattern"));
+				api.listAlgorithms(out, request.getParameter("app_version"),
+							request.getParameter("app_family_name"),
+							request.getParameter("app_executable_name"),
+							request.getParameter("parameterset_name")
+						);
+
 			}
 			else if (apiParam.equals("listRuns")) {
 				api.listRuns(out, request.getParameter("path"));

@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.14 $"
- $Id: DBSTest.java,v 1.14 2006/11/14 19:14:36 sekhri Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSTest.java,v 1.15 2006/11/14 21:21:45 sekhri Exp $"
  *
  */
 
@@ -217,9 +217,9 @@ public class DBSTest {
 		System.out.println("\n\nPrimary Datasets");
 		api.listPrimaryDatasets(out, "*");
 		System.out.println("\n\nProcessed Datasets");
-		api.listProcessedDatasets(out, "*");
+		api.listProcessedDatasets(out, "*", "*", "*", "*", "*", "*", "*");
 		System.out.println("\n\nAlgorithms");
-		api.listAlgorithms(out, "*");
+		api.listAlgorithms(out, "*", "*", "*", "*");
 		System.out.println("\n\nRuns");
 		api.listRuns(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
 		System.out.println("\n\nTiers");

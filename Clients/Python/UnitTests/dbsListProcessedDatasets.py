@@ -26,7 +26,7 @@ try:
    #for proc in api.listProcessedDatasets("/PrimaryDS_ANZAR_01/*/anzar-procds-05/*/*/*/*"):
    #for proc in api.listProcessedDatasets("/*/*/anzar-procds-05/*/*/*/*"):
    #for proc in api.listProcessedDatasets("/*/*/anzar-procds-05"):
-   for proc in api.listProcessedDatasets("/*/*/anzar-procds-05/*"):
+   for proc in api.listProcessedDatasets("/*/*/*/*"):
    #for proc in api.listProcessedDatasets("*"):
      print "  %s" % proc
   except DbsDatabaseError,e:

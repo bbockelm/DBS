@@ -99,7 +99,7 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listProcessedDatasets(self, pattern="*"):
+  def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*", patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
     Retrieve list of processed datasets matching a shell glob pattern.
     Returns a list of DbsProcessedDataset objects.  If the pattern is
@@ -111,7 +111,15 @@ class DbsApi(DbsConfig):
     """
 
     # Invoke Server.    
-    data = self._server._call ({ 'api' : 'listDatasets', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listDatasets', 
+		    'primary_datatset_name_pattern' : patternPrim, 
+		    'data_tier_name_pattern' : patternDT, 
+		    'processed_datatset_name_pattern' : patternProc, 
+		    'app_version' : patternVer, 
+		    'app_family_name' : patternFam, 
+		    'app_executable_name' : patternExe, 
+		    'parameterset_name' : patternPS }, 
+		    'GET')
  
     # Parse the resulting xml output.
     try:
@@ -173,7 +181,7 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listAlgorithms(self, pattern="*"):
+  def listAlgorithms(self, patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
     Retrieve list of applications matching a shell glob pattern.
     Returns a list of DbsApplication objects.  If the pattern is
@@ -183,7 +191,13 @@ class DbsApi(DbsConfig):
     May raise an DbsApiException.
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listAlgorithms', 'pattern' : pattern }, 'GET')
+    data = self._server._call ({ 'api' : 'listAlgorithms'
+		    'app_version' : patternVer, 
+		    'app_family_name' : patternFam, 
+		    'app_executable_name' : patternExe, 
+		    'parameterset_name' : patternPS }, 
+		    'GET')
+ 
 
     # Parse the resulting xml output.
     try:

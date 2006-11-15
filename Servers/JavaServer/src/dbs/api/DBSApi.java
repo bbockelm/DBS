@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApi.java,v 1.13 2006/11/14 19:14:36 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApi.java,v 1.14 2006/11/14 22:08:18 afaq Exp $"
  *
 */
 
@@ -319,19 +319,23 @@ public class DBSApi {
 		}
 	}
 
-	public void listProcessedDatasets(Writer out, String pattern) throws Exception {
+	//public void listProcessedDatasets(Writer out, String pattern) throws Exception {
+	public void listProcessedDatasets(Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		Connection conn = getConnection();
 		try {
-			api.listProcessedDatasets(conn, out, pattern);
+			//api.listProcessedDatasets(conn, out, pattern);
+			api.listProcessedDatasets(conn, out, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS);
 		} finally {
 			if(conn != null) conn.close();
 		}
 	}
 
-	public void listAlgorithms(Writer out, String pattern) throws Exception {
+	//public void listAlgorithms(Writer out, String pattern) throws Exception {
+	public void listAlgorithms(Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		Connection conn = getConnection();
 		try {
-			api.listAlgorithms(conn, out, pattern);
+			//api.listAlgorithms(conn, out, pattern);
+			api.listAlgorithms(conn, out, patternVer, patternFam, patternExe, patternPS);
 		} finally {
 			if(conn != null) conn.close();
 		}
