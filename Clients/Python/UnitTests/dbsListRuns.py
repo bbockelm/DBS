@@ -23,8 +23,9 @@ try:
    print "RUNS...."
    #for app in api.listRuns("/PrimaryDS_ANZAR_01/KIM/anzar-procds-01"):
    #for app in api.listRuns("/PrimaryDS_ANZAR_01/DIGI/anzar-procds-01"):
-   for app in api.listRuns("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
    #for app in api.listRuns("/*/*/*"):
+   #for app in api.listRuns("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
+   for app in api.listRuns("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05"):
      print "  %s" % app
   except DbsDatabaseError,e:
    print e

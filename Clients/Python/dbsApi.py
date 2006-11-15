@@ -735,6 +735,70 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
+
+  def insertTier(self, tier_name):
+    """
+    Create a new primary dataset.  Instantiates a database entity for
+    the dataset, and updates input object for the id of the new row.
+    The input object should be a DbsPrimaryDataset with the name set.
+
+    Raises DbsObjectExists if a primary dataset already exists in
+    the database, otherwise may raise an DbsApiException.
+    """
+
+    data = self._server._call ({ 'api' : 'insertTier', 
+                         'tier_name' : tier_name }, 'POST')
+    try:
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if (name == 'primary-dataset'):
+            #This is just useless now 
+            dataset['objectId'] = long(attrs['id'])
+      xml.sax.parseString (data, Handler())
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+    
+  # ------------------------------------------------------------
+
+  def insertLumiSection(self, lumi):
+
+    """
+    Create a new primary dataset.  Instantiates a database entity for
+    the dataset, and updates input object for the id of the new row.
+    The input object should be a DbsPrimaryDataset with the name set.
+
+    Raises DbsObjectExists if a primary dataset already exists in
+    the database, otherwise may raise an DbsApiException.
+    """
+  
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<lumi "
+    xmlinput += " lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
+    xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
+    xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'"
+    xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
+    xmlinput += " lumi_start_time='"+lumi.get('LumiStartTime', '')+"'"
+    xmlinput += " lumi_end_time='"+lumi.get('LumiEndTime', '')+"'"
+    xmlinput += " />"
+    xmlinput += "</dbs>"
+
+    print xmlinput 
+
+    data = self._server._call ({ 'api' : 'insertLumiSection',
+                         'xmlinput' : xmlinput }, 'POST')
+    try:
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if (name == 'primary-dataset'):
+            #This is just useless now 
+            dataset['objectId'] = long(attrs['id'])
+      xml.sax.parseString (data, Handler())
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+  # ------------------------------------------------------------
   #def remap(self, eventCollections, outEventCollection, dataset):
   def remap(self, files, outFile):
 
