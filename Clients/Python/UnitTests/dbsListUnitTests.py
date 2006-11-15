@@ -16,9 +16,7 @@ apiObj = ""
 	
 def run(*listArgs, **dictArgs):
 	try:
-		#import pdb
-		#pdb.set_trace()
-		info = "TEST CASE  " + str(apiObj.im_func.func_name) + str(listArgs)
+		info =  str(apiObj.im_func.func_name) + str(listArgs)
 		excep = dictArgs['excep']
 		apiObj(*listArgs)
 		#for data in apiObj(*listArgs):
