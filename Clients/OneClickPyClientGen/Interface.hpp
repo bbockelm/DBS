@@ -64,8 +64,10 @@ class DBS__File {
                    int   ValidationStatus 0;
                    DBS__ProcessedDataset* Dataset 0;
                    DBS__FileBlock* Block 0;
-                   std::vector<DBS__LumiSection*> lumiList 0;
-                   std::vector<DBS__DataTier*> tierList 0;
+                   std::vector<DBS__LumiSection*> LumiList 0;
+                   std::vector<DBS__DataTier*> TierList 0;
+                   std::vector<DBS__Algorithm*> AlgoList 0;
+                   std::vector<DBS__File*> ParentList 0;
 };
 
 
@@ -92,9 +94,9 @@ class DBS__LumiSection {
                    #int   RunNumber 1;
                    int   StartEventNumber 0;
                    int   EndEventNumber 0;
+                   int RunNumber 1;
                    std::string   LumiStartTime 0;
                    std::string   LumiEndTime 0;
-                   DBS__Run* RunNumber 1;
 };
 
 int DBS__createPrimaryDataset(DBS__PrimaryDataset* primaryDataset, std::string& primaryDatasetResult);

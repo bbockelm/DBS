@@ -57,19 +57,16 @@ class DbsApi(DbsConfig):
     assume the object is a processed datatset and make it's path out
     of the primary dataset, tier and processed dataset name.
     """
-    if isinstance(dataset, type("")):
-      return dataset
 
-    try:
-      if dataset.get('datasetPathName') in ('', None):
-         return "/" + dataset.get('primaryDataset').get('datasetName') \
-             + "/" + dataset.get('dataTier') + "/" + dataset.get('datasetName')
+    if dataset.get('Name') not in ('', None):
+         primary = dataset.get('PrimaryDataset')
+         if primary != None:
+            tier= dataset.get('TierList', [])
+            if tier != []:
+               return "/" + primary.get('Name') \
+                     + "/" + tier[0] + "/" + dataset.get('Name')
 
-      return dataset.get('datasetPathName')
-
-    except:
-      return "/" + dataset.get('primaryDataset').get('datasetName') \
-	     + "/" + dataset.get('dataTier') + "/" + dataset.get('datasetName')
+    raise InvalidDatasetPathName(Message="The path name is not correct")      
 
   # ------------------------------------------------------------
   #  dbsApi API Implementation follows
@@ -599,7 +596,7 @@ class DbsApi(DbsConfig):
     xmlinput += "</processed-dataset>"
     xmlinput += "</dbs>"
 
-    print xmlinput
+    #print xmlinput
 
     # Call the method
     data = self._server._call ({ 'api' : 'insertProcessedDataset',
@@ -616,7 +613,7 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def insertFiles(self, block, files):
+  def insertFiles(self, dataset, files, block):
     """
     Insert files to an existing block.  Instantiates a database row
     for each element of the file list.  The objects are *not* updated
@@ -630,17 +627,65 @@ class DbsApi(DbsConfig):
     """
     # Prepare XML description of the input
 
-    input = "<dbs><block name='%s'>" % escape (block.get('blockName'))
-    for f in files:
-      input += ("<file lfn='%s' guid='%s' checksum='%s' size='%d'"
-		+ " status='%s' type='%s' />") % (
-	escape (f.get('logicalFileName')), escape (f.get('guid', '')),
-	escape (f.get('checkSum')), f.get('fileSize'),
-	escape (f.get('fileStatus', '')), escape (f.get('fileType')))
-    input += "</block></dbs>"
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += " <processed_datatset path='"+self._path(dataset)+"'"
+    if block != None:
+       xmlinput += " block_name='"+block.get("Name", "")+"'"
+    xmlinput += " >"
+    
+    for file in files:
+       xmlinput += " <file lfn='"+file.get('LogicalFileName', '')+"'"
+       xmlinput += " checksum='"+file.get('Checksum', '')+"'"
+       xmlinput += " number_of_events='"+str(file.get('NumberOfEvents', ''))+"'"
+       xmlinput += " size='"+str(file.get('FileSize', ''))+"'"
+       xmlinput += " file_status='"+file.get('Status', '')+"'" 
+       xmlinput += " type= '"+file.get('FileType', '')+"'"
+       xmlinput += " validation_status='"+file.get('ValidationStatus', '')+"'"
+       xmlinput += " queryable_meta_data='"+file.get('QueryableMetadata', '')+"'"
+       xmlinput += " >" 
+       
+       for lumi in file.get('LumiList', []):
+            xmlinput += "<lumi_section lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
+            xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
+            xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'" 
+            xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
+            xmlinput += " lumi_start_time='"+lumi.get('LumiStartTime', '')+"'" 
+            xmlinput += " lumi_end_time='"+lumi.get('LumiEndTime', '')+"'"
+            xmlinput += " />"
 
-    # Call the method.
-    data = self._server._call ({ 'api' : 'insertFiles', 'xmlinput' : input })
+       for tier in file.get('TierList',[]):
+            xmlinput += "<data_tier name='"+tier+"'/>"
+    
+       # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
+       for parent in file.get('ParentList',[]):
+            xmlinput += "<parent lfn='"+parent+"'/>"
+
+       for algorithm in file.get('AlgoList',[]):
+           xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
+           xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
+           xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
+           pset = algorithm.get('ParameterSetID')
+           # Server expects a ps_name, it should expect a ps_hash instead 
+           if pset != None:
+              xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
+              xmlinput += " ps_name='"+pset.get('Name', "")+"'"
+              xmlinput += " ps_version='"+pset.get('Version', "")+"'"
+              xmlinput += " ps_type='"+pset.get('Type', "")+"'"
+              xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
+              xmlinput += " ps_content='"+pset.get('Content', "")+"'"
+              xmlinput += "/>"
+       xmlinput += "</file>"
+       xmlinput += "\n"
+
+    xmlinput += "</processed_datatset>"
+    xmlinput += "</dbs>"
+
+    print xmlinput
+
+    # Call the method
+    data = self._server._call ({ 'api' : 'insertFiles',
+                         'xmlinput' : xmlinput }, 'POST')
 
   # ------------------------------------------------------------
   def insertEventCollections(self, dataset, eventCollections):

@@ -68,11 +68,13 @@ ValidationTable = {
          "FileSize" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
          "Status" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "FileType" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
-         "ValidationStatus" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
+         "ValidationStatus" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "Dataset" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "Block" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
-         "lumiList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
-         "tierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "LumiList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "ParentList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
           },
 "DbsDataTier" : {
          "Name" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
@@ -93,7 +95,7 @@ ValidationTable = {
          "EndEventNumber" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
          "LumiStartTime" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "LumiEndTime" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
-         "RunNumber" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
+         "RunNumber" : { "Comment" : "User may not need to set this variable always", "Validator" : isIntType },
           },
 }
 
