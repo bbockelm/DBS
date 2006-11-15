@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiLogic.java,v 1.21 2006/11/14 22:08:18 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiLogic.java,v 1.22 2006/11/15 18:04:08 sekhri Exp $"
  *
  */
 
@@ -245,10 +245,10 @@ public class DBSApiLogic {
 		
 		String procDSID = null;
 		String blockID = null;
-		if(path != null) {
+		if(!isNull(path)) {
 			procDSID = getProcessedDSID(conn, path);
 		}
-		if(blockName != null) {
+		if(!isNull(blockName) {
 			blockID = getBlockID(conn, blockName, true);
 		}
 		if(blockID == null && procDSID == null) {

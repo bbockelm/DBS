@@ -23,7 +23,7 @@ public class DBSTest {
 						
         public DBSTest() {
            try { 
-               api = new DBSApi("v00_00_01");
+               api = new DBSApi();
 		user.put("user_dn", "ANZARDN");
                out = new PrintWriter(System.out);
  
@@ -214,7 +214,7 @@ public class DBSTest {
         /**
           Run all list API calls
         */
-		System.out.println("\n\nPrimary Datasets");
+		/*System.out.println("\n\nPrimary Datasets");
 		api.listPrimaryDatasets(out, "*");
 		System.out.println("\n\nProcessed Datasets");
 		api.listProcessedDatasets(out, "*", "*", "*", "*", "*", "*", "*");
@@ -225,9 +225,10 @@ public class DBSTest {
 		System.out.println("\n\nTiers");
 		api.listTiers(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
 		System.out.println("\n\nBlocks");
-		api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");*/
 		System.out.println("\n\nFiles");
 		api.listFiles(out, "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-07", null, "*");
+		api.listFiles(out, null, "Block_001", "*");
 		//api.listFiles(out, null, "Block_001", "*");
 		//api.listFiles(out, null, null, "*");
                     /*System.out.println("\n\nParameter Sets");

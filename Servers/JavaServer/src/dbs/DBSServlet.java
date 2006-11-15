@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.17 $"
- $Id: DBSServlet.java,v 1.17 2006/11/15 18:04:07 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSServlet.java,v 1.18 2006/11/15 18:24:48 afaq Exp $"
 
  */
 package dbs;
@@ -59,7 +59,7 @@ public class DBSServlet extends HttpServlet{
 		DBSApi api = new DBSApi(request.getParameter("apiversion"));
 
 			if(apiParam.equals("listPrimaryDatasets")
-				|| apiParam.equals("listProcessedDatasets")
+				//|| apiParam.equals("listProcessedDatasets")
 				|| apiParam.equals("listDatasets")
 				|| apiParam.equals("listParameterSets")
 				|| apiParam.equals("listApplications")
@@ -115,8 +115,8 @@ public class DBSServlet extends HttpServlet{
 			}
 			else if (apiParam.equals("listFiles")) {
 				api.listFiles(out, request.getParameter("path"),
-							request.getParameter("blockName"), 
-							request.getParameter("patternLFN"));
+							request.getParameter("block_name"), 
+							request.getParameter("pattern_lfn"));
 			}
 
                         else if (apiParam.equals("insertPrimaryDataset")) {
