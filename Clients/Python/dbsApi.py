@@ -191,7 +191,7 @@ class DbsApi(DbsConfig):
     May raise an DbsApiException.
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listAlgorithms'
+    data = self._server._call ({ 'api' : 'listAlgorithms',
 		    'app_version' : patternVer, 
 		    'app_family_name' : patternFam, 
 		    'app_executable_name' : patternExe, 
