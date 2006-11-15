@@ -322,7 +322,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, path="*"):
+  def listFiles(self, path, blockName, patternLFN="*"):
     """
     Retrieve list of runs matching a shell glob pattern.
     Returns a list of DbsParameterSet objects.  If the pattern is
@@ -333,7 +333,7 @@ class DbsApi(DbsConfig):
 
     """
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listFiles', 'path' : path }, 'GET')
+    data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 'block_name' : blockName, 'pattern_lfn' : patternLFN }, 'GET')
 
     # Parse the resulting xml output.
     try:
