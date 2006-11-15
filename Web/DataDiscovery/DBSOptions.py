@@ -40,6 +40,8 @@ class DBSOptionParser:
          help="specify any keywords to search your data, e.g. --search='CMSSW_0_8_1 and Merged'")
     self.parser.add_option("-v","--verbose",action="store_true", default=False, dest="verbose",
          help="be verbose")
+    self.parser.add_option("--profile",action="store_true", default=False, dest="profile",
+         help="perform profiling of the code")
          
   def getOpt(self):
     """

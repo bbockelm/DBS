@@ -3,7 +3,16 @@
 """
 List of templates used by DBS data discovery server.
 """
-
+templateTime="""
+<p>
+Response time:
+<table>
+<tr><td>DBS:</td><td>$dbsTime</td></tr>
+<tr><td>DLS:</td><td>$dlsTime</td></tr>
+<tr><td>HTML:</td><td>$htmlTime</td></tr>
+</table>
+</p>
+"""
 templateERROR="""
 The server encountered an unexpected condition which prevented it from fulfilling the request.
 <p></p>
@@ -671,6 +680,7 @@ view</a>):
 """
 
 templateLFB = """
+<hr class="dbs" />
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #set tot=len($blockDict.keys())
 #set idPath=$path.replace("/","___")
@@ -824,9 +834,11 @@ Both
 ##
 #end if
 ##
+#*
 #if not $last
 <hr class="dbs" />
 #end if
+*#
 """
 
 templateBottom="""
@@ -841,6 +853,7 @@ templateBottom="""
 <td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
 </tr>
 </table>
+<br />
 <span id="results" class="show_inline"></span>
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
@@ -937,6 +950,11 @@ Home page: <a href="$host/">users</a>
 <tr>
 <td class="td_gray_box" id="Hide_Menu"><a href="javascript:HidePanel('$host')">Hide panel</a></td>
 </tr>
+<!--
+<tr>
+<td><span id="time">Test timing</span></td>
+</tr>
+-->
 </table>
 </td>
 

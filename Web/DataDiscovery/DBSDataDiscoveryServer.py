@@ -10,7 +10,7 @@ DBS data discovery server module.
 """
 
 # system modules
-import os, string, logging, types, time, socket, socket
+import os, string, logging, types, time, socket, socket, urlparse
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -79,6 +79,9 @@ class DBSDataDiscoveryServer(DBSLogger):
             if string.find(dbs,'fanfani')!=-1:
                name+="_fanfani"
             self.dbsShortNames.append(name)
+        self.dbsTime    = 0
+        self.dlsTime    = 0
+        self.htmlTime   = 0
         self.topHTML    = ""
         self.bottomHTML = ""
         self.verbose    = verbose
@@ -88,6 +91,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.sumPage    = ""
         self.firstSearch=1
         self.siteDict   = {}
+#        self.host       = urlparse.urljoin(os.environ['DBSDD'],"discovery")
+        self.host       = os.environ['DBSDD']
         try:
             self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
         except:
@@ -875,6 +880,17 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateProcDatasets, searchList=[nameSpace])
         return str(t)
     
+    def getURL(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
+        # add URL link to the page
+        siteHTML=site
+        if site=="*":
+           siteHTML='All'
+        tierHTML=tier
+        if tier=="*":
+           tierHTML='All'
+        page="""<pre>URL: %s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
+        return page
+
     def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
@@ -903,7 +919,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.primD= primD
         self.tier = tier
         
+        t1=time.time()
         page+= self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
+        t2=time.time()
 
         primaryDataset=primD
         dataTier = tier
@@ -911,7 +929,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         id=0
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
+        t2=time.time()
         dList = self.helper.getDatasetsFromApp(appPath)
+        t2=time.time()
+        self.dbsTime=(t2-t1)
         regList=[]
         last=0
         page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
@@ -922,6 +943,8 @@ class DBSDataDiscoveryServer(DBSLogger):
             if primaryDataset!="*" and prim!=primaryDataset: continue
             if dataTier!="*" and tier!=dataTier: continue
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
+            self.dbsTime+=self.helper.dbsTime
+            self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
             if id>=len(dList):
                last=1
@@ -948,7 +971,19 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDataHelper.exposed=True
 
-    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
+    def responseTime(self,htmlTime):
+#        page="""\n<response type="object" id="time">"""
+        nameSpace = {
+                     'dbsTime' : "%5.3f"%self.dbsTime,
+                     'dlsTime' : "%5.3f"%self.dlsTime,
+                     'htmlTime': "%5.3f"%htmlTime
+                    }
+        t = Template(CheetahDBSTemplate.templateTime, searchList=[nameSpace])
+        page=str(t)
+#        page+="</response>\n"
+        return page
+
+    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",ajax=1,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -964,9 +999,13 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML code
         """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results">"""
+        t1=time.time()
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="results">"""
+        else:
+           page=self.genTopHTML()
         try:
             if string.lower(tier)=="all": tier="*"
             if string.lower(site)=="all": site="*"
@@ -980,7 +1019,16 @@ class DBSDataDiscoveryServer(DBSLogger):
         except:
             t=self.errorReport("Fail in getData function")
             page+=str(t)
-        page+="</response></ajax-response>"
+        t2=time.time()
+        page+="""<hr class="dbs" />"""
+        if not self.userMode:
+           page+=self.responseTime(t2-t1)
+        # generate URL link
+        page+=self.getURL(dbsInst,site,app,primD,tier)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
         if self.verbose:
            print page
         return page
@@ -1262,12 +1310,15 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getPrimaryDatasets.exposed=True
 
-    def getDetailsForPrimDataset(self,dbsInst,primDataset,**kwargs):
+    def getDetailsForPrimDataset(self,dbsInst,primDataset,ajax=1,**kwargs):
         """
            Generates AJAX response to get all primary datasets available in all DBS instances
         """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+        else:
+           page=self.genTopHTML()
         self.helperInit(dbsInst)
         dList=self.helper.getProcessedDatasets("/"+primDataset+"/*/*",app=0)
         pSum=""
@@ -1278,9 +1329,14 @@ class DBSDataDiscoveryServer(DBSLogger):
             if id>=len(dList):
                last=1
             pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
-        page="""<ajax-response><response type="object" id="results">"""
+        if int(ajax):
+           page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
-        page+="</response></ajax-response>"
+        page+="""<hr class="dbs" /><pre>URL: %s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,primDataset)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
         if self.verbose:
            print page
         return page
@@ -1354,12 +1410,15 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getApplications.exposed=True
 
-    def getDatasetsFromApplication(self,dbsInst,appPath,**kwargs):
+    def getDatasetsFromApplication(self,dbsInst,appPath,ajax=1,**kwargs):
         """
            Generates AJAX response to get datasets available for given application
         """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+        else:
+           page=self.genTopHTML()
         self.helperInit(dbsInst)
         dList=self.helper.getProcessedDatasets(appPath,app=1)
         pSum=""
@@ -1370,11 +1429,15 @@ class DBSDataDiscoveryServer(DBSLogger):
             if id>=len(dList):
                last=1
             pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
-        page="""<ajax-response><response type="object" id="results">"""
+        if int(ajax):
+           page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
-        page+="</response></ajax-response>"
+        page+="""<hr class="dbs" /><pre>URL: %s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,appPath)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
         if self.verbose:
-#        if 1:
            print page
         return page
     getDatasetsFromApplication.exposed=True
@@ -1419,15 +1482,22 @@ class DBSDataDiscoveryServer(DBSLogger):
             page="No information found for dataset '%s' in DBS='%s'"%(dataset,dbsInst)
         return page
 
-    def getDatasetContent(self,dbsInst,dataset,**kwargs):
+    def getDatasetContent(self,dbsInst,dataset,ajax=1,**kwargs):
         """
            Generates AJAX response to get dataset content
         """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page ="""<ajax-response><response type="object" id="results">"""
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page ="""<ajax-response><response type="object" id="results">"""
+        else:
+           page = self.genTopHTML()
         page+=self.getDatasetContentHelper(dbsInst,dataset)
-        page+="</response></ajax-response>"
+        page+="""<hr class="dbs" /><pre>URL: %s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,dataset)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+= self.genBottomHTML()
         if self.verbose:
            print page
         return page
@@ -1606,6 +1676,10 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getAppConfigs.exposed=True
+
+    def dummy(self,**kwargs):
+        return ""
+    dummy.exposed=True
 #
 # main
 #
@@ -1616,7 +1690,18 @@ if __name__ == "__main__":
     verbose = 0
     if opts.verbose:
        verbose=1
-       
+
     cherrypy.root = DBSDataDiscoveryServer(verbose) 
     cherrypy.config.update(file="CherryServer.conf")
-    cherrypy.server.start()
+    if opts.profile:
+       import hotshot                   # Python profiler
+       import hotshot.stats             # profiler statistics
+       print "Start DBS/DLS discovery server in profile mode"
+       profiler = hotshot.Profile("profile.dat")
+       profiler.run("cherrypy.server.start()")
+       profiler.close()
+       stats = hotshot.stats.load("profile.dat")
+       stats.sort_stats('time', 'calls')
+       stats.print_stats()
+    else:       
+       cherrypy.server.start()

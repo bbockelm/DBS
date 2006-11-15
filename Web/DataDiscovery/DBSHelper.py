@@ -57,6 +57,8 @@ class DBSHelper(DBSLogger):
          if self.verbose:
             printExcept()
          pass
+      self.dbsTime     = ""
+      self.dlsTime     = ""
       self.api         = "" # dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
       self.dbsApi      = {} #  {'dbsInst': dbsCgiApi.DbsCgiApi(url,dbsInst) }
       self.dbsDLS      = {} #  {'dbsInst': dlsClient.getDlsApi(dlsType,endpoint) }
@@ -315,7 +317,10 @@ class DBSHelper(DBSLogger):
          @return: a list of application in the following form, [(family,version,exe)]
       """
       aList = []
-      for item in self.api.listApplications(datasetPath):
+      dList = self.api.listApplications(datasetPath)
+      dList.sort()
+      dList.reverse()
+      for item in dList:
           family = item.get('family')
           ver    = item.get('version')
           exe    = item.get('executable')
@@ -338,6 +343,8 @@ class DBSHelper(DBSLogger):
       """
       oList = []
       dList = self.api.listDatasetsFromApp(datasetPath)
+      dList.sort()
+      dList.reverse()
       for entry in dList:
           oList.append(entry.get('datasetPathName'))
       return oList
@@ -352,6 +359,8 @@ class DBSHelper(DBSLogger):
       """
       oList = []
       dList = self.api.listPrimaryDatasets(datasetPath)
+      dList.sort()
+      dList.reverse()
       for entry in dList:
           name = entry.get('datasetName')
           if self.html:
@@ -375,6 +384,7 @@ class DBSHelper(DBSLogger):
       else:
          dList = self.api.listProcessedDatasets(datasetPath)
       dList.sort()
+      dList.reverse()
       for entry in dList:
           name = entry.get('datasetPathName')
           if html:
@@ -896,10 +906,10 @@ class DBSHelper(DBSLogger):
       totFiles = 0
       totSize  = 0
       # IMPORTANT: I think we need to replace listBlocks(dataset) to listBlocksFromApp(app)
-#      t1 = time.time()
+      t1 = time.time()
       blockInfoDict = self.api.listBlocks(dataset,app,"yes")
-#      t2 = time.time()
-#      print "DBS time:",(t2-t1)
+      t2 = time.time()
+      self.dbsTime=(t2-t1)
 
 #      for key in blockInfoDict.keys():
 #          if not blockInfoDict[key][0]:
@@ -917,10 +927,11 @@ class DBSHelper(DBSLogger):
           # query DLS
           hostList=[]
           try:
-#              t3 = time.time()
+              t3 = time.time()
               dlsList = self.dlsApi.getLocations(blockName)
-#              t4 = time.time()
-#              print "DLS time:",(t4-t3)
+              t4 = time.time()
+              self.dlsTime=(t4-t3)
+#              print "dlsTime",self.dlsTime
               for entry in dlsList:
                   for loc in entry.locations:
                       dlsHost = str(loc.host)
@@ -936,6 +947,10 @@ class DBSHelper(DBSLogger):
               pass
           # end of DLS query
           blockInfoDict[blockName]+=hostList
+#      print "+++",blockInfoDict
+#      print "###",locDict
+      if self.verbose:
+         print "### time =",self.dbsTime,self.dlsTime,(time.time()-t1)
       return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
 
   def getBlocksFromSite(self,site):
@@ -1109,7 +1124,7 @@ if __name__ == "__main__":
         if  not opts.showProcD:
             for bName in blockDict.keys():
                 count=0
-                print "blockDict",bName,blockDict[bName]
+#                print "blockDict",bName,blockDict[bName]
                 if not blockDict[bName][0]:
                    print "contains 0 events, 0 files."
                    continue
