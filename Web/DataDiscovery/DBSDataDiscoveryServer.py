@@ -777,7 +777,8 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in getDataFromSelection function")
             page+=str(t)
             pass
-        page+="""<hr class="dbs" /><pre>URL: %s/getDataFromSelection?userSelection=%s</pre>"""%(self.host,convertListToString(userSelection))
+        url="%s/getDataFromSelection?userSelection=%s&amp;ajax=0"%(self.host,userSelection)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+=endAjaxMsg
         else:
@@ -896,7 +897,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         tierHTML=tier
         if tier=="*":
            tierHTML='All'
-        page="""<pre>URL: %s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
+        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         return page
 
     def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
@@ -1340,7 +1342,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
-        page+="""<hr class="dbs" /><pre>URL: %s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,primDataset)
+        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.host,dbsInst,primDataset)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1440,7 +1443,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
-        page+="""<hr class="dbs" /><pre>URL: %s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,appPath)
+        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.host,dbsInst,appPath)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1501,7 +1505,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            page = self.genTopHTML()
         page+=self.getDatasetContentHelper(dbsInst,dataset)
-        page+="""<hr class="dbs" /><pre>URL: %s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0</pre>"""%(self.host,dbsInst,dataset)
+        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.host,dbsInst,dataset)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+="</response></ajax-response>"
         else:
