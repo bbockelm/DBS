@@ -2,13 +2,13 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">447</attrib>
-		<attrib name="serial">289386</attrib>
+		<attrib name="build">456</attrib>
+		<attrib name="serial">290673</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">use dbs_new_era_v03;</attrib>
+			<attrib name="preSql">use dbs_new_era_v04;</attrib>
 			<attrib name="postSql"/>
 			<attrib name="ddUseDDEquiv">false</attrib>
 			<attrib name="codeUseBuild">false</attrib>
@@ -133,6 +133,42 @@
 					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/XHTML</output>
 				</html>
 			</DocsGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
+			<SqlGenModule>
+				<stdSql>
+					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS.sql</output>
+					<order>s</order>
+					<genComments>N</genComments>
+					<genIndexes>N</genIndexes>
+					<genTriggers>Y</genTriggers>
+					<genDropStmt>Y</genDropStmt>
+					<genViews>N</genViews>
+					<genRules>N</genRules>
+					<genFunctions>N</genFunctions>
+					<genProcedures>Y</genProcedures>
+					<genInlineFKs>Y</genInlineFKs>
+					<genPreSQL>Y</genPreSQL>
+					<genSequences>Y</genSequences>
+				</stdSql>
+				<oraSql>
+					<genFunctions>Y</genFunctions>
+					<genViews>N</genViews>
+					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE.sql</output>
+					<genDropStmt>N</genDropStmt>
+					<genInlineFKs>N</genInlineFKs>
+					<genProcedures>N</genProcedures>
+					<genComments>N</genComments>
+				</oraSql>
+				<pgSql>
+					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE_2.sql</output>
+					<genInlineFKs>N</genInlineFKs>
+					<genProcedures>N</genProcedures>
+				</pgSql>
+			</SqlGenModule>
 			<CodeGenModule>
 				<cpp>
 					<output>d:\dbs\cpp</output>
@@ -149,48 +185,12 @@
 					<useJdo>Y</useJdo>
 				</java>
 			</CodeGenModule>
-			<SqlGenModule>
-				<stdSql>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS.sql</output>
-					<order>s</order>
-					<genComments>N</genComments>
-					<genIndexes>N</genIndexes>
-					<genTriggers>Y</genTriggers>
-					<genDropStmt>Y</genDropStmt>
-					<genFunctions>N</genFunctions>
-					<genRules>N</genRules>
-					<genViews>N</genViews>
-					<genProcedures>Y</genProcedures>
-					<genInlineFKs>Y</genInlineFKs>
-					<genPreSQL>Y</genPreSQL>
-					<genSequences>Y</genSequences>
-				</stdSql>
-				<oraSql>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE.sql</output>
-					<genComments>N</genComments>
-					<genDropStmt>N</genDropStmt>
-					<genViews>N</genViews>
-					<genFunctions>Y</genFunctions>
-					<genProcedures>N</genProcedures>
-					<genInlineFKs>N</genInlineFKs>
-				</oraSql>
-				<pgSql>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE_2.sql</output>
-					<genInlineFKs>N</genInlineFKs>
-					<genProcedures>N</genProcedures>
-				</pgSql>
-			</SqlGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
 			<module name="DocsGenModule.html"/>
-			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.stdSql"/>
+			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.pgSql"/>
 			<module name="SqlGenModule.oraSql"/>
 			<module name="CodeGenModule.java"/>
@@ -3763,6 +3763,26 @@
 									</list>
 								</idx>
 							</oraSql>
+							<pgSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="s">access</elem>
+											<elem type="s">where</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>default</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -3805,8 +3825,8 @@
 								<attrib name="17">true</attrib>
 								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="339">v00_00_01</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -4100,9 +4120,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Query</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Query</attrib>
 							<attrib name="id">285485</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -4184,9 +4204,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">PhysicsGroup</attrib>
-							<attrib name="refField">134549</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134549</attrib>
+							<attrib name="name">PhysicsGroup</attrib>
 							<attrib name="id">286825</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -4603,9 +4623,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">NumberOfEvents</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">NumberOfEvents</attrib>
 							<attrib name="id">285493</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5094,9 +5114,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Status</attrib>
-							<attrib name="refField">286864</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">286864</attrib>
+							<attrib name="name">Status</attrib>
 							<attrib name="id">285481</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -5393,7 +5413,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -5753,7 +5773,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
+								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -5777,7 +5797,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
+								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -5801,7 +5821,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
+								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -5825,7 +5845,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">false</attrib>
+								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -6351,7 +6371,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">true</attrib>
-								<attrib name="340">false</attrib>
+								<attrib name="340">true</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -6774,7 +6794,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -7918,10 +7938,6 @@
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -8028,9 +8044,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">285504</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8052,14 +8068,86 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LogEntry</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Action</attrib>
 							<attrib name="id">285505</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">136868</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Cause</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">289812</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Effect</attrib>
+							<attrib name="id">289814</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Description</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">289816</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -8076,9 +8164,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">285506</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8100,9 +8188,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">285507</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8124,9 +8212,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">285508</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8148,9 +8236,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">285509</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8164,14 +8252,6 @@
 					<vars>
 						<list>
 							<header>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 								<elem>name</elem>
 								<elem>type</elem>
 								<elem>value</elem>
@@ -8408,18 +8488,6 @@
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -8512,9 +8580,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">286864</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8536,9 +8604,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Status</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Status</attrib>
 							<attrib name="id">286865</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8560,9 +8628,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">286866</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8584,9 +8652,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">286867</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8608,9 +8676,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">286868</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8632,9 +8700,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">286869</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12521,10 +12589,6 @@
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -12617,9 +12681,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">285965</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12641,9 +12705,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Status</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Status</attrib>
 							<attrib name="id">285966</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12665,9 +12729,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">285967</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12689,9 +12753,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">285968</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12713,9 +12777,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">285969</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12737,9 +12801,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">285970</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12753,10 +12817,6 @@
 					<vars>
 						<list>
 							<header>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 								<elem>name</elem>
 								<elem>type</elem>
 								<elem>value</elem>
@@ -12853,9 +12913,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">286395</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12877,9 +12937,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Type</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Type</attrib>
 							<attrib name="id">286396</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12901,9 +12961,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">286397</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12925,9 +12985,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">286398</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12949,9 +13009,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">286399</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12973,9 +13033,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">286400</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -13598,9 +13658,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">285950</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
