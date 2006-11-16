@@ -4,8 +4,6 @@
 
 import sys
 from dbsApi import DbsApi
-from dbsException import *
-from dbsApiException import *
 from dbsOptions import DbsOptionParser
 from dbsUnitTestApi import DbsUnitTestApi
 

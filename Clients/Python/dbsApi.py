@@ -31,6 +31,14 @@ from dbsAlgorithm import DbsAlgorithm
 from dbsParent import DbsParent
 from dbsConfig import DbsConfig
 
+def getInt(value = None):
+	#print "value is ", value
+	if (value == None ) :
+		return 0
+	if (len(value) < 1 ) :
+		return 0
+	return int(value)
+
 class DbsApi(DbsConfig):
 
   def __init__(self, Args={}):
@@ -237,15 +245,17 @@ class DbsApi(DbsConfig):
     # Parse the resulting xml output.
     try:
       result = []
+      #import pdb
+      #pdb.set_trace()
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'run':
                self.currRun= DbsRun (
-                                   RunNumber=int(attrs['run_number']),
-                                   NumberOfEvents=int(attrs['number_of_events']),
-                                   NumberOfLumiSections=int(attrs['number_of_lumi_sections']),
-                                   TotalLuminosity=int(attrs['total_luminosity']),
-                                   StoreNumber=int(attrs['store_number']),
+                                   RunNumber=getInt(attrs['run_number']),
+                                   NumberOfEvents=getInt(attrs['number_of_events']),
+                                   NumberOfLumiSections=getInt(attrs['number_of_lumi_sections']),
+                                   TotalLuminosity=getInt(attrs['total_luminosity']),
+                                   StoreNumber=getInt(attrs['store_number']),
                                    StartOfRun=str(attrs['start_of_run']),
                                    EndOfRun=str(attrs['end_of_run']))
           if name =='processed-dataset':
@@ -606,12 +616,12 @@ class DbsApi(DbsConfig):
            xmlinput += " ps_type='"+pset.get('Type', "")+"'"
            xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
            xmlinput += " ps_content='"+pset.get('Content', "")+"'"
-           xmlinput += "/>"
+        xmlinput += "/>"
     xmlinput += "</processed-dataset>"
     xmlinput += "</dbs>"
 
-    #print xmlinput
-
+    print xmlinput
+    
     # Call the method
     data = self._server._call ({ 'api' : 'insertProcessedDataset',
                          'xmlinput' : xmlinput }, 'POST')
@@ -716,8 +726,14 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<block name='"+block.get('Name', '')+"'"
-    procdataset = block.get('Dataset') 
-    xmlinput += " path='"+self._path(procdataset)+"'/>"
+    path = ""
+    if block.get('Dataset') != None:
+	    path = self._path(block.get('Dataset'))
+    else :
+	    path = block.get('Path')
+    #procdataset = block.get('Dataset') 
+    #xmlinput += " path='"+self._path(procdataset)+"'/>"
+    xmlinput += " path='"+path+"'/>"
     xmlinput += "</dbs>"
 
     print xmlinput
