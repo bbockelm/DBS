@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 462
+REM === Build : 465
 REM ======================================================================
 
 CREATE TABLE Person
@@ -80,10 +80,10 @@ CREATE TABLE Runs
   (
     ID                    int,
     RunNumber             int                              unique not null,
-    NumberOfEvents        int,
-    NumberOfLumiSections  int,
-    TotalLuminosity       int,
-    StoreNumber           int,
+    NumberOfEvents        int                              not null,
+    NumberOfLumiSections  int                              not null,
+    TotalLuminosity       int                              not null,
+    StoreNumber           int                              not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             int,
