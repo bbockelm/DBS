@@ -1103,7 +1103,7 @@ $dbsContent
 <td class="td_menu_gray_box" align="center" id="_help_refs"><a href="javascript:showResMenu('help_refs',$menuArr)">References</a></td>
 </tr>
 </table>
-<span id="help_intro" class="hide"><br />
+<span id="help_intro" class="hide">
 <div class="div_scroll">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>

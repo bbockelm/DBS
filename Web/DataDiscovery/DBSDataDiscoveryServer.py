@@ -51,7 +51,7 @@ class DBSDataDiscoveryServer(DBSLogger):
        All methods are wrapped in try/catch blocks. In the case of any error
        exception captured passed to L{sendErrorReport} method.
     """
-    def __init__(self,verbose=0):
+    def __init__(self,verbose=0,profile=0):
         """
            DBSDataDiscoveryServer constructor. It takes only one optional argument.
            Initialize L{DBSHelper} with default DBS instance "MCGlobal/Writer".
@@ -85,6 +85,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.topHTML    = ""
         self.bottomHTML = ""
         self.verbose    = verbose
+        self.profile    = profile
         self.dbsDict    = {}
         self.userMode   = True
         self.timer      = self.timerForSummary = time.time()
@@ -746,14 +747,17 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateSnapshot, searchList=[nameSpace])
         return str(t)
         
-    def getDataFromSelection(self,userSelection,**kwargs):
+    def getDataFromSelection(self,userSelection,ajax=1,**kwargs):
         """
            Retrieves data upon user selection criterias.
         """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results">"""
-        endAjaxMsg="</response></ajax-response>"
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="results">"""
+           endAjaxMsg="</response></ajax-response>"
+        else:
+           page=self.genTopHTML()
         try:
             if  not userSelection:
                 page+="No data found"
@@ -773,7 +777,11 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in getDataFromSelection function")
             page+=str(t)
             pass
-        page+=endAjaxMsg
+        page+="""<hr class="dbs" /><pre>URL: %s/getDataFromSelection?userSelection=%s</pre>"""%(self.host,convertListToString(userSelection))
+        if int(ajax):
+           page+=endAjaxMsg
+        else:
+           page+=self.genBottomHTML()
         if self.verbose:
            print page
         return page
@@ -1021,7 +1029,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+=str(t)
         t2=time.time()
         page+="""<hr class="dbs" />"""
-        if not self.userMode:
+        if not self.userMode and self.profile:
            page+=self.responseTime(t2-t1)
         # generate URL link
         page+=self.getURL(dbsInst,site,app,primD,tier)
@@ -1691,7 +1699,7 @@ if __name__ == "__main__":
     if opts.verbose:
        verbose=1
 
-    cherrypy.root = DBSDataDiscoveryServer(verbose) 
+    cherrypy.root = DBSDataDiscoveryServer(verbose,opts.profile) 
     cherrypy.config.update(file="CherryServer.conf")
     if opts.profile:
        import hotshot                   # Python profiler

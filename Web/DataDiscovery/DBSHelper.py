@@ -57,8 +57,8 @@ class DBSHelper(DBSLogger):
          if self.verbose:
             printExcept()
          pass
-      self.dbsTime     = ""
-      self.dlsTime     = ""
+      self.dbsTime     = 0
+      self.dlsTime     = 0
       self.api         = "" # dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
       self.dbsApi      = {} #  {'dbsInst': dbsCgiApi.DbsCgiApi(url,dbsInst) }
       self.dbsDLS      = {} #  {'dbsInst': dlsClient.getDlsApi(dlsType,endpoint) }

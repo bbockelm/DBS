@@ -19,6 +19,13 @@ from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 # file created by crontab job, see getDLSsites.sh
 DLS_INFO='dls.all'
 
+def convertListToString(iList):
+    s="["
+    for item in iList:
+        s+="'%s'"%item+","
+    s=s[:-1]+"]"
+    return s
+
 def getListOfSites(dbsInst='all'):
     """
        Generats list of DLS sites out given DBS instance and DLS_INFO (dls.all) file.
@@ -470,4 +477,5 @@ class DBSLogger:
 if __name__ == "__main__":
 #   print formattingListPrint([1,2,3,4,5,6,7,8,9,10])
 #   print formattingDictPrint({'test':[1,2,3,4,5,6,7,8,9,10],'vk':[21,22,23,24]})
-   print getDictOfSites()
+#   print getDictOfSites()
+   print convertListToString([1,2,3,4,5,6,7,8,9,10])
