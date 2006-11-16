@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 458
+REM === Build : 462
 REM ======================================================================
 
 CREATE TABLE Person
@@ -66,7 +66,7 @@ REM ======================================================================
 CREATE TABLE SchemaVersion
   (
     ID                    int,
-    SchemaVersion         varchar(100)                     unique not null,
+    SchemaVersion         varchar(100)                     unique not null default v00_00_01,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
@@ -169,7 +169,49 @@ REM ======================================================================
 CREATE TABLE TimeLog
   (
     ID                    int,
-    LogEntry              varchar(1000)                    unique not null,
+    Action                varchar(100)                     not null,
+    Cause                 varchar(100)                     not null,
+    Effect                varchar(100)                     not null,
+    Description           varchar(100)                     not null,
+    CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE AnalysisDSStatus
+  (
+    ID                    int,
+    Status                varchar(100)                     unique not null,
+    CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE AnalysisDSype
+  (
+    ID                    int,
+    Type                  varchar(100)                     unique not null,
+    CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE PrimaryDSType
+  (
+    ID                    int,
+    Type                  varchar(100)                     unique not null,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
@@ -293,6 +335,45 @@ CREATE TABLE OtherDescription
 
 REM ======================================================================
 
+CREATE TABLE FileStatus
+  (
+    ID                    int,
+    Status                varchar(100)                     unique not null,
+    CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE FileType
+  (
+    ID                    int,
+    Type                  varchar(100)                     unique not null,
+    CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ProcDSStatus
+  (
+    ID                    int,
+    Status                varchar(100)                     unique not null,
+    CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
 CREATE TABLE AlgorithmConfig
   (
     ID                    int,
@@ -330,7 +411,7 @@ CREATE TABLE PrimaryDataset
     ID                    int,
     Annotation            varchar(1000)                    not null,
     Name                  varchar(100)                     unique not null,
-    Description           int                              not null,
+    Description           int,
     StartDate             varchar(100),
     EndDate               varchar(100),
     Type                  int                              not null,
@@ -412,18 +493,19 @@ REM ======================================================================
 
 CREATE TABLE DatasetParentage
   (
+    ID                    int,
     ThisDataset           int                              not null,
     ItsParent             int                              not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
-    primary key(ThisDataset,ItsParent)
+    primary key(ID)
   );
 
 REM ======================================================================
 
-CREATE TABLE ProcAlgoMap
+CREATE TABLE ProcAlgo
   (
     ID                    int,
     Dataset               int                              not null,
@@ -508,13 +590,14 @@ REM ======================================================================
 
 CREATE TABLE FileParentage
   (
+    ID                    int,
     ThisFile              int                              not null,
     ItsParent             int                              not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
-    primary key(ThisFile,ItsParent)
+    primary key(ID)
   );
 
 REM ======================================================================
@@ -534,7 +617,7 @@ CREATE TABLE FileLumi
 
 REM ======================================================================
 
-CREATE TABLE FileAlgoMap
+CREATE TABLE FileAlgo
   (
     ID                    int,
     FileID                int                              not null,
@@ -644,6 +727,27 @@ ALTER TABLE TimeLog ADD CONSTRAINT
     TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDSype ADD CONSTRAINT 
+    AnalysisDSype_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSype ADD CONSTRAINT 
+    AnalysisDSypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE PrimaryDSType ADD CONSTRAINT 
+    PrimaryDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE PrimaryDSType ADD CONSTRAINT 
+    PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE AppFamily ADD CONSTRAINT 
     AppFamily_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -706,6 +810,27 @@ ALTER TABLE OtherDescription ADD CONSTRAINT
     OtherDescriptionLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE FileStatus ADD CONSTRAINT 
+    FileStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileStatus ADD CONSTRAINT 
+    FileStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE FileType ADD CONSTRAINT 
+    FileType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileType ADD CONSTRAINT 
+    FileType_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ProcDSStatus ADD CONSTRAINT 
+    ProcDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcDSStatus ADD CONSTRAINT 
+    ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
     AlgorithmConfigExecutableNa_FK foreign key(ExecutableName) references AppExecutable(ID)
 /
@@ -745,7 +870,7 @@ ALTER TABLE PrimaryDataset ADD CONSTRAINT
     PrimaryDataset_Description_FK foreign key(Description) references PrimaryDatasetDescription(ID)
 /
 ALTER TABLE PrimaryDataset ADD CONSTRAINT 
-    PrimaryDataset_Type_FK foreign key(Type) references Type(ID)
+    PrimaryDataset_Type_FK foreign key(Type) references PrimaryDSType(ID)
 /
 ALTER TABLE PrimaryDataset ADD CONSTRAINT 
     PrimaryDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -761,7 +886,7 @@ ALTER TABLE ProcessedDataset ADD CONSTRAINT
     ProcessedDatasetPhysicsGrou_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
 /
 ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDataset_Status_FK foreign key(Status) references Status(ID)
+    ProcessedDataset_Status_FK foreign key(Status) references ProcDSStatus(ID)
 /
 ALTER TABLE ProcessedDataset ADD CONSTRAINT 
     ProcessedDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -819,27 +944,27 @@ ALTER TABLE DatasetParentage ADD CONSTRAINT
     DatasetParentageLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
 /
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
 /
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
-ALTER TABLE ProcAlgoMap ADD CONSTRAINT 
-    ProcAlgoMap_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_DatasetType_FK foreign key(DatasetType) references Type(ID)
+    AnalysisDataset_DatasetType_FK foreign key(DatasetType) references AnalysisDSype(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Status_FK foreign key(Status) references Status(ID)
+    AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_Parent_FK foreign key(Parent) references AnalysisDataset(ID)
@@ -858,13 +983,13 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_Block_FK foreign key(Block) references Block(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_Status_FK foreign key(Status) references Status(ID)
+    Files_Status_FK foreign key(Status) references FileStatus(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_FileType_FK foreign key(FileType) references Type(ID)
+    Files_FileType_FK foreign key(FileType) references FileType(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_ValidationStatus_FK foreign key(ValidationStatus) references Status(ID)
+    Files_ValidationStatus_FK foreign key(ValidationStatus) references FileStatus(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -925,17 +1050,17 @@ ALTER TABLE FileLumi ADD CONSTRAINT
     FileLumi_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_FileID_FK foreign key(FileID) references Files(ID)
+ALTER TABLE FileAlgo ADD CONSTRAINT 
+    FileAlgo_FileID_FK foreign key(FileID) references Files(ID)
 /
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
+ALTER TABLE FileAlgo ADD CONSTRAINT 
+    FileAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
 /
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE FileAlgo ADD CONSTRAINT 
+    FileAlgo_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
-ALTER TABLE FileAlgoMap ADD CONSTRAINT 
-    FileAlgoMap_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE FileAlgo ADD CONSTRAINT 
+    FileAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 
@@ -949,20 +1074,22 @@ CREATE INDEX  ON Runs(RunNumber,StoreNumber);
 
 CREATE INDEX  ON DataTier(Name);
 
+CREATE INDEX  ON LumiSection(LumiSectionNumber);
+
+CREATE INDEX  ON TimeLog(Action);
+
 CREATE INDEX  ON AppFamily(FamilyName);
 
 CREATE INDEX  ON AppVersion(Version);
 
 CREATE INDEX  ON AppExecutable(ExecutableName);
 
-CREATE INDEX  ON TriggerPathDescription(TriggerPathDescription);
+CREATE INDEX  ON QueryableParameterSet(Hash);
 
 CREATE INDEX  ON PrimaryDataset(Name);
 
 CREATE INDEX  ON ProcessedDataset(Name);
 
-CREATE INDEX  ON Block(Name,Dataset);
+CREATE INDEX  ON Block(Name);
 
-CREATE INDEX  ON AnalysisDataset(Query);
-
-CREATE INDEX  ON Files(LogicalFileName);
+CREATE INDEX  ON AnalysisDataset(Annotation,Query);
