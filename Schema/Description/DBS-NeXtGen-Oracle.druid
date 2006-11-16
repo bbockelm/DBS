@@ -2,17 +2,17 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">454</attrib>
-		<attrib name="serial">285938</attrib>
+		<attrib name="build">463</attrib>
+		<attrib name="serial">290369</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">use dbs_new_era_v01;</attrib>
+			<attrib name="preSql"/>
 			<attrib name="postSql"/>
-			<attrib name="ddUseDDEquiv">false</attrib>
-			<attrib name="codeUseBuild">false</attrib>
-			<attrib name="summUseDDEquiv">false</attrib>
+			<attrib name="ddUseDDEquiv">true</attrib>
+			<attrib name="codeUseBuild">true</attrib>
+			<attrib name="summUseDDEquiv">true</attrib>
 		</attribs>
 		<revisions>
 			<list>
@@ -107,7 +107,7 @@
 					<elem/>
 					<elem>b</elem>
 					<elem>i</elem>
-					<elem>false</elem>
+					<elem>true</elem>
 					<elem>true</elem>
 					<elem>60</elem>
 					<elem>An index</elem>
@@ -133,6 +133,21 @@
 					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/XHTML</output>
 				</html>
 			</DocsGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
+			<SqlGenModule>
+				<oraSql>
+					<output>/home/anzar/devDBS/DBS/Schema/NeXtGen/DBS-NeXtGen-Oracle.sql</output>
+					<genSequences>N</genSequences>
+					<genDropStmt>N</genDropStmt>
+					<genTriggers>Y</genTriggers>
+					<genInlineFKs>N</genInlineFKs>
+					<genIndexes>Y</genIndexes>
+				</oraSql>
+			</SqlGenModule>
 			<CodeGenModule>
 				<cpp>
 					<output>d:\dbs\cpp</output>
@@ -149,19 +164,6 @@
 					<useJdo>Y</useJdo>
 				</java>
 			</CodeGenModule>
-			<SqlGenModule>
-				<oraSql>
-					<output>/home/anzar/test_oracle.sql</output>
-					<genDropStmt>Y</genDropStmt>
-					<genInlineFKs>N</genInlineFKs>
-					<genIndexes>N</genIndexes>
-				</oraSql>
-			</SqlGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
@@ -2651,7 +2653,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">true</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -3640,7 +3642,7 @@
 								<attrib name="17">true</attrib>
 								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
-								<attrib name="339"/>
+								<attrib name="339">v00_00_01</attrib>
 								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
@@ -3954,12 +3956,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">145373</attrib>
+							<attrib name="refField">285978</attrib>
 							<attrib name="name">DatasetType</attrib>
 							<attrib name="id">134949</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">145372</attrib>
+							<attrib name="refTable">285977</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -3984,12 +3986,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">135354</attrib>
+							<attrib name="refField">285949</attrib>
 							<attrib name="name">Status</attrib>
 							<attrib name="id">145964</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">135353</attrib>
+							<attrib name="refTable">285948</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -4219,7 +4221,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -4249,7 +4251,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -4390,12 +4392,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">135354</attrib>
+							<attrib name="refField">287227</attrib>
 							<attrib name="name">Status</attrib>
 							<attrib name="id">134969</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">135353</attrib>
+							<attrib name="refTable">287226</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -4420,12 +4422,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">145373</attrib>
+							<attrib name="refField">287255</attrib>
 							<attrib name="name">FileType</attrib>
 							<attrib name="id">134970</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">145372</attrib>
+							<attrib name="refTable">287254</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -4450,12 +4452,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">135354</attrib>
+							<attrib name="refField">287227</attrib>
 							<attrib name="name">ValidationStatus</attrib>
 							<attrib name="id">135614</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">135353</attrib>
+							<attrib name="refTable">287226</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -4792,12 +4794,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">135354</attrib>
+							<attrib name="refField">288560</attrib>
 							<attrib name="name">Status</attrib>
 							<attrib name="id">285481</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">135353</attrib>
+							<attrib name="refTable">288559</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -5054,7 +5056,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -5154,12 +5156,12 @@
 						<attribs>
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
-							<attrib name="refField">145373</attrib>
+							<attrib name="refField">289017</attrib>
 							<attrib name="name">Type</attrib>
 							<attrib name="id">191891</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">145372</attrib>
+							<attrib name="refTable">289016</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
@@ -5839,7 +5841,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>LumiSection: A file can contains many Lumi Sections and a Lumi Sections can be contained in many files. These Lumi Sections are used for describing an analysis dataset which is conceptually more or less not related with files.</t>
@@ -5877,7 +5906,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">true</attrib>
-								<attrib name="340">false</attrib>
+								<attrib name="340">true</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -6264,7 +6293,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -6471,7 +6500,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -6640,7 +6696,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -6809,7 +6892,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -6978,7 +7088,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -7171,7 +7308,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>Log here what server did, i.e, what tables were involved and what operation was done and why.</t>
@@ -7214,7 +7378,55 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">true</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Action</attrib>
+							<attrib name="id">285505</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Cause</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">290347</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -7225,12 +7437,36 @@
 							<attrib name="comment"/>
 							<attrib name="matchType">s</attrib>
 							<attrib name="refField">0</attrib>
-							<attrib name="name">LogEntry</attrib>
-							<attrib name="id">285505</attrib>
+							<attrib name="name">Effect</attrib>
+							<attrib name="id">290349</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">136868</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Description</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">290351</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7331,6 +7567,610 @@
 						<modsConfig/>
 					</field>
 				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">AnalysisDSStatus</attrib>
+						<attrib name="id">285948</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285949</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Status</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285950</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285951</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285952</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285953</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285954</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">AnalysisDSype</attrib>
+						<attrib name="id">285977</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285978</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Type</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285979</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285980</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285981</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285982</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">285983</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">PrimaryDSType</attrib>
+						<attrib name="id">289016</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
+							<attrib name="id">289017</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Type</attrib>
+							<attrib name="id">289018</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="id">289019</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="id">289020</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="id">289021</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="id">289022</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
 			</folder>
 			<folder>
 				<attribs>
@@ -7365,7 +8205,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>An instance of running an application. AppConfig: A unique combination of an Application and a ParameterSet would represent an AppConfig. A file will be produced by a single AppConfig. That is why we have many to one relationship between AppConfig and File table. Note that a File has a relationship with ProcessedDataset, but that is not enough to determine the exact AppConfig used to produce the file. The reason being that a ProcessedDataset can spawn multiple AppConfig.</t>
@@ -8231,7 +9098,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>A parameter set consisting of bound parameters and other parameter sets. Optionally, a data cards file can be given also.</t>
@@ -8277,7 +9171,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
+								<attrib name="340">true</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -8554,7 +9448,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>A bound parmeter (key value pair.) Bound parameters are in a many to one relationship with ParameterSets.</t>
@@ -8781,7 +9702,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>This table relates descriptions which help define a Primary Dataset,</t>
@@ -9093,7 +10041,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -9234,7 +10182,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>Monte Carlo description table.</t>
@@ -9477,7 +10452,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<docs>
 						<p>
 							<t>This is a description of a trigger mask corresponding to the data in the primary dataset.</t>
@@ -9928,9 +10930,38 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">290363</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Primary key row id.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
@@ -9959,7 +10990,7 @@
 							<attribs>
 								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
-								<attrib name="15">true</attrib>
+								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
@@ -10315,7 +11346,7 @@
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">FileAlgoMap</attrib>
+						<attrib name="name">FileAlgo</attrib>
 						<attrib name="id">279868</attrib>
 						<attrib name="schema"/>
 						<attrib name="tempPK"/>
@@ -10525,6 +11556,406 @@
 						<modsConfig/>
 					</field>
 				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">FileStatus</attrib>
+						<attrib name="id">287226</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287227</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Status</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287228</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287229</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287230</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287231</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287232</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">FileType</attrib>
+						<attrib name="id">287254</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287255</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Type</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287256</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287257</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287258</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287259</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">287260</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
 			</folder>
 			<folder>
 				<attribs>
@@ -10554,7 +11985,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -10752,7 +12210,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -10986,9 +12471,38 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
+							<attrib name="id">290365</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Primary key row id.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
@@ -11017,7 +12531,7 @@
 							<attribs>
 								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
-								<attrib name="15">true</attrib>
+								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
@@ -11153,7 +12667,7 @@
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">ProcAlgoMap</attrib>
+						<attrib name="name">ProcAlgo</attrib>
 						<attrib name="id">280269</attrib>
 						<attrib name="schema"/>
 						<attrib name="tempPK"/>
@@ -11161,7 +12675,34 @@
 						<attrib name="tempOther"/>
 						<attrib name="sqlCommands"/>
 					</attribs>
-					<modsConfig/>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
 					<field>
 						<fieldAttribs>
 							<attribs>
@@ -11328,6 +12869,210 @@
 							<attrib name="refField">134524</attrib>
 							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">280276</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">ProcDSStatus</attrib>
+						<attrib name="id">288559</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
+							<attrib name="id">288560</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">238995</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Status</attrib>
+							<attrib name="id">288561</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="id">288562</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="id">288563</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="id">288564</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="id">288565</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134523</attrib>
