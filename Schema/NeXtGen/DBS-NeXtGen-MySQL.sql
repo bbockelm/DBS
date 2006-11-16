@@ -1,10 +1,10 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 447
+-- === Build : 456
 -- ======================================================================
 
-use dbs_new_era_v03;
+use dbs_new_era_v04;
 -- ======================================================================
 
 DROP TABLE ProcAlgo;
@@ -52,7 +52,7 @@ DROP TABLE Person;
 
 CREATE TABLE Person
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Name                  varchar(100)                                                      not null,
     DistinguishedName     varchar(100)                                                      not null,
     ContactInfo           varchar(100),
@@ -72,7 +72,7 @@ CREATE TABLE Person
 
 CREATE TABLE Role
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     RoleName              varchar(100)                                                      unique not null,
     RoleDescription       varchar(100)                                                      not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -90,7 +90,7 @@ CREATE TABLE Role
 
 CREATE TABLE AssignedRole
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     PersonID              int                                                               not null,
     RoleID                int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -111,7 +111,7 @@ CREATE TABLE AssignedRole
 
 CREATE TABLE PhysicsGroup
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     PhysicsGroupName      varchar(100)                                                      unique not null,
     PhysicsGroupConvener  int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -130,14 +130,15 @@ CREATE TABLE PhysicsGroup
 
 CREATE TABLE SchemaVersion
   (
-    ID                    int not null auto_increment,
-    SchemaVersion         varchar(100)                                                      unique not null,
+    ID                    int,
+    SchemaVersion         varchar(100)                                                      unique not null default v00_00_01,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
     primary key(ID),
+    unique(SchemaVersion),
 
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
@@ -147,7 +148,7 @@ CREATE TABLE SchemaVersion
 
 CREATE TABLE AnalysisDataset
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Annotation            varchar(1000)                                                     not null,
     Query                 varchar(1000)                                                     not null,
     ProcessedDS           int                                                               not null,
@@ -175,7 +176,7 @@ CREATE TABLE AnalysisDataset
 
 CREATE TABLE Files
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     LogicalFileName       varchar(500)                                                      unique not null,
     Dataset               int                                                               not null,
     Block                 int                                                               not null,
@@ -206,7 +207,7 @@ CREATE TABLE Files
 
 CREATE TABLE ProcessedDataset
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Name                  varchar(100)                                                      not null,
     PrimaryDataset        int                                                               not null,
     OpenForWriting        char(1)                                                           not null,
@@ -233,10 +234,10 @@ CREATE TABLE ProcessedDataset
 
 CREATE TABLE PrimaryDataset
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Annotation            varchar(1000)                                                     not null,
     Name                  varchar(100)                                                      unique not null,
-    Description           int                                                               not null,
+    Description           int,
     StartDate             varchar(100),
     EndDate               varchar(100),
     Type                  int                                                               not null,
@@ -257,12 +258,12 @@ CREATE TABLE PrimaryDataset
 
 CREATE TABLE Runs
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     RunNumber             smallint                                                          unique not null,
-    NumberOfEvents        smallint,
-    NumberOfLumiSections  smallint,
-    TotalLuminosity       smallint,
-    StoreNumber           smallint,
+    NumberOfEvents        smallint                                                          unique,
+    NumberOfLumiSections  smallint                                                          unique,
+    TotalLuminosity       smallint                                                          unique,
+    StoreNumber           smallint                                                          unique,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             int,
@@ -280,7 +281,7 @@ CREATE TABLE Runs
 
 CREATE TABLE DataTier
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Name                  varchar(100)                                                      unique not null,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -297,7 +298,7 @@ CREATE TABLE DataTier
 
 CREATE TABLE LumiSection
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     LumiSectionNumber     smallint                                                          not null,
     RunNumber             int                                                               not null,
     StartEventNumber      smallint,
@@ -321,7 +322,7 @@ CREATE TABLE LumiSection
 
 CREATE TABLE Block
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     BlockSize             int                                                               not null,
     Name                  varchar(100)                                                      unique not null,
     Dataset               int                                                               not null,
@@ -345,7 +346,7 @@ CREATE TABLE Block
 
 CREATE TABLE AnalysisDSStatus
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -362,7 +363,7 @@ CREATE TABLE AnalysisDSStatus
 
 CREATE TABLE AnalysisDSType
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -379,7 +380,7 @@ CREATE TABLE AnalysisDSType
 
 CREATE TABLE Description
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -396,7 +397,7 @@ CREATE TABLE Description
 
 CREATE TABLE AnalysisDatasetLumi
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     AnalysisDataset       int                                                               not null,
     Lumi                  int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -416,8 +417,11 @@ CREATE TABLE AnalysisDatasetLumi
 
 CREATE TABLE TimeLog
   (
-    ID                    int not null auto_increment,
-    LogEntry              varchar(1000)                                                     unique not null,
+    ID                    int,
+    Action                varchar(100)                                                      unique not null,
+    Cause                 varchar(100)                                                      unique not null,
+    Effect                varchar(100)                                                      unique not null,
+    Description           varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -433,7 +437,7 @@ CREATE TABLE TimeLog
 
 CREATE TABLE PrimaryDSType
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -450,7 +454,7 @@ CREATE TABLE PrimaryDSType
 
 CREATE TABLE ProcDSStatus
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -467,7 +471,7 @@ CREATE TABLE ProcDSStatus
 
 CREATE TABLE AlgorithmConfig
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     ExecutableName        int                                                               not null,
     ApplicationVersion    int                                                               not null,
     ApplicationFamily     int                                                               not null,
@@ -492,7 +496,7 @@ CREATE TABLE AlgorithmConfig
 
 CREATE TABLE AppFamily
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     FamilyName            varchar(100)                                                      unique not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -509,7 +513,7 @@ CREATE TABLE AppFamily
 
 CREATE TABLE AppVersion
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Version               varchar(100)                                                      unique not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -526,7 +530,7 @@ CREATE TABLE AppVersion
 
 CREATE TABLE AppExecutable
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     ExecutableName        varchar(100)                                                      unique not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -543,7 +547,7 @@ CREATE TABLE AppExecutable
 
 CREATE TABLE QueryableParameterSet
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Hash                  varchar(1000)                                                     not null,
     Name                  varchar(100)                                                      unique not null,
     Version               varchar(100)                                                      not null,
@@ -565,7 +569,7 @@ CREATE TABLE QueryableParameterSet
 
 CREATE TABLE ParameterBinding
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Self                  int                                                               not null,
     Contains              int                                                               not null,
     CreatedBy             int,
@@ -625,7 +629,7 @@ CREATE TABLE TriggerPathDescription
 
 CREATE TABLE MCDescription
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     MCChannelDescription  varchar(100)                                                      not null,
     MCProduction          varchar(100),
     MCDecayChain          varchar(100),
@@ -645,7 +649,7 @@ CREATE TABLE MCDescription
 
 CREATE TABLE OtherDescription
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Description           varchar(100)                                                      unique not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -662,7 +666,7 @@ CREATE TABLE OtherDescription
 
 CREATE TABLE FileTier
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Fileid                int                                                               not null,
     DataTier              int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -683,7 +687,7 @@ CREATE TABLE FileTier
 
 CREATE TABLE FileParentage
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     ThisFile              int,
     ItsParent             int,
     CreatedBy             int,
@@ -704,7 +708,7 @@ CREATE TABLE FileParentage
 
 CREATE TABLE FileLumi
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Fileid                int                                                               not null,
     Lumi                  int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -725,7 +729,7 @@ CREATE TABLE FileLumi
 
 CREATE TABLE FileAlgo
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Fileid                int                                                               not null,
     Algorithm             int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -745,7 +749,7 @@ CREATE TABLE FileAlgo
 
 CREATE TABLE FileStatus
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -762,7 +766,7 @@ CREATE TABLE FileStatus
 
 CREATE TABLE FileType
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -779,7 +783,7 @@ CREATE TABLE FileType
 
 CREATE TABLE ProcDSRuns
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Dataset               int                                                               not null,
     Run                   int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -800,7 +804,7 @@ CREATE TABLE ProcDSRuns
 
 CREATE TABLE ProcDSTier
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Dataset               int                                                               not null,
     DataTier              int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -821,7 +825,7 @@ CREATE TABLE ProcDSTier
 
 CREATE TABLE DatasetParentage
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     ThisDataset           int,
     ItsParent             int,
     CreatedBy             int,
@@ -842,7 +846,7 @@ CREATE TABLE DatasetParentage
 
 CREATE TABLE ProcAlgo
   (
-    ID                    int not null auto_increment,
+    ID                    int,
     Dataset               int                                                               not null,
     Algorithm             int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
