@@ -1,3 +1,7 @@
+function showHelpContent() {
+  var t=document.getElementById("help_intro");
+  t.className="show_inline";
+}
 // Menu array
 var _ids = new Array();
 _ids[0]='results';

@@ -948,17 +948,12 @@ Home page: <a href="$host/">users</a>
 <td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History')">History</a></td>
 </tr>
 <tr>
-<td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help')">Help</a></td>
+<td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help');showHelpContent()">Help</a></td>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
 <td class="td_gray_box" id="Hide_Menu"><a href="javascript:HidePanel('$host')">Hide panel</a></td>
 </tr>
-<!--
-<tr>
-<td><span id="time">Test timing</span></td>
-</tr>
--->
 </table>
 </td>
 
@@ -1078,28 +1073,10 @@ $dbsContent
        </span>
       </div>
       <div id="summaryContent1">
-      <!--
-      <div id="summary">Please wait while we retrieve this information</div>
-      -->
       <div id="summary"><script type="text/javascript">showLoadingMessage("summary");</script></div>
       </div>
    </div>
 </div>
-
-<!--
-<div id="ReleasesDiv" class="hide">
-   <div id="releasesPanel1">
-     <div id="releasesHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Release specifications
-       </span>
-      </div>
-      <div id="releasesContent1">
-      <span id="releaseSpec"></span>
-      </div>
-   </div>
-</div>
--->
 
 <div id="HistoryDiv" class="hide">
    <div id="historyPanel1">
@@ -1114,14 +1091,20 @@ $dbsContent
    </div>
 </div>
 
-<div id="HelpDiv" class="hide">
-   <div id="helpPanel1">
-     <div id="helpHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Introduction
-       </span>
-     </div>
-     <div id="helpContent1">
+###### Replacement for accordion help
+#set menuArr=['help_intro','help_glossary','help_resources','help_feedback','help_refs']
+<div id="HelpDiv" class="hide"> 
+<table id="help_info" cellspacing="1" width="70%">
+<tr>
+<td class="td_menu_white_box" align="center" id="_help_intro"><a href="javascript:showResMenu('help_intro',$menuArr)">Introduction</a></td>
+<td class="td_menu_gray_box" align="center" id="_help_glossary"><a href="javascript:showResMenu('help_glossary',$menuArr)">DBS glossary</a></td>
+<td class="td_menu_gray_box" align="center" id="_help_resources"><a href="javascript:showResMenu('help_resources',$menuArr)">DBS resources</a></td>
+<td class="td_menu_gray_box" align="center" id="_help_feedback"><a href="javascript:showResMenu('help_feedback',$menuArr)">Feedback</a></td>
+<td class="td_menu_gray_box" align="center" id="_help_refs"><a href="javascript:showResMenu('help_refs',$menuArr)">References</a></td>
+</tr>
+</table>
+<span id="help_intro" class="hide"><br />
+<div class="div_scroll">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
 The purpose of this page to help you navigate through CMS data in
@@ -1159,26 +1142,11 @@ move your mouse over the column name and click on it to sort entries.
 <p>
 All terms used on discovery page are defined in DBS glossary.
 </p>
-     </div>
-   </div>
-
-   <div id="helpPanel2">
-     <div id="helpHeader2" class="accordionTabTitleBar">
-       <span class="menu_title">
-       DBS glossary
-       </span>
-     </div>
-     <div id="helpContent2">
-     $glossary
-     </div>
-   </div>
-   <div id="helpPanel3">
-     <div id="helpHeader3" class="accordionTabTitleBar">
-       <span class="menu_title">
-       DBS resources
-       </span>
-     </div>
-     <div id="helpContent3">
+</div>
+</span>
+<span id="help_glossary" class="hide"><div class="div_scroll">$glossary</div></span>
+<span id="help_resources" class="hide">
+<div class="div_scroll">
           <table>
               <tr><td>&\#187;</td>
               <td><a href="https://twiki.cern.ch/twiki/bin/view/CMS/WebHome">CMS Home</a>
@@ -1188,11 +1156,6 @@ All terms used on discovery page are defined in DBS glossary.
               <tr><td>&\#187;</td>
               <td><a href="https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS Home</a>
               provides full description of Data Bookeeping System (DBS) system.
-              </td>
-              </tr>
-              <tr><td>&\#187;</td>
-              <td><a href="https://https://twiki.cern.ch/twiki/bin/view/CMS/DBS-TDR">DBS glossary</a>
-              provides a short term definitions used on DBS discovery page.
               </td>
               </tr>
               <tr><td>&\#187;</td>
@@ -1218,15 +1181,10 @@ All terms used on discovery page are defined in DBS glossary.
               </td>
               </tr>
           </table>
-     </div>
-   </div>
-   <div id="helpPanel4">
-     <div id="helpHeader4" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Feedback form
-       </span>
-     </div>
-     <div id="helpContent4">
+</div>
+</span>
+<span id="help_feedback" class="hide">
+<div class="div_scroll">
          <p></p>
          <form action="sendFeedback" method="post">
          <p>
@@ -1240,15 +1198,10 @@ All terms used on discovery page are defined in DBS glossary.
          <input type="submit" value="Submit" id="submit-button-form"/>
          </p>
          </form>
-     </div>
-   </div>
-   <div id="helpPanel5">
-     <div id="helpHeader5" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Site resources
-       </span>
-     </div>
-     <div id="helpContent5">
+</div>
+</span>
+<span id="help_refs" class="hide">
+<div class="div_scroll">
        <table>
          <tr><td>&\#187;</td>
          <td>The sort capabilities in tables provided by <a href="http://www.kryogenix.org/code/browser/sorttable/">sortable</a> package. I extended this package and include some additions (highlihting, new sort functions, etc.)</td>
@@ -1270,25 +1223,11 @@ All terms used on discovery page are defined in DBS glossary.
          <td>Some of my work inspired by <a href="http://www.ajaxprojects.com/">Ajax</a> projects</td>
          </tr>
        </table>
-     </div>
-   </div>
-#if not $userMode
-   <div id="helpPanel6">
-     <div id="helpHeader6" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Method description
-       </span>
-     </div>
-     <div id="helpContent6">
-      At the moment all all menus are generated up-front and I use CSS tricks to hide/highlight
-      part of the document. The menus entries are generated every 5 minutes for DBS and once an hour 
-      for DLS information. I use AJAX technology in some part of DBS discovery page.
-     </div>
-   </div>
-#end if
 </div>
-</td>
+</span>
+</div>
 
+</td>
 </tr>
 </table>
 <script type="text/javascript">
@@ -1300,7 +1239,7 @@ new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('ReleasesDiv'), {panelHeight:accordionHeight} );
 new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('HelpDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('HelpDiv'), {panelHeight:accordionHeight} );
 #if $frontPage
 showMenu('Navigator');
 #end if
