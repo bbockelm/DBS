@@ -340,23 +340,22 @@ Upon your search:
 <!--
 <a href="javascript:ajaxGetDataFromSelection()">Test ajaxGetDataFromSelection</a>
 <b>
-Please make your selection from table below and <a href="javascript:ajaxGenParentsGraph();ajaxGetDataFromSelection();showWaitingMessage()">process your request</a>
+#####Please make your selection from table below and <a href="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();showWaitingMessage()">process your request</a>
+###Please make your selection from table below and <a href="javascript:showWaitingMessage();ajaxGetDataFromSelection();ajaxGenParentsGraph();">process your request</a>
+Please make your selection from table below and <a href="javascript:showWaitingMessage();ajaxGetDataFromSelection();">process your request</a>
 </b>
 -->
 #if len($oList)
-<form action="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();" method="get">
+<form action="" method="get">
 <!--
 <form action="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <form action="getDataFromSelection" method="get">
 -->
 #if len($oList)>15
 <b>
-Please make your selection from table below and <a href="javascript:ajaxGetDataFromSelection();showWaitingMessage()">process your request</a>
+Please make your selection from table above and <a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
 </b>
 <!--
-<b>
-Please make your selection from table below and <a href="javascript:showWaitingMessage();ajaxGetDataFromSelection()">process your request</a>
-</b>
 Please make your selection and submit for further processing:
 </b>
 <input type="submit" value="Find" id="submit-button2a" onclick="javascript:showWaitingMessage();ajaxGetDataFromSelection();" />
@@ -404,7 +403,7 @@ Please make your selection and submit for further processing:
 </b>
 -->
 <b>
-Please make your selection from table above and <a href="javascript:ajaxGenParentsGraph();ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
+Please make your selection from table above and <a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
 </b>
 </form>
 #else

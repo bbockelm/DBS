@@ -356,7 +356,7 @@ ParentsGraphUpdater.prototype = {
      var r=document.getElementById("_parents");
      r.className="td_menu_lavender_box";
      var t=document.getElementById("parents");
-     t.innerHTML=responseHTML;
+     t.innerHTML+=responseHTML;
      // additional action can come here
    }
 }
@@ -365,46 +365,22 @@ function registerAjaxProvenanceGraphCalls() {
   ajaxEngine.registerRequest('ajaxGenParentsGraph','getProvenanceForAllDatasets');
   ajaxEngine.registerAjaxObject('parents',parentsGraphUpdater);
 }
-function ajaxGenParentsGraph(iParam) {
-  var dbs, _dbs, site, _site, app, _app, primD, _primD, tier, _tier;
-  if(iParam) {
-     uSelection=iParam.split(",");
-     _dbs  = uSelection[0];
-     _primD= uSelection[1];
-     _tier = uSelection[2];
-     _app  = "/"+uSelection[4]+"/"+uSelection[5]+"/"+uSelection[3]; // /family/exe/ver
-     _site = "*";
+function ajaxGenParentsGraphFromSelection() {
+  uSelection=document.getElementsByName('userSelection');
+  for(i=0;i<uSelection.length;i++) {
+      if(uSelection[i].checked) {
+         var val=uSelection[i].value;
+         uSel = val.split("___");
+         dbs  = uSel[0];
+         primD= uSel[1];
+         tier = uSel[2];
+         app  = "/"+uSel[3]+"/"+uSel[4]+"/"+uSel[5]; // /ver/family/exe
+         site = "*";
+         ajaxGenParentsGraph(dbs,site,app,primD,tier);
+      }
   }
-  if(_dbs) {
-      dbs=_dbs;
-  } else {
-      dbs=document.getElementById('dbsSelector').value;
-  }
-  if(_site) {
-      site=_site;
-  } else {
-      site=document.getElementById('siteSelector').value;
-  }
-  if(_app) {
-      app=_app;
-  } else {
-      app=document.getElementById('appSelector').value;
-  }
-  if(_primD) {
-      primD=_primD;
-  } else {
-      primD=document.getElementById('primSelector').value;
-  }
-  if(_tier) {
-      tier=_tier;
-  } else {
-      tier=document.getElementById('tierSelector').value;
-  }
-  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
-  var action='<a href="javascript:showWaitingMessage();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
-  ajaxHistory(action);
 }
-function ajaxGenParentsGraph_orig(_dbs,_site,_app,_primD,_tier) {
+function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
   var dbs;
   if(_dbs) {
       dbs=_dbs;

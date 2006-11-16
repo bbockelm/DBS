@@ -759,6 +759,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            page=self.genTopHTML()
         try:
+            print "#########",userSelection
             if  not userSelection:
                 page+="No data found"
             else:
@@ -784,6 +785,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            page+=self.genBottomHTML()
         if self.verbose:
+#        if 1:
            print page
         return page
     getDataFromSelection.exposed = True 
