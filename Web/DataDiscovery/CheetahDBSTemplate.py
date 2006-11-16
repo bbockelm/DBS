@@ -4,7 +4,7 @@
 List of templates used by DBS data discovery server.
 """
 templateTime="""
-<p>
+<hr class="dbs" />
 <table class="intro">
 <caption>Response time:</caption>
 <tr><td>DBS</td><td>DLS</td><td>HTML</td><td>Total</td></tr>
@@ -15,7 +15,6 @@ templateTime="""
 <td>$totalTime</td>
 </tr>
 </table>
-</p>
 """
 templateERROR="""
 The server encountered an unexpected condition which prevented it from fulfilling the request.
@@ -846,7 +845,7 @@ Both
 """
 
 templateBottom="""
-<hr class="dbs" />
+<hr class="dbs" id="hr_results_menu" />
 <table id="results_menu" class="hide" cellspacing="1" width="70%">
 <tr>
 <td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>

@@ -898,7 +898,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         if tier=="*":
            tierHTML='All'
         url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+        page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         return page
 
     def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
@@ -1030,7 +1030,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in getData function")
             page+=str(t)
         t2=time.time()
-        page+="""<hr class="dbs" />"""
         if not self.userMode and self.profile:
            page+=self.responseTime(t2-t1)
         # generate URL link

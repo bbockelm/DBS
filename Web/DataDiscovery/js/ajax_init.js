@@ -6,8 +6,9 @@ GetDataUpdater.prototype = {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
-     var r=document.getElementById("results_menu");
-     r.className="show_table";
+//     var r=document.getElementById("results_menu");
+//     r.className="show_table";
+     showResultsMenu();
      var t=document.getElementById("results");
      t.innerHTML=responseHTML;
      sortables_init();
@@ -162,8 +163,9 @@ function ajaxGetBlocksFromSite() {
 //  ajaxEngine.registerAjaxElement('results');
 //}
 function ajaxGetDetailsForPrimDataset(dbsInst,primDataset) {
-  var r=document.getElementById("results_menu");
-  r.className="show_inline";
+//  var r=document.getElementById("results_menu");
+//  r.className="show_inline";
+  showResultsMenu();
   var id=document.getElementById("results");
   id.className="show_cell";
   ajaxEngine.sendRequest('ajaxGetDetailsForPrimDataset',"dbsInst="+dbsInst,"primDataset="+primDataset);
@@ -279,8 +281,9 @@ function ajaxGetDatasetContent(dbsInst,dataset) {
 //  ajaxEngine.registerAjaxElement('results');
 //}
 function ajaxGetDatasetsFromApplication(dbsInst,appPath) {
-  var r=document.getElementById("results_menu");
-  r.className="show_inline";
+//  var r=document.getElementById("results_menu");
+//  r.className="show_inline";
+  showResultsMenu();
   var id=document.getElementById("results");
   id.className="show_cell";
   ajaxEngine.sendRequest('ajaxGetDatasetsFromApplication',"dbsInst="+dbsInst,"appPath="+appPath);

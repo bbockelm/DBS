@@ -144,6 +144,26 @@ function HidePanel_old(link) {
       alert("Fail to find GlobalPanel");
    }
 }
+function hideResultsMenu() {
+   var t=document.getElementById("results_menu");
+   if(t) {
+      t.className="hide";
+   }
+   var t=document.getElementById("hr_results_menu");
+   if(t) {
+      t.className="hide";
+   }
+}
+function showResultsMenu() {
+   var t=document.getElementById("results_menu");
+   if(t) {
+      t.className="show_inline";
+   }
+   var t=document.getElementById("hr_results_menu");
+   if(t) {
+      t.className="dbs";
+   }
+}
 function showMenu(menu) {
    hideWaitingMessage();
    var menuArr = new Array();
@@ -156,6 +176,7 @@ function showMenu(menu) {
    menuArr[5]='History';
    menuArr[6]='Help';
    menuArr[7]='Hide';
+   hideResultsMenu();
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
