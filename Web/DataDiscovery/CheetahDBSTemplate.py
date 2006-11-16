@@ -344,8 +344,9 @@ Please make your selection from table below and <a href="javascript:ajaxGenParen
 </b>
 -->
 #if len($oList)
-<form action="javascript:ajaxGetDataFromSelection();" method="get">
+<form action="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();" method="get">
 <!--
+<form action="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <form action="getDataFromSelection" method="get">
 -->
 #if len($oList)>15

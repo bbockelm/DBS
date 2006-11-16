@@ -153,6 +153,7 @@ function hideResultsMenu() {
    if(t) {
       t.className="hide";
    }
+   hideResMenu();
 }
 function showResultsMenu() {
    var t=document.getElementById("results_menu");
