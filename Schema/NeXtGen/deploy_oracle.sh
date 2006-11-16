@@ -11,6 +11,7 @@ oracle_db=devdb10
 #
 ddl_file=DBS-NeXtGen-Oracle_generated.sql
 #
+#
 tokenize() {
 index_on_toks=`python -c "instr=\"$1\"
 instr = instr.split(',')
@@ -20,6 +21,11 @@ for astr in instr:
 }
 #
 #  execution starts here
+#
+seq_ddl=seq_ddl.tmp
+trig_ddl=trig_ddl.tmp
+rm -f $seq_ddl
+rm -f $trig_ddl
 #
 date=`date +%m%d%Y%H%M%S`
 if [ -f $ddl_file ]; then
@@ -34,10 +40,17 @@ echo "-- ====================================================" >> $ddl_file
 table_list=`cat DBS-NeXtGen-Oracle.sql|grep "CREATE TABLE"| awk -FTABLE '{print $2}' | tr '[A-Z]' '[a-z]'`
 echo "-- ====================================================" >> $ddl_file
 for atable in $table_list; do
-   echo "create sequence seq_$atable"  >> $ddl_file
+   echo "create sequence seq_$atable ;"  >> $seq_ddl
+   echo   >> $seq_ddl
+   echo "-- ====================================================" >> $trig_ddl
+   echo "-- AUTO INC TRIGGER FOR $atable.ID using SEQ seq_$atable" >> $trig_ddl
+   echo >> $trig_ddl
+   echo " CREATE OR REPLACE TRIGGER "${atable}_TRIG" before insert on "$atable"    for each row begin     if inserting then       if :NEW."ID" is null then          select seq_$atable.nextval into :NEW."ID" from dual;       end if;    end if; end;"   >> $trig_ddl
+   echo "/" >> $trig_ddl
+   echo >> $trig_ddl
 done
-echo "-- ====================================================" >> $ddl_file
 #
+echo "-- ====================================================" >> $ddl_file
 # Add the rest of DDL
 cat DBS-NeXtGen-Oracle.sql| tee |grep --invert-match "CREATE INDEX" >> $ddl_file
 #
@@ -53,12 +66,21 @@ for index_entry in $index_entry_list; do
     
     for ix in $index_on_toks; do
        index_name=`echo ix_${table_name}_${ix}| tr '[A-Z]' '[a-z]'`
-       echo "create index $index_name on $table_name ($ix)" >> $ddl_file
+       echo "create index $index_name on $table_name ($ix);" >> $ddl_file
     done
 done
 echo "-- ====================================================" >> $ddl_file 
 echo >> $ddl_file
-echo "Generated $ddl_file"
+#
+echo "-- SEQUENCES ==========================================" >> $ddl_file
+cat $seq_ddl >> $ddl_file
+echo "-- AUTO INC Table.ID TRIGGERS =========================" >> $ddl_file
+echo >> $ddl_file
+cat $trig_ddl >>  $ddl_file
+#
+echo
+echo
+echo "GENERATED $ddl_file"
 echo
 echo "setup Oracle client environment, for example:"
 echo
