@@ -4,6 +4,7 @@ source setup.sh
 cd -
 echo "Please wait ... The tests can take up to 5 minutes"
 python dbsListUnitTests.py > /dev/null
+python dbsInsertUnitTests.py > /dev/null
 echo "Test results are written in $PWD/result.txt"
 echo ""
 message=`cat result.txt | grep FAILED`

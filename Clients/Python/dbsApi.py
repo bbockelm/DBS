@@ -636,6 +636,47 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+# ------------------------------------------------------------
+
+  def insertRun(self, run):
+
+    """
+    Create a new primary dataset.  Instantiates a database entity for
+    the dataset, and updates input object for the id of the new row.
+    The input object should be a DbsPrimaryDataset with the name set.
+
+    Raises DbsObjectExists if a primary dataset already exists in
+    the database, otherwise may raise an DbsApiException.
+    """
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<run"
+    xmlinput += " run_number='"+str(run.get('RunNumber', ''))+"'"
+    xmlinput += " number_of_events='"+str(run.get('NumberOfEvents', ''))+"'"
+    xmlinput += " number_of_lumi_sections='"+str(run.get('NumberOfLumiSections', ''))+"'"
+    xmlinput += " total_luminosity='"+str(run.get('TotalLuminosity', ''))+"'"
+    xmlinput += " store_number='"+str(run.get('StoreNumber', ''))+"'"
+    xmlinput += " start_of_run='"+run.get('StartOfRun', '')+"'"
+    xmlinput += " end_of_run='"+run.get('EndOfRun', '')+"'"
+    xmlinput += " />"
+    xmlinput += "</dbs>"
+
+    print xmlinput
+
+    data = self._server._call ({ 'api' : 'insertRun',
+                         'xmlinput' : xmlinput }, 'POST')
+    try:
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if (name == 'primary-dataset'):
+            #This is just useless now 
+            dataset['objectId'] = long(attrs['id'])
+      xml.sax.parseString (data, Handler())
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+ 
   # ------------------------------------------------------------
   def insertFiles(self, dataset, files, block):
     """

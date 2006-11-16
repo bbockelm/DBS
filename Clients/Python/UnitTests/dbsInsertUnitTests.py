@@ -20,7 +20,7 @@ api = DbsApi(opts.__dict__)
 mytime = str(time.time())
 
 f = open("result.txt", "a+")
-"""	
+
 apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
 f.write("\n\n***********************insertPrimaryDataset API tests***************************")
 
@@ -393,12 +393,14 @@ block = DbsFileBlock (Path = "/ddd/hd/hd;hd")
 apiObj.run(block, excep = True)
 
 f.write("\n***********************insertBlock API tests***************************")
-"""
 
 apiObj = DbsUnitTestApi(api.insertRun, f)
 f.write("\n\n***********************insertRun API tests***************************")
-runNumber = 101 + int(time.time())
-run = DbsRun (RunNumber=runNumber,
+runNumber1 = 101 + int(time.time()%1000)
+runNumber2 = 102 + int(time.time()%1000)
+runNumber3 = 103 + int(time.time()%1000)
+
+run1 = DbsRun (RunNumber=runNumber1,
 		NumberOfEvents= 100,
 		NumberOfLumiSections= 20,
 		TotalLuminosity= 2222,
@@ -406,9 +408,50 @@ run = DbsRun (RunNumber=runNumber,
 		StartOfRun= 'now',
 		EndOfRun= 'never',
 )
-apiObj.run(run, excep = False)
+apiObj.run(run1, excep = False)
+apiObj.run(run1, excep = True)
+
+run2 = DbsRun (RunNumber=runNumber2)
+apiObj.run(run2, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		StartOfRun= 'no*w')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		StartOfRun= 'no w')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		StartOfRun= 'no;w')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		EndOfRun= 'nev*er')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		EndOfRun= 'nev er')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		EndOfRun= 'nev;er')
+apiObj.run(run, excep = True)
 
 f.write("\n***********************insertRun API tests***************************")
+
+apiObj = DbsUnitTestApi(api.insertTier, f)
+f.write("\n\n***********************insertTier API tests***************************")
+tierName = "HIT" + mytime
+apiObj.run(tierName, excep = False)
+apiObj.run(tierName, excep = False)
+apiObj.run("", excep = True)
+apiObj.run(tierName + "sjhd*lk", excep = True)
+apiObj.run(tierName + "sjhd;lk", excep = True)
+apiObj.run(tierName + "sjhd lk", excep = True)
+apiObj.run(tierName, "",  excep = True)
+
+f.write("\n***********************insertTier API tests***************************")
 
 
 f.close()
