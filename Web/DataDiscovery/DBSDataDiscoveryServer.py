@@ -910,6 +910,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         if string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all": site="*"
+        self.dbsTime=self.dlsTime=0
         page=""
         
         self.helperInit(dbsInst)
@@ -919,9 +920,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.primD= primD
         self.tier = tier
         
-        t1=time.time()
         page+= self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
-        t2=time.time()
 
         primaryDataset=primD
         dataTier = tier
@@ -929,7 +928,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         id=0
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
-        t2=time.time()
+        t1=time.time()
         dList = self.helper.getDatasetsFromApp(appPath)
         t2=time.time()
         self.dbsTime=(t2-t1)
@@ -974,9 +973,10 @@ class DBSDataDiscoveryServer(DBSLogger):
     def responseTime(self,htmlTime):
 #        page="""\n<response type="object" id="time">"""
         nameSpace = {
-                     'dbsTime' : "%5.3f"%self.dbsTime,
-                     'dlsTime' : "%5.3f"%self.dlsTime,
-                     'htmlTime': "%5.3f"%htmlTime
+                     'dbsTime'  : "%5.3f"%self.dbsTime,
+                     'dlsTime'  : "%5.3f"%self.dlsTime,
+                     'htmlTime' : "%5.3f"%(htmlTime-self.dbsTime-self.dlsTime),
+                     'totalTime': "%5.3f"%htmlTime
                     }
         t = Template(CheetahDBSTemplate.templateTime, searchList=[nameSpace])
         page=str(t)

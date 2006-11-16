@@ -902,9 +902,7 @@ class DBSHelper(DBSLogger):
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
       locDict  = {}
-      nEvts    = 0
-      totFiles = 0
-      totSize  = 0
+      nEvts    = totFiles = totSize = self.dbsTime = self.dlsTime = 0
       # IMPORTANT: I think we need to replace listBlocks(dataset) to listBlocksFromApp(app)
       t1 = time.time()
       blockInfoDict = self.api.listBlocks(dataset,app,"yes")
@@ -930,7 +928,7 @@ class DBSHelper(DBSLogger):
               t3 = time.time()
               dlsList = self.dlsApi.getLocations(blockName)
               t4 = time.time()
-              self.dlsTime=(t4-t3)
+              self.dlsTime+=(t4-t3)
 #              print "dlsTime",self.dlsTime
               for entry in dlsList:
                   for loc in entry.locations:

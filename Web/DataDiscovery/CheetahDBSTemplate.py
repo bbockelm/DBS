@@ -5,11 +5,15 @@ List of templates used by DBS data discovery server.
 """
 templateTime="""
 <p>
-Response time:
-<table>
-<tr><td>DBS:</td><td>$dbsTime</td></tr>
-<tr><td>DLS:</td><td>$dlsTime</td></tr>
-<tr><td>HTML:</td><td>$htmlTime</td></tr>
+<table class="intro">
+<caption>Response time:</caption>
+<tr><td>DBS</td><td>DLS</td><td>HTML</td><td>Total</td></tr>
+<tr>
+<td>$dbsTime</td>
+<td>$dlsTime</td>
+<td>$htmlTime</td>
+<td>$totalTime</td>
+</tr>
 </table>
 </p>
 """
