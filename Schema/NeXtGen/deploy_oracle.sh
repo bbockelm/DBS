@@ -24,6 +24,7 @@ for astr in instr:
 #
 seq_ddl=seq_ddl.tmp
 trig_ddl=trig_ddl.tmp
+stamp_trig=trig_ts_ddl.tmp
 rm -f $seq_ddl
 rm -f $trig_ddl
 #
@@ -41,13 +42,23 @@ table_list=`cat DBS-NeXtGen-Oracle.sql|grep "CREATE TABLE"| awk -FTABLE '{print 
 echo "-- ====================================================" >> $ddl_file
 for atable in $table_list; do
    echo "create sequence seq_$atable ;"  >> $seq_ddl
-   echo   >> $seq_ddl
+   #echo   >> $seq_ddl
    echo "-- ====================================================" >> $trig_ddl
    echo "-- AUTO INC TRIGGER FOR $atable.ID using SEQ seq_$atable" >> $trig_ddl
    echo >> $trig_ddl
    echo " CREATE OR REPLACE TRIGGER "${atable}_TRIG" before insert on "$atable"    for each row begin     if inserting then       if :NEW."ID" is null then          select seq_$atable.nextval into :NEW."ID" from dual;       end if;    end if; end;"   >> $trig_ddl
    echo "/" >> $trig_ddl
    echo >> $trig_ddl
+   echo "-- ====================================================" >> $stamp_trig
+   echo "-- LastModified Time Stamp Trigger" >> $stamp_trig
+   echo >> $stamp_trig
+   echo "CREATE OR REPLACE TRIGGER TRTS${atable} BEFORE INSERT OR UPDATE ON ${atable}" >> $stamp_trig
+   echo "FOR EACH ROW" >> $stamp_trig
+   echo "BEGIN" >> $stamp_trig
+   echo "  :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;" >> $stamp_trig
+   echo "END;" >> $stamp_trig
+   echo "/" >> $stamp_trig
+   echo >> $stamp_trig
 done
 #
 echo "-- ====================================================" >> $ddl_file
@@ -77,6 +88,12 @@ cat $seq_ddl >> $ddl_file
 echo "-- AUTO INC Table.ID TRIGGERS =========================" >> $ddl_file
 echo >> $ddl_file
 cat $trig_ddl >>  $ddl_file
+#
+echo "-- TIME STAMP TRIGGERS ================================" >> $ddl_file
+echo >> $ddl_file
+cat $stamp_trig >>  $ddl_file
+#
+echo "commit;">> $ddl_file
 #
 echo
 echo
