@@ -9,7 +9,9 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-ddl_file=DBS-NeXtGen-Oracle_generated.sql
+SchemaVersion=v00_00_02
+#
+ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
 #
 tokenize() {
@@ -93,6 +95,10 @@ echo "-- TIME STAMP TRIGGERS ================================" >> $ddl_file
 echo >> $ddl_file
 cat $stamp_trig >>  $ddl_file
 #
+#
+echo "-- Set the Schema Version -- " >> $ddl_file
+echo "insert into SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
+#
 echo "commit;">> $ddl_file
 #
 echo
@@ -110,6 +116,11 @@ echo
 echo "Verify and then use following commands to deploy:"
 echo
 echo "         sqlplus ${oracle_user}/${oracle_passwd}@${oracle_db} < $ddl_file"
+echo
+echo
+echo "Make sure you check SchemaVersion at the Bottom of this file"
+echo "Current version will be set to ${SchemaVersion} "
+echo
 echo
 echo
 

@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 465
+REM === Build : 469
 REM ======================================================================
 
 CREATE TABLE Person
@@ -23,13 +23,14 @@ REM ======================================================================
 CREATE TABLE Role
   (
     ID                    int,
-    RoleName              varchar(100)                     unique not null,
+    RoleName              varchar(100)                     not null,
     RoleDescription       varchar(100)                     not null,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
-    primary key(ID)
+    primary key(ID),
+    unique(RoleName,RoleDescription)
   );
 
 REM ======================================================================
@@ -66,7 +67,7 @@ REM ======================================================================
 CREATE TABLE SchemaVersion
   (
     ID                    int,
-    SchemaVersion         varchar(100)                     unique not null default v00_00_01,
+    SchemaVersion         varchar(100)                     unique not null,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
@@ -113,8 +114,8 @@ CREATE TABLE LumiSection
     ID                    int,
     LumiSectionNumber     int                              not null,
     RunNumber             int                              not null,
-    StartEventNumber      int,
-    EndEventNumber        int,
+    StartEventNumber      int                              not null,
+    EndEventNumber        int                              not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
     CreatedBy             int,
@@ -264,7 +265,7 @@ CREATE TABLE QueryableParameterSet
   (
     ID                    int,
     Hash                  varchar(1000)                    not null,
-    Name                  varchar(100)                     unique not null,
+    Name                  varchar(100)                     not null,
     Version               varchar(100)                     not null,
     Type                  varchar(100)                     not null,
     Annotation            varchar(1000)                    not null,
@@ -273,7 +274,8 @@ CREATE TABLE QueryableParameterSet
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
-    primary key(ID)
+    primary key(ID),
+    unique(Hash,Name,Version)
   );
 
 REM ======================================================================
@@ -310,8 +312,8 @@ CREATE TABLE MCDescription
   (
     ID                    int,
     MCChannelDescription  varchar(100)                     not null,
-    MCProduction          varchar(100),
-    MCDecayChain          varchar(100),
+    MCProduction          varchar(100)                     not null,
+    MCDecayChain          varchar(100)                     not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
@@ -394,14 +396,15 @@ REM ======================================================================
 CREATE TABLE PrimaryDatasetDescription
   (
     ID                      int,
-    TriggerDescriptionID    int                              unique,
-    MCChannelDescriptionID  int                              unique,
-    OtherDescriptionID      int                              unique,
+    TriggerDescriptionID    int                              not null,
+    MCChannelDescriptionID  int                              not null,
+    OtherDescriptionID      int                              not null,
     CreatedBy               int,
     CreationDate            TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy          int,
     LastModificationDate    TIMESTAMP DEFAULT SYSTIMESTAMP,
-    primary key(ID)
+    primary key(ID),
+    unique(TriggerDescriptionID,MCChannelDescriptionID,OtherDescriptionID)
   );
 
 REM ======================================================================
@@ -446,8 +449,8 @@ REM ======================================================================
 CREATE TABLE Block
   (
     ID                    int,
-    BlockSize             int                              not null,
     Name                  varchar(100)                     unique not null,
+    BlockSize             int                              not null,
     Dataset               int                              not null,
     NumberOfFiles         int                              not null,
     OpenForWriting        char(1)                          not null,
@@ -500,7 +503,8 @@ CREATE TABLE DatasetParentage
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
-    primary key(ID)
+    primary key(ID),
+    unique(ThisDataset,ItsParent)
   );
 
 REM ======================================================================
@@ -514,7 +518,8 @@ CREATE TABLE ProcAlgo
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
-    primary key(ID)
+    primary key(ID),
+    unique(Dataset,Algorithm)
   );
 
 REM ======================================================================
@@ -522,6 +527,7 @@ REM ======================================================================
 CREATE TABLE AnalysisDataset
   (
     ID                    int,
+    Name                  varchar(100)                     unique not null,
     Annotation            varchar(1000)                    not null,
     Query                 varchar(1000)                    not null,
     ProcessedDS           int                              not null,
@@ -568,7 +574,8 @@ CREATE TABLE AnalysisDatasetLumi
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
-    primary key(ID)
+    primary key(ID),
+    unique(AnalysisDataset,Lumi)
   );
 
 REM ======================================================================
@@ -597,7 +604,8 @@ CREATE TABLE FileParentage
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
-    primary key(ID)
+    primary key(ID),
+    unique(ThisFile,ItsParent)
   );
 
 REM ======================================================================
@@ -626,7 +634,8 @@ CREATE TABLE FileAlgo
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
-    primary key(ID)
+    primary key(ID),
+    unique(FileID,Algorithm)
   );
 
 REM ======================================================================
@@ -1066,30 +1075,6 @@ ALTER TABLE FileAlgo ADD CONSTRAINT
 
 CREATE INDEX  ON Person(DistinguishedName);
 
-CREATE INDEX  ON Role(RoleName);
-
-CREATE INDEX  ON PhysicsGroup(PhysicsGroupName);
-
-CREATE INDEX  ON Runs(RunNumber,StoreNumber);
-
-CREATE INDEX  ON DataTier(Name);
-
-CREATE INDEX  ON LumiSection(LumiSectionNumber);
-
 CREATE INDEX  ON TimeLog(Action);
-
-CREATE INDEX  ON AppFamily(FamilyName);
-
-CREATE INDEX  ON AppVersion(Version);
-
-CREATE INDEX  ON AppExecutable(ExecutableName);
-
-CREATE INDEX  ON QueryableParameterSet(Hash);
-
-CREATE INDEX  ON PrimaryDataset(Name);
-
-CREATE INDEX  ON ProcessedDataset(Name);
-
-CREATE INDEX  ON Block(Name);
 
 CREATE INDEX  ON AnalysisDataset(Annotation,Query);
