@@ -241,9 +241,23 @@ apiObj.run(algo, excep = True)
 
 f.write("\n***********************insertAlgorithm API tests***************************")
 
+apiObj = DbsUnitTestApi(api.insertTier, f)
+f.write("\n\n***********************insertTier API tests***************************")
+tierName1 = "HIT" + mytime
+tierName2 = "SIM" + mytime
+apiObj.run(tierName1, excep = False)
+apiObj.run(tierName1, excep = False)
+apiObj.run(tierName2, excep = False)
+apiObj.run("", excep = False)
+apiObj.run(tierName1 + "sjhd*lk", excep = True)
+apiObj.run(tierName1 + "sjhd;lk", excep = True)
+apiObj.run(tierName1 + "sjhd lk", excep = True)
+apiObj.run(tierName1, "",  excep = True)
+
+f.write("\n***********************insertTier API tests***************************")
 
 f.write("\n\n***********************insertProcessedDataset API tests***************************")
-tierList = ['SIM' + mytime, 'RECO' + mytime]
+tierList = [tierName1, tierName2]
 
 apiObj = DbsUnitTestApi(api.insertProcessedDataset,f)
 proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
@@ -441,18 +455,6 @@ apiObj.run(run, excep = True)
 
 f.write("\n***********************insertRun API tests***************************")
 
-apiObj = DbsUnitTestApi(api.insertTier, f)
-f.write("\n\n***********************insertTier API tests***************************")
-tierName = "HIT" + mytime
-apiObj.run(tierName, excep = False)
-apiObj.run(tierName, excep = False)
-apiObj.run("", excep = False)
-apiObj.run(tierName + "sjhd*lk", excep = True)
-apiObj.run(tierName + "sjhd;lk", excep = True)
-apiObj.run(tierName + "sjhd lk", excep = True)
-apiObj.run(tierName, "",  excep = True)
-
-f.write("\n***********************insertTier API tests***************************")
 
 apiObj = DbsUnitTestApi(api.insertLumiSection, f)
 f.write("\n\n***********************insertLumiSection API tests***************************")
