@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApiLogic.java,v 1.25 2006/11/16 23:22:17 sekhri Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApiLogic.java,v 1.26 2006/11/17 17:09:55 sekhri Exp $"
  *
  */
 
@@ -248,7 +248,7 @@ public class DBSApiLogic {
 		if(!isNull(path)) {
 			procDSID = getProcessedDSID(conn, path);
 		}
-		if(!isNull(blockName) {
+		if(!isNull(blockName)) {
 			blockID = getBlockID(conn, blockName, true);
 		}
 		if(blockID == null && procDSID == null) {
@@ -692,20 +692,25 @@ public class DBSApiLogic {
 
 
 
-	public void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
-		String lsNumber = get(table, "lumi_section_number");
-		//Insert a new Lumi Section by feting the run ID 
-		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
-			DBManagement.execute(conn, DBSSql.insertLumiSection(lsNumber, 
-									getID(conn, "Runs", "RunNumber", 
-										get(table, "run_number", true), 
-										true),
-									get(table, "start_event_number", true), 
-									get(table, "end_event_number", true), 
-									get(table, "lumi_start_time", false), 
-									get(table, "lumi_end_time", false), 
-									userID));
-		}
+        private void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
+                String lsNumber = get(table, "lumi_section_number");
+                //Insert a new Lumi Section by feting the run ID 
+                if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
+                        DBManagement.execute(conn, DBSSql.insertLumiSection(lsNumber,
+                                                                        getID(conn, "Runs", "RunNumber",
+                                                                                get(table, "run_number", true),
+                                                                                true),
+                                                                        get(table, "start_event_number", true),
+                                                                        get(table, "end_event_number", true),
+                                                                        get(table, "lumi_start_time", false),
+                                                                        get(table, "lumi_end_time", false),
+                                                                        userID));
+                }
+        }
+
+
+	public void insertLumiSection(Connection conn, Hashtable table, Hashtable dbsUser) throws Exception {
+                insertLumiSection(conn, table, getUserID(conn, dbsUser));
 	}
 
 	/*TODO more information needed and change in the schema required,
