@@ -11,6 +11,8 @@ from dbsProcessedDataset import DbsProcessedDataset
 from dbsQueryableParameterSet import DbsQueryableParameterSet
 from dbsFileBlock import DbsFileBlock
 from dbsRun import DbsRun
+from dbsFile import DbsFile
+from dbsLumiSection import DbsLumiSection
 from dbsOptions import DbsOptionParser
 from dbsUnitTestApi import DbsUnitTestApi
 
@@ -359,11 +361,10 @@ path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][
 block = DbsFileBlock (Path = path)
 apiObj.run(block, excep = False)
 
-block = DbsFileBlock (Name = "/" + mytime + "this/isatestblock#016712", Path = path)
-apiObj.run(block, excep = False)
+block1 = DbsFileBlock (Name = "/" + mytime + "this/isatestblock#016712", Path = path)
+apiObj.run(block1, excep = False)
 
-block = DbsFileBlock (Name = "/" + mytime + "this/isatestblock#016712", Path = path)
-apiObj.run(block, excep = True)
+apiObj.run(block1, excep = True)
 
 block = DbsFileBlock (Name = "/" + mytime + "this/isatestblock016712", Path = path)
 apiObj.run(block, excep = True)
@@ -445,13 +446,141 @@ f.write("\n\n***********************insertTier API tests************************
 tierName = "HIT" + mytime
 apiObj.run(tierName, excep = False)
 apiObj.run(tierName, excep = False)
-apiObj.run("", excep = True)
+apiObj.run("", excep = False)
 apiObj.run(tierName + "sjhd*lk", excep = True)
 apiObj.run(tierName + "sjhd;lk", excep = True)
 apiObj.run(tierName + "sjhd lk", excep = True)
 apiObj.run(tierName, "",  excep = True)
 
 f.write("\n***********************insertTier API tests***************************")
+
+apiObj = DbsUnitTestApi(api.insertLumiSection, f)
+f.write("\n\n***********************insertLumiSection API tests***************************")
+lumiNumber1 = 111 + int(time.time()%1000)
+lumiNumber2 = 112 + int(time.time()%1000)
+lumiNumber3 = 113 + int(time.time()%1000)
+
+lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime='notime',
+			LumiEndTime='neverending',
+			RunNumber=runNumber1,
+			)
+
+apiObj.run(lumi1, excep = False)
+apiObj.run(lumi1, excep = False)
+
+lumi2 = DbsLumiSection (LumiSectionNumber=lumiNumber2,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			RunNumber=runNumber1)
+apiObj.run(lumi2, excep = False)
+
+lumi = DbsLumiSection (startEventNumber=100)
+apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (startEventNumber='10 0')
+apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime='noti me',
+			RunNumber=runNumber1,
+			)
+apiObj.run(lumi, excep = True)
+
+
+lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime='not* me',
+			RunNumber=runNumber1,
+			)
+apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime='no;me',
+			RunNumber=runNumber1,
+			)
+apiObj.run(lumi, excep = True)
+
+f.write("\n***********************insertLumiSection API tests***************************")
+
+apiObj = DbsUnitTestApi(api.insertFiles, f)
+f.write("\n\n***********************insertFiles API tests***************************")
+lfn1 = '1111-0909-9767-8764' + mytime
+lfn2 = '1111-0909-9767-876411' + mytime
+file1= DbsFile (
+		Checksum= '999',
+		LogicalFileName= lfn1,
+		#QueryableMetadata= 'This is a test file',
+		NumberOfEvents= 10000,
+		FileSize= 12340,
+		Status= 'Valid',
+		FileType= 'EVD',
+		LumiList= [lumi1, lumi2],
+		TierList= tierList,
+		)
+
+file2= DbsFile (
+		Checksum= '999',
+		LogicalFileName= lfn2,
+		#QueryableMetadata= 'This is a test file',
+		NumberOfEvents= 10000,
+		FileSize= 12340,
+		Status= 'Valid',
+		FileType= 'EVD',
+		LumiList= [lumi1, lumi2],
+		TierList= tierList,
+		)
+
+apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
+apiObj.run(proc1 ,[file1,file2], block1,  excep = True)
+
+file3 = DbsFile (LogicalFileName= '1111-0909-9767-8764222' + mytime,
+		NumberOfEvents= 10000,
+		FileSize= 12340)
+apiObj.run(proc1 ,[file3], block1,  excep = False)
+
+file = DbsFile (LogicalFileName= '1111*-0909-9767-8764222' + mytime,
+		NumberOfEvents= 10000,
+		FileSize= 12340)
+apiObj.run(proc1 ,[file], block1,  excep = True)
+
+file = DbsFile (LogicalFileName= '1111;-0909-9767-8764222' + mytime,
+		NumberOfEvents= 10000,
+		FileSize= 12340)
+apiObj.run(proc1 ,[file], block1,  excep = True)
+
+file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
+		NumberOfEvents= 10000,
+		FileSize= 12340)
+proc = DbsProcessedDataset(PrimaryDataset=pri1,
+		Name="TestProcessxxxxxxxxxxxxx" + mytime,
+		TierList=tierList)
+
+apiObj.run(proc ,[file], block1,  excep = True)
+
+block = DbsFileBlock (Name = "/" + mytime + "xxxxxxxxxxxxxxxxthis/isatestblock#016712")
+apiObj.run(proc1 ,[file], block,  excep = True)
+
+file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
+		ParentList = [lfn1,lfn2],
+		NumberOfEvents= 10000,
+		FileSize= 12340)
+apiObj.run(proc1 ,[file], block1,  excep = False)
+
+file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
+		ParentList = [lfn1,'doesnotexists'],
+		NumberOfEvents= 10000,
+		FileSize= 12340)
+apiObj.run(proc1 ,[file], block1,  excep = True)
+
+f.write("\n***********************insertFiles API tests***************************")
 
 
 f.close()

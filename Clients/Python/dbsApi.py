@@ -696,7 +696,10 @@ class DbsApi(DbsConfig):
     xmlinput += "<dbs>"
     xmlinput += " <processed_datatset path='"+self._path(dataset)+"'"
     if block != None:
+       #if (block.get("Name", "") == ""):
+       #     print "BLOCK NAME IS NULL"
        xmlinput += " block_name='"+block.get("Name", "")+"'"
+       
     xmlinput += " >"
     
     for file in files:

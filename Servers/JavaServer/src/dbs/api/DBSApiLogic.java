@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiLogic.java,v 1.23 2006/11/15 20:19:04 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiLogic.java,v 1.25 2006/11/16 23:22:17 sekhri Exp $"
  *
  */
 
@@ -700,8 +700,8 @@ public class DBSApiLogic {
 									getID(conn, "Runs", "RunNumber", 
 										get(table, "run_number", true), 
 										true),
-									get(table, "start_event_number", false), 
-									get(table, "end_event_number", false), 
+									get(table, "start_event_number", true), 
+									get(table, "end_event_number", true), 
 									get(table, "lumi_start_time", false), 
 									get(table, "lumi_end_time", false), 
 									userID));

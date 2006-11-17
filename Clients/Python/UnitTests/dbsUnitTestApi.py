@@ -3,13 +3,13 @@
 # API Unit tests for the DBS JavaServer.
 
 import sys
-#from dbsApi import DbsApi
-#from dbsException import *
-#from dbsApiException import *
-#from dbsOptions import DbsOptionParser
-#optManager  = DbsOptionParser()
-#(opts,args) = optManager.getOpt()
-#api = DbsApi(opts.__dict__)
+from dbsApi import DbsApi
+from dbsException import *
+from dbsApiException import *
+from dbsOptions import DbsOptionParser
+optManager  = DbsOptionParser()
+(opts,args) = optManager.getOpt()
+api = DbsApi(opts.__dict__)
       
 lapiObj = ""
 f = ""
@@ -46,11 +46,14 @@ class DbsUnitTestApi:
 			else:
 				f.write("\n" + str(index) + ") FAILED. \t" + info + " AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS : " + exception)
 
-	"""
 	def getExistingPDPath(self):
 		for proc in api.listProcessedDatasets("*"):
 			return "/" + str(proc['PrimaryDataset']['Name']) + "/" + str(proc['tierList'][0]) + "/" + str(proc['Name'])
 
+	def getExistingBlock(self):
+		for block in api.listBlocks(self.getExistingPDPath()):
+			return block['Name']
+	"""
 	def getExistingRunNumber(self):
 		for proc in api.listProcessedDatasets("*"):
 			path =  "/" + str(proc['PrimaryDataset']['Name']) + "/" + str(proc['tierList'][0]) + "/" + str(proc['Name'])
@@ -58,6 +61,7 @@ class DbsUnitTestApi:
 				print run
 				#print run['run_number']
 	"""
-#a = DbsUnitTestApi(None, None)
+a = DbsUnitTestApi(None, None)
+print a.getExistingBlock()
 #print a.getExistingPDPath()
 #print a.getExistingRunNumber()
