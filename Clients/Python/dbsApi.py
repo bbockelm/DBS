@@ -66,6 +66,9 @@ class DbsApi(DbsConfig):
     of the primary dataset, tier and processed dataset name.
     """
 
+    if dataset.type == type(''):
+       return dataset
+ 
     if dataset.get('Name') not in ('', None):
          primary = dataset.get('PrimaryDataset')
          if primary != None:
