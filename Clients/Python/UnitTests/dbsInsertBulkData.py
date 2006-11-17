@@ -72,7 +72,7 @@ for i in range(maxDS):
 
 	#Insert Block
 	block1 = DbsFileBlock (Name = "/" + mytime + "this/isatestblock#016712", Path = path)
-	apiObj.run(block1, excep = False)
+	apiObj.run(path, "/" + mytime + "this/isatestblock#016712" , excep = False)
 
 	#Insert Run
 	apiObj = DbsUnitTestApi(api.insertRun, f)

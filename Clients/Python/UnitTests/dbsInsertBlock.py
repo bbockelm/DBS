@@ -10,6 +10,7 @@
 
 
 import sys
+import random
 from dbsApi import DbsApi
 from dbsException import *
 from dbsApiException import *
@@ -30,20 +31,18 @@ proc = DbsProcessedDataset (
          Name="TestProcessedDS01",
          TierList=['SIM', 'RECO'],
          )
-
+ran = str(int(random.random()*10000000))
 block = DbsFileBlock (
-         Name= "/this/isatestblock#016712",
-         #BlockSize= 0, these are default values, sever will ignore anything else
-         #NumberOfFiles= 0, these are default values, sever will ignore anything else
-         #OpenForWriting= "y", these are default values, sever will ignore anything else
-         Dataset= proc,
-         fileList= ['2222-0909-9767-8764', '1111-0909-9767-8764'],
+		Name= "/this/isaqqqqqqqqqxstbddddlock#016712"+ ran,
          )
 
 print "Creating block %s" % block
 
 try:
-    api.insertBlock (block)
+    api.insertBlock (proc, block)
+    api.insertBlock (proc)
+    api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01")
+    api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01", "/this/isaqww" + ran + "wwwqqqxstblock#016712")
     print "Result: %s" % primary
 except DbsObjectExists, ex:
     print "Object existed already, passing"

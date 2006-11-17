@@ -66,7 +66,9 @@ class DbsApi(DbsConfig):
     of the primary dataset, tier and processed dataset name.
     """
 
-    if dataset.type == type(''):
+    if dataset == None:
+	    return "";
+    if type(dataset) == type(''):
        return dataset
  
     if dataset.get('Name') not in ('', None):
@@ -78,6 +80,20 @@ class DbsApi(DbsConfig):
                      + "/" + tier[0] + "/" + dataset.get('Name')
 
     raise InvalidDatasetPathName(Message="The path name is not correct")      
+
+  def _name (self, obj):
+    """
+    """
+
+    if obj == None:
+	    return "";
+    if type(obj) == type(''):
+       return obj
+    name = obj.get('Name')
+    if name ==  None:
+	    return ""
+    return name
+
 
   # ------------------------------------------------------------
   #  dbsApi API Implementation follows
@@ -231,7 +247,7 @@ class DbsApi(DbsConfig):
 
 
   # ------------------------------------------------------------
-  def listRuns(self, path="*"):
+  def listRuns(self, dataset="*"):
     """
     Retrieve list of runs matching a shell glob pattern.
     Returns a list of DbsParameterSet objects.  If the pattern is
@@ -241,6 +257,7 @@ class DbsApi(DbsConfig):
     May raise an DbsApiException.
 
     """
+    path = self._path(dataset)
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listRuns', 'path' : path }, 'GET')
     print data
@@ -277,7 +294,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listTiers(self, path="*"):
+  def listTiers(self, dataset="*"):
 
     """
     Retrieve list of runs matching a shell glob pattern.
@@ -289,6 +306,7 @@ class DbsApi(DbsConfig):
 
     """
 
+    path = self._path(dataset)
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listTiers', 'path' : path }, 'GET')
 
@@ -308,8 +326,9 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listBlocks(self, path="*"):
+  def listBlocks(self, dataset="*"):
     # Invoke Server.
+    path = self._path(dataset)
     data = self._server._call ({ 'api' : 'listBlocks', 'path' : path }, 'GET')
 
     # Parse the resulting xml output.
@@ -335,7 +354,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, path, blockName, patternLFN="*"):
+  def listFiles(self, dataset, blockName, patternLFN="*"):
     """
     Retrieve list of runs matching a shell glob pattern.
     Returns a list of DbsParameterSet objects.  If the pattern is
@@ -345,6 +364,7 @@ class DbsApi(DbsConfig):
     May raise an DbsApiException.
 
     """
+    path = self._path(dataset)
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 'block_name' : blockName, 'pattern_lfn' : patternLFN }, 'GET')
 
@@ -760,7 +780,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def insertBlock(self, block):
+  def insertBlock(self, dataset, block=None ):
     """
     Create a new primary dataset.  Instantiates a database entity for
     the dataset, and updates input object for the id of the new row.
@@ -769,17 +789,12 @@ class DbsApi(DbsConfig):
     Raises DbsObjectExists if a primary dataset already exists in
     the database, otherwise may raise an DbsApiException.
     """
-
+    path = self._path(dataset)
+    name = self._name(block)
+    
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<block name='"+block.get('Name', '')+"'"
-    path = ""
-    if block.get('Dataset') != None:
-	    path = self._path(block.get('Dataset'))
-    else :
-	    path = block.get('Path')
-    #procdataset = block.get('Dataset') 
-    #xmlinput += " path='"+self._path(procdataset)+"'/>"
+    xmlinput += "<block name='"+ name +"'"
     xmlinput += " path='"+path+"'/>"
     xmlinput += "</dbs>"
 

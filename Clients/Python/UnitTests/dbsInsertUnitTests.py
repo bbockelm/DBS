@@ -371,49 +371,40 @@ f.write("\n***********************insertProcessedDataset API tests**************
 apiObj = DbsUnitTestApi(api.insertBlock, f)
 f.write("\n\n***********************insertBlock API tests***************************")
 path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
-
+blockName =  "/"+ mytime + "this/isatestblock#016712"
+blockName1 =  "/"+ mytime + "this/isatestskljblock#016712"
+blockName2 =  "/"+ mytime + "thislkss/isatestskljblock#016712"
 block = DbsFileBlock (Path = path)
-apiObj.run(block, excep = False)
+apiObj.run(path, excep = False)
 
-block1 = DbsFileBlock (Name = "/" + mytime + "this/isatestblock#016712", Path = path)
-apiObj.run(block1, excep = False)
+block1 = DbsFileBlock (Name = blockName)
+apiObj.run(path, blockName, excep = False)
 
-apiObj.run(block1, excep = True)
+block = DbsFileBlock (Name= blockName1)
+apiObj.run(path, block,  excep = False)
 
-block = DbsFileBlock (Name = "/" + mytime + "this/isatestblock016712", Path = path)
-apiObj.run(block, excep = True)
+block = DbsFileBlock (Name= blockName2)
+apiObj.run(proc1, block,  excep = False)
 
-block = DbsFileBlock (Path = "/absssssssc/dessssssf/hijaaaaaaa")
-apiObj.run(block, excep = True)
+apiObj.run(path, blockName,  excep = True)
+apiObj.run(path, "/" + mytime + "this/isatestblock016712", excep = True)
+apiObj.run("/absssssssc/dessssssf/hijaaaaaaa", excep = True)
+apiObj.run("/abcaaaa/deaaaaaaf/hiaaaaaaaj", "/this/isatestblock#016712", excep = True)
+apiObj.run(path, "/thisisatestblock#016712", excep = True)
+apiObj.run(path, "/thisis atestblock#016712", excep = True)
+apiObj.run(path, "thisisat/ae/stblock#016712", block, excep = True)
+apiObj.run("/ddd/hd*/hdhd", excep = True)
+apiObj.run("/dd d/hd/hdhd", excep = True)
+apiObj.run("/ddd/hd/hd;hd", excep = True)
 
-block = DbsFileBlock (Name = "/this/isatestblock#016712", Path = "/abcaaaa/deaaaaaaf/hiaaaaaaaj")
-apiObj.run(block, excep = True)
-
-block = DbsFileBlock (Name = "/thisisatestblock#016712", Path = path)
-apiObj.run(block, excep = True)
-
-block = DbsFileBlock (Name = "/thisis atestblock#016712", Path = path)
-apiObj.run(block, excep = True)
-
-block = DbsFileBlock (Name = "thisisat/ae/stblock#016712", Path = path)
-apiObj.run(block, excep = True)
-
-block = DbsFileBlock (Path = "/ddd/hd*/hdhd")
-apiObj.run(block, excep = True)
-
-block = DbsFileBlock (Path = "/dd d/hd/hdhd")
-apiObj.run(block, excep = True)
-
-block = DbsFileBlock (Path = "/ddd/hd/hd;hd")
-apiObj.run(block, excep = True)
 
 f.write("\n***********************insertBlock API tests***************************")
 
 apiObj = DbsUnitTestApi(api.insertRun, f)
 f.write("\n\n***********************insertRun API tests***************************")
-runNumber1 = 101 + int(time.time()%1000)
-runNumber2 = 102 + int(time.time()%1000)
-runNumber3 = 103 + int(time.time()%1000)
+runNumber1 = 101 + int(time.time()%10000)
+runNumber2 = 102 + int(time.time()%10000)
+runNumber3 = 103 + int(time.time()%10000)
 
 run1 = DbsRun (RunNumber=runNumber1,
 		NumberOfEvents= 100,
@@ -458,9 +449,9 @@ f.write("\n***********************insertRun API tests***************************
 
 apiObj = DbsUnitTestApi(api.insertLumiSection, f)
 f.write("\n\n***********************insertLumiSection API tests***************************")
-lumiNumber1 = 111 + int(time.time()%1000)
-lumiNumber2 = 112 + int(time.time()%1000)
-lumiNumber3 = 113 + int(time.time()%1000)
+lumiNumber1 = 111 + int(time.time()%10000)
+lumiNumber2 = 112 + int(time.time()%10000)
+lumiNumber3 = 113 + int(time.time()%10000)
 
 lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
 			StartEventNumber=100,
