@@ -2,14 +2,19 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">456</attrib>
-		<attrib name="serial">290673</attrib>
+		<attrib name="build">477</attrib>
+		<attrib name="serial">308229</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">use dbs_new_era_v04;</attrib>
-			<attrib name="postSql"/>
+			<attrib name="preSql">drop database dbs_new_era_v04;
+create database dbs_new_era_v04;
+use dbs_new_era_v04;
+</attrib>
+			<attrib name="postSql">insert into SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
+commit;
+</attrib>
 			<attrib name="ddUseDDEquiv">false</attrib>
 			<attrib name="codeUseBuild">false</attrib>
 			<attrib name="summUseDDEquiv">false</attrib>
@@ -133,42 +138,6 @@
 					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/XHTML</output>
 				</html>
 			</DocsGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
-			<SqlGenModule>
-				<stdSql>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS.sql</output>
-					<order>s</order>
-					<genComments>N</genComments>
-					<genIndexes>N</genIndexes>
-					<genTriggers>Y</genTriggers>
-					<genDropStmt>Y</genDropStmt>
-					<genViews>N</genViews>
-					<genRules>N</genRules>
-					<genFunctions>N</genFunctions>
-					<genProcedures>Y</genProcedures>
-					<genInlineFKs>Y</genInlineFKs>
-					<genPreSQL>Y</genPreSQL>
-					<genSequences>Y</genSequences>
-				</stdSql>
-				<oraSql>
-					<genFunctions>Y</genFunctions>
-					<genViews>N</genViews>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE.sql</output>
-					<genDropStmt>N</genDropStmt>
-					<genInlineFKs>N</genInlineFKs>
-					<genProcedures>N</genProcedures>
-					<genComments>N</genComments>
-				</oraSql>
-				<pgSql>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE_2.sql</output>
-					<genInlineFKs>N</genInlineFKs>
-					<genProcedures>N</genProcedures>
-				</pgSql>
-			</SqlGenModule>
 			<CodeGenModule>
 				<cpp>
 					<output>d:\dbs\cpp</output>
@@ -185,12 +154,49 @@
 					<useJdo>Y</useJdo>
 				</java>
 			</CodeGenModule>
+			<SqlGenModule>
+				<stdSql>
+					<genPostSQL>Y</genPostSQL>
+					<output>/home/anzar/devDBS/DBS/Schema/NeXtGen/DBS-NeXtGen-MySQL.sql</output>
+					<order>s</order>
+					<genComments>N</genComments>
+					<genIndexes>N</genIndexes>
+					<genTriggers>Y</genTriggers>
+					<genDropStmt>N</genDropStmt>
+					<genFunctions>N</genFunctions>
+					<genRules>N</genRules>
+					<genViews>N</genViews>
+					<genProcedures>Y</genProcedures>
+					<genInlineFKs>Y</genInlineFKs>
+					<genPreSQL>Y</genPreSQL>
+					<genSequences>Y</genSequences>
+				</stdSql>
+				<oraSql>
+					<genFunctions>Y</genFunctions>
+					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE.sql</output>
+					<genViews>N</genViews>
+					<genDropStmt>N</genDropStmt>
+					<genInlineFKs>N</genInlineFKs>
+					<genProcedures>N</genProcedures>
+					<genComments>N</genComments>
+				</oraSql>
+				<pgSql>
+					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE_2.sql</output>
+					<genInlineFKs>N</genInlineFKs>
+					<genProcedures>N</genProcedures>
+				</pgSql>
+			</SqlGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
 			<module name="DocsGenModule.html"/>
-			<module name="SqlGenModule.stdSql"/>
 			<module name="DocsGenModule.pdf"/>
+			<module name="SqlGenModule.stdSql"/>
 			<module name="SqlGenModule.pgSql"/>
 			<module name="SqlGenModule.oraSql"/>
 			<module name="CodeGenModule.java"/>
@@ -242,7 +248,7 @@
 				</type>
 				<type>
 					<attribs>
-						<attrib name="name">smallint</attrib>
+						<attrib name="name">int</attrib>
 						<attrib name="ddEquiv"/>
 						<attrib name="id">6</attrib>
 					</attribs>
@@ -410,7 +416,7 @@
 				</type>
 				<type>
 					<attribs>
-						<attrib name="name">int not null auto_increment</attrib>
+						<attrib name="name">int</attrib>
 						<attrib name="ddEquiv"/>
 						<attrib name="id">285090</attrib>
 					</attribs>
@@ -2695,7 +2701,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3000,7 +3006,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3229,6 +3235,26 @@
 									</list>
 								</idx>
 							</oraSql>
+							<pgSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="s">access</elem>
+											<elem type="s">where</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>default</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -3256,7 +3282,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3273,7 +3299,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -3302,7 +3328,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -3534,7 +3560,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3810,7 +3836,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3825,8 +3851,8 @@
 								<attrib name="17">true</attrib>
 								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
-								<attrib name="339">v00_00_01</attrib>
-								<attrib name="338">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -4068,7 +4094,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -4076,6 +4102,30 @@
 								<t>Primary key row id.</t>
 							</p>
 						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">true</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Name</attrib>
+							<attrib name="id">290677</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
 					</field>
 					<field>
 						<fieldAttribs>
@@ -4194,7 +4244,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -4489,7 +4539,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -4506,7 +4556,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -4536,7 +4586,7 @@
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -4985,7 +5035,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -5074,7 +5124,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -5343,41 +5393,12 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
 							<p>
 								<t>Primary key row id.</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="matchType">s</attrib>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">Annotation</attrib>
-							<attrib name="id">135018</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">136868</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>User text desribing what is in the primary dataset.</t>
 							</p>
 						</docs>
 					</field>
@@ -5402,6 +5423,35 @@
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
 							<attrib name="type">7</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>User text desribing what is in the primary dataset.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Annotation</attrib>
+							<attrib name="id">135018</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">136868</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -5741,7 +5791,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -5772,8 +5822,8 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -5796,8 +5846,8 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -5820,8 +5870,8 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -5844,12 +5894,12 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -6122,7 +6172,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6359,7 +6409,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6414,7 +6464,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -6438,7 +6488,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -6719,41 +6769,12 @@
 							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">c</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
 							<p>
 								<t>Foreign key from Analysis Dataset is Primary key.  </t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">false</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="matchType">s</attrib>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">BlockSize</attrib>
-							<attrib name="id">135505</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Collective size of the files in the block.  Guaranteed correct when closed.</t>
 							</p>
 						</docs>
 					</field>
@@ -6812,6 +6833,35 @@
 						<docs>
 							<p>
 								<t>User text desribing what is in the primary dataset.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">BlockSize</attrib>
+							<attrib name="id">135505</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">5</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Collective size of the files in the block.  Guaranteed correct when closed.</t>
 							</p>
 						</docs>
 					</field>
@@ -7085,7 +7135,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7317,7 +7367,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7549,7 +7599,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7781,7 +7831,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7792,7 +7842,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -7816,7 +7866,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -8051,7 +8101,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -8059,7 +8109,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -8083,7 +8133,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -8092,9 +8142,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Cause</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Cause</attrib>
 							<attrib name="id">289812</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8107,7 +8157,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -8131,7 +8181,7 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -8140,9 +8190,9 @@
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Description</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Description</attrib>
 							<attrib name="id">289816</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -8355,7 +8405,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -8788,6 +8838,26 @@
 									</list>
 								</idx>
 							</oraSql>
+							<pgSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="s">access</elem>
+											<elem type="s">where</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>default</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -8815,7 +8885,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -9145,7 +9215,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -9377,7 +9447,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -9609,7 +9679,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -9855,7 +9925,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -9871,7 +9941,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -9884,7 +9954,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">136868</attrib>
+							<attrib name="type">7</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -9892,10 +9962,10 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -9924,7 +9994,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -10238,7 +10308,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -10255,7 +10325,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -10285,7 +10355,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -10528,7 +10598,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -10541,10 +10611,10 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -10570,10 +10640,10 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -10599,10 +10669,10 @@
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">false</attrib>
-								<attrib name="16">true</attrib>
+								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -10833,7 +10903,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -11080,7 +11150,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -11386,7 +11456,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -11634,7 +11704,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -11900,7 +11970,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -11912,7 +11982,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -11941,7 +12011,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -12171,7 +12241,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -12427,7 +12497,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -12443,7 +12513,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -12467,7 +12537,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -12688,7 +12758,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -12920,7 +12990,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -13116,6 +13186,26 @@
 									</list>
 								</idx>
 							</oraSql>
+							<pgSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="s">access</elem>
+											<elem type="s">where</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>default</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -13138,7 +13228,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -13399,7 +13489,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -13665,7 +13755,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -13677,7 +13767,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -13706,7 +13796,7 @@
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">false</attrib>
+								<attrib name="17">true</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -13936,7 +14026,7 @@
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -13952,7 +14042,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -13976,7 +14066,7 @@
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">false</attrib>
+								<attrib name="338">true</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
