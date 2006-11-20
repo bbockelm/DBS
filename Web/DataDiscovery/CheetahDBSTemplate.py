@@ -337,34 +337,21 @@ Upon your search:
 </b>
 </p>
 
-<!--
-<a href="javascript:ajaxGetDataFromSelection()">Test ajaxGetDataFromSelection</a>
-<b>
-#####Please make your selection from table below and <a href="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();showWaitingMessage()">process your request</a>
-###Please make your selection from table below and <a href="javascript:showWaitingMessage();ajaxGetDataFromSelection();ajaxGenParentsGraph();">process your request</a>
-Please make your selection from table below and <a href="javascript:showWaitingMessage();ajaxGetDataFromSelection();">process your request</a>
-</b>
--->
 #if len($oList)
 <form action="" method="get">
-<!--
-<form action="javascript:ajaxGetDataFromSelection();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
-<form action="getDataFromSelection" method="get">
--->
 #if len($oList)>15
-<b>
-Please make your selection from table above and <a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
-</b>
-<!--
-Please make your selection and submit for further processing:
-</b>
-<input type="submit" value="Find" id="submit-button2a" onclick="javascript:showWaitingMessage();ajaxGetDataFromSelection();" />
--->
+<table><tr valign="bottom"><td>
+Please make your selection from the table below and submit your
+</td></td>
+<table class="table_box"><tr><td>
+<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">request</a>
+</td></tr></table>
+</td></tr></table>
 #end if
 <p><span id="SelectionHandler" name="SelectionHandler"></span></p>
 <script type="text/javascript">UnSelectAll()</script>
 <table id="search1" class="sortable">
-<tr>
+<tr class="sortable_gray">
 <th></th>
 #if not $userMode:
 <th>DBS instances</th>
@@ -383,7 +370,7 @@ Please make your selection and submit for further processing:
 #set ver =$item[3]
 #set fam =$item[4]
 #set exe =$item[5]
-<tr>
+<tr class="sortable_yellow">
 <td><input type="checkbox" value="${dbsInst}___${prim}___${tier}___${ver}___${fam}___${exe}" name="userSelection" /></td>
 #if not $userMode:
 <td>$dbsInst</td>
@@ -396,15 +383,13 @@ Please make your selection and submit for further processing:
 </tr>
 #end for
 </table>
-<!--
-<b>
-Please make your selection and submit for further processing:
-<input type="submit" value="Find" id="submit-button2" onclick="javascript:showWaitingMessage();ajaxGetDataFromSelection();" />
-</b>
--->
-<b>
-Please make your selection from table above and <a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">process your request</a>
-</b>
+<table><tr valign="bottom"><td>
+Please make your selection from the table below and submit your
+</td></td>
+<table class="table_box"><tr><td>
+<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">request</a>
+</td></tr></table>
+</td></tr></table>
 </form>
 #else
 #if not $firstSearch
@@ -603,21 +588,24 @@ Block name: <b>$blockName</b>
 <table class="lfn" border="1">
 <tr>
 
-<td bgcolor="#CCCCFF">&nbsp; status &nbsp;</td>
-<td bgcolor="#CCCCFF">&nbsp; type &nbsp;</td>
-<td bgcolor="#CCCCFF">&nbsp; size &nbsp;</td>
-<td bgcolor="#CCCCFF">&nbsp; name &nbsp;</td>
+<td bgcolor="#CCCCFF">status</td>
+<td bgcolor="#CCCCFF">type</td>
+<td bgcolor="#CCCCFF">events</td>
+<td bgcolor="#CCCCFF">size</td>
+<td bgcolor="#CCCCFF">name</td>
 </tr>
 #for item in $lfnList:
 #set name=item[0]
 #set size=item[1]
 #set stat=item[2]
 #set type=item[3]
+#set evts=item[4]
 <tr>
-<td>&nbsp; $stat &nbsp;</td>
-<td>&nbsp; $type &nbsp;</td>
-<td>&nbsp; $size &nbsp;</td>
-<td>&nbsp; $name &nbsp;</td>
+<td>$stat</td>
+<td>$type</td>
+<td>$evts</td>
+<td>$size</td>
+<td>$name</td>
 </tr>
 #end for
 </table>
@@ -1484,6 +1472,15 @@ For given application: $appPath we got
 </p>
 """
 
+templateDummy="""
+<table><tr valign="bottom"><td>
+Choose from the table below and 
+</td><td>
+<table class="table_box"><tr><td>
+<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">Find your data</a>
+</td></tr></table>
+</td></tr></table>
+"""
 #
 # main
 #

@@ -1692,7 +1692,14 @@ class DBSDataDiscoveryServer(DBSLogger):
     getAppConfigs.exposed=True
 
     def dummy(self,**kwargs):
-        return ""
+        page=self.genTopHTML()
+        nameSpace = {
+                     'firstSearch': 0 
+                    }
+        t = Template(CheetahDBSTemplate.templateDummy, searchList=[nameSpace])
+        page+= str(t)
+        page+=self.genBottomHTML()
+        return page
     dummy.exposed=True
 #
 # main

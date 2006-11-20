@@ -474,8 +474,9 @@ class DBSHelper(DBSLogger):
 	  fSize = item[1]
 	  status= item[2]
 	  type  = item[3]
+          evts  = item[4]
           # item=(id,logical_name,fileSize,status,type)
-          lfnList.append((lfn,fSize,status,type))
+          lfnList.append((lfn,fSize,status,type,evts))
       return lfnList
 
   def getLFNs_bName(self,blockName):
@@ -731,24 +732,6 @@ class DBSHelper(DBSLogger):
 #          print searchList,searchString,constructExpression(searchString,'searchList')
           if eval(constructExpression(searchString,'searchList')):
              oList.append((self.dbsInstance,)+tup)
-#
-#
-#          for i in tup:
-#              found=0
-#              for p in pList:
-#                 # skip keywords which represent conditions, e.g. dbs:MCLocal_1/Writer
-#                 if string.find(p,":")>-1: continue
-#                 if  type(i) is types.StringType:
-#                     if string.find(string.lower(i),string.lower(p))>-1:
-#                        oList.append((self.dbsInstance,)+tup)
-#                        found=1
-#                        break
-#                 if  type(i) is types.IntType:
-#                     if pList.count(i):
-#                        oList.append((self.dbsInstance,)+tup)
-#                        found=1
-#                        break
-#              if found: break
       return oList
 
   def getBlockInfo_orig(self,dataset):
