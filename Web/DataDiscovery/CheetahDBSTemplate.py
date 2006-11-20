@@ -341,26 +341,27 @@ Upon your search:
 <form action="" method="get">
 #if len($oList)>15
 <table><tr valign="bottom"><td>
-Please make your selection from the table below and submit your
-</td></td>
+Please make your selection from the table below.
+To submit your request click:
+</td><td>
 <table class="table_box"><tr><td>
-<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">request</a>
+<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">Find</a>
 </td></tr></table>
 </td></tr></table>
 #end if
 <p><span id="SelectionHandler" name="SelectionHandler"></span></p>
 <script type="text/javascript">UnSelectAll()</script>
-<table id="search1" class="sortable">
-<tr class="sortable_gray">
-<th></th>
+<table id="search1" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<tr class="sortable_gray" align="center">
+<td></td>
 #if not $userMode:
-<th>DBS instances</th>
+<td>DBS instances</td>
 #end if
-<th>Primary dataset</th>
-<th>Data tier</th>
-<th>software version</th>
-<th>family</th>
-<th>executable</th>
+<td>Primary dataset</td>
+<td>Data tier</td>
+<td>software version</td>
+<td>family</td>
+<td>executable</td>
 </tr>
 #for item in $oList
 #set dbsInst=$item[0]
@@ -370,7 +371,7 @@ Please make your selection from the table below and submit your
 #set ver =$item[3]
 #set fam =$item[4]
 #set exe =$item[5]
-<tr class="sortable_yellow">
+<tr class="sortable_yellow" align="center">
 <td><input type="checkbox" value="${dbsInst}___${prim}___${tier}___${ver}___${fam}___${exe}" name="userSelection" /></td>
 #if not $userMode:
 <td>$dbsInst</td>
@@ -383,11 +384,13 @@ Please make your selection from the table below and submit your
 </tr>
 #end for
 </table>
-<table><tr valign="bottom"><td>
-Please make your selection from the table below and submit your
-</td></td>
+<br />
+<table><tr valign="center"><td>
+Please make your selection from the table above.
+To submit your request click:
+</td><td>
 <table class="table_box"><tr><td>
-<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">request</a>
+<a href="javascript:ajaxGenParentsGraphFromSelection();ajaxGetDataFromSelection();showWaitingMessage();">Find</a>
 </td></tr></table>
 </td></tr></table>
 </form>
@@ -583,16 +586,17 @@ $msg
 """
 
 templateLFN = """
+#from DBSUtil import sizeFormat, colorSizeHTMLFormat
 Block name: <b>$blockName</b>
 <!-- Main table -->
-<table class="lfn" border="1">
-<tr>
+<table id="lfn_table" class="sortable" cellspacing="0" border="1">
+<tr class="sortable_gray">
 
-<td bgcolor="#CCCCFF">status</td>
-<td bgcolor="#CCCCFF">type</td>
-<td bgcolor="#CCCCFF">events</td>
-<td bgcolor="#CCCCFF">size</td>
-<td bgcolor="#CCCCFF">name</td>
+<td>status</td>
+<td>type</td>
+<td>events</td>
+<td>size</td>
+<td>name</td>
 </tr>
 #for item in $lfnList:
 #set name=item[0]
@@ -600,16 +604,17 @@ Block name: <b>$blockName</b>
 #set stat=item[2]
 #set type=item[3]
 #set evts=item[4]
-<tr>
+<tr class="sortable_yellow">
 <td>$stat</td>
 <td>$type</td>
 <td>$evts</td>
-<td>$size</td>
+<td>$colorSizeHTMLFormat($size)</td>
 <td>$name</td>
 </tr>
 #end for
 </table>
 <!-- end of main table -->
+<script type="text/javascript">sortables_init();</script>
 """
 
 templateSnapshot="""

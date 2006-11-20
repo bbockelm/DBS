@@ -391,13 +391,15 @@ table.lfn  {
 }
 /* Sortable tables */
 table.sortable a.sortheader {
+  border-width: thin thin thin thin;
+  border-spacing: 4px;
   background-color:#eee;
   background:#eee;
   color: #005599;
   font-weight: bold;
   text-decoration: none;
   display: block;
-  border-width: 1px;
+/*  border-width: 1px;*/
   border-color: #eee;
 }
 table.sortable a.sortheader:hover { color: #996699; }
@@ -410,7 +412,7 @@ table.sortable a.sortheader:hover { color: #996699; }
   padding: 2px 2px 2px 2px;
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
-  background-color: "#FFFADC";
+  background-color: #FFFADC;
 }
 .sortable_gray {
   font-weight: normal;
@@ -420,7 +422,7 @@ table.sortable a.sortheader:hover { color: #996699; }
   padding: 2px 2px 2px 2px;
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
-  background-color: "#F0F0F0";
+  background-color: #F0F0F0;
 }
 
 .nonsortable {
