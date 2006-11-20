@@ -612,7 +612,7 @@ class DbsCgiApi(DbsApi):
 		    			  fileType=str(attrs['type']),
 		    			  fileSize=long(attrs['size'])))
             """
-            mylist.append( (  str(attrs['lfn']), long(attrs['size']), str(attrs['status']), str(attrs['type']) ) )
+            mylist.append( (  str(attrs['lfn']), long(attrs['size']), str(attrs['status']), str(attrs['type']), long(attrs['evts']) ) )
 
 
       xml.sax.parseString (data, Handler ())
