@@ -7,9 +7,17 @@ public class DBSConstants {
 	/**
 	 * 
 	 */
-	
+		
+	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
+	public static String XML_FOOTER = "</dbs>\n";
+	public static String XML_EXCEPTION_HEADER = "<exception>\n";
+	public static String XML_EXCEPTION_FOOTER = "</exception>\n";
+	public static String XML_WARNNING_HEADER = "<warnning>\n";
+	public static String XML_WARNNING_FOOTER = "</warnning>\n";
+	public static String XML_SUCCESS = "<SUCCESS/>\n";
+
 	public static String DRIVER = "org.gjt.mm.mysql.Driver";
-	public static String URL = "jdbc:mysql://localhost/dbs_new_era_v03";
+	public static String URL = "jdbc:mysql://localhost/dbs_new_era_v04";
 	public static String USERID = "anzar";
 	public static String PASSWORD = "prodagentpass";
 	/*

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.15 $"
- $Id: DBSSql.java,v 1.15 2006/11/10 18:05:41 afaq Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSSql.java,v 1.16 2006/11/14 21:21:44 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -156,7 +156,7 @@ public class DBSSql {
 	}
 		       
         public static String insertPerson(String userName, String userDN, String contactInfo, String userID) {
-		String sql = "INSERT INTO Pserson ( \n" +
+		String sql = "INSERT INTO Person ( \n" +
 					"Name, \n" +
 				        "DistinguishedName, \n" +
 					"ContactInfo, \n" +
@@ -343,7 +343,7 @@ public class DBSSql {
 			"percb.DistinguishedName as created_by, \n" +
 			"perlm.DistinguishedName as last_modified_by \n" +
 			"FROM PrimaryDataset pd \n" +
-			"LEFT OUTER JOIN Type ty \n" +
+			"LEFT OUTER JOIN PrimaryDSType ty \n" +
 				"ON ty.id = pd.Type \n" +
 			"LEFT OUTER JOIN PrimaryDatasetDescription pdd \n" +
 				"ON pdd.id = pd.Description \n" +
@@ -402,10 +402,10 @@ public class DBSSql {
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"LEFT OUTER JOIN Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
-			"LEFT OUTER JOIN ProcAlgoMap pam \n" +
-				"ON pam.Dataset = procds.id \n" +
+			"LEFT OUTER JOIN ProcAlgo pa \n" +
+				"ON pa.Dataset = procds.id \n" +
 			"LEFT OUTER JOIN AlgorithmConfig algo \n" +
-				"ON algo.id = pam.Algorithm \n" +
+				"ON algo.id = pa.Algorithm \n" +
 			"LEFT OUTER JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
 			"LEFT OUTER JOIN AppFamily af \n" +

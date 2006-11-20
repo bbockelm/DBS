@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.19 $"
- $Id: DBSServlet.java,v 1.19 2006/11/15 20:19:03 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSServlet.java,v 1.20 2006/11/15 23:01:15 afaq Exp $"
 
  */
 package dbs;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import dbs.api.DBSApi;
+import dbs.util.DBSUtil;
 import xml.XMLException;
 
 public class DBSServlet extends HttpServlet{
@@ -28,19 +29,25 @@ public class DBSServlet extends HttpServlet{
          private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
          private static String XML_FOOTER = "</dbs>\n";
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
 
                 //Another interim solution no user DN so make one up, 
                 //will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
                 Hashtable userDN = new Hashtable();
                 userDN.put("user_dn", "ANZARDN");
-
 		System.out.println("DN of the user is " + request.getAttribute("org.globus.gsi.authorized.user.dn"));
 
 		response.setContentType("text/xml");
-
 		PrintWriter out = response.getWriter();
-		if(! isIn("api", request.getParameterNames())) {
+		
+		try {
+			DBSApi api = new DBSApi();
+			api.call(out, getTable(request), userDN);
+		} catch(Exception e) {
+			throw new ServletException(e);
+		}
+
+		/*if(! isIn("api", request.getParameterNames())) {
 			addHeader(response, "api parameter missing", "200", "No API call specified");
 			return;
 		}
@@ -55,9 +62,10 @@ public class DBSServlet extends HttpServlet{
 		addHeader(response, "Success", "100", "");
 
 		try {
-
-		DBSApi api = new DBSApi(request.getParameter("apiversion"));
-
+			DBSApi api = new DBSApi(request.getParameter("apiversion"));
+			api.call(getTable(request), userDN);
+			
+			
 			if(apiParam.equals("getDatasetFiles")
 				|| apiParam.equals("getDatasetContents")
 				|| apiParam.equals("listRuns")
@@ -210,7 +218,7 @@ public class DBSServlet extends HttpServlet{
 		doPost(request, response);
 	}
 
-	private void addHeader(HttpServletResponse response , String message, String code, String detail) {
+	/*private void addHeader(HttpServletResponse response , String message, String code, String detail) {
 		response.addHeader("Dbs-status-code", code);
 		response.addHeader("Dbs-status-message", message.replace('\n', ' '));
 		response.addHeader("Dbs-status-detail", detail.replace('\n', ' '));
@@ -233,7 +241,6 @@ public class DBSServlet extends HttpServlet{
 		System.out.println("Dbs-status-message " + message);
 		System.out.println("Dbs-status-detail " +  detail);
 	}
-
 	private boolean isIn(String param, Enumeration e) {
 		while (e.hasMoreElements()) {
 			if( param.equals((String)e.nextElement()) ) {
@@ -242,5 +249,20 @@ public class DBSServlet extends HttpServlet{
 		}
 		return false;
 	}
+
+*/
+	private Hashtable getTable(HttpServletRequest request) {
+                Hashtable table = new Hashtable();
+		Enumeration e = request.getParameterNames();
+		while (e.hasMoreElements()) {
+			String key = (String)e.nextElement();
+			table.put(key, request.getParameter(key));
+		}
+		return table;
+	}
+
+	
+
+	
 	
 }

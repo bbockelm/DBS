@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.18 $"
- $Id: DBSTest.java,v 1.18 2006/11/15 20:19:05 sekhri Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSTest.java,v 1.19 2006/11/15 23:01:16 afaq Exp $"
  *
  */
 
@@ -23,7 +23,8 @@ public class DBSTest {
 						
         public DBSTest() {
            try { 
-               api = new DBSApi("v00_00_01");
+               api = new DBSApi();
+               //api = new DBSApi("v00_00_01");
 		user.put("user_dn", "ANZARDN");
                out = new PrintWriter(System.out);
  
@@ -42,8 +43,13 @@ public class DBSTest {
 					"<primary-dataset annotation='aaaa' primary_name='PrimaryDS_VIJAY_01' start_date='NOV' end_date='DEC' trigger_path_description='anyTD' mc_channel_description='MCDesc' mc_production='MCProd' mc_decay_chain='DC' other_description='OD' type='PDS'>" +
 					"</primary-dataset>" +
 					"</dbs>";
-					    
-		api.insertPrimaryDataset(xmlString, user);
+
+		Hashtable table = new Hashtable();
+		table.put("api", "insertPrimaryDataset");
+		table.put("xmlinput", xmlString);
+		api.call(out, table, user);
+   
+		//api.insertPrimaryDataset(xmlString, user);
         }
 
         public void insertProcessedDataset() throws Exception {
@@ -64,9 +70,13 @@ public class DBSTest {
 					"<run run_number='3'/>" +
 				"</processed-dataset>" +
 				"</dbs>";
+		/*Hashtable table = new Hashtable();
+		table.put("api", "insertProcessedDataset");
+		table.put("xmlinput", xmlString);
+		api.call(out, table, user);*/
 
-		//api.insertProcessedDataset(xmlString, user); 
-		api.insertProcessedDataset(" ", user); 
+		api.insertProcessedDataset(out, xmlString, user); 
+		//api.insertProcessedDataset(" ", user); 
 
         } 
 
@@ -100,7 +110,12 @@ public class DBSTest {
 				"</file>" +
 				"</processed_datatset>" +
 				"</dbs>";
-		api.insertFiles(xmlString, user); 
+		api.insertFiles(out,xmlString, user); 
+		/*Hashtable table = new Hashtable();
+		table.put("api", "");
+		table.put("xmlinput", xmlString);
+		api.call(out, table, user);*/
+
 	}
 
         public void insertBlock() throws Exception {
@@ -114,8 +129,12 @@ public class DBSTest {
 				"<block path='/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05' open_for_writing='1'>" +
 				"</block>" +
 				"</dbs>";
+		/*Hashtable table = new Hashtable();
+		table.put("api", "");
+		table.put("xmlinput", xmlString);
+		api.call(out, table, user);*/
 
-		api.insertBlock(xmlString, user);
+		api.insertBlock(out,xmlString, user);
         }
 
 /*        public void closeBlock() {
@@ -141,7 +160,7 @@ public class DBSTest {
 				"</run>" +
 				"</dbs>";
 
-		api.insertRun(xmlString, user);
+		api.insertRun(out, xmlString, user);
 		//api.insertRun(null, user);
         }
 
@@ -164,86 +183,146 @@ public class DBSTest {
         }
 */
 
-	public void insertTier() throws Exception {
-		api.insertTier("MY-TIER", user);
+	public void insertTier() throws Exception {	
+		api.insertTier(out, "MY-TIER", user);
         }
 	public void insertParentInPD() throws Exception {
-		api.insertParentInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06",  user);
+		api.insertParentInPD(out, "/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-06",  user);
         }
 	public void insertRunInPD() throws Exception {
-		api.insertRunInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "52",  user);
+		api.insertRunInPD(out, "/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "52",  user);
         }
 	public void insertTierInPD() throws Exception {
-		api.insertTierInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "MY-TIER",  user);
+		api.insertTierInPD(out, "/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", "MY-TIER",  user);
         }
 	public void insertAlgoInPD() throws Exception {
 		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
 					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
 				"</dbs>";
-
-		api.insertAlgoInPD("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", xmlString,  user);
+		api.insertAlgoInPD(out, "/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", xmlString,  user);
         }
 
 	public void insertTierInFile() throws Exception {
-		api.insertTierInFile("LFN40", "MY-TIER",  user);
+		api.insertTierInFile(out, "LFN40", "MY-TIER",  user);
         }
 	public void insertParentInFile() throws Exception {
-		api.insertParentInFile("LFN40", "LFN39",  user);
+		api.insertParentInFile(out, "LFN40", "LFN39",  user);
         }
 	public void insertLumiInFile() throws Exception {
-		api.insertLumiInFile("LFN40", "1028",  user);
+		api.insertLumiInFile(out, "LFN40", "1028",  user);
         }
 	public void insertAlgoInFile() throws Exception {
 		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
 					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2'/>" +
 				"</dbs>";
-		api.insertAlgoInFile("LFN40", xmlString,  user);
+		api.insertAlgoInFile(out, "LFN40", xmlString,  user);
         }
 
 	public void insertAlgorithm() throws Exception {
 		String xmlString = "<?xml version='1.0' standalone='yes'?>" +
 				"<dbs>" +
-					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps1_name2' ps_hash='DUMMY_HASH'/>" +
+					"<algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH'/>" +
 				"</dbs>";
-		api.insertAlgorithm(xmlString,  user);
+		//api.insertAlgorithm(out, xmlString,  user);
+		xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+					"<algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH'/>" +
+				"</dbs>";
+		//api.insertAlgorithm(out, xmlString,  user);
+
+		xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+					"<algorithm app_version='MyVersion12' app_family_name='MyFamily12' app_executable_name='MyExe12' ps_name='DUMMY_ps_name2'/>" +
+				"</dbs>";
+		//api.insertAlgorithm(out, xmlString,  user);
+
+		xmlString = "<?xml version='1.0' standalone='yes'?>" +
+				"<dbs>" +
+					"<algorithm app_version='MyVersion22' app_family_name='MyFamily22' app_executable_name='MyExe22' ps_name='DUMMY_ps_name2'/>" +
+				"</dbs>";
+		//api.insertAlgorithm(xmlString,  user);
+
+
+
+
+
         }
 
         public void runListAPIs() throws Exception {
         /**
           Run all list API calls
         */
-		/*System.out.println("\n\nPrimary Datasets");
-		api.listPrimaryDatasets(out, "*");
+		Hashtable table;
+		
+		System.out.println("\n\nPrimary Datasets");
+		api.listPrimaryDatasets(out, null);
+		//table = new Hashtable();
+		//table.put("api", "listPrimaryDataset");
+		//table.put("pattern", "*");
+		//api.call(out, table, null);
+		
 		System.out.println("\n\nProcessed Datasets");
-		api.listProcessedDatasets(out, "*", "*", "*", "*", "*", "*", "*");
+		api.listProcessedDatasets(out, "*","*","*","*","*","*","*");
+		/*
+		table = new Hashtable();
+		table.put("api", "listProcessedDatasets");
+		table.put("primary_datatset_name_pattern", "*");
+		table.put("data_tier_name_pattern", "*");
+		table.put("processed_datatset_name_pattern", "*");
+		table.put("app_version", "*");
+		table.put("app_family_name", "*");
+		table.put("app_executable_name", "*");
+		table.put("parameterset_name", "*");
+		api.call(out, table, null);
+		*/
 		System.out.println("\n\nAlgorithms");
-		api.listAlgorithms(out, "*", "*", "*", "*");
+		api.listAlgorithms(out, "*","*","*","*");
+		/*
+		table = new Hashtable();
+		table.put("api", "listAlgorithms");
+		table.put("app_version", "*");
+		table.put("app_family_name", "*");
+		table.put("app_executable_name", "*");
+		table.put("parameterset_name", "*");
+		api.call(out, table, null);*/
+
+	
 		System.out.println("\n\nRuns");
 		api.listRuns(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//table = new Hashtable();
+		//table.put("api", "listRuns");
+		//table.put("path", "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//api.call(out, table, null);
+
 		System.out.println("\n\nTiers");
 		api.listTiers(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//table = new Hashtable();
+		//table.put("api", "listTiers");
+		//table.put("path", "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//api.call(out, table, null);
+
 		System.out.println("\n\nBlocks");
-		api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");*/
+		api.listBlocks(out, "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//table = new Hashtable();
+		//table.put("api", "listBlocks");
+		//table.put("path", "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//api.call(out, table, null);
+
 		System.out.println("\n\nFiles");
-		api.listFiles(out, "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-07", null, "*");
-		api.listFiles(out, null, "Block_001", "*");
-		//api.listFiles(out, null, "Block_001", "*");
-		//api.listFiles(out, null, null, "*");
-                    /*System.out.println("\n\nParameter Sets");
-                    api.listParameterSets(out, "*");
-                    System.out.println("\n\nApplications");
-                    api.listApplications(out, "*");
-                    System.out.println("\n\nApplications Configs");
-                    api.listApplicationConfigs(out, "*");
-                    System.out.println("\n\nDataset Contents");
-                    api.getDatasetContents(out, "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI");
-                    System.out.println("\n\nDataset Files");
-                    api.getDatasetFiles(out, "/PreProdR2Mu10GeV/DIGI/GEN-SIM-DIGI");
-                                */
-                    out.flush();
-                    System.out.println();
+		api.listFiles(out, "/PrimaryDS_ANZAR_01/test-tier-02/anzar-procds-07", "", "*");
+		//table = new Hashtable();
+		//table.put("api", "listFiles");
+		//table.put("path", "/PrimaryDS_ANZAR_01/HIT/anzar-procds-117");
+		//api.call(out, table, null);
+
+		//table = new Hashtable();
+		//table.put("api", "listFiles");
+		//table.put("block_name", "Block_001");
+		//api.call(out, table, null);
+
+		System.out.println();
         }
 
 	static public void main(String[] args) {
@@ -253,6 +332,7 @@ public class DBSTest {
 
 			test.runListAPIs(); 
 			//test.insertPrimary();
+			//test.insertAlgorithm();
 			//test.insertProcessedDataset(); 
 			//test.insertFiles(); 
 			//test.insertBlock();
@@ -268,9 +348,8 @@ public class DBSTest {
 			//test.insertParentInFile();
 			//test.insertAlgoInFile();
 			//test.insertLumiInFile();
-			//test.insertAlgorithm();
  
-		} catch (DBSException dbsEx) {
+		/*} catch (DBSException dbsEx) {
 			System.out.println("message: " + dbsEx.getMessage() + " code: " + dbsEx.getCode() + " detail: " + dbsEx.getDetail());
 			dbsEx.printStackTrace();
 		} catch (XMLException xmlEx) {
@@ -278,7 +357,7 @@ public class DBSTest {
 			xmlEx.printStackTrace();
 		} catch (SQLException sqlEx) {
 			System.out.println("message: Database Exception code: 402 detail : " + sqlEx.getMessage());
-			sqlEx.printStackTrace();
+			sqlEx.printStackTrace();*/
 		} catch(Exception e) {
 			System.out.println("message: " +e.getMessage());
 			e.printStackTrace();

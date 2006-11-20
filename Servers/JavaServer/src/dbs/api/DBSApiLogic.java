@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiLogic.java,v 1.26 2006/11/17 17:09:55 sekhri Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiLogic.java,v 1.27 2006/11/17 22:34:41 afaq Exp $"
  *
  */
 
@@ -20,12 +20,6 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 
 public class DBSApiLogic {
-	private static String XML_HEADERa = "Dbs-status-message: Success\n" +
-						"Dbs-status-code: 100\n" +
-						"Content-Type: text/plain; charset=ISO-8859-1\n\n" +
-						"<?xml version='1.0' standalone='yes'?><dbs>";
-	private static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
-	private static String XML_FOOTER = "</dbs>\n";
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
 	//private static String SAFE_PATH = "[-A-Za-z0-9_./\\p{%}]";
 	//private static String SAFE_NAME = "[-A-Za-z0-9_.]";
@@ -34,8 +28,6 @@ public class DBSApiLogic {
 	private static String VALID_PATH = "^/([^/]+)/([^/]+)/([^/]+)";
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
 	//private static String VALID_PATTERN = "^/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)";
-	//private String userDN;
-	//private static String SUCCESS_HEADER = "Dbs-status-message: Success\nDbs-status-code: 100\nContent-Type: text/plain; charset=ISO-8859-1\n\n";
 
 	public DBSApiLogic() {
 		//System.out.println("Constructor DBSApiLogic");
@@ -45,7 +37,6 @@ public class DBSApiLogic {
 	public void listPrimaryDatasets(Connection conn, Writer out, String pattern) throws Exception {
 		pattern = getPattern(pattern, "primary_dataset_name_pattern");
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listPrimaryDatasets(pattern));
-		out.write(XML_HEADER); 
 		while(rs.next()) {
 			out.write(((String) "<primary-dataset id='" + get(rs, "id") + 
 						"' annotation='" + get(rs, "annotation") +
@@ -64,7 +55,6 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "last_modified_by") +
 						"'/>\n"));
 		}
-		out.write(XML_FOOTER);
 	}
 
 	//public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
@@ -94,7 +84,6 @@ public class DBSApiLogic {
 		boolean first = true;
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
-		out.write(XML_HEADER);
 		                
 		while(rs.next()) {
 			//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
@@ -144,7 +133,6 @@ public class DBSApiLogic {
 		}
 
                 if (!first) out.write(((String) "</processed-dataset>\n")); 
-		out.write(XML_FOOTER);
 	}
 
 	/*public void listAlgorithms(Connection conn, Writer out, String pattern) throws Exception {
@@ -161,7 +149,6 @@ public class DBSApiLogic {
 		patternPS 	= getPattern(patternPS, "parameterset_name");
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
-		out.write(XML_HEADER);
 		while(rs.next()) {
 			out.write(((String) "<algorithm id='" + get(rs, "id") + 
 						"' app_version='" + get(rs, "app_version") +
@@ -175,14 +162,12 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "last_modified_by") +
 						"'/>\n"));
 		}
-		out.write(XML_FOOTER);
 	}
 
 
 	public void listRuns(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listRuns(procDSID));
-		out.write(XML_HEADER);
 		while(rs.next()) {
 				out.write(((String) "<run id='" + get(rs, "id") +
 						"' run_number='" + get(rs, "run_number") +
@@ -198,13 +183,11 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "last_modified_by") +
 						"'/>\n"));
 		}
-		out.write(XML_FOOTER);
 	}
 
 	public void listTiers(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listTiers(procDSID));
-		out.write(XML_HEADER);
 		while(rs.next()) {
 				out.write(((String) "<data_tier id='" + get(rs, "id") +
 						"' name='" + get(rs, "name") +
@@ -214,13 +197,11 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "last_modified_by") +
 						"'/>\n"));
 		}
-		out.write(XML_FOOTER);
 	}
 
 	public void listBlocks(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listBlocks(procDSID));
-		out.write(XML_HEADER);
 		while(rs.next()) {
 				out.write(((String) "<block id='" + get(rs, "id") +
 						"' name='" + get(rs, "name") +
@@ -233,7 +214,6 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "last_modified_by") +
 						"'/>\n"));
 		}
-		out.write(XML_FOOTER);
 	}
 
 	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN) throws Exception {
@@ -256,7 +236,6 @@ public class DBSApiLogic {
 		}
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listFiles(procDSID, blockID, patternLFN));
-		out.write(XML_HEADER);
 		while(rs.next()) {
 			String fileID = get(rs, "id");
 			String tier = get(rs, "data_tier");
@@ -292,11 +271,10 @@ public class DBSApiLogic {
 			}
 		}
                 if (!first) out.write(((String) "</file>\n"));
-		out.write(XML_FOOTER);
 	}
 
 	
-	public void insertPrimaryDataset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
+	public void insertPrimaryDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser); 
@@ -313,7 +291,7 @@ public class DBSApiLogic {
 		String tpDesc = get(dataset, "trigger_path_description", false);
 		
 		//Insert a Dataset Type if it does not exists
-		//insertName(conn, "Type", "Type", type , userID);
+		insertName(conn, "PrimaryDSType", "Type", type , userID);
 		
 		//Insert a Dataset Trigger Desc if it does not exists
 		//FIXME some problem with this table while insertng rows
@@ -335,7 +313,7 @@ public class DBSApiLogic {
 							"0",//FIXME Should not be in the schema
 							startDate,
 							endDate,
-							getID(conn, "Type", "Type", type, false), 
+							getID(conn, "PrimaryDSType", "Type", type, true), 
 							userID));
 		//} else {
 			//Append Warnning message that run eixts
@@ -343,7 +321,7 @@ public class DBSApiLogic {
 
 	}
 
-	public void insertRun(Connection conn, Hashtable run, Hashtable dbsUser) throws Exception {
+	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
 		DBManagement.execute(conn, DBSSql.insertRun(
 							get(run, "run_number", true),
 							get(run, "number_of_events", true),
@@ -356,11 +334,11 @@ public class DBSApiLogic {
 
 	}
 
-	public void insertTier(Connection conn, String tierName, Hashtable dbsUser) throws Exception {
+	public void insertTier(Connection conn, Writer out, String tierName, Hashtable dbsUser) throws Exception {
 		insertName(conn, "DataTier", "Name", tierName , getUserID(conn, dbsUser));
 	}
 
-	public void insertBlock(Connection conn, Hashtable block, Hashtable dbsUser) throws Exception {
+	public void insertBlock(Connection conn, Writer out, Hashtable block, Hashtable dbsUser) throws Exception {
 		String path = get(block, "path");
 		String name = get(block, "name");
 		String openForWriting = get(block, "open_for_writing", false);
@@ -380,11 +358,12 @@ public class DBSApiLogic {
 							getUserID(conn, dbsUser)));
 
 		//FIXME Return blockNameback to the user
+		out.write("<block block_name='" + name + "'/>");
 
 	}
 
 
-	public void insertAlgorithm(Connection conn, Hashtable algo, Hashtable dbsUser) throws Exception {
+	public void insertAlgorithm(Connection conn, Writer out, Hashtable algo, Hashtable dbsUser) throws Exception {
 		String version = get(algo, "app_version", true);
 		String family = get(algo, "app_family_name", true);
 		String exe = get(algo, "app_executable_name", true);
@@ -414,7 +393,7 @@ public class DBSApiLogic {
 	}
 
 	//public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
-	public void insertFiles(Connection conn, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
+	public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
 		
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);
@@ -520,7 +499,7 @@ public class DBSApiLogic {
 			for (int j = 0; j < lumiVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
-				insertLumiSection(conn, hashTable, userID);
+				insertLumiSection(conn, out, hashTable, userID);
 				insertMap(conn, "FileLumi", "Fileid", "Lumi", 
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
@@ -533,7 +512,7 @@ public class DBSApiLogic {
 	}
 
 
-	public void insertProcessedDataset(Connection conn, Hashtable dataset, Hashtable dbsUser) throws Exception {
+	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);
@@ -559,7 +538,7 @@ public class DBSApiLogic {
 		//insertName(conn, "Status", "Status", status , userID);
 		
 		//Insert a Physics Group if it does not exists
-		insertPhysicsGroup(conn, phyGroupName, phyGroupCon, userID);
+		insertPhysicsGroup(conn, out,  phyGroupName, phyGroupCon, userID);
 		
 		//Insert a Processed Datatset before by fetching the primDSID, status
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
@@ -626,21 +605,21 @@ public class DBSApiLogic {
 
 	
 
-	public void insertTierInPD(Connection conn, String path, String tierName, Hashtable dbsUser) throws Exception {
+	public void insertTierInPD(Connection conn, Writer out, String path, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
 				getProcessedDSID(conn, path), 
 				getID(conn, "DataTier", "Name", tierName , true), 
 				getUserID(conn, dbsUser));
 	}
 
-	public void insertParentInPD(Connection conn, String path, String parentPath, Hashtable dbsUser) throws Exception {
+	public void insertParentInPD(Connection conn, Writer out, String path, String parentPath, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
 					getProcessedDSID(conn, path), 
 					getProcessedDSID(conn, parentPath), 
 					getUserID(conn, dbsUser));
 	}
 
-	public void insertAlgoInPD(Connection conn, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
+	public void insertAlgoInPD(Connection conn, Writer out, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", 
 					getProcessedDSID(conn, path), 
 					getAlgorithmID(conn, get(algo, "app_version"), 
@@ -650,14 +629,14 @@ public class DBSApiLogic {
 					getUserID(conn, dbsUser));
 	}
 
-	public void insertRunInPD(Connection conn, String path, String runNumber, Hashtable dbsUser) throws Exception {
+	public void insertRunInPD(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
 				getProcessedDSID(conn, path), 
 				getID(conn, "Runs", "RunNumber", runNumber , true), 
 				getUserID(conn, dbsUser));
 	}
 
-	public void insertTierInFile(Connection conn, String lfn, String tierName, Hashtable dbsUser) throws Exception {
+	public void insertTierInFile(Connection conn, Writer out, String lfn, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn,	"FileTier", "Fileid", "DataTier", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
 				getID(conn, "DataTier", "Name", tierName , true), 
@@ -665,14 +644,14 @@ public class DBSApiLogic {
 
 	}
 	
-	public void insertParentInFile(Connection conn, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
+	public void insertParentInFile(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileParentage", "ThisFile", "itsParent", 
 				getID(conn, "Files", "LogicalFileName", lfn, true),
 			 	getID(conn, "Files", "LogicalFileName", parentLFN, true),
 				getUserID(conn, dbsUser));
 	}
 
-	public void insertAlgoInFile(Connection conn, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
+	public void insertAlgoInFile(Connection conn, Writer out, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
 				getAlgorithmID(conn, get(algo, "app_version"), 
@@ -682,7 +661,7 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 	}
 
-	public void insertLumiInFile(Connection conn, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
+	public void insertLumiInFile(Connection conn, Writer out, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileLumi", "Fileid", "Lumi", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
@@ -692,7 +671,7 @@ public class DBSApiLogic {
 
 
 
-        private void insertLumiSection(Connection conn, Hashtable table, String userID) throws Exception {
+        private void insertLumiSection(Connection conn, Writer out, Hashtable table, String userID) throws Exception {
                 String lsNumber = get(table, "lumi_section_number");
                 //Insert a new Lumi Section by feting the run ID 
                 if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
@@ -709,8 +688,8 @@ public class DBSApiLogic {
         }
 
 
-	public void insertLumiSection(Connection conn, Hashtable table, Hashtable dbsUser) throws Exception {
-                insertLumiSection(conn, table, getUserID(conn, dbsUser));
+	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+                insertLumiSection(conn, out, table, getUserID(conn, dbsUser));
 	}
 
 	/*TODO more information needed and change in the schema required,
@@ -726,10 +705,13 @@ public class DBSApiLogic {
 	}*/
 
 	private void insertName(Connection conn, String table, String key, String value, String userID) throws Exception {
+		//System.out.println("inserting table " + table + "  key " + key + " value " + value);
 		if(isNull(value)) throw new DBSException("Bad Data", "300", "Null Field " + key );
 		if(isNull(userID)) throw new DBSException("Bad Data", "300", "Null Field UserDN ");
 		if( getID(conn, table, key, value, false) == null ) {
+			//System.out.println("Just before exe query " + DBSSql.insertName(table, key, value, userID));
 			DBManagement.execute(conn, DBSSql.insertName(table, key, value, userID));
+			//System.out.println("After exe query DONE");
 		}
 	}
 	
@@ -756,9 +738,9 @@ public class DBSApiLogic {
 		}
 	}
 
-	public void insertPhysicsGroup(Connection conn, String name, String phyGroupCon, String userID) throws Exception {
+	public void insertPhysicsGroup(Connection conn, Writer out, String name, String phyGroupCon, String userID) throws Exception {
 		//Insert a new Person if it does not exists
-		insertPerson(conn, "", phyGroupCon, "", userID); //FIXME Get userName and contactInfo also
+		insertPerson(conn, out,  "", phyGroupCon, "", userID); //FIXME Get userName and contactInfo also
 		if( getID(conn, "PhysicsGroup", "PhysicsGroupName", name, false) == null ) {
 			DBManagement.execute(conn, DBSSql.insertPhysicsGroup(name, 
 										getID(conn, "Person", "DistinguishedName", phyGroupCon, true), 
@@ -766,7 +748,7 @@ public class DBSApiLogic {
 		}
 	}
 
-	public void insertPerson(Connection conn, String userName, String userDN, String contactInfo, String userID) throws Exception {
+	public void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String userID) throws Exception {
 		if (isNull(userID)) userID = "0";//0 is user not created by anyone
 		if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
 			DBManagement.execute(conn, DBSSql.insertPerson(userName, userDN, contactInfo,  userID));
@@ -862,10 +844,14 @@ public class DBSApiLogic {
 	}
 
 	private String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
-		return (getID(conn, "Person", "DistinguishedName", 
-					get(dbsUser, "user_dn", true), 
-					true));
-	
+		String id = "";
+		String userDN = get(dbsUser, "user_dn", true);
+		if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
+			//FIXME instead of passing null for out stream writer , pass teh actual stream
+			insertPerson(conn, null,  "", userDN, "", ""); //FIXME Get userName and contactInfo also and the userID shoudl be decicde?
+			id = getID(conn, "Person", "DistinguishedName", userDN , true);
+		}
+		return id;
 	}
 
 	private void checkPath(String path) throws Exception {
