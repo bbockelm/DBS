@@ -1045,7 +1045,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getData.exposed = True 
 
-    def getLFNlist(self,dbsInst,blockName,dataset=""):
+    def getLFNlist(self,dbsInst,blockName,dataset="",iSite="",iApp="",iPrimD="",iTier=""):
         """
            Retrieves and represents LFN list. The list is formed by L{lfnToHTML}.
            @type  dataset: string 
@@ -1059,9 +1059,19 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             page = self.genTopHTML()
             if dataset:
-               page+= self.genSnapshot(dbsInst,self.site,self.app,self.primD,self.tier)
+               if iSite: site=iSite
+               else: site=self.site
+               if iApp: app=iApp
+               else: app=self.app
+               if iPrimD: primD=iPrimD
+               else: primD=self.primD
+               if iTier: tier=iTier
+               else: tier=self.tier
+               page+= self.genSnapshot(dbsInst,site,app,primD,tier)
             page+="""<hr class="dbs" />"""
             page+= self.lfnToHTML(dbsInst,blockName,dataset)
+            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.host,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
+            page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
             page+= self.genBottomHTML()
             return page
         except:
