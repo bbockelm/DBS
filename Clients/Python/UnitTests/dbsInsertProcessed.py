@@ -34,10 +34,10 @@ algo = DbsAlgorithm (
                               )
          )
 
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
+primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 proc = DbsProcessedDataset (
                             PrimaryDataset=primary, 
-                            Name="TestProcessedDS01", 
+                            Name="TestProcessedDS002", 
                             PhysicsGroup="BPositive",
                             Status="Valid",
                             TierList=['SIM', 'RECO'],

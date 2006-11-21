@@ -11,6 +11,7 @@ from dbsApi import DbsApi
 from dbsException import *
 from dbsApiException import *
 from dbsAlgorithm import DbsAlgorithm
+from dbsFileBlock import DbsFileBlock
 from dbsFile import DbsFile
 from dbsLumiSection import DbsLumiSection
 from dbsQueryableParameterSet import DbsQueryableParameterSet
@@ -36,10 +37,10 @@ algo = DbsAlgorithm (
            )
          )
 
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
+primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
-        Name="TestProcessedDS01", 
+        Name="TestProcessedDS001", 
         PhysicsGroup="BPositive",
         Status="Valid",
         TierList=['SIM', 'RECO'],
@@ -66,7 +67,7 @@ lumi2 = DbsLumiSection (
 
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= '1111-0909-9767-8764',
+        LogicalFileName= '1122-0909-9767-8764',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -75,12 +76,12 @@ myfile1= DbsFile (
         Dataset= proc,
         #Block= isDictType,
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM', 'GEN'],
+        TierList= ['SIM', 'RECO'],
          )
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= '2222-0909-9767-8764',
+        LogicalFileName= '2233-0909-9767-8764',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -89,13 +90,13 @@ myfile2= DbsFile (
         Dataset= proc,
         #Block= isDictType,
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM', 'GEN'],
+        TierList= ['SIM', 'RECO'],
         AlgoList = [algo],
         #ParentList = ['lfn01', 'lfn02']  
          )
                             
 block = DbsFileBlock (
-         Name="/test/block#007"
+         Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"

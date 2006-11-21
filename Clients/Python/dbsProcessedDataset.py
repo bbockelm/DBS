@@ -39,7 +39,7 @@ class  DbsProcessedDataset(DbsBase):
       self.setdefault('AlgoList', [])
       # List type object tierList needs to be initialized
       # to avoid return "None" instead of empty list []
-      self.setdefault('tierList', [])
+      self.setdefault('TierList', [])
       # Read in all User provided values
       self.update(args)
       # Verifying that data types of user provide parameters is correct

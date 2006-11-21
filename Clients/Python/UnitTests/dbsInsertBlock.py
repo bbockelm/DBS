@@ -31,9 +31,14 @@ proc = DbsProcessedDataset (
          Name="TestProcessedDS01",
          TierList=['SIM', 'RECO'],
          )
-ran = str(int(random.random()*10000000))
+#ran = str(int(random.random()*10000000))
+#block = DbsFileBlock (
+#		Name= "/this/isaqqqqqqqqqxstbddddlock#016712"+ ran,
+#         )
+
+
 block = DbsFileBlock (
-		Name= "/this/isaqqqqqqqqqxstbddddlock#016712"+ ran,
+         Name="/test/block#007"
          )
 
 print "Creating block %s" % block
@@ -41,8 +46,8 @@ print "Creating block %s" % block
 try:
     api.insertBlock (proc, block)
     api.insertBlock (proc)
-    api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01")
-    api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01", "/this/isaqww" + ran + "wwwqqqxstblock#016712")
+    api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002")
+    #api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01", "/this/isaqww" + ran + "wwwqqqxstblock#016712")
     print "Result: %s" % primary
 except DbsObjectExists, ex:
     print "Object existed already, passing"

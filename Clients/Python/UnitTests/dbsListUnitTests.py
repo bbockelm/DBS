@@ -11,14 +11,13 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-f = open("result.txt", "w")
+f = open("result.txt", "a+")
 apiObj = DbsUnitTestApi(api.listPrimaryDatasets, f)
 path =  apiObj.getExistingPDPath()
 block =  apiObj.getExistingBlock()
 
 f.write("\n\n***********************listPrimaryDatasets API tests***************************")
 apiObj.run("*", excep = False)
-
 apiObj.run("*test*", excep = False)
 apiObj.run(excep = False)
 apiObj.run("", excep = False)

@@ -8,6 +8,10 @@ from dbsApiException import *
 from dbsExecHandler import DbsExecHandler
 
 
+import os, re, string, xml.sax, xml.sax.handler
+from xml.sax.saxutils import escape
+
+
 class DbsHttpService:
 
   """Provides Server connectivity through HTTP"""
@@ -101,17 +105,19 @@ class DbsHttpService:
           result = conn.request(type, request_string)
 
        response = conn.getresponse() 
-       
+ 
        # See if HTTP call succeeded 
        if int(response.status) != 200:
           raise DbsToolError (args = response.reason)
  
+       """
        statusCode = int(response.getheader('Dbs-status-code'))
        statusMessage = response.getheader('Dbs-status-message')
        statusDetail = response.getheader('Dbs-status-detail')
        print "statusCode ", statusCode
        print "statusMessage ", statusMessage 
        print "statusDetail ", statusDetail
+       
        # If there was a server-side error, raise an appropriate exception
        if statusCode != 100:
          exmsg = "Status message: '%s', Status detail: '%s'" % (statusMessage, statusDetail)
@@ -124,8 +130,44 @@ class DbsHttpService:
          elif statusCode == 401: raise DbsConnectionError (args=exmsg)
          elif statusCode == 402: raise DbsDatabaseError (args=exmsg)
          else: raise DbsToolError (args=exmsg)
+       """
 
        data = response.read()
+       print data
+
+       # Error message would arrive in XML, if any
+       class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'exception':
+             statusCode = attrs['code']
+               
+             """
+             if statusCode == 200: raise DbsBadRequest (args=exmsg)
+             elif statusCode == 300: raise DbsBadData (args=exmsg)
+             elif statusCode == 301: raise InvalidDataTier (args=exmsg)
+             elif statusCode == 302: raise DbsNoObject (args=exmsg)
+             elif statusCode == 303: raise DbsObjectExists (args=exmsg)
+             elif statusCode == 400: raise DbsExecutionError (args=exmsg)
+             elif statusCode == 401: raise DbsConnectionError (args=exmsg)
+             elif statusCode == 402: raise DbsDatabaseError (args=exmsg)
+             else: raise DbsToolError (args=exmsg)
+             """
+
+             print "Error Message: " + attrs['message']
+             print "Error Details: " + attrs['detail'] 
+             print "\n\n\n"
+             # For now I am just raising an exception this must be done with proper codes
+             raise DbsException(args=attrs['detail'])
+
+          if name == 'warning':
+             print "Waring Message: " + attrs['message']
+             print "Warning Detail: " + attrs['detail']
+             print "\n\n\n"
+             #print attrs['detail']
+ 
+       xml.sax.parseString (data, Handler ())
+
+
        #f = open("out.txt", "w")
        #print "\n\ndata ->>>>>>>>", data
        if response.getheader ('Content-encoding', '') == 'gzip':

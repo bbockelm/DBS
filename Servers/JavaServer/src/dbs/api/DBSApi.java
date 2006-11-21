@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApi.java,v 1.17 2006/11/15 23:01:15 afaq Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApi.java,v 1.18 2006/11/20 22:46:09 sekhri Exp $"
  *
 */
 
@@ -77,7 +77,12 @@ public class DBSApi {
 	}
 
 	public void call(Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+                
+
 		String apiStr = DBSUtil.get(table, "api");
+
+                System.out.println("apiStr: "+apiStr);
+
 		out.write(DBSConstants.XML_HEADER); 
 		if(isNull(apiStr)) {
 			writeException(out, "Null API", "401", "The client should specify an api field");
@@ -87,7 +92,7 @@ public class DBSApi {
 		try {
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			if (apiStr.equals("listPrimaryDataset")) {
+			if (apiStr.equals("listPrimaryDatasets")) {
 				api.listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
 			} else if (apiStr.equals("listProcessedDatasets")) {
@@ -208,7 +213,7 @@ public class DBSApi {
 						dbsUser);
 				
 			} else {
-				writeException(out, "Invalid API", "401", "The api " + api + " provided by the client is not valid");
+				writeException(out, "Invalid API", "401", "The api " + apiStr + " provided by the client is not valid");
 				return;
 			}
 			conn.commit();
@@ -256,6 +261,9 @@ public class DBSApi {
 	
 	private static void writeException(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
+                message = message.replace('\'',' ');
+                detail= detail.replace('\'',' ');
+                code =code.replace('\'',' ');
 		out.write("<exception message='" + message + "' "); 
 		out.write(" code ='" + code + "' "); 
 		out.write(" detail ='" + detail + "' />\n"); 

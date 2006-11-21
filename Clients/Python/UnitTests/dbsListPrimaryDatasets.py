@@ -21,13 +21,16 @@ try:
    # List all parameter sets
    print ""
    print "Primary Datasets"
-   for primary in api.listPrimaryDatasets("*"):
+   #for primary in api.listPrimaryDatasets("*"):
+   for primary in api.listPrimaryDatasets('ab;bc'):
      print "  %s" % primary
   except DbsDatabaseError,e:
    print e
   
 except InvalidDataTier, ex:
   print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
+except DbsException, ex:
+  print "Caught API exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
 except DbsApiException, ex:
   print "Caught API exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
 except DbsException, ex:

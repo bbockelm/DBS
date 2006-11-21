@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.16 $"
- $Id: DBSSql.java,v 1.16 2006/11/14 21:21:44 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSSql.java,v 1.17 2006/11/20 22:46:09 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -276,6 +276,10 @@ public class DBSSql {
 	
 	//public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) {
 	public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatus, String type, String valStatus, String qMetaData, String userID) {
+
+
+                System.out.println("SERIOUS WARNING:: Validation Status Table is not in Schema, check that again");
+
 		String sql = "INSERT INTO Files ( \n" +
 					"LogicalFileName, \n" +
 					"Dataset, \n" +
@@ -283,7 +287,7 @@ public class DBSSql {
 					"Checksum, \n" +
 					"NumberOfEvents, \n" +
 					"FileSize, \n" +
-					"Status, \n" +
+					"FileStatus, \n" +
 					"FileType, \n" +
 					"ValidationStatus, \n" +
 					"QueryableMetadata, \n" +
@@ -297,9 +301,10 @@ public class DBSSql {
 					"'" + checksum + "', \n" +
 					"'" + nOfEvents + "', \n" +
 					"'" + size + "', \n" +
-					"(" + getID("Status", "Status", fileStatus) + "), \n" +
-					"(" + getID("Type", "Type", type) + "), \n" +
-					"(" + getID("Status", "Status", valStatus) + "), \n" +
+					"(" + getID("FileStatus", "Status", fileStatus) + "), \n" +
+					"(" + getID("FileType", "Type", type) + "), \n" +
+					"(" + getID("FileStatus", "Status", valStatus) + "), \n" +
+					//"(" + getID("ValidationStatus", "Status", valStatus) + "), \n" +
 					"'" + qMetaData + "', \n" +
 					"'" + userID + "', \n" +
 					"'" + DBSUtil.getDate() + "', \n" +
@@ -581,7 +586,7 @@ public class DBSSql {
 				"ON dt.id = fdt.DataTier " +
 			"LEFT OUTER JOIN Type ty \n" +
 				"ON ty.id = f.FileType \n" +
-			"LEFT OUTER JOIN Status st \n" +
+			"LEFT OUTER JOIN FileStatus st \n" +
 				"ON st.id = f.Status \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +

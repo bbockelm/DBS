@@ -1,53 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 456
+-- === Build : 477
 -- ======================================================================
 
+drop database dbs_new_era_v04;
+create database dbs_new_era_v04;
 use dbs_new_era_v04;
--- ======================================================================
-
-DROP TABLE ProcAlgo;
-DROP TABLE DatasetParentage;
-DROP TABLE ProcDSTier;
-DROP TABLE ProcDSRuns;
-DROP TABLE FileType;
-DROP TABLE FileStatus;
-DROP TABLE FileAlgo;
-DROP TABLE FileLumi;
-DROP TABLE FileParentage;
-DROP TABLE FileTier;
-DROP TABLE OtherDescription;
-DROP TABLE MCDescription;
-DROP TABLE TriggerPathDescription;
-DROP TABLE PrimaryDatasetDescription;
-DROP TABLE ParameterBinding;
-DROP TABLE QueryableParameterSet;
-DROP TABLE AppExecutable;
-DROP TABLE AppVersion;
-DROP TABLE AppFamily;
-DROP TABLE AlgorithmConfig;
-DROP TABLE ProcDSStatus;
-DROP TABLE PrimaryDSType;
-DROP TABLE TimeLog;
-DROP TABLE AnalysisDatasetLumi;
-DROP TABLE Description;
-DROP TABLE AnalysisDSType;
-DROP TABLE AnalysisDSStatus;
-DROP TABLE Block;
-DROP TABLE LumiSection;
-DROP TABLE DataTier;
-DROP TABLE Runs;
-DROP TABLE PrimaryDataset;
-DROP TABLE ProcessedDataset;
-DROP TABLE Files;
-DROP TABLE AnalysisDataset;
-DROP TABLE SchemaVersion;
-DROP TABLE PhysicsGroup;
-DROP TABLE AssignedRole;
-DROP TABLE Role;
-DROP TABLE Person;
-
 -- ======================================================================
 
 CREATE TABLE Person
@@ -99,7 +58,6 @@ CREATE TABLE AssignedRole
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(PersonID,RoleID),
 
     foreign key(PersonID) references Person(ID) on update CASCADE on delete CASCADE,
     foreign key(RoleID) references Role(ID) on update CASCADE on delete CASCADE,
@@ -131,14 +89,13 @@ CREATE TABLE PhysicsGroup
 CREATE TABLE SchemaVersion
   (
     ID                    int,
-    SchemaVersion         varchar(100)                                                      unique not null default v00_00_01,
+    SchemaVersion         varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(SchemaVersion),
 
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
@@ -149,11 +106,12 @@ CREATE TABLE SchemaVersion
 CREATE TABLE AnalysisDataset
   (
     ID                    int,
+    Name                  varchar(100)                                                      unique not null,
     Annotation            varchar(1000)                                                     not null,
     Query                 varchar(1000)                                                     not null,
     ProcessedDS           int                                                               not null,
     Type                  int                                                               not null,
-    PhysicsGroup          int,
+    PhysicsGroup          int                                                               not null,
     Status                int                                                               not null,
     Parent                int,
     CreatedBy             int,
@@ -181,7 +139,7 @@ CREATE TABLE Files
     Dataset               int                                                               not null,
     Block                 int                                                               not null,
     Checksum              varchar(100)                                                      not null,
-    NumberOfEvents        smallint                                                          not null,
+    NumberOfEvents        int                                                               not null,
     FileSize              int                                                               not null,
     FileStatus            int                                                               not null,
     FileType              int                                                               not null,
@@ -211,7 +169,7 @@ CREATE TABLE ProcessedDataset
     Name                  varchar(100)                                                      not null,
     PrimaryDataset        int                                                               not null,
     OpenForWriting        char(1)                                                           not null,
-    PhysicsGroup          int,
+    PhysicsGroup          int                                                               not null,
     Status                int                                                               not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -235,8 +193,8 @@ CREATE TABLE ProcessedDataset
 CREATE TABLE PrimaryDataset
   (
     ID                    int,
-    Annotation            varchar(1000)                                                     not null,
     Name                  varchar(100)                                                      unique not null,
+    Annotation            varchar(1000)                                                     not null,
     Description           int,
     StartDate             varchar(100),
     EndDate               varchar(100),
@@ -259,11 +217,11 @@ CREATE TABLE PrimaryDataset
 CREATE TABLE Runs
   (
     ID                    int,
-    RunNumber             smallint                                                          unique not null,
-    NumberOfEvents        smallint                                                          unique,
-    NumberOfLumiSections  smallint                                                          unique,
-    TotalLuminosity       smallint                                                          unique,
-    StoreNumber           smallint                                                          unique,
+    RunNumber             int                                                               unique not null,
+    NumberOfEvents        int                                                               not null,
+    NumberOfLumiSections  int                                                               not null,
+    TotalLuminosity       int                                                               not null,
+    StoreNumber           int                                                               not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             int,
@@ -299,10 +257,10 @@ CREATE TABLE DataTier
 CREATE TABLE LumiSection
   (
     ID                    int,
-    LumiSectionNumber     smallint                                                          not null,
+    LumiSectionNumber     int                                                               not null,
     RunNumber             int                                                               not null,
-    StartEventNumber      smallint,
-    EndEventNumber        smallint,
+    StartEventNumber      int                                                               not null,
+    EndEventNumber        int                                                               not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
     CreatedBy             int,
@@ -323,9 +281,9 @@ CREATE TABLE LumiSection
 CREATE TABLE Block
   (
     ID                    int,
-    BlockSize             int                                                               not null,
     Name                  varchar(100)                                                      unique not null,
     Dataset               int                                                               not null,
+    BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,
     OpenForWriting        char(1)                                                           not null,
     CreatedBy             int,
@@ -406,6 +364,7 @@ CREATE TABLE AnalysisDatasetLumi
     LastModifiedBy        int,
 
     primary key(ID),
+    unique(AnalysisDataset,Lumi),
 
     foreign key(AnalysisDataset) references AnalysisDataset(ID),
     foreign key(Lumi) references LumiSection(ID),
@@ -418,10 +377,10 @@ CREATE TABLE AnalysisDatasetLumi
 CREATE TABLE TimeLog
   (
     ID                    int,
-    Action                varchar(100)                                                      unique not null,
-    Cause                 varchar(100)                                                      unique not null,
-    Effect                varchar(100)                                                      unique not null,
-    Description           varchar(100)                                                      unique not null,
+    Action                varchar(100)                                                      not null,
+    Cause                 varchar(100)                                                      not null,
+    Effect                varchar(100)                                                      not null,
+    Description           varchar(100)                                                      not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -548,8 +507,8 @@ CREATE TABLE AppExecutable
 CREATE TABLE QueryableParameterSet
   (
     ID                    int,
-    Hash                  varchar(1000)                                                     not null,
-    Name                  varchar(100)                                                      unique not null,
+    Hash                  varchar(100)                                                      not null,
+    Name                  varchar(100)                                                      not null,
     Version               varchar(100)                                                      not null,
     Type                  varchar(100)                                                      not null,
     Annotation            varchar(1000)                                                     not null,
@@ -560,6 +519,7 @@ CREATE TABLE QueryableParameterSet
     LastModifiedBy        int,
 
     primary key(ID),
+    unique(Hash,Name,Version),
 
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
@@ -578,7 +538,6 @@ CREATE TABLE ParameterBinding
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
-    unique(Self,Contains),
 
     foreign key(Self) references QueryableParameterSet(ID),
     foreign key(Contains) references QueryableParameterSet(ID),
@@ -591,15 +550,16 @@ CREATE TABLE ParameterBinding
 CREATE TABLE PrimaryDatasetDescription
   (
     ID                      int,
-    TriggerDescriptionID    int                                                               unique,
-    MCChannelDescriptionID  int                                                               unique,
-    OtherDescriptionID      int                                                               unique,
+    TriggerDescriptionID    int,
+    MCChannelDescriptionID  int,
+    OtherDescriptionID      int,
     CreatedBy               int,
     CreationDate            TIMESTAMP DEFAULT 0,
     LastModifiedBy          int,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
+    unique(TriggerDescriptionID,MCChannelDescriptionID,OtherDescriptionID),
 
     foreign key(TriggerDescriptionID) references TriggerPathDescription(ID),
     foreign key(MCChannelDescriptionID) references MCDescription(ID),
@@ -688,8 +648,8 @@ CREATE TABLE FileTier
 CREATE TABLE FileParentage
   (
     ID                    int,
-    ThisFile              int,
-    ItsParent             int,
+    ThisFile              int                                                               not null,
+    ItsParent             int                                                               not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
@@ -738,6 +698,7 @@ CREATE TABLE FileAlgo
     LastModifiedBy        int,
 
     primary key(ID),
+    unique(Fileid,Algorithm),
 
     foreign key(Fileid) references Files(ID),
     foreign key(Algorithm) references AlgorithmConfig(ID),
@@ -826,8 +787,8 @@ CREATE TABLE ProcDSTier
 CREATE TABLE DatasetParentage
   (
     ID                    int,
-    ThisDataset           int,
-    ItsParent             int,
+    ThisDataset           int                                                               not null,
+    ItsParent             int                                                               not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
@@ -855,6 +816,7 @@ CREATE TABLE ProcAlgo
     LastModifiedBy        int,
 
     primary key(ID),
+    unique(Dataset,Algorithm),
 
     foreign key(Dataset) references ProcessedDataset(ID),
     foreign key(Algorithm) references AlgorithmConfig(ID),
@@ -863,4 +825,25 @@ CREATE TABLE ProcAlgo
   );
 
 -- ======================================================================
+
+insert into SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
+commit;
+-- ======================================================================
+
+-- Initialize status tables There are better ways to do it, get to that laters
+
+INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW()); 
+
+INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
+
+INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
+
+INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;
+
+INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
+
+INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());
+
+
+
 

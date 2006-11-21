@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.20 $"
- $Id: DBSServlet.java,v 1.20 2006/11/15 23:01:15 afaq Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSServlet.java,v 1.21 2006/11/20 22:46:08 sekhri Exp $"
 
  */
 package dbs;
@@ -31,6 +31,7 @@ public class DBSServlet extends HttpServlet{
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
 
+		try {
                 //Another interim solution no user DN so make one up, 
                 //will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
                 Hashtable userDN = new Hashtable();
@@ -40,7 +41,6 @@ public class DBSServlet extends HttpServlet{
 		response.setContentType("text/xml");
 		PrintWriter out = response.getWriter();
 		
-		try {
 			DBSApi api = new DBSApi();
 			api.call(out, getTable(request), userDN);
 		} catch(Exception e) {
@@ -256,7 +256,10 @@ public class DBSServlet extends HttpServlet{
 		Enumeration e = request.getParameterNames();
 		while (e.hasMoreElements()) {
 			String key = (String)e.nextElement();
-			table.put(key, request.getParameter(key));
+                        System.out.println("getTable :"+key); 
+         
+		   table.put(key, request.getParameter(key));
+                   System.out.println("value :"+request.getParameter(key)); 
 		}
 		return table;
 	}

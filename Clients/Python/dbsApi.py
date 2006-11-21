@@ -138,7 +138,7 @@ class DbsApi(DbsConfig):
     """
 
     # Invoke Server.    
-    data = self._server._call ({ 'api' : 'listDatasets', 
+    data = self._server._call ({ 'api' : 'listProcessedDatasets', 
 		    'primary_datatset_name_pattern' : patternPrim, 
 		    'data_tier_name_pattern' : patternDT, 
 		    'processed_datatset_name_pattern' : patternProc, 
@@ -160,7 +160,7 @@ class DbsApi(DbsConfig):
                                                 PrimaryDataset=DbsPrimaryDataset(
                                                         Name=str(attrs['primary_datatset_name'])) )
           if name == 'data_tier':
-            self.currDataset['tierList'].append(str(attrs['name']))
+            self.currDataset['TierList'].append(str(attrs['name']))
 
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
@@ -386,7 +386,7 @@ class DbsApi(DbsConfig):
                                        )
 
           if name == 'data_tier':
-            self.currFile['tierList'].append(str(attrs['name']))
+            self.currFile['TierList'].append(str(attrs['name']))
 
           if name == 'lumi_section':
              self.currFile['lumiList'].append(DbsLumiSection(

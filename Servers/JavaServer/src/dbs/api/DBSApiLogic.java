@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApiLogic.java,v 1.27 2006/11/17 22:34:41 afaq Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApiLogic.java,v 1.28 2006/11/20 22:46:09 sekhri Exp $"
  *
  */
 
@@ -18,6 +18,8 @@ import db.DBManagement;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+
+import dbs.DBSConstants;
 
 public class DBSApiLogic {
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
@@ -466,7 +468,7 @@ public class DBSApiLogic {
 			//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
 			for (int j = 0; j < algoVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)algoVector.get(j);
-				insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", 
+				insertMap(conn, "FileAlgo", "Fileid", "Algorithm", 
 						fileID, 
 						getAlgorithmID(conn, get(hashTable, "app_version"), 
 								get(hashTable, "app_family_name"), 
@@ -547,7 +549,7 @@ public class DBSApiLogic {
 							getID(conn, "PrimaryDataset", "Name", primDSName, true),
 							openForWriting,
 							getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
-							getID(conn, "Status", "Status", status, false), 
+							getID(conn, "ProcDSStatus", "Status", status, true), 
 							userID));
 		//} else {
 			//warMsg =+ (String)"ProcessedDataset Name " + procDSName + " already exists but ignored.\n";
@@ -564,7 +566,7 @@ public class DBSApiLogic {
 		//Insert ProcAlgoMap table by fetching application ID. 
 		for (int j = 0; j < algoVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
-			insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", 
+			insertMap(conn, "ProcAlgo", "Dataset", "Algorithm", 
 					procDSID, 
 					getAlgorithmID(conn, get(hashTable, "app_version"), 
 							get(hashTable, "app_family_name"), 
@@ -620,7 +622,7 @@ public class DBSApiLogic {
 	}
 
 	public void insertAlgoInPD(Connection conn, Writer out, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "ProcAlgoMap", "Dataset", "Algorithm", 
+		insertMap(conn, "ProcAlgo", "Dataset", "Algorithm", 
 					getProcessedDSID(conn, path), 
 					getAlgorithmID(conn, get(algo, "app_version"), 
 							get(algo, "app_family_name"), 
@@ -652,7 +654,7 @@ public class DBSApiLogic {
 	}
 
 	public void insertAlgoInFile(Connection conn, Writer out, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "FileAlgoMap", "Fileid", "Algorithm", 
+		insertMap(conn, "FileAlgo", "Fileid", "Algorithm", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
 				getAlgorithmID(conn, get(algo, "app_version"), 
 						get(algo, "app_family_name"), 
@@ -685,7 +687,24 @@ public class DBSApiLogic {
                                                                         get(table, "lumi_end_time", false),
                                                                         userID));
                 }
+                else {
+                  writeWarning(out, "Already Exists", "401", "LumiSection "+lsNumber+" ALready Exists");
+                }
         }
+
+
+        private static void writeWarning(Writer out, String message, String code, String detail) throws Exception {
+                //out.write(DBSConstants.XML_EXCEPTION_HEADER);
+                message = message.replace('\'',' ');
+                detail= detail.replace('\'',' ');
+                code =code.replace('\'',' ');
+                out.write("<warning message='" + message + "' ");
+                out.write(" code ='" + code + "' ");
+                out.write(" detail ='" + detail + "' />\n");
+                out.flush();
+                //out.write(DBSConstants.XML_EXCEPTION_FOOTER);
+        }
+
 
 
 	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {

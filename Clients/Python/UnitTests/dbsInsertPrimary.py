@@ -18,7 +18,7 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
  
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
+primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 print "Creating primary dataset %s" % primary
 
 try:

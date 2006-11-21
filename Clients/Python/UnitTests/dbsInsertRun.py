@@ -19,7 +19,7 @@ api = DbsApi(opts.__dict__)
 
                             
 run = DbsRun (
-         RunNumber=101,
+         RunNumber=1,
          NumberOfEvents= 100,
          NumberOfLumiSections= 20,
          TotalLuminosity= 2222,
