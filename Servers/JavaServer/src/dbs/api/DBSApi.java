@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApi.java,v 1.18 2006/11/20 22:46:09 sekhri Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApi.java,v 1.19 2006/11/21 23:26:11 afaq Exp $"
  *
 */
 
@@ -49,7 +49,7 @@ public class DBSApi {
                 return false;
         }
 
-        public DBSApi(String apiversion) throws Exception {
+        public void checkVersion(String apiversion) throws Exception {
 		//FIXME I dont think this api check is does anything. Anyways it has to move in the call method insated of the constructor
                 Enumeration verEnum = supportedClientApiVersions().elements();
                 String msg  = "Incorrect API version specified '"+apiversion+"'";
@@ -67,29 +67,25 @@ public class DBSApi {
 
 
                 //Now lets check the Schema version too !!!!!!!!!!!!
-
-                api = new DBSApiLogic();
-                //System.out.println("Constructor DBSApi");
         }
 
-        public DBSApi() throws Exception {
+        public DBSApi() {
                 api = new DBSApiLogic();
 	}
 
 	public void call(Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
                 
+		Connection conn = null;
 
-		String apiStr = DBSUtil.get(table, "api");
+		try {
 
+		String apiStr = get(table, "api", true);
+                String apiVersion = get(table, "apiversion", true);
                 System.out.println("apiStr: "+apiStr);
+                checkVersion(get(table, "apiversion", true)); 
 
 		out.write(DBSConstants.XML_HEADER); 
-		if(isNull(apiStr)) {
-			writeException(out, "Null API", "401", "The client should specify an api field");
-			return;
-		}
-		Connection conn = null;
-		try {
+
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			if (apiStr.equals("listPrimaryDatasets")) {
@@ -259,7 +255,7 @@ public class DBSApi {
 		return 	get(table, "xmlinput", true);
 	}
 	
-	private static void writeException(Writer out, String message, String code, String detail) throws Exception {
+	public void writeException(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
                 message = message.replace('\'',' ');
                 detail= detail.replace('\'',' ');
