@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.17 $"
- $Id: DBSSql.java,v 1.17 2006/11/20 22:46:09 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSSql.java,v 1.18 2006/11/21 23:26:12 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -584,10 +584,10 @@ public class DBSSql {
                                 "ON fdt.Fileid = f.id \n" +
 			"LEFT OUTER JOIN DataTier dt \n" +
 				"ON dt.id = fdt.DataTier " +
-			"LEFT OUTER JOIN Type ty \n" +
+			"LEFT OUTER JOIN FileType ty \n" +
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN FileStatus st \n" +
-				"ON st.id = f.Status \n" +
+				"ON st.id = f.FileStatus \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +

@@ -13,8 +13,17 @@ api = DbsApi(opts.__dict__)
 
 f = open("result.txt", "a+")
 apiObj = DbsUnitTestApi(api.listPrimaryDatasets, f)
-path =  apiObj.getExistingPDPath()
-block =  apiObj.getExistingBlock()
+
+pathfile = open('pathfile', 'r')
+path= pathfile.readline()
+pathfile.close()
+
+blockfile = open('blockfile', 'r')
+block = blockfile.readline()
+blockfile.close()
+
+#path =  apiObj.getExistingPDPath()
+#block =  apiObj.getExistingBlock()
 
 f.write("\n\n***********************listPrimaryDatasets API tests***************************")
 apiObj.run("*", excep = False)

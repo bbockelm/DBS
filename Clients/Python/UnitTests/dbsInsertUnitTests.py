@@ -536,24 +536,29 @@ apiObj.run(proc1 ,[file1,file2], block1,  excep = True)
 
 file3 = DbsFile (LogicalFileName= '1111-0909-9767-8764222' + mytime,
 		NumberOfEvents= 10000,
+                Status= 'Valid',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file3], block1,  excep = False)
 
 file = DbsFile (LogicalFileName= '1111*-0909-9767-8764222' + mytime,
 		NumberOfEvents= 10000,
+                Status= 'Valid',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111;-0909-9767-8764222' + mytime,
 		NumberOfEvents= 10000,
+                Status= 'Valid', 
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		NumberOfEvents= 10000,
+                Status= 'Valid',
 		FileSize= 12340)
 proc = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessxxxxxxxxxxxxx" + mytime,
+                Status= 'Valid',
 		TierList=tierList)
 
 apiObj.run(proc ,[file], block1,  excep = True)
@@ -564,16 +569,29 @@ apiObj.run(proc1 ,[file], block,  excep = True)
 file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		ParentList = [lfn1,lfn2],
 		NumberOfEvents= 10000,
+                Status= 'Valid',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = False)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
 		ParentList = [lfn1,'doesnotexists'],
 		NumberOfEvents= 10000,
+                Status= 'Valid',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 f.write("\n***********************insertFiles API tests***************************")
 
 
+# Store ONE path that could be used by next LIST test cases
+pathfile=open('pathfile', 'w')
+pathfile.write(path)
+pathfile.close()
+blockfile=open('blockfile', 'w')
+blockfile.write(blockName)
+blockfile.close()
+###########################
+
 f.close()
+sys.exit(0)
+

@@ -6,7 +6,13 @@ source setup.sh
 cd -
 echo "Please wait ... The tests can take up to 5 minutes"
 python dbsInsertUnitTests.py > /dev/null
-python dbsListUnitTests.py   > /dev/null
+if [ $? -eq 0 ] ; then 
+   python dbsListUnitTests.py > /dev/null 
+else
+   echo "dbsInsertUnitTests.py test cases probably FAILED"
+   echo "Check result.txt for details"
+   exit 0
+fi
 echo "Test results are written in $PWD/result.txt"
 echo ""
 message=`cat result.txt | grep FAILED`
@@ -16,3 +22,4 @@ if [ "$len" -lt "1" ] ; then
 else
 	echo "$message"
 fi
+

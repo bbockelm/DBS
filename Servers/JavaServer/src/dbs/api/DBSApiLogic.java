@@ -1,6 +1,6 @@
 /**
- $Revision: 1.28 $"
- $Id: DBSApiLogic.java,v 1.28 2006/11/20 22:46:09 sekhri Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSApiLogic.java,v 1.29 2006/11/21 23:26:11 afaq Exp $"
  *
  */
 
@@ -532,7 +532,7 @@ public class DBSApiLogic {
 	
 
 		//Set defaults Values
-		if (isNull(status)) status = "NEW";
+		if (isNull(status)) status = "VALID";
 		if (isNull(phyGroupName)) phyGroupName = "ALLGROUP";
 		if (isNull(phyGroupCon)) phyGroupCon = "ANZARDN";//FIXME Some default convenor name should be used
 		

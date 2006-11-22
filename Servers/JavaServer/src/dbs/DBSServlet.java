@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.21 $"
- $Id: DBSServlet.java,v 1.21 2006/11/20 22:46:08 sekhri Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSServlet.java,v 1.22 2006/11/21 23:26:11 afaq Exp $"
 
  */
 package dbs;
@@ -256,10 +256,7 @@ public class DBSServlet extends HttpServlet{
 		Enumeration e = request.getParameterNames();
 		while (e.hasMoreElements()) {
 			String key = (String)e.nextElement();
-                        System.out.println("getTable :"+key); 
-         
-		   table.put(key, request.getParameter(key));
-                   System.out.println("value :"+request.getParameter(key)); 
+		        table.put(key, request.getParameter(key));
 		}
 		return table;
 	}
