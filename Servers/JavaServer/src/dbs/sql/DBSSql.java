@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.18 $"
- $Id: DBSSql.java,v 1.18 2006/11/21 23:26:12 afaq Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSSql.java,v 1.19 2006/11/22 16:17:28 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -12,9 +12,9 @@ public class DBSSql {
 	/**
 	 * 
 	 */
-	//public static String getDual() {
-	//	return "SELECT 1 FROM dual";
-	//}
+	public static String getDual() {
+		return "SELECT 1 FROM dual";
+	}
 
        	public static String insertName(String table, String key, String value, String userID) {
 		String sql = "INSERT INTO " + table + " ( \n" +
@@ -332,21 +332,21 @@ public class DBSSql {
 	
 	
 	public static String listPrimaryDatasets(String pattern) {
-		String sql = "SELECT pd.ID as id, \n" +
-			"pd.Annotation as annotation, \n" +
-			"pd.Name as primary_name, \n" +
-			"pd.StartDate as start_date, \n"  +
-			"pd.EndDate as end_date, \n" + 
-			"pd.CreationDate as creation_date, \n" +
-			"pd.LastModificationDate as last_modification_date, \n" +
-			"tpd.TriggerPathDescription as trigger_path_description, \n" +
-			"md.MCChannelDescription as mc_channel_description, \n" +
-			"md.MCProduction as mc_production, \n" +
-			"md.MCDecayChain as mc_decay_chain, \n" +
-			"od.Description as other_description, \n" +
-			"ty.Type as type, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+		String sql = "SELECT pd.ID as ID, \n" +
+			"pd.Annotation as ANNOTATION, \n" +
+			"pd.Name as PRIMARY_NAME, \n" +
+			"pd.StartDate as START_DATE, \n"  +
+			"pd.EndDate as END_DATE, \n" + 
+			"pd.CreationDate as CREATION_DATE, \n" +
+			"pd.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"tpd.TriggerPathDescription as TRIGGER_PATH_DESCRIPTION, \n" +
+			"md.MCChannelDescription as MC_CHANNEL_DESCRIPTION, \n" +
+			"md.MCProduction as MC_PRODUCTION, \n" +
+			"md.MCDecayChain as MC_DECAY_CHAIN, \n" +
+			"od.Description as OTHER_DESCRIPTION, \n" +
+			"ty.Type as TYPE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM PrimaryDataset pd \n" +
 			"LEFT OUTER JOIN PrimaryDSType ty \n" +
 				"ON ty.id = pd.Type \n" +
@@ -364,7 +364,7 @@ public class DBSSql {
 				"ON perlm.id = pd.LastModifiedBy \n";
 		if(pattern != null) {
 			sql += "WHERE pd.Name like '" + pattern + "'\n" +
-				"ORDER BY primary_name";
+				"ORDER BY PRIMARY_NAME";
 		}
 		System.out.println("\n\n" + sql + "\n\n");
 		return sql;

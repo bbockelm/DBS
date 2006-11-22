@@ -35,6 +35,8 @@ INSERT INTO Files (LogicalFileName, Dataset, Checksum, FileSize, Status, FileTyp
 
 INSERT INTO Files (LogicalFileName, Dataset, Checksum, FileSize, Status, FileType, CreationDate) VALUES ('testfile_02', 1, 222, 456, 1, 1, SYSTIMESTAMP);
 
+INSERT INTO PrimaryDSType(Type, CreationDate) VALUES ('VALID', SYSTIMESTAMP);
+
 INSERT INTO Type(Type, CreationDate) VALUES ('VALID', SYSTIMESTAMP);
 INSERT INTO Type(Type, CreationDate) VALUES ('TEST', SYSTIMESTAMP);
 
@@ -103,4 +105,24 @@ INSERT INTO FileAlgo(Fileid, Algorithm, CreationDate) VALUES(1,2,SYSTIMESTAMP);
 -- select * from Files;
 -- select * from FileTier;
 -- select * from FileType;
+
+
+
+SELECT  pd.Name as pname          
+FROM PrimaryDataset pd 
+LEFT OUTER JOIN PrimaryDSType ty 
+ON ty.id = pd.Type 
+LEFT OUTER JOIN PrimaryDatasetDescription pdd 
+ON pdd.id = pd.Description 
+LEFT OUTER JOIN TriggerPathDescription tpd 
+ON tpd.id = pdd.TriggerDescriptionID 
+LEFT OUTER JOIN MCDescription md 
+ON md.id = pdd.MCChannelDescriptionID 
+LEFT OUTER JOIN OtherDescription od 
+ON od.id = pdd.OtherDescriptionID 
+LEFT OUTER JOIN Person percb 
+ON percb.id = pd.CreatedBy 
+LEFT OUTER JOIN Person perlm 
+ON perlm.id = pd.LastModifiedBy 
+WHERE pd.Name like '%';
 

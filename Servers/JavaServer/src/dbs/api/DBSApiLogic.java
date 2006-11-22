@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApiLogic.java,v 1.29 2006/11/21 23:26:11 afaq Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSApiLogic.java,v 1.30 2006/11/22 16:17:28 afaq Exp $"
  *
  */
 
@@ -37,24 +37,26 @@ public class DBSApiLogic {
 
 	
 	public void listPrimaryDatasets(Connection conn, Writer out, String pattern) throws Exception {
+                 
 		pattern = getPattern(pattern, "primary_dataset_name_pattern");
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listPrimaryDatasets(pattern));
+                  
 		while(rs.next()) {
-			out.write(((String) "<primary-dataset id='" + get(rs, "id") + 
-						"' annotation='" + get(rs, "annotation") +
-						"' primary_name='" + get(rs, "primary_name") +
-						"' start_date='" + get(rs, "start_date") +
-						"' end_date='" + get(rs, "end_date") +
-						"' creation_date='" + get(rs, "creation_date") +
-						"' last_modification_date='" + get(rs, "last_modification_date") +
-						"' trigger_path_description='" + get(rs, "trigger_path_description") +
-						"' mc_channel_description='" + get(rs, "mc_channel_description") +
-						"' mc_production='" + get(rs, "mc_production") +
-						"' mc_decay_chain='" + get(rs, "mc_decay_chain") +
-						"' other_description='" + get(rs, "other_description") +
-						"' type='" + get(rs, "type") +
-						"' created_by='" + get(rs, "created_by") +
-						"' last_modified_by='" + get(rs, "last_modified_by") +
+			out.write(((String) "<primary-dataset id='" + get(rs, "ID") +
+						"' annotation='" + get(rs, "ANNOTATION") +
+						"' primary_name='" + get(rs, "PRIMARY_NAME") +
+						"' start_date='" + get(rs, "START_DATE") +
+						"' end_date='" + get(rs, "END_DATE") +
+						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' trigger_path_description='" + get(rs, "TRIGGER_PATH_DESCRIPTION") +
+						"' mc_channel_description='" + get(rs, "MC_CHANNEL_DESCRIPTION") +
+						"' mc_production='" + get(rs, "MC_PRODUCTION") +
+						"' mc_decay_chain='" + get(rs, "MC_DECAY_CHAIN") +
+						"' other_description='" + get(rs, "OTHER_DESCRIPTION") +
+						"' type='" + get(rs, "TYPE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 		}
 	}

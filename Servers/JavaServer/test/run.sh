@@ -39,7 +39,7 @@ xmlString="<?xml version='1.0' standalone='yes'?>
 			<primary-dataset annotation='aaaa' primary_name='PrimaryDS_VIJAY_01' start_date='NOV' end_date='DEC' trigger_path_description='anyTD' mc_channel_description='MCDesc' mc_production='MCProd' mc_decay_chain='DC' other_description='OD' type='PDS'>
 			</primary-dataset>
 		</dbs>"
-#$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI api=insertPrimaryDataset "xmlinput=$xmlString"
+#$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI api=insertPrimaryDataset "xmlinput=$xmlString" apiversion=v00_00_01
 
 
 xmlString="<?xml version='1.0' standalone='yes'?>

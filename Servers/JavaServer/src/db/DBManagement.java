@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.3 $"
- $Id: DBManagement.java,v 1.3 2006/10/26 21:49:06 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBManagement.java,v 1.4 2006/11/01 16:59:44 afaq Exp $"
 
  *
  */
@@ -39,5 +39,4 @@ public class DBManagement{
         public static int executeUpdate(Connection conn, String query) throws Exception{
                 return conn.createStatement().executeUpdate(query);
         }
-
 }
