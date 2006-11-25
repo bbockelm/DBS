@@ -6,11 +6,10 @@ GetDataUpdater.prototype = {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
-//     var r=document.getElementById("results_menu");
-//     r.className="show_table";
      showResultsMenu();
+     hideWaitingMessage();
      var t=document.getElementById("results");
-     t.innerHTML=responseHTML;
+     t.innerHTML+=responseHTML;
      sortables_init();
      underlineLink('Summary');
      if(responseHTML.search("checkbox")) {
@@ -94,14 +93,19 @@ function ajaxGetDataFromSelection(iParamString) {
          } else {
             selList[i]=uSelection[i].value;
          }
-         action=action+selList[i]+',';
+         ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList[i]);
+         var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+selList[i]+'\')">data selection ('+selList[i]+')</a>';
+         ajaxHistory(actionHistory);
+//         action=action+selList[i]+',';
       }
   }
+/*
   ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList);
   var parameters= action.substr(0,action.length-1);
   var parString = parameters.replace(",",", ");
   var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+parameters+'\')">data selection ('+parString+')</a>';
   ajaxHistory(actionHistory);
+*/
 }
 
 // AJAX registration for search

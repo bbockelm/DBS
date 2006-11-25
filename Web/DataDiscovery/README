@@ -25,6 +25,17 @@ but then found it in /afs/cern.ch/cms/external/lcg/external/cx_Oracle/
 5) to run the server you need to setup environment
 . scripts/setup.sh
 
+on cmslcgco01.cern.ch
+old discovery page
+export DBSDD=http://cmslcgco01.cern.ch:8001
+or 
+export DBSDD=http://cmsdoc.cern.ch/cms/test/aprom/DBS/discovery
+
+New discovery page
+export DBSDD=http://cmsdoc.cern.ch/cms/test/aprom/DBS/discovery_test
+
+on cmsdbs.cern.ch
+export DBSDD=http://cmsdbs.cern.ch/discovery
 6) you need to setup grid credentials in order to allow server to query DLS
 I'm doing this in crontab, please have a look at scripts/getDLSsites.h and
 script/updateDBSDD.sh

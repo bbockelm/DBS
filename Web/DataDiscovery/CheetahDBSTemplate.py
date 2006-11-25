@@ -100,33 +100,6 @@ templateProvenance="""
     </p>
 """
 
-templateProvenance_orig="""
-#set idPath=$dataset.replace("/","___")
-    <p>
-    <table border="0" cellspacing="0" cellpadding="0">
-    <tr>
-    <th align="left">Parent list (<a href="javascript:HideParents('parentGraph');">hide</a>):</th>
-    </tr>
-    #if not len($parentList)
-    <tr>
-    <td>
-    No parents found
-    </td>
-    </tr>
-    #else
-    #for parent in $parentList
-    <tr>
-    <td align="left">
-    $parent
-    </td>
-    </tr>
-    #end for
-    #end if
-    </table>
-    </p>
-    <p></p>
-"""
-
 templateTop = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -668,6 +641,7 @@ all columns are sortable, move your mouse over the column name and click on it.
 """
 
 templateProcDatasets="""
+<hr class="dbs" />
 <p>
 Processed datasets (plain 
 <a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier')">
@@ -675,18 +649,38 @@ view</a>):
 </p>
 """
 
-templateLFB = """
+templateBlockList = """
 <hr class="dbs" />
+#if len($blockList)
+<table>
+#for item in $blockList
+#set path=item[0]
+#set idPath=$path.replace("/","___")
+#set evts=item[1]
+<tr>
+<td align="left">
+<a href="javascript:showResMenu('parents')">$path</a>
+</td>
+<td align="center">
+(<a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$evts',1000)">crab.cfg</a>)
+</td>
+</tr>
+#end for
+</table>
+#end if
+"""
+
+templateLFB = """
+###<hr class="dbs" />
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #set tot=len($blockDict.keys())
 #set idPath=$path.replace("/","___")
+#*
 <div>
-<a href="javascript:showResMenu('parents')">$path</a>
-<!--
-<a href="javascript:showLoadingMessage('parentGraph');registerAjaxProvenanceCalls();getProvenance('$idPath')">$path</a>
--->
+<a href="javascript:showResMenu('parents')">$path</a> (<a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$nEvents',1000)">crab.cfg</a>)
 </div>
 <div id="$idPath"></div>
+*#
 
 <p>
 contains $nEvents events, $totFiles files, $totSize. 
@@ -706,13 +700,11 @@ contains $nEvents events, $totFiles files, $totSize.
 Blocks
 </a>
 </td>
-###<td><br></br></td>
 <td id="td_Summary" name="td_Summary" class="td_plain">
 <a href="javascript:HideBlockInfo('$tableId');ShowSumInfo('$tableId');">
 Summary
 </a>
 </td>
-###<td><br></br></td>
 <td id="td_Both" name="td_Both" class="td_plain">
 <a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');underlineLink('Both')">
 Both
@@ -830,11 +822,6 @@ Both
 ##
 #end if
 ##
-#*
-#if not $last
-<hr class="dbs" />
-#end if
-*#
 """
 
 templateBottom="""
@@ -851,6 +838,7 @@ templateBottom="""
 </table>
 <br />
 <span id="results" class="show_inline"></span>
+<span id="results_waiting" class="show_inline"></span>
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
 <span id="validation" class="hide"><br />... We plan to add some information about found data, e.g. plots, etc. This should be part of validation ...</span>
@@ -1437,6 +1425,9 @@ templateDbsCont="""
 """
 
 templateCRAB="""
+<pre>
+###### For more information please consult
+###### http://www.uscms.org/SoftwareComputing/UserComputing/Tutorials/Crab.html
 [CRAB]
 
 jobtype                 = cmssw
@@ -1444,11 +1435,15 @@ scheduler               = glitecoll
 
 [CMSSW]
 
-datasetpath             = /CSA06-105-os-minbias19-0/RECO/CMSSW_1_0_5-RECO_H746ee88eddaa52306cd016b2f689e370
-pset                    = robot.cfg
-total_number_of_events  = 500000
+datasetpath             = $dataset
+##### Please provide PSet configuration file below
+pset                    = 
+total_number_of_events  = $totEvt
 events_per_job          = 1000
-output_file             = FrameworkJobReport.xml
+##### Please provide output_file, e.g. FrameworkJobReport.xml
+##### or a list of output files separated by comma, for example
+##### output.root, output.txt, FrameworkJobReport.xml
+output_file             = 
 
 [USER]
 return_data             = 1
@@ -1463,6 +1458,7 @@ retry_count             = 0
 lcg_catalog_type        = lfc
 lfc_host                = lfc-cms-test.cern.ch
 lfc_home                = /grid/cms
+</pre>
 """
 
 templateAppConfigs="""

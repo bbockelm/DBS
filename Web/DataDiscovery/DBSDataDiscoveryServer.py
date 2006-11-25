@@ -113,6 +113,9 @@ class DBSDataDiscoveryServer(DBSLogger):
                            'siteForm': ("","") # (dbsInst,site)
                           }
 
+    def setQuiet(self):
+        self.helper.setQuiet()
+        
     def setContentType(self,type):
         """
            Set CherryPy Content-Type to provided type
@@ -759,7 +762,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            page=self.genTopHTML()
         try:
-            print "#########",userSelection
             if  not userSelection:
                 page+="No data found"
             else:
@@ -945,8 +947,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         t2=time.time()
         self.dbsTime=(t2-t1)
         regList=[]
-        last=0
         page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
+        bList=[]
+        id=0
         for dataset in dList:
             id+=1
             self.writeLog(dataset)
@@ -957,31 +960,54 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.dbsTime+=self.helper.dbsTime
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
-            if id>=len(dList):
-               last=1
-            p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
+            p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
+               bList.append((dataset,totEvt))
                idPath=string.replace(oldDataset,"/","___")
-               page+="""
-<div>
-<a href="javascript:showLoadingMessage('parentGraph');registerAjaxProvenanceCalls();getProvenance('%s')">%s</a>
-<div id="%s"></div>
-</div>
-<!--
-<br />
--->
-                     """%(idPath,oldDataset,idPath)
+#               page+="""
+#<div><a href="javascript:showResMenu('parents')">%s</a> (<a href="javascript:popUp('%s/crabCfg?dataset=%s&amp;totEvt=%s',1000)">crab.cfg</a>)</div>
+#                     """%(oldDataset,self.dbsdd,oldDataset,oldTotEvt)
+
+#               page+="""
+#<div>
+#<a href="javascript:showLoadingMessage('parentGraph');registerAjaxProvenanceCalls();getProvenance('%s')">%s</a>
+#<div id="%s"></div>
+#</div>
+#                     """%(idPath,oldDataset,idPath)
             else:
+               if len(bList): 
+                  bList.append((dataset,totEvt))
+                  page+=self.blockListToHTML(bList)
+                  bList=[]
+               bList.append((dataset,totEvt))
                page+=prevPage
             oldTotEvt=totEvt
             oldTotFiles=totFiles
             oldTotSize=totSize
             oldDataset=dataset
             prevPage = p
+        page+=self.blockListToHTML(bList)
         page+=prevPage # end of new stuff
         return page
     getDataHelper.exposed=True
 
+    def blockListToHTML(self,bList):
+        if not len(bList): return ""
+        nameSpace = {'host': self.dbsdd, 'blockList' : bList}
+        t = Template(CheetahDBSTemplate.templateBlockList, searchList=[nameSpace])
+        page=str(t)
+        return page
+        
+    def crabCfg(self,dataset,totEvt,**kwargs):
+        nameSpace = {
+                     'dataset'  : dataset,
+                     'totEvt'   : totEvt
+                    }
+        t = Template(CheetahDBSTemplate.templateCRAB, searchList=[nameSpace])
+        page=str(t)
+        return page
+    crabCfg.exposed=True
+    
     def responseTime(self,htmlTime):
 #        page="""\n<response type="object" id="time">"""
         nameSpace = {
@@ -1190,7 +1216,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
         return str(t)
         
-    def dataToHTML(self,dbsInst,path,locDict,blockDict,totEvt,totFiles,totSize,id,last=0):
+    def dataToHTML(self,dbsInst,path,locDict,blockDict,totEvt,totFiles,totSize,id):
         """
            Forms output tables.
            @type  path: string 
@@ -1213,8 +1239,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'totFiles'   : totFiles,
                      'totSize'    : totSize,
                      'userMode'   : self.userMode,
-                     'tid'        : id,
-                     'last'       : last
+                     'tid'        : id
                     }
         t = Template(CheetahDBSTemplate.templateLFB, searchList=[nameSpace])
 	page+=str(t)
@@ -1343,13 +1368,12 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.helperInit(dbsInst)
         dList=self.helper.getProcessedDatasets("/"+primDataset+"/*/*",app=0)
         pSum=""
-        last=id=0
+        id=0
         for dataset in dList:
             id+=1
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            if id>=len(dList):
-               last=1
-            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
+            pSum+=self.blockListToHTML([(dataset,totEvt)])
+            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
@@ -1444,13 +1468,12 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.helperInit(dbsInst)
         dList=self.helper.getProcessedDatasets(appPath,app=1)
         pSum=""
-        last=id=0
+        id=0
         for dataset in dList:
             id+=1
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            if id>=len(dList):
-               last=1
-            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id,last)
+            pSum+=self.blockListToHTML([(dataset,totEvt)])
+            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
@@ -1497,12 +1520,15 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype: string
            @return: returns parents fro given datasets in HTML form 
         """
+        page=""
         try:
             self.helperInit(dbsInst)
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            page= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id=0,last=1)
+            page+=self.blockListToHTML([(dataset,totEvt)])
+            page+=self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id=0)
         except:
-            page="No information found for dataset '%s' in DBS='%s'"%(dataset,dbsInst)
+            printExcept()
+            page="""<hr class="dbs" />No information found for dataset '%s' in DBS='%s'"""%(dataset,dbsInst)
         return page
 
     def getDatasetContent(self,dbsInst,dataset,ajax=1,**kwargs):
@@ -1718,11 +1744,10 @@ if __name__ == "__main__":
     optManager  = DBSOptions.DBSOptionParser()
     (opts,args) = optManager.getOpt()
 
-    verbose = 0
-    if opts.verbose:
-       verbose=1
-
-    cherrypy.root = DBSDataDiscoveryServer(verbose,opts.profile) 
+    dbsManager = DBSDataDiscoveryServer(opts.verbose,opts.profile)
+    if opts.quiet:
+       dbsManager.setQuiet()
+    cherrypy.root = dbsManager
     cherrypy.config.update(file="CherryServer.conf")
     if opts.profile:
        import hotshot                   # Python profiler
