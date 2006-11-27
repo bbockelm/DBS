@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApi.java,v 1.20 2006/11/22 17:39:19 afaq Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApi.java,v 1.21 2006/11/27 20:26:17 afaq Exp $"
  *
 */
 
@@ -53,22 +53,17 @@ public class DBSApi {
         }
 
         public void checkSchemaVersion() throws Exception {
-
-                Connection conn =  getConnection();
+              Connection conn =  getConnection();
+              try {
                 String sql = "select SchemaVersion from SchemaVersion where id=1";
 
                 System.out.println(sql);
 
-                System.out.println("PRE executed");
                 ResultSet rs =  DBManagement.executeQuery(conn, sql);
-                System.out.println("Query executed");
 
                 String  dbsSchemaVersion="";
                 while(rs.next()) {
-                    System.out.println("In while loop");
                     dbsSchemaVersion = rs.getString("SchemaVersion");
-                    System.out.println("dbsSchemaVersion"+dbsSchemaVersion);
-                     
                 }
  
                 if(isNull(dbsSchemaVersion)) {
@@ -76,9 +71,14 @@ public class DBSApi {
                 } 
 
                 String suppSchemaVer = supportedSchemaVersions();
-                System.out.println("suppSchemaVer "+suppSchemaVer);
                 if (dbsSchemaVersion != suppSchemaVer ) {
                     throw new Exception("Database Schema Mismatch, Server works with "+suppSchemaVer); 
+                }
+              } catch (SQLException sqlEx) {
+                throw new Exception("Unable to get Schema Version from Database, cannot continue"); 
+              }  
+              finally {
+                        if(conn != null) conn.close();
                 }
         }  
 
@@ -118,8 +118,6 @@ public class DBSApi {
 
                 checkVersion(get(table, "apiversion", true));
  
-                System.out.println("Testing Schema Version"); 
-
                 checkSchemaVersion();
 
 		out.write(DBSConstants.XML_HEADER); 
@@ -329,7 +327,7 @@ public class DBSApi {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
 			if (name.equals(key) ) {
-				System.out.println("Found a " + key + " : " + name);  
+				//System.out.println("Found a " + key + " : " + name);  
 				table = e.attributes;
 			} 
 		}
@@ -345,7 +343,7 @@ public class DBSApi {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
 			if (name.equals("processed-dataset") ) {
-				System.out.println("Found a processed-dataset: " + name);  
+				//System.out.println("Found a processed-dataset: " + name);  
 				psDS = e.attributes;
 				psDS.put("data_tier", new Vector());
 				psDS.put("parent", new Vector());
