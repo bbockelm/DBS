@@ -829,4 +829,18 @@ CREATE TABLE ProcAlgo
 insert into SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
 commit;
 -- ======================================================================
+-- Initialize status tables There are better ways to do it, get to that laters
+
+INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
+
+INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
+
+INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
+
+INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;
+
+INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
+
+INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());
+
 
