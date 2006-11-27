@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.20 $"
- $Id: DBSSql.java,v 1.20 2006/11/22 18:32:50 afaq Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSSql.java,v 1.21 2006/11/27 20:26:17 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -388,20 +388,20 @@ public class DBSSql {
 					"),'/' \n" +
 				"), procds.name \n" +
 			") as path, \n" +*/
-			"primds.Name as primary_datatset_name, \n" +
-			"dt.Name as data_tier, \n" +
-			"procds.name as processed_datatset_name, \n" +
-			"procds.OpenForWriting as open_for_writing, \n" +
-			"procds.CreationDate as creation_date, \n" +
-			"procds.LastModificationDate as last_modification_date, \n" +
-			"pg.PhysicsGroupName as physics_group_name, \n" +
-			"perpg.DistinguishedName as physics_group_convener, \n" +
-			"av.Version as app_version, \n" +
-			"af.FamilyName as app_family_name, \n" +
-			"ae.ExecutableName as app_executable_name, \n" +
-			"ps.Name as ps_name, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
+			"dt.Name as DATA_TIER, \n" +
+			"procds.name as PROCESSED_DATATSET_NAME, \n" +
+			"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
+			"procds.CreationDate as CREATION_DATE, \n" +
+			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
+			"perpg.DistinguishedName as PHYSICS_GROUP_CONVENER, \n" +
+			"av.Version as APP_VERSION, \n" +
+			"af.FamilyName as APP_FAMILY_NAME, \n" +
+			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
+			"ps.Name as PS_NAME, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM ProcessedDataset procds \n" +
 			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
@@ -453,16 +453,16 @@ public class DBSSql {
 	}
 
 	public static String listAlgorithms(String patternVer, String patternFam, String patternExe, String patternPS) {
-		String sql = "SELECT algo.id as id, \n" +
-			"av.Version as app_version, \n" +
-			"af.FamilyName as app_family_name, \n" +
-			"ae.ExecutableName as app_executable_name, \n" +
-			"ps.Name as ps_name, \n" +
-			"ps.Hash as ps_hash, \n" +
-			"algo.CreationDate as creation_date, \n" +
-			"algo.LastModificationDate as last_modification_date, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+		String sql = "SELECT algo.id as ID, \n" +
+			"av.Version as APP_VERSION, \n" +
+			"af.FamilyName as APP_FAMILY_NAME, \n" +
+			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
+			"ps.Name as PS_NAME, \n" +
+			"ps.Hash as PS_HASH, \n" +
+			"algo.CreationDate as CREATION_DATE, \n" +
+			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
@@ -492,18 +492,18 @@ public class DBSSql {
 	}
 
 	public static String listRuns(String procDSID) {
-		String sql = "SELECT run.ID as id, \n " +
-			"run.RunNumber as run_number, \n" +
-			"run.NumberOfEvents as number_of_events, \n" +
-			"run.NumberOfLumiSections as number_of_lumi_sections, \n" +
-			"run.TotalLuminosity as total_luminosity, \n" +
-			"run.StoreNumber as strore_number, \n" +
-			"run.StartOfRun as start_of_run, \n" +
-			"run.EndOfRun as end_of_run, \n" +
-			"run.CreationDate as creation_date, \n" +
-			"run.LastModificationDate as last_modification_date, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+		String sql = "SELECT run.ID as ID, \n " +
+			"run.RunNumber as RUN_NUMBER, \n" +
+			"run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+			"run.NumberOfLumiSections as NUMBER_OF_LUMI_SECTIONS, \n" +
+			"run.TotalLuminosity as TOTAL_LUMINOSITY, \n" +
+			"run.StoreNumber as STRORE_NUMBER, \n" +
+			"run.StartOfRun as START_OF_RUN, \n" +
+			"run.EndOfRun as END_OF_RUN, \n" +
+			"run.CreationDate as CREATION_DATE, \n" +
+			"run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Runs run \n" +
 			"JOIN ProcDSRuns pdsr \n" +
 				"ON pdsr.Run = run.id \n" +
@@ -521,12 +521,12 @@ public class DBSSql {
 	}
 
 	public static String listTiers(String procDSID) {
-		String sql = "SELECT dt.ID as id, \n " +
-			"dt.Name as name, \n" +
-			"dt.CreationDate as creation_date, \n" +
-			"dt.LastModificationDate as last_modification_date, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+		String sql = "SELECT dt.ID as ID, \n " +
+			"dt.Name as NAME, \n" +
+			"dt.CreationDate as CREATION_DATE, \n" +
+			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM DataTier dt \n" +
 			"JOIN ProcDSTier pdst \n" +
 				"ON pdst.DataTier = dt.id \n" +
@@ -544,15 +544,15 @@ public class DBSSql {
 	}
 
 	public static String listBlocks(String procDSID) {
-		String sql = "SELECT b.ID as id, \n " +
-			"b.Name as name, \n" +
-			"b.BlockSize as size, \n" +
-			"b.NumberOfFiles as number_of_files, \n" +
-			"b.OpenForWriting as open_for_writing, \n" +
-			"b.CreationDate as creation_date, \n" +
-			"b.LastModificationDate as last_modification_date, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by \n" +
+		String sql = "SELECT b.ID as ID, \n " +
+			"b.Name as NAME, \n" +
+			"b.BlockSize as SIZE, \n" +
+			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
+			"b.CreationDate as CREATION_DATE, \n" +
+			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Block b \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = b.CreatedBy \n" +
@@ -568,21 +568,21 @@ public class DBSSql {
 	}
 
 	public static String listFiles(String procDSID, String blockID, String patternLFN) {
-		String sql = "SELECT f.ID as id, \n " +
-			"f.LogicalFileName as lfn, \n" +
-			"f.Checksum as checksum, \n" +
-			"f.FileSize as size, \n" +
-			"f.QueryableMetaData as queryable_meta_data, \n" +
-			"f.CreationDate as creation_date, \n" +
-			"f.LastModificationDate as last_modification_date, \n" +
-			"f.NumberOfEvents as number_of_events, \n" +
-			"f.ValidationStatus as validation_status, \n" +
-			"st.Status as status, \n" +
-			"ty.Type as type, \n" +
-			"percb.DistinguishedName as created_by, \n" +
-			"perlm.DistinguishedName as last_modified_by, \n" +
-                        "b.Name as block_name, \n"+ 
-			"dt.Name as data_tier \n"+ 
+		String sql = "SELECT f.ID as ID, \n " +
+			"f.LogicalFileName as LFN, \n" +
+			"f.Checksum as CHECKSUM, \n" +
+			"f.FileSize as SIZE, \n" +
+			"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+			"f.CreationDate as CREATION_DATE, \n" +
+			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+			"f.ValidationStatus as VALIDATION_STATUS, \n" +
+			"st.Status as STATUS, \n" +
+			"ty.Type as TYPE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+                        "b.Name as BLOCK_NAME, \n"+ 
+			"dt.Name as DATA_TIER \n"+ 
 			"FROM Files f \n" +
                         "LEFT OUTER JOIN Block b \n" +
                                 "ON b.id = f.Block \n "+  
@@ -613,7 +613,7 @@ public class DBSSql {
 	}
 
 	public static String getPrameterSets(String pattern) {
-		String sql = "SELECT id, hash, content FROM t_parameter_set ";
+		String sql = "SELECT ID, HASH, CONTENT FROM t_parameter_set ";
 		if(pattern != null) {
 			sql += "WHERE content like '" + pattern + "' " +
 				"or hash like '" + pattern + "' " ;
@@ -632,7 +632,7 @@ public class DBSSql {
 		return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key1 + " = '" + value1 + "' AND " + key2 + " = '" + value2 + "'"));
 	}
 	public static String getProcessedDSID(String prim, String dt ,String proc) {
-		String sql = "SELECT procds.ID as id \n" +
+		String sql = "SELECT procds.ID as ID \n" +
 				"FROM ProcessedDataset procds \n" +
 				"JOIN PrimaryDataset primds \n" +
 					"ON primds.id = procds.PrimaryDataset \n" +

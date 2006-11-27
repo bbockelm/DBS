@@ -1,6 +1,6 @@
 /**
- $Revision: 1.30 $"
- $Id: DBSApiLogic.java,v 1.30 2006/11/22 16:17:28 afaq Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApiLogic.java,v 1.31 2006/11/22 18:32:50 afaq Exp $"
  *
  */
 
@@ -91,31 +91,31 @@ public class DBSApiLogic {
 		                
 		while(rs.next()) {
 			//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
-			String procDSID = get(rs, "id");
-			String tier = get(rs, "data_tier");
-			String fam = get(rs, "app_family_name");
-			String exe = get(rs, "app_executable_name");
-			String ver = get(rs, "app_version");
-			String ps = get(rs, "ps_name");
+			String procDSID = get(rs, "ID");
+			String tier = get(rs, "DATA_TIER");
+			String fam = get(rs, "APP_FAMILY_NAME");
+			String exe = get(rs, "APP_EXECUTABLE_NAME");
+			String ver = get(rs, "APP_VERSION");
+			String ps = get(rs, "PS_NAME");
 
 			if( !prevDS.equals(procDSID) && ! first) {
 				out.write(((String) "</processed-dataset>\n")); 
 			}
 			if( !prevDS.equals(procDSID) || first) {
-				out.write(((String) "<processed-dataset id='" + get(rs, "id") + 
-						//"' path='" +  get(rs, "path") +
-						"' primary_datatset_name='" +  get(rs, "primary_datatset_name") +
-						"' processed_datatset_name='" +  get(rs, "processed_datatset_name") +
-						"' open_for_writing='" + get(rs, "open_for_writing") +
-						"' creation_date='" + get(rs, "creation_date") +
-						"' last_modification_date='" + get(rs, "last_modification_date") +
-						"' physics_group_name='" + get(rs, "physics_group_name") +
-						"' physics_group_convener='" + get(rs, "physics_group_convener") +
-						//"' app_version='" + get(rs, "app_version") +
-						//"' app_family_name='" + get(rs, "app_family_name") +
-						//"' app_executable_name='" + get(rs, "app_executable_name") +
-						"' created_by='" + get(rs, "created_by") +
-						"' last_modified_by='" + get(rs, "last_modified_by") +
+				out.write(((String) "<processed-dataset id='" + get(rs, "ID") + 
+						//"' path='" +  get(rs, "PATH") +
+						"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
+						"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
+						"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
+						"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
+						//"' app_version='" + get(rs, "APP_VERSION") +
+						//"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
+						//"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'>\n"));
 						//"'/>\n"));
 				first = false;
@@ -154,16 +154,16 @@ public class DBSApiLogic {
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
 		while(rs.next()) {
-			out.write(((String) "<algorithm id='" + get(rs, "id") + 
-						"' app_version='" + get(rs, "app_version") +
-						"' app_family_name='" + get(rs, "app_family_name") +
-						"' app_executable_name='" + get(rs, "app_executable_name") +
-						"' ps_name='" + get(rs, "ps_name") +
-						"' ps_hash='" + get(rs, "ps_hash") +
-						"' creation_date='" + get(rs, "creation_date") +
-						"' last_modification_date='" + get(rs, "last_modification_date") +
-						"' created_by='" + get(rs, "created_by") +
-						"' last_modified_by='" + get(rs, "last_modified_by") +
+			out.write(((String) "<algorithm id='" + get(rs, "ID") + 
+						"' app_version='" + get(rs, "APP_VERSION") +
+						"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
+						"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
+						"' ps_name='" + get(rs, "PS_NAME") +
+						"' ps_hash='" + get(rs, "PS_HASH") +
+						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 		}
 	}
@@ -173,18 +173,18 @@ public class DBSApiLogic {
 		String procDSID = getProcessedDSID(conn, path);
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listRuns(procDSID));
 		while(rs.next()) {
-				out.write(((String) "<run id='" + get(rs, "id") +
-						"' run_number='" + get(rs, "run_number") +
-						"' number_of_events='" + get(rs, "number_of_events") +
-						"' number_of_lumi_sections='" + get(rs, "number_of_lumi_sections") +
-						"' total_luminosity='" + get(rs, "total_luminosity") +
-						"' store_number='" + get(rs, "strore_number") +
-						"' start_of_run='" + get(rs, "start_of_run") +
-						"' end_of_run='" + get(rs, "end_of_run") +
-						"' creation_date='" + get(rs, "creation_date") +
-						"' last_modification_date='" + get(rs, "last_modification_date") +
-						"' created_by='" + get(rs, "created_by") +
-						"' last_modified_by='" + get(rs, "last_modified_by") +
+				out.write(((String) "<run id='" + get(rs, "ID") +
+						"' run_number='" + get(rs, "RUN_NUMBER") +
+						"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+						"' number_of_lumi_sections='" + get(rs, "NUMBER_OF_LUMI_SECTIONS") +
+						"' total_luminosity='" + get(rs, "TOTAL_LUMINOSITY") +
+						"' store_number='" + get(rs, "STRORE_NUMBER") +
+						"' start_of_run='" + get(rs, "START_OF_RUN") +
+						"' end_of_run='" + get(rs, "END_OF_RUN") +
+						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 		}
 	}
@@ -193,12 +193,12 @@ public class DBSApiLogic {
 		String procDSID = getProcessedDSID(conn, path);
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listTiers(procDSID));
 		while(rs.next()) {
-				out.write(((String) "<data_tier id='" + get(rs, "id") +
-						"' name='" + get(rs, "name") +
-						"' creation_date='" + get(rs, "creation_date") +
-						"' last_modification_date='" + get(rs, "last_modification_date") +
-						"' created_by='" + get(rs, "created_by") +
-						"' last_modified_by='" + get(rs, "last_modified_by") +
+				out.write(((String) "<data_tier id='" + get(rs, "ID") +
+						"' name='" + get(rs, "NAME") +
+						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 		}
 	}
@@ -207,15 +207,15 @@ public class DBSApiLogic {
 		String procDSID = getProcessedDSID(conn, path);
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listBlocks(procDSID));
 		while(rs.next()) {
-				out.write(((String) "<block id='" + get(rs, "id") +
-						"' name='" + get(rs, "name") +
-						"' size='" + get(rs, "size") +
-						"' number_of_files='" + get(rs, "number_of_files") +
-						"' open_for_writing='" + get(rs, "open_for_writing") +
-						"' creation_date='" + get(rs, "creation_date") +
-						"' last_modification_date='" + get(rs, "last_modification_date") +
-						"' created_by='" + get(rs, "created_by") +
-						"' last_modified_by='" + get(rs, "last_modified_by") +
+				out.write(((String) "<block id='" + get(rs, "ID") +
+						"' name='" + get(rs, "NAME") +
+						"' size='" + get(rs, "SIZE") +
+						"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
+						"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 		}
 	}
@@ -241,8 +241,8 @@ public class DBSApiLogic {
 
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listFiles(procDSID, blockID, patternLFN));
 		while(rs.next()) {
-			String fileID = get(rs, "id");
-			String tier = get(rs, "data_tier");
+			String fileID = get(rs, "ID");
+			String tier = get(rs, "DATA_TIER");
 
 			if( !prevFileID.equals(fileID) && ! first) {
 				out.write( (String) "</file> \n");
@@ -250,19 +250,19 @@ public class DBSApiLogic {
                          
 			if( !prevFileID.equals(fileID) || first) {  
 				out.write(((String) "<file id='" + fileID +
-					"' lfn='" + get(rs, "lfn") +
-					"' checksum='" + get(rs, "checksum") +
-					"' size='" + get(rs, "size") +
-					"' queryable_meta_data='" + get(rs, "queryable_meta_data") +
-					"' number_of_events='" + get(rs, "number_of_events") +
-					"' validation_status='" + get(rs, "validation_status") +
-					"' type='" + get(rs, "type") +
-					"' status='" + get(rs, "status") +
-					"' block_name='" + get(rs, "block_name") +
-					"' creation_date='" + get(rs, "creation_date") +
-					"' last_modification_date='" + get(rs, "last_modification_date") +
-					"' created_by='" + get(rs, "created_by") +
-					"' last_modified_by='" + get(rs, "last_modified_by") +
+					"' lfn='" + get(rs, "LFN") +
+					"' checksum='" + get(rs, "CHECKSUM") +
+					"' size='" + get(rs, "SIZE") +
+					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+					"' validation_status='" + get(rs, "VALIDATION_STATUS") +
+					"' type='" + get(rs, "TYPE") +
+					"' status='" + get(rs, "STATUS") +
+					"' block_name='" + get(rs, "BLOCK_NAME") +
+					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'>\n"));
 					//"'/>\n"));
 				first = false;
@@ -795,7 +795,7 @@ public class DBSApiLogic {
 		if(!rs.next()) {
 			throw new DBSException("Bad Data", "300", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
 		}
-		return  get(rs, "id");
+		return  get(rs, "ID");
 	}
 
 	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String ps) throws Exception {
@@ -807,7 +807,7 @@ public class DBSApiLogic {
 		if(!rs.next()) {
 			throw new DBSException("Bad Data", "300", "No such Application " + ver + " " + fam + " " + exe + " " + ps);
 		}
-		return  get(rs, "id");
+		return  get(rs, "ID");
 	}
 
 	/*private String getMCDescID(Connection conn, String des, String prod, String chain, boolean excep) throws Exception {
@@ -830,7 +830,7 @@ public class DBSApiLogic {
 			if(excep) throw new DBSException("Bad Data", "300", "No such Block : Name : "  + name );
 			else return null;
 		}
-		return  get(rs, "id");
+		return  get(rs, "ID");
 	}
 
 	private String getID(Connection conn, String tableName, String key, String value, boolean excep) throws Exception {
@@ -844,7 +844,7 @@ public class DBSApiLogic {
 			if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key + " : " + value );
 			else return null;
 		}
-		return  get(rs, "id");
+		return  get(rs, "ID");
 	}
 
 	private String getMapID(Connection conn, String tableName, String key1, String key2, String value1, String value2,  boolean excep) throws Exception {
@@ -861,7 +861,7 @@ public class DBSApiLogic {
 			if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
 			else return null;
 		}
-		return  get(rs, "id");
+		return  get(rs, "ID");
 	}
 
 	private String getUserID(Connection conn, Hashtable dbsUser) throws Exception {

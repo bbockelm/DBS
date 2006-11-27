@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApi.java,v 1.21 2006/11/27 20:26:17 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApi.java,v 1.22 2006/11/27 20:36:36 afaq Exp $"
  *
 */
 
@@ -39,7 +39,7 @@ public class DBSApi {
 
         public String supportedSchemaVersions() {
 
-           return "v00_00_01";
+           return "v00_00_02";
         }
 
         //This func must move to Utility
@@ -71,8 +71,8 @@ public class DBSApi {
                 } 
 
                 String suppSchemaVer = supportedSchemaVersions();
-                if (dbsSchemaVersion != suppSchemaVer ) {
-                    throw new Exception("Database Schema Mismatch, Server works with "+suppSchemaVer); 
+                if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
+                    throw new Exception("Database Schema Mismatch, Server works with "+suppSchemaVer+" Current schema version is :"+dbsSchemaVersion); 
                 }
               } catch (SQLException sqlEx) {
                 throw new Exception("Unable to get Schema Version from Database, cannot continue"); 
