@@ -18,6 +18,19 @@ class DbsUnitTestApi:
 		self.lapiObj = obj
 		self.f = fileObj
 		self.index = 0
+                self.verbose=0
+        def setVerboseLevel(self,level):
+            self.verbose=level
+        def printTestStatus(self,info,status,iMsg,exp=None):
+            msg = "\n\nTest started : %s"%str(self.lapiObj.im_func.func_name)
+            msg+= "\n"+info
+            if self.verbose:
+               msg+="\nComment      : %s"%iMsg
+            if self.verbose==2:
+               msg+="\nException    : %s"%exp
+            msg+=   "\nTest ended   : [%6s]"%status
+            self.f.write(msg)
+
 	def run(self, *listArgs, **dictArgs):
 		try:
 
@@ -31,16 +44,16 @@ class DbsUnitTestApi:
 			#for data in apiObj(*listArgs):
 				#print "  %s" % data
 			if excep:
-				self.f.write("\n" + str(self.index) + ") FAILED. \t" + info + " AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED")
+                                self.printTestStatus(info,"FAILED","AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED")
 			else:
-				self.f.write("\n" + str(self.index) + ") PASSED. \t" + info + " AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED ")
+                                self.printTestStatus(info,"PASSED","AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED")
 		except:
 			exception =  str(sys.exc_info()[0]) + " : " +  str(sys.exc_info()[1])
-			print exception
+                        print exception
 			if excep:
-				self.f.write("\n" + str(self.index) + ") PASSED. \t" + info + " AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS : " + exception)
+                                self.printTestStatus(info,"PASSED","AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS",exception)
 			else:
-				self.f.write("\n" + str(self.index) + ") FAILED. \t" + info + " AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS : " + exception)
+                                self.printTestStatus(info,"FAILED","AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS",exception)
 
 	def getExistingPDPath(self):
               try:

@@ -24,6 +24,7 @@ mytime = str(time.time())
 f = open("result.txt", "a+")
 
 apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertPrimaryDataset API tests***************************")
 
 primary = 'TestPrimary' + mytime
@@ -56,6 +57,7 @@ f.write("\n***********************insertPrimaryDataset API tests****************
 
 
 apiObj = DbsUnitTestApi(api.insertAlgorithm,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertAlgorithm API tests***************************")
 algo1 = DbsAlgorithm (ExecutableName="TestExe01", 
 		ApplicationVersion= "TestVersion01" + mytime, 
@@ -242,6 +244,7 @@ apiObj.run(algo, excep = True)
 f.write("\n***********************insertAlgorithm API tests***************************")
 
 apiObj = DbsUnitTestApi(api.insertTier, f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertTier API tests***************************")
 tierName1 = "HIT" + mytime
 tierName2 = "SIM" + mytime
@@ -260,6 +263,7 @@ f.write("\n\n***********************insertProcessedDataset API tests************
 tierList = [tierName1, tierName2]
 
 apiObj = DbsUnitTestApi(api.insertProcessedDataset,f)
+apiObj.setVerboseLevel(opts.verbose)
 proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessed" + mytime,
 		PhysicsGroup="BPositive",
@@ -369,6 +373,7 @@ f.write("\n***********************insertProcessedDataset API tests**************
 
 
 apiObj = DbsUnitTestApi(api.insertBlock, f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertBlock API tests***************************")
 path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
 blockName =  "/"+ mytime + "this/isatestblock#016712"
@@ -401,6 +406,7 @@ apiObj.run("/ddd/hd/hd;hd", excep = True)
 f.write("\n***********************insertBlock API tests***************************")
 
 apiObj = DbsUnitTestApi(api.insertRun, f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertRun API tests***************************")
 runNumber1 = 101 + int(time.time()%10000)
 runNumber2 = 102 + int(time.time()%10000)
@@ -448,6 +454,7 @@ f.write("\n***********************insertRun API tests***************************
 
 
 apiObj = DbsUnitTestApi(api.insertLumiSection, f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertLumiSection API tests***************************")
 lumiNumber1 = 111 + int(time.time()%10000)
 lumiNumber2 = 112 + int(time.time()%10000)
@@ -504,6 +511,7 @@ apiObj.run(lumi, excep = True)
 f.write("\n***********************insertLumiSection API tests***************************")
 
 apiObj = DbsUnitTestApi(api.insertFiles, f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertFiles API tests***************************")
 lfn1 = '1111-0909-9767-8764' + mytime
 lfn2 = '1111-0909-9767-876411' + mytime

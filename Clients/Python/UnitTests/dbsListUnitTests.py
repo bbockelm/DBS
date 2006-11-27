@@ -13,6 +13,7 @@ api = DbsApi(opts.__dict__)
 
 f = open("result.txt", "a+")
 apiObj = DbsUnitTestApi(api.listPrimaryDatasets, f)
+apiObj.setVerboseLevel(opts.verbose)
 
 pathfile = open('pathfile', 'r')
 path= pathfile.readline()
@@ -39,6 +40,7 @@ apiObj.run("","", excep = True)
 f.write("\n***********************listPrimaryDatasets API tests***************************")
 
 apiObj = DbsUnitTestApi(api.listAlgorithms,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listAlgorithm API tests***************************")
 apiObj.run("*","*", excep = False)
 apiObj.run(excep = False)
@@ -56,6 +58,7 @@ f.write("\n***********************listAlgorithm API tests***********************
 
 
 apiObj = DbsUnitTestApi(api.listProcessedDatasets,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listProcessedDatasets API tests***************************")
 apiObj.run("*","*", excep = False)
 apiObj.run(excep = False)
@@ -70,6 +73,7 @@ apiObj.run("","","","","","","","", excep = True)
 f.write("\n***********************\tlistProcessedDatasets API tests***************************")
 
 apiObj = DbsUnitTestApi(api.listBlocks,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listBlock API tests***************************")
 apiObj.run(path,excep = False)
 #apiObj.run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01",excep = False)
@@ -86,6 +90,7 @@ f.write("\n***********************listBlock API tests***************************
 
 
 apiObj = DbsUnitTestApi(api.listRuns,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listRuns API tests***************************")
 apiObj.run(path,excep = False)
 #apiObj.run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01",excep = False)
@@ -102,6 +107,7 @@ f.write("\n\n***********************listRuns API tests**************************
 
 
 apiObj = DbsUnitTestApi(api.listTiers,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listTiers API tests***************************")
 apiObj.run(path,excep = False)
 #apiObj.run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01",excep = False)
@@ -119,6 +125,7 @@ f.write("\n\n***********************listTiers API tests*************************
 
 
 apiObj = DbsUnitTestApi(api.listFiles,f)
+apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listFiles API tests***************************")
 apiObj.run(path,"","",excep = False)
 #apiObj.run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01","","",excep = False)

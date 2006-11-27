@@ -5,9 +5,9 @@ cd ..
 source setup.sh
 cd -
 echo "Please wait ... The tests can take up to 5 minutes"
-python dbsInsertUnitTests.py > /dev/null
+python dbsInsertUnitTests.py --verbose=2 > /dev/null
 if [ $? -eq 0 ] ; then 
-   python dbsListUnitTests.py > /dev/null 
+   python dbsListUnitTests.py --verbose=2 > /dev/null 
 else
    echo "dbsInsertUnitTests.py test cases probably FAILED"
    echo "Check result.txt for details"
