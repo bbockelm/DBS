@@ -38,8 +38,8 @@ class DbsOptionParser:
            help="specify user name for DB access (if any)")
       self.parser.add_option("--password",action="store", type="string", dest="password",
            help="specify user password for DB access (if any)")
-      self.parser.add_option("-v","--verbose",action="store_true", default=False, dest="verbose",
-           help="be verbose")
+      self.parser.add_option("-v","--verbose", action="store", type="int", default=0, dest="verbose",
+           help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
   def getOpt(self):
       """
           Returns parse list of options
