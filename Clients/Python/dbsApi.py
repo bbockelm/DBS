@@ -44,6 +44,12 @@ class DbsApi(DbsConfig):
   def __init__(self, Args={}):
     """ Constructor. """
     DbsConfig.__init__(self,Args)
+    if self.verbose():
+       print "configuration dictionary:", self.configDict
+       print "using host   ",self.host()
+       print "using port   ",self.port()
+       print "using servlet",self.servlet()
+       print "using version",self.version()
     #
     # Create the Server proxy
     #
@@ -530,6 +536,8 @@ class DbsApi(DbsConfig):
     xmlinput += "</primary-dataset>"
     xmlinput += "</dbs>"
 
+    if self.verbose():
+       print "insertPrimaryDataset, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertPrimaryDataset',
                          'xmlinput' : xmlinput }, 'POST')
     try:
@@ -577,6 +585,8 @@ class DbsApi(DbsConfig):
     xmlinput += "/>"
     xmlinput += "</dbs>"
 
+    if self.verbose():
+       print "insertAlgorithm, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertAlgorithm',
                          'xmlinput' : xmlinput }, 'POST')
     try:
@@ -643,7 +653,8 @@ class DbsApi(DbsConfig):
     xmlinput += "</processed-dataset>"
     xmlinput += "</dbs>"
 
-    print xmlinput
+    if self.verbose():
+       print "insertProcessedDataset, xmlinput",xmlinput
     
     # Call the method
     data = self._server._call ({ 'api' : 'insertProcessedDataset',
@@ -685,8 +696,9 @@ class DbsApi(DbsConfig):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    print xmlinput
-
+    if self.verbose():
+       print "insertRun, xmlinput",xmlinput
+       
     data = self._server._call ({ 'api' : 'insertRun',
                          'xmlinput' : xmlinput }, 'POST')
     try:
@@ -772,7 +784,8 @@ class DbsApi(DbsConfig):
     xmlinput += "</processed_datatset>"
     xmlinput += "</dbs>"
 
-    print xmlinput
+    if self.verbose():
+       print "insertFiles, xmlinput",xmlinput
 
     # Call the method
     data = self._server._call ({ 'api' : 'insertFiles',
@@ -798,7 +811,8 @@ class DbsApi(DbsConfig):
     xmlinput += " path='"+path+"'/>"
     xmlinput += "</dbs>"
 
-    print xmlinput
+    if self.verbose():
+       print "insertBlock, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertBlock',
                          'xmlinput' : xmlinput }, 'POST')
@@ -861,7 +875,8 @@ class DbsApi(DbsConfig):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    print xmlinput 
+    if self.verbose():
+       print "insertLumiSection, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertLumiSection',
                          'xmlinput' : xmlinput }, 'POST')

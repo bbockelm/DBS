@@ -40,7 +40,7 @@ class DbsConfig:
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
     login = masterHost =  masterName = masterPort = masterSocket = admin = ""
-    iList=['user','password','driver','url','host','port','servlet','version']
+    iList=['user','password','driver','url','host','port','servlet','version','dbname','dbsDB','dbtype','verbose']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -52,22 +52,46 @@ class DbsConfig:
                self.configDict[item] = string.split(line,"%s="%keyword)[1]
             if iConfig.has_key(item) and iConfig[item]:
                self.configDict[item] = iConfig[item]
+  def verbose(self):
+    if not self.configDict.has_key('verbose'):
+       return 0
+    return 1
   def host(self):
     if not self.configDict.has_key('host'):
-       raise DbsException(args="DBS configuration missing host number")
+       raise DbsException(args="DBS configuration missing host parameter")
     return self.configDict['host']
   def port(self):
     if not self.configDict.has_key('port'):
-       raise DbsException(args="DBS configuration missing port number")
+       raise DbsException(args="DBS configuration missing port parameter")
     return self.configDict['port']
   def servlet(self):
     if not self.configDict.has_key('servlet'):
-       raise DbsException(args="DBS configuration missing servlet number")
+       raise DbsException(args="DBS configuration missing servlet parameter")
     return self.configDict['servlet']
   def version(self):
     if not self.configDict.has_key('version'):
-       raise DbsException(args="DBS configuration missing version number")
+       raise DbsException(args="DBS configuration missing version parameter")
     return self.configDict['version']
+  def user(self):
+    if not self.configDict.has_key('user'):
+       raise DbsException(args="DBS configuration missing user parameter")
+    return self.configDict['user']
+  def password(self):
+    if not self.configDict.has_key('password'):
+       raise DbsException(args="DBS configuration missing password parameter")
+    return self.configDict['password']
+  def dbname(self):
+    if not self.configDict.has_key('dbname'):
+       raise DbsException(args="DBS configuration missing dbname parameter")
+    return self.configDict['dbname']
+  def dbsDB(self):
+    if not self.configDict.has_key('dbsDB'):
+       raise DbsException(args="DBS configuration missing dbsDB parameter")
+    return self.configDict['dbsDB']
+  def dbtype(self):
+    if not self.configDict.has_key('dbtype'):
+       raise DbsException(args="DBS configuration missing dbtype parameter")
+    return self.configDict['dbtype']
 
 #
 # main
