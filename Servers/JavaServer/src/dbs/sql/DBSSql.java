@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.19 $"
- $Id: DBSSql.java,v 1.19 2006/11/22 16:17:28 afaq Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSSql.java,v 1.20 2006/11/22 18:32:50 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -15,6 +15,12 @@ public class DBSSql {
 	public static String getDual() {
 		return "SELECT 1 FROM dual";
 	}
+
+        public static String getSchemaVersion() {
+
+             String sql = "select SchemaVersion from SchemaVersion where id=1";
+             return sql;  
+        }
 
        	public static String insertName(String table, String key, String value, String userID) {
 		String sql = "INSERT INTO " + table + " ( \n" +

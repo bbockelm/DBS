@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApi.java,v 1.19 2006/11/21 23:26:11 afaq Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApi.java,v 1.20 2006/11/22 17:39:19 afaq Exp $"
  *
 */
 
@@ -18,6 +18,9 @@ import db.DBManagement;
 import dbs.DBSConstants;
 import dbs.DBSException;
 import dbs.util.DBSUtil;
+import db.DBManagement;
+import java.sql.ResultSet;
+
 
 public class DBSApi {
 	/**
@@ -48,6 +51,36 @@ public class DBSApi {
                 }
                 return false;
         }
+
+        public void checkSchemaVersion() throws Exception {
+
+                Connection conn =  getConnection();
+                String sql = "select SchemaVersion from SchemaVersion where id=1";
+
+                System.out.println(sql);
+
+                System.out.println("PRE executed");
+                ResultSet rs =  DBManagement.executeQuery(conn, sql);
+                System.out.println("Query executed");
+
+                String  dbsSchemaVersion="";
+                while(rs.next()) {
+                    System.out.println("In while loop");
+                    dbsSchemaVersion = rs.getString("SchemaVersion");
+                    System.out.println("dbsSchemaVersion"+dbsSchemaVersion);
+                     
+                }
+ 
+                if(isNull(dbsSchemaVersion)) {
+                    throw new Exception("Unable to get Schema Version from Database, cannot continue");
+                } 
+
+                String suppSchemaVer = supportedSchemaVersions();
+                System.out.println("suppSchemaVer "+suppSchemaVer);
+                if (dbsSchemaVersion != suppSchemaVer ) {
+                    throw new Exception("Database Schema Mismatch, Server works with "+suppSchemaVer); 
+                }
+        }  
 
         public void checkVersion(String apiversion) throws Exception {
 		//FIXME I dont think this api check is does anything. Anyways it has to move in the call method insated of the constructor
@@ -82,7 +115,12 @@ public class DBSApi {
 		String apiStr = get(table, "api", true);
                 String apiVersion = get(table, "apiversion", true);
                 System.out.println("apiStr: "+apiStr);
-                checkVersion(get(table, "apiversion", true)); 
+
+                checkVersion(get(table, "apiversion", true));
+ 
+                System.out.println("Testing Schema Version"); 
+
+                checkSchemaVersion();
 
 		out.write(DBSConstants.XML_HEADER); 
 
