@@ -66,8 +66,8 @@ algo1 = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
-							#Annotation="This is test", 
-							#Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+							Annotation="This is test", 
+							Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo1, excep = False)
@@ -78,7 +78,9 @@ algo2 = DbsAlgorithm (ExecutableName="TestExe011",
 		ApplicationVersion= "TestVersion011" + mytime, 
 		ApplicationFamily="AppFamily011", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
-							Name="MyFirstParam01" 
+							Name="MyFirstParam01",
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo2, excep = False)
@@ -90,6 +92,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -101,6 +105,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -112,6 +118,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -124,6 +132,8 @@ algo = DbsAlgorithm (
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -143,6 +153,8 @@ algo = DbsAlgorithm (ExecutableName="TestE xe01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -154,6 +166,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstPddaram01", 
 							Version="V00/1", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -166,6 +180,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -178,6 +194,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -190,6 +208,8 @@ algo = DbsAlgorithm (ExecutableName="TestEDDDe01",
 							Name="MyaaaaddddffFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -202,6 +222,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFirstP;aram01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -214,6 +236,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 							Name="MyFir/stP/aram01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -226,6 +250,8 @@ algo = DbsAlgorithm (ExecutableName="Testaae01",
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -237,6 +263,8 @@ algo = DbsAlgorithm (ExecutableName="TestE01",
 							Name="MyFirstPzzzzaram01", 
 							Version="V001", 
 							Type="test", 
+                                                        Annotation="This is test",
+                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
@@ -267,7 +295,7 @@ apiObj.setVerboseLevel(opts.verbose)
 proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessed" + mytime,
 		PhysicsGroup="BPositive",
-		Status="Valid",
+		Status="VALID",
 		TierList=tierList,
 		AlgoList=[algo1, algo2])
 apiObj.run(proc1, excep = False)
@@ -521,7 +549,7 @@ file1= DbsFile (
 		#QueryableMetadata= 'This is a test file',
 		NumberOfEvents= 10000,
 		FileSize= 12340,
-		Status= 'Valid',
+		Status= 'VALID',
 		FileType= 'EVD',
 		LumiList= [lumi1, lumi2],
 		TierList= tierList,
@@ -533,7 +561,7 @@ file2= DbsFile (
 		#QueryableMetadata= 'This is a test file',
 		NumberOfEvents= 10000,
 		FileSize= 12340,
-		Status= 'Valid',
+		Status= 'VALID',
 		FileType= 'EVD',
 		LumiList= [lumi1, lumi2],
 		TierList= tierList,
@@ -544,29 +572,29 @@ apiObj.run(proc1 ,[file1,file2], block1,  excep = True)
 
 file3 = DbsFile (LogicalFileName= '1111-0909-9767-8764222' + mytime,
 		NumberOfEvents= 10000,
-                Status= 'Valid',
+                Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file3], block1,  excep = False)
 
 file = DbsFile (LogicalFileName= '1111*-0909-9767-8764222' + mytime,
 		NumberOfEvents= 10000,
-                Status= 'Valid',
+                Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111;-0909-9767-8764222' + mytime,
 		NumberOfEvents= 10000,
-                Status= 'Valid', 
+                Status= 'VALID', 
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		NumberOfEvents= 10000,
-                Status= 'Valid',
+                Status= 'VALID',
 		FileSize= 12340)
 proc = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessxxxxxxxxxxxxx" + mytime,
-                Status= 'Valid',
+                Status= 'VALID',
 		TierList=tierList)
 
 apiObj.run(proc ,[file], block1,  excep = True)
@@ -577,14 +605,14 @@ apiObj.run(proc1 ,[file], block,  excep = True)
 file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		ParentList = [lfn1,lfn2],
 		NumberOfEvents= 10000,
-                Status= 'Valid',
+                Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = False)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
 		ParentList = [lfn1,'doesnotexists'],
 		NumberOfEvents= 10000,
-                Status= 'Valid',
+                Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 

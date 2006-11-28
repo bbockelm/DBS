@@ -45,6 +45,8 @@ class DbsUnitTestApi:
 				#print "  %s" % data
 			if excep:
                                 self.printTestStatus(info,"FAILED","AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED")
+                                self.printTestStatus(info,"FAILED","STOPING EXECUTION...")
+                                sys.exit(1)  
 			else:
                                 self.printTestStatus(info,"PASSED","AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED")
 		except:
@@ -54,6 +56,8 @@ class DbsUnitTestApi:
                                 self.printTestStatus(info,"PASSED","AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS",exception)
 			else:
                                 self.printTestStatus(info,"FAILED","AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS",exception)
+                                self.printTestStatus(info,"FAILED","STOPING EXECUTION...")
+                                sys.exit(1)  
 
 	def getExistingPDPath(self):
               try:
