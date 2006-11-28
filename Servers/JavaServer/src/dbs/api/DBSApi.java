@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApi.java,v 1.22 2006/11/27 20:36:36 afaq Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApi.java,v 1.23 2006/11/27 22:41:44 afaq Exp $"
  *
 */
 
@@ -16,6 +16,7 @@ import xml.Element;
 import xml.XMLException;
 import db.DBManagement;
 import dbs.DBSConstants;
+import dbs.sql.DBSSql;
 import dbs.DBSException;
 import dbs.util.DBSUtil;
 import db.DBManagement;
@@ -37,10 +38,9 @@ public class DBSApi {
 
         }
 
-        public String supportedSchemaVersions() {
-
-           return "v00_00_02";
-        }
+	public String supportedSchemaVersions() {
+		return "v00_00_02";
+	}
 
         //This func must move to Utility
         private boolean isIn(String param, Enumeration e) {
@@ -52,33 +52,24 @@ public class DBSApi {
                 return false;
         }
 
-        public void checkSchemaVersion() throws Exception {
-              Connection conn =  getConnection();
-              try {
-                String sql = "select SchemaVersion from SchemaVersion where id=1";
-
-                System.out.println(sql);
-
-                ResultSet rs =  DBManagement.executeQuery(conn, sql);
-
-                String  dbsSchemaVersion="";
-                while(rs.next()) {
-                    dbsSchemaVersion = rs.getString("SchemaVersion");
-                }
- 
-                if(isNull(dbsSchemaVersion)) {
-                    throw new Exception("Unable to get Schema Version from Database, cannot continue");
-                } 
-
-                String suppSchemaVer = supportedSchemaVersions();
-                if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
-                    throw new Exception("Database Schema Mismatch, Server works with "+suppSchemaVer+" Current schema version is :"+dbsSchemaVersion); 
-                }
-              } catch (SQLException sqlEx) {
-                throw new Exception("Unable to get Schema Version from Database, cannot continue"); 
-              }  
-              finally {
-                        if(conn != null) conn.close();
+	public void checkSchemaVersion() throws Exception {
+		Connection conn =  getConnection();
+		try {
+			String sql = "select SchemaVersion from SchemaVersion";
+			System.out.println(sql);
+			ResultSet rs =  DBSSql.getSchemaVersion(conn).executeQuery();
+			String dbsSchemaVersion="";
+			if(rs.next()) {
+				dbsSchemaVersion = rs.getString("SchemaVersion");
+			} else {
+				throw new DBSException("Schema Version Failure", "589", "Unable to get Schema Version from Database, cannot continue");
+			} 
+			String suppSchemaVer = supportedSchemaVersions();
+			if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
+				throw new DBSException("Unsupported Schema version", "590", "Database Schema Mismatch, Server works with " + suppSchemaVer + " Current schema version is :" + dbsSchemaVersion); 
+			}
+		} finally {
+			if(conn != null) conn.close();
                 }
         }  
 

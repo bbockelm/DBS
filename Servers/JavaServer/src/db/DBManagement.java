@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.4 $"
- $Id: DBManagement.java,v 1.4 2006/11/01 16:59:44 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBManagement.java,v 1.5 2006/11/22 18:32:49 afaq Exp $"
 
  *
  */
@@ -12,6 +12,9 @@ package db;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import db.PreparedStatementWrapper;
 
 public class DBManagement{
 
@@ -26,17 +29,22 @@ public class DBManagement{
 	* @param query An sql query in the sql format to be executed on the database server.
 	* @return A ResultSet containing the result of executing the sql query. Null if an exception occurs
 	*/
-	public static ResultSet executeQuery(Connection conn, String query) throws Exception{
+	public static ResultSet executeQuery(Connection conn, String query) throws Exception {
 		return conn.createStatement().executeQuery(query);
 	}
 
-        /** Executes insert queries */
-        public static boolean execute(Connection conn, String query) throws Exception{
-                return conn.createStatement().execute(query);
-        }
 
         /** Executes insert queries */
-        public static int executeUpdate(Connection conn, String query) throws Exception{
-                return conn.createStatement().executeUpdate(query);
-        }
+	public static boolean execute(Connection conn, String query) throws Exception {
+		return conn.createStatement().execute(query);
+	}
+
+        /** Executes insert queries */
+	public static int executeUpdate(Connection conn, String query) throws Exception {
+		return conn.createStatement().executeUpdate(query);
+	}
+	
+	public static PreparedStatement getStatement(Connection conn, String query) throws SQLException {
+		return (new PreparedStatementWrapper(conn.prepareStatement(query), conn, query));
+	}
 }

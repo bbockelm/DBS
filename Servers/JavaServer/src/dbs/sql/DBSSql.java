@@ -1,63 +1,74 @@
 
 /**
- $Revision: 1.21 $"
- $Id: DBSSql.java,v 1.21 2006/11/27 20:26:17 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSSql.java,v 1.22 2006/11/27 22:41:45 afaq Exp $"
  *
  */
 package dbs.sql;
 import java.util.Hashtable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import dbs.util.DBSUtil;
+import db.DBManagement;
 
 public class DBSSql {
 	/**
 	 * 
 	 */
-	public static String getDual() {
+	public static String getDual() throws SQLException {
 		return "SELECT 1 FROM dual";
 	}
 
-        public static String getSchemaVersion() {
+	public static PreparedStatement getSchemaVersion(Connection conn) throws SQLException {
 
-             String sql = "select SchemaVersion from SchemaVersion where id=1";
-             return sql;  
+		String sql = "SELECT SchemaVersion FROM SchemaVersion";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
         }
 
-       	public static String insertName(String table, String key, String value, String userID) {
+       	public static PreparedStatement insertName(Connection conn, String table, String key, String value, String userID) throws SQLException {
 		String sql = "INSERT INTO " + table + " ( \n" +
 				         key + ", \n" +
 			        	"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + value + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, value);
+		ps.setString(2, userID);
+		ps.setString(3, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
-	public static String insertMap(String table, String key1, String key2, String value1, String value2, String userID) {
+	public static PreparedStatement insertMap(Connection conn, String table, String key1, String key2, String value1, String value2, String userID) throws SQLException {
 		String sql = "INSERT INTO " + table + " ( \n" +
 					key1 + ", \n" +
 					key2 + ", \n" +
 					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + value1 + "', \n" +
-					"'" + value2 + "' , \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, value1);
+		ps.setString(2, value2);
+		ps.setString(3, userID);
+		ps.setString(4, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
 
-	public static String insertPrimaryDataset(String ann, String name, String descID, String startDate, String endDate, String typeID , String userID) {
+	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String userID) throws SQLException {
 		String sql = "INSERT INTO PrimaryDataset ( \n" +
 				        "Annotation, \n" +
 				        "Name, \n" +
@@ -66,24 +77,31 @@ public class DBSSql {
 				        "EndDate, \n" +
 				        "Type, \n" +
 			        	"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + ann + "', \n" +
-					"'" + name + "', \n" +
-					"'" + descID + "', \n" +
-					"'" + startDate + "', \n" +
-					"'" + endDate + "', \n" +
-					"'" + typeID + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, ann);
+		ps.setString(2, name);
+		ps.setString(3, descID);
+		ps.setString(4, startDate);
+		ps.setString(5, endDate);
+		ps.setString(6, typeID);
+		ps.setString(7, userID);
+		ps.setString(8, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertRun(String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String storeNumber, String startOfRun, String endOfRun, String userID) {
+	public static PreparedStatement insertRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String storeNumber, String startOfRun, String endOfRun, String userID) throws SQLException {
 		String sql = "INSERT INTO Runs ( \n" +
 				        "RunNumber, \n" +
 				        "NumberOfEvents, \n" +
@@ -93,25 +111,33 @@ public class DBSSql {
 				        "StartOfRun, \n" +
 				        "EndOfRun, \n" +
 			        	"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + runNumber + "', \n" +
-					"'" + nOfEvents + "', \n" +
-					"'" + nOfLumiSections + "', \n" +
-					"'" + totalLumi + "', \n" +
-					"'" + storeNumber + "', \n" +
-					"'" + startOfRun + "', \n" +
-					"'" + endOfRun + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, runNumber);
+		ps.setString(2, nOfEvents);
+		ps.setString(3, nOfLumiSections);
+		ps.setString(4, totalLumi);
+		ps.setString(5, storeNumber);
+		ps.setString(6, startOfRun);
+		ps.setString(7, endOfRun);
+		ps.setString(8, userID);
+		ps.setString(9, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertBlock(String size, String name, String procDSID, String nOfFiles, String openForWriting, String userID) {
+	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String openForWriting, String userID) throws SQLException {
 		String sql = "INSERT INTO Block ( \n" +
 				        "BlockSize, \n" +
 				        "Name, \n" +
@@ -119,23 +145,29 @@ public class DBSSql {
 				        "NumberOfFiles, \n" +
 				        "OpenForWriting, \n" +
 			        	"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + size + "', \n" +
-					"'" + name + "', \n" +
-					"'" + procDSID + "', \n" +
-					"'" + nOfFiles + "', \n" +
-					"'" + openForWriting + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, size);
+		ps.setString(2, name);
+		ps.setString(3, procDSID);
+		ps.setString(4, nOfFiles);
+		ps.setString(5, openForWriting);
+		ps.setString(6, userID);
+		ps.setString(7, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertLumiSection(String lsNumber, String runID, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String userID) {
+	public static PreparedStatement insertLumiSection(Connection conn, String lsNumber, String runID, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String userID) throws SQLException {
 		String sql = "INSERT INTO LumiSection ( \n" +
 				        "LumiSectionNumber, \n" +
 				        "RunNumber, \n" +
@@ -144,46 +176,57 @@ public class DBSSql {
 				        "LumiStartTime, \n" +
 				        "LumiEndTime, \n" +
 			        	"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + lsNumber + "', \n" +
-					"'" + runID + "', \n" +
-					"'" + startEvNumber + "', \n" +
-					"'" + endEvNumber + "', \n" +
-					"'" + lStartTime + "', \n" +
-					"'" + lEndTime + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, lsNumber);
+		ps.setString(2, runID);
+		ps.setString(3, startEvNumber);
+		ps.setString(4, endEvNumber);
+		ps.setString(5, lStartTime);
+		ps.setString(6, lEndTime);
+		ps.setString(7, userID);
+		ps.setString(8, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 		       
-        public static String insertPerson(String userName, String userDN, String contactInfo, String userID) {
+        public static PreparedStatement insertPerson(Connection conn, String userName, String userDN, String contactInfo, String userID) throws SQLException {
 		String sql = "INSERT INTO Person ( \n" +
 					"Name, \n" +
 				        "DistinguishedName, \n" +
 					"ContactInfo, \n" +
 					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + userName + "', \n" +
-					"'" + userDN + "', \n" +
-					"'" + contactInfo + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, userName);
+		ps.setString(2, userDN);
+		ps.setString(3, contactInfo);
+		ps.setString(4, userID);
+		ps.setString(5, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 
 
-	public static String insertParameterSet(String hash, String name, String version, String type, String annotation, String content, String userID) {
+	public static PreparedStatement insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws SQLException {
 		String sql = "INSERT INTO QueryableParameterSet ( \n" +
 				        "Hash, \n" +
 				        "Name, \n" +
@@ -192,49 +235,61 @@ public class DBSSql {
 				        "Annotation, \n" +
 				        "Content, \n" +
 			        	"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + hash + "', \n" +
-					"'" + name + "', \n" +
-					"'" + version + "', \n" +
-					"'" + type + "', \n" +
-					"'" + annotation + "', \n" +
-					"'" + content + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, hash);
+		ps.setString(2, name);
+		ps.setString(3, version);
+		ps.setString(4, type);
+		ps.setString(5, annotation);
+		ps.setString(6, content);
+		ps.setString(7, userID);
+		ps.setString(8, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 				       
-        public static String insertApplication(String exeID, String versionID, String familyID, String psID, String userID) {
+        public static PreparedStatement insertApplication(Connection conn, String exeID, String versionID, String familyID, String psID, String userID) throws SQLException {
 		String sql = "INSERT INTO AlgorithmConfig ( \n" +
 					"ExecutableName, \n" +
 				        "ApplicationVersion, \n" +
 					"ApplicationFamily, \n" +
 					"ParameterSetID, \n" +
 					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + exeID + "', \n" +
-					"'" + versionID + "', \n" +
-					"'" + familyID + "', \n" +
-					"'" + psID + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, exeID);
+		ps.setString(2, versionID);
+		ps.setString(3, familyID);
+		ps.setString(4, psID);
+		ps.setString(5, userID);
+		ps.setString(6, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
-	public static String insertProcessedDatatset(String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String userID) {
+	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String userID) throws SQLException {
 		String sql = "INSERT INTO ProcessedDataset ( \n" +
 					"Name, \n" +
 					"PrimaryDataset, \n" +
@@ -242,49 +297,58 @@ public class DBSSql {
 					"PhysicsGroup, \n" +
 					"Status, \n" +
 					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + name + "', \n" +
-					"'" + primDSID + "', \n" +
-					"'" + openForWriting + "', \n" +
-					"'" + phyGroupID + "', \n" +
-					"'" + statusID + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, name);
+		ps.setString(2, primDSID);
+		ps.setString(3, openForWriting);
+		ps.setString(4, phyGroupID);
+		ps.setString(5, statusID);
+		ps.setString(6, userID);
+		ps.setString(7, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
-	public static String insertPhysicsGroup(String name, String conID, String userID) {
+	public static PreparedStatement insertPhysicsGroup(Connection conn, String name, String conID, String userID) throws SQLException {
 		String sql = "INSERT INTO PhysicsGroup ( \n" +
 					"PhysicsGroupName, \n" +
 					"PhysicsGroupConvener, \n" +
 					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + name + "', \n" +
-					"'" + conID + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, name);
+		ps.setString(2, conID);
+		ps.setString(3, userID);
+		ps.setString(4, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 
 	// SQL for inserting File and its related tables.
 	// ____________________________________________________
 	
-	//public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) {
-	public static String insertFile(String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatus, String type, String valStatus, String qMetaData, String userID) {
+	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) throws SQLException {
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatus, String type, String valStatus, String qMetaData, String userID) throws SQLException {
 
 
-                System.out.println("SERIOUS WARNING:: Validation Status Table is not in Schema, check that again");
+		System.out.println("SERIOUS WARNING:: Validation Status Table is not in Schema, check that again");
 
 		String sql = "INSERT INTO Files ( \n" +
 					"LogicalFileName, \n" +
@@ -298,36 +362,47 @@ public class DBSSql {
 					"ValidationStatus, \n" +
 					"QueryableMetadata, \n" +
 					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
-					"'" + lfn + "', \n" +
-					"'" + procDSID + "', \n" +
-					"'" + blockID + "', \n" +
-					"'" + checksum + "', \n" +
-					"'" + nOfEvents + "', \n" +
-					"'" + size + "', \n" +
-					"(" + getID("FileStatus", "Status", fileStatus) + "), \n" +
-					"(" + getID("FileType", "Type", type) + "), \n" +
-					"(" + getID("FileStatus", "Status", valStatus) + "), \n" +
-					//"(" + getID("ValidationStatus", "Status", valStatus) + "), \n" +
-					"'" + qMetaData + "', \n" +
-					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
-					"'" + userID + "' \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"?, \n" +
+					"(" + getID(conn, "FileStatus", "Status", fileStatus) + "), \n" +
+					"(" + getID(conn, "FileType", "Type", type) + "), \n" +
+					"(" + getID(conn, "FileStatus", "Status", valStatus) + "), \n" +
+					"?, \n" +
+					"?, \n" +
+					"? \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, lfn);
+		ps.setString(2, procDSID);
+		ps.setString(3, blockID);
+		ps.setString(4, checksum);
+		ps.setString(5, nOfEvents);
+		ps.setString(6, size);
+		ps.setString(7, qMetaData);
+		ps.setString(8, userID);
+		ps.setString(9, userID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
 
-	public static String updateBlock(String blockID) {
+	public static PreparedStatement updateBlock(Connection conn, String blockID) throws SQLException {
 		String sql = "UPDATE Block \n" +
-			"SET BlockSize = (SELECT SUM(FileSize) FROM Files f WHERE f.Block = " + blockID + ") , \n" +
-			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = " + blockID + ") \n" +
-			"WHERE ID = " + blockID ;
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+			"SET BlockSize = (SELECT SUM(FileSize) FROM Files f WHERE f.Block = ?) , \n" +
+			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = ?) \n" +
+			"WHERE ID = ?" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, blockID);
+		ps.setString(2, blockID);
+		ps.setString(3, blockID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	// ____________________________________________________
 	
@@ -337,7 +412,7 @@ public class DBSSql {
 	
 	
 	
-	public static String listPrimaryDatasets(String pattern) {
+	public static PreparedStatement listPrimaryDatasets(Connection conn, String pattern) throws SQLException {
 		String sql = "SELECT pd.ID as ID, \n" +
 			"pd.Annotation as ANNOTATION, \n" +
 			"pd.Name as PRIMARY_NAME, \n" +
@@ -369,14 +444,16 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = pd.LastModifiedBy \n";
 		if(pattern != null) {
-			sql += "WHERE pd.Name like '" + pattern + "'\n" +
+			sql += "WHERE pd.Name like ?\n" +
 				"ORDER BY PRIMARY_NAME";
 		}
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, pattern);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String listProcessedDatasets(String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) {
+	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws SQLException {
 		String sql = "SELECT procds.id as id, \n" +
 			/*"concat( \n" +
 				"concat( \n" +
@@ -439,20 +516,28 @@ public class DBSSql {
 		if(patternExe == null) patternExe = "%";
 		if(patternPS == null) patternPS = "%";
 
-		sql += "WHERE primds.Name like '" + patternPrim + "' \n" +
-			"and dt.Name like '" + patternDT + "' \n" +
-			"and procds.name like '" + patternProc + "' \n" +
-			"and av.Version like '" + patternVer + "' \n" +
-			"and af.FamilyName like '" + patternFam + "' \n" +
-			"and ae.ExecutableName like '" + patternExe + "' \n" +
-			"and ps.Name like '" + patternPS + "' \n" +
+		sql += "WHERE primds.Name like ? \n" +
+			"and dt.Name like ? \n" +
+			"and procds.name like ? \n" +
+			"and av.Version like ? \n" +
+			"and af.FamilyName like ? \n" +
+			"and ae.ExecutableName like ? \n" +
+			"and ps.Name like ? \n" +
 			//"ORDER BY path";
 			"ORDER BY id, app_version, app_family_name, app_executable_name, ps_name, data_tier";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, patternPrim);
+		ps.setString(2, patternDT);
+		ps.setString(3, patternProc);
+		ps.setString(4, patternVer);
+		ps.setString(5, patternFam);
+		ps.setString(6, patternExe);
+		ps.setString(7, patternPS);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String listAlgorithms(String patternVer, String patternFam, String patternExe, String patternPS) {
+	public static PreparedStatement listAlgorithms(Connection conn, String patternVer, String patternFam, String patternExe, String patternPS) throws SQLException {
 		String sql = "SELECT algo.id as ID, \n" +
 			"av.Version as APP_VERSION, \n" +
 			"af.FamilyName as APP_FAMILY_NAME, \n" +
@@ -481,17 +566,22 @@ public class DBSSql {
 		if(patternFam == null) patternFam = "%";
 		if(patternExe == null) patternExe = "%";
 		if(patternPS == null) patternPS = "%";
-
-		sql += "WHERE av.Version like '" + patternVer + "' \n" +
-			"and af.FamilyName like '" + patternFam + "' \n" +
-			"and ae.ExecutableName like '" + patternExe + "' \n" +
-			"and ps.Name like '" + patternPS + "' \n" +
+		
+		sql += "WHERE av.Version like ? \n" +
+			"and af.FamilyName like ? \n" +
+			"and ae.ExecutableName like ? \n" +
+			"and ps.Name like ? \n" +
 			"ORDER BY app_family_name, app_executable_name, app_version, ps_name";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, patternVer);
+		ps.setString(2, patternFam);
+		ps.setString(3, patternExe);
+		ps.setString(4, patternPS);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String listRuns(String procDSID) {
+	public static PreparedStatement listRuns(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT run.ID as ID, \n " +
 			"run.RunNumber as RUN_NUMBER, \n" +
 			"run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
@@ -513,14 +603,16 @@ public class DBSSql {
 				"ON perlm.id = run.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "WHERE pdsr.Dataset = " + procDSID + " \n";
+			sql += "WHERE pdsr.Dataset = ? \n";
 		}
 		sql +=	"ORDER BY run_number";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, procDSID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String listTiers(String procDSID) {
+	public static PreparedStatement listTiers(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT dt.ID as ID, \n " +
 			"dt.Name as NAME, \n" +
 			"dt.CreationDate as CREATION_DATE, \n" +
@@ -536,14 +628,16 @@ public class DBSSql {
 				"ON perlm.id = dt.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "WHERE pdst.Dataset = " + procDSID + " \n";
+			sql += "WHERE pdst.Dataset = ? \n";
 		}
 		sql +=	"ORDER BY name";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, procDSID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String listBlocks(String procDSID) {
+	public static PreparedStatement listBlocks(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.BlockSize as SIZE, \n" +
@@ -560,14 +654,16 @@ public class DBSSql {
 				"ON perlm.id = b.LastModifiedBy \n";
 
 		if(procDSID != null) {
-			sql += "WHERE b.Dataset = " + procDSID + " \n";
+			sql += "WHERE b.Dataset = ? \n";
 		}
 		sql +=	"ORDER BY name";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, procDSID);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String listFiles(String procDSID, String blockID, String patternLFN) {
+	public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String patternLFN) throws SQLException {
 		String sql = "SELECT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
@@ -600,38 +696,50 @@ public class DBSSql {
 				"ON perlm.id = f.LastModifiedBy \n";
 
 		if(patternLFN == null) patternLFN = "%";
-		sql += "WHERE f.LogicalFileName like '" + patternLFN + "' \n" ;
+		sql += "WHERE f.LogicalFileName like ? \n" ;
 		if(procDSID != null) {
-			sql += "and f.Dataset = " + procDSID + " \n";
+			sql += "and f.Dataset = ? \n";
 		}
 		if(blockID != null) {
-			sql += "and f.Block = " + blockID + " \n";
+			sql += "and f.Block = ? \n";
 		}
 		sql +=	"ORDER BY lfn";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
-	}
-
-	public static String getPrameterSets(String pattern) {
-		String sql = "SELECT ID, HASH, CONTENT FROM t_parameter_set ";
-		if(pattern != null) {
-			sql += "WHERE content like '" + pattern + "' " +
-				"or hash like '" + pattern + "' " ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, patternLFN);
+		if(procDSID != null) {
+			ps.setString(2, procDSID);
 		}
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		if(blockID != null) {
+			ps.setString(3, blockID);
+		}
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getID(String table, String key, String value) {
-		System.out.println("\n\n" + "SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'" + "\n\n");
-		return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
+
+	public static PreparedStatement getID(Connection conn, String table, String key, String value) throws SQLException {
+		String sql = "SELECT ID \n " +
+			"FROM " + table + "\n " +
+			"WHERE " + key + " = ? \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, value);
+		System.out.println("\n\n" + ps + "\n\n");
+		//return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
+		return ps;
 	}
 
-	public static String getMapID(String table, String key1, String key2, String value1, String value2) {
-		System.out.println((String)("SELECT ID AS id FROM " + table + " WHERE " + key1 + " = '" + value1 + "' AND " + key2 + " = '" + value2 + "'"));
-		return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key1 + " = '" + value1 + "' AND " + key2 + " = '" + value2 + "'"));
+	public static PreparedStatement getMapID(Connection conn, String table, String key1, String key2, String value1, String value2) throws SQLException {
+		String sql = "SELECT ID \n " +
+			"FROM " + table + "\n " +
+			"WHERE " + key1 + " = ? \n" +
+			"AND " + key2 + " = ? \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, value1);
+		ps.setString(2, value2);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
-	public static String getProcessedDSID(String prim, String dt ,String proc) {
+	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
 		String sql = "SELECT procds.ID as ID \n" +
 				"FROM ProcessedDataset procds \n" +
 				"JOIN PrimaryDataset primds \n" +
@@ -641,17 +749,21 @@ public class DBSSql {
 				"JOIN DataTier dt \n" +
 					"ON dt.id = pdst.DataTier \n";
 		if(prim == null || dt == null || proc == null) {
-			return sql;
+			return DBManagement.getStatement(conn, sql);
 		}
-		sql += "WHERE primds.Name = '" + prim + "' " +
-			"and dt.Name = '" + dt + "' " +
-			"and procds.Name = '" + proc + "' ";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		sql += "WHERE primds.Name = ? \n" +
+			"and dt.Name = ? \n" +
+			"and procds.Name = ? \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, prim);
+		ps.setString(2, dt);
+		ps.setString(3, proc);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 
-	public static String getAlgorithmID(String ver, String fam, String exe, String ps) {
+	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {
 		String sql = "SELECT algo.id \n" +
 			"FROM AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
@@ -662,83 +774,88 @@ public class DBSSql {
 				"ON ae.id = algo.ExecutableName \n" +
 			"JOIN QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
-			"WHERE av.Version = '" + ver + "' \n" +
-			"and af.FamilyName = '" + fam + "' \n" +
-			"and ae.ExecutableName = '" + exe + "' \n" +
-			"and ps.Name = '" + ps + "' \n" ;
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+			"WHERE av.Version = ? \n" +
+			"and af.FamilyName = ? \n" +
+			"and ae.ExecutableName = ? \n" +
+			"and ps.Name = ? \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, ver);
+		ps.setString(2, fam);
+		ps.setString(3, exe);
+		ps.setString(4, psName);
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 
 	/*
-	public static String getAppVersionID(String version) {
+	public static PreparedStatement getAppVersionID(Connection conn, String version) throws SQLException {
 		String sql = getID("AppVersion", "Version", version);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
-	public static String getAppExecutableID(String exe) {
+	public static PreparedStatement getAppExecutableID(Connection conn, String exe) throws SQLException {
 		String sql = getID("AppExecutable", "ExecutableName", exe);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
-	public static String getAppFamilyID(String family) {
+	public static PreparedStatement getAppFamilyID(Connection conn, String family) throws SQLException {
 		String sql = getID("AppFamily", "FamilyName", family);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getParameterSetID(String psName) {
+	public static PreparedStatement getParameterSetID(Connection conn, String psName) throws SQLException {
 		String sql = getID("QueryableParameterSet", "Name", psName);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getPersonID(String userDN) {
+	public static PreparedStatement getPersonID(Connection conn, String userDN) throws SQLException {
 		String sql = getID("Person", "DistinguishedName", userDN);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getBlockID(String blockName) {
+	public static PreparedStatement getBlockID(Connection conn, String blockName) throws SQLException {
 		String sql = getID("Block", "Name", blockName);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getDataTierID(String tierName) {
+	public static PreparedStatement getDataTierID(Connection conn, String tierName) throws SQLException {
 		String sql = getID("DataTier", "Name", tierName);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getLumiSectionID(String lsNumber) {
+	public static PreparedStatement getLumiSectionID(Connection conn, String lsNumber) throws SQLException {
 		String sql = getID("LumiSection", "LumiSectionNumber", lsNumber);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getFileID(String lfn) {
+	public static PreparedStatement getFileID(Connection conn, String lfn) throws SQLException {
 		String sql = getID("Files", "LogicalFileName", lfn);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getStatusID(String status) {
+	public static PreparedStatement getStatusID(Connection conn, String status) throws SQLException {
 		String sql = getID("Status", "Status", status);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String getTypeID(String type) {
+	public static PreparedStatement getTypeID(Connection conn, String type) throws SQLException {
 		String sql = getID("Type", "Type", type);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertFileTier(String fileID, String tierID, String userID) {
+	public static PreparedStatement insertFileTier(Connection conn, String fileID, String tierID, String userID) throws SQLException {
 		String sql = "INSERT INTO FileTier ( \n" +
 					"Fileid, \n" +
 				        "DataTier, \n" +
@@ -749,14 +866,13 @@ public class DBSSql {
 					"'" + fileID + "', \n" +
 					"'" + tierID + "' , \n" +
 					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
 					"'" + userID + "' \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertFileLumi(String fileID, String lumiID, String userID) {
+	public static PreparedStatement insertFileLumi(Connection conn, String fileID, String lumiID, String userID) throws SQLException {
 		String sql = "INSERT INTO FileLumi ( \n" +
 					"Fileid, \n" +
 				        "Lumi, \n" +
@@ -767,14 +883,13 @@ public class DBSSql {
 					"'" + fileID + "', \n" +
 					"'" + lumiID + "' , \n" +
 					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
 					"'" + userID + "' \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 	
-	public static String insertFileAlgo(String fileID, String appID, String userID) {
+	public static PreparedStatement insertFileAlgo(Connection conn, String fileID, String appID, String userID) throws SQLException {
 		String sql = "INSERT INTO FileAlgoMap ( \n" +
 					"Fileid, \n" +
 				        "Algorithm, \n" +
@@ -785,14 +900,13 @@ public class DBSSql {
 					"'" + fileID + "', \n" +
 					"'" + appID + "' , \n" +
 					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
 					"'" + userID + "' \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertFileParentage(String fileID, String parentID, String userID) {
+	public static PreparedStatement insertFileParentage(Connection conn, String fileID, String parentID, String userID) throws SQLException {
 		String sql = "INSERT INTO FileParentage ( \n" +
 					"ThisFile, \n" +
 				        "itsParent, \n" +
@@ -803,43 +917,42 @@ public class DBSSql {
 					"'" + fileID + "', \n" +
 					"'" + parentID + "' , \n" +
 					"'" + userID + "', \n" +
-					"'" + DBSUtil.getDate() + "', \n" +
 					"'" + userID + "' \n" +
 				") \n";
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
-	public static String insertStatus(String status, String userID) {
+	public static PreparedStatement insertStatus(Connection conn, String status, String userID) throws SQLException {
 		String sql = insertName("Status", "Status", status, userID);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertType(String type, String userID) {
+	public static PreparedStatement insertType(Connection conn, String type, String userID) throws SQLException {
 		String sql = insertName("Type", "Type", type, userID);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 
 	// SQL for inserting Application and its related tables.
 	// ____________________________________________________
-        public static String insertAppVersion(String version, String userID) {
+        public static String insertAppVersion(Connection conn, String version, String userID) throws SQLException {
 		String sql = insertName("AppVersion", "Version", version, userID);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertAppFamily(String family, String userID) {
+	public static PreparedStatement insertAppFamily(Connection conn, String family, String userID) throws SQLException {
 		String sql = insertName("AppFamily", "FamilyName", family, userID);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
-	public static String insertAppExecutable(String exe, String userID) {
+	public static PreparedStatement insertAppExecutable(Connection conn, String exe, String userID) throws SQLException {
 		String sql = insertName("AppExecutable", "ExecutableName", exe, userID);
-		System.out.println("\n\n" + sql + "\n\n");
-		return sql;
+		System.out.println("\n\n" + ps + "\n\n");
+		return ps;
 	}*/
 
 	
