@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.23 $"
- $Id: DBSSql.java,v 1.23 2006/11/28 19:41:38 sekhri Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSSql.java,v 1.24 2006/11/28 20:33:26 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -138,6 +138,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String openForWriting, String userID) throws SQLException {
+
 		String sql = "INSERT INTO Block ( \n" +
 				        "BlockSize, \n" +
 				        "Name, \n" +
@@ -160,7 +161,8 @@ public class DBSSql {
 		ps.setString(2, name);
 		ps.setString(3, procDSID);
 		ps.setString(4, nOfFiles);
-		ps.setString(5, openForWriting);
+                //FIXME Forcing it to be TRUE for each new Block  
+		ps.setBoolean(5, true);
 		ps.setString(6, userID);
 		ps.setString(7, userID);
 		System.out.println("\n\n" + ps + "\n\n");

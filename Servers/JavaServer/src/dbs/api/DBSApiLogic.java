@@ -1,6 +1,6 @@
 /**
- $Revision: 1.33 $"
- $Id: DBSApiLogic.java,v 1.33 2006/11/28 19:41:38 sekhri Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSApiLogic.java,v 1.34 2006/11/28 20:33:26 sekhri Exp $"
  *
  */
 
@@ -25,7 +25,8 @@ public class DBSApiLogic {
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
 	//private static String SAFE_PATH = "[-A-Za-z0-9_./\\p{%}]";
 	//private static String SAFE_NAME = "[-A-Za-z0-9_.]";
-	private static String SAFE_NAME = "[-\\w_\\.%]+";
+	private static String SAFE_WORD = "[-\\w_\\.%]+";
+	private static String SAFE_STR = "[-\\w_\\.% ]+";
 	private static String SAFE_BLOCK = "[-\\w_\\.%#/]+";
 	private static String VALID_PATH = "^/([^/]+)/([^/]+)/([^/]+)";
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
@@ -449,9 +450,9 @@ public class DBSApiLogic {
 
 			//Insert a File Type if it does not exists
 			//insertName(conn, "Type", "Type", type , userID);
-			checkName(fileStatus, "FileStatus");
-			checkName(type, "FileType");
-			checkName(valStatus, "ValidationStatus");
+			checkWord(fileStatus, "FileStatus");
+			checkWord(type, "FileType");
+			checkWord(valStatus, "ValidationStatus");
 			//Insert a File by fetching the fileStatus, type and validationStatus
 			//if( (fileID = getID(conn, "Files", "LogicalFileName", lfn, false)) == null ) {
 			//TODO Exception of null status or type should be catched and parsed and 
@@ -751,12 +752,13 @@ public class DBSApiLogic {
 		String psName = get(algo, "ps_name", true);
 		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
 			DBSSql.insertParameterSet(conn,
-						get(algo, "ps_hash", false), 
+						get(algo, "ps_hash", true), 
 						psName, 
-						get(algo, "ps_version", false), 
-						get(algo, "ps_type", false), 
-						get(algo, "ps_annotation", false), 
-						get(algo, "ps_content", false), 
+						getStr(algo, "ps_version", true), 
+						getStr(algo, "ps_type", true), 
+						getStr(algo, "ps_annotation", true), 
+                                                //FIXME We are allowing every thing in content, need to fix it
+						get(algo, "ps_content"), 
 						userID).execute();
 		}
 	}
@@ -791,9 +793,9 @@ public class DBSApiLogic {
 	}
 
 	private String getProcessedDSID(Connection conn, String prim, String dt, String proc) throws Exception {
-		checkName(prim, "primary_dataset_name");
-		checkName(dt, "data_tier");
-		checkName(proc, "processed_dataset_name");
+		checkWord(prim, "primary_dataset_name");
+		checkWord(dt, "data_tier");
+		checkWord(proc, "processed_dataset_name");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDSID(prim, dt, proc));
 		ResultSet rs =  DBSSql.getProcessedDSID(conn, prim, dt, proc).executeQuery();
 		if(!rs.next()) {
@@ -803,10 +805,10 @@ public class DBSApiLogic {
 	}
 
 	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String ps) throws Exception {
-		checkName(ver, "app_version");
-		checkName(fam, "app_family_name");
-		checkName(exe, "app_executable_name");
-		checkName(ps, "ps_name");
+		checkWord(ver, "app_version");
+		checkWord(fam, "app_family_name");
+		checkWord(exe, "app_executable_name");
+		checkWord(ps, "ps_name");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getAlgorithmID(ver, fam, exe, ps));
 		ResultSet rs =  DBSSql.getAlgorithmID(conn, ver, fam, exe, ps).executeQuery();
 		if(!rs.next()) {
@@ -816,10 +818,10 @@ public class DBSApiLogic {
 	}
 
 	/*private String getMCDescID(Connection conn, String des, String prod, String chain, boolean excep) throws Exception {
-		if(excep) checkName(des, "mc_channel_description");
-		else if(!isNull(des) checkName(des, "mc_channel_description");
-		if(!isNull(prod)) checkName(prod, "mc_production");
-		if(!isNull(chain)) checkName(chain, "mc_decay_chain");
+		if(excep) checkWord(des, "mc_channel_description");
+		else if(!isNull(des) checkWord(des, "mc_channel_description");
+		if(!isNull(prod)) checkWord(prod, "mc_production");
+		if(!isNull(chain)) checkWord(chain, "mc_decay_chain");
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getMCDescID(des, prod, chain));
 		if(!rs.next()) {
 			if(excep) throw new DBSException("Bad Data", "300", "No such MCDescription " + des + " " + prod + " " + chain);
@@ -841,8 +843,8 @@ public class DBSApiLogic {
 
 	private String getID(Connection conn, String tableName, String key, String value, boolean excep) throws Exception {
 		if(isNull(tableName) || isNull(key) || isNull(value)) return null;
-		if (excep) checkName(value, key);
-		else if(!isNull(value)) checkName(value, key);
+		if (excep) checkWord(value, key);
+		else if(!isNull(value)) checkWord(value, key);
 
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getID(tableName, key, value));
 		ResultSet rs =  DBSSql.getID(conn, tableName, key, value).executeQuery();
@@ -857,11 +859,11 @@ public class DBSApiLogic {
 	private String getMapID(Connection conn, String tableName, String key1, String key2, String value1, String value2,  boolean excep) throws Exception {
 		if(isNull(tableName) || isNull(key1) || isNull(value1) || isNull(key2) || isNull(key2) ) return null;
 		if (excep) {
-			checkName(value1, key1);
-			checkName(value2, key2);
+			checkWord(value1, key1);
+			checkWord(value2, key2);
 		} else {
-			if(!isNull(value1)) checkName(value1, key1);
-			if(!isNull(value2)) checkName(value2, key2);
+			if(!isNull(value1)) checkWord(value1, key1);
+			if(!isNull(value2)) checkWord(value2, key2);
 		}
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getMapID(tableName, key1, key2, value1, value2));
 		ResultSet rs =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2).executeQuery();
@@ -901,14 +903,22 @@ public class DBSApiLogic {
 			throw new DBSException("Bad Data", "300", "Invalid Characters in " + blockName + " Expected /PRIMARY/PROCESSED#GUID in format "+ SAFE_BLOCK);
 	}
 	
-	private void checkName(String pattern, String key) throws Exception {
+	private void checkWord(String pattern, String key) throws Exception {
 		if(isNull(pattern))
 			throw new DBSException("Bad Data", "300", "Null Fields. Expected a " + key);
-		if (! Pattern.matches(SAFE_NAME, pattern)) 
-			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_NAME);
+		if (! Pattern.matches(SAFE_WORD, pattern)) 
+			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_WORD);
 	}
 	
-	
+
+        private void checkString(String pattern, String key) throws Exception {
+                if(isNull(pattern))
+                        throw new DBSException("Bad Data", "300", "Null Fields. Expected a " + key);
+                if (! Pattern.matches(SAFE_STR, pattern))
+                        throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_STR);
+        }
+
+
 	private boolean isNull(String pattern) {
 		return DBSUtil.isNull(pattern);
 		/*if(pattern == null) {
@@ -918,15 +928,25 @@ public class DBSApiLogic {
 			return true;
 		}
 		return false;*/
+
 	}
 	
 	private String get(Hashtable table, String key, boolean excep) throws Exception{
 		//System.out.println(key);
 		String value = DBSUtil.get(table, key);
-		if(excep) checkName(value, key);
-		else if(! isNull(value)) checkName(value, key);
+		if(excep) checkWord(value, key);
+		else if(! isNull(value)) checkWord(value, key);
 		return value;
 	}
+
+        private String getStr(Hashtable table, String key, boolean excep) throws Exception{
+                //System.out.println(key);
+                String value = DBSUtil.get(table, key);
+                if(excep) checkString(value, key);
+                else if(! isNull(value)) checkString(value, key);
+                return value;
+        }
+
 
 	private String get(Hashtable table, String key) {
 		//System.out.println(key);
@@ -941,7 +961,7 @@ public class DBSApiLogic {
 	private String getPattern(String pattern, String key) throws Exception {
 		if(isNull(pattern))  return "%";
 		pattern = pattern.replace('*','%');
-		checkName(pattern,key);
+		checkWord(pattern,key);
         	return pattern;
 	}
 
