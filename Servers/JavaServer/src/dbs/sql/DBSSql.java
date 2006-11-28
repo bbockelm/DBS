@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.22 $"
- $Id: DBSSql.java,v 1.22 2006/11/27 22:41:45 afaq Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSSql.java,v 1.23 2006/11/28 19:41:38 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -72,7 +72,7 @@ public class DBSSql {
 		String sql = "INSERT INTO PrimaryDataset ( \n" +
 				        "Annotation, \n" +
 				        "Name, \n" +
-				        "Description, \n" +
+				        //"Description, \n" +
 				        "StartDate, \n" +
 				        "EndDate, \n" +
 				        "Type, \n" +
@@ -81,7 +81,7 @@ public class DBSSql {
 				") VALUES ( \n" +
 					"?, \n" +
 					"?, \n" +
-					"?, \n" +
+					//"?, \n" +
 					"?, \n" +
 					"?, \n" +
 					"?, \n" +
@@ -91,12 +91,12 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, ann);
 		ps.setString(2, name);
-		ps.setString(3, descID);
-		ps.setString(4, startDate);
-		ps.setString(5, endDate);
-		ps.setString(6, typeID);
+		//ps.setString(3, descID);
+		ps.setString(3, startDate);
+		ps.setString(4, endDate);
+		ps.setString(5, typeID);
+		ps.setString(6, userID);
 		ps.setString(7, userID);
-		ps.setString(8, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}

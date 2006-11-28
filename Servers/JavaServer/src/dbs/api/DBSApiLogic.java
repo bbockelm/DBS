@@ -1,6 +1,6 @@
 /**
- $Revision: 1.32 $"
- $Id: DBSApiLogic.java,v 1.32 2006/11/27 22:41:44 afaq Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSApiLogic.java,v 1.33 2006/11/28 19:41:38 sekhri Exp $"
  *
  */
 
@@ -678,7 +678,7 @@ public class DBSApiLogic {
 
 
         private void insertLumiSection(Connection conn, Writer out, Hashtable table, String userID) throws Exception {
-		String lsNumber = get(table, "lumi_section_number");
+		String lsNumber = get(table, "lumi_section_number", true);
 		//Insert a new Lumi Section by feting the run ID 
 		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 			DBSSql.insertLumiSection(conn,
