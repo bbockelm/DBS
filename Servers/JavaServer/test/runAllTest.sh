@@ -24,10 +24,10 @@ path="/$primary_name/$tier_name1/$processed_name"
 run_number1="9999"
 run_number2="9998"
 block_name="/test/test#$rand"
-algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand'/>"
-algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand'/>"
-algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand'/>"
-algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand'/>"
+algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCON_$rand'/>"
+algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand'/>"
+algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand'/>"
+algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='DUMMYCON_$rand'/>"
 
 
 display () {
