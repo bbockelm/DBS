@@ -820,97 +820,134 @@ CREATE TABLE ProcAlgo
     foreign key(LastModifiedBy) references Person(ID)
   );
 
+
 -- ======================= TRIGGERS FOR CreationDate
 
-CREATE TRIGGER TR_TS_person BEFORE INSERT ON Person
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_algorithmconfig BEFORE INSERT ON AlgorithmConfig
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_role BEFORE INSERT ON Role
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_assignedrole BEFORE INSERT ON AssignedRole
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_physicsgroup BEFORE INSERT ON PhysicsGroup
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_schemaversion BEFORE INSERT ON SchemaVersion
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_runs BEFORE INSERT ON Runs
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_datatier BEFORE INSERT ON DataTier
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_lumisection BEFORE INSERT ON LumiSection
-FOR EACH ROW SET NEW.CreationDate = NOW();
---CREATE TRIGGER TR_TS_status BEFORE INSERT ON Status
---FOR EACH ROW SET NEW.CreationDate = NOW();
---CREATE TRIGGER TR_TS_type BEFORE INSERT ON Type
---FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_description BEFORE INSERT ON Description
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_timelog BEFORE INSERT ON TimeLog
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_analysisdsstatus BEFORE INSERT ON AnalysisDSStatus
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_analysisdstype BEFORE INSERT ON AnalysisDSType
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_primarydstype BEFORE INSERT ON PrimaryDSType
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_appfamily BEFORE INSERT ON AppFamily
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_appversion BEFORE INSERT ON AppVersion
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_appexecutable BEFORE INSERT ON AppExecutable
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_queryableparameterset BEFORE INSERT ON QueryableParameterSet
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_parameterbinding BEFORE INSERT ON ParameterBinding
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_triggerpathdescription BEFORE INSERT ON TriggerPathDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_mcdescription BEFORE INSERT ON MCDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_otherdescription BEFORE INSERT ON OtherDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_filestatus BEFORE INSERT ON FileStatus
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_filetype BEFORE INSERT ON FileType
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_procdsstatus BEFORE INSERT ON ProcDSStatus
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_primarydataset BEFORE INSERT ON PrimaryDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_processeddataset BEFORE INSERT ON ProcessedDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_block BEFORE INSERT ON Block
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_procdsruns BEFORE INSERT ON ProcDSRuns
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_procdstier BEFORE INSERT ON ProcDSTier
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_datasetparentage BEFORE INSERT ON DatasetParentage
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_procalgo BEFORE INSERT ON ProcAlgo
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_analysisdataset BEFORE INSERT ON AnalysisDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_files BEFORE INSERT ON Files
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_analysisdatasetlumi BEFORE INSERT ON AnalysisDatasetLumi
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_filetier BEFORE INSERT ON FileTier
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_fileparentage BEFORE INSERT ON FileParentage
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_filelumi BEFORE INSERT ON FileLumi
-FOR EACH ROW SET NEW.CreationDate = NOW();
-CREATE TRIGGER TR_TS_filealgo BEFORE INSERT ON FileAlgo
+CREATE TRIGGER TR_TS_Person BEFORE INSERT ON Person
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
+CREATE TRIGGER TR_TS_Role BEFORE INSERT ON Role
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AssignedRole BEFORE INSERT ON AssignedRole
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_PhysicsGroup BEFORE INSERT ON PhysicsGroup
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_SchemaVersion BEFORE INSERT ON SchemaVersion
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AnalysisDataset BEFORE INSERT ON AnalysisDataset
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_Files BEFORE INSERT ON Files
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_ProcessedDataset BEFORE INSERT ON ProcessedDataset
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_PrimaryDataset BEFORE INSERT ON PrimaryDataset
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_Runs BEFORE INSERT ON Runs
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_DataTier BEFORE INSERT ON DataTier
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_LumiSection BEFORE INSERT ON LumiSection
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_Block BEFORE INSERT ON Block
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AnalysisDSStatus BEFORE INSERT ON AnalysisDSStatus
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AnalysisDSType BEFORE INSERT ON AnalysisDSType
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_Description BEFORE INSERT ON Description
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AnalysisDatasetLumi BEFORE INSERT ON AnalysisDatasetLumi
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_TimeLog BEFORE INSERT ON TimeLog
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_PrimaryDSType BEFORE INSERT ON PrimaryDSType
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_ProcDSStatus BEFORE INSERT ON ProcDSStatus
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AlgorithmConfig BEFORE INSERT ON AlgorithmConfig
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AppFamily BEFORE INSERT ON AppFamily
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AppVersion BEFORE INSERT ON AppVersion
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_AppExecutable BEFORE INSERT ON AppExecutable
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_QueryableParameterSet BEFORE INSERT ON QueryableParameterSet
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_ParameterBinding BEFORE INSERT ON ParameterBinding
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_PrimaryDatasetDescription BEFORE INSERT ON PrimaryDatasetDescription
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_TriggerPathDescription BEFORE INSERT ON TriggerPathDescription
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_MCDescription BEFORE INSERT ON MCDescription
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_OtherDescription BEFORE INSERT ON OtherDescription
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_FileTier BEFORE INSERT ON FileTier
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_FileParentage BEFORE INSERT ON FileParentage
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_FileLumi BEFORE INSERT ON FileLumi
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_FileAlgo BEFORE INSERT ON FileAlgo
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_FileStatus BEFORE INSERT ON FileStatus
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_FileType BEFORE INSERT ON FileType
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_ProcDSRuns BEFORE INSERT ON ProcDSRuns
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_ProcDSTier BEFORE INSERT ON ProcDSTier
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_DatasetParentage BEFORE INSERT ON DatasetParentage
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_ProcAlgo BEFORE INSERT ON ProcAlgo
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+-- ======================================================================
+-- Initialize status tables There are better ways to do it, get to that laters
 -- ======================================================================
 
 insert into SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
-commit;
--- ======================================================================
--- Initialize status tables There are better ways to do it, get to that laters
 
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 
@@ -923,5 +960,7 @@ INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
 
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());
+
+commit;
 
 
