@@ -436,7 +436,6 @@ CREATE TABLE ProcessedDataset
     ID                    int,
     Name                  varchar(100)                     not null,
     PrimaryDataset        int                              not null,
-    OpenForWriting        char(1)                          not null,
     PhysicsGroup          int,
     Status                int                              not null,
     CreatedBy             int,
@@ -444,8 +443,7 @@ CREATE TABLE ProcessedDataset
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
     primary key(ID),
-    unique(Name,PrimaryDataset),
-    CHECK(OpenForWriting IN ('y', 'n'))
+    unique(Name,PrimaryDataset)
   );
 
 REM ======================================================================
@@ -457,13 +455,11 @@ CREATE TABLE Block
     BlockSize             int                              not null,
     Dataset               int                              not null,
     NumberOfFiles         int                              not null,
-    OpenForWriting        char(1)                          not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
-    primary key(ID),
-    CHECK(OpenForWriting IN ('y', 'n'))
+    primary key(ID)
   );
 
 REM ======================================================================
@@ -3479,4 +3475,27 @@ END;
 
 -- Set the Schema Version -- 
 insert into SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('v00_00_02', SYSTIMESTAMP);
+
+
+-- Initialize status tables There are better ways to do it, get to that laters
+
+INSERT INTO AnalysisDSStatus (Status) VALUES ('NEW');
+
+INSERT INTO FileStatus (Status) VALUES ('VALID');
+INSERT INTO FileStatus (Status) VALUES ('INVALID');
+INSERT INTO FileStatus (Status) VALUES ('MERGED');
+INSERT INTO FileStatus (Status) VALUES ('PROMOTED');
+
+INSERT INTO ProcDSStatus (Status) VALUES ('VALID');
+INSERT INTO ProcDSStatus (Status) VALUES ('INVALID');
+INSERT INTO ProcDSStatus (Status) VALUES ('PROMOTED');
+
+INSERT INTO FileType(Type) VALUES ('EVD') ;
+
+-- INSERT INTO AnalysisDSType(Type) VALUES ('TEST');
+
+INSERT INTO PrimaryDSType  (Type) VALUES ('VALID');
+
+
 commit;
+
