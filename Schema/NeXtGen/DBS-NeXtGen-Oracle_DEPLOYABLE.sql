@@ -200,7 +200,7 @@ CREATE TABLE AnalysisDSStatus
 
 REM ======================================================================
 
-CREATE TABLE AnalysisDSype
+CREATE TABLE AnalysisDSType
   (
     ID                    int,
     Type                  varchar(100)                     unique not null,
@@ -743,11 +743,11 @@ ALTER TABLE AnalysisDSStatus ADD CONSTRAINT
     AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE AnalysisDSype ADD CONSTRAINT 
-    AnalysisDSype_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
-ALTER TABLE AnalysisDSype ADD CONSTRAINT 
-    AnalysisDSypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE PrimaryDSType ADD CONSTRAINT 
@@ -970,7 +970,7 @@ ALTER TABLE AnalysisDataset ADD CONSTRAINT
     AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_DatasetType_FK foreign key(DatasetType) references AnalysisDSype(ID)
+    AnalysisDataset_DatasetType_FK foreign key(DatasetType) references AnalysisDSType(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
@@ -1096,7 +1096,7 @@ create sequence seq_type ;
 create sequence seq_description ;
 create sequence seq_timelog ;
 create sequence seq_analysisdsstatus ;
-create sequence seq_analysisdsype ;
+create sequence seq_analysisdstype ;
 create sequence seq_primarydstype ;
 create sequence seq_appfamily ;
 create sequence seq_appversion ;
@@ -1206,9 +1206,9 @@ create sequence seq_filealgo ;
 /
 
 -- ====================================================
--- AUTO INC TRIGGER FOR analysisdsype.ID using SEQ seq_analysisdsype
+-- AUTO INC TRIGGER FOR analysisdstype.ID using SEQ seq_analysisdstype
 
- CREATE OR REPLACE TRIGGER analysisdsype_TRIG before insert on analysisdsype    for each row begin     if inserting then       if :NEW.ID is null then          select seq_analysisdsype.nextval into :NEW.ID from dual;       end if;    end if; end;
+ CREATE OR REPLACE TRIGGER analysisdstype_TRIG before insert on analysisdstype    for each row begin     if inserting then       if :NEW.ID is null then          select seq_analysisdstype.nextval into :NEW.ID from dual;       end if;    end if; end;
 /
 
 -- ====================================================
@@ -1514,7 +1514,7 @@ END;
 -- ====================================================
 -- LastModified Time Stamp Trigger
 
-CREATE OR REPLACE TRIGGER TR_TS_analysisdsype BEFORE INSERT OR UPDATE ON analysisdsype
+CREATE OR REPLACE TRIGGER TR_TS_analysisdstype BEFORE INSERT OR UPDATE ON analysisdstype
 FOR EACH ROW
 BEGIN
   :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;
@@ -1925,7 +1925,7 @@ END;
 -- ====================================================
 -- LastModified Time Stamp Trigger
 
-CREATE OR REPLACE TRIGGER TRTSanalysisdsype BEFORE INSERT OR UPDATE ON analysisdsype
+CREATE OR REPLACE TRIGGER TRTSanalysisdstype BEFORE INSERT OR UPDATE ON analysisdstype
 FOR EACH ROW
 BEGIN
   :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;
@@ -2346,7 +2346,7 @@ END;
 -- ====================================================
 -- LastModified Time Stamp Trigger
 
-CREATE OR REPLACE TRIGGER TRTSanalysisdsype BEFORE INSERT OR UPDATE ON analysisdsype
+CREATE OR REPLACE TRIGGER TRTSanalysisdstype BEFORE INSERT OR UPDATE ON analysisdstype
 FOR EACH ROW
 BEGIN
   :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;
@@ -2766,7 +2766,7 @@ END;
 -- ====================================================
 -- LastModified Time Stamp Trigger
 
-CREATE OR REPLACE TRIGGER TRTSanalysisdsype BEFORE INSERT OR UPDATE ON analysisdsype
+CREATE OR REPLACE TRIGGER TRTSanalysisdstype BEFORE INSERT OR UPDATE ON analysisdstype
 FOR EACH ROW
 BEGIN
   :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;
@@ -3186,7 +3186,7 @@ END;
 -- ====================================================
 -- LastModified Time Stamp Trigger
 
-CREATE OR REPLACE TRIGGER TRTSanalysisdsype BEFORE INSERT OR UPDATE ON analysisdsype
+CREATE OR REPLACE TRIGGER TRTSanalysisdstype BEFORE INSERT OR UPDATE ON analysisdstype
 FOR EACH ROW
 BEGIN
   :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;
