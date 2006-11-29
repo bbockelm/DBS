@@ -571,18 +571,21 @@ apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
 apiObj.run(proc1 ,[file1,file2], block1,  excep = True)
 
 file3 = DbsFile (LogicalFileName= '1111-0909-9767-8764222' + mytime,
+		Checksum= '999',
 		NumberOfEvents= 10000,
                 Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file3], block1,  excep = False)
 
 file = DbsFile (LogicalFileName= '1111*-0909-9767-8764222' + mytime,
+		Checksum= '999',
 		NumberOfEvents= 10000,
                 Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111;-0909-9767-8764222' + mytime,
+		Checksum= '999',
 		NumberOfEvents= 10000,
                 Status= 'VALID', 
 		FileSize= 12340)
@@ -591,6 +594,7 @@ apiObj.run(proc1 ,[file], block1,  excep = True)
 file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		NumberOfEvents= 10000,
                 Status= 'VALID',
+		Checksum= '999',
 		FileSize= 12340)
 proc = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessxxxxxxxxxxxxx" + mytime,
@@ -604,6 +608,7 @@ apiObj.run(proc1 ,[file], block,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		ParentList = [lfn1,lfn2],
+		Checksum= '999',
 		NumberOfEvents= 10000,
                 Status= 'VALID',
 		FileSize= 12340)
@@ -612,6 +617,7 @@ apiObj.run(proc1 ,[file], block1,  excep = False)
 file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
 		ParentList = [lfn1,'doesnotexists'],
 		NumberOfEvents= 10000,
+		Checksum= '999',
                 Status= 'VALID',
 		FileSize= 12340)
 apiObj.run(proc1 ,[file], block1,  excep = True)

@@ -22,14 +22,16 @@ class DbsUnitTestApi:
         def setVerboseLevel(self,level):
             self.verbose=level
         def printTestStatus(self,info,status,iMsg,exp=None):
-            msg = "\n\nTest started : %s"%str(self.lapiObj.im_func.func_name)
-            msg+= "\n"+info
+            msg = "\n\nType : %s"%str(self.lapiObj.im_func.func_name)
+            msg+= "\nDone "+info
             if self.verbose:
                msg+="\nComment      : %s"%iMsg
             if self.verbose==2:
                msg+="\nException    : %s"%exp
             msg+=   "\nTest ended   : [%6s]"%status
             self.f.write(msg)
+            self.f.flush() 
+            print msg 
 
 	def run(self, *listArgs, **dictArgs):
 		try:
@@ -39,13 +41,14 @@ class DbsUnitTestApi:
 			#info =  str(self.lapiObj.im_func.func_name) + str(listArgs[1:])
 			#print info
 			excep = dictArgs['excep']
+                        print "\nTest Starting: "+str(self.lapiObj.im_func.func_name)+" test number "+str(self.index) 
 			self.lapiObj(*listArgs)
 			#self.lapiObj(*listArgs[1:])
 			#for data in apiObj(*listArgs):
 				#print "  %s" % data
 			if excep:
                                 self.printTestStatus(info,"FAILED","AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED")
-                                self.printTestStatus(info,"FAILED","STOPING EXECUTION...")
+                                print "Test FAILED STOPING EXECUTION."
                                 sys.exit(1)  
 			else:
                                 self.printTestStatus(info,"PASSED","AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED")
@@ -56,7 +59,7 @@ class DbsUnitTestApi:
                                 self.printTestStatus(info,"PASSED","AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS",exception)
 			else:
                                 self.printTestStatus(info,"FAILED","AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS",exception)
-                                self.printTestStatus(info,"FAILED","STOPING EXECUTION...")
+                                print "Test FAILED STOPING EXECUTION."
                                 sys.exit(1)  
 
 	def getExistingPDPath(self):

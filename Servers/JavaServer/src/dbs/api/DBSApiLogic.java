@@ -1,12 +1,13 @@
 /**
- $Revision: 1.34 $"
- $Id: DBSApiLogic.java,v 1.34 2006/11/28 20:33:26 sekhri Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSApiLogic.java,v 1.35 2006/11/28 22:45:33 afaq Exp $"
  *
  */
 
 package dbs.api;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
@@ -41,10 +42,11 @@ public class DBSApiLogic {
                  
 		pattern = getPattern(pattern, "primary_dataset_name_pattern");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listPrimaryDatasets(pattern));
-		ResultSet rs =  DBSSql.listPrimaryDatasets(conn, pattern).executeQuery();
-                  
-		while(rs.next()) {
-			out.write(((String) "<primary-dataset id='" + get(rs, "ID") +
+		PreparedStatement ps = DBSSql.listPrimaryDatasets(conn, pattern);
+		ResultSet rs =  ps.executeQuery();
+		try {
+			while(rs.next()) {
+				out.write(((String) "<primary-dataset id='" + get(rs, "ID") +
 						"' annotation='" + get(rs, "ANNOTATION") +
 						"' primary_name='" + get(rs, "PRIMARY_NAME") +
 						"' start_date='" + get(rs, "START_DATE") +
@@ -60,6 +62,10 @@ public class DBSApiLogic {
 						"' created_by='" + get(rs, "CREATED_BY") +
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
 	}
 
@@ -90,52 +96,60 @@ public class DBSApiLogic {
 		boolean first = true;
 
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
-		ResultSet rs =  DBSSql.listProcessedDatasets(conn, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS).executeQuery();
-		while(rs.next()) {
-			//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
-			String procDSID = get(rs, "ID");
-			String tier = get(rs, "DATA_TIER");
-			String fam = get(rs, "APP_FAMILY_NAME");
-			String exe = get(rs, "APP_EXECUTABLE_NAME");
-			String ver = get(rs, "APP_VERSION");
-			String ps = get(rs, "PS_NAME");
-
-			if( !prevDS.equals(procDSID) && ! first) {
-				out.write(((String) "</processed-dataset>\n")); 
+		PreparedStatement ps =  DBSSql.listProcessedDatasets(conn, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS);
+		ResultSet rs =  ps.executeQuery();
+		try {
+			while(rs.next()) {
+				//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
+				String procDSID = get(rs, "ID");
+				String tier = get(rs, "DATA_TIER");
+				String fam = get(rs, "APP_FAMILY_NAME");
+				String exe = get(rs, "APP_EXECUTABLE_NAME");
+				String ver = get(rs, "APP_VERSION");
+				String pset = get(rs, "PS_NAME");
+	
+				if( !prevDS.equals(procDSID) && ! first) {
+					out.write(((String) "</processed-dataset>\n")); 
+				}
+				if( !prevDS.equals(procDSID) || first) {
+					out.write(((String) "<processed-dataset id='" + get(rs, "ID") + 
+							//"' path='" +  get(rs, "PATH") +
+							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
+							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
+							//"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+							"' creation_date='" + get(rs, "CREATION_DATE") +
+							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
+							"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
+							//"' app_version='" + get(rs, "APP_VERSION") +
+							//"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
+							//"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
+							"' created_by='" + get(rs, "CREATED_BY") +
+							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+							"'>\n"));
+							//"'/>\n"));
+					first = false;
+					prevDS = procDSID;
+					dtVec = new Vector();// Or dtVec.removeAllElements();
+				}
+				if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
+					out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
+					dtVec.add(tier);
+					prevTier = tier;
+				}
+				if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
+					out.write(((String) "\t<algorithm app_version='" + ver + 
+                                                            "' app_family_name='" + fam + "' app_executable_name='" + 
+                                                            exe + "' ps_name='" + pset + "'/>\n"));
+					prevExe = exe;
+					prevFam = fam;
+					prevVer = ver;
+					prevPS = pset;
+				}
 			}
-			if( !prevDS.equals(procDSID) || first) {
-				out.write(((String) "<processed-dataset id='" + get(rs, "ID") + 
-						//"' path='" +  get(rs, "PATH") +
-						"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
-						"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
-						"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
-						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-						"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
-						"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
-						//"' app_version='" + get(rs, "APP_VERSION") +
-						//"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
-						//"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
-						"' created_by='" + get(rs, "CREATED_BY") +
-						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-						"'>\n"));
-						//"'/>\n"));
-				first = false;
-				prevDS = procDSID;
-				dtVec = new Vector();// Or dtVec.removeAllElements();
-			}
-			if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
-				out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
-				dtVec.add(tier);
-				prevTier = tier;
-			}
-			if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(ps) || first) {
-				out.write(((String) "\t<algorithm app_version='" + ver + "' app_family_name='" + fam + "' app_executable_name='" + exe + "' ps_name='" + ps + "'/>\n"));
-				prevExe = exe;
-				prevFam = fam;
-				prevVer = ver;
-				prevPS = ps;
-			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
 
                 if (!first) out.write(((String) "</processed-dataset>\n")); 
@@ -155,7 +169,9 @@ public class DBSApiLogic {
 		patternPS 	= getPattern(patternPS, "parameterset_name");
 
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
-		ResultSet rs =  DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS).executeQuery();
+		PreparedStatement ps = DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS);
+		ResultSet rs = ps.executeQuery();
+		try {
 		while(rs.next()) {
 			out.write(((String) "<algorithm id='" + get(rs, "ID") + 
 						"' app_version='" + get(rs, "APP_VERSION") +
@@ -168,59 +184,85 @@ public class DBSApiLogic {
 						"' created_by='" + get(rs, "CREATED_BY") +
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
+
 	}
 
 
 	public void listRuns(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
-		ResultSet rs =  DBSSql.listRuns(conn, procDSID).executeQuery();
-		while(rs.next()) {
+		PreparedStatement ps = DBSSql.listRuns(conn, procDSID);
+		ResultSet rs = ps.executeQuery();
+		try {
+			while(rs.next()) {
 				out.write(((String) "<run id='" + get(rs, "ID") +
-						"' run_number='" + get(rs, "RUN_NUMBER") +
-						"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
-						"' number_of_lumi_sections='" + get(rs, "NUMBER_OF_LUMI_SECTIONS") +
-						"' total_luminosity='" + get(rs, "TOTAL_LUMINOSITY") +
-						"' store_number='" + get(rs, "STRORE_NUMBER") +
-						"' start_of_run='" + get(rs, "START_OF_RUN") +
-						"' end_of_run='" + get(rs, "END_OF_RUN") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
-						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-						"' created_by='" + get(rs, "CREATED_BY") +
-						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-						"'/>\n"));
+					"' run_number='" + get(rs, "RUN_NUMBER") +
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+					"' number_of_lumi_sections='" + get(rs, "NUMBER_OF_LUMI_SECTIONS") +
+					"' total_luminosity='" + get(rs, "TOTAL_LUMINOSITY") +
+					"' store_number='" + get(rs, "STRORE_NUMBER") +
+					"' start_of_run='" + get(rs, "START_OF_RUN") +
+					"' end_of_run='" + get(rs, "END_OF_RUN") +
+					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
+
 	}
 
 	public void listTiers(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
-		ResultSet rs =  DBSSql.listTiers(conn, procDSID).executeQuery();
-		while(rs.next()) {
+		PreparedStatement ps =  DBSSql.listTiers(conn, procDSID);
+		ResultSet rs = ps.executeQuery();
+		try {
+			while(rs.next()) {
 				out.write(((String) "<data_tier id='" + get(rs, "ID") +
-						"' name='" + get(rs, "NAME") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
-						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-						"' created_by='" + get(rs, "CREATED_BY") +
-						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-						"'/>\n"));
+					"' name='" + get(rs, "NAME") +
+					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
+
 	}
 
 	public void listBlocks(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
-		ResultSet rs =  DBSSql.listBlocks(conn, procDSID).executeQuery();
-		while(rs.next()) {
+		PreparedStatement ps =  DBSSql.listBlocks(conn, procDSID);
+		ResultSet rs =  ps.executeQuery();
+		try {
+			while(rs.next()) {
 				out.write(((String) "<block id='" + get(rs, "ID") +
-						"' name='" + get(rs, "NAME") +
-						"' size='" + get(rs, "SIZE") +
-						"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
-						"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
-						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-						"' created_by='" + get(rs, "CREATED_BY") +
-						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-						"'/>\n"));
+					"' name='" + get(rs, "NAME") +
+					"' size='" + get(rs, "BLOCKSIZE") +
+					"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
+					//"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'/>\n"));
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
+
 	}
 
 	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN) throws Exception {
@@ -241,20 +283,22 @@ public class DBSApiLogic {
 		if(blockID == null && procDSID == null) {
 			throw new DBSException("Bad Data", "300", "Null Fields. Expected either a Processed Dataset or a Block");
 		}
-		ResultSet rs =  DBSSql.listFiles(conn, procDSID, blockID, patternLFN).executeQuery();
-		while(rs.next()) {
-			String fileID = get(rs, "ID");
-			String tier = get(rs, "DATA_TIER");
+		PreparedStatement ps = DBSSql.listFiles(conn, procDSID, blockID, patternLFN);
+		ResultSet rs =  ps.executeQuery();
+		try {
+			while(rs.next()) {
+				String fileID = get(rs, "ID");
+				String tier = get(rs, "DATA_TIER");
 
-			if( !prevFileID.equals(fileID) && ! first) {
-				out.write( (String) "</file> \n");
-			}
+				if( !prevFileID.equals(fileID) && ! first) {
+					out.write( (String) "</file> \n");
+				}
                          
-			if( !prevFileID.equals(fileID) || first) {  
-				out.write(((String) "<file id='" + fileID +
+				if( !prevFileID.equals(fileID) || first) {  
+					out.write(((String) "<file id='" + fileID +
 					"' lfn='" + get(rs, "LFN") +
 					"' checksum='" + get(rs, "CHECKSUM") +
-					"' size='" + get(rs, "SIZE") +
+					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
 					"' validation_status='" + get(rs, "VALIDATION_STATUS") +
@@ -267,15 +311,20 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'>\n"));
 					//"'/>\n"));
-				first = false;
-                                prevFileID = fileID;
-			}
+					first = false;
+               	                 prevFileID = fileID;
+				}
       
- 			if( !prevTier.equals(tier) || first ) {
-				out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
-				prevTier = tier;
+ 				if( !prevTier.equals(tier) || first ) {
+					out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
+					prevTier = tier;
+				}
 			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
+
                 if (!first) out.write(((String) "</file>\n"));
 	}
 
@@ -954,7 +1003,10 @@ public class DBSApiLogic {
 	}
 
 	private String get(ResultSet rs, String key) throws Exception {
+
+                //System.out.println("Looking for :"+key); 
 		String value = rs.getString(key);
+                //System.out.println("Value is: "+value);
 		if(isNull(value)) return "";
 		return value;
 	}

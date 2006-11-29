@@ -12,7 +12,7 @@ use dbs_new_era_v04;
 CREATE TABLE Person
   (
     ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      not null,
+    Name                  varchar(100) ,
     DistinguishedName     varchar(100)                                                      not null,
     ContactInfo           varchar(100),
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -168,7 +168,6 @@ CREATE TABLE ProcessedDataset
     ID                    int not null auto_increment,
     Name                  varchar(100)                                                      not null,
     PrimaryDataset        int                                                               not null,
-    OpenForWriting        char(1)                                                           not null,
     PhysicsGroup          int                                                               not null,
     Status                int                                                               not null,
     CreatedBy             int,
@@ -183,9 +182,8 @@ CREATE TABLE ProcessedDataset
     foreign key(PhysicsGroup) references PhysicsGroup(ID),
     foreign key(Status) references ProcDSStatus(ID),
     foreign key(CreatedBy) references Person(ID),
-    foreign key(LastModifiedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
 
-    CHECK(OpenForWriting IN ('y', 'n'))
   );
 
 -- ======================================================================
@@ -281,11 +279,10 @@ CREATE TABLE LumiSection
 CREATE TABLE Block
   (
     ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      unique not null,
+    Name                  varchar(250)                                                      unique not null,
     Dataset               int                                                               not null,
     BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,
-    OpenForWriting        char(1)                                                           not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
@@ -295,9 +292,8 @@ CREATE TABLE Block
 
     foreign key(Dataset) references ProcessedDataset(ID),
     foreign key(CreatedBy) references Person(ID),
-    foreign key(LastModifiedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
 
-    CHECK(OpenForWriting IN ('y', 'n'))
   );
 
 -- ======================================================================

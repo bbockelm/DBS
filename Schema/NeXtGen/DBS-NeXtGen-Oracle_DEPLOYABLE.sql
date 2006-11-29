@@ -11,7 +11,7 @@ REM ======================================================================
 CREATE TABLE Person
   (
     ID                    int,
-    Name                  varchar(100)                     not null,
+    Name                  varchar(100),
     DistinguishedName     varchar(100)                     not null,
     ContactInfo           varchar(100),
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
@@ -451,7 +451,7 @@ REM ======================================================================
 CREATE TABLE Block
   (
     ID                    int,
-    Name                  varchar(100)                     unique not null,
+    Name                  varchar(250)                     unique not null,
     BlockSize             int                              not null,
     Dataset               int                              not null,
     NumberOfFiles         int                              not null,
@@ -552,7 +552,7 @@ CREATE TABLE Files
     Checksum              varchar(100)                     not null,
     NumberOfEvents        int                              not null,
     FileSize              int                              not null,
-    Status                int                              not null,
+    FileStatus                int                              not null,
     FileType              int                              not null,
     ValidationStatus      int,
     QueryableMetadata     varchar(1000),
@@ -992,7 +992,7 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_Block_FK foreign key(Block) references Block(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_Status_FK foreign key(Status) references FileStatus(ID)
+    Files_Status_FK foreign key(FileStatus) references FileStatus(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_FileType_FK foreign key(FileType) references FileType(ID)

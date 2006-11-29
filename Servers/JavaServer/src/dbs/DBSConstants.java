@@ -16,20 +16,20 @@ public class DBSConstants {
 	public static String XML_WARNNING_FOOTER = "</warnning>\n";
 	public static String XML_SUCCESS = "<SUCCESS/>\n";
 
-
+        /*
 	public static String DRIVER = "oracle.jdbc.driver.OracleDriver";
 	public static String URL = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))";
 	public static String USERID = "cms_dbs_afaq";
 	public static String PASSWORD = "MeraMaslaHaina?";
+        */
 
 
-
-	/*
+	
 	public static String DRIVER = "org.gjt.mm.mysql.Driver";
 	public static String URL = "jdbc:mysql://localhost/dbs_new_era_v04";
 	public static String USERID = "anzar";
 	public static String PASSWORD = "prodagentpass";
-
+        /*
 
 	public static String DRIVER = "oracle.jdbc.driver.OracleDriver";
 	public static String URL = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(PORT=1521)(HOST=uscmsdb03.fnal.gov))(CONNECT_DATA=(SID=cmscald)))";

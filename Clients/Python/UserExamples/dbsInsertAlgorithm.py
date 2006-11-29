@@ -27,12 +27,10 @@ algo = DbsAlgorithm (
                               Name="MyFirstParam01", 
                               Version="V001",
                               Type="test",
-                              #Annotation="This is test",
-                              #Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+                              Annotation="This is test",
+                              Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
                               )
          )
-
-print "SERVER has a bug, it still doesn't allow me to use Annotation, Content for PSet, will fix that"
 
 print "Creating an algorithm %s" % algo
 

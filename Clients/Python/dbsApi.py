@@ -162,7 +162,7 @@ class DbsApi(DbsConfig):
 	def startElement(self, name, attrs):
 	  if name == 'processed-dataset':
             self.currDataset = DbsProcessedDataset ( Name=str(attrs['processed_datatset_name']),     
-                                                OpenForWriting=str(attrs['open_for_writing']), 
+                                                #OpenForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(
                                                         Name=str(attrs['primary_datatset_name'])) )
           if name == 'data_tier':
@@ -347,7 +347,7 @@ class DbsApi(DbsConfig):
                                        Name=str(attrs['name']), 
                                        BlockSize=int(attrs['size']),
                                        NumberOfFiles=int(attrs['number_of_files']),
-                                       OpenForWriting=str(attrs['open_for_writing'])
+                                       #OpenForWriting=str(attrs['open_for_writing'])
                                        )
                              )
 
@@ -624,7 +624,7 @@ class DbsApi(DbsConfig):
        raise DbsApiException(ErrorMsg="Serious Error Primary Dataset not specified")
     xmlinput += " primary_datatset_name='"+primary.get('Name', "")+"'" 
     xmlinput += " processed_datatset_name='"+dataset.get('Name', "")+"'"
-    xmlinput += " open_for_writing='y'"
+    #xmlinput += " open_for_writing='y'"
     xmlinput += " physics_group_name='"+dataset.get('PhysicsGroup', "")+"'"
     xmlinput += " physics_group_convener='"+dataset.get('Convener', "")+"'"
     xmlinput += " status='"+dataset.get('Status', "")+"'>" 

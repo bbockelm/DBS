@@ -24,11 +24,12 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
+#primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
+primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
 
 proc = DbsProcessedDataset (
          PrimaryDataset=primary,
-         Name="TestProcessedDS01",
+         Name="TestProcessedDS002",
          TierList=['SIM', 'RECO'],
          )
 #ran = str(int(random.random()*10000000))
@@ -38,15 +39,16 @@ proc = DbsProcessedDataset (
 
 
 block = DbsFileBlock (
-         Name="/test/block#007"
+         Name="/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48"
          )
 
 print "Creating block %s" % block
 
 try:
-    api.insertBlock (proc, block)
-    api.insertBlock (proc)
-    api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002")
+    #api.insertBlock (proc, block)
+    api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
+    #api.insertBlock (proc)
+    #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002")
     #api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01", "/this/isaqww" + ran + "wwwqqqxstblock#016712")
     print "Result: %s" % primary
 except DbsObjectExists, ex:

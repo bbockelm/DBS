@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.24 $"
- $Id: DBSSql.java,v 1.24 2006/11/28 20:33:26 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSSql.java,v 1.25 2006/11/28 22:45:34 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -39,9 +39,10 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, value);
-		ps.setString(2, userID);
-		ps.setString(3, userID);
+                int columnIndx=1; 
+		ps.setString(columnIndx++, value);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -59,10 +60,11 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, value1);
-		ps.setString(2, value2);
-		ps.setString(3, userID);
-		ps.setString(4, userID);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, value1);
+		ps.setString(columnIndx++, value2);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -89,14 +91,15 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, ann);
-		ps.setString(2, name);
-		//ps.setString(3, descID);
-		ps.setString(3, startDate);
-		ps.setString(4, endDate);
-		ps.setString(5, typeID);
-		ps.setString(6, userID);
-		ps.setString(7, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, ann);
+		ps.setString(columnIndx++, name);
+		//ps.setString(columnIndx++, descID);
+		ps.setString(columnIndx++, startDate);
+		ps.setString(columnIndx++, endDate);
+		ps.setString(columnIndx++, typeID);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -124,15 +127,16 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, runNumber);
-		ps.setString(2, nOfEvents);
-		ps.setString(3, nOfLumiSections);
-		ps.setString(4, totalLumi);
-		ps.setString(5, storeNumber);
-		ps.setString(6, startOfRun);
-		ps.setString(7, endOfRun);
-		ps.setString(8, userID);
-		ps.setString(9, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, runNumber);
+		ps.setString(columnIndx++, nOfEvents);
+		ps.setString(columnIndx++, nOfLumiSections);
+		ps.setString(columnIndx++, totalLumi);
+		ps.setString(columnIndx++, storeNumber);
+		ps.setString(columnIndx++, startOfRun);
+		ps.setString(columnIndx++, endOfRun);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -144,7 +148,8 @@ public class DBSSql {
 				        "Name, \n" +
 				        "Dataset, \n" +
 				        "NumberOfFiles, \n" +
-				        "OpenForWriting, \n" +
+                                        //OpenForWriting flag can be managed through Status why we duplicate 
+				        //"OpenForWriting, \n" +
 			        	"CreatedBy, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
@@ -152,19 +157,22 @@ public class DBSSql {
 					"?, \n" +
 					"?, \n" +
 					"?, \n" +
-					"?, \n" +
+					//"?, \n" +
 					"?, \n" +
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, size);
-		ps.setString(2, name);
-		ps.setString(3, procDSID);
-		ps.setString(4, nOfFiles);
-                //FIXME Forcing it to be TRUE for each new Block  
-		ps.setBoolean(5, true);
-		ps.setString(6, userID);
-		ps.setString(7, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, size);
+		ps.setString(columnIndx++, name);
+		ps.setString(columnIndx++, procDSID);
+		ps.setString(columnIndx++, nOfFiles);
+                                        //OpenForWriting flag can be managed through Status why we duplicate 
+                //FIXME openForWriting Forcing it to be TRUE for each new Block  
+		//ps.setBoolean(5, true);
+                //mind the INDEX
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -190,14 +198,15 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, lsNumber);
-		ps.setString(2, runID);
-		ps.setString(3, startEvNumber);
-		ps.setString(4, endEvNumber);
-		ps.setString(5, lStartTime);
-		ps.setString(6, lEndTime);
-		ps.setString(7, userID);
-		ps.setString(8, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, lsNumber);
+		ps.setString(columnIndx++, runID);
+		ps.setString(columnIndx++, startEvNumber);
+		ps.setString(columnIndx++, endEvNumber);
+		ps.setString(columnIndx++, lStartTime);
+		ps.setString(columnIndx++, lEndTime);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -217,11 +226,12 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, userName);
-		ps.setString(2, userDN);
-		ps.setString(3, contactInfo);
-		ps.setString(4, userID);
-		ps.setString(5, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, userName);
+		ps.setString(columnIndx++, userDN);
+		ps.setString(columnIndx++, contactInfo);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -249,14 +259,15 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, hash);
-		ps.setString(2, name);
-		ps.setString(3, version);
-		ps.setString(4, type);
-		ps.setString(5, annotation);
-		ps.setString(6, content);
-		ps.setString(7, userID);
-		ps.setString(8, userID);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, hash);
+		ps.setString(columnIndx++, name);
+		ps.setString(columnIndx++, version);
+		ps.setString(columnIndx++, type);
+		ps.setString(columnIndx++, annotation);
+		ps.setString(columnIndx++, content);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -278,12 +289,13 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, exeID);
-		ps.setString(2, versionID);
-		ps.setString(3, familyID);
-		ps.setString(4, psID);
-		ps.setString(5, userID);
-		ps.setString(6, userID);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, exeID);
+		ps.setString(columnIndx++, versionID);
+		ps.setString(columnIndx++, familyID);
+		ps.setString(columnIndx++, psID);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -295,7 +307,8 @@ public class DBSSql {
 		String sql = "INSERT INTO ProcessedDataset ( \n" +
 					"Name, \n" +
 					"PrimaryDataset, \n" +
-					"OpenForWriting, \n" +
+                                        //OpenForWriting flag can be managed through Status why we duplicate 
+					//"OpenForWriting, \n" +
 					"PhysicsGroup, \n" +
 					"Status, \n" +
 					"CreatedBy, \n" +
@@ -303,20 +316,22 @@ public class DBSSql {
 				") VALUES ( \n" +
 					"?, \n" +
 					"?, \n" +
-					"?, \n" +
+					//"?, \n" +
 					"?, \n" +
 					"?, \n" +
 					"?, \n" +
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, name);
-		ps.setString(2, primDSID);
-		ps.setString(3, openForWriting);
-		ps.setString(4, phyGroupID);
-		ps.setString(5, statusID);
-		ps.setString(6, userID);
-		ps.setString(7, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, name);
+		ps.setString(columnIndx++, primDSID);
+                                        //OpenForWriting flag can be managed through Status why we duplicate 
+		//ps.setString(columnIndx++, openForWriting);
+		ps.setString(columnIndx++, phyGroupID);
+		ps.setString(columnIndx++, statusID);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -334,10 +349,11 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, name);
-		ps.setString(2, conID);
-		ps.setString(3, userID);
-		ps.setString(4, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, name);
+		ps.setString(columnIndx++, conID);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -380,15 +396,16 @@ public class DBSSql {
 					"? \n" +
 				") \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, lfn);
-		ps.setString(2, procDSID);
-		ps.setString(3, blockID);
-		ps.setString(4, checksum);
-		ps.setString(5, nOfEvents);
-		ps.setString(6, size);
-		ps.setString(7, qMetaData);
-		ps.setString(8, userID);
-		ps.setString(9, userID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, lfn);
+		ps.setString(columnIndx++, procDSID);
+		ps.setString(columnIndx++, blockID);
+		ps.setString(columnIndx++, checksum);
+		ps.setString(columnIndx++, nOfEvents);
+		ps.setString(columnIndx++, size);
+		ps.setString(columnIndx++, qMetaData);
+		ps.setString(columnIndx++, userID);
+		ps.setString(columnIndx++, userID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -400,9 +417,10 @@ public class DBSSql {
 			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = ?) \n" +
 			"WHERE ID = ?" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, blockID);
-		ps.setString(2, blockID);
-		ps.setString(3, blockID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, blockID);
+		ps.setString(columnIndx++, blockID);
+		ps.setString(columnIndx++, blockID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -450,7 +468,8 @@ public class DBSSql {
 				"ORDER BY PRIMARY_NAME";
 		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, pattern);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, pattern);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -470,7 +489,8 @@ public class DBSSql {
 			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
 			"dt.Name as DATA_TIER, \n" +
 			"procds.name as PROCESSED_DATATSET_NAME, \n" +
-			"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
+                        //OpenForWriting could be managed by Status we don't need that
+			//"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
@@ -528,13 +548,14 @@ public class DBSSql {
 			//"ORDER BY path";
 			"ORDER BY id, app_version, app_family_name, app_executable_name, ps_name, data_tier";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, patternPrim);
-		ps.setString(2, patternDT);
-		ps.setString(3, patternProc);
-		ps.setString(4, patternVer);
-		ps.setString(5, patternFam);
-		ps.setString(6, patternExe);
-		ps.setString(7, patternPS);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, patternPrim);
+		ps.setString(columnIndx++, patternDT);
+		ps.setString(columnIndx++, patternProc);
+		ps.setString(columnIndx++, patternVer);
+		ps.setString(columnIndx++, patternFam);
+		ps.setString(columnIndx++, patternExe);
+		ps.setString(columnIndx++, patternPS);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -575,10 +596,11 @@ public class DBSSql {
 			"and ps.Name like ? \n" +
 			"ORDER BY app_family_name, app_executable_name, app_version, ps_name";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, patternVer);
-		ps.setString(2, patternFam);
-		ps.setString(3, patternExe);
-		ps.setString(4, patternPS);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, patternVer);
+		ps.setString(columnIndx++, patternFam);
+		ps.setString(columnIndx++, patternExe);
+		ps.setString(columnIndx++, patternPS);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -609,7 +631,8 @@ public class DBSSql {
 		}
 		sql +=	"ORDER BY run_number";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, procDSID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, procDSID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -634,7 +657,8 @@ public class DBSSql {
 		}
 		sql +=	"ORDER BY name";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, procDSID);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, procDSID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -642,9 +666,10 @@ public class DBSSql {
 	public static PreparedStatement listBlocks(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
-			"b.BlockSize as SIZE, \n" +
+			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
-			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
+                        //OpenForWriting flag can be managed through Status why we duplicate 
+			//"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"b.CreationDate as CREATION_DATE, \n" +
 			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
@@ -660,7 +685,8 @@ public class DBSSql {
 		}
 		sql +=	"ORDER BY name";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, procDSID);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, procDSID);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -669,7 +695,7 @@ public class DBSSql {
 		String sql = "SELECT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
-			"f.FileSize as SIZE, \n" +
+			"f.FileSize as FILESIZE, \n" +
 			"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
 			"f.CreationDate as CREATION_DATE, \n" +
 			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -707,12 +733,16 @@ public class DBSSql {
 		}
 		sql +=	"ORDER BY lfn";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, patternLFN);
+                
+                int columnIndx=1;
+  
+		ps.setString(columnIndx++, patternLFN);
 		if(procDSID != null) {
-			ps.setString(2, procDSID);
+			ps.setString(columnIndx++, procDSID);
 		}
 		if(blockID != null) {
-			ps.setString(3, blockID);
+			ps.setString(columnIndx++, blockID);
+
 		}
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
@@ -724,7 +754,8 @@ public class DBSSql {
 			"FROM " + table + "\n " +
 			"WHERE " + key + " = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, value);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, value);
 		System.out.println("\n\n" + ps + "\n\n");
 		//return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
 		return ps;
@@ -736,8 +767,9 @@ public class DBSSql {
 			"WHERE " + key1 + " = ? \n" +
 			"AND " + key2 + " = ? \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, value1);
-		ps.setString(2, value2);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, value1);
+		ps.setString(columnIndx++, value2);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -757,9 +789,10 @@ public class DBSSql {
 			"and dt.Name = ? \n" +
 			"and procds.Name = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, prim);
-		ps.setString(2, dt);
-		ps.setString(3, proc);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, prim);
+		ps.setString(columnIndx++, dt);
+		ps.setString(columnIndx++, proc);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -781,10 +814,11 @@ public class DBSSql {
 			"and ae.ExecutableName = ? \n" +
 			"and ps.Name = ? \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, ver);
-		ps.setString(2, fam);
-		ps.setString(3, exe);
-		ps.setString(4, psName);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, ver);
+		ps.setString(columnIndx++, fam);
+		ps.setString(columnIndx++, exe);
+		ps.setString(columnIndx++, psName);
 		System.out.println("\n\n" + ps + "\n\n");
 		return ps;
 	}
