@@ -1,6 +1,6 @@
 /**
- $Revision: 1.35 $"
- $Id: DBSApiLogic.java,v 1.35 2006/11/28 22:45:33 afaq Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApiLogic.java,v 1.36 2006/11/29 21:52:52 afaq Exp $"
  *
  */
 
@@ -42,9 +42,11 @@ public class DBSApiLogic {
                  
 		pattern = getPattern(pattern, "primary_dataset_name_pattern");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listPrimaryDatasets(pattern));
-		PreparedStatement ps = DBSSql.listPrimaryDatasets(conn, pattern);
-		ResultSet rs =  ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 		try {
+			ps = DBSSql.listPrimaryDatasets(conn, pattern);
+			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<primary-dataset id='" + get(rs, "ID") +
 						"' annotation='" + get(rs, "ANNOTATION") +
@@ -63,10 +65,7 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 	}
 
 	//public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
@@ -96,9 +95,11 @@ public class DBSApiLogic {
 		boolean first = true;
 
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listProcessedDatasets(patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS));
-		PreparedStatement ps =  DBSSql.listProcessedDatasets(conn, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS);
-		ResultSet rs =  ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 		try {
+			ps = DBSSql.listProcessedDatasets(conn, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS);
+			rs =  ps.executeQuery();
 			while(rs.next()) {
 				//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
 				String procDSID = get(rs, "ID");
@@ -147,10 +148,7 @@ public class DBSApiLogic {
 					prevPS = pset;
 				}
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 
                 if (!first) out.write(((String) "</processed-dataset>\n")); 
 	}
@@ -162,6 +160,7 @@ public class DBSApiLogic {
 		String patternExe	= getPattern(pattern, "app_executable_name", 3);
 		String patternPS 	= getPattern(pattern, "parameterset_name", 4);*/
 	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+		System.out.println("Inside liet algo");
 		//name should be changed to hash
 		patternVer	= getPattern(patternVer, "app_version");
 		patternFam	= getPattern(patternFam, "app_family_name");
@@ -169,11 +168,13 @@ public class DBSApiLogic {
 		patternPS 	= getPattern(patternPS, "parameterset_name");
 
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.listAlgorithms(patternVer, patternFam, patternExe, patternPS));
-		PreparedStatement ps = DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS);
-		ResultSet rs = ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
-		while(rs.next()) {
-			out.write(((String) "<algorithm id='" + get(rs, "ID") + 
+			ps = DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<algorithm id='" + get(rs, "ID") + 
 						"' app_version='" + get(rs, "APP_VERSION") +
 						"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
 						"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
@@ -185,19 +186,18 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 
 	}
 
 
 	public void listRuns(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
-		PreparedStatement ps = DBSSql.listRuns(conn, procDSID);
-		ResultSet rs = ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
+			ps = DBSSql.listRuns(conn, procDSID);
+			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<run id='" + get(rs, "ID") +
 					"' run_number='" + get(rs, "RUN_NUMBER") +
@@ -213,18 +213,17 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 
 	}
 
 	public void listTiers(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
-		PreparedStatement ps =  DBSSql.listTiers(conn, procDSID);
-		ResultSet rs = ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		try {
+			ps =  DBSSql.listTiers(conn, procDSID);
+			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<data_tier id='" + get(rs, "ID") +
 					"' name='" + get(rs, "NAME") +
@@ -234,18 +233,17 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 
 	}
 
 	public void listBlocks(Connection conn, Writer out, String path) throws Exception {
 		String procDSID = getProcessedDSID(conn, path);
-		PreparedStatement ps =  DBSSql.listBlocks(conn, procDSID);
-		ResultSet rs =  ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 		try {
+			ps =  DBSSql.listBlocks(conn, procDSID);
+			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<block id='" + get(rs, "ID") +
 					"' name='" + get(rs, "NAME") +
@@ -258,10 +256,7 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 
 	}
 
@@ -283,9 +278,11 @@ public class DBSApiLogic {
 		if(blockID == null && procDSID == null) {
 			throw new DBSException("Bad Data", "300", "Null Fields. Expected either a Processed Dataset or a Block");
 		}
-		PreparedStatement ps = DBSSql.listFiles(conn, procDSID, blockID, patternLFN);
-		ResultSet rs =  ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 		try {
+			ps = DBSSql.listFiles(conn, procDSID, blockID, patternLFN);
+			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
 				String tier = get(rs, "DATA_TIER");
@@ -320,10 +317,7 @@ public class DBSApiLogic {
 					prevTier = tier;
 				}
 			}
-		} finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
+		} finally { close(ps, rs); }
 
                 if (!first) out.write(((String) "</file>\n"));
 	}
@@ -362,14 +356,19 @@ public class DBSApiLogic {
 		//TODO Insert PrimaryDatasetDescription table also
 		//String primDSID;
 		//if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
-		DBSSql.insertPrimaryDataset(conn, 
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertPrimaryDataset(conn, 
 					ann,
 					name,
 					"0",//FIXME Should not be in the schema
 					startDate,
 					endDate,
 					getID(conn, "PrimaryDSType", "Type", type, true), 
-					userID).execute();
+					userID);
+			ps.execute();
+		} finally { close(ps); }
+
 		//} else {
 			//Append Warnning message that run eixts
 		//}
@@ -377,7 +376,9 @@ public class DBSApiLogic {
 	}
 
 	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
-		DBSSql.insertRun(conn, 
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertRun(conn, 
 				get(run, "run_number", true),
 				get(run, "number_of_events", true),
 				get(run, "number_of_lumi_sections", true),
@@ -385,7 +386,9 @@ public class DBSApiLogic {
 				get(run, "store_number", true),
 				get(run, "start_of_run", false),
 				get(run, "end_of_run", false),
-				getUserID(conn, dbsUser)).execute();
+				getUserID(conn, dbsUser));
+			ps.execute();
+		} finally { close(ps); }
 
 	}
 
@@ -404,13 +407,18 @@ public class DBSApiLogic {
 		if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
 		checkBlock(name);
-		DBSSql.insertBlock(conn,
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertBlock(conn,
 				"0",// A new block should always have 0 size
 				name,
 				procDSID,
 				"0",// A new block should always have 0 files
 				openForWriting,
-				getUserID(conn, dbsUser)).execute();
+				getUserID(conn, dbsUser));
+
+			ps.execute();
+		} finally { close(ps); }
 
 		//FIXME Return blockNameback to the user
 		out.write("<block block_name='" + name + "'/>");
@@ -440,12 +448,17 @@ public class DBSApiLogic {
 		insertParameterSet(conn, algo, userID);
 		
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
-		DBSSql.insertApplication(conn, 
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertApplication(conn, 
 				getID(conn, "AppExecutable", "ExecutableName", exe, true), 
 				getID(conn, "AppVersion", "Version", version, true), 
 				getID(conn, "AppFamily", "FamilyName", family, true), 
 				getID(conn, "QueryableParameterSet", "Name", psName, true), 
-				userID).execute();
+				userID);
+			ps.execute();
+		} finally { close(ps); }
+
 	}
 
 	//public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
@@ -508,7 +521,23 @@ public class DBSApiLogic {
 			//a proper message should be returned back to the user. Different Database can have different error message YUK
 			//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
 			//User will never know about this YUK
-			DBSSql.insertFile(conn, procDSID, blockID, lfn, checksum, nOfEvents, size, fileStatus, type, valStatus, qMetaData, userID).execute();
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertFile(conn, 
+						procDSID, 
+						blockID, 
+						lfn, 
+						checksum, 
+						nOfEvents, 
+						size, 
+						fileStatus, 
+						type, 
+						valStatus, 
+						qMetaData, 
+						userID);
+				ps.execute();
+			} finally { close(ps); }
+
 			//}
 
 			//if(isNull(fileID)) fileID = getID(conn, "Files", "LogicalFileName", lfn, true);
@@ -564,7 +593,12 @@ public class DBSApiLogic {
 		
 		}//For loop
 		//Update Block numberOfFiles and Size
-		DBSSql.updateBlock(conn, blockID).executeUpdate();
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.updateBlock(conn, blockID);
+			ps.executeUpdate();
+		} finally { close(ps); }
+
 	}
 
 
@@ -598,13 +632,18 @@ public class DBSApiLogic {
 		
 		//Insert a Processed Datatset before by fetching the primDSID, status
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
-		DBSSql.insertProcessedDatatset(conn, 
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertProcessedDatatset(conn, 
 					procDSName,
 					getID(conn, "PrimaryDataset", "Name", primDSName, true),
 					openForWriting,
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
-					userID).execute();
+					userID);
+			ps.execute();
+		} finally { close(ps); }
+
 		//} else {
 			//warMsg =+ (String)"ProcessedDataset Name " + procDSName + " already exists but ignored.\n";
 		//}
@@ -731,7 +770,9 @@ public class DBSApiLogic {
 		String lsNumber = get(table, "lumi_section_number", true);
 		//Insert a new Lumi Section by feting the run ID 
 		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
-			DBSSql.insertLumiSection(conn,
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertLumiSection(conn,
 						lsNumber,
 						getID(conn, "Runs", "RunNumber",
 							get(table, "run_number", true),
@@ -740,7 +781,10 @@ public class DBSApiLogic {
 						get(table, "end_event_number", true),
 						get(table, "lumi_start_time", false),
 						get(table, "lumi_end_time", false),
-						userID).execute();
+						userID);
+				ps.execute();
+			} finally { close(ps); }
+
 		} else {
 			writeWarning(out, "Already Exists", "401", "LumiSection "+lsNumber+" ALready Exists");
 		}
@@ -782,16 +826,23 @@ public class DBSApiLogic {
 		if(isNull(value)) throw new DBSException("Bad Data", "300", "Null Field " + key );
 		if(isNull(userID)) throw new DBSException("Bad Data", "300", "Null Field UserDN ");
 		if( getID(conn, table, key, value, false) == null ) {
-			//System.out.println("Just before exe query " + DBSSql.insertName(table, key, value, userID));
-			DBSSql.insertName(conn, table, key, value, userID).execute();
-			//System.out.println("After exe query DONE");
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertName(conn, table, key, value, userID);
+				ps.execute();
+			} finally { close(ps); }
 		}
 	}
 	
 	
 	private void insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String userID) throws Exception {
-		if( getMapID(conn, tableName, key1, key2, value1, value2, false) == null )
-			DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, userID).execute();
+		if( getMapID(conn, tableName, key1, key2, value1, value2, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, userID);
+				ps.execute();
+			} finally { close(ps); }
+		}
 
 	}
 
@@ -800,7 +851,9 @@ public class DBSApiLogic {
 	private void insertParameterSet(Connection conn, Hashtable algo, String userID) throws Exception {
 		String psName = get(algo, "ps_name", true);
 		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
-			DBSSql.insertParameterSet(conn,
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertParameterSet(conn,
 						get(algo, "ps_hash", true), 
 						psName, 
 						getStr(algo, "ps_version", true), 
@@ -808,7 +861,9 @@ public class DBSApiLogic {
 						getStr(algo, "ps_annotation", true), 
                                                 //FIXME We are allowing every thing in content, need to fix it
 						get(algo, "ps_content"), 
-						userID).execute();
+						userID);
+				ps.execute();
+			} finally { close(ps); }
 		}
 	}
 
@@ -816,17 +871,25 @@ public class DBSApiLogic {
 		//Insert a new Person if it does not exists
 		insertPerson(conn, out,  "", phyGroupCon, "", userID); //FIXME Get userName and contactInfo also
 		if( getID(conn, "PhysicsGroup", "PhysicsGroupName", name, false) == null ) {
-			DBSSql.insertPhysicsGroup(conn,
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertPhysicsGroup(conn,
 					name, 
 					getID(conn, "Person", "DistinguishedName", phyGroupCon, true), 
-					userID).execute();
+					userID);
+				ps.execute();
+			} finally { close(ps); }
 		}
 	}
 
 	public void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String userID) throws Exception {
 		if (isNull(userID)) userID = "0";//0 is user not created by anyone
 		if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
-			DBSSql.insertPerson(conn, userName, userDN, contactInfo,  userID).execute();
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo,  userID);
+				ps.execute();
+			} finally { close(ps); }
 		}
 	}
 
@@ -846,24 +909,38 @@ public class DBSApiLogic {
 		checkWord(dt, "data_tier");
 		checkWord(proc, "processed_dataset_name");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getProcessedDSID(prim, dt, proc));
-		ResultSet rs =  DBSSql.getProcessedDSID(conn, prim, dt, proc).executeQuery();
-		if(!rs.next()) {
-			throw new DBSException("Bad Data", "300", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
-		}
-		return  get(rs, "ID");
+		String id = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = DBSSql.getProcessedDSID(conn, prim, dt, proc);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+				throw new DBSException("Bad Data", "300", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
+			}
+			id = get(rs, "ID");
+		} finally { close(ps, rs); }
+		return  id;
 	}
 
-	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String ps) throws Exception {
+	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws Exception {
 		checkWord(ver, "app_version");
 		checkWord(fam, "app_family_name");
 		checkWord(exe, "app_executable_name");
-		checkWord(ps, "ps_name");
+		checkWord(psName, "ps_name");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getAlgorithmID(ver, fam, exe, ps));
-		ResultSet rs =  DBSSql.getAlgorithmID(conn, ver, fam, exe, ps).executeQuery();
-		if(!rs.next()) {
-			throw new DBSException("Bad Data", "300", "No such Application " + ver + " " + fam + " " + exe + " " + ps);
-		}
-		return  get(rs, "ID");
+		String id = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psName);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+				throw new DBSException("Bad Data", "300", "No such Application " + ver + " " + fam + " " + exe + " " + psName);
+			}
+			id = get(rs, "ID");
+		} finally { close(ps, rs); }
+		return  id;
 	}
 
 	/*private String getMCDescID(Connection conn, String des, String prod, String chain, boolean excep) throws Exception {
@@ -871,6 +948,7 @@ public class DBSApiLogic {
 		else if(!isNull(des) checkWord(des, "mc_channel_description");
 		if(!isNull(prod)) checkWord(prod, "mc_production");
 		if(!isNull(chain)) checkWord(chain, "mc_decay_chain");
+		PreparedStatement ps = null;
 		ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getMCDescID(des, prod, chain));
 		if(!rs.next()) {
 			if(excep) throw new DBSException("Bad Data", "300", "No such MCDescription " + des + " " + prod + " " + chain);
@@ -882,12 +960,19 @@ public class DBSApiLogic {
 	private String getBlockID(Connection conn, String name, boolean excep) throws Exception {
 		checkBlock(name);
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getID( "Block", "Name", name));
-		ResultSet rs =  DBSSql.getID(conn, "Block", "Name", name).executeQuery();
-		if(!rs.next()) {
-			if(excep) throw new DBSException("Bad Data", "300", "No such Block : Name : "  + name );
-			else return null;
-		}
-		return  get(rs, "ID");
+		String id = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = DBSSql.getID(conn, "Block", "Name", name);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+				if(excep) throw new DBSException("Bad Data", "300", "No such Block : Name : "  + name );
+				else return null;
+			}
+			id = get(rs, "ID");
+		} finally { close(ps, rs); }
+		return  id;
 	}
 
 	private String getID(Connection conn, String tableName, String key, String value, boolean excep) throws Exception {
@@ -896,13 +981,20 @@ public class DBSApiLogic {
 		else if(!isNull(value)) checkWord(value, key);
 
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getID(tableName, key, value));
-		ResultSet rs =  DBSSql.getID(conn, tableName, key, value).executeQuery();
+		String id = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps =  DBSSql.getID(conn, tableName, key, value);
+			rs =  ps.executeQuery();
 		//System.out.println("tableName "+ tableName+ " key "+ key + " value " + value + " excep "+ excep);
-		if(!rs.next()) {
-			if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key + " : " + value );
-			else return null;
-		}
-		return  get(rs, "ID");
+			if(!rs.next()) {
+				if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key + " : " + value );
+				else return null;
+			}
+			id = get(rs, "ID");
+		} finally { close(ps, rs); }
+		return  id;
 	}
 
 	private String getMapID(Connection conn, String tableName, String key1, String key2, String value1, String value2,  boolean excep) throws Exception {
@@ -915,12 +1007,19 @@ public class DBSApiLogic {
 			if(!isNull(value2)) checkWord(value2, key2);
 		}
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getMapID(tableName, key1, key2, value1, value2));
-		ResultSet rs =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2).executeQuery();
-		if(!rs.next()) {
-			if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
-			else return null;
-		}
-		return  get(rs, "ID");
+		String id = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+				if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
+				else return null;
+			}
+			id = get(rs, "ID");
+		} finally { close(ps, rs); }
+		return  id;
 	}
 
 	private String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
@@ -1031,5 +1130,14 @@ public class DBSApiLogic {
 			return getPattern(tokens[index], key);            
                 return "%";
 	}
+
+	private void close(PreparedStatement ps, ResultSet rs) throws Exception {
+		if (rs != null) rs.close();
+		close(ps);
+	}
+	private void close(PreparedStatement ps) throws Exception {
+		if (ps != null) ps.close();
+	}
+
 
 }
