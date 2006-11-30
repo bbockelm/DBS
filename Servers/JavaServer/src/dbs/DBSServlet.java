@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.22 $"
- $Id: DBSServlet.java,v 1.22 2006/11/21 23:26:11 afaq Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSServlet.java,v 1.23 2006/11/22 16:17:27 afaq Exp $"
 
  */
 package dbs;
@@ -30,21 +30,23 @@ public class DBSServlet extends HttpServlet{
          private static String XML_FOOTER = "</dbs>\n";
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
-
+		PrintWriter out = null;
 		try {
-                //Another interim solution no user DN so make one up, 
-                //will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
-                Hashtable userDN = new Hashtable();
-                userDN.put("user_dn", "ANZARDN");
-		System.out.println("DN of the user is " + request.getAttribute("org.globus.gsi.authorized.user.dn"));
+	                //Another interim solution no user DN so make one up, 
+        	        //will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
+                	Hashtable userDN = new Hashtable();
+	                userDN.put("user_dn", "ANZARDN");
+			System.out.println("DN of the user is " + request.getAttribute("org.globus.gsi.authorized.user.dn"));
 
-		response.setContentType("text/xml");
-		PrintWriter out = response.getWriter();
+			response.setContentType("text/xml");
+			out = response.getWriter();
 		
 			DBSApi api = new DBSApi();
 			api.call(out, getTable(request), userDN);
 		} catch(Exception e) {
 			throw new ServletException(e);
+		} finally {
+			if (out != null) out.close();
 		}
 
 		/*if(! isIn("api", request.getParameterNames())) {
