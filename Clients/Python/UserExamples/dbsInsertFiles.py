@@ -40,7 +40,7 @@ algo = DbsAlgorithm (
 primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
-        Name="TestProcessedDS001", 
+        Name="TestProcessedDS002", 
         PhysicsGroup="BPositive",
         Status="Valid",
         TierList=['SIM', 'RECO'],
@@ -48,7 +48,7 @@ proc = DbsProcessedDataset (
         )
 
 lumi1 = DbsLumiSection (
-         LumiSectionNumber=1,
+         LumiSectionNumber=1222,
          StartEventNumber=100,
          EndEventNumber=200,
          LumiStartTime='notime',
@@ -56,7 +56,7 @@ lumi1 = DbsLumiSection (
          RunNumber=1,
          )
 lumi2 = DbsLumiSection (
-         LumiSectionNumber=1,
+         LumiSectionNumber=1333,
          StartEventNumber=100,
          EndEventNumber=200,
          LumiStartTime='notime',
@@ -65,13 +65,15 @@ lumi2 = DbsLumiSection (
          )
 
 
+
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= '1122-0909-9767-8764',
+        LogicalFileName= 'aaa1122-0909-9767-8764aaa',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
-        Status= 'Valid',
+        Status= 'VALID',
+	ValidationStatus = 'VALID',
         FileType= 'EVD',
         Dataset= proc,
         #Block= isDictType,
@@ -81,22 +83,24 @@ myfile1= DbsFile (
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= '2233-0909-9767-8764',
+        LogicalFileName= 'aaaa2233-0909-9767-8764aaa',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
-        Status= 'Valid',
+        Status= 'VALID',
+	ValidationStatus = 'VALID',
         FileType= 'EVD',
         Dataset= proc,
         #Block= isDictType,
-        LumiList= [lumi1, lumi2],
+        #LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'RECO'],
         AlgoList = [algo],
         #ParentList = ['lfn01', 'lfn02']  
          )
                             
 block = DbsFileBlock (
-         Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db"
+         #Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db"
+         Name="/this/hahah#12345"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"

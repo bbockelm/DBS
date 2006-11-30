@@ -25,7 +25,8 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 
 #primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
-primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
+#primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
+primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 
 proc = DbsProcessedDataset (
          PrimaryDataset=primary,
@@ -46,10 +47,10 @@ print "Creating block %s" % block
 
 try:
     #api.insertBlock (proc, block)
-    api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
+    #api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
     #api.insertBlock (proc)
     #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002")
-    #api.insertBlock ("/test_primary_anzar_03/SIM/TestProcessedDS01", "/this/isaqww" + ran + "wwwqqqxstblock#016712")
+    api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002/", "/this/hahah#12345")
     print "Result: %s" % primary
 except DbsObjectExists, ex:
     print "Object existed already, passing"

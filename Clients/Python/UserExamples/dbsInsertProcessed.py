@@ -20,9 +20,9 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-algo = {'ExecutableName': 'TestExe01', 'ApplicationVersion': 'TestVersion011164750596.79', 'ParameterSetID': {'Content': 'int a= {}, b={c=1, d=33}, f={}, x, y, x', 'Version': 'V001', 'Hash': '001234565798685', 'Name': 'MyFirstParam01', 'Type': 'test', 'Annotation': 'This is test'}, 'ApplicationFamily': 'AppFamily01'}
+#algo = {'ExecutableName': 'TestExe01', 'ApplicationVersion': 'TestVersion011164750596.79', 'ParameterSetID': {'Content': 'int a= {}, b={c=1, d=33}, f={}, x, y, x', 'Version': 'V001', 'Hash': '001234565798685', 'Name': 'MyFirstParam01', 'Type': 'test', 'Annotation': 'This is test'}, 'ApplicationFamily': 'AppFamily01'}
 
-algoa = DbsAlgorithm (
+algo = DbsAlgorithm (
          ExecutableName="TestExe01",
          ApplicationVersion= "TestVersion01",
          ApplicationFamily="AppFamily01",
@@ -36,8 +36,8 @@ algoa = DbsAlgorithm (
                               )
          )
 
-primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
-#primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+#primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
+primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 proc = DbsProcessedDataset (
                             PrimaryDataset=primary, 
                             Name="TestProcessedDS002", 
