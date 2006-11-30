@@ -4,9 +4,12 @@ touch $PWD/result.txt
 cd ..
 source setup.sh
 cd -
+counter=`date +%m%h%s`
+mkdir -p $counter
+cp dbsInsertUnitTests.py dbsListUnitTests.py dbsUnitTestApi.py $counter
+cd $counter
 echo "Please wait ... The tests can take up to 5 minutes"
 python dbsInsertUnitTests.py --verbose=2 | grep '^\Test'
-#python dbsInsertUnitTests.py --verbose=2 > /dev/null
 if [ $? -eq 0 ] ; then 
    python dbsListUnitTests.py --verbose=2 |  grep '^\Test'
 else
@@ -23,4 +26,6 @@ if [ "$len" -lt "1" ] ; then
 else
 	echo "$message"
 fi
+cd -
+rm -f $counter/*.py
 

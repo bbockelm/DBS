@@ -7,7 +7,10 @@ from dbsApi import DbsApi
 from dbsException import *
 from dbsApiException import *
 from dbsOptions import DbsOptionParser
-import pdb
+#import pdb
+import datetime
+import time
+
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
@@ -21,7 +24,7 @@ class DbsUnitTestApi:
                 self.verbose=0
         def setVerboseLevel(self,level):
             self.verbose=level
-        def printTestStatus(self,info,status,iMsg,exp=None):
+        def printTestStatus(self,info,status,iMsg,timeDiff,exp=None):
             msg = "\n\nType : %s"%str(self.lapiObj.im_func.func_name)
             msg+= "\nDone "+info
             if self.verbose:
@@ -29,6 +32,7 @@ class DbsUnitTestApi:
             if self.verbose==2:
                msg+="\nException    : %s"%exp
             msg+=   "\nTest ended   : [%6s]"%status
+            msg+=   "\nTest LAPSED  : [%06s] seconds" % (str(timeDiff))
             self.f.write(msg)
             self.f.flush() 
             print msg 
@@ -41,24 +45,32 @@ class DbsUnitTestApi:
 			#info =  str(self.lapiObj.im_func.func_name) + str(listArgs[1:])
 			#print info
 			excep = dictArgs['excep']
-                        print "\nTest Starting: "+str(self.lapiObj.im_func.func_name)+" test number "+str(self.index) 
+                        startTime = time.mktime(datetime.datetime.now().timetuple()) 
+                        print "\nTest Starting: "+ str(self.lapiObj.im_func.func_name)+" test number " \
+                              + str(self.index)+  \
+                              " started at: " + str(datetime.datetime.fromtimestamp(startTime)) 
 			self.lapiObj(*listArgs)
+                        endTime = time.mktime(datetime.datetime.now().timetuple())
+                        timeDiff = endTime - startTime
+                         
 			#self.lapiObj(*listArgs[1:])
 			#for data in apiObj(*listArgs):
 				#print "  %s" % data
 			if excep:
-                                self.printTestStatus(info,"FAILED","AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED")
+                                self.printTestStatus(info,"FAILED","AN EXCEPTION WAS EXPECTED BUT NONE WAS RAISED", timeDiff)
                                 print "Test FAILED STOPING EXECUTION."
                                 sys.exit(1)  
 			else:
-                                self.printTestStatus(info,"PASSED","AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED")
+                                self.printTestStatus(info,"PASSED","AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED", timeDiff)
 		except:
+                        endTime = time.mktime(datetime.datetime.now().timetuple())
+                        timeDiff = endTime - startTime
 			exception =  str(sys.exc_info()[0]) + " : " +  str(sys.exc_info()[1])
                         print exception
 			if excep:
-                                self.printTestStatus(info,"PASSED","AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS",exception)
+                                self.printTestStatus(info,"PASSED","AN EXCEPTION WAS EXPECTED AND RAISED. THE EXCEPTION IS",timeDiff,exception)
 			else:
-                                self.printTestStatus(info,"FAILED","AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS",exception)
+                                self.printTestStatus(info,"FAILED","AN EXCEPTION WAS NOT EXPECTED BUT RAISED. THE EXCEPTION IS",timeDiff,exception)
                                 print "Test FAILED STOPING EXECUTION."
                                 sys.exit(1)  
 
