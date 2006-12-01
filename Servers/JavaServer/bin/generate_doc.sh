@@ -38,6 +38,6 @@ Problems reported to <a href="mailto:cms-dbs-support@cernNOPAMSMAN.ch">cms-dbs-s
 </li> <li> <b>Developers</b>: Vijay Sekhri, Anzar Afaq, Valentin Kuznetsov <br>
 </li> <li> <b>Operations Team</b>: Vijay Sekhri, Anzar Afaq, Valentin Kuznetsov, Barry Blumenfeld, Lee Lueking, Douglas Teodora, Dimitrije Maletic <br>
 
-</li></ul>' -classpath $CLASSPATH db  dbs  xml dbs.api dbs.sql dbs.util
+</li></ul>' -subpackages java:javax.swing -classpath $CLASSPATH db  dbs  xml dbs.api dbs.sql dbs.util -linksource -link http://java.sun.com/j2se/1.4.2/docs/api/ -link http://java.sun.com/j2ee/sdk_1.3/techdocs/api/
 
 cd $savePWD

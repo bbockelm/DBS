@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.5 $"
- $Id: DBSXMLParser.java,v 1.5 2006/11/14 21:21:46 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSXMLParser.java,v 1.6 2006/11/30 16:29:37 sekhri Exp $"
 *
 */
 
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.Vector;
 import java.util.Hashtable;
+import dbs.util.DBSUtil;
 
 public class DBSXMLParser extends DefaultHandler {
 
@@ -94,10 +95,8 @@ public class DBSXMLParser extends DefaultHandler {
 
 	//Parse a String
 	public void parseString(String xmlcontent) throws Exception {
-		if (xmlcontent == null) 
-			throw new XMLException("Invalid XML", "800", "Null inputXml. Expected inputXml in XML format.");
-		if (xmlcontent.length() < 1)
-			throw new XMLException("Invalid XML", "800", "Null inputXml. Expected inputXml in XML format.");
+		if (DBSUtil.isNull(xmlcontent)) 
+			throw new XMLException("Missing data", "3000", "Null Fields. Expected a valid inputxml in XML format.");
 		StringReader reader = null;
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -106,7 +105,7 @@ public class DBSXMLParser extends DefaultHandler {
 			InputSource source = new InputSource(reader);
 			saxParser.parse(source, this);
 		} catch (Exception e) {
-			throw new XMLException("Invalid XML", "800", "Cannot Parse xmlInput. Expected inputXml in XML format. Exception from parser : " + e.getMessage());
+			throw new XMLException("XML parse exception", "3001", "Cannot parse xmlInput. Expected a valid inputXml in XML format. Exception from parser : " + e.getMessage() + " The given xml is " + xmlcontent);
 		} finally {
 			if (reader != null) reader.close();
 		}

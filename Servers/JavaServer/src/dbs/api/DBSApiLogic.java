@@ -1,6 +1,6 @@
 /**
- $Revision: 1.36 $"
- $Id: DBSApiLogic.java,v 1.36 2006/11/29 21:52:52 afaq Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSApiLogic.java,v 1.37 2006/11/29 23:09:59 sekhri Exp $"
  *
  */
 
@@ -276,7 +276,7 @@ public class DBSApiLogic {
 			blockID = getBlockID(conn, blockName, true);
 		}
 		if(blockID == null && procDSID == null) {
-			throw new DBSException("Bad Data", "300", "Null Fields. Expected either a Processed Dataset or a Block");
+			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset or a Block");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
@@ -823,8 +823,8 @@ public class DBSApiLogic {
 
 	private void insertName(Connection conn, String table, String key, String value, String userID) throws Exception {
 		//System.out.println("inserting table " + table + "  key " + key + " value " + value);
-		if(isNull(value)) throw new DBSException("Bad Data", "300", "Null Field " + key );
-		if(isNull(userID)) throw new DBSException("Bad Data", "300", "Null Field UserDN ");
+		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
+		if(isNull(userID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
 		if( getID(conn, table, key, value, false) == null ) {
 			PreparedStatement ps = null;
 			try {
@@ -899,7 +899,7 @@ public class DBSApiLogic {
 		//checkPath(path);
 		String[] data = path.split("/");
 		if(data.length != 4) {
-			throw new DBSException("Bad Data", "300", "Invalid Format. Expected /PRIMARY/TIER/PROCESSED");
+			throw new DBSException("Invalid format", "1007", " Expected a path in format /PRIMARY/TIER/PROCESSED given " + path);
 		}
 		return  getProcessedDSID(conn, data[1], data[2], data[3]);
 	}
@@ -916,7 +916,7 @@ public class DBSApiLogic {
 			ps = DBSSql.getProcessedDSID(conn, prim, dt, proc);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				throw new DBSException("Bad Data", "300", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
+				throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
 			}
 			id = get(rs, "ID");
 		} finally { close(ps, rs); }
@@ -936,7 +936,7 @@ public class DBSApiLogic {
 			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psName);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				throw new DBSException("Bad Data", "300", "No such Application " + ver + " " + fam + " " + exe + " " + psName);
+				throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psName);
 			}
 			id = get(rs, "ID");
 		} finally { close(ps, rs); }
@@ -967,7 +967,7 @@ public class DBSApiLogic {
 			ps = DBSSql.getID(conn, "Block", "Name", name);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				if(excep) throw new DBSException("Bad Data", "300", "No such Block : Name : "  + name );
+				if(excep) throw new DBSException("Unavailable data", "1010", "No such block : name : "  + name );
 				else return null;
 			}
 			id = get(rs, "ID");
@@ -989,7 +989,7 @@ public class DBSApiLogic {
 			rs =  ps.executeQuery();
 		//System.out.println("tableName "+ tableName+ " key "+ key + " value " + value + " excep "+ excep);
 			if(!rs.next()) {
-				if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key + " : " + value );
+				if(excep) throw new DBSException("Unavailable data", "1011", "No such " + tableName + " : " + key + " : " + value );
 				else return null;
 			}
 			id = get(rs, "ID");
@@ -1014,7 +1014,7 @@ public class DBSApiLogic {
 			ps =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				if(excep) throw new DBSException("Bad Data", "300", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
+				if(excep) throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
 				else return null;
 			}
 			id = get(rs, "ID");
@@ -1035,35 +1035,35 @@ public class DBSApiLogic {
 
 	private void checkPath(String path) throws Exception {
 		if(isNull(path)) 
-			throw new DBSException("Bad Data", "300", "Null path. Expected /PRIMARY/TIER/PROCESSED");
+			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid path in format /PRIMARY/TIER/PROCESSED");
 		if (! Pattern.matches(VALID_PATH, path) ) 
-			throw new DBSException("Bad Data", "300", "Invalid path " + path + ". Expected /PRIMARY/TIER/PROCESSED in format " + VALID_PATH);
+			throw new DBSException("Invalid format", "1007", "Expected a path in format /PRIMARY/TIER/PROCESSED which should satisfy the regular expression " + VALID_PATH + " The given path is " + path);
 		if( ! Pattern.matches(SAFE_PATH, path) ) 
-			throw new DBSException("Bad Data", "300", "Invalid Characters in " + path + " Expected /PRIMARY/TIER/PROCESSED in format "+ SAFE_PATH);
+			throw new DBSException("Invalid format", "1013", "Invalid Characters in " + path + " for path. Expected a path in format /PRIMARY/TIER/PROCESSED  which should satisfy the regular expression  "+ SAFE_PATH);
 	}
 	
 	private void checkBlock(String blockName) throws Exception {
 		if(isNull(blockName)) 
-			throw new DBSException("Bad Data", "300", "Null blockName. Expected /PRIMARY/PROCESSED#GUID");
+			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid block_name in format /PRIMARY/PROCESSED#GUID");
 		if (! Pattern.matches(VALID_BLOCK, blockName) ) 
-			throw new DBSException("Bad Data", "300", "Invalid blockName " + blockName + ". Expected /PRIMARY/PROCESSED#GUID in format " + VALID_BLOCK);
+			throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK + " The given block_name is " + blockName);
 		if( ! Pattern.matches(SAFE_BLOCK, blockName) ) 
-			throw new DBSException("Bad Data", "300", "Invalid Characters in " + blockName + " Expected /PRIMARY/PROCESSED#GUID in format "+ SAFE_BLOCK);
+			throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK);
 	}
 	
 	private void checkWord(String pattern, String key) throws Exception {
 		if(isNull(pattern))
-			throw new DBSException("Bad Data", "300", "Null Fields. Expected a " + key);
+			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid " + key);
 		if (! Pattern.matches(SAFE_WORD, pattern)) 
-			throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_WORD);
+			throw new DBSException("Invalid format", "1016", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression "+ SAFE_WORD);
 	}
 	
 
         private void checkString(String pattern, String key) throws Exception {
                 if(isNull(pattern))
-                        throw new DBSException("Bad Data", "300", "Null Fields. Expected a " + key);
+                        throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid " + key);
                 if (! Pattern.matches(SAFE_STR, pattern))
-                        throw new DBSException("Bad Data", "300", "Invalid Characters in " + pattern + " for " + key + " Expected "+ SAFE_STR);
+                        throw new DBSException("Invalid format", "1017", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression " + SAFE_STR);
         }
 
 
@@ -1132,11 +1132,10 @@ public class DBSApiLogic {
 	}
 
 	private void close(PreparedStatement ps, ResultSet rs) throws Exception {
-		if (rs != null) rs.close();
-		close(ps);
+		DBManagement.close(ps, rs);
 	}
 	private void close(PreparedStatement ps) throws Exception {
-		if (ps != null) ps.close();
+		DBManagement.close(ps);
 	}
 
 

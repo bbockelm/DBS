@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApi.java,v 1.23 2006/11/27 22:41:44 afaq Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApi.java,v 1.24 2006/11/28 19:41:38 sekhri Exp $"
  *
 */
 
@@ -62,11 +62,11 @@ public class DBSApi {
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
 			} else {
-				throw new DBSException("Schema Version Failure", "589", "Unable to get Schema Version from Database, cannot continue");
+				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
 			String suppSchemaVer = supportedSchemaVersions();
 			if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
-				throw new DBSException("Unsupported Schema version", "590", "Database Schema Mismatch, Server works with " + suppSchemaVer + " Current schema version is :" + dbsSchemaVersion); 
+				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, Server works with " + suppSchemaVer + " Current schema version is :" + dbsSchemaVersion); 
 			}
 		} finally {
 			if(conn != null) conn.close();
@@ -85,7 +85,7 @@ public class DBSApi {
                 }
 
                 if ( ! isIn(apiversion, verEnum ) ) {
-                        throw new Exception("BAD Api Version: "+ msg);
+                        throw new DBSException("BAD Api Version", "1003",  msg);
                         //return;
                 }
 
@@ -253,12 +253,12 @@ public class DBSApi {
 			return;
 		} catch (SQLException sqlEx) {
 			if(conn != null) conn.rollback();
-			writeException(out, "Database exception", "402", sqlEx.getMessage());
+			writeException(out, "Database exception", "2000", sqlEx.getMessage());
 			//sqlEx.printStackTrace();
 			return;
 		} catch (Exception ex) {
 			if(conn != null) conn.rollback();
-			writeException(out, "Execution error", "401", ex.getMessage());
+			writeException(out, "Unexpected execution exception", "4000", ex.getMessage());
 			//ex.printStackTrace();
 			return;
 		} finally {
@@ -272,7 +272,7 @@ public class DBSApi {
 	private String get(Hashtable table, String key, boolean excep) throws Exception {
 		String value = "";
 		if ( isNull(value = DBSUtil.get(table, key)) ) {
-			if (excep) throw new DBSException("Bad Data", "300", "Null Fields. Expected a valid " + key);
+			if (excep) throw new DBSException("Mandatory data missing", "1004", "Null Fields. Expected a valid " + key);
 		}
 		return value;
 	}
