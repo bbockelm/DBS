@@ -268,21 +268,21 @@ insertFiles () {
 }
 
 
-#insertPrimaryDataset
-#insertAlgorithm
-#insertTier
-#insertRun
-#insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
+insertPrimaryDataset
+insertAlgorithm
+insertTier
+insertRun
+insertLumiSection
+insertProcessedDataset
+insertBlock
+insertFiles
 listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
 
 echo 
 echo "*************************************************************"
