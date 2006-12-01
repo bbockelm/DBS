@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApi.java,v 1.24 2006/11/28 19:41:38 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApi.java,v 1.25 2006/12/01 18:47:43 sekhri Exp $"
  *
 */
 
@@ -236,7 +236,7 @@ public class DBSApi {
 						dbsUser);
 				
 			} else {
-				writeException(out, "Invalid API", "401", "The api " + apiStr + " provided by the client is not valid");
+				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;
 			}
 			conn.commit();
