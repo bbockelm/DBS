@@ -1,6 +1,10 @@
 /**
- * 
- */
+ * @author sekhri
+ $Revision: 1.6 $"
+ $Id: DBSXMLParser.java,v 1.6 2006/11/30 16:29:37 sekhri Exp $"
+ *
+*/
+
 package dbs.util;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -10,7 +14,6 @@ import java.util.Date;
 import java.io.Writer;
 
 /**
- * @author sekhri
  *
  */
 public class DBSUtil {

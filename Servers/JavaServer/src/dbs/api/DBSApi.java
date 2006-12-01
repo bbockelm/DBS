@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApi.java,v 1.25 2006/12/01 18:47:43 sekhri Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApi.java,v 1.26 2006/12/01 19:14:40 sekhri Exp $"
  *
 */
 
@@ -21,7 +21,7 @@ import dbs.DBSException;
 import dbs.util.DBSUtil;
 import db.DBManagement;
 import java.sql.ResultSet;
-
+import dbs.util.DBSConfig;
 
 public class DBSApi {
 	/**
@@ -64,7 +64,10 @@ public class DBSApi {
 			} else {
 				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
-			String suppSchemaVer = supportedSchemaVersions();
+                        //Get Schema Version for DBSConfig
+                        DBSConfig config = DBSConfig.getInstance();
+                        String suppSchemaVer = config.getSupportedSchemaVersion();
+			//String suppSchemaVer = supportedSchemaVersions();
 			if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
 				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, Server works with " + suppSchemaVer + " Current schema version is :" + dbsSchemaVersion); 
 			}

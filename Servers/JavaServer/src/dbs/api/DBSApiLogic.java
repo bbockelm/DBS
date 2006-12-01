@@ -1,6 +1,6 @@
 /**
- $Revision: 1.37 $"
- $Id: DBSApiLogic.java,v 1.37 2006/11/29 23:09:59 sekhri Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSApiLogic.java,v 1.38 2006/12/01 18:47:43 sekhri Exp $"
  *
  */
 
@@ -65,7 +65,10 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 			}
-		} finally { close(ps, rs); }
+		} finally { 
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close(); 
+                }
 	}
 
 	//public void listProcessedDatasets(Connection conn, Writer out, String pattern) throws Exception {
@@ -148,7 +151,10 @@ public class DBSApiLogic {
 					prevPS = pset;
 				}
 			}
-		} finally { close(ps, rs); }
+		} finally { 
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
 
                 if (!first) out.write(((String) "</processed-dataset>\n")); 
 	}
@@ -186,7 +192,10 @@ public class DBSApiLogic {
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 						"'/>\n"));
 			}
-		} finally { close(ps, rs); }
+		} finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                 }
 
 	}
 
@@ -213,7 +222,10 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
-		} finally { close(ps, rs); }
+		} finally { 
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
 
 	}
 
@@ -233,7 +245,10 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
-		} finally { close(ps, rs); }
+		} finally { 
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
 
 	}
 
@@ -256,7 +271,11 @@ public class DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'/>\n"));
 			}
-		} finally { close(ps, rs); }
+		} finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+
+                }
 
 	}
 
@@ -317,7 +336,10 @@ public class DBSApiLogic {
 					prevTier = tier;
 				}
 			}
-		} finally { close(ps, rs); }
+		} finally { 
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
 
                 if (!first) out.write(((String) "</file>\n"));
 	}
@@ -367,7 +389,10 @@ public class DBSApiLogic {
 					getID(conn, "PrimaryDSType", "Type", type, true), 
 					userID);
 			ps.execute();
-		} finally { close(ps); }
+		} finally { 
+                  if (ps != null) ps.close();
+
+                }
 
 		//} else {
 			//Append Warnning message that run eixts
@@ -388,7 +413,9 @@ public class DBSApiLogic {
 				get(run, "end_of_run", false),
 				getUserID(conn, dbsUser));
 			ps.execute();
-		} finally { close(ps); }
+		} finally { 
+                  if (ps != null) ps.close();
+                }
 
 	}
 
@@ -418,7 +445,9 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 
 			ps.execute();
-		} finally { close(ps); }
+		} finally { 
+                  if (ps != null) ps.close();
+                }
 
 		//FIXME Return blockNameback to the user
 		out.write("<block block_name='" + name + "'/>");
@@ -457,10 +486,10 @@ public class DBSApiLogic {
 				getID(conn, "QueryableParameterSet", "Name", psName, true), 
 				userID);
 			ps.execute();
-		} finally { close(ps); }
-
-	}
-
+		} finally { 
+                  if (ps != null) ps.close();
+	        }
+       }
 	//public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
 	public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
 		
@@ -536,7 +565,10 @@ public class DBSApiLogic {
 						qMetaData, 
 						userID);
 				ps.execute();
-			} finally { close(ps); }
+			} finally { 
+                  if (ps != null) ps.close();
+
+                        }
 
 			//}
 
@@ -597,7 +629,9 @@ public class DBSApiLogic {
 		try {
 			ps = DBSSql.updateBlock(conn, blockID);
 			ps.executeUpdate();
-		} finally { close(ps); }
+		} finally { 
+                  if (ps != null) ps.close();
+                }
 
 	}
 
@@ -642,7 +676,9 @@ public class DBSApiLogic {
 					getID(conn, "ProcDSStatus", "Status", status, true), 
 					userID);
 			ps.execute();
-		} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
 
 		//} else {
 			//warMsg =+ (String)"ProcessedDataset Name " + procDSName + " already exists but ignored.\n";
@@ -783,7 +819,9 @@ public class DBSApiLogic {
 						get(table, "lumi_end_time", false),
 						userID);
 				ps.execute();
-			} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
 
 		} else {
 			writeWarning(out, "Already Exists", "401", "LumiSection "+lsNumber+" ALready Exists");
@@ -830,7 +868,10 @@ public class DBSApiLogic {
 			try {
 				ps = DBSSql.insertName(conn, table, key, value, userID);
 				ps.execute();
-			} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
+
 		}
 	}
 	
@@ -841,7 +882,9 @@ public class DBSApiLogic {
 			try {
 				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, userID);
 				ps.execute();
-			} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
 		}
 
 	}
@@ -863,7 +906,10 @@ public class DBSApiLogic {
 						get(algo, "ps_content"), 
 						userID);
 				ps.execute();
-			} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
+
 		}
 	}
 
@@ -878,7 +924,10 @@ public class DBSApiLogic {
 					getID(conn, "Person", "DistinguishedName", phyGroupCon, true), 
 					userID);
 				ps.execute();
-			} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
+
 		}
 	}
 
@@ -889,7 +938,10 @@ public class DBSApiLogic {
 			try {
 				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo,  userID);
 				ps.execute();
-			} finally { close(ps); }
+                } finally {
+                  if (ps != null) ps.close();
+                }
+
 		}
 	}
 
@@ -919,7 +971,11 @@ public class DBSApiLogic {
 				throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
 			}
 			id = get(rs, "ID");
-		} finally { close(ps, rs); }
+                } finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
+
 		return  id;
 	}
 
@@ -939,7 +995,11 @@ public class DBSApiLogic {
 				throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psName);
 			}
 			id = get(rs, "ID");
-		} finally { close(ps, rs); }
+                } finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
+
 		return  id;
 	}
 
@@ -971,7 +1031,11 @@ public class DBSApiLogic {
 				else return null;
 			}
 			id = get(rs, "ID");
-		} finally { close(ps, rs); }
+                } finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
+
 		return  id;
 	}
 
@@ -993,7 +1057,11 @@ public class DBSApiLogic {
 				else return null;
 			}
 			id = get(rs, "ID");
-		} finally { close(ps, rs); }
+                } finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
+
 		return  id;
 	}
 
@@ -1018,7 +1086,11 @@ public class DBSApiLogic {
 				else return null;
 			}
 			id = get(rs, "ID");
-		} finally { close(ps, rs); }
+                } finally {
+                  if (rs != null) rs.close();
+                  if (ps != null) ps.close();
+                }
+
 		return  id;
 	}
 
@@ -1130,13 +1202,5 @@ public class DBSApiLogic {
 			return getPattern(tokens[index], key);            
                 return "%";
 	}
-
-	private void close(PreparedStatement ps, ResultSet rs) throws Exception {
-		DBManagement.close(ps, rs);
-	}
-	private void close(PreparedStatement ps) throws Exception {
-		DBManagement.close(ps);
-	}
-
 
 }
