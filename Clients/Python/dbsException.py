@@ -19,8 +19,11 @@ class DbsException(Exception):
       DBSException(args=exceptionString)
       DBSException(exception=exceptionObject)      
     """ 
+
     args = kwargs.get("args", "")
     ex = kwargs.get("exception", None)
+    self.code = kwargs.get("code", "")
+  
     if ex != None:
       if isinstance(ex, Exception):
 	 exArgs = "%s" % (ex)
@@ -41,6 +44,11 @@ class DbsException(Exception):
   def getClassName(self):
     """ Return class name. """
     return "%s" % (self.__class__.__name__)
+
+  def getErrorCode(self):
+    """ Return class name. """
+    return "%s" % (self.code)
+
     
 ##############################################################################
 # Other exception classes.

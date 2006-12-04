@@ -40,9 +40,20 @@ def getInt(value = None):
 	return int(value)
 
 class DbsApi(DbsConfig):
+  """
+  DbsApi class, provides access to DBS Server, 
+  all clients must use this interface 
+  """ 
 
   def __init__(self, Args={}):
-    """ Constructor. """
+    """ 
+    Constructor. 
+    Initializes the DBS Api by reading configuration 
+    parameters from dbs.config file.
+    
+    Creates a http proxy, to be able to talk to DBS Server 
+    """
+
     DbsConfig.__init__(self,Args)
     if self.verbose():
        print "configuration dictionary:", self.configDict
@@ -66,10 +77,10 @@ class DbsApi(DbsConfig):
   def _path (self, dataset):
     """
     Determine the dataset path of a dataset.  If the argument is a
-    string, it's assumed to be the path and is returned.  If it is a
-    a dataset object, we'll ask for it's path.  If that fails, we
-    assume the object is a processed datatset and make it's path out
-    of the primary dataset, tier and processed dataset name.
+    string, it's assumed to be the path and is returned.  If the 
+    argument is an object, its assumed to be a processed datatset 
+    and this function make a path out of its  primary dataset, 
+    tier and processed dataset name.
     """
 
     if dataset == None:
@@ -89,6 +100,8 @@ class DbsApi(DbsConfig):
 
   def _name (self, obj):
     """
+    A utility function, that gets "Name" from an Object.
+    Not a very cool function !
     """
 
     if obj == None:
@@ -132,11 +145,12 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*", patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
+  def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",   
+                                  patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
-    Retrieve list of processed datasets matching a shell glob pattern.
-    Returns a list of DbsProcessedDataset objects.  If the pattern is
-    given, it will be matched against the dataset path as a shell glob
+    Retrieve list of processed datasets matching a shell glob patterns.
+    Returns a list of DbsProcessedDataset objects.  If the pattern(s) are
+    given, they will be matched against the dataset primary dataset, data tier, application version,  etc. as a shell glob
     pattern.
 
     May raise an DbsApiException.
@@ -216,7 +230,7 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
   def listAlgorithms(self, patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
-    Retrieve list of applications matching a shell glob pattern.
+    Retrieve list of applications/algorithms matching a shell glob pattern.
     Returns a list of DbsApplication objects.  If the pattern is
     given, it will be matched against the application label as
     /family/executable/version as a shell glob pattern.
@@ -256,7 +270,7 @@ class DbsApi(DbsConfig):
   def listRuns(self, dataset="*"):
     """
     Retrieve list of runs matching a shell glob pattern.
-    Returns a list of DbsParameterSet objects.  If the pattern is
+    Returns a list of DbsRun objects.  If the pattern is
     given, it will be matched against the content as a shell glob
     pattern.
 
@@ -271,8 +285,7 @@ class DbsApi(DbsConfig):
     # Parse the resulting xml output.
     try:
       result = []
-      #import pdb
-      #pdb.set_trace()
+
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'run':
@@ -303,8 +316,8 @@ class DbsApi(DbsConfig):
   def listTiers(self, dataset="*"):
 
     """
-    Retrieve list of runs matching a shell glob pattern.
-    Returns a list of DbsParameterSet objects.  If the pattern is
+    Retrieve list of Tiers matching a shell glob pattern.
+    Returns a list of DbsDataTier objects.  If the pattern is
     given, it will be matched against the content as a shell glob
     pattern.
 
@@ -333,6 +346,16 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listBlocks(self, dataset="*"):
+    """
+    Retrieve list of Blocks matching a shell glob pattern.
+    Returns a list of DbsFileBlock objects.  If the pattern is
+    given, it will be matched against the content as a shell glob
+    pattern.
+
+    May raise an DbsApiException.
+
+    """
+
     # Invoke Server.
     path = self._path(dataset)
     data = self._server._call ({ 'api' : 'listBlocks', 'path' : path }, 'GET')
@@ -362,7 +385,8 @@ class DbsApi(DbsConfig):
 
   def listFiles(self, dataset, blockName, patternLFN="*"):
     """
-    Retrieve list of runs matching a shell glob pattern.
+    Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
+    or any combinition of dataset, block and or LFN pattern
     Returns a list of DbsParameterSet objects.  If the pattern is
     given, it will be matched against the content as a shell glob
     pattern.

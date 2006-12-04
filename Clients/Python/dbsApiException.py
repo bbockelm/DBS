@@ -43,6 +43,10 @@ class DbsBadRequest(DbsApiException):
   def __init__ (self, **kwargs):
     DbsApiException.__init__(self, **kwargs)
 
+class DbsBadXMLData(DbsApiException):
+  def __init__ (self, **kwargs):
+    DbsApiException.__init__(self, **kwargs)
+
 class DbsBadData(DbsApiException):
   def __init__ (self, **kwargs):
     DbsApiException.__init__(self, **kwargs)

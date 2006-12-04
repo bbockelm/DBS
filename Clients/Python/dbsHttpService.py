@@ -100,78 +100,66 @@ class DbsHttpService:
 
        if type == 'POST':
           result = conn.request(type, request_string, params, headers)  
-          #result = conn.request(type, request_string, xmlinput)  
        else:
           result = conn.request(type, request_string)
 
        response = conn.getresponse() 
  
        # See if HTTP call succeeded 
-       if int(response.status) != 200:
-          raise DbsToolError (args = response.reason)
+       responseCode = int(response.status)
+       if responseCode != 200:
+         statusDetail = "HTTP Call to server failed"
+         #statusDetail = response.read()
+         #statusDetail = response.read().split('<body>')[1].split('</body>')[0].split('description')[1]  
+         exmsg = "HTTP ERROR Status '%s', Status detail: '%s'" % (responseCode, statusDetail)
+         if responseCode == 200: raise DbsBadRequest (args=exmsg, code=responseCode)
+         elif responseCode == 300: raise DbsBadData (args=exmsg, code=responseCode)
+         elif responseCode == 302: raise DbsNoObject (args=exmsg, code=responseCode)
+         elif responseCode == 400: raise DbsExecutionError (args=exmsg, code=responseCode)
+         elif responseCode == 401: raise DbsConnectionError (args=exmsg, code=responseCode)
+         else: raise DbsToolError (args=exmsg, code=responseCode)
  
-       """
-       statusCode = int(response.getheader('Dbs-status-code'))
-       statusMessage = response.getheader('Dbs-status-message')
-       statusDetail = response.getheader('Dbs-status-detail')
-       print "statusCode ", statusCode
-       print "statusMessage ", statusMessage 
-       print "statusDetail ", statusDetail
-       
-       # If there was a server-side error, raise an appropriate exception
-       if statusCode != 100:
-         exmsg = "Status message: '%s', Status detail: '%s'" % (statusMessage, statusDetail)
-	 if statusCode == 200: raise DbsBadRequest (args=exmsg)
-         elif statusCode == 300: raise DbsBadData (args=exmsg)
-         elif statusCode == 301: raise InvalidDataTier (args=exmsg)
-         elif statusCode == 302: raise DbsNoObject (args=exmsg)
-         elif statusCode == 303: raise DbsObjectExists (args=exmsg)
-         elif statusCode == 400: raise DbsExecutionError (args=exmsg)
-         elif statusCode == 401: raise DbsConnectionError (args=exmsg)
-         elif statusCode == 402: raise DbsDatabaseError (args=exmsg)
-         else: raise DbsToolError (args=exmsg)
-       """
-
+       # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       print data
+       #print data
 
        # Error message would arrive in XML, if any
        class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'exception':
              statusCode = attrs['code']
-               
-             """
-             if statusCode == 200: raise DbsBadRequest (args=exmsg)
-             elif statusCode == 300: raise DbsBadData (args=exmsg)
-             elif statusCode == 301: raise InvalidDataTier (args=exmsg)
-             elif statusCode == 302: raise DbsNoObject (args=exmsg)
-             elif statusCode == 303: raise DbsObjectExists (args=exmsg)
-             elif statusCode == 400: raise DbsExecutionError (args=exmsg)
-             elif statusCode == 401: raise DbsConnectionError (args=exmsg)
-             elif statusCode == 402: raise DbsDatabaseError (args=exmsg)
-             else: raise DbsToolError (args=exmsg)
-             """
+             exmsg = "DBS Server Raised An Error: %s, %s" \
+                                 %(attrs['message'], attrs['detail'])
 
-             print "Error Message: " + attrs['message']
-             print "Error Details: " + attrs['detail'] 
-             print "\n\n\n"
+             if (int(statusCode) < 2000 and  int(statusCode) > 1000 ): 
+                raise DbsBadRequest (args=exmsg, code=statusCode)
+
+             if (int(statusCode) < 3000 and  int(statusCode) > 2000 ):
+                raise DbsDatabaseError (args=exmsg, code=statusCode) 
+             
+             if (int(statusCode) < 4000 and  int(statusCode) > 3000 ):
+                raise DbsBadXMLData (args=exmsg, code=statusCode)
+
+             else: raise DbsExecutionError (args=exmsg, code=statusCode)
+  
+             #print "Error Message: " + attrs['message']
+             #print "Error Details: " + attrs['detail'] 
+             #print "\n\n\n"
              # For now I am just raising an exception this must be done with proper codes
-             raise DbsException(args=attrs['detail'])
+             #raise DbsException(args=attrs['detail'], code=statusCode)
 
           if name == 'warning':
              print "Waring Message: " + attrs['message']
              print "Warning Detail: " + attrs['detail']
              print "\n\n\n"
-             #print attrs['detail']
+             #raise DbsObjectExists (args=exmsg)
  
        xml.sax.parseString (data, Handler ())
 
-
        #f = open("out.txt", "w")
        #print "\n\ndata ->>>>>>>>", data
-       if response.getheader ('Content-encoding', '') == 'gzip':
-         data = gzip.GzipFile (fileobj=StringIO(data)).read ()
+       #if response.getheader ('Content-encoding', '') == 'gzip':
+       #  data = gzip.GzipFile (fileobj=StringIO(data)).read ()
        #f.write(data);
        #f.close();
 
@@ -181,8 +169,15 @@ class DbsHttpService:
     except DbsException, ex:
       # One of our own errors, re-raise
       raise ex
-    except Exception, ex:
-      # URL access failed, raise an exception
-      raise DbsToolError (exception=ex)
 
+    except DbsToolError, ex:
+      # One of our own errors, re-raise
+      raise ex
+
+    except Exception, ex:
+      #if ex.get('code', "") == "" :
+      #   raise DbsToolError (exception=ex, code='unknown')
+      #raise DbsException(exception=ex)
+      # URL access failed, raise an exception
+      raise DbsToolError (exception=ex, code='unknown')
 
