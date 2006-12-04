@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.25 $"
- $Id: DBSSql.java,v 1.25 2006/11/28 22:45:34 afaq Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSSql.java,v 1.26 2006/11/29 21:52:53 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -465,7 +465,7 @@ public class DBSSql {
 				"ON perlm.id = pd.LastModifiedBy \n";
 		if(pattern != null) {
 			sql += "WHERE pd.Name like ?\n" +
-				"ORDER BY PRIMARY_NAME";
+				"ORDER BY PRIMARY_NAME DESC";
 		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -546,7 +546,7 @@ public class DBSSql {
 			"and ae.ExecutableName like ? \n" +
 			"and ps.Name like ? \n" +
 			//"ORDER BY path";
-			"ORDER BY id, app_version, app_family_name, app_executable_name, ps_name, data_tier";
+			"ORDER BY id, app_version, app_family_name, app_executable_name, ps_name, data_tier DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		ps.setString(columnIndx++, patternPrim);
@@ -594,7 +594,7 @@ public class DBSSql {
 			"and af.FamilyName like ? \n" +
 			"and ae.ExecutableName like ? \n" +
 			"and ps.Name like ? \n" +
-			"ORDER BY app_family_name, app_executable_name, app_version, ps_name";
+			"ORDER BY app_family_name, app_executable_name, app_version, ps_name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, patternVer);
@@ -629,7 +629,7 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE pdsr.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY run_number";
+		sql +=	"ORDER BY run_number DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
@@ -655,7 +655,7 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE pdst.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY name";
+		sql +=	"ORDER BY name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
@@ -683,7 +683,7 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE b.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY name";
+		sql +=	"ORDER BY name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		ps.setString(columnIndx++, procDSID);
@@ -731,7 +731,7 @@ public class DBSSql {
 		if(blockID != null) {
 			sql += "and f.Block = ? \n";
 		}
-		sql +=	"ORDER BY lfn";
+		sql +=	"ORDER BY lfn DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;

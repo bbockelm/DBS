@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.20 $"
- $Id: DBSTest.java,v 1.20 2006/11/20 22:46:10 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSCLI.java,v 1.1 2006/11/21 23:19:51 sekhri Exp $"
  *
  */
 
@@ -49,7 +49,7 @@ public class DBSCLI {
 									args[i].length()).trim());
 					
 				}
-				printTable(table);
+				//printTable(table);
 				api.call(out, table, user);
 			} catch(Exception ex) {
 				api.writeException(out, "Execution error", "401", ex.getMessage());
