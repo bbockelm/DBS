@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApi.java,v 1.27 2006/12/01 21:05:16 afaq Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApi.java,v 1.28 2006/12/04 15:51:51 afaq Exp $"
  *
 */
 
@@ -112,15 +112,15 @@ public class DBSApi {
 
 		try {
 
-		String apiStr = get(table, "api", true);
-                String apiVersion = get(table, "apiversion", true);
-                System.out.println("apiStr: "+apiStr);
+			out.write(DBSConstants.XML_HEADER); 
+			String apiStr = get(table, "api", true);
+        	        String apiVersion = get(table, "apiversion", true);
+                	System.out.println("apiStr: "+apiStr);
 
-                checkVersion(get(table, "apiversion", true));
+	                checkVersion(get(table, "apiversion", true));
  
-                checkSchemaVersion();
+        	        checkSchemaVersion();
 
-		out.write(DBSConstants.XML_HEADER); 
 
 			conn = getConnection();
 			conn.setAutoCommit(false);
@@ -314,11 +314,20 @@ public class DBSApi {
 	}*/
 
 	private Connection getConnection() throws Exception {
-                DBSConfig config = DBSConfig.getInstance();
-		return DBManagement.getConnection( config.getDbDriver(),
-                                                   config.getDbURL(),
-                                                   config.getDbUserName(),
-                                                   config.getDbUserPasswd());
+		Connection conn = DBManagement.getDBConnManInstance().getConnection();
+		if (conn != null) {
+       			System.out.println("Pooling at work");
+			return conn;
+		} else {
+			System.out.println("Pooling not required for standalone client");
+			DBSConfig config = DBSConfig.getInstance();
+			return DBManagement.getConnection( config.getDbDriver(),
+					config.getDbURL(), 
+					config.getDbUserName(),
+					config.getDbUserPasswd());
+					
+		}
+		
 	}
 	
 	public Hashtable parse(String inputXml, String key) throws Exception {
@@ -408,7 +417,7 @@ public class DBSApi {
 	//The DBSTest client will aslo change and it will take command line arguments which will be converted into hashtable and 
 	// can be used for call method. So the following api calls are useless. They can go away.
 
-	
+	/*
 	public void listPrimaryDatasets(Writer out, String pattern) throws Exception {
 		Hashtable table = new Hashtable();
 		put(table, "api", "listPrimaryDataset");
@@ -591,7 +600,7 @@ public class DBSApi {
 		put(table, "inputxml", inputXml);
 		call(out, table, dbsUser);
 	}
-	
+	*/
 	private void put(Hashtable table, String key, String value) {
 		if(isNull(value)) table.put(key, "");
 		else table.put(key, value);

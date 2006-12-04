@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.6 $"
- $Id: DBManagement.java,v 1.6 2006/11/28 19:41:37 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBManagement.java,v 1.7 2006/12/01 18:47:42 sekhri Exp $"
 
  *
  */
@@ -14,9 +14,42 @@ import java.sql.ResultSet;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import javax.sql.DataSource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
 import db.PreparedStatementWrapper;
 
 public class DBManagement{
+	private static DBManagement instance = null;
+	private static Boolean mutex = new Boolean(true);
+	private DataSource ds = null;
+	
+	public static DBManagement getDBConnManInstance() throws Exception {
+		if( instance != null) return instance;
+		synchronized(mutex) {
+			if( instance != null ) return instance;
+			DBManagement dbm = new DBManagement();
+			instance = dbm;
+		}
+		return instance;
+	}
+	
+	private DBManagement() throws Exception {
+		//get DNS name from configuration file that ANZAR is working on
+		try {
+			if ( (ds = (DataSource)(((Context)((new InitialContext()).lookup("java:/comp/env"))).lookup("jdbc/dbs"))) == null ) {
+				throw new SQLException("Datasource cound not be initialized. Connection pooling failed.");
+			}
+		} catch(javax.naming.NoInitialContextException e) {
+			System.out.println("This must be a standalone client");
+		}
+	}
+
+	public Connection getConnection() throws Exception {
+		if(ds == null) return null;
+		return ds.getConnection();
+	}
 
 	public static Connection getConnection(String driver,String url,String userId,String password) throws Exception {
 		Class.forName(driver);
