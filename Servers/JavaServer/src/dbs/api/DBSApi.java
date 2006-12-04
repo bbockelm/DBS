@@ -1,6 +1,6 @@
 /**
- $Revision: 1.28 $"
- $Id: DBSApi.java,v 1.28 2006/12/04 15:51:51 afaq Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSApi.java,v 1.29 2006/12/04 19:02:23 sekhri Exp $"
  *
 */
 
@@ -75,7 +75,7 @@ public class DBSApi {
 			} 
 			String suppSchemaVer = supportedSchemaVersions();
 			if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
-				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, Server works with " + suppSchemaVer + " Current schema version is :" + dbsSchemaVersion); 
+				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, $DBS_CONFIG Version is " + suppSchemaVer + " Current schema version in DB is :" + dbsSchemaVersion); 
 			}
 		} finally {
 			if(conn != null) conn.close();
