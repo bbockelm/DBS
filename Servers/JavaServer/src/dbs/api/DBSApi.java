@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApi.java,v 1.26 2006/12/01 19:14:40 sekhri Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApi.java,v 1.27 2006/12/01 21:05:16 afaq Exp $"
  *
 */
 
@@ -29,17 +29,26 @@ public class DBSApi {
 	 */
 	private DBSApiLogic api;
 	
-       public Vector supportedClientApiVersions() {
+        public Vector supportedClientApiVersions() throws Exception {
 		//FIXME ASK Anzar  to use some conventions in declaing vaiables.
+                DBSConfig config = DBSConfig.getInstance();
+                String clientVers = config.getSupportedClientVersions(); 
+                String[] result = clientVers.split(","); 
+                //String[] result = clientVers.split("\\s"); 
+                //FIXME Turning array into a verstor is just something not required, fix this later 
 		Vector supported_version_list  = new Vector();
-		supported_version_list.add("v00_00_01");
-		supported_version_list.add("v00_00_02");
+                for (int x=0; x<result.length; x++) {
+                    supported_version_list.add(result[x].trim());
+                }
 		return supported_version_list;
 
         }
 
-	public String supportedSchemaVersions() {
-		return "v00_00_02";
+	public String supportedSchemaVersions() throws Exception {
+               //Get Schema Version from DBSConfig
+               DBSConfig config = DBSConfig.getInstance();
+               String suppSchemaVer = config.getSupportedSchemaVersion();
+	       return suppSchemaVer;
 	}
 
         //This func must move to Utility
@@ -64,10 +73,7 @@ public class DBSApi {
 			} else {
 				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
-                        //Get Schema Version for DBSConfig
-                        DBSConfig config = DBSConfig.getInstance();
-                        String suppSchemaVer = config.getSupportedSchemaVersion();
-			//String suppSchemaVer = supportedSchemaVersions();
+			String suppSchemaVer = supportedSchemaVersions();
 			if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
 				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, Server works with " + suppSchemaVer + " Current schema version is :" + dbsSchemaVersion); 
 			}
@@ -308,7 +314,11 @@ public class DBSApi {
 	}*/
 
 	private Connection getConnection() throws Exception {
-		return DBManagement.getConnection(DBSConstants.DRIVER ,DBSConstants.URL ,DBSConstants.USERID ,DBSConstants.PASSWORD);
+                DBSConfig config = DBSConfig.getInstance();
+		return DBManagement.getConnection( config.getDbDriver(),
+                                                   config.getDbURL(),
+                                                   config.getDbUserName(),
+                                                   config.getDbUserPasswd());
 	}
 	
 	public Hashtable parse(String inputXml, String key) throws Exception {
