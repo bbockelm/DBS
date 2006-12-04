@@ -27,12 +27,10 @@ try:
   except DbsDatabaseError,e:
    print e
   
-except InvalidDataTier, ex:
-  print "Caught InvalidDataTier API exception: %s" % (ex.getErrorMessage())
 except DbsApiException, ex:
-  print "Caught API exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
-except DbsException, ex:
-  print "Caught exception %s: %s" % (ex.getClassName(), ex.getErrorMessage())
+  print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+  if ex.getErrorCode() not in (None, ""):
+    print "DBS Exception Error Code: ", ex.getErrorCode()
 
 print "Done"
 

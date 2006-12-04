@@ -37,8 +37,11 @@ print "Creating an algorithm %s" % algo
 try:
     api.insertAlgorithm (algo)
     print "Result: %s" % algo
-except DbsObjectExists, ex:
-    print "Object existed already, passing"
+
+except DbsApiException, ex:
+  print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+  if ex.getErrorCode() not in (None, ""):
+    print "DBS Exception Error Code: ", ex.getErrorCode()
 
 print "Done"
 

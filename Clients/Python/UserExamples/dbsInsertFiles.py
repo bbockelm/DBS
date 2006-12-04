@@ -112,8 +112,11 @@ print "Inserting files in processDS %s" % proc
 try:
     api.insertFiles (proc, [myfile1, myfile2], block)
     print "Result: %s" % proc
-except DbsObjectExists, ex:
-    print "Object existed already, passing"
+
+except DbsApiException, ex:
+  print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+  if ex.getErrorCode() not in (None, ""):
+    print "DBS Exception Error Code: ", ex.getErrorCode()
 
 
 print "Done"

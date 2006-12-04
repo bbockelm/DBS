@@ -52,8 +52,10 @@ try:
     #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002")
     api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002/", "/this/hahah#12345")
     print "Result: %s" % primary
-except DbsObjectExists, ex:
-    print "Object existed already, passing"
+except DbsApiException, ex:
+  print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+  if ex.getErrorCode() not in (None, ""):
+    print "DBS Exception Error Code: ", ex.getErrorCode()
 
 
 print "Done"

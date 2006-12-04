@@ -24,9 +24,11 @@ print "Creating primary dataset %s" % primary
 try:
     api.insertPrimaryDataset (primary)
     print "Result: %s" % primary
-except DbsObjectExists, ex:
-    print "Object existed already, passing"
 
+except DbsApiException, ex:
+  print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+  if ex.getErrorCode() not in (None, ""):
+    print "DBS Exception Error Code: ", ex.getErrorCode()
 
 print "Done"
 
