@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApi.java,v 1.29 2006/12/04 19:02:23 sekhri Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSApi.java,v 1.30 2006/12/04 22:47:48 afaq Exp $"
  *
 */
 
@@ -65,7 +65,7 @@ public class DBSApi {
 		Connection conn =  getConnection();
 		try {
 			String sql = "select SchemaVersion from SchemaVersion";
-			System.out.println(sql);
+			DBSUtil.writeLog(sql);
 			ResultSet rs =  DBSSql.getSchemaVersion(conn).executeQuery();
 			String dbsSchemaVersion="";
 			if(rs.next()) {
@@ -115,7 +115,7 @@ public class DBSApi {
 			out.write(DBSConstants.XML_HEADER); 
 			String apiStr = get(table, "api", true);
         	        String apiVersion = get(table, "apiversion", true);
-                	System.out.println("apiStr: "+apiStr);
+                	DBSUtil.writeLog("apiStr: "+apiStr);
 
 	                checkVersion(get(table, "apiversion", true));
  
@@ -316,10 +316,10 @@ public class DBSApi {
 	private Connection getConnection() throws Exception {
 		Connection conn = DBManagement.getDBConnManInstance().getConnection();
 		if (conn != null) {
-       			System.out.println("Pooling at work");
+       			DBSUtil.writeLog("Pooling at work");
 			return conn;
 		} else {
-			System.out.println("Pooling not required for standalone client");
+			DBSUtil.writeLog("Pooling not required for standalone client");
 			DBSConfig config = DBSConfig.getInstance();
 			return DBManagement.getConnection( config.getDbDriver(),
 					config.getDbURL(), 
@@ -340,7 +340,6 @@ public class DBSApi {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
 			if (name.equals(key) ) {
-				//System.out.println("Found a " + key + " : " + name);  
 				table = e.attributes;
 			} 
 		}
@@ -356,7 +355,6 @@ public class DBSApi {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
 			if (name.equals("processed-dataset") ) {
-				//System.out.println("Found a processed-dataset: " + name);  
 				psDS = e.attributes;
 				psDS.put("data_tier", new Vector());
 				psDS.put("parent", new Vector());
@@ -371,7 +369,6 @@ public class DBSApi {
 				((Vector)(psDS.get("algorithm"))).add(e.attributes);
 			if (name.equals("run") ) 
 				((Vector)(psDS.get("run"))).add(e.attributes);
-				//System.out.println("Algorithm hashtable "+ (e.attributes).toString());
 		}
 		return psDS;
 	}
@@ -387,7 +384,6 @@ public class DBSApi {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
 			if (name.equals("file") ) {
-				//System.out.println("Found a file: " + name);  
 				Hashtable file = e.attributes;
 				file.put("lumi_section", new Vector());
 				file.put("data_tier", new Vector());
