@@ -6,7 +6,7 @@ fi
 savePWD=$PWD
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 cd $BASE/lib
-CLASSPATH=.:$PWD/ojdbc14_g.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
+CLASSPATH=.:$PWD/ojdbc14_g.jar:$PWD/mysql-connector-java-5.0.3-bin.jar:$PWD/servlet-api.jar:$JAVA_HOME/jre/lib/rt.jar
 cd $BASE/src
 		
 javadoc -d ../doc -windowtitle "DBS API Documenation"  -header '<a name="Data_Set_Bookeeping_System"></a> <font size=5 color=#ff0000><b>Data Set Bookeeping System</b></font><br><p /> 
