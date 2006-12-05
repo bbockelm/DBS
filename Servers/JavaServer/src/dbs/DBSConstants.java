@@ -1,19 +1,18 @@
 /**
  * 
- $Revision: 1.13 $"
- $Id: DBSConstants.java,v 1.13 2006/12/04 15:24:30 afaq Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSConstants.java,v 1.14 2006/12/05 15:56:37 afaq Exp $"
  *
 */
 package dbs;
+
+/**
+* A class that stores static DBS constants will be used througout by the DBS API code
+* @author sekhri
+*/
 public class DBSConstants {
-	/**
-	 * 
-	 */
         //Specify the Global debug flag, if set to True DEBUG Messages wil be displayed. 
         public static boolean DEBUG = true;
-
-
-		
 	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
 	public static String XML_FOOTER = "</dbs>\n";
 	public static String XML_EXCEPTION_HEADER = "<exception>\n";

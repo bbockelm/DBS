@@ -9,7 +9,6 @@ package dbs;
 * 2) Exception code contains the numeric value of the exception type. <br>
 * 3) Exception detail contains the verbose information of the exception. <br>
 * @author sekhri
-*
 */
 public class DBSException extends Exception{
 	private String code;
