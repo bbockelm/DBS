@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.1 $"
- $Id: DBSConfig.java,v 1.1 2006/12/01 21:05:17 afaq Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSConfig.java,v 1.2 2006/12/04 22:51:10 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -24,6 +24,7 @@ import java.lang.CloneNotSupportedException;
 import java.util.Hashtable;
 import java.util.Vector;
 import dbs.DBSException;
+import dbs.util.DBSUtil;
 
 public class DBSConfig {
 
@@ -107,12 +108,13 @@ public class DBSConfig {
                       throw new DBSException("Configuration Error", "1057", "Supported CLIENT_VERSIONS not found in Config File");
                     }
 
-                    System.out.println(dbUserName);
-                    System.out.println(dbUserPasswd);
-                    System.out.println(dbDriver);
-                    System.out.println(dbURL);
-                    System.out.println(supportedSchemaVersion);
-                    System.out.println(supportedClientVersions);
+                    DBSUtil.writeLog("dbUserName: "+dbUserName); 
+                    DBSUtil.writeLog("dbUserName: "+dbUserName);
+                    DBSUtil.writeLog("dbUserPasswd: "+dbUserPasswd);
+                    DBSUtil.writeLog("dbDriver: "+dbDriver);
+                    DBSUtil.writeLog("dbURL: "+dbURL);
+                    DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);
+                    DBSUtil.writeLog("supportedClientVersions: "+supportedClientVersions);
 
                 } catch (IOException ex) {
                   throw new DBSException("Configuration Error", "1051","Unable to read configuration file dbs.config "+
