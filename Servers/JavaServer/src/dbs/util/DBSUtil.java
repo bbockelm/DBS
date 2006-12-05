@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.6 $"
- $Id: DBSXMLParser.java,v 1.6 2006/11/30 16:29:37 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSUtil.java,v 1.4 2006/12/01 21:05:17 afaq Exp $"
  *
 */
 
@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-//import dbs.DBSConstants;
+import dbs.DBSConstants;
 import java.io.Writer;
 
 /**
@@ -86,6 +86,12 @@ public class DBSUtil {
 		}
 		return false;
 	}
+
+        public static void writeLog(String logText) {
+                if (DBSConstants.DEBUG) {
+                          System.out.println(logText);
+                }
+        }
 
 
 }
