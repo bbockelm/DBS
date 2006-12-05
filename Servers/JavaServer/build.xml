@@ -23,7 +23,7 @@
 
     <target name="compile" depends="clean, copy-resources">
       <javac srcdir="${sourcedir}"
-             destdir="${targetdir}"
+	      destdir="${targetdir}"
              classpathref="libraries"/>
     </target>
 

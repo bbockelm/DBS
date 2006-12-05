@@ -22,28 +22,40 @@ import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.Map;
 
+
 /**
- * PreparedStatementWrapper
- * @version $Rev$
- */
+* A wrapper around <code>java.sql.PreparedStatement<code> class that can store the bind variables and can regenerate the SQL query.
+* @author sekhri
+*/
 public class PreparedStatementWrapper implements PreparedStatement {
 
 	private PreparedStatement embedded;
 	private Connection conn;
 	private String sql;
 	private Map bindParams;
-    
+ 
+	/**
+	* Constructs a PreparedStatementWrapper object that inherits from <code>java.sql.PreparedStatement</code>. This constructor initializes a private <code>java.sql.PreparedStatement, java.sql.Connection, java.util.TreeMap</code> that stores bind variables and <code>java.lang.String</code> that store the sql query.
+	*/
 	PreparedStatementWrapper(PreparedStatement ps, Connection c, String s) {
 		embedded = ps;
 		conn = c;
 		sql = s;
 		bindParams = new TreeMap();
 	}
-
+	
+	/**
+	 * A method that simply calls private method toString(String sql) with stored sql query in private variable sql.
+	 * @return a <code>java.lang.String</code>  that conatins the SQL query that is executed by the driver
+	 */
 	public String toString() {
 		return toString(sql);
 	}
 
+	/**
+	 * A method that convert the bind variable into a well formed printable query. The format of the printable query can be user defined and be changed.
+	 * @return a <code>java.lang.String</code>  that conatins the SQL query that is executed by the driver
+	 */
 	private String toString(String sql) {
 		String logStr = sql;
 		int i = 1;

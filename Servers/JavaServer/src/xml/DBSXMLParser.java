@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.6 $"
- $Id: DBSXMLParser.java,v 1.6 2006/11/30 16:29:37 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSXMLParser.java,v 1.7 2006/12/01 18:47:43 sekhri Exp $"
 *
 */
 
@@ -19,82 +19,56 @@ import java.util.Vector;
 import java.util.Hashtable;
 import dbs.util.DBSUtil;
 
+/**
+* A class that inherits from <code>org.xml.sax.helpers.DefaultHandler</code> and is used for XML parsing . This class is not used to generate any XML, rather it is used to only parse the xml and returns the contents in a <code>java.util.Vector</code> of <code>xml.Element</code> that store the key value pairs or <code>java.util.Hashtable</code> of key value pairs. 
+* @author sekhri
+*
+*/
 public class DBSXMLParser extends DefaultHandler {
 
-	public Vector elements;
+	private Vector elements;
 
+	/**
+	* Constructs a DBSXMLParser object that inherits from <code>org.xml.sax.helpers.DefaultHandler</code>. This constructor initializes a private <code>java.util.Vector</code> that will be used to store the <code>java.util.Vector</code> of <code>xml.Element</code> after parsing.
+	*/
 	public DBSXMLParser() {
 	        super();
 		elements = new Vector();
 	}
 
+	/**
+	* Returns a <code>java.util.Vector</code> of <code>xml.Element</code> . 
+	* @return 
+	* a <code>java.util.Vector</code> of <code>xml.Element</code> that contains key value pairs or <code>java.util.Hashtable</code> of key value pairs.
+	*/
 	public Vector getElements() {
 		return(elements);
 	}
 
-	public void startDocument () throws SAXException {
-		// Write your application specific logic
-	}
-
-	public void endDocument() throws SAXException {
-		// Write your application specific logic
-	}
-
+	/**
+	 * Receive notification of the start of an element when parsing beguns. This method takes in th avules returned by the standard SAX parser and stores it in a <code>java.util.Vector</code> of  <code>xml.Element</code>
+	 * @param uri 
+	 * @param localName The local name (without prefix), or the empty <code>java.lang.String</code> if Namespace processing is not being performed.
+	 * @param qName The qualified name (with prefix), or the empty <code>java.lang.String</code> if qualified names are not available.
+	 * @param attributes The specified or defaulted attributes.
+	 * @throws SAXException - Any SAX exception, possibly wrapping another exception.
+	 */
 	public void startElement (String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		// Write your application specific logic
-		//System.out.println("StartElement"); 
-		//System.out.println("URI :"+uri);
-		//System.out.println("localName:"+localName);
-		//System.out.println("qName: >>>>>>>>>>>>>>>>>>>>>"+qName);
 		Element newElement = new Element(qName); 
-		//newElement.value = "Test";
 		for (int i=0; i< attributes.getLength();++i){
 			//System.out.println("attribute:"+attributes.getQName(i)+" value: "+attributes.getValue(i));
-			 newElement.value = "dbsTest";
+			newElement.value = "dbsTest";
 			newElement.attributes.put(attributes.getQName(i), attributes.getValue(i)); 
 		}
 		elements.add(newElement);
 	 }
 
-	public void endElement (String uri, String localName, String qName) throws SAXException  {
-		//System.out.println("qName:<<<<<<<<<<<<<<<<<<<"+qName);
-	}
-
-	public void characters (char ch[], int start, int length) throws SAXException {
-		//System.out.println("characters");
-		// your application specific logic
-
-		String value="";
-		//System.out.print("Characters: ");
-		for (int i = start; i < start + length; i++) {
-			//System.out.print(ch[i]);
-			switch (ch[i]) {
-				case '\\':
-					//System.out.print("\\\\");
-					break;
-				case '"':
-					//System.out.print("\\\"");
-					break;
-				case '\n':
-					//System.out.print("\\n");
-					break;
-				case '\r':
-					//System.out.print("\\r");
-					break;
-				case '\t':
-					//System.out.print("\\t");
-					break;
-				default:
-				//System.out.print(ch[i]);
-					value=value+ch[i];	
-					break;
-			}
-		}
-		//System.out.println("Value:"+value);       
-	}
-
-	//Parse a String
-	public void parseString(String xmlcontent) throws Exception {
+	/**
+	 * A public method of this class used to start the parsing of xmlcontent that is passed as a <code>java.lang.String</code> parameter. After the parsing of this <code>java.lang.String</code> is done, the results are stored in a <code>java.util.Vector</code> of <code>xml.Element</code> that contains key value pairs or <code>java.util.Hashtable</code> of key value pairs. That vector can be retrived by calling getElements method os this class.
+	 * @param xmlcontent The xml <code>java.lang.String</code> to be parsed by this class.
+	 * @throws XMLException - Any SAX exception is wrapped in XMLException with proper code and detail.
+	 */
+	public void parseString(String xmlcontent) throws XMLException {
 		if (DBSUtil.isNull(xmlcontent)) 
 			throw new XMLException("Missing data", "3000", "Null Fields. Expected a valid inputxml in XML format.");
 		StringReader reader = null;
@@ -110,16 +84,23 @@ public class DBSXMLParser extends DefaultHandler {
 			if (reader != null) reader.close();
 		}
 
-		//saxParser.parse(newFile,new DefaultHandlerImpl());
 	}
 
-	//Parse a file
-	public void parseFile(String fileName) throws Exception {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser saxParser = factory.newSAXParser();
-		File newFile = new File(fileName);
-		saxParser.parse(newFile, this);
-		//saxParser.parse(newFile,new DefaultHandlerImpl());
+	/**
+	 * A public method of this class used to start the parsing of a xml <code>java.io.File</code> that is passed as a <code>java.lang.String</code> parameter. After the parsing of this <code>java.io.File</code> is done, the results are stored in a <code>java.util.Vector</code> of <code>xml.Element</code> that contains key value pairs or <code>java.util.Hashtable</code> of key value pairs. That vector can be retrived by calling getElements method os this class.
+	 * @param fileName The name of the file thats contents to be parsed in <code>java.lang.String</code> by this class.
+	 * @throws XMLException - Any SAX exception is wrapped in XMLException with proper code and detail.
+	 */
+	public void parseFile(String fileName) throws XMLException {
+		try {
+			File newFile = new File(fileName);
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(newFile, this);
+		} catch (Exception e) {
+			throw new XMLException("XML parse exception", "3001", "Cannot parse xml file. Expected a valid xml file in XML format. Exception from parser : " + e.getMessage() );
+		}
+
 	}
 
 	public static void main(String args[]){

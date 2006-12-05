@@ -4,7 +4,7 @@
 package dbs;
 
 /**
-* A thin wrapper around <code>java.lang.Exception</code> that allows to store exception information divided among three different variables.<br> 
+* A thin wrapper around <code>java.lang.Exception</code> that allows to store exception information divided among three different variables. This type of exception is raised when any business rule for the API fails.<br> 
 * 1) Exception message contains the brief message of the type of exception. <br>
 * 2) Exception code contains the numeric value of the exception type. <br>
 * 3) Exception detail contains the verbose information of the exception. <br>
