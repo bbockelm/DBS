@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.26 $"
- $Id: DBSSql.java,v 1.26 2006/11/29 21:52:53 afaq Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSSql.java,v 1.27 2006/12/04 19:30:23 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -24,7 +24,7 @@ public class DBSSql {
 
 		String sql = "SELECT SchemaVersion FROM SchemaVersion";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
 
@@ -43,7 +43,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, value);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -65,7 +65,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, value2);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -100,7 +100,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, typeID);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -137,7 +137,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, endOfRun);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -173,7 +173,7 @@ public class DBSSql {
                 //mind the INDEX
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -207,7 +207,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, lEndTime);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 		       
@@ -232,7 +232,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, contactInfo);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -268,7 +268,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, content);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 				       
@@ -296,7 +296,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, psID);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -332,7 +332,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, statusID);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -354,7 +354,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, conID);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -365,8 +365,7 @@ public class DBSSql {
 	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) throws SQLException {
 	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatus, String type, String valStatus, String qMetaData, String userID) throws SQLException {
 
-
-		System.out.println("SERIOUS WARNING:: Validation Status Table is not in Schema, check that again");
+                DBSUtil.writeLog("\n\nSERIOUS WARNING:: Validation Status Table is not in Schema, check that again\n\n");
 
 		String sql = "INSERT INTO Files ( \n" +
 					"LogicalFileName, \n" +
@@ -406,7 +405,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, qMetaData);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	
@@ -421,7 +420,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, blockID);
 		ps.setString(columnIndx++, blockID);
 		ps.setString(columnIndx++, blockID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	// ____________________________________________________
@@ -470,7 +469,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, pattern);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -556,7 +555,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, patternFam);
 		ps.setString(columnIndx++, patternExe);
 		ps.setString(columnIndx++, patternPS);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -601,7 +600,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, patternFam);
 		ps.setString(columnIndx++, patternExe);
 		ps.setString(columnIndx++, patternPS);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -633,7 +632,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -659,7 +658,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -687,7 +686,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		ps.setString(columnIndx++, procDSID);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -744,7 +743,7 @@ public class DBSSql {
 			ps.setString(columnIndx++, blockID);
 
 		}
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -756,7 +755,7 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, value);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		//return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
 		return ps;
 	}
@@ -770,7 +769,7 @@ public class DBSSql {
                 int columnIndx = 1;
 		ps.setString(columnIndx++, value1);
 		ps.setString(columnIndx++, value2);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
@@ -793,7 +792,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, prim);
 		ps.setString(columnIndx++, dt);
 		ps.setString(columnIndx++, proc);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -819,176 +818,12 @@ public class DBSSql {
 		ps.setString(columnIndx++, fam);
 		ps.setString(columnIndx++, exe);
 		ps.setString(columnIndx++, psName);
-		System.out.println("\n\n" + ps + "\n\n");
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
 
 	/*
-	public static PreparedStatement getAppVersionID(Connection conn, String version) throws SQLException {
-		String sql = getID("AppVersion", "Version", version);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-	
-	public static PreparedStatement getAppExecutableID(Connection conn, String exe) throws SQLException {
-		String sql = getID("AppExecutable", "ExecutableName", exe);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-	
-	public static PreparedStatement getAppFamilyID(Connection conn, String family) throws SQLException {
-		String sql = getID("AppFamily", "FamilyName", family);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getParameterSetID(Connection conn, String psName) throws SQLException {
-		String sql = getID("QueryableParameterSet", "Name", psName);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getPersonID(Connection conn, String userDN) throws SQLException {
-		String sql = getID("Person", "DistinguishedName", userDN);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getBlockID(Connection conn, String blockName) throws SQLException {
-		String sql = getID("Block", "Name", blockName);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getDataTierID(Connection conn, String tierName) throws SQLException {
-		String sql = getID("DataTier", "Name", tierName);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getLumiSectionID(Connection conn, String lsNumber) throws SQLException {
-		String sql = getID("LumiSection", "LumiSectionNumber", lsNumber);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getFileID(Connection conn, String lfn) throws SQLException {
-		String sql = getID("Files", "LogicalFileName", lfn);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getStatusID(Connection conn, String status) throws SQLException {
-		String sql = getID("Status", "Status", status);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement getTypeID(Connection conn, String type) throws SQLException {
-		String sql = getID("Type", "Type", type);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement insertFileTier(Connection conn, String fileID, String tierID, String userID) throws SQLException {
-		String sql = "INSERT INTO FileTier ( \n" +
-					"Fileid, \n" +
-				        "DataTier, \n" +
-					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"'" + fileID + "', \n" +
-					"'" + tierID + "' , \n" +
-					"'" + userID + "', \n" +
-					"'" + userID + "' \n" +
-				") \n";
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement insertFileLumi(Connection conn, String fileID, String lumiID, String userID) throws SQLException {
-		String sql = "INSERT INTO FileLumi ( \n" +
-					"Fileid, \n" +
-				        "Lumi, \n" +
-					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"'" + fileID + "', \n" +
-					"'" + lumiID + "' , \n" +
-					"'" + userID + "', \n" +
-					"'" + userID + "' \n" +
-				") \n";
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-	
-	public static PreparedStatement insertFileAlgo(Connection conn, String fileID, String appID, String userID) throws SQLException {
-		String sql = "INSERT INTO FileAlgoMap ( \n" +
-					"Fileid, \n" +
-				        "Algorithm, \n" +
-					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"'" + fileID + "', \n" +
-					"'" + appID + "' , \n" +
-					"'" + userID + "', \n" +
-					"'" + userID + "' \n" +
-				") \n";
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement insertFileParentage(Connection conn, String fileID, String parentID, String userID) throws SQLException {
-		String sql = "INSERT INTO FileParentage ( \n" +
-					"ThisFile, \n" +
-				        "itsParent, \n" +
-					"CreatedBy, \n" +
-			        	"CreationDate, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"'" + fileID + "', \n" +
-					"'" + parentID + "' , \n" +
-					"'" + userID + "', \n" +
-					"'" + userID + "' \n" +
-				") \n";
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-	public static PreparedStatement insertStatus(Connection conn, String status, String userID) throws SQLException {
-		String sql = insertName("Status", "Status", status, userID);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement insertType(Connection conn, String type, String userID) throws SQLException {
-		String sql = insertName("Type", "Type", type, userID);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-
-	// SQL for inserting Application and its related tables.
-	// ____________________________________________________
-        public static String insertAppVersion(Connection conn, String version, String userID) throws SQLException {
-		String sql = insertName("AppVersion", "Version", version, userID);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement insertAppFamily(Connection conn, String family, String userID) throws SQLException {
-		String sql = insertName("AppFamily", "FamilyName", family, userID);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement insertAppExecutable(Connection conn, String exe, String userID) throws SQLException {
-		String sql = insertName("AppExecutable", "ExecutableName", exe, userID);
-		System.out.println("\n\n" + ps + "\n\n");
-		return ps;
 	}*/
 
 	
