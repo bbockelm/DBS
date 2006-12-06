@@ -1,6 +1,6 @@
 /**
- $Revision: 1.30 $"
- $Id: DBSApi.java,v 1.30 2006/12/04 22:47:48 afaq Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApi.java,v 1.31 2006/12/05 16:10:00 afaq Exp $"
  *
 */
 
@@ -188,7 +188,12 @@ public class DBSApi {
 			} else if (apiStr.equals("insertProcessedDataset")) {
 				api.insertProcessedDataset(conn, out,  parsePD(getXml(table)), dbsUser);
 				
-			} else if (apiStr.equals("insertBlock")) {
+			} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
+                                api.createAnalysisDatasetFromPD(conn, out,
+                                                parse(getXml(table), "analysis-dataset"),
+                                                dbsUser);
+
+                        }else if (apiStr.equals("insertBlock")) {
 				api.insertBlock(conn, out,
 						parse(getXml(table), "block") , 
 						dbsUser);
@@ -407,196 +412,7 @@ public class DBSApi {
 		api.insertFiles(conn, out, DBSUtil.get(psDS, "path"), DBSUtil.get(psDS, "block_name"), topLevel, dbsUser);
 	}
 
-
 	
-	//All these api call are un necessary . The client can dierecly use the call method in this class. 
-	//The DBSTest client will aslo change and it will take command line arguments which will be converted into hashtable and 
-	// can be used for call method. So the following api calls are useless. They can go away.
-
-	/*
-	public void listPrimaryDatasets(Writer out, String pattern) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "listPrimaryDataset");
-		put(table, "pattern", pattern);
-		call(out, table, null);
-	}
-	
-	public void listProcessedDatasets(Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "listProcessedDatasets");
-		put(table, "primary_datatset_name_pattern", patternPrim);
-		put(table, "data_tier_name_pattern", patternDT);
-		put(table, "processed_datatset_name_pattern", patternProc);
-		put(table, "app_version", patternVer);
-		put(table, "app_family_name", patternFam);
-		put(table, "app_executable_name", patternExe);
-		put(table, "parameterset_name", patternPS);
-		call(out, table, null);
-	}
-
-	public void listAlgorithms(Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {	
-		Hashtable table = new Hashtable();
-		put(table, "api", "listAlgorithms");
-		put(table, "app_version", patternVer);
-		put(table, "app_family_name", patternFam);
-		put(table, "app_executable_name", patternExe);
-		put(table, "parameterset_name", patternPS);
-		call(out, table, null);
-	}
-
-	public void listRuns(Writer out, String path) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "listRuns");
-		put(table, "path", path);
-		call(out, table, null);
-	}
-
-	
-	public void listTiers(Writer out, String path) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "listTiers");
-		put(table, "path", path);
-		call(out, table, null);
-	}
-
-	public void listBlocks(Writer out, String path) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "listBlocks");
-		put(table, "path", path);
-		call(out, table, null);
-	}
-
-	public void listFiles(Writer out, String path, String blockName, String patternLFN) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "listFiles");
-		put(table, "path", path);
-		put(table, "block_name", blockName);
-		put(table, "pattern_lfn", patternLFN);
-		call(out, table, null);
-	}
-
-        public void insertPrimaryDataset(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertPrimaryDataset");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-		
-        }
-	
-	public void insertAlgorithm(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertAlgorithm");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-
-	public void insertRun(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertRun");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-
-	public void insertBlock(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertBlock");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-
-        public void insertLumiSection(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertLumiSection");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-        }
-
-	public void insertTier(Writer out, String tierName, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertTier");
-		put(table, "tier_name", tierName);
-		call(out, table, dbsUser);
-	}
-
-	public void insertTierInPD(Writer out, String path, String tierName, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertTierInPD");
-		put(table, "path", path);
-		put(table, "tier_name", tierName);
-		call(out, table, dbsUser);
-	}
-	
-	public void insertParentInPD(Writer out, String path, String parentPath, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertParentInPD");
-		put(table, "path", path);
-		put(table, "parent_path", parentPath);
-		call(out, table, dbsUser);
-	}
-
-	public void insertAlgoInPD(Writer out, String path, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertAlgoInPD");
-		put(table, "path", path);
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-
-	public void insertRunInPD(Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertRunInPD");
-		put(table, "path", path);
-		put(table, "run_number", runNumber);
-		call(out, table, dbsUser);
-	}
-
-
-	public void insertTierInFile(Writer out, String lfn, String tierName, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertTierInFile");
-		put(table, "lfn", lfn);
-		put(table, "tier_name", tierName);
-		call(out, table, dbsUser);
-	}
-
-	public void insertParentInFile(Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertParentInFile");
-		put(table, "lfn", lfn);
-		put(table, "parent_lfn", parentLFN);
-		call(out, table, dbsUser);
-	}
-
-	public void insertAlgoInFile(Writer out, String lfn, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertAlgoInFile");
-		put(table, "lfn", lfn);
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-
-	public void insertLumiInFile(Writer out, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertLumiInFile");
-		put(table, "lfn", lfn);
-		put(table, "ls_number", lsNumber);
-		call(out, table, dbsUser);
-	}
-
-	public void insertFiles(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertFiles");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-
-	public void insertProcessedDataset(Writer out, String inputXml, Hashtable dbsUser) throws Exception {
-		Hashtable table = new Hashtable();
-		put(table, "api", "insertProcessedDataset");
-		put(table, "inputxml", inputXml);
-		call(out, table, dbsUser);
-	}
-	*/
 	private void put(Hashtable table, String key, String value) {
 		if(isNull(value)) table.put(key, "");
 		else table.put(key, value);
@@ -606,13 +422,5 @@ public class DBSApi {
 	private boolean isNull(String pattern) {
 		return DBSUtil.isNull(pattern);
 	}
-		
 	
-	/*private void checkXML(String xml) throws Exception {
-		if(isNull(xml))
-			throw new DBSException("Bad Data", "300", "Null Fields. Expected a xmlInput in XML format");
-	}
-
-*/
-
 }

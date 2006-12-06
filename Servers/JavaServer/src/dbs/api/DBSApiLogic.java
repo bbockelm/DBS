@@ -1,6 +1,6 @@
 /**
- $Revision: 1.38 $"
- $Id: DBSApiLogic.java,v 1.38 2006/12/01 18:47:43 sekhri Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSApiLogic.java,v 1.39 2006/12/01 21:05:16 afaq Exp $"
  *
  */
 
@@ -34,7 +34,6 @@ public class DBSApiLogic {
 	//private static String VALID_PATTERN = "^/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)";
 
 	public DBSApiLogic() {
-		//System.out.println("Constructor DBSApiLogic");
 	}
 
 	
@@ -166,7 +165,6 @@ public class DBSApiLogic {
 		String patternExe	= getPattern(pattern, "app_executable_name", 3);
 		String patternPS 	= getPattern(pattern, "parameterset_name", 4);*/
 	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
-		System.out.println("Inside liet algo");
 		//name should be changed to hash
 		patternVer	= getPattern(patternVer, "app_version");
 		patternFam	= getPattern(patternFam, "app_family_name");
@@ -734,7 +732,79 @@ public class DBSApiLogic {
 
 	}
 
-	
+         public void createAnalysisDatasetFromPD(Connection conn, Writer out, Hashtable analysisDataset, Hashtable dbsUser) 
+         throws Exception { 
+
+                String path = get(analysisDataset, "path"); 
+                String annotation = get(analysisDataset, "annotation", true);
+                String name = get(analysisDataset, "name", true);
+                String type = get(analysisDataset, "type", true);
+                String status = get(analysisDataset, "status", true);
+                String phyGroupName = get(analysisDataset, "physics_group_name", false);
+
+                String userID = getUserID(conn, dbsUser);
+
+                //Getting ID before spliting the path will type chech the path also.
+                //Getting this ID upfront will test if ProcDS exist or not, if not quit here 
+                String procDSID = getProcessedDSID(conn, path);
+                String phyGroupID = getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true);
+
+                //FIXME Parentage of Analysis Datasets (not well understood yet)
+                //Vector parentVector = DBSUtil.getVector(dataset,"parent");
+
+                //FIXME   Make sure that Type and Status fileds are well understood
+                //        will they pre-exist, or user can define as they create AnalysisDS ??     
+
+                insertName(conn, "AnalysisDSType", "Type", type , userID);
+                String typeID = getID(conn, "AnalysisDSType", "Type", type, true);
+
+                insertName(conn, "AnalysisDSStatus", "Status", status, userID);
+                String statusID = getID(conn, "AnalysisDSStatus", "Status", status, true);
+
+	        ResultSet rsLumi = null;
+                PreparedStatement psLumi = null; 
+                try { 
+                     psLumi = DBSSql.listLumiSectionsForProcDS(conn, procDSID); 
+               
+                     PreparedStatement ps = null;
+                     try {
+                         ps = DBSSql.insertAnalysisDataset(conn,
+                             annotation,// A new block should always have 0 size
+                             name,
+                             psLumi.toString(),
+                             procDSID,
+                             typeID,       
+                             statusID,// A new block should always have 0 files
+                             phyGroupID, userID); 
+                                                
+                         ps.execute();
+                      } finally {
+                        if (ps != null) ps.close();   
+                      }
+
+                      System.out.println("ANZAR: procDSID="+procDSID);
+
+                      //ID of just added AnalysisDS 
+                       String analysisDSID = getID(conn, "AnalysisDataset", "Name", name , true);
+                 
+                       //For eacxh run belonging to this ProcDS, get LumiSections and
+                       //make an entry into AnalysisDatasetLumi
+
+                       System.out.println("ANZAR: procDSID="+procDSID);
+                     
+                       rsLumi =  psLumi.executeQuery(); 
+                       while(rsLumi.next()) {   
+                            String lumiID = get(rsLumi, "ID");
+                            System.out.println("lumiID: "+lumiID);
+                            insertMap(conn, "AnalysisDatasetLumi", "AnalysisDataset", "Lumi",   
+                                       analysisDSID, lumiID, userID);
+                       }
+                } finally {
+                          if (psLumi != null) psLumi.close();
+                          if (rsLumi != null) rsLumi.close();
+                }
+         }
+
 
 	public void insertTierInPD(Connection conn, Writer out, String path, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
@@ -860,7 +930,6 @@ public class DBSApiLogic {
 	}*/
 
 	private void insertName(Connection conn, String table, String key, String value, String userID) throws Exception {
-		//System.out.println("inserting table " + table + "  key " + key + " value " + value);
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
 		if(isNull(userID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
 		if( getID(conn, table, key, value, false) == null ) {
@@ -947,7 +1016,6 @@ public class DBSApiLogic {
 
 
 	private String getProcessedDSID(Connection conn, String path) throws Exception {
-                System.out.println("PATH: "+path);
 		//checkPath(path);
 		String[] data = path.split("/");
 		if(data.length != 4) {
@@ -1051,7 +1119,6 @@ public class DBSApiLogic {
 		try {
 			ps =  DBSSql.getID(conn, tableName, key, value);
 			rs =  ps.executeQuery();
-		//System.out.println("tableName "+ tableName+ " key "+ key + " value " + value + " excep "+ excep);
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1011", "No such " + tableName + " : " + key + " : " + value );
 				else return null;
@@ -1152,7 +1219,6 @@ public class DBSApiLogic {
 	}
 	
 	private String get(Hashtable table, String key, boolean excep) throws Exception{
-		//System.out.println(key);
 		String value = DBSUtil.get(table, key);
 		if(excep) checkWord(value, key);
 		else if(! isNull(value)) checkWord(value, key);
@@ -1160,7 +1226,6 @@ public class DBSApiLogic {
 	}
 
         private String getStr(Hashtable table, String key, boolean excep) throws Exception{
-                //System.out.println(key);
                 String value = DBSUtil.get(table, key);
                 if(excep) checkString(value, key);
                 else if(! isNull(value)) checkString(value, key);
@@ -1169,15 +1234,12 @@ public class DBSApiLogic {
 
 
 	private String get(Hashtable table, String key) {
-		//System.out.println(key);
 		return DBSUtil.get(table, key);
 	}
 
 	private String get(ResultSet rs, String key) throws Exception {
 
-                //System.out.println("Looking for :"+key); 
 		String value = rs.getString(key);
-                //System.out.println("Value is: "+value);
 		if(isNull(value)) return "";
 		return value;
 	}
