@@ -1,6 +1,6 @@
 /**
- $Revision: 1.31 $"
- $Id: DBSApi.java,v 1.31 2006/12/05 16:10:00 afaq Exp $"
+ $Revision: 1.32 $"
+ $Id: DBSApi.java,v 1.32 2006/12/06 17:27:19 afaq Exp $"
  *
 */
 
@@ -189,11 +189,10 @@ public class DBSApi {
 				api.insertProcessedDataset(conn, out,  parsePD(getXml(table)), dbsUser);
 				
 			} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
-                                api.createAnalysisDatasetFromPD(conn, out,
-                                                parse(getXml(table), "analysis-dataset"),
-                                                dbsUser);
-
-                        }else if (apiStr.equals("insertBlock")) {
+				api.createAnalysisDatasetFromPD(conn, out,
+					parse(getXml(table), "analysis-dataset"),
+					dbsUser);
+                        } else if (apiStr.equals("insertBlock")) {
 				api.insertBlock(conn, out,
 						parse(getXml(table), "block") , 
 						dbsUser);
