@@ -1,6 +1,7 @@
 export JAVA_HOME=/usr/java/jdk1.5.0_06/
 export ANT_HOME=/home/sekhri/apache-ant-1.6.5
 export DBS_HOME=`pwd`
+export DBS_CONFIG=$DBS_HOME/etc/context.xml
 
 ret=0
 
