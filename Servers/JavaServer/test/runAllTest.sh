@@ -267,6 +267,20 @@ insertFiles () {
 
 }
 
+#insert primary dataset
+createAnalysisDatasetFromPD () {
+        xmlString="<?xml version='1.0' standalone='yes'?>
+                        <dbs>
+                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path' physics_group_name='AnyName_$rand' />
+                        </dbs>"
+        message="Executing  createAnalysisDatasetFromPD API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=createAnalysisDatasetFromPD "xmlinput=$xmlString"`
+        display "$out"
+}
+
+
+
 
 insertPrimaryDataset
 insertAlgorithm
@@ -276,6 +290,7 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
+createAnalysisDatasetFromPD
 listPrimaryDatasets
 listProcessedDatasets
 listAlgorithms

@@ -12,7 +12,7 @@ cd $BASE/lib
 CLASSPATH=.:$PWD/ojdbc14_g.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI apiversion=v00_00_02"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI apiversion=v00_00_01"
 rand=`uuidgen`
 #$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 block='/TestPrimary1164144491.29/TestProcessed1164144491.29#42665801-a716-487e-9220-057e955f3a39'
@@ -267,16 +267,31 @@ insertFiles () {
 
 }
 
+#insert primary dataset
+createAnalysisDatasetFromPD () {
+        xmlString="<?xml version='1.0' standalone='yes'?>
+                        <dbs>
+                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path' physics_group_name='AnyName_$rand' />
+                        </dbs>"
+        message="Executing  createAnalysisDatasetFromPD API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=createAnalysisDatasetFromPD "xmlinput=$xmlString"`
+        display "$out"
+}
 
-#insertPrimaryDataset
-#insertAlgorithm
+
+
+
+insertPrimaryDataset
+insertAlgorithm
 #insertTier
 #insertRun
 #insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
-listPrimaryDatasets
+insertProcessedDataset
+insertBlock
+insertFiles
+createAnalysisDatasetFromPD
+#listPrimaryDatasets
 #listProcessedDatasets
 #listAlgorithms
 #listRuns
