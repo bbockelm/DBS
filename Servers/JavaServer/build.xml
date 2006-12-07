@@ -3,6 +3,8 @@
     <property name="sourcedir" value="${basedir}/src"/>
     <property name="targetdir" value="${basedir}/bin/WEB-INF/classes"/>
     <property name="targetlibdir" value="${basedir}/bin/WEB-INF/lib"/>
+    <property name="configsrcdir" value="${basedir}/etc"/>
+    <property name="configtargetdir" value="${basedir}/bin/META-INF"/>
     <property name="librarydir" value="${basedir}/lib"/>
     <property name="app.name" value="DBS"/>
     <property environment="env"/>
@@ -23,7 +25,7 @@
 
     <target name="compile" depends="clean, copy-resources">
       <javac srcdir="${sourcedir}"
-	      destdir="${targetdir}"
+             destdir="${targetdir}"
              classpathref="libraries"/>
     </target>
 
@@ -36,6 +38,10 @@
         <copy todir="${targetlibdir}">
             <fileset dir="${librarydir}">
                 <exclude name="servlet-api.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${configtargetdir}">
+            <fileset dir="${configsrcdir}">
             </fileset>
         </copy>
 
