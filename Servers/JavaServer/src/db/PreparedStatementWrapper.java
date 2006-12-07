@@ -60,7 +60,10 @@ public class PreparedStatementWrapper implements PreparedStatement {
 		String logStr = sql;
 		int i = 1;
 		while (logStr.indexOf('?') >= 0) {
-			logStr = logStr.replaceFirst("\\?", "'" + bindParams.get(new Integer(i++)).toString() + "'");
+                        Object obj = bindParams.get(new Integer(i++));
+                        String value="";
+                        if ( obj != null ) value = obj.toString();
+			logStr = logStr.replaceFirst("\\?", "'" + value  + "'");
         	}
 		return logStr;
 		//System.out.println("QUERY is "+ logStr);
