@@ -1,6 +1,6 @@
 /**
- $Revision: 1.40 $"
- $Id: DBSApiLogic.java,v 1.40 2006/12/06 17:27:19 afaq Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSApiLogic.java,v 1.42 2006/12/07 20:33:16 sekhri Exp $"
  *
  */
 
@@ -888,7 +888,7 @@ public class DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-         public void insertAnalysisDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception { 
+         public void createAnalysisDatasetFromPD(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception { 
 		String name = get(dataset, "name", true);
 		String type = get(dataset, "type", true);
 		String status = get(dataset, "status", true);
@@ -918,7 +918,7 @@ public class DBSApiLogic {
 		   				getID(conn, "AnalysisDSType", "Type", type, true),
 						getID(conn, "AnalysisDSStatus", "Status", status, true),
 						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
-							get(dataset, "physics_group_name", false), 
+							get(dataset, "physics_group_name", true), 
 							true), 
 						userID); 
                                                 
@@ -1373,7 +1373,12 @@ public class DBSApiLogic {
 	}
 
 	private String getID(Connection conn, String tableName, String key, String value, boolean excep) throws Exception {
-		if(isNull(tableName) || isNull(key) || isNull(value)) return null;
+		if(isNull(tableName) || isNull(key) || isNull(value)) {
+
+                     if(excep) throw new DBSException("Unavailable data", "1011", "No such " + 
+                                                                                 tableName + " : " + key + " : " + value );
+                     return null;
+                } 
 		if (excep) checkWord(value, key);
 		else if(!isNull(value)) checkWord(value, key);
 
