@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.28 $"
- $Id: DBSSql.java,v 1.28 2006/12/05 15:57:14 afaq Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSSql.java,v 1.29 2006/12/06 17:27:39 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -490,24 +490,22 @@ public class DBSSql {
               return ps;
         }
 
-        public static PreparedStatement listLumiSectionsForProcDS(Connection conn, String procDSID) 
-                throws SQLException
-        {
-              //FIXME We can expand this query if we need, for now we don't !
-              String sql = "SELECT ls.id as ID, \n "+
-                           "ls.LumiSectionNumber as LUMISECTIONNUMBER, \n "+
-                           "ls.RunNumber as RUNNUMBER \n"+
-                           "FROM LumiSection ls \n"+
-                           "JOIN Runs rs\n"+	
-	                      "ON rs.ID = ls.ID\n"+
-                           "JOIN ProcDSRuns pdsr\n"+
-                              "ON pdsr.Run = rs.ID\n"+
-                           "WHERE pdsr.Dataset = ?";
-              PreparedStatement ps = DBManagement.getStatement(conn, sql);
-              int columnIndx = 1;
-              ps.setString(columnIndx++, procDSID);
-              DBSUtil.writeLog("\n\n" + ps + "\n\n");
-              return ps;
+        public static PreparedStatement listLumiSections(Connection conn, String procDSID) throws SQLException {
+		//FIXME We can expand this query if we need, for now we don't !
+		String sql = "SELECT ls.id as ID, \n " +
+			"ls.LumiSectionNumber as LUMISECTIONNUMBER, \n " +
+			"ls.RunNumber as RUNNUMBER \n" +
+			"FROM LumiSection ls \n" +
+			"JOIN Runs rs\n" +	
+				"ON rs.ID = ls.ID\n" +
+			"JOIN ProcDSRuns pdsr\n" +
+				"ON pdsr.Run = rs.ID\n" +
+			"WHERE pdsr.Dataset = ?";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, procDSID);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 	public static PreparedStatement listPrimaryDatasets(Connection conn, String pattern) throws SQLException {

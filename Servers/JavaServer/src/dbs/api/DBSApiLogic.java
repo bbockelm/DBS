@@ -54,7 +54,7 @@ public class DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param pattern a parameter passed in from the client that can contain wild card characters. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
 	 */
 	public void listPrimaryDatasets(Connection conn, Writer out, String pattern) throws Exception {
                  
@@ -100,7 +100,7 @@ public class DBSApiLogic {
 	 * @param patternFam a parameter passed in from the client that can contain wild card characters for application family. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @param patternExe a parameter passed in from the client that can contain wild card characters for application executable name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @param patternPS a parameter passed in from the client that can contain wild card characters for parameter set name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patterns are invalid or the database connection is unavailable.
 	 */
 	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		String prevDS = "";
@@ -188,7 +188,7 @@ public class DBSApiLogic {
 	 * @param patternFam a parameter passed in from the client that can contain wild card characters for application family. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @param patternExe a parameter passed in from the client that can contain wild card characters for application executable name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @param patternPS a parameter passed in from the client that can contain wild card characters for parameter set name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied pattern parameters are invalid or the database connection is unavailable.
 	 */
 	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		//FIXME name should be changed to hash
@@ -228,7 +228,7 @@ public class DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
 	public void listRuns(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
@@ -264,7 +264,7 @@ public class DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
 	public void listTiers(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
@@ -293,7 +293,7 @@ public class DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable  or processed dataset is not found.
 	 */
 	public void listBlocks(Connection conn, Writer out, String path) throws Exception {
 		PreparedStatement ps = null;
@@ -322,17 +322,20 @@ public class DBSApiLogic {
 
 
 	/**
-	 * Lists all the files within a processed dataset or within a block from the database in a xml format. This method makes one sql query, execute it, fetch the results and packs and write it in xml format to the output stream. The query that it executes get generated by <code>dbs.DBSSql.listFiles</code> method. First it fetches the processed dataset ID from the database by calling a private <code>getProcessedDSID<code> method using the path provided in the parameter. It also fetches the block id from the database by calling a private method <code>getBlockID</code> If niether  processed dataset id not block id exists then it throws an exception. A sample XML that is written to the output stream is like <br>
-	 * <code> <"block id='2' name='/test/test#9ac2b28b-781f-4907-a87a-40e233ab139a' size='0' number_of_files='0' creation_date='2006-12-06 16:29:34.0' last_modification_date='2006-12-06 16:29:34.0' created_by='ANZARDN' last_modified_by='ANZARDN'"/></code>
+	 * Lists all the files within a processed dataset or within a block from the database in a xml format. This method makes one sql query, execute it, fetch the results and packs and write it in xml format to the output stream. The query that it executes get generated by <code>dbs.DBSSql.listFiles</code> method. First it fetches the processed dataset ID from the database by calling a private <code>getProcessedDSID<code> method using the path provided in the parameter. It also fetches the block id from the database by calling a private method <code>getBlockID</code> If niether the processed dataset id nor the block id exists then it throws an exception. A sample XML that is written to the output stream is like <br>
+	 * <code> <"file id='9' lfn='TEST_LFN' checksum='CHKSUM' size='200' queryable_meta_data='any' number_of_events='200' validation_status='1' type='EVD' status='VALID' block_name='/test/test#8a99a0' creation_date='2006-12-07 09:52:55.0' last_modification_date='2006-12-07 09:52:55.0' created_by='ANZARDN' last_modified_by='ANZARDN'"><"data_tier name='HIT'"/><"data_tier name='SIM'"/><"/file"></code>
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
-	 * @throws Exception Various types of exceptions can be thorwn. Commonly they are thrown if the supplied pattern is invalid or the database connection is unavailable.
+	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
+	 * @param blockName a block name in the format of /primary/processed#GUID. This block name is used to find the existing block id.
+	 * @param patternLFN a parameter passed in from the client that can contain wild card characters for logical file name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patternLFN is invalid, the database connection is unavailable or processed dataset or block is not found.
 	 */
 	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN) throws Exception {
 
 		patternLFN = getPattern(patternLFN, "pattern_lfn");
                 String prevTier = "";
+		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true;
 		String prevFileID = "";
 		
@@ -376,9 +379,8 @@ public class DBSApiLogic {
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'>\n"));
-					//"'/>\n"));
 					first = false;
-               	                 prevFileID = fileID;
+					prevFileID = fileID;
 				}
       
  				if( !prevTier.equals(tier) || first ) {
@@ -394,7 +396,16 @@ public class DBSApiLogic {
                 if (!first) out.write(((String) "</file>\n"));
 	}
 
-	
+	/**
+	 * Insert a primary dataset whose parameters are provided in the passed dataset <code>java.util.Hashtable</code>. This hashtable dataset is generated externally and filled in with the primary dataset parameters by parsing the xml input provided by the client. This method inserts entriy into more than one table associated with PrimaryDataset table. The the main query that it executes to insert in PrimaryDataset table, get generated by <code>dbs.DBSSql.insertPrimaryDataset</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. Then it inserts the primary dataset type in PrimaryDSType table if does not exist already. It works on Description tables (needed to be done in the code) and finally inserts a new primary dataset in PrimaryDataset table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param dataset a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for inserting a new primary dataset. The keys along with its values that it may or may not contain are <br>
+	 * <code>type, annotation, primary_name, start_date, end_date</code>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertPrimaryDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
 		//Get the User ID from USERDN
@@ -445,6 +456,16 @@ public class DBSApiLogic {
 
 	}
 
+	/**
+	 * Insert a run  whose parameters are provided in the passed run <code>java.util.Hashtable</code>. This hashtable run is generated externally and filled in with the run parameters by parsing the xml input provided by the client. This method inserts entry into just one table called Run table. The the main query that it executes to insert in Run table, get generated by <code>dbs.DBSSql.insertRun</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. Then it finally inserts a new run in Run table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param run a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for inserting a new run. The keys along with its values that it may or may not contain are <br>
+	 * <code>run_number, number_of_events, number_of_lumi_sections, total_luminosity, store_number, start_of_run, end_of_run</code>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
 		PreparedStatement ps = null;
 		try {
@@ -464,10 +485,32 @@ public class DBSApiLogic {
 
 	}
 
+	/**
+	 * Insert a tier whose name is provided in the parameter tierName. This method inserts entry into just one table table called DataTier table. The the main query that it executes to insert in DataTier table, get generated by a generic <code>dbs.DBSSql.insertName</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. Then it finally inserts a new tier in DataTier table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param tierName a <code>java.lang.String</code> that contains the name of the data tier to be inserted.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameter tierName is invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertTier(Connection conn, Writer out, String tierName, Hashtable dbsUser) throws Exception {
 		insertName(conn, "DataTier", "Name", tierName , getUserID(conn, dbsUser));
 	}
 
+
+	/**
+	 * Insert a block whose parameters are provided in the passed block <code>java.util.Hashtable</code>. This hashtable block is generated externally and filled in with the block parameters by parsing the xml input provided by the client. This method inserts entry into just one table called Block table. The the main query that it executes to insert in Block table, get generated by <code>dbs.DBSSql.insertBlock</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the inserts the processed dataset id using the path suppiled in the block hashtable by calling a private <code>getProcessedDSID</code> method. If the processed dataset id is not found then an exception is thrown. <br>
+	 * Then it either takes the block name suppiled in the block hashtable or generates one first generating a new GUID and then by concating /Primary/Process#GUID. Finally it inserts a new block in the Block table and writes the block name on the output stream in xml format so that the cleint can get the name of the newly created block.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param block a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for inserting a new block. The keys along with its values that it may or may not contain are <br>
+	 * <code>path, name, open_for_writing</code>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertBlock(Connection conn, Writer out, Hashtable block, Hashtable dbsUser) throws Exception {
 		String path = get(block, "path");
 		String name = get(block, "name");
@@ -497,7 +540,21 @@ public class DBSApiLogic {
 
 	}
 
-
+	/**
+	 * Insert a algorithm/application whose parameters are provided in the passed algo <code>java.util.Hashtable</code>. This hashtable block is generated externally and filled in with the algorithm parameters by parsing the xml input provided by the client. This method inserts entry into more than one table associated with AlgorithmConfig table. The the main query that it executes to insert in AlgorithmConfig table, get generated by <code>dbs.DBSSql.insertApplication</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts a new version in the AppVersion table by calling a generic private insertName method. <br>
+	 * Then it inserts a new family in the AppFamily table by calling a generic private insertName method. <br>
+	 * Then it inserts a new executable in the AppExecutable table by calling a generic private insertName method. <br>
+	 * Then it inserts a new parameter set in the QueryableParameterSet table by calling a insertParameterSet method. <br>
+	 * Finally it inserts a new algorithm in the AlgorithmConfig table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param algo a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for inserting a new algorithm. The keys along with its values that it may or may not contain are <br>
+	 * <code>app_version, app_family_name, app_executable_name, ps_name, ps_hash, ps_version, ps_type, ps_annotation, ps_content</code>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertAlgorithm(Connection conn, Writer out, Hashtable algo, Hashtable dbsUser) throws Exception {
 		String version = get(algo, "app_version", true);
 		String family = get(algo, "app_family_name", true);
@@ -533,7 +590,33 @@ public class DBSApiLogic {
                   if (ps != null) ps.close();
 	        }
        }
-	//public void insertFiles(Connection conn, Vector files, Hashtable dbsUser) throws Exception {
+
+       /**
+	 * Insert a list of Files whose parameters are provided in the passed files <code>java.util.Vector</code>. This vector contains a list of hashtable and is generated externally and filled in with the file parameters by parsing the xml input provided by the client. This method inserts entries into more than one table associated with File table. The the main query that it executes to insert in File table, get generated by <code>dbs.DBSSql.insertFile</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the processed dataset id and the block id by calling a private getProcessedDSID method and private getBlockID method with parameters path and blockName. The log of insert file bahaves in a way such that all the files to be inserted per this method call, should belong to the same processed dataset and same block <br>
+	 * Then it iterates through all the files Hashtable provided in the files vector and inserts one file at a time. <br>
+	 * Then in the same loop it fetches all the algorithm list of the file that just got inserted and inserts a new row in FileAlgoMap table by calling a generic private insertMap method. <br>
+	 * Then in the same loop it fetches all the tier list of the file that just got inserted and inserts a new row in FileTier table by calling a generic private insertMap method. <br>
+	 * Then in the same loop it fetches all the parent list of the file that just got inserted and inserts a new row in FileParentage table by calling a generic private insertMap method. <br>
+	 * Then in the same loop it fetches all the lumi section list of the file that just got inserted and inserts a new row in FileLumi table by calling a generic private insertMap method. Before it insert in to this FileLumi table , it first insert the LumiSection by calling insertLumiSection method<br>
+	 * Finally it updates the block information with correct number of files and size in bytes by calling the updateBlock method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param files a <code>java.util.Vector</code> that contains a list of <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new file. The keys along with its values that it may or may not contain are <br>
+	 * <code>lfn, checksum, number_of_events, size, queryable_meta_data, file_status, type, validation_status, lumi_section, data_tier, parent, algorithm </code> <br>
+	 * Further the keys <code>lumi_section, data_tier, parent, algorithm </code> are itself vector of Hashtable. <br>
+	 * The key that <code>parent </code> hashtable may or may not contain is <code>lfn</code> <br>
+	 * The key that <code>data_tier </code> hashtable may or may not contain is <code>name</code> <br>
+	 * The keys that <code>lumi_section </code> hashtable may or may not contain are <br>
+	 * <code>lumi_section_number, run_number, start_event_number, end_event_number, lumi_start_time, lumi_end_time</code> <br>
+	 * The keys that <code>algorithm </code> hashtable may or may not contain are <br> 
+	 * <code>app_version, app_family_name, app_executable_name, ps_name</code> <br>
+	  * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
+	 * @param blockName a block name in the format of /primary/processed#GUID. This block name is used to find the existing block id.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
 		
 		//Get the User ID from USERDN
@@ -673,13 +756,32 @@ public class DBSApiLogic {
 
 	}
 
-
+       /**
+	 * Insert a processed dataset whose parameters are provided in the passed dataset <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the processed dataset parameters by parsing the xml input provided by the client. This method inserts entr into more than one table associated with ProcessedDataset table. The the main query that it executes to insert in ProcessedDataset table, get generated by <code>dbs.DBSSql.insertProcessedDataset</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it insert a new processed dataset whose sql query is generated by calling <code>dbs.sql.insertProcessedDatatset<code>
+	 * Then it fetches all the algorithm list of the processed dataset that just got inserted and inserts a new row in ProcAlgoMap table by calling a generic private insertMap method. <br>
+	 * Then it fetches all the tier list of the  processed dataset that just got inserted and inserts a new row in ProcDSTier table by calling a generic private insertMap method. Before that it first inserts the data tier if it does not exists by calling a generic insertName method.<br>
+	 * Then it fetches all the parent list of the  processed dataset that just got inserted and inserts a new row in DatasetParentage table by calling a generic private insertMap method. <br>
+	 * Then it fetches all the run list of the  processed dataset that just got inserted and inserts a new row in ProcDSRun table by calling a generic private insertMap method. <br>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param dataset a  <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new processed dataset. The keys along with its values that it may or may not contain are <br>
+	 * <code>primary_datatset_name, processed_datatset_name, physics_group_name, physics_group_convener,status, data_tier, parent, algorithm, run </code> <br>
+	 * Further the keys <code>data_tier, parent, algorithm, run </code> are itself vector of Hashtable. <br>
+	 * The key that <code>parent </code> hashtable may or may not contain is <code>path</code> <br>
+	 * The key that <code>data_tier </code> hashtable may or may not contain is <code>name</code> <br>
+	 * The keys that <code>run </code> hashtable may or may not contain is  <code>run_number</code> <br>
+	 * The keys that <code>algorithm </code> hashtable may or may not contain are <br> 
+	 * <code>app_version, app_family_name, app_executable_name, ps_name</code> <br>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
 	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);
 
-		String primDSName = get(dataset, "primary_datatset_name", true);
 		String procDSName = get(dataset, "processed_datatset_name", true);
 		String phyGroupName = get(dataset, "physics_group_name", false);
 		String phyGroupCon = get(dataset, "physics_group_convener", false);
@@ -773,12 +875,25 @@ public class DBSApiLogic {
 
 	}
 
-         public void createAnalysisDatasetFromPD(Connection conn, Writer out, Hashtable analysisDataset, Hashtable dbsUser) throws Exception { 
-		String name = get(analysisDataset, "name", true);
-		String type = get(analysisDataset, "type", true);
-		String status = get(analysisDataset, "status", true);
+ 	/**
+	 * Insert a analysis dataset whose parameters are provided in the passed dataset <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the analysis dataset parameters by parsing the xml input provided by the client. This method inserts entry into more than one table associated with AnalysisDataset table. The the main query that it executes to insert in AnalysisDataset table, get generated by <code>dbs.DBSSql.insertAnalysisDataset</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it insert a new type field in AnalysisDSType table by calling a generic private  insertName method. <br>
+	 * Then it insert a new status field in AnalysisDSStatus table by calling a generic private  insertName method. <br>
+	 * Then it insert a new analysis dataset in AnalysisDataset table. <br>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param dataset a  <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new analysis dataset. The keys along with its values that it may or may not contain are <br>
+	 * <code>name, type, status, annotation, physics_group_name </code> <br>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
+         public void insertAnalysisDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception { 
+		String name = get(dataset, "name", true);
+		String type = get(dataset, "type", true);
+		String status = get(dataset, "status", true);
 		String userID = getUserID(conn, dbsUser);
-		String procDSID = getProcessedDSID(conn, get(analysisDataset, "path"));
+		String procDSID = getProcessedDSID(conn, get(dataset, "path"));
 
 		//FIXME Parentage of Analysis Datasets (not well understood yet)
 		//Vector parentVector = DBSUtil.getVector(dataset,"parent");
@@ -792,19 +907,18 @@ public class DBSApiLogic {
 	        ResultSet rsLumi = null;
                 PreparedStatement psLumi = null; 
 		try { 
-			psLumi = DBSSql.listLumiSectionsForProcDS(conn, procDSID); 
-               
+			psLumi = DBSSql.listLumiSections(conn, procDSID); 
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertAnalysisDataset(conn,
-		   				get(analysisDataset, "annotation", true),
+		   				getStr(dataset, "annotation", true),
 		   				name,
 		   				psLumi.toString(),
 		   				procDSID,
 		   				getID(conn, "AnalysisDSType", "Type", type, true),
 						getID(conn, "AnalysisDSStatus", "Status", status, true),
 						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
-							get(analysisDataset, "physics_group_name", false), 
+							get(dataset, "physics_group_name", false), 
 							true), 
 						userID); 
                                                 
@@ -833,7 +947,17 @@ public class DBSApiLogic {
 		}
          }
 
-
+ 	/**
+	 * Insert a data tier in processed dataset. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table ProcDSTier by calling a generic private <code>insertMap</code> method. It first fetches the processed dataset id by calling getProcessedDSID.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
+	 * @param tierName a data tier name which is assumed to be already present in the database.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
 	public void insertTierInPD(Connection conn, Writer out, String path, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
 				getProcessedDSID(conn, path), 
@@ -841,6 +965,18 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 	}
 
+
+	/**
+	 * Insert a dataset parent in processed dataset. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table DatasetParentage by calling a generic private <code>insertMap</code> method. It first fetches the processed dataset id by calling a private getProcessedDSID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
+	 * @param parentPath a dataset path in the format of /primary/tier/processed that represent the parent of this dataset represented by path.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
 	public void insertParentInPD(Connection conn, Writer out, String path, String parentPath, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
 					getProcessedDSID(conn, path), 
@@ -848,6 +984,18 @@ public class DBSApiLogic {
 					getUserID(conn, dbsUser));
 	}
 
+	/**
+	 * Insert a algorithm in processed dataset. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table ProcAlgoMap by calling a generic private <code>insertMap</code> method. It first fetches the processed dataset id by calling a private getProcessedDSID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
+	 * @param algo a <code>java.util.Hashtable</code> that conatin the parameter that defines an algorithm. The keys that <code>algo </code> hashtable may or may not contain are <br> 
+	 * <code>app_version, app_family_name, app_executable_name, ps_name</code> <br>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
 	public void insertAlgoInPD(Connection conn, Writer out, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcAlgo", "Dataset", "Algorithm", 
 					getProcessedDSID(conn, path), 
@@ -858,6 +1006,18 @@ public class DBSApiLogic {
 					getUserID(conn, dbsUser));
 	}
 
+
+	/**
+	 * Insert a run parent in processed dataset. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table ProcDSRun by calling a generic private <code>insertMap</code> method. It first fetches the processed dataset id by calling a private getProcessedDSID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
+	 * @param runNumber a run number that uniquely identifies a run.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
 	public void insertRunInPD(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
 				getProcessedDSID(conn, path), 
@@ -865,6 +1025,17 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 	}
 
+	/**
+	 * Insert a data tier in file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table FileTier by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param tierName a data tier name which is assumed to be already present in the database.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
+	 */
 	public void insertTierInFile(Connection conn, Writer out, String lfn, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn,	"FileTier", "Fileid", "DataTier", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
@@ -873,6 +1044,17 @@ public class DBSApiLogic {
 
 	}
 	
+	/**
+	 * Insert a parent in a file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table FileParentage by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param parentLFN a logical file name of the parent file.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
+	 */
 	public void insertParentInFile(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileParentage", "ThisFile", "itsParent", 
 				getID(conn, "Files", "LogicalFileName", lfn, true),
@@ -880,6 +1062,19 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 	}
 
+
+	/**
+	 * Insert a algorithm in a file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table FileAlgoMap by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param algo a <code>java.util.Hashtable</code> that conatin the parameter that defines an algorithm. The keys that <code>algo </code> hashtable may or may not contain are <br> 
+	 * <code>app_version, app_family_name, app_executable_name, ps_name</code> <br>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
+	 */
 	public void insertAlgoInFile(Connection conn, Writer out, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileAlgo", "Fileid", "Algorithm", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
@@ -890,6 +1085,17 @@ public class DBSApiLogic {
 				getUserID(conn, dbsUser));
 	}
 
+	/**
+	 * Insert a lumi section in a file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it inserts entry into just one table FileLumi by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param lsNumber a lumi section number that uniquely identifies a lumi section.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
+	 */
 	public void insertLumiInFile(Connection conn, Writer out, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
 		insertMap(conn, "FileLumi", "Fileid", "Lumi", 
 				getID(conn, "Files", "LogicalFileName", lfn, true), 
@@ -900,8 +1106,22 @@ public class DBSApiLogic {
 
 
 
-        private void insertLumiSection(Connection conn, Writer out, Hashtable table, String userID) throws Exception {
-		String lsNumber = get(table, "lumi_section_number", true);
+	/**
+	 * Insert a lumi section whose parameters are provided in the passed lumi <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the lumi section parameters by parsing the xml input provided by the client. This method inserts entry into just one  LumiSection table. The the main query that it executes to insert in LumiSection table, get generated by <code>dbs.DBSSql.insertLumiSection</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it insert a new lumi section whose sql query is generated by calling <code>dbs.sql.insertLumiSection<code>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lumi a <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new lumi section. The keys along with its values that it may or may not contain are <br>
+	 * <code>lumi_section_number, run_number, start_event_number, end_event_number, lumi_start_time, lumi_end_time </code> <br>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
+	 */
+	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		insertLumiSection(conn, out, table, getUserID(conn, dbsUser));
+	}
+	private void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String userID) throws Exception {
+		String lsNumber = get(lumi, "lumi_section_number", true);
 		//Insert a new Lumi Section by feting the run ID 
 		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 			PreparedStatement ps = null;
@@ -909,23 +1129,22 @@ public class DBSApiLogic {
 				ps = DBSSql.insertLumiSection(conn,
 						lsNumber,
 						getID(conn, "Runs", "RunNumber",
-							get(table, "run_number", true),
+							get(lumi, "run_number", true),
 							true),
-						get(table, "start_event_number", true),
-						get(table, "end_event_number", true),
-						get(table, "lumi_start_time", false),
-						get(table, "lumi_end_time", false),
+						get(lumi, "start_event_number", true),
+						get(lumi, "end_event_number", true),
+						get(lumi, "lumi_start_time", false),
+						get(lumi, "lumi_end_time", false),
 						userID);
 				ps.execute();
-                } finally {
-                  if (ps != null) ps.close();
-                }
+			} finally {
+				if (ps != null) ps.close();
+			}
 
 		} else {
-			writeWarning(out, "Already Exists", "401", "LumiSection "+lsNumber+" ALready Exists");
+			writeWarning(out, "Already Exists", "401", "LumiSection " + lsNumber + " Already Exists");
 		}
 	}
-
 
 	private static void writeWarning(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER);
@@ -941,9 +1160,6 @@ public class DBSApiLogic {
 
 
 
-	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-                insertLumiSection(conn, out, table, getUserID(conn, dbsUser));
-	}
 
 	/*TODO more information needed and change in the schema required,
 	 * private void insertMCDesc(Connection conn, Hashtable table, String userID) throws Exception {
@@ -957,6 +1173,13 @@ public class DBSApiLogic {
 		}
 	}*/
 
+	/**
+	 * This is a private generic method that can insert entry into any table that has just one coloum in it which is unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks of the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.
+	 * @param table the table name of the table in the database schema.
+	 * @param key the coloumn name of the table in the database schema that is unique.
+	 * @param value the value to be inserted in the coloumn name of the table.
+	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 */
 	private void insertName(Connection conn, String table, String key, String value, String userID) throws Exception {
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
 		if(isNull(userID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
@@ -971,7 +1194,15 @@ public class DBSApiLogic {
 		}
 	}
 	
-	
+	/**
+	 * This is a private generic method that can insert entry into any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks of the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.
+	 * @param table the table name of the table in the database schema.
+	 * @param key1 the first coloumn name of the table in the database schema.
+	 * @param key2 the second coloumn name of the table in the database schema.
+	 * @param value1 the first value to be inserted in the first coloumn name of the table.
+	 * @param value2 the second value to be inserted in the second coloumn name of the table.
+	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 */
 	private void insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String userID) throws Exception {
 		if( getMapID(conn, tableName, key1, key2, value1, value2, false) == null ) {
 			PreparedStatement ps = null;
@@ -986,7 +1217,17 @@ public class DBSApiLogic {
 	}
 
 
-	//private void insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws Exception {
+	/**
+	 * Insert a parameter set whose parameters are provided in the passed algo <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the lumi section parameters by parsing the xml input provided by the client. This method inserts entry into just one  QueryableParameterSet table. The the main query that it executes to insert in QueryableParameterSet table, get generated by <code>dbs.DBSSql.insertParameterSet</code> method.<br> 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it insert a new parameter set whose sql query is generated by calling <code>dbs.sql.insertParameterSet<code>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param algo a <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new parameter set. The keys along with its values that it may or may not contain are <br>
+	 * <code>ps_name, ps_hash, ps_version, ps_type, ps_annotation, ps_content</code> <br>
+	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
+	 */
 	private void insertParameterSet(Connection conn, Hashtable algo, String userID) throws Exception {
 		String psName = get(algo, "ps_name", true);
 		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
