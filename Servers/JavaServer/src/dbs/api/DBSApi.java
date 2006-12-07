@@ -1,6 +1,6 @@
 /**
- $Revision: 1.33 $"
- $Id: DBSApi.java,v 1.33 2006/12/06 22:37:15 sekhri Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSApi.java,v 1.34 2006/12/07 20:33:16 sekhri Exp $"
  *
 */
 
@@ -188,8 +188,8 @@ public class DBSApi {
 			} else if (apiStr.equals("insertProcessedDataset")) {
 				api.insertProcessedDataset(conn, out,  parsePD(getXml(table)), dbsUser);
 				
-			} else if (apiStr.equals("insertAnalysisDataset")) {
-				api.insertAnalysisDataset(conn, out,
+			} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
+				api.createAnalysisDatasetFromPD(conn, out,
 					parse(getXml(table), "analysis-dataset"),
 					dbsUser);
                         } else if (apiStr.equals("insertBlock")) {
@@ -253,30 +253,46 @@ public class DBSApi {
 				return;
 			}
 			conn.commit();
-			
 		} catch (DBSException dbsEx) {
 			if(conn != null) conn.rollback();
+			if (dbsEx.getMessage() == null ) {
+				writeException(out, "Unexpected execution exception", "1031", "NULL POINTER DBSException");
+				return;
+			}
+			dbsEx.printStackTrace();
 			writeException(out, dbsEx.getMessage(), dbsEx.getCode(), dbsEx.getDetail());
-			//dbsEx.printStackTrace();
 			return;
 		} catch (XMLException xmlEx) {
 			if(conn != null) conn.rollback();
+			if (xmlEx.getMessage() == null ) {
+				writeException(out, "Unexpected execution exception", "3003", "NULL POINTER SQLException");
+				return;
+			}
+			xmlEx.printStackTrace();
 			writeException(out, xmlEx.getMessage(), xmlEx.getCode(), xmlEx.getDetail());
-			//xmlEx.printStackTrace();
 			return;
 		} catch (SQLException sqlEx) {
 			if(conn != null) conn.rollback();
+			if (sqlEx.getMessage() == null ) {
+				writeException(out, "Unexpected execution exception", "2001", "NULL POINTER SQLException");
+				return;
+			}
+			sqlEx.printStackTrace();
 			writeException(out, "Database exception", "2000", sqlEx.getMessage());
-			//sqlEx.printStackTrace();
 			return;
 		} catch (Exception ex) {
 			if(conn != null) conn.rollback();
+			ex.printStackTrace();
+			if (ex.getMessage() == null ) {
+				writeException(out, "Unexpected execution exception", "4001", "NULL POINTER Exception");
+				return;
+			}
 			writeException(out, "Unexpected execution exception", "4000", ex.getMessage());
-			//ex.printStackTrace();
 			return;
 		} finally {
 			if(conn != null) conn.close();
 		}
+
 		out.write(DBSConstants.XML_SUCCESS);
 		out.write(DBSConstants.XML_FOOTER);
 		out.flush();
