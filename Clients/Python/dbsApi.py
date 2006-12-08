@@ -564,16 +564,6 @@ class DbsApi(DbsConfig):
        print "insertPrimaryDataset, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertPrimaryDataset',
                          'xmlinput' : xmlinput }, 'POST')
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-        def startElement(self, name, attrs):
-          if (name == 'primary-dataset'):
-            #This is just useless now 
-            dataset['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
   # ------------------------------------------------------------
   def insertAlgorithm(self, algorithm):
 
@@ -613,15 +603,6 @@ class DbsApi(DbsConfig):
        print "insertAlgorithm, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertAlgorithm',
                          'xmlinput' : xmlinput }, 'POST')
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-	def startElement (self, name, attrs):
-	  if (name == 'algorithm'):
-            #This is useless for now
-	    processing['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
 
@@ -684,16 +665,6 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'insertProcessedDataset',
                          'xmlinput' : xmlinput }, 'POST')
 
-    try:
-      # Following code is useless so far !!!!!!!!!
-      class Handler (xml.sax.handler.ContentHandler):
-	def startElement (self, name, attrs):
-	  if (name == 'processed-dataset'):
-	    dataset['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
 # ------------------------------------------------------------
 
   def insertRun(self, run):
@@ -725,16 +696,6 @@ class DbsApi(DbsConfig):
        
     data = self._server._call ({ 'api' : 'insertRun',
                          'xmlinput' : xmlinput }, 'POST')
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-        def startElement(self, name, attrs):
-          if (name == 'primary-dataset'):
-            #This is just useless now 
-            dataset['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
  
   # ------------------------------------------------------------
   def insertFiles(self, dataset, files, block):
@@ -840,15 +801,6 @@ class DbsApi(DbsConfig):
 
     data = self._server._call ({ 'api' : 'insertBlock',
                          'xmlinput' : xmlinput }, 'POST')
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-        def startElement(self, name, attrs):
-          if (name == 'primary-dataset'):
-            #This is just useless now 
-            dataset['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
 
@@ -864,16 +816,6 @@ class DbsApi(DbsConfig):
 
     data = self._server._call ({ 'api' : 'insertTier', 
                          'tier_name' : tier_name }, 'POST')
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-        def startElement(self, name, attrs):
-          if (name == 'primary-dataset'):
-            #This is just useless now 
-            dataset['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-    
   # ------------------------------------------------------------
 
   def insertLumiSection(self, lumi):
@@ -904,15 +846,38 @@ class DbsApi(DbsConfig):
 
     data = self._server._call ({ 'api' : 'insertLumiSection',
                          'xmlinput' : xmlinput }, 'POST')
-    try:
-      class Handler (xml.sax.handler.ContentHandler):
-        def startElement(self, name, attrs):
-          if (name == 'primary-dataset'):
-            #This is just useless now 
-            dataset['objectId'] = long(attrs['id'])
-      xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
+  # ------------------------------------------------------------
+
+  def createAnalysisDatasetFromPD(self, dataset, analysisdataset ):
+    """
+    Create a new primary dataset.  Instantiates a database entity for
+    the dataset, and updates input object for the id of the new row.
+    The input object should be a DbsPrimaryDataset with the name set.
+
+    Raises DbsObjectExists if a primary dataset already exists in
+    the database, otherwise may raise an DbsApiException.
+    """
+    path = self._path(dataset)
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>" 
+    xmlinput += "<analysis-dataset name='"+ analysisdataset.get('Name', '') +"'"
+    xmlinput += " annotation='"+ analysisdataset.get('Annotation', '') +"'"
+    xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
+    xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
+    xmlinput += " physics_group_name='"+ analysisdataset.get('PhysicsGroup', '') +"'" 
+    xmlinput += " path='"+path+"'/>"
+    xmlinput += "</dbs>"
+
+    print xmlinput
+
+    if self.verbose(): 
+       print "createAnalysisDatasetFromPD, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'createAnalysisDatasetFromPD',
+                         'xmlinput' : xmlinput }, 'POST')
+
+  # ------------------------------------------------------------
 
 
   # ------------------------------------------------------------
@@ -980,14 +945,5 @@ class DbsApi(DbsConfig):
 		         'name' : name, 
 			 })
 	   
-    try:
-       class Handler (xml.sax.handler.ContentHandler):
-         def startElement(self, name, attrs):
-		 pass
-       xml.sax.parseString (data, Handler())
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
- 
- 
 ##############################################################################
 # Unit testing: see $PWD/UnitTests

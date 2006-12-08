@@ -27,6 +27,13 @@ ValidationTable = {
          "Type" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
          "Description" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
           },
+"DbsAnalysisDataset" : {
+         "Annotation" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+         "Name" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
+         "Type" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+         "Status" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+         "PhysicsGroup" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+          },
 "DbsAlgorithm" : {
          "ExecutableName" : { "Comment" : "Probably a required variable", "Validator" : isStringType },
          "ApplicationVersion" : { "Comment" : "Probably a required variable", "Validator" : isStringType },

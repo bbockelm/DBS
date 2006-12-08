@@ -121,7 +121,6 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       #print data
 
        # Error message would arrive in XML, if any
        class Handler (xml.sax.handler.ContentHandler):
