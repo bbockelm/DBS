@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">486</attrib>
-		<attrib name="serial">308661</attrib>
+		<attrib name="build">498</attrib>
+		<attrib name="serial">308662</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -136,11 +136,6 @@ use dbs_new_era_v05;
 					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/XHTML</output>
 				</html>
 			</DocsGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
 			<SqlGenModule>
 				<stdSql>
 					<genPostSQL>Y</genPostSQL>
@@ -150,55 +145,37 @@ use dbs_new_era_v05;
 					<genIndexes>N</genIndexes>
 					<genTriggers>Y</genTriggers>
 					<genDropStmt>N</genDropStmt>
-					<genViews>N</genViews>
-					<genRules>N</genRules>
 					<genFunctions>N</genFunctions>
+					<genRules>N</genRules>
+					<genViews>N</genViews>
 					<genProcedures>Y</genProcedures>
 					<genInlineFKs>Y</genInlineFKs>
 					<genPreSQL>Y</genPreSQL>
 					<genSequences>Y</genSequences>
 				</stdSql>
 				<oraSql>
-					<genFunctions>Y</genFunctions>
-					<genViews>N</genViews>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE.sql</output>
+					<output>/Users/anzar/DBS/Schema/NeXtGen/DBS-NeXtGen-Oracle.sql</output>
+					<genComments>Y</genComments>
 					<genDropStmt>N</genDropStmt>
+					<genViews>Y</genViews>
+					<genFunctions>Y</genFunctions>
+					<genProcedures>Y</genProcedures>
 					<genInlineFKs>N</genInlineFKs>
-					<genProcedures>N</genProcedures>
-					<genComments>N</genComments>
+					<genSequences>N</genSequences>
 				</oraSql>
-				<pgSql>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS_ORACLE_2.sql</output>
-					<genInlineFKs>N</genInlineFKs>
-					<genProcedures>N</genProcedures>
-				</pgSql>
 			</SqlGenModule>
-			<CodeGenModule>
-				<cpp>
-					<output>d:\dbs\cpp</output>
-				</cpp>
-				<java>
-					<foreignKeyAsClassRef>Y</foreignKeyAsClassRef>
-					<output>d:\dbs\java</output>
-					<jdoFile>Y</jdoFile>
-					<setter>Y</setter>
-					<serializable>Y</serializable>
-					<foreignKeyArray>Y</foreignKeyArray>
-					<getter>Y</getter>
-					<package>DBS</package>
-					<useJdo>Y</useJdo>
-				</java>
-			</CodeGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
 			<module name="DocsGenModule.html"/>
-			<module name="SqlGenModule.stdSql"/>
 			<module name="DocsGenModule.pdf"/>
-			<module name="SqlGenModule.pgSql"/>
+			<module name="SqlGenModule.stdSql"/>
 			<module name="SqlGenModule.oraSql"/>
-			<module name="CodeGenModule.java"/>
-			<module name="CodeGenModule.cpp"/>
 		</modsUsage>
 		<dataTypes>
 			<constFolder>
@@ -463,8 +440,8 @@ use dbs_new_era_v05;
 					<domain>
 						<attribs>
 							<attrib name="minValue"/>
-							<attrib name="maxValue"/>
 							<attrib name="outRange">false</attrib>
+							<attrib name="maxValue"/>
 							<attrib name="type">none</attrib>
 						</attribs>
 						<list>
@@ -2673,26 +2650,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -2732,7 +2689,7 @@ use dbs_new_era_v05;
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -2766,7 +2723,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -2978,26 +2935,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -3042,7 +2979,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -3254,26 +3191,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -3328,8 +3245,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">134524</attrib>
 							<attrib name="name">PersonID</attrib>
 							<attrib name="id">134542</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134523</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -3357,16 +3274,15 @@ use dbs_new_era_v05;
 							<attrib name="refField">134533</attrib>
 							<attrib name="name">RoleID</attrib>
 							<attrib name="id">134543</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134532</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
 							<p>
-								<t>A valid role id number from the Role table.
-</t>
+								<t>A valid role id number from the Role table.</t>
 							</p>
 						</docs>
 					</field>
@@ -3532,26 +3448,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -3596,7 +3492,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -3808,26 +3704,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -4066,26 +3942,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -4133,7 +3989,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -4464,26 +4320,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -4561,8 +4397,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">135015</attrib>
 							<attrib name="name">PrimaryDataset</attrib>
 							<attrib name="id">140694</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">135014</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -4790,26 +4626,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -4852,7 +4668,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -5174,26 +4990,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -5238,7 +5034,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -5355,8 +5151,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">145373</attrib>
 							<attrib name="name">Type</attrib>
 							<attrib name="id">134949</attrib>
-							<attrib name="onDelete">s</attrib>
-							<attrib name="onUpdate">s</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">145372</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -5415,8 +5211,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">135354</attrib>
 							<attrib name="name">Status</attrib>
 							<attrib name="id">145964</attrib>
-							<attrib name="onDelete">s</attrib>
-							<attrib name="onUpdate">s</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">135353</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -5619,26 +5415,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -5686,7 +5462,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -5957,26 +5733,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -6453,26 +6209,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -6512,7 +6248,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -6690,26 +6426,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -6749,7 +6465,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">true</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -7053,26 +6769,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -7285,26 +6981,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -7517,26 +7193,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -7749,26 +7405,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -8005,26 +7641,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -8323,26 +7939,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -8555,26 +8151,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -8798,26 +8374,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -9133,26 +8689,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -9187,7 +8723,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -9365,26 +8901,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -9419,7 +8935,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -9597,26 +9113,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -9651,7 +9147,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -9835,26 +9331,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -10221,26 +9697,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -10511,26 +9967,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -10816,26 +10252,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -10880,7 +10296,7 @@ use dbs_new_era_v05;
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
+								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
 						<attribs>
@@ -11063,26 +10479,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -11369,26 +10765,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -11622,26 +10998,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -11883,26 +11239,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -11956,8 +11292,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">ThisFile</attrib>
 							<attrib name="id">135484</attrib>
-							<attrib name="onDelete">s</attrib>
-							<attrib name="onUpdate">s</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -11985,8 +11321,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">ItsParent</attrib>
 							<attrib name="id">135483</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -12159,26 +11495,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -12415,26 +11731,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -12676,26 +11972,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -12908,26 +12184,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -13146,26 +12402,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -13407,26 +12643,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
@@ -13668,26 +12884,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<docs>
@@ -13741,8 +12937,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">ThisDataset</attrib>
 							<attrib name="id">190552</attrib>
-							<attrib name="onDelete">s</attrib>
-							<attrib name="onUpdate">s</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -13770,8 +12966,8 @@ use dbs_new_era_v05;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">ItsParent</attrib>
 							<attrib name="id">190551</attrib>
-							<attrib name="onDelete">c</attrib>
-							<attrib name="onUpdate">c</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
@@ -13944,26 +13140,6 @@ use dbs_new_era_v05;
 									</list>
 								</idx>
 							</oraSql>
-							<pgSql>
-								<idx type="l">
-									<list>
-										<header>
-											<elem type="i">id</elem>
-											<elem type="s">index</elem>
-											<elem type="s">name</elem>
-											<elem type="s">access</elem>
-											<elem type="s">where</elem>
-										</header>
-										<row>
-											<elem>340</elem>
-											<elem>Idx1</elem>
-											<elem/>
-											<elem>default</elem>
-											<elem/>
-										</row>
-									</list>
-								</idx>
-							</pgSql>
 						</SqlGenModule>
 					</modsConfig>
 					<field>
