@@ -45,7 +45,7 @@ echo "-- ======================================================================"
 echo "-- Initialize status tables There can be better ways to do it ( laters ) "  >> $ddl_file
 echo "-- ======================================================================"  >> $ddl_file
 echo  >> $ddl_file
-echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());"  >> $ddl_file
+echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('$SchemaVersion', NOW());"  >> $ddl_file
 echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());"  >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());"  >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());"  >> $ddl_file

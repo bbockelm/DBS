@@ -24,16 +24,16 @@ ORACLE:
 
 #############################  Expert ONLY Options #########################
 
-The DRUID Generated Files are:
+The DRUID Generated File is:
     
        DBS-NeXtGen-MySQL.sql and DBS-NeXtGen-Oracle.sql
 
 To re-generate deployable scripts:
 
 For MySQL use 
-     ./gen_auto_inc.sh
+     ./generate_mysql_deployable.sh
 
 For Oracle use
-     ./deploy_oracle.sh
+     ./generate_oracle_deployable.sh
 
 

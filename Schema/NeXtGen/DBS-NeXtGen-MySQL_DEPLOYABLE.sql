@@ -4,9 +4,9 @@
 -- === Build : 485
 -- ======================================================================
 
-drop database dbs_new_era_v04;
-create database dbs_new_era_v04;
-use dbs_new_era_v04;
+-- drop database dbs_new_era_v05;
+create database dbs_new_era_v05;
+use dbs_new_era_v05;
 -- ======================================================================
 
 CREATE TABLE Person

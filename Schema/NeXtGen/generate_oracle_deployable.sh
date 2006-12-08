@@ -65,7 +65,11 @@ done
 #
 echo "-- ====================================================" >> $ddl_file
 # Add the rest of DDL
-cat DBS-NeXtGen-Oracle.sql| tee |grep --invert-match "CREATE INDEX" >> $ddl_file
+# Along with changing the TIMESTAMP Format to ORACLE (PL/SQL) format
+#cat DBS-NeXtGen-Oracle.sql| tee |grep --invert-match "CREATE INDEX" >> $ddl_file
+
+cat DBS-NeXtGen-Oracle.sql| tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%TIMESTAMP DEFAULT SYSTIMESTAMP%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%TIMESTAMP DEFAULT SYSTIMESTAMP%g" >> $ddl_file
+
 #
 #
 # add the index statements
@@ -97,9 +101,22 @@ cat $stamp_trig >>  $ddl_file
 #
 #
 echo "-- Set the Schema Version -- " >> $ddl_file
-echo "insert into SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
+echo "-- Pre Fill some information into tables ---------" >> $ddl_file
+echo "INSERT INTO AnalysisDSStatus (Status) VALUES ('NEW');" >> $ddl_file
+echo "INSERT INTO FileStatus (Status) VALUES ('VALID');" >> $ddl_file
+echo "INSERT INTO FileStatus (Status) VALUES ('INVALID');" >> $ddl_file
+echo "INSERT INTO FileStatus (Status) VALUES ('MERGED');" >> $ddl_file
+echo "INSERT INTO FileStatus (Status) VALUES ('PROMOTED');" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status) VALUES ('VALID');" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status) VALUES ('INVALID');" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status) VALUES ('PROMOTED');" >> $ddl_file
+echo "INSERT INTO FileType(Type) VALUES ('EVD') ;" >> $ddl_file
+echo "INSERT INTO AnalysisDSType(Type) VALUES ('TEST');" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type) VALUES ('VALID');" >> $ddl_file
+echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', SYSTIMESTAMP);" >> $ddl_file
 #
-echo "commit;">> $ddl_file
+echo "commit;" >> $ddl_file
 #
 echo
 echo
