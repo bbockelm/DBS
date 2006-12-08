@@ -290,13 +290,13 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-#createAnalysisDatasetFromPD
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
+createAnalysisDatasetFromPD
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
 listFiles
 
 echo 

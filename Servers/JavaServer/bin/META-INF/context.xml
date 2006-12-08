@@ -1,27 +1,27 @@
 <Context path="/servlet/DBSServlet" docBase="DBSServlet" debug="5" reloadable="true" crossContext="true">
-	<!--Resource name="jdbc/dbs" 
+	<Resource name="jdbc/dbs" 
 		auth="Container" 
 		type="javax.sql.DataSource" 
 		maxActive="100" 
 		maxIdle="30" 
 		maxWait="10000"
-		username="????" 
-		password="?????" 
+		username="anzar" 
+		password="prodagentpass" 
 		driverClassName="org.gjt.mm.mysql.Driver"
-		url="jdbc:mysql://localhost:3306/dbs_new_era_v04?autoReconnect=true"/-->
+		url="jdbc:mysql://localhost:3306/dbs_new_era_v04?autoReconnect=true"/>
 
-        <Resource name="jdbc/dbs" 
+        <!--Resource name="jdbc/dbs" 
                 auth="Container" 
                 type="javax.sql.DataSource" 
                 maxActive="10" 
                 maxIdle="30" 
                 maxWait="10000"
-                username="????????" 
-                password="?????????" 
+                username="cms_dbs_afaq" 
+                password="MeraMaslaHaina?" 
                 driverClassName="oracle.jdbc.driver.OracleDriver"
-                url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/>
+                url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
 
-<SupportedSchemaVersion schemaversion="v00_00_01" />
+<SupportedSchemaVersion schemaversion="v00_00_02" />
 <SupportedClientVersions clientversions="v00_00_01, v00_00_02" />
 </Context>
 					       
