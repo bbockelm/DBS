@@ -24,7 +24,8 @@ calculateAverage()
 
 }
 
-rm -f TEST_AVERAGE.txt 
+date=`date`
+echo "Test Starting at $date" >> TEST_AVERAGE.txt
 
 # 10 parallel clients
 calculateAverage 10 dbsListPrimaryDatasets.py
