@@ -128,8 +128,9 @@ class DbsApi(DbsConfig):
     """
  
     # Invoke Server.    
-    #data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern , 'instance' : 'MCLocal/Writer' })
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
+
+    print data
 
     # Parse the resulting xml output.
     try:
@@ -137,7 +138,14 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
 	  if name == 'primary-dataset':
-	    result.append(DbsPrimaryDataset (Name=str(attrs['primary_name'])))
+	    result.append(DbsPrimaryDataset (
+                                             Name=str(attrs['primary_name']),
+                                             CreationDate=str(attrs['creation_date']),
+                                             CreatedBy=str(attrs['created_by']),
+                                             LastModificationDate=str(attrs['last_modification_date']),
+                                             LastModifiedBy=str(attrs['last_modified_by']),
+                                            )
+                         )
 
       xml.sax.parseString (data, Handler ())
       return result
@@ -175,10 +183,15 @@ class DbsApi(DbsConfig):
         
 	def startElement(self, name, attrs):
 	  if name == 'processed-dataset':
-            self.currDataset = DbsProcessedDataset ( Name=str(attrs['processed_datatset_name']),     
+            self.currDataset = DbsProcessedDataset ( 
+                                                Name=str(attrs['processed_datatset_name']),     
                                                 #OpenForWriting=str(attrs['open_for_writing']), 
-                                                PrimaryDataset=DbsPrimaryDataset(
-                                                        Name=str(attrs['primary_datatset_name'])) )
+                                                PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name'])),
+                                                CreationDate=str(attrs['creation_date']),
+                                                CreatedBy=str(attrs['created_by']),
+                                                LastModificationDate=str(attrs['last_modification_date']),
+                                                LastModifiedBy=str(attrs['last_modified_by']),
+                                                )
           if name == 'data_tier':
             self.currDataset['TierList'].append(str(attrs['name']))
 
@@ -221,7 +234,13 @@ class DbsApi(DbsConfig):
 	  if name == 'parameter-set':
 	    result.append(DbsQueryableParameterSet (
 					   Hash=str(attrs['parameterset_hash']),
-					   content=str(attrs['content'])))
+					   content=str(attrs['content']),
+                                           CreationDate=str(attrs['creation_date']),
+                                           CreatedBy=str(attrs['created_by']),
+                                           LastModificationDate=str(attrs['last_modification_date']),
+                                           LastModifiedBy=str(attrs['last_modified_by']),
+                                                   )                        
+                          )
       xml.sax.parseString (data, Handler ())
       return result
     except Exception, ex:
@@ -258,7 +277,11 @@ class DbsApi(DbsConfig):
                                                          ParameterSetID=DbsQueryableParameterSet
                                                                            (
                                                                              hash=str(attrs['ps_hash'])
-                                                                           )
+                                                                           ),
+                                                         CreationDate=str(attrs['creation_date']),
+                                                         CreatedBy=str(attrs['created_by']),
+                                                         LastModificationDate=str(attrs['last_modification_date']),
+                                                         LastModifiedBy=str(attrs['last_modified_by']),
                                                         ) )
       xml.sax.parseString (data, Handler ())
       return result
@@ -296,7 +319,12 @@ class DbsApi(DbsConfig):
                                    TotalLuminosity=getInt(attrs['total_luminosity']),
                                    StoreNumber=getInt(attrs['store_number']),
                                    StartOfRun=str(attrs['start_of_run']),
-                                   EndOfRun=str(attrs['end_of_run']))
+                                   EndOfRun=str(attrs['end_of_run']),
+                                   CreationDate=str(attrs['creation_date']),
+                                   CreatedBy=str(attrs['created_by']),
+                                   LastModificationDate=str(attrs['last_modification_date']),
+                                   LastModifiedBy=str(attrs['last_modified_by']),
+                                  )
           if name =='processed-dataset':
                self.currRun['Dataset'].append(DbsProcessedDataset (
                                             Name=str(attrs['processed_datatset_name']),
@@ -335,7 +363,14 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'data_tier':
-               result.append(DbsDataTier(Name=str(attrs['name'])))
+               result.append(DbsDataTier(
+                                          Name=str(attrs['name']),
+                                          CreationDate=str(attrs['creation_date']),
+                                          CreatedBy=str(attrs['created_by']),
+                                          LastModificationDate=str(attrs['last_modification_date']),
+                                          LastModifiedBy=str(attrs['last_modified_by']),
+                                        )
+                            )
 
       xml.sax.parseString (data, Handler ())
       return result
@@ -370,7 +405,11 @@ class DbsApi(DbsConfig):
                                        Name=str(attrs['name']), 
                                        BlockSize=int(attrs['size']),
                                        NumberOfFiles=int(attrs['number_of_files']),
-                                       #OpenForWriting=str(attrs['open_for_writing'])
+                                       #OpenForWriting=str(attrs['open_for_writing']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
                                        )
                              )
 
@@ -412,7 +451,11 @@ class DbsApi(DbsConfig):
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
                                        Checksum=str(attrs['checksum']),
-                                       QueryableMetadata=str(attrs['queryable_meta_data']) 
+                                       QueryableMetadata=str(attrs['queryable_meta_data']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
                                        )
 
           if name == 'data_tier':
@@ -425,13 +468,21 @@ class DbsApi(DbsConfig):
                                                    EndEventNumber=int(attrs['end_event']),   
                                                    LumiStartTime=str(attrs['lumi_start']),
                                                    LumiEndTime=str(attrs['lumi_end']),
-                                                   RunNumber=int(attrs['run_number']) 
+                                                   RunNumber=int(attrs['run_number']),
+                                                   CreationDate=str(attrs['creation_date']),
+                                                   CreatedBy=str(attrs['created_by']),
+                                                   LastModificationDate=str(attrs['last_modification_date']),
+                                                   LastModifiedBy=str(attrs['last_modified_by']), 
                                               ))
           if name == 'algorithm':
             self.currFile['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
-                                                         ApplicationFamily=str(attrs['app_family_name'])
-                                              )) 
+                                                         ApplicationFamily=str(attrs['app_family_name']),
+                                                         CreationDate=str(attrs['creation_date']),
+                                                         CreatedBy=str(attrs['created_by']),
+                                                         LastModificationDate=str(attrs['last_modification_date']),
+                                                         LastModifiedBy=str(attrs['last_modified_by']),
+                                              ) ) 
         def endElement(self, name):
           if name == 'file':
              result.append(self.currFile)
