@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 477
+-- === Build : 485
 -- ======================================================================
 
 drop database dbs_new_era_v04;
@@ -12,8 +12,8 @@ use dbs_new_era_v04;
 CREATE TABLE Person
   (
     ID                    int not null auto_increment,
-    Name                  varchar(100) ,
-    DistinguishedName     varchar(100)                                                      not null,
+    Name                  varchar(100)                                                      not null,
+    DistinguishedName     varchar(100)                                                      unique not null,
     ContactInfo           varchar(100),
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
@@ -21,7 +21,6 @@ CREATE TABLE Person
     LastModifiedBy        int,
 
     primary key(ID),
-    unique(Name,DistinguishedName),
 
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
@@ -103,6 +102,77 @@ CREATE TABLE SchemaVersion
 
 -- ======================================================================
 
+CREATE TABLE PrimaryDataset
+  (
+    ID                    int not null auto_increment,
+    Name                  varchar(100)                                                      unique not null,
+    Annotation            varchar(1000)                                                     not null,
+    Description           int,
+    StartDate             varchar(100),
+    EndDate               varchar(100),
+    Type                  int                                                               not null,
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+
+    foreign key(Description) references PrimaryDatasetDescription(ID),
+    foreign key(Type) references PrimaryDSType(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE ProcessedDataset
+  (
+    ID                    int not null auto_increment,
+    Name                  varchar(100)                                                      not null,
+    PrimaryDataset        int                                                               not null,
+    PhysicsGroup          int                                                               not null,
+    Status                int                                                               not null,
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID),
+    unique(Name,PrimaryDataset),
+
+    foreign key(PrimaryDataset) references PrimaryDataset(ID) on update CASCADE on delete CASCADE,
+    foreign key(PhysicsGroup) references PhysicsGroup(ID),
+    foreign key(Status) references ProcDSStatus(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE Runs
+  (
+    ID                    int not null auto_increment,
+    RunNumber             int                                                               unique not null,
+    NumberOfEvents        int                                                               not null,
+    NumberOfLumiSections  int                                                               not null,
+    TotalLuminosity       int                                                               not null,
+    StoreNumber           int                                                               not null,
+    StartOfRun            varchar(100),
+    EndOfRun              varchar(100),
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID),
+
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
 CREATE TABLE AnalysisDataset
   (
     ID                    int not null auto_increment,
@@ -126,6 +196,27 @@ CREATE TABLE AnalysisDataset
     foreign key(PhysicsGroup) references PhysicsGroup(ID),
     foreign key(Status) references AnalysisDSStatus(ID) on update SET NULL on delete SET NULL,
     foreign key(Parent) references AnalysisDataset(ID),
+    foreign key(CreatedBy) references Person(ID),
+    foreign key(LastModifiedBy) references Person(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE Block
+  (
+    ID                    int not null auto_increment,
+    Name                  varchar(100)                                                      unique not null,
+    Dataset               int                                                               not null,
+    BlockSize             int                                                               not null,
+    NumberOfFiles         int                                                               not null,
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID),
+
+    foreign key(Dataset) references ProcessedDataset(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -157,78 +248,6 @@ CREATE TABLE Files
     foreign key(FileStatus) references FileStatus(ID),
     foreign key(FileType) references FileType(ID),
     foreign key(ValidationStatus) references AnalysisDSStatus(ID),
-    foreign key(CreatedBy) references Person(ID),
-    foreign key(LastModifiedBy) references Person(ID)
-  );
-
--- ======================================================================
-
-CREATE TABLE ProcessedDataset
-  (
-    ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      not null,
-    PrimaryDataset        int                                                               not null,
-    PhysicsGroup          int                                                               not null,
-    Status                int                                                               not null,
-    CreatedBy             int,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    primary key(ID),
-    unique(Name,PrimaryDataset),
-
-    foreign key(PrimaryDataset) references PrimaryDataset(ID) on update CASCADE on delete CASCADE,
-    foreign key(PhysicsGroup) references PhysicsGroup(ID),
-    foreign key(Status) references ProcDSStatus(ID),
-    foreign key(CreatedBy) references Person(ID),
-    foreign key(LastModifiedBy) references Person(ID)
-
-  );
-
--- ======================================================================
-
-CREATE TABLE PrimaryDataset
-  (
-    ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      unique not null,
-    Annotation            varchar(1000)                                                     not null,
-    Description           int,
-    StartDate             varchar(100),
-    EndDate               varchar(100),
-    Type                  int                                                               not null,
-    CreatedBy             int,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID),
-
-    foreign key(Description) references PrimaryDatasetDescription(ID),
-    foreign key(Type) references PrimaryDSType(ID),
-    foreign key(CreatedBy) references Person(ID),
-    foreign key(LastModifiedBy) references Person(ID)
-  );
-
--- ======================================================================
-
-CREATE TABLE Runs
-  (
-    ID                    int not null auto_increment,
-    RunNumber             int                                                               unique not null,
-    NumberOfEvents        int                                                               not null,
-    NumberOfLumiSections  int                                                               not null,
-    TotalLuminosity       int                                                               not null,
-    StoreNumber           int                                                               not null,
-    StartOfRun            varchar(100),
-    EndOfRun              varchar(100),
-    CreatedBy             int,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    primary key(ID),
-
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -272,28 +291,6 @@ CREATE TABLE LumiSection
     foreign key(RunNumber) references Runs(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
-  );
-
--- ======================================================================
-
-CREATE TABLE Block
-  (
-    ID                    int not null auto_increment,
-    Name                  varchar(250)                                                      unique not null,
-    Dataset               int                                                               not null,
-    BlockSize             int                                                               not null,
-    NumberOfFiles         int                                                               not null,
-    CreatedBy             int,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    primary key(ID),
-
-    foreign key(Dataset) references ProcessedDataset(ID),
-    foreign key(CreatedBy) references Person(ID),
-    foreign key(LastModifiedBy) references Person(ID)
-
   );
 
 -- ======================================================================
@@ -820,8 +817,9 @@ CREATE TABLE ProcAlgo
     foreign key(LastModifiedBy) references Person(ID)
   );
 
+-- ======================================================================
 
--- ======================= TRIGGERS FOR CreationDate
+-- =========== TRIGGERS FOR CreationDate ==============================
 
 CREATE TRIGGER TR_TS_Person BEFORE INSERT ON Person
 FOR EACH ROW SET NEW.CreationDate = NOW();
@@ -838,28 +836,28 @@ FOR EACH ROW SET NEW.CreationDate = NOW();
 CREATE TRIGGER TR_TS_SchemaVersion BEFORE INSERT ON SchemaVersion
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
-CREATE TRIGGER TR_TS_AnalysisDataset BEFORE INSERT ON AnalysisDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_Files BEFORE INSERT ON Files
+CREATE TRIGGER TR_TS_PrimaryDataset BEFORE INSERT ON PrimaryDataset
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 CREATE TRIGGER TR_TS_ProcessedDataset BEFORE INSERT ON ProcessedDataset
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
-CREATE TRIGGER TR_TS_PrimaryDataset BEFORE INSERT ON PrimaryDataset
+CREATE TRIGGER TR_TS_Runs BEFORE INSERT ON Runs
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
-CREATE TRIGGER TR_TS_Runs BEFORE INSERT ON Runs
+CREATE TRIGGER TR_TS_AnalysisDataset BEFORE INSERT ON AnalysisDataset
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_Block BEFORE INSERT ON Block
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_Files BEFORE INSERT ON Files
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 CREATE TRIGGER TR_TS_DataTier BEFORE INSERT ON DataTier
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 CREATE TRIGGER TR_TS_LumiSection BEFORE INSERT ON LumiSection
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_Block BEFORE INSERT ON Block
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 CREATE TRIGGER TR_TS_AnalysisDSStatus BEFORE INSERT ON AnalysisDSStatus
@@ -944,23 +942,14 @@ CREATE TRIGGER TR_TS_ProcAlgo BEFORE INSERT ON ProcAlgo
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 -- ======================================================================
--- Initialize status tables There are better ways to do it, get to that laters
+-- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-insert into SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
-
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
-
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
-
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
-
 INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;
-
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
-
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());
-
 commit;
-
-
