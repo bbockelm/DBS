@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.29 $"
- $Id: DBSSql.java,v 1.29 2006/12/06 17:27:39 afaq Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSSql.java,v 1.30 2006/12/07 20:33:16 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -12,6 +12,11 @@ import java.sql.SQLException;
 import dbs.util.DBSUtil;
 import db.DBManagement;
 
+
+
+/**
+ * This class is the SQL generator. All the methods in this class are static method. The main function of this class is to construct a <code>java.sql.PreparedStatement</code> with the proper query. All the methods returns the constructed <code>java.sql.PreparedStatement</code> after packing it with proper variables' values that are passed in as parameters to various method calls. All the methods can throw and <code>java.sql.SQLException</code> if the prepared statement fails to construct.
+ */
 public class DBSSql {
 	/**
 	 * 

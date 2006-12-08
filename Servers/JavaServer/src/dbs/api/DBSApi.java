@@ -1,6 +1,6 @@
 /**
- $Revision: 1.34 $"
- $Id: DBSApi.java,v 1.34 2006/12/07 20:33:16 sekhri Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSApi.java,v 1.35 2006/12/07 22:49:07 afaq Exp $"
  *
 */
 
@@ -23,12 +23,101 @@ import db.DBManagement;
 import java.sql.ResultSet;
 import dbs.util.DBSConfig;
 
+/**
+ * This class encapsulate <code>dbs.api.DBSApiLogic</code> , handles database connection management,handle XML parsing for the input provided by the clients, checks the match between schema and api version and handles exceptions. This class works as the higher level dispatcher for DBS API. All the DBS API calls are invoked vias a public method call. The interface of this class is this call method which can take a hashtable of key value pairs. It invokes the API call depending upon the value of the api key in the hashtable. The reason for having this higher level class is to separate the lovel level business logic from database connection management and xml parsing.<br>
+* Most of the insert API calls requires an xml input that needs to be parsed and converted into a hastable that can be further passed down to <code>dbs.api.DBSApiLogic</code> class. Here are the sample XML input required by various insert APIs <br> <br><code>
+ * <b>insertPrimaryDataset</b> <br>
+	<"?xml version='1.0' standalone='yes'?"> <br>
+			<"dbs"> <br>
+				<"primary-dataset annotation='aaaa' primary_name='abcd' start_date='NOV' end_date='DEC' trigger_path_description='anyTD' mc_channel_description='MCDesc' mc_production='MCProd' mc_decay_chain='DC' other_description='OD' type='VALID'">
+				<"/primary-dataset"> <br>
+ 			<"/dbs"> <br>
+ * <br>		
+ * <br>		
+ * <b>insertAlgorithm</b> <br>
+		<"?xml version='1.0' standalone='yes'?"> <br>
+		<"dbs"> <br>
+			<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE1' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
+		<"/dbs"> <br>
+		
+ * <br>		
+ * <br>		
+ * <b>insertRun</b> <br>
+		<"?xml version='1.0' standalone='yes'?"> <br>
+		<"dbs"> <br>
+			<"run run_number='111' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'/"> <br>
+		<"/dbs"> <br>
+	
+ * <br>		
+ * <br>		
+ * <b>insertLumiSection</b> <br>
+		<"?xml version='1.0' standalone='yes'?"> <br>
+		<"dbs"> <br>
+			<"lumi lumi_section_number='1111' run_number='11' start_event_number='20' end_event_number='200' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+		<"/dbs"> <br>
+
+ * <br>		
+ * <br>		
+ * <b>insertProcessedDataset</b>  <br>
+		<"?xml version='1.0' standalone='yes'?"> <br>
+		<"dbs"> <br>
+			<"processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='VALID'"> <br>
+				<"data_tier name='$tier_name1'/"> <br>
+				<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE1' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
+				<"algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY2' ps_type='DUMMYTYPE2' ps_annotation='ANN2' ps_content='DUMMYCON'/"> <br>
+				<"run run_number='222'/"> <br>
+				<"run run_number='111'/"> <br>
+			<"/processed-dataset"> <br>
+		<"/dbs"> <br>
+
+ * <br>		
+ * <br>		
+ * <b>insertBlock</b> <br>
+		<"?xml version='1.0' standalone='yes'?"> <br>
+		"<"dbs"> <br>
+			<"block path='$path' name='$block_name' open_for_writing='1'/"> <br>
+		<"/dbs"> <br>
+
+ * <br>		
+ * <br>		
+ * <b>insertFiles</b> <br>
+		<"?xml version='1.0' standalone='yes'?"> <br>
+		<"dbs"> <br>
+		<"processed_datatset path='$path' block_name='$block_name'"> <br>
+			<"file lfn='TEST_LFN_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'"> <br>
+				<"lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+				<"lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+				<"lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+				<"data_tier name='$tier_name1'/"> <br>
+				<"data_tier name='$tier_name2'/"> <br>
+				<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name1' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE2' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
+				<"algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY2' ps_type='DUMMYTYPE2' ps_annotation='ANN2' ps_content='DUMMYCON'/"> <br>
+			<"/file"> <br>
+			<"file lfn='TEST_LFN_2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='MERGED' type= 'EVD' validation_status='VALID' queryable_meta_data='any'"> <br>
+				<"lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+				<"lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+				<"lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+				<"data_tier name='$tier_name1'/"> <br>
+				<"data_tier name='$tier_name2'/"> <br>
+				<"parent lfn='TEST_LFN_1'/"> <br>
+				<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name1' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE2' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
+			<"/file"> <br>
+		<"/processed_datatset"> <br>
+		<"/dbs"> <br>
+ * </code>
+ * @author sekhri
+ * 
+ */
 public class DBSApi {
-	/**
-	 * 
-	 */
 	private DBSApiLogic api;
 	
+	/**
+	* Constructs a DBSApi object that can be used to invoke call method that invokes several APIs from <code>dbs.api.DBSApiLogic</code> class. The constructor instantiates a private <code>dbs.api.DBSApiLogic</code> object.
+	*/
+	public DBSApi() {
+		api = new DBSApiLogic();
+	}
+
         public Vector supportedClientApiVersions() throws Exception {
 		//FIXME ASK Anzar  to use some conventions in declaing vaiables.
                 DBSConfig config = DBSConfig.getInstance();
@@ -61,7 +150,7 @@ public class DBSApi {
                 return false;
         }
 
-	public void checkSchemaVersion() throws Exception {
+	private void checkSchemaVersion() throws Exception {
 		Connection conn =  getConnection();
 		try {
 			String sql = "select SchemaVersion from SchemaVersion";
@@ -82,7 +171,7 @@ public class DBSApi {
                 }
         }  
 
-        public void checkVersion(String apiversion) throws Exception {
+        private void checkVersion(String apiversion) throws Exception {
 		//FIXME I dont think this api check is does anything. Anyways it has to move in the call method insated of the constructor
                 Enumeration verEnum = supportedClientApiVersions().elements();
                 String msg  = "Incorrect API version specified '"+apiversion+"'";
@@ -102,10 +191,39 @@ public class DBSApi {
                 //Now lets check the Schema version too !!!!!!!!!!!!
         }
 
-        public DBSApi() {
-                api = new DBSApiLogic();
-	}
-
+	/**
+	 * This method is the main interface for invoking the various API calls. It makes a database connection, extract the key value pairs from the input hashtable and calls the low level DBSApiLogic with the extracted parameters. If the input parameters are in xml format then it parse the xml and packs those parameters in another hashtable and pass that to the low level DBSApiLogic.
+	 * If any exception is occured then it takes that exception and converts it into a proper string message and writes it ont to the output stream  that gets transferred back to the client. Any hash table with any key value pair can be passed to this call method and it determines which low level DBSApiLogic api to call depending upon the value of api parameter.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into and passed it further down to the DBSApiLogic apis.
+	 * @param table a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for any particular api. It determines which api to call by the value of the api field in the table. For the various API the following key value parsie may or may not be required. <br>
+	 * listPrimaryDatasets - pattern <br>
+	 * listProcessedDatasets - primary_datatset_name_pattern, data_tier_name_pattern, processed_datatset_name_pattern, app_version,	app_family_name, app_executable_name, parameterset_name <br>
+	 * listAlgorithms - app_version, app_family_name, app_executable_name, 	parameterset_name <br>
+	 * listRuns - path <br>
+	 * listTiers - path <br>
+	 * listBlocks - path <br>
+	 * listFiles - path, block_name, pattern_lfn <br>
+	 * insertPrimaryDataset - xmlinput <br>
+	 * insertAlgorithm - xmlinput <br>
+	 * insertRun - xmlinput <br>
+	 * insertTier - tier_name <br>
+	 * insertLumiSection - xmlinput <br>
+	 * insertProcessedDataset - xmlinput <br>
+	 * createAnalysisDatasetFromPD - xmlinput <br>
+	 * insertBlock - xmlinput <br>
+	 * insertFiles - xmlinput <br>
+	 * insertTierInPD - path, tier_name <br>
+	 * insertParentInPD - path, parent_path <br>
+	 * insertAlgoInPD - path, xmlinput <br>
+	 * insertRunInPD - path, run_number <br>
+	 * insertTierInFile - lfn, tier_name <br>
+	 * insertParentInFile - lfn, parent_lfn <br>
+	 * insertAlgoInFile - lfn, xmlinput <br>
+	 * insertLumiInFile - lfn, ls_number <br>
+	 * 
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception All the exceptions that are thrown by the underlying layesr are caught and written down in the output stream that goes back to the client in proper XML format. Only an un expected exception may be raised in this method when trying to wirte to the output stream, which may not propogate back to the client.
+	 */
 	public void call(Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
                 
 		Connection conn = null;
@@ -350,7 +468,7 @@ public class DBSApi {
 		
 	}
 	
-	public Hashtable parse(String inputXml, String key) throws Exception {
+	private Hashtable parse(String inputXml, String key) throws Exception {
 		//	checkXML(inputXml);
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
@@ -366,7 +484,7 @@ public class DBSApi {
 		return table;
 	}
 	
-	public Hashtable parsePD(String inputXml) throws Exception {
+	private Hashtable parsePD(String inputXml) throws Exception {
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
 		Vector allElement = dbsParser.getElements();
@@ -393,7 +511,7 @@ public class DBSApi {
 		return psDS;
 	}
 	
-	public void insertFiles(Connection conn, Writer out, String inputXml, Hashtable dbsUser) throws Exception {
+	private void insertFiles(Connection conn, Writer out, String inputXml, Hashtable dbsUser) throws Exception {
 		Vector topLevel = new Vector();
 		int index = -1;
 		DBSXMLParser dbsParser = new DBSXMLParser();
