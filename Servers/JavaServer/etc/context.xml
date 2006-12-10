@@ -7,7 +7,7 @@
 		maxIdle="30" 
 		maxWait="10000"
 		username="anzar" 
-		password="prodagentpass" 
+		password="" 
 		driverClassName="org.gjt.mm.mysql.Driver"
 		url="jdbc:mysql://localhost:3306/dbs_new_era_v05?autoReconnect=true"/>
 
