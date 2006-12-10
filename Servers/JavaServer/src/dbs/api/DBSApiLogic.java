@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApiLogic.java,v 1.43 2006/12/07 22:53:18 afaq Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApiLogic.java,v 1.44 2006/12/08 20:59:24 sekhri Exp $"
  *
  */
 
@@ -18,7 +18,7 @@ import db.DBManagement;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
-
+import dbs.util.DBSConfig;
 import dbs.DBSConstants;
 
 /**
@@ -345,7 +345,9 @@ public class DBSApiLogic {
 			procDSID = getProcessedDSID(conn, path);
 		}
 		if(!isNull(blockName)) {
-			blockID = getBlockID(conn, blockName, true);
+			blockID = getBlockID(conn, blockName, false, true);
+                        //FIXME: We need to make sure that we MUST have ONLY an OPEN Block for adding a file to !
+                       
 		}
 		if(blockID == null && procDSID == null) {
 			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset or a Block");
@@ -529,7 +531,7 @@ public class DBSApiLogic {
 				name,
 				procDSID,
 				"0",// A new block should always have 0 files
-				openForWriting,
+				"1", //openForWriting must be 1 fr a new block
 				getUserID(conn, dbsUser));
 
 			ps.execute();
@@ -633,9 +635,19 @@ public class DBSApiLogic {
 			}
 		}*/
 		String procDSID = getProcessedDSID(conn, path);
-		String blockID = getBlockID(conn, blockName, true);
+                String blockID;
 
-		
+                //If user INSIST to provide a BlockName
+                if ( ! isNull(blockName) && !(blockName.equals("")) ) {
+		    blockID = getBlockID(conn, blockName, true, true);
+                    //FIXME: We must need to verify that Block is OpenForWriting
+                    
+                }
+                //Let DBS choose the Block
+                else {
+                    blockID = dbsManagedBlockID(conn, procDSID, path, dbsUser);
+                }
+
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
 		
@@ -1397,7 +1409,77 @@ public class DBSApiLogic {
 	}*/
 
 
+        private String insertBlock(Connection conn, String procDSID, String path, Hashtable dbsUser) throws Exception {
+                String[] data = path.split("/");
+                String name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID();
+                String openForWriting = "1";
 
+                //checkBlock(name);
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertBlock(conn,
+                                "0",// A new block should always have 0 size
+                                name,
+                                procDSID,
+                                "0",// A new block should always have 0 files
+                                openForWriting,
+                                getUserID(conn, dbsUser));
+
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+                return getBlockID(conn, name, false, true);
+        }
+
+        private String dbsManagedBlockID (Connection conn, String procDSID, String path, Hashtable dbsUser) throws Exception {
+                String id = "";
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+                try {
+                        ps = DBSSql.getOpenBlockID(conn, procDSID);
+                        rs =  ps.executeQuery();
+                        if(!rs.next()) {
+                           Hashtable newBlock = new Hashtable();
+                           //Unable to find an Open Block, Create one.
+                           id = insertBlock(conn, procDSID, path, dbsUser);
+                           return id;
+                        }
+                        id = get(rs, "ID");
+
+                        DBSConfig config = DBSConfig.getInstance();
+
+                        int configuredBlkSize = config.getMaxBlockSize();
+                        int configuredNumFiles = config.getMaxBlockFiles();
+                        System.out.println("configuredBlkSize: "+configuredBlkSize);
+                        System.out.println("configuredNumFiles: "+configuredNumFiles);
+
+                        int blockSize = Integer.parseInt(get(rs, "BLOCKSIZE"));
+                        int numberOfFiles = Integer.parseInt(get(rs, "NUMBER_OF_FILES"));
+                        if (blockSize > configuredBlkSize || numberOfFiles >= configuredNumFiles ) {
+                           System.out.println("*********************CLOSING BLOCK****************");
+                           closeBlock(conn, id);
+                           id = insertBlock(conn, procDSID, path, dbsUser);
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+                return id;
+        }
+
+
+        private void closeBlock(Connection conn, String blockID) throws Exception {
+
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.closeBlock(conn, blockID);
+                        ps.executeUpdate();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+       }
+ 
 	/**
 	 * Gets a block id from the database by using the block name as the unique key. This actually generates the sql by calling a generic private <code>dbs.sql.DBSSql.getID</code> method. 
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
@@ -1405,20 +1487,26 @@ public class DBSApiLogic {
 	 * @param excep a boolean flag that determines if the exception needs to be raised if the block is not found.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable, or the block is not found.
 	 */
-	private String getBlockID(Connection conn, String name, boolean excep) throws Exception {
+	private String getBlockID(Connection conn, String name, boolean checkOpen, boolean excep) throws Exception {
 		checkBlock(name);
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getID( "Block", "Name", name));
 		String id = "";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = DBSSql.getID(conn, "Block", "Name", name);
+			//ps = DBSSql.getID(conn, "Block", "Name", name);
+			ps = DBSSql.getBlockID(conn, name);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				if(excep) throw new DBSException("Unavailable data", "1010", "No such block : name : "  + name );
 				else return null;
 			}
 			id = get(rs, "ID");
+                        if (checkOpen) {
+                           String openForWriting = get(rs, "OPEN_FOR_WRITING");
+                           if ( ! openForWriting.equals("1") )
+                              throw new DBSException("Data insert error", "1066", "Block :"+name+" not open for further files");
+                        }
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.30 $"
- $Id: DBSSql.java,v 1.30 2006/12/07 20:33:16 sekhri Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSSql.java,v 1.31 2006/12/08 20:59:25 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -153,8 +153,7 @@ public class DBSSql {
 				        "Name, \n" +
 				        "Dataset, \n" +
 				        "NumberOfFiles, \n" +
-                                        //OpenForWriting flag can be managed through Status why we duplicate 
-				        //"OpenForWriting, \n" +
+				        "OpenForWriting, \n" +
 			        	"CreatedBy, \n" +
 				        "LastModifiedBy \n" +
 				") VALUES ( \n" +
@@ -162,7 +161,7 @@ public class DBSSql {
 					"?, \n" +
 					"?, \n" +
 					"?, \n" +
-					//"?, \n" +
+					"?, \n" +
 					"?, \n" +
 					"? \n" +
 				") \n";
@@ -172,10 +171,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, name);
 		ps.setString(columnIndx++, procDSID);
 		ps.setString(columnIndx++, nOfFiles);
-                                        //OpenForWriting flag can be managed through Status why we duplicate 
-                //FIXME openForWriting Forcing it to be TRUE for each new Block  
-		//ps.setBoolean(5, true);
-                //mind the INDEX
+		ps.setString(columnIndx++, openForWriting);
 		ps.setString(columnIndx++, userID);
 		ps.setString(columnIndx++, userID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -429,6 +425,48 @@ public class DBSSql {
 		return ps;
 	}
 
+
+
+        public static PreparedStatement closeBlock(Connection conn, String blockID) throws SQLException {
+                String sql = "UPDATE Block \n" +
+                        "SET OpenForWriting=0 \n" +
+                        "WHERE ID = ?" ;
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, blockID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+
+        public static PreparedStatement getOpenBlockID(Connection conn, String processedDSID) throws SQLException {
+                String sql = "SELECT blk.ID as ID, \n" +
+                             "blk.BlockSize as BLOCKSIZE, \n" +
+                             "blk.NumberOfFiles as NUMBER_OF_FILES \n" +
+                             "From Block blk \n" +
+                             " WHERE blk.Dataset = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, processedDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }  
+
+
+        public static PreparedStatement getBlockID(Connection conn, String blockName) throws SQLException {
+                String sql = "SELECT blk.ID as ID, \n" +
+                             "blk.BlockSize as BLOCKSIZE, \n" +
+                             "blk.NumberOfFiles as NUMBER_OF_FILES, \n" +
+                             "blk.OpenForWriting as OPEN_FOR_WRITING \n" +
+                             "From Block blk \n" +
+                             " WHERE blk.Name = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, blockName);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 
         public static PreparedStatement insertAnalysisDataset(Connection conn, String ann,
