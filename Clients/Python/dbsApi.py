@@ -749,7 +749,7 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
  
   # ------------------------------------------------------------
-  def insertFiles(self, dataset, files, block):
+  def insertFiles(self, dataset, files, block=None):
     """
     Insert files to an existing block.  Instantiates a database row
     for each element of the file list.  The objects are *not* updated
