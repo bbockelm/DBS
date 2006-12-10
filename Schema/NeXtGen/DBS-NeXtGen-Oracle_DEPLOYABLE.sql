@@ -445,6 +445,7 @@ CREATE TABLE Block
     Dataset               int                                                               not null,
     BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,
+    OpenForWriting        int                                                               not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     LastModifiedBy        int,

@@ -4,7 +4,7 @@
 -- === Build : 485
 -- ======================================================================
 
--- drop database dbs_new_era_v05;
+drop database dbs_new_era_v05;
 create database dbs_new_era_v05;
 use dbs_new_era_v05;
 -- ======================================================================
@@ -209,6 +209,7 @@ CREATE TABLE Block
     Dataset               int                                                               not null,
     BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,
+    OpenForWriting        int                                                               not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
