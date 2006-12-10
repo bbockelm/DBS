@@ -6,7 +6,7 @@ source setup.sh
 cd -
 counter=`date +%m%h%s`
 mkdir -p $counter
-cp dbsInsertUnitTests.py dbsListUnitTests.py dbsUnitTestApi.py $counter
+cp dbsInsertUnitTestsWithDBSBlkMgmt.py dbsListUnitTests.py dbsUnitTestApi.py $counter
 cd $counter
 echo "Please wait ... The tests can take up to 5 minutes"
 python dbsInsertUnitTestsWithDBSBlkMgmt.py --verbose=2 | grep '^\Test'
