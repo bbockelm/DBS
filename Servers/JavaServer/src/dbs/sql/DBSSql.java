@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.31 $"
- $Id: DBSSql.java,v 1.31 2006/12/08 20:59:25 sekhri Exp $"
+ $Revision: 1.32 $"
+ $Id: DBSSql.java,v 1.32 2006/12/10 01:53:49 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -438,6 +438,36 @@ public class DBSSql {
                 return ps;
         }
 
+	//FIXME Just use this and delete all other getBlockIds
+	public static PreparedStatement getBlock(Connection conn, String procDSID,  String blockName) throws SQLException {
+		String sql = "SELECT b.ID as ID, \n " +
+			"b.Name as NAME, \n" +
+			"b.BlockSize as BLOCKSIZE, \n" +
+			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+			"b.OpenForWriting as OPEN_FOR_WRITING \n" +
+			"FROM Block b \n";
+		if(procDSID != null && blockName != null) {
+			sql += "WHERE b.Dataset = ? AND  b.Name = ? \n";
+		} else if(procDSID != null) {
+			sql += "WHERE b.Dataset = ? \n";
+		} else if(blockName != null) {
+			sql += "WHERE b.Name = ? \n";
+		}
+
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		if(procDSID != null && blockName != null) {
+                	ps.setString(columnIndx++, procDSID);
+                	ps.setString(columnIndx++, blockName);
+		} else if(procDSID != null) {
+                	ps.setString(columnIndx++, procDSID);
+		} else if(blockName != null) {
+                	ps.setString(columnIndx++, blockName);
+		}
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
 
         public static PreparedStatement getOpenBlockID(Connection conn, String processedDSID) throws SQLException {
@@ -527,8 +557,7 @@ public class DBSSql {
                            "FROM LumiSection ls \n"+
                            "WHERE ls.RunNumber = ? \n";
               PreparedStatement ps = DBManagement.getStatement(conn, sql);
-              int columnIndx = 1;
-              ps.setString(columnIndx++, runNumber);
+              ps.setString(1, runNumber);
               DBSUtil.writeLog("\n\n" + ps + "\n\n");
               return ps;
         }
@@ -545,8 +574,7 @@ public class DBSSql {
 				"ON pdsr.Run = rs.ID\n" +
 			"WHERE pdsr.Dataset = ?";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		int columnIndx = 1;
-		ps.setString(columnIndx++, procDSID);
+		ps.setString(1, procDSID);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -587,8 +615,7 @@ public class DBSSql {
 				"ORDER BY PRIMARY_NAME DESC";
 		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, pattern);
+		ps.setString(1, pattern);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -665,7 +692,7 @@ public class DBSSql {
 			"and ae.ExecutableName like ? \n" +
 			"and ps.Name like ? \n" +
 			//"ORDER BY path";
-			"ORDER BY id, app_version, app_family_name, app_executable_name, ps_name, data_tier DESC";
+			"ORDER BY id, APP_VERSION, APP_FAMILY_NAME, APP_EXECUTABLE_NAME, PS_NAME, DATA_TIER DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		ps.setString(columnIndx++, patternPrim);
@@ -675,6 +702,55 @@ public class DBSSql {
 		ps.setString(columnIndx++, patternFam);
 		ps.setString(columnIndx++, patternExe);
 		ps.setString(columnIndx++, patternPS);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
+		String sql = "SELECT procds.id as id, \n" +
+			"concat( \n" +
+				"concat( \n" +
+					"concat( \n" +
+						"concat( \n" +
+							"concat('/', primds.Name \n" +
+							"),'/' \n" +
+						"),dt.Name \n" +
+					"),'/' \n" +
+				"), procds.name \n" +
+			") as PATH, \n" +
+			"procds.CreationDate as CREATION_DATE, \n" +
+			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
+			"perpg.DistinguishedName as PHYSICS_GROUP_CONVENER, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM ProcessedDataset procds \n" +
+			"JOIN PrimaryDataset primds \n" +
+				"ON primds.id = procds.PrimaryDataset \n" +
+			"LEFT OUTER JOIN ProcDSTier pdst \n" +
+				"ON pdst.Dataset = procds.id \n" +
+			"LEFT OUTER JOIN DataTier dt \n" +
+				"ON dt.id = pdst.DataTier \n" +
+			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+				"ON pg.id = procds.PhysicsGroup \n" +
+			"JOIN DatasetParentage dp \n" +
+				"ON dp.ItsParent = procds.id \n" +
+			"LEFT OUTER JOIN Person perpg \n" +
+				"ON perpg.id = pg.PhysicsGroupConvener \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = procds.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = procds.LastModifiedBy \n";
+		
+		if(procDSID != null) {
+			sql += "WHERE dp.ThisDataset = ? \n";
+		}
+		sql +=	"ORDER BY PATH DESC";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(procDSID != null) {
+			ps.setString(1, procDSID);
+		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -713,7 +789,7 @@ public class DBSSql {
 			"and af.FamilyName like ? \n" +
 			"and ae.ExecutableName like ? \n" +
 			"and ps.Name like ? \n" +
-			"ORDER BY app_family_name, app_executable_name, app_version, ps_name DESC";
+			"ORDER BY APP_FAMILY_NAME, APP_EXECUTABLE_NAME, APP_VERSION, PS_NAME DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, patternVer);
@@ -748,10 +824,9 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE pdsr.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY run_number DESC";
+		sql +=	"ORDER BY RUN_NUMBER DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, procDSID);
+		ps.setString(1, procDSID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -774,15 +849,14 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE pdst.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY name DESC";
+		sql +=	"ORDER BY NAME DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, procDSID);
+		ps.setString(1, procDSID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
-	public static PreparedStatement listBlocks(Connection conn, String procDSID) throws SQLException {
+	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName) throws SQLException {
 		String sql = "SELECT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
@@ -799,13 +873,24 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = b.LastModifiedBy \n";
 
-		if(procDSID != null) {
+		if(procDSID != null && blockName != null) {
+			sql += "WHERE b.Dataset = ? AND  b.Name like ? \n";
+		} else if(procDSID != null)  {
 			sql += "WHERE b.Dataset = ? \n";
+		} else if(blockName != null) {
+			sql += "WHERE b.Name like ? \n";
 		}
-		sql +=	"ORDER BY name DESC";
+		sql +=	"ORDER BY NAME DESC";
+                int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1; 
-		ps.setString(columnIndx++, procDSID);
+		if(procDSID != null && blockName != null) {
+			ps.setString(columnIndx++, procDSID);
+			ps.setString(columnIndx++, blockName);
+		} else if(procDSID != null)  {
+			ps.setString(columnIndx++, procDSID);
+		} else if(blockName != null) {
+			ps.setString(columnIndx++, blockName);
+		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -822,15 +907,15 @@ public class DBSSql {
 			"f.ValidationStatus as VALIDATION_STATUS, \n" +
 			"st.Status as STATUS, \n" +
 			"ty.Type as TYPE, \n" +
-			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
                         "b.Name as BLOCK_NAME, \n"+ 
-			"dt.Name as DATA_TIER \n"+ 
+			"dt.Name as DATA_TIER, \n"+ 
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Files f \n" +
-                        "LEFT OUTER JOIN Block b \n" +
-                                "ON b.id = f.Block \n "+  
-                        "LEFT OUTER JOIN FileTier fdt \n" +
-                                "ON fdt.Fileid = f.id \n" +
+			"LEFT OUTER JOIN Block b \n" +
+				"ON b.id = f.Block \n "+  
+			"LEFT OUTER JOIN FileTier fdt \n" +
+				"ON fdt.Fileid = f.id \n" +
 			"LEFT OUTER JOIN DataTier dt \n" +
 				"ON dt.id = fdt.DataTier " +
 			"LEFT OUTER JOIN FileType ty \n" +
@@ -850,7 +935,7 @@ public class DBSSql {
 		if(blockID != null) {
 			sql += "and f.Block = ? \n";
 		}
-		sql +=	"ORDER BY lfn DESC";
+		sql +=	"ORDER BY LFN DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
@@ -867,14 +952,147 @@ public class DBSSql {
 		return ps;
 	}
 
+	public static PreparedStatement listFileParents(Connection conn, String fileID) throws SQLException {
+		String sql = "SELECT f.ID as ID, \n " +
+			"f.LogicalFileName as LFN, \n" +
+			"f.Checksum as CHECKSUM, \n" +
+			"f.FileSize as FILESIZE, \n" +
+			"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+			"f.CreationDate as CREATION_DATE, \n" +
+			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+			"f.ValidationStatus as VALIDATION_STATUS, \n" +
+			"st.Status as STATUS, \n" +
+			"ty.Type as TYPE, \n" +
+                        "b.Name as BLOCK_NAME, \n"+ 
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+			"FROM Files f \n" +
+			"JOIN FileParentage fp \n" +
+				"ON fp.ItsParent = f.ID \n" +
+			"LEFT OUTER JOIN Block b \n" +
+				"ON b.id = f.Block \n "+  
+			"LEFT OUTER JOIN FileType ty \n" +
+				"ON ty.id = f.FileType \n" +
+			"LEFT OUTER JOIN FileStatus st \n" +
+				"ON st.id = f.FileStatus \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = f.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = f.LastModifiedBy \n";
+	
+		if(fileID != null) {
+			sql += "WHERE fp.ThisFile = ? \n";
+		}
+		sql +=	"ORDER BY LFN DESC";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(fileID != null) {
+			ps.setString(1, fileID);
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listFileTiers(Connection conn, String fileID) throws SQLException {
+		String sql = "SELECT dt.ID as ID, \n " +
+			"dt.Name as NAME, \n" +
+			"dt.CreationDate as CREATION_DATE, \n" +
+			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM DataTier dt \n" +
+			"JOIN FileTier ft \n" +
+				"ON ft.DataTier = dt.id \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = dt.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = dt.LastModifiedBy \n";
+		if(fileID != null) {
+			sql += "WHERE ft.File = ? \n";
+		}
+
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(fileID != null) {
+			ps.setString(1, fileID);
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listFileAlgorithms(Connection conn, String fileID) throws SQLException {
+		String sql = "SELECT algo.id as ID, \n" +
+			"av.Version as APP_VERSION, \n" +
+			"af.FamilyName as APP_FAMILY_NAME, \n" +
+			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
+			"ps.Name as PS_NAME, \n" +
+			"ps.Hash as PS_HASH, \n" +
+			"algo.CreationDate as CREATION_DATE, \n" +
+			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM AlgorithmConfig algo \n" +
+			"JOIN FileAlgoMap fam \n" +
+				"ON fam.Algorithm = algo.id \n" +
+			"JOIN AppVersion av \n" +
+				"ON av.id = algo.ApplicationVersion \n" +
+			"JOIN AppFamily af \n" +
+				"ON af.id = algo.ApplicationFamily \n" +
+			"JOIN AppExecutable ae \n" +
+				"ON ae.id = algo.ExecutableName \n" +
+			"JOIN QueryableParameterSet ps \n" +
+				"ON ps.id = algo.ParameterSetID \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = algo.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = algo.LastModifiedBy \n";
+		if(fileID != null) {
+			sql += "WHERE fam.File = ? \n";
+		}
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(fileID != null) {
+			ps.setString(1, fileID);
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listFileLumis(Connection conn, String fileID) throws SQLException {
+		String sql = "SELECT lumi.id as ID, \n" +
+			"lumi.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
+			"lumi.RunNumber as RUN_NUMBER, \n" +
+			"lumi.StartEventNumber as START_EVENT_NUMBER, \n" +
+			"lumi.EndEventNumber as END_EVENT_NUMBER, \n" +
+			"lumi.LumiStartTime as LUMI_START_TIME, \n" +
+			"lumi.LumiEndTime as LUMI_END_TIME, \n" +
+			"lumi.CreationDate as CREATION_DATE, \n" +
+			"lumi.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM LumiSection lumi \n" +
+			"JOIN FileLumi fl \n" +
+				"ON fl.Lumi = lumi.id \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = lumi.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = lumi.LastModifiedBy \n";
+		if(fileID != null) {
+			sql += "WHERE fl.File = ? \n";
+		}
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(fileID != null) {
+			ps.setString(1, fileID);
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
 	public static PreparedStatement getID(Connection conn, String table, String key, String value) throws SQLException {
 		String sql = "SELECT ID \n " +
 			"FROM " + table + "\n " +
 			"WHERE " + key + " = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, value);
+		ps.setString(1, value);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		//return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
 		return ps;

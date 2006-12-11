@@ -21,9 +21,11 @@ tier_name1="This_is_a_test_tier_HIT_$rand"
 tier_name2="This_is_a_test_tier_SIM_$rand"
 processed_name="This_is_a_test_processed_$rand"
 path="/$primary_name/$tier_name1/$processed_name"
+path_child="/$primary_name/$tier_name2/CHILD_$processed_name"
 run_number1="9999"
 run_number2="9998"
 block_name="/test/test#$rand"
+lfn="'TEST_LFN_2_$rand"
 algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCON_$rand'/>"
 algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand'/>"
 algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand'/>"
@@ -97,6 +99,45 @@ listFiles () {
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
+}
+
+listFileParents () {
+	message="Executing listFileParents API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listFileParents lfn=$lfn`
+	display "$out"
+}
+listFileAlgorithms () {
+	message="Executing listFileAlgorithms API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listFileAlgorithms lfn=$lfn`
+	display "$out"
+}
+listFileTiers () {
+	message="Executing listFileTiers API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listFileTiers lfn=$lfn`
+	display "$out"
+}
+listFileLumis () {
+	message="Executing listFileLumis API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listFileLumis lfn=$lfn`
+	display "$out"
+}
+
+listDatasetContents () {
+	message="Executing listDatasetContents API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listDatasetContents path=$path`
+	display "$out"
+}
+
+listDatasetParents () {
+	message="Executing listDatasetParents API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listDatasetParents path=$path_child`
+	display "$out"
 }
 
 #insert primary dataset
@@ -286,19 +327,25 @@ insertPrimaryDataset
 insertAlgorithm
 insertTier
 insertRun
-insertLumiSection
+#insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-createAnalysisDatasetFromPD
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
-
+#createAnalysisDatasetFromPD
+#listPrimaryDatasets
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
+#listDatasetContents
+#listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
+													
 echo 
 echo "*************************************************************"
 echo "For more detail and the output of the APIs look in $outFile"

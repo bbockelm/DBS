@@ -1,6 +1,6 @@
 /**
- $Revision: 1.35 $"
- $Id: DBSApi.java,v 1.35 2006/12/07 22:49:07 afaq Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApi.java,v 1.36 2006/12/08 20:59:24 sekhri Exp $"
  *
 */
 
@@ -203,6 +203,7 @@ public class DBSApi {
 	 * listTiers - path <br>
 	 * listBlocks - path <br>
 	 * listFiles - path, block_name, pattern_lfn <br>
+	 * listDatasetContents - path<br>
 	 * insertPrimaryDataset - xmlinput <br>
 	 * insertAlgorithm - xmlinput <br>
 	 * insertRun - xmlinput <br>
@@ -255,7 +256,16 @@ public class DBSApi {
 						get(table, "app_executable_name", false),
 						get(table, "parameterset_name", false)
 						);
-				
+			} else if (apiStr.equals("listDatasetContents")) {
+				api.listDatasetContents(conn, out, 
+						get(table, "path", false),
+						get(table, "block_name", false)
+						);
+			} else if (apiStr.equals("listDatasetParents")) {
+				api.listDatasetParents(conn, out, 
+						get(table, "path", true)
+						);
+
 			} else if (apiStr.equals("listAlgorithms")) {
 				api.listAlgorithms(conn, out,
 						get(table, "app_version", false),
@@ -271,15 +281,33 @@ public class DBSApi {
 				api.listTiers(conn, out, get(table, "path", true));
 				
 			} else if (apiStr.equals("listBlocks")) {
-				api.listBlocks(conn, out, get(table, "path", true));
-				
+				api.listBlocks(conn, out, 
+						get(table, "path", true),
+						get(table, "block_name", false)
+						);
 			} else if (apiStr.equals("listFiles")) {
 				api.listFiles(conn, out, 
 						get(table, "path", false),
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false)
 						);
-				
+			} else if (apiStr.equals("listFileParents")) {
+				api.listFileParents(conn, out, 
+						get(table, "lfn", true)
+						);
+			} else if (apiStr.equals("listFileAlgorithms")) {
+				api.listFileAlgorithms(conn, out, 
+						get(table, "lfn", true)
+						);
+			} else if (apiStr.equals("listFileTiers")) {
+				api.listFileTiers(conn, out, 
+						get(table, "lfn", true)
+						);
+			} else if (apiStr.equals("listFileLumis")) {
+				api.listFileLumis(conn, out, 
+						get(table, "lfn", true)
+						);
+	
 			} else if (apiStr.equals("insertPrimaryDataset")) {
 				api.insertPrimaryDataset(conn, out,
 						parse( getXml(table), "primary-dataset") , 
