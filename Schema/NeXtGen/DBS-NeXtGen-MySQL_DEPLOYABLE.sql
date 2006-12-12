@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 485
+-- === Build : 499
 -- ======================================================================
 
 drop database dbs_new_era_v05;
@@ -12,7 +12,7 @@ use dbs_new_era_v05;
 CREATE TABLE Person
   (
     ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      not null,
+    Name                  varchar(100),
     DistinguishedName     varchar(100)                                                      unique not null,
     ContactInfo           varchar(100),
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -58,8 +58,8 @@ CREATE TABLE AssignedRole
 
     primary key(ID),
 
-    foreign key(PersonID) references Person(ID) on update CASCADE on delete CASCADE,
-    foreign key(RoleID) references Role(ID) on update CASCADE on delete CASCADE,
+    foreign key(PersonID) references Person(ID),
+    foreign key(RoleID) references Role(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -141,7 +141,7 @@ CREATE TABLE ProcessedDataset
     primary key(ID),
     unique(Name,PrimaryDataset),
 
-    foreign key(PrimaryDataset) references PrimaryDataset(ID) on update CASCADE on delete CASCADE,
+    foreign key(PrimaryDataset) references PrimaryDataset(ID),
     foreign key(PhysicsGroup) references PhysicsGroup(ID),
     foreign key(Status) references ProcDSStatus(ID),
     foreign key(CreatedBy) references Person(ID),
@@ -192,9 +192,9 @@ CREATE TABLE AnalysisDataset
     primary key(ID),
 
     foreign key(ProcessedDS) references ProcessedDataset(ID),
-    foreign key(Type) references AnalysisDSType(ID) on update SET NULL on delete SET NULL,
+    foreign key(Type) references AnalysisDSType(ID),
     foreign key(PhysicsGroup) references PhysicsGroup(ID),
-    foreign key(Status) references AnalysisDSStatus(ID) on update SET NULL on delete SET NULL,
+    foreign key(Status) references AnalysisDSStatus(ID),
     foreign key(Parent) references AnalysisDataset(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
@@ -652,8 +652,8 @@ CREATE TABLE FileParentage
     primary key(ID),
     unique(ThisFile,ItsParent),
 
-    foreign key(ThisFile) references Files(ID) on update SET NULL on delete SET NULL,
-    foreign key(ItsParent) references Files(ID) on update CASCADE on delete CASCADE,
+    foreign key(ThisFile) references Files(ID),
+    foreign key(ItsParent) references Files(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
@@ -791,8 +791,8 @@ CREATE TABLE DatasetParentage
     primary key(ID),
     unique(ThisDataset,ItsParent),
 
-    foreign key(ThisDataset) references ProcessedDataset(ID) on update SET NULL on delete SET NULL,
-    foreign key(ItsParent) references ProcessedDataset(ID) on update CASCADE on delete CASCADE,
+    foreign key(ThisDataset) references ProcessedDataset(ID),
+    foreign key(ItsParent) references ProcessedDataset(ID),
     foreign key(CreatedBy) references Person(ID),
     foreign key(LastModifiedBy) references Person(ID)
   );
