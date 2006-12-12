@@ -1,6 +1,6 @@
 /**
- $Revision: 1.45 $"
- $Id: DBSApiLogic.java,v 1.45 2006/12/10 01:53:49 afaq Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSApiLogic.java,v 1.46 2006/12/11 22:34:30 sekhri Exp $"
  *
  */
 
@@ -1487,7 +1487,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable.
 	 */
 	public void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String userID) throws Exception {
-		if (isNull(userID)) userID = "0";//0 is user not created by anyone
+		//if (isNull(userID)) userID = "0";//0 is user not created by anyone
 		if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
 			PreparedStatement ps = null;
 			try {
