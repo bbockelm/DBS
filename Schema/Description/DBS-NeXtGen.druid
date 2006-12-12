@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">498</attrib>
-		<attrib name="serial">308662</attrib>
+		<attrib name="build">500</attrib>
+		<attrib name="serial">309095</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -136,6 +136,11 @@ use dbs_new_era_v05;
 					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/XHTML</output>
 				</html>
 			</DocsGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
 			<SqlGenModule>
 				<stdSql>
 					<genPostSQL>Y</genPostSQL>
@@ -145,9 +150,9 @@ use dbs_new_era_v05;
 					<genIndexes>N</genIndexes>
 					<genTriggers>Y</genTriggers>
 					<genDropStmt>N</genDropStmt>
-					<genFunctions>N</genFunctions>
-					<genRules>N</genRules>
 					<genViews>N</genViews>
+					<genRules>N</genRules>
+					<genFunctions>N</genFunctions>
 					<genProcedures>Y</genProcedures>
 					<genInlineFKs>Y</genInlineFKs>
 					<genPreSQL>Y</genPreSQL>
@@ -164,17 +169,12 @@ use dbs_new_era_v05;
 					<genSequences>N</genSequences>
 				</oraSql>
 			</SqlGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
 			<module name="DocsGenModule.html"/>
-			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.stdSql"/>
+			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.oraSql"/>
 		</modsUsage>
 		<dataTypes>
@@ -5558,6 +5558,36 @@ use dbs_new_era_v05;
 							<attrib name="refField">0</attrib>
 							<attrib name="name">NumberOfFiles</attrib>
 							<attrib name="id">197076</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">5</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Collective Checksum of the files in the block.  Guanteed correct when the block is closed.
+</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">OpenForWriting</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">309093</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
