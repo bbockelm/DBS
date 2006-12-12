@@ -18,6 +18,9 @@
                 maxIdle="30" 
                 maxWait="10000"
                 username="cms_dbs_afaq" 
+                initialSize="5" 
+                removeAbandoned="true"
+                removeAbandonedTimeout="100"
                 password="" 
                 driverClassName="oracle.jdbc.driver.OracleDriver"
                 url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
@@ -29,7 +32,10 @@
                 maxIdle="30" 
                 maxWait="10000"
                 username="cms_dbs_lueking" 
-                password="" 
+                password="newpRoRAil54roa" 
+                initialSize="5" 
+                removeAbandoned="true"
+                removeAbandonedTimeout="100"
                 driverClassName="oracle.jdbc.driver.OracleDriver"
                 url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
 
@@ -39,3 +45,4 @@
 <DBSBlockConfig maxBlockSize="20000" maxBlockFiles="50" />
 </Context>
 					       
+
