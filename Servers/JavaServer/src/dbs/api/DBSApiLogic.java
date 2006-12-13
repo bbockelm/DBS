@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApiLogic.java,v 1.47 2006/12/12 18:05:41 afaq Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApiLogic.java,v 1.48 2006/12/13 16:58:00 sekhri Exp $"
  *
  */
 
@@ -627,7 +627,7 @@ public class DBSApiLogic {
 			ps = DBSSql.insertPrimaryDataset(conn, 
 					get(dataset, "annotation", false),
 					get(dataset, "primary_name", true),
-					"0",//FIXME Should not be in the schema
+					"",//FIXME 
 					get(dataset, "start_date", true),
 					get(dataset, "end_date", false),
 					getID(conn, "PrimaryDSType", "Type", type, true), 
@@ -844,7 +844,7 @@ public class DBSApiLogic {
 		
 			//String path = get(file, "path");
 			//String blockName = get(file, "block_name");
-			String lfn = get(file, "lfn", true);
+			String lfn = getStr(file, "lfn", true);
 			String fileStatus = get(file, "file_status", false);
 			String type = get(file, "type", false);
 			String valStatus = get(file, "validation_status", false);
