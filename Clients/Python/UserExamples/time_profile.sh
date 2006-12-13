@@ -14,7 +14,7 @@ calculateAverage()
      
      echo "Time for $1 parallel clients running $2" >> $2.timelog.txt
      for i in `seq 1 10` ; do
-       { time python dbsListPrimaryDatasets.py > /dev/null 2>&1 ; } 2>> $2.timelog.txt  & 
+       { time python $2 > /dev/null 2>&1 ; } 2>> $2.timelog.txt  & 
      done
      # Give enough time to finish (100 sec ?)
      sleep 100
