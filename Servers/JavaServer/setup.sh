@@ -12,7 +12,7 @@
 ret=0
 
 if [ "${DBS_SERVER_CONFIG}" == "" ]; then
-        echo "Error! Please set your DBS_HOME variable and source this file again"
+        echo "Error! Please set your DBS_SERVER_CONFIG variable and source this file again"
         ret=1
 fi
 
