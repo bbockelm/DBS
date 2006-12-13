@@ -340,12 +340,6 @@ listRuns
 listTiers
 listBlocks
 listFiles
-listDatasetContents
-listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
 													
 echo 
 echo "*************************************************************"
