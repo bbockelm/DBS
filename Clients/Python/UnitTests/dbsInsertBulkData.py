@@ -3,6 +3,7 @@
 # API Unit tests for the DBS JavaServer.
 
 import sys
+import os
 import time
 from dbsApi import DbsApi
 from dbsPrimaryDataset import DbsPrimaryDataset
@@ -21,10 +22,10 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 mytime = str(time.time())
 
-maxDS = 10
-maxFiles = 100
+maxDS = 1
+maxFiles = 5000
 f = open("bulkDataResult.txt", "w")
-
+fileList = []
 for i in range(maxDS):
 	mytime = str(time.time())
 	#Insert Primary
@@ -42,8 +43,8 @@ for i in range(maxDS):
 							Name="MyFirstParam01", 
 							Version="V001", 
 							Type="test", 
-							#Annotation="This is test", 
-							#Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+							Annotation="This is test", 
+							Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 	apiObj.run(algo1, excep = False)
@@ -62,7 +63,7 @@ for i in range(maxDS):
 	proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 			Name="TestProcessed" + mytime,
 			PhysicsGroup="BPositive",
-			Status="Valid",
+			Status="VALID",
 			TierList=tierList,
 			AlgoList=[algo1])
 	apiObj.run(proc1, excep = False)
@@ -109,18 +110,22 @@ for i in range(maxDS):
 	apiObj.run(lumi2, excep = False)
 
 	#Insert File
-	for j in range(maxFiles):
-		mytime = str(time.time())
+	for j in range(maxFiles/2):
+		#mytime = str(time.time())
+                #mytime = os.popen('uuidgen').readline()
 		apiObj = DbsUnitTestApi(api.insertFiles, f)
-		lfn1 = '1111-0909-9767-8764' + mytime
-		lfn2 = '1111-0909-9767-876411' + mytime
+		lfn1 = os.popen('uuidgen').readline().strip()
+		lfn2 = os.popen('uuidgen').readline().strip()
+
+		#lfn1 = '1111-0909-9767-8764' + mytime
+		#lfn2 = '1111-0909-9767-876411' + mytime
 		file1= DbsFile (
 			Checksum= '999',
 			LogicalFileName= lfn1,
 			#QueryableMetadata= 'This is a test file',
 			NumberOfEvents= 10000,
 			FileSize= 12340,
-			Status= 'Valid',
+			Status= 'VALID',
 			FileType= 'EVD',
 			LumiList= [lumi1, lumi2],
 			TierList= tierList,
@@ -132,12 +137,14 @@ for i in range(maxDS):
 			#QueryableMetadata= 'This is a test file',
 			NumberOfEvents= 10000,
 			FileSize= 12340,
-			Status= 'Valid',
+			Status= 'VALID',
 			FileType= 'EVD',
 			LumiList= [lumi1, lumi2],
 			TierList= tierList,
 			)
-	
-		apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
+		fileList.append(file1)
+	        fileList.append(file2)
+                       
+	apiObj.run(proc1 ,fileList, block1,  excep = False)
 
 f.close()

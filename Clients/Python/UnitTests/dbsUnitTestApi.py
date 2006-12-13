@@ -27,10 +27,8 @@ class DbsUnitTestApi:
         def printTestStatus(self,info,status,iMsg,timeDiff,exp=None):
             msg = "\n\nType : %s"%str(self.lapiObj.im_func.func_name)
             msg+= "\nDone "+info
-            if self.verbose:
-               msg+="\nComment      : %s"%iMsg
-            if self.verbose==2:
-               msg+="\nException    : %s"%exp
+            msg+="\nComment      : %s"%iMsg
+            msg+="\nException    : %s"%exp
             msg+=   "\nTest ended   : [%6s]"%status
             msg+=   "\nTest LAPSED  : [%06s] seconds" % (str(timeDiff))
             self.f.write(msg)
