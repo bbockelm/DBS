@@ -25,7 +25,8 @@ path_child="/$primary_name/$tier_name2/CHILD_$processed_name"
 run_number1="9999"
 run_number2="9998"
 block_name="/test/test#$rand"
-lfn="'TEST_LFN_2_$rand"
+lfn1="TEST_LFN_1_$rand"
+lfn2="TEST_LFN_2_$rand"
 algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCON_$rand'/>"
 algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand'/>"
 algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand'/>"
@@ -74,28 +75,28 @@ listAlgorithms () {
 listRuns() {
 	message="Executing listRuns API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listRuns path=$path`
+	out=`$CMD api=listRuns path=$path_child`
 	display "$out"
 }
 
 listTiers () {
 	message="Executing listTiers API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listTiers path=$path`
+	out=`$CMD api=listTiers path=$path_child`
 	display "$out"
 }
 
 listBlocks() {
 	message="Executing listBlocks API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listBlocks path=$path`
+	out=`$CMD api=listBlocks path=$path_child`
 	display "$out"
 }
 
 listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFiles path=$path`
+	out=`$CMD api=listFiles path=$path_child`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
@@ -104,32 +105,32 @@ listFiles () {
 listFileParents () {
 	message="Executing listFileParents API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFileParents lfn=$lfn`
+	out=`$CMD api=listFileParents lfn=$lfn2`
 	display "$out"
 }
 listFileAlgorithms () {
 	message="Executing listFileAlgorithms API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFileAlgorithms lfn=$lfn`
+	out=`$CMD api=listFileAlgorithms lfn=$lfn2`
 	display "$out"
 }
 listFileTiers () {
 	message="Executing listFileTiers API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFileTiers lfn=$lfn`
+	out=`$CMD api=listFileTiers lfn=$lfn2`
 	display "$out"
 }
 listFileLumis () {
 	message="Executing listFileLumis API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFileLumis lfn=$lfn`
+	out=`$CMD api=listFileLumis lfn=$lfn2`
 	display "$out"
 }
 
 listDatasetContents () {
 	message="Executing listDatasetContents API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listDatasetContents path=$path`
+	out=`$CMD api=listDatasetContents path=$path_child`
 	display "$out"
 }
 
@@ -268,7 +269,7 @@ insertProcessedDataset () {
 insertBlock () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<block path='$path' name='$block_name' open_for_writing='1'/>
+			<block path='$path_child' name='$block_name' open_for_writing='1'/>
 		</dbs>"
 	message="Executing insertBlock API ..."	
 	echo $message >> $outFile ; echo $message
@@ -279,8 +280,8 @@ insertBlock () {
 insertFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-		<processed_datatset path='$path' block_name='$block_name'>
-			<file lfn='TEST_LFN_1_$rand' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+		<processed_datatset path='$path_child' block_name='$block_name'>
+			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
 				<lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
@@ -289,7 +290,7 @@ insertFiles () {
 				$algo1
 				$algo1
 			</file>
-			<file lfn='TEST_LFN_2_$rand' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
 				<lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
@@ -312,7 +313,7 @@ insertFiles () {
 createAnalysisDatasetFromPD () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path' physics_group_name='AnyName_$rand' />
+                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path_child' physics_group_name='AnyName_$rand' />
                         </dbs>"
         message="Executing  createAnalysisDatasetFromPD API..."
         echo $message >> $outFile ; echo $message
@@ -326,25 +327,25 @@ createAnalysisDatasetFromPD () {
 insertPrimaryDataset
 insertAlgorithm
 insertTier
-#insertRun
+insertRun
 insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-#createAnalysisDatasetFromPD
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
-#listDatasetContents
-#listDatasetParents
-#listFileParents
-#listFileAlgorithms
-#listFileTiers
-#listFileLumis
+createAnalysisDatasetFromPD
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
+listDatasetContents
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 													
 echo 
 echo "*************************************************************"
