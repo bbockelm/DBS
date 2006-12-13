@@ -1,11 +1,17 @@
-export JAVA_HOME=/usr/java/jdk1.5.0_06/
-export ANT_HOME=/home/sekhri/apache-ant-1.6.5
-export DBS_HOME=`pwd`
-export DBS_CONFIG=$DBS_HOME/etc/context.xml
+#!/bin/sh
+#
+# Setting JAVA_HOME ANT_HOME and DBS_CONFIG
+# is users responsibility.
+# DBS_SERVER_CONFIG needs to be set before deploying to TomCat 
+#
+#
+#export JAVA_HOME=
+#export ANT_HOME=
+#export DBS_SERVER_CONFIG=$PWD/etc/context.xml
 
 ret=0
 
-if [ "${DBS_HOME}" == "" ]; then
+if [ "${DBS_SERVER_CONFIG}" == "" ]; then
         echo "Error! Please set your DBS_HOME variable and source this file again"
         ret=1
 fi
