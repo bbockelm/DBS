@@ -289,7 +289,7 @@ insertFiles () {
 				$algo1
 				$algo1
 			</file>
-			<file lfn='TEST_LFN_2_$rand' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='MERGED' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='TEST_LFN_2_$rand' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
 				<lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
@@ -326,8 +326,8 @@ createAnalysisDatasetFromPD () {
 insertPrimaryDataset
 insertAlgorithm
 insertTier
-insertRun
-#insertLumiSection
+#insertRun
+insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
@@ -341,10 +341,10 @@ insertFiles
 #listFiles
 #listDatasetContents
 #listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
+#listFileParents
+#listFileAlgorithms
+#listFileTiers
+#listFileLumis
 													
 echo 
 echo "*************************************************************"

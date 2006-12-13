@@ -1,6 +1,6 @@
 /**
- $Revision: 1.46 $"
- $Id: DBSApiLogic.java,v 1.46 2006/12/11 22:34:30 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSApiLogic.java,v 1.47 2006/12/12 18:05:41 afaq Exp $"
  *
  */
 
@@ -833,6 +833,12 @@ public class DBSApiLogic {
                     blockID = dbsManagedBlockID(conn, procDSID, path, dbsUser);
                 }
 
+		Hashtable statusTable = new Hashtable();
+		Hashtable typeTable = new Hashtable();
+		Hashtable valStatusTable = new Hashtable();
+		String statusID = "";
+		String typeID = "";
+		String valStatusID = "";
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
 		
@@ -848,9 +854,9 @@ public class DBSApiLogic {
 			Vector algoVector = DBSUtil.getVector(file,"algorithm");
 		
 			//Set defaults Values
-			if (isNull(fileStatus)) fileStatus = "NEW";
+			if (isNull(fileStatus)) fileStatus = "VALID";
 			if (isNull(type)) type = "EVD";
-			if (isNull(valStatus)) valStatus = "NOTVALIDATED";
+			if (isNull(valStatus)) valStatus = "VALID";
 			
 			//Insert a File status if it does not exists
 			//insertName(conn, "Status", "Status", fileStatus , userID);
@@ -860,15 +866,25 @@ public class DBSApiLogic {
 
 			//Insert a File Type if it does not exists
 			//insertName(conn, "Type", "Type", type , userID);
-			//checkWord(fileStatus, "FileStatus");
-			//checkWord(type, "FileType");
-			//checkWord(valStatus, "ValidationStatus");
 			//Insert a File by fetching the fileStatus, type and validationStatus
 			//if( (fileID = getID(conn, "Files", "LogicalFileName", lfn, false)) == null ) {
 			//TODO Exception of null status or type should be catched and parsed and 
 			//a proper message should be returned back to the user. Different Database can have different error message YUK
 			//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
 			//User will never know about this YUK
+			if( isNull(statusID = get(statusTable, fileStatus)) ) {
+				statusID = getID(conn, "FileStatus", "Status", fileStatus, true);
+				statusTable.put(fileStatus, statusID);
+			}
+			if( isNull(typeID = get(typeTable, type)) ) {
+				typeID = getID(conn, "FileType", "Type", type, true);
+				typeTable.put(type, typeID);
+			}
+			if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
+				valStatusID = getID(conn, "FileStatus", "Status", valStatus, true);
+				valStatusTable.put(valStatus, valStatusID);
+			}
+
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertFile(conn, 
@@ -878,9 +894,12 @@ public class DBSApiLogic {
 						get(file, "checksum", false), 
 						get(file, "number_of_events", false), 
 						get(file, "size", false), 
-						fileStatus, 
-						type, 
-						valStatus, 
+						statusID,
+						typeID,
+						valStatusID,
+						//fileStatus, 
+						//type, 
+						//valStatus, 
 						get(file, "queryable_meta_data", false), 
 						userID);
 				ps.execute();
@@ -1636,7 +1655,6 @@ public class DBSApiLogic {
                         ps = DBSSql.getOpenBlockID(conn, procDSID);
                         rs =  ps.executeQuery();
                         if(!rs.next()) {
-                           Hashtable newBlock = new Hashtable();
                            //Unable to find an Open Block, Create one.
                            id = insertBlock(conn, procDSID, path, dbsUser);
                            return id;
@@ -1802,8 +1820,12 @@ public class DBSApiLogic {
 		String id = "";
 		String userDN = get(dbsUser, "user_dn", true);
 		if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
-			//FIXME instead of passing null for out stream writer , pass teh actual stream
-			insertPerson(conn, null,  "", userDN, "", ""); //FIXME Get userName and contactInfo also and the userID shoudl be decicde?
+			//FIXME instead of passing null for out stream writer , pass the actual stream
+			insertPerson(conn, null,  
+					get(dbsUser, "user_name", false), 
+					userDN, 
+					get(dbsUser, "contact_info", false), 
+					""); //FIXME Get userName and contactInfo also and the userID shoudl be decicde?
 			id = getID(conn, "Person", "DistinguishedName", userDN , true);
 		}
 		return id;

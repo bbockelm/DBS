@@ -1,11 +1,12 @@
 
 /**
- $Revision: 1.32 $"
- $Id: DBSSql.java,v 1.32 2006/12/10 01:53:49 afaq Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSSql.java,v 1.33 2006/12/11 22:34:31 sekhri Exp $"
  *
  */
 package dbs.sql;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -33,330 +34,134 @@ public class DBSSql {
 		return ps;
         }
 
-       	public static PreparedStatement insertName(Connection conn, String table, String key, String value, String userID) throws SQLException {
-		String sql = "INSERT INTO " + table + " ( \n" +
-				         key + ", \n" +
-			        	"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx=1; 
-		ps.setString(columnIndx++, value);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+       	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String userID) throws SQLException {	
+		Hashtable table = new Hashtable();
+		table.put(key, value);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, tableName, table);
 	}
 	
-	public static PreparedStatement insertMap(Connection conn, String table, String key1, String key2, String value1, String value2, String userID) throws SQLException {
-		String sql = "INSERT INTO " + table + " ( \n" +
-					key1 + ", \n" +
-					key2 + ", \n" +
-					"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1; 
-		ps.setString(columnIndx++, value1);
-		ps.setString(columnIndx++, value2);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+	public static PreparedStatement insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String userID) throws SQLException {
+		Hashtable table = new Hashtable();
+		table.put(key1, value1);
+		table.put(key2, value2);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, tableName, table);
 	}
 	
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String userID) throws SQLException {
-		String sql = "INSERT INTO PrimaryDataset ( \n" +
-				        "Annotation, \n" +
-				        "Name, \n" +
-				        //"Description, \n" +
-				        "StartDate, \n" +
-				        "EndDate, \n" +
-				        "Type, \n" +
-			        	"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					//"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, ann);
-		ps.setString(columnIndx++, name);
-		//ps.setString(columnIndx++, descID);
-		ps.setString(columnIndx++, startDate);
-		ps.setString(columnIndx++, endDate);
-		ps.setString(columnIndx++, typeID);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("Annotation", ann);
+		table.put("Name", name);
+		table.put("Description", descID);
+		table.put("StartDate", startDate);
+		table.put("EndDate", endDate);
+		table.put("Type", typeID);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "PrimaryDataset", table);
 	}
 
 	public static PreparedStatement insertRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String storeNumber, String startOfRun, String endOfRun, String userID) throws SQLException {
-		String sql = "INSERT INTO Runs ( \n" +
-				        "RunNumber, \n" +
-				        "NumberOfEvents, \n" +
-				        "NumberOfLumiSections, \n" +
-				        "TotalLuminosity, \n" +
-				        "StoreNumber, \n" +
-				        "StartOfRun, \n" +
-				        "EndOfRun, \n" +
-			        	"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, runNumber);
-		ps.setString(columnIndx++, nOfEvents);
-		ps.setString(columnIndx++, nOfLumiSections);
-		ps.setString(columnIndx++, totalLumi);
-		ps.setString(columnIndx++, storeNumber);
-		ps.setString(columnIndx++, startOfRun);
-		ps.setString(columnIndx++, endOfRun);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("RunNumber", runNumber);
+		table.put("NumberOfEvents", nOfEvents);
+		table.put("NumberOfLumiSections", nOfLumiSections);
+		table.put("TotalLuminosity", totalLumi);
+		table.put("StoreNumber", storeNumber);
+		table.put("StartOfRun", startOfRun);
+		table.put("EndOfRun", endOfRun);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "Runs", table);
 	}
 
 	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String openForWriting, String userID) throws SQLException {
-
-		String sql = "INSERT INTO Block ( \n" +
-				        "BlockSize, \n" +
-				        "Name, \n" +
-				        "Dataset, \n" +
-				        "NumberOfFiles, \n" +
-				        "OpenForWriting, \n" +
-			        	"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, size);
-		ps.setString(columnIndx++, name);
-		ps.setString(columnIndx++, procDSID);
-		ps.setString(columnIndx++, nOfFiles);
-		ps.setString(columnIndx++, openForWriting);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("BlockSize", size);
+		table.put("Name", name);
+		table.put("Dataset", procDSID);
+		table.put("NumberOfFiles", nOfFiles);
+		table.put("OpenForWriting", openForWriting);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "Block", table);
 	}
 
 	public static PreparedStatement insertLumiSection(Connection conn, String lsNumber, String runID, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String userID) throws SQLException {
-		String sql = "INSERT INTO LumiSection ( \n" +
-				        "LumiSectionNumber, \n" +
-				        "RunNumber, \n" +
-				        "StartEventNumber, \n" +
-				        "EndEventNumber, \n" +
-				        "LumiStartTime, \n" +
-				        "LumiEndTime, \n" +
-			        	"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, lsNumber);
-		ps.setString(columnIndx++, runID);
-		ps.setString(columnIndx++, startEvNumber);
-		ps.setString(columnIndx++, endEvNumber);
-		ps.setString(columnIndx++, lStartTime);
-		ps.setString(columnIndx++, lEndTime);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("LumiSectionNumber", lsNumber);
+		table.put("RunNumber", runID);
+		table.put("StartEventNumber", startEvNumber);
+		table.put("EndEventNumber", endEvNumber);
+		table.put("LumiStartTime", lStartTime);
+		table.put("LumiEndTime", lEndTime);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "LumiSection", table);
 	}
 		       
         public static PreparedStatement insertPerson(Connection conn, String userName, String userDN, String contactInfo, String userID) throws SQLException {
-		String sql = "INSERT INTO Person ( \n" +
-					"Name, \n" +
-				        "DistinguishedName, \n" +
-					"ContactInfo, \n" +
-					"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, userName);
-		ps.setString(columnIndx++, userDN);
-		ps.setString(columnIndx++, contactInfo);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("Name", userName);
+		table.put("DistinguishedName", userDN);
+		table.put("ContactInfo", contactInfo);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "Person", table);
 	}
 
 
 
 	public static PreparedStatement insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws SQLException {
-		String sql = "INSERT INTO QueryableParameterSet ( \n" +
-				        "Hash, \n" +
-				        "Name, \n" +
-				        "Version, \n" +
-				        "Type, \n" +
-				        "Annotation, \n" +
-				        "Content, \n" +
-			        	"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1; 
-		ps.setString(columnIndx++, hash);
-		ps.setString(columnIndx++, name);
-		ps.setString(columnIndx++, version);
-		ps.setString(columnIndx++, type);
-		ps.setString(columnIndx++, annotation);
-		ps.setString(columnIndx++, content);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("Hash", hash);
+		table.put("Name", name);
+		table.put("Version", version);
+		table.put("Type", type);
+		table.put("Annotation", annotation);
+		table.put("Content", content);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "QueryableParameterSet", table);
 	}
 				       
         public static PreparedStatement insertApplication(Connection conn, String exeID, String versionID, String familyID, String psID, String userID) throws SQLException {
-		String sql = "INSERT INTO AlgorithmConfig ( \n" +
-					"ExecutableName, \n" +
-				        "ApplicationVersion, \n" +
-					"ApplicationFamily, \n" +
-					"ParameterSetID, \n" +
-					"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1; 
-		ps.setString(columnIndx++, exeID);
-		ps.setString(columnIndx++, versionID);
-		ps.setString(columnIndx++, familyID);
-		ps.setString(columnIndx++, psID);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("ExecutableName", exeID);
+		table.put("ApplicationVersion", versionID);
+		table.put("ApplicationFamily", familyID);
+		table.put("ParameterSetID", psID);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "AlgorithmConfig", table);
 	}
 
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
 	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String userID) throws SQLException {
-		String sql = "INSERT INTO ProcessedDataset ( \n" +
-					"Name, \n" +
-					"PrimaryDataset, \n" +
-                                        //OpenForWriting flag can be managed through Status why we duplicate 
-					//"OpenForWriting, \n" +
-					"PhysicsGroup, \n" +
-					"Status, \n" +
-					"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					//"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, name);
-		ps.setString(columnIndx++, primDSID);
-                                        //OpenForWriting flag can be managed through Status why we duplicate 
-		//ps.setString(columnIndx++, openForWriting);
-		ps.setString(columnIndx++, phyGroupID);
-		ps.setString(columnIndx++, statusID);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("Name", name);
+		table.put("PrimaryDataset", primDSID);
+		//table.put("OpenForWriting", );OpenForWriting flag can be managed through Status why we duplicate
+		table.put("PhysicsGroup", phyGroupID);
+		table.put("Status", statusID);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "ProcessedDataset", table);
 	}
 	
 	public static PreparedStatement insertPhysicsGroup(Connection conn, String name, String conID, String userID) throws SQLException {
-		String sql = "INSERT INTO PhysicsGroup ( \n" +
-					"PhysicsGroupName, \n" +
-					"PhysicsGroupConvener, \n" +
-					"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, name);
-		ps.setString(columnIndx++, conID);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+		Hashtable table = new Hashtable();
+		table.put("PhysicsGroupName", name);
+		table.put("PhysicsGroupConvener", conID);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "PhysicsGroup", table);
 	}
 
 
@@ -364,52 +169,45 @@ public class DBSSql {
 	// ____________________________________________________
 	
 	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) throws SQLException {
-	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatus, String type, String valStatus, String qMetaData, String userID) throws SQLException {
-
-                DBSUtil.writeLog("\n\nSERIOUS WARNING:: Validation Status Table is not in Schema, check that again\n\n");
-
-		String sql = "INSERT INTO Files ( \n" +
-					"LogicalFileName, \n" +
-					"Dataset, \n" +
-					"Block, \n" +
-					"Checksum, \n" +
-					"NumberOfEvents, \n" +
-					"FileSize, \n" +
-					"FileStatus, \n" +
-					"FileType, \n" +
-					"ValidationStatus, \n" +
-					"QueryableMetadata, \n" +
-					"CreatedBy, \n" +
-				        "LastModifiedBy \n" +
-				") VALUES ( \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"?, \n" +
-					"(" + getID(conn, "FileStatus", "Status", fileStatus) + "), \n" +
-					"(" + getID(conn, "FileType", "Type", type) + "), \n" +
-					"(" + getID(conn, "FileStatus", "Status", valStatus) + "), \n" +
-					"?, \n" +
-					"?, \n" +
-					"? \n" +
-				") \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-		ps.setString(columnIndx++, lfn);
-		ps.setString(columnIndx++, procDSID);
-		ps.setString(columnIndx++, blockID);
-		ps.setString(columnIndx++, checksum);
-		ps.setString(columnIndx++, nOfEvents);
-		ps.setString(columnIndx++, size);
-		ps.setString(columnIndx++, qMetaData);
-		ps.setString(columnIndx++, userID);
-		ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) throws SQLException {
+		Hashtable table = new Hashtable();
+		table.put("LogicalFileName", lfn);
+		table.put("Dataset", procDSID);
+		table.put("Block", blockID);
+		table.put("Checksum", checksum);
+		table.put("NumberOfEvents", nOfEvents);
+		table.put("FileSize", size);
+		table.put("FileStatus", fileStatusID);
+		table.put("FileType", typeID);
+		table.put("ValidationStatus", valStatusID);
+		table.put("QueryableMetadata", qMetaData);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "Files", table);
 	}
 	
+
+        public static PreparedStatement insertAnalysisDataset(Connection conn, String ann,
+                             String name,
+                             String query,
+                             String processedDSID,
+                             String typeID,
+                             String statusID, 
+                             String phyGroupID, 
+                             String userID) throws SQLException
+        {
+		Hashtable table = new Hashtable();
+		table.put("Annotation", ann);
+		table.put("Name", name);
+		table.put("Query", query);
+		table.put("ProcessedDS", processedDSID);
+		table.put("Type", typeID);
+		table.put("Status", statusID);
+		table.put("PhysicsGroup", phyGroupID);
+		table.put("CreatedBy", userID);
+		table.put("LastModifiedBy", userID);
+		return getInsertSQL(conn, "AnalysisDataset", table);
+        }
 
 	public static PreparedStatement updateBlock(Connection conn, String blockID) throws SQLException {
 		String sql = "UPDATE Block \n" +
@@ -498,52 +296,6 @@ public class DBSSql {
                 return ps;
         }
 
-
-        public static PreparedStatement insertAnalysisDataset(Connection conn, String ann,
-                             String name,
-                             String query,
-                             String processedDSID,
-                             String typeID,
-                             String statusID, 
-                             String phyGroupID, 
-                             String userID) throws SQLException
-        {
-
-                String sql = "INSERT INTO AnalysisDataset( \n" +
-                                        "Annotation, \n" +
-                                        "Name, \n" +
-                                        "Query, \n"+
-                                        "ProcessedDS, \n"+
-                                        "Type, \n" +
-                                        "Status, \n" +
-                                        "PhysicsGroup, \n" +
-                                        "CreatedBy, \n" +
-                                        "LastModifiedBy \n" +
-                                ") VALUES ( \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "?, \n" +
-                                        "? \n" +
-                                ") \n";
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-                ps.setString(columnIndx++, ann);
-                ps.setString(columnIndx++, name);
-                ps.setString(columnIndx++, query);
-                ps.setString(columnIndx++, processedDSID);
-                ps.setString(columnIndx++, typeID);
-                ps.setString(columnIndx++, statusID);
-                ps.setString(columnIndx++, phyGroupID);
-                ps.setString(columnIndx++, userID);
-                ps.setString(columnIndx++, userID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
-        }
 
 	// ____________________________________________________
 	
@@ -1160,10 +912,46 @@ public class DBSSql {
 		return ps;
 	}
 
+	private static PreparedStatement getInsertSQL (Connection conn, String tableName, Hashtable table) throws SQLException	{
+		String sql = "INSERT INTO " + tableName + " ( \n";
+		String sqlKeys = "  ";
+		String sqlValues = "  ";
+		Enumeration e = table.keys();
+		while(e.hasMoreElements()) {
+			String key = (String)e.nextElement();
+			if(!DBSUtil.isNull( DBSUtil.get(table, key) )) {
+				sqlKeys += "\t" + key + ",\n";
+				sqlValues += "\t?,\n";
+			}
+		}
+		sql += sqlKeys.substring(0, sqlKeys.length() - 2) + 
+			"\n ) VALUES ( \n" + 
+			sqlValues.substring(0, sqlValues.length() - 2) + 
+			"\n)\n";
+		
+		//System.out.println("THE QUERY IS " +sql);
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		e = table.keys();
+                int columnIndx = 1;
+		while(e.hasMoreElements()) {
+			String value = DBSUtil.get(table, (String)e.nextElement());
+			if(!DBSUtil.isNull(value)) {
+				ps.setString(columnIndx++, value);
+			}
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
 
-	/*
-	}*/
+	}
+	
+	private static String getSQL(String key, String value) {
+		if(!DBSUtil.isNull(value)) {
+			return key;
+		}
+		return "";
 
+	}
 	
 
 }

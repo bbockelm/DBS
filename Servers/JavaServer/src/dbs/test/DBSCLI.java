@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.1 $"
- $Id: DBSCLI.java,v 1.1 2006/11/21 23:19:51 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSCLI.java,v 1.2 2006/12/04 19:30:24 sekhri Exp $"
  *
  */
 
@@ -24,7 +24,9 @@ public class DBSCLI {
 		api = new DBSApi();
 		//FIXME get the user information from the proxy
 		user = new Hashtable();
-		user.put("user_dn", "ANZARDN");
+		user.put("user_dn", "VIJAY_SEKHRI_DN");
+		user.put("user_name", "VIJAY_SEKHRI");
+		user.put("contact_info", "VIJAY_SEKHRI_HOME");
 		out = new PrintWriter(System.out);
  
 	}
