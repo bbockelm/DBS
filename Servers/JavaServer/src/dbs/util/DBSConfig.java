@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.5 $"
- $Id: DBSConfig.java,v 1.5 2006/12/08 16:55:40 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSConfig.java,v 1.6 2006/12/10 01:53:50 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -54,9 +54,9 @@ public class DBSConfig {
                 FileInputStream property_file = null;
                 // See if DBS_HOME is set
                 String dbs_config = null;
-                dbs_config = System.getenv("DBS_CONFIG");
+                dbs_config = System.getenv("DBS_SERVER_CONFIG");
                 if (dbs_config == null || dbs_config.equals("") ) {
-                   throw new DBSException("Configuration Error", "1050", "Environment variable DBS_CONFIG not set ?");
+                   throw new DBSException("Configuration Error", "1050", "Environment variable DBS_SERVER_CONFIG not set ?");
                 }
 
                 try { 
@@ -67,9 +67,9 @@ public class DBSConfig {
                     DBSXMLParser dbsParser = new DBSXMLParser();
                     dbsParser.parseFile(dbs_config);  
                     Vector allElement = dbsParser.getElements();
-                    //Atleaste Resource, SupportedSchemaVersion, SupportedClientVersions nneds to be in DBS_CONFIG
+                    //Atleaste Resource, SupportedSchemaVersion, SupportedClientVersions nneds to be in DBS_SERVER_CONFIG
                     if (allElement.size() < 3) {
-                       throw new DBSException("Configuration Error", "1050", "DBS_CONFIG doesnot have all required parameters ?");  
+                       throw new DBSException("Configuration Error", "1050", "DBS_SERVER_CONFIG doesnot have all required parameters ?");  
                     }
                     
                     //Lets try to get all required parameters     
