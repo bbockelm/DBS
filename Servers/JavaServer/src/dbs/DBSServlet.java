@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.25 $"
- $Id: DBSServlet.java,v 1.25 2006/12/05 16:07:50 afaq Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSServlet.java,v 1.26 2006/12/05 22:44:31 sekhri Exp $"
 
  */
 package dbs;
@@ -31,6 +31,8 @@ public class DBSServlet extends HttpServlet{
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
 		PrintWriter out = null;
+                DBSApi api = null; 
+
 		try {
 			//Another interim solution no user DN so make one up, 
 			//will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
@@ -42,9 +44,16 @@ public class DBSServlet extends HttpServlet{
 			response.setContentType("text/xml");
 			out = response.getWriter();
 		
-			DBSApi api = new DBSApi();
+			api = new DBSApi();
 			api.call(out, getTable(request), userDN);
 		} catch(Exception e) {
+			try {
+	                        if (api != null) api.writeException(out, "Servlet Error", "500",  e.getMessage()); 
+			} catch(Exception ex) {
+                        	ex.printStackTrace(); 
+				throw new ServletException(ex);
+			}
+                        e.printStackTrace(); 
 			throw new ServletException(e);
 		} finally {
 			if (out != null) out.close();
