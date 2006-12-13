@@ -25,10 +25,10 @@ class DbsConfig:
        to provide access to underlying DB, if SQLite is used they're ignored. 
     """
     uFileName=""
-    if os.environ.has_key('DBSCONFIG'):
-       if not os.path.isfile(os.environ['DBSCONFIG']):
-          raise DbsException(args="The '%s' config file does not exists"%os.environ['DBSCONFIG'])
-       uFileName=os.environ['DBSCONFIG']
+    if os.environ.has_key('DBS_CLIENT_CONFIG'):
+       if not os.path.isfile(os.environ['DBS_CLIENT_CONFIG']):
+          raise DbsException(args="The '%s' config file does not exists"%os.environ['DBS_CLIENT_CONFIG'])
+       uFileName=os.environ['DBS_CLIENT_CONFIG']
     else:
        uFileName = os.path.normpath(os.environ["HOME"]+"/.dbs.conf")
     self.configFile=uFileName
