@@ -11,61 +11,153 @@ GetDataUpdater.prototype = {
      var t=document.getElementById("results");
      t.innerHTML+=responseHTML;
      sortables_init();
-     underlineLink('Summary');
+     underlineLink('Both');
      if(responseHTML.search("checkbox")) {
         UnSelectAll();
      }
    }
 }
-var HistoryUpdater=Class.create();
-HistoryUpdater.prototype = {
+var UserRegistrationUpdater=Class.create();
+UserRegistrationUpdater.prototype = {
    initialize: function() {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
-     var t=document.getElementById("userHistory");
-     t.innerHTML=t.innerHTML+responseHTML;
+     var t=document.getElementById('formAuthResults');
+     if(responseHTML=='fail') {
+        t.innerHTML='<p><span class="box_red">Ups, this login name is already in use.</span> Please choose another name.</p>';
+     } else if(responseHTML=='wrong password') {
+        t.innerHTML='<p><span class="box_red">Wrong password!!!</span> Please try again.</p>';
+     } else {
+        t.innerHTML='<p><span class="box_blue">Welcome '+responseHTML+'! Your authentication is completed. You may use your history at any time.</span></p>';
+        setGreeting();
+     }
+   }
+}
+var HistoryUpdater=Class.create();
+HistoryUpdater.prototype = {
+   initialize: function(tab) {
+     this.tab=tab
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementById(this.tab+'History');
+     if(this.tab=='session') {
+        t.innerHTML=t.innerHTML+responseHTML;
+     } else {
+        t.innerHTML=responseHTML;
+     }
    }
 }
 function registerAjaxHistoryCalls() {
-    historyUpdater = new HistoryUpdater();
-    ajaxEngine.registerRequest('ajaxHistory','history');
-    ajaxEngine.registerAjaxObject('userHistory',historyUpdater);
+  userRegUpdater = new UserRegistrationUpdater();
+  ajaxEngine.registerRequest('ajaxCheckUser','checkUser');
+  ajaxEngine.registerAjaxObject('historyUserName',userRegUpdater);
+  sessionHistoryUpdater = new HistoryUpdater('session');
+  ajaxEngine.registerRequest('ajaxHistory','history');
+  ajaxEngine.registerAjaxObject('sessionHistory',sessionHistoryUpdater);
+  ajaxEngine.registerRequest('ajaxHistorySearch','historySearch');
+  ajaxEngine.registerAjaxElement('historySearchResults');
+//  ajaxEngine.registerAjaxObject('historySearchResults',sessionHistoryUpdater);
+  allHistoryUpdater = new HistoryUpdater('all');
+  ajaxEngine.registerRequest('ajaxGetHistory','getHistory');
+  ajaxEngine.registerAjaxObject('allHistory',allHistoryUpdater);
 }
-function ajaxHistory(action) {
-  ajaxEngine.sendRequest('ajaxHistory','actionString='+action);
+function ajaxCheckUser() {
+  var user = GetCookie("DBSDD_username");
+  var pass = GetCookie("DBSDD_password");
+  if(user!='guest') {
+     ajaxEngine.sendRequest('ajaxCheckUser','userName='+user,'password='+pass);
+  }
+}
+function getUserName(iUser) {
+  var userName;
+  if(iUser) {
+     userName=iUser;
+  } else {
+    // get user name and password from cookie
+    userName=GetCookie("DBSDD_username");
+  }
+  return userName;
+}
+function getPassword(iPass) {
+  var password;
+  if(iPass) {
+     password=iPass;
+  } else {
+     password=GetCookie("DBSDD_password");
+  }
+  return password
+}
+function ajaxHistory(action,iUser,iPass) {
+  ajaxEngine.sendRequest('ajaxHistory','actionString='+action,'userName='+getUserName(iUser),'password='+getPassword(iPass));
+}
+function ajaxGetHistory(iUser,iPass,iLimit) {
+  var limit;
+  if(iLimit) {
+     limit=iLimit;
+  } else {
+     limit=100;
+  }
+  ajaxEngine.sendRequest('ajaxGetHistory','userName='+getUserName(iUser),'password='+getPassword(iPass),'limit='+limit);
+}
+function getSelectedOption(iArr) {
+  for(i=0;i<iArr.length;i++) {
+     if(iArr[i].selected) {
+        return iArr[i].value;
+     }
+  }
+  return null;
+}
+function ajaxHistorySearch(iUser,iPass) {
+  var iMonth = getSelectedOption(document.getElementById('in_hSearch_month'));
+  var iYear  = getSelectedOption(document.getElementById('in_hSearch_year'));
+  var oMonth = getSelectedOption(document.getElementById('out_hSearch_month'));
+  var oYear  = getSelectedOption(document.getElementById('out_hSearch_year'));
+  ajaxEngine.sendRequest('ajaxHistorySearch','iYear='+iYear,'iMonth='+iMonth,'oYear='+oYear,'oMonth='+oMonth,'userName='+getUserName(iUser),'password='+getPassword(iPass));
 }
 // AJAX registration for getDataHelper
 function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
+  var sel;
   var dbs;
   if(_dbs) {
       dbs=_dbs;
   } else {
-      dbs=document.getElementById('dbsSelector').value;
+      sel=document.getElementById('dbsSelector');
+      if(!sel) return;
+      dbs=sel.value;
   }
   var site;
   if(_site) {
       site=_site;
   } else {
-      site=document.getElementById('siteSelector').value;
+      sel=document.getElementById('siteSelector');
+      if(!sel) return;
+      site=sel.value;
   }
   var app;
   if(_app) {
       app=_app;
   } else {
-      app=document.getElementById('appSelector').value;
+      sel=document.getElementById('appSelector');
+      if(!sel) return;
+      app=sel.value;
   }
   var primD;
   if(_primD) {
       primD=_primD;
   } else {
-      primD=document.getElementById('primSelector').value;
+      sel=document.getElementById('primSelector');
+      if(!sel) return;
+      primD=sel.value;
   }
   var tier;
   if(_tier) {
       tier=_tier;
   } else {
-      tier=document.getElementById('tierSelector').value;
+      sel=document.getElementById('tierSelector');
+      if(!sel) return;
+      tier=sel.value;
   }
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
   var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
@@ -162,13 +254,7 @@ function ajaxGetBlocksFromSite() {
   ajaxEngine.sendRequest('ajaxGetBlocksFromSite');
 }
 
-//function registerAjaxGetDetailsForPrimDatasetCalls() {
-//  ajaxEngine.registerRequest('ajaxGetDetailsForPrimDataset','getDetailsForPrimDataset');
-//  ajaxEngine.registerAjaxElement('results');
-//}
 function ajaxGetDetailsForPrimDataset(dbsInst,primDataset) {
-//  var r=document.getElementById("results_menu");
-//  r.className="show_inline";
   showResultsMenu();
   var id=document.getElementById("results");
   id.className="show_cell";
@@ -310,6 +396,11 @@ NavigatorMenuDictUpdater.prototype = {
      eval(responseHTML);
      var dbs = document.getElementById("dbsSelector");
      updateLayer(dbs);
+     enableSel("appSelector");
+     enableSel("primSelector");
+     enableSel("tierSelector");
+     var t=document.getElementById("navSelector");
+     t.innerHTML="";
    }
 }
 function registerAjaxGenNavigatorMenuDictCalls() {
@@ -318,7 +409,29 @@ function registerAjaxGenNavigatorMenuDictCalls() {
   ajaxEngine.registerAjaxObject('navigatorDict',navigatorUpdater);
 }
 function ajaxGenNavigatorMenuDict() {
-  ajaxEngine.sendRequest('ajaxGenNavigatorMenuDict');
+  var dbsInst;
+  var sel=document.getElementById("dbsSelector");
+  if(sel) {
+     for(i=0;i<sel.length;i++) {
+         if(sel[i].selected) {
+            dbsInst=sel[i].value;
+            break;
+         }
+     }
+     if(!dbsInst) {
+         dbsInst="MCGlobal/Writer"; // default dbs instance
+     }
+  } else {
+    dbsInst="MCGlobal/Writer"; // default dbs instance
+  }
+  // de-activate underneath menues (will be activated back once AJAX will arrive
+  disableSel("appSelector");
+  disableSel("primSelector");
+  disableSel("tierSelector");
+  showLoadingMessage('navSelector');
+  ajaxEngine.sendRequest('ajaxGenNavigatorMenuDict','dbsInst='+dbsInst);
+// original
+//  ajaxEngine.sendRequest('ajaxGenNavigatorMenuDict');
 }
 var SiteMenuDictUpdater=Class.create();
 SiteMenuDictUpdater.prototype = {
@@ -343,8 +456,22 @@ function ajaxGenSiteMenuDict() {
 
 // method which should be called on page load, to initialize all AJAX calls
 function ajaxInit() {
+  registerAjaxSelectAppsCalls();
+  registerAjaxSelectPrimCalls();
+  registerAjaxSelectTierCalls();
+  registerAjaxObjectCalls();
+  registerAjaxPrimaryDatasetsCalls();
+  registerAjaxSummaryCalls();
+  registerAjaxHistoryCalls();
+  registerAjaxProvenanceCalls();
+  registerAjaxProvenanceGraphCalls();
+  registerAjaxAppConfigsCalls();
   registerAjaxGenNavigatorMenuDictCalls();
+  registerAjaxGetDataDescriptionCalls();
+
   ajaxGenNavigatorMenuDict();
+
+
 //  registerAjaxGenSiteMenuDictCalls();
 //  ajaxGenSiteMenuDict();
 }
@@ -385,35 +512,46 @@ function ajaxGenParentsGraphFromSelection() {
   }
 }
 function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
+  var sel;
   var dbs;
   if(_dbs) {
       dbs=_dbs;
   } else {
-      dbs=document.getElementById('dbsSelector').value;
+      sel=document.getElementById('dbsSelector');
+      if(!sel) return;
+      dbs=sel.value;
   }
   var site;
   if(_site) {
       site=_site;
   } else {
-      site=document.getElementById('siteSelector').value;
+      sel=document.getElementById('siteSelector');
+      if(!sel) return;
+      site=sel.value;
   }
   var app;
   if(_app) {
       app=_app;
   } else {
-      app=document.getElementById('appSelector').value;
+      sel=document.getElementById('appSelector');
+      if(!sel) return;
+      app=sel.value;
   }
   var primD;
   if(_primD) {
       primD=_primD;
   } else {
-      primD=document.getElementById('primSelector').value;
+      sel=document.getElementById('primSelector');
+      if(!sel) return;
+      primD=sel.value;
   }
   var tier;
   if(_tier) {
       tier=_tier;
   } else {
-      tier=document.getElementById('tierSelector').value;
+      sel=document.getElementById('tierSelector');
+      if(!sel) return;
+      tier=sel.value;
   }
   ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
   var action='<a href="javascript:showWaitingMessage();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
@@ -449,7 +587,9 @@ function ajaxGenAppConfigs(_app) {
   if(_app) {
       app=_app;
   } else {
-      app=document.getElementById('appSelector').value;
+      sel=document.getElementById('appSelector');
+      if(!sel) return;
+      app=sel.value
       // now we need to convert app to /family/executable/version
       parts = app.split('/'); // we got back /family/version/executable
       app='/'+parts[2]+'/'+parts[3]+'/'+parts[1];
@@ -457,4 +597,79 @@ function ajaxGenAppConfigs(_app) {
   ajaxEngine.sendRequest('ajaxGenAppConfigs',"appPath="+app);
   var action='<a href="javascript:showWaitingMessage();ajaxGenAppConfigs(\''+app+'\')">AppConfigs ('+app+')</a>';
   ajaxHistory(action);
+}
+function registerAjaxGetDataDescriptionCalls() {
+    ajaxEngine.registerRequest('ajaxGetDataDescription','getDataDescription');
+    ajaxEngine.registerAjaxElement('floatDataDescription');
+}
+function ajaxGetDataDescription(dbsInst,procD) {
+    ajaxEngine.sendRequest('ajaxGetDataDescription','dbsInst='+dbsInst,'processedDataset='+procD)
+    showTag('floatDataDescription');
+}
+function registerAjaxSelectAppsCalls() {
+    ajaxEngine.registerRequest('ajaxSelectApps','selectApplications');
+    ajaxEngine.registerAjaxElement('selectApps');
+}
+function ajaxSelectApps() {
+    var sel=document.getElementById("dbsSelector");
+    for(i=0;i<sel.length;i++) {
+        if(sel[i].selected) {
+           ajaxEngine.sendRequest('ajaxSelectApps','dbsInst='+sel[i].value);
+           return;
+        }
+    }
+}
+function registerAjaxSelectPrimCalls() {
+    ajaxEngine.registerRequest('ajaxSelectPrim','selectPrimaryDatasets');
+    ajaxEngine.registerAjaxElement('selectPrim');
+}
+function ajaxSelectPrim() {
+    var sel=document.getElementById("dbsSelector");
+    var dbsInst;
+    for(i=0;i<sel.length;i++) {
+        if(sel[i].selected) {
+           dbsInst=sel[i].value;
+           break;
+        }
+    }
+    var sel=document.getElementById("appSelector");
+    var app;
+    for(i=0;i<sel.length;i++) {
+        if(sel[i].selected) {
+           app=sel[i].value;
+           ajaxEngine.sendRequest('ajaxSelectPrim','dbsInst='+dbsInst,'app='+app);
+           return;
+        }
+    }
+}
+function registerAjaxSelectTierCalls() {
+    ajaxEngine.registerRequest('ajaxSelectTier','selectDataTiers');
+    ajaxEngine.registerAjaxElement('selectTier');
+}
+function ajaxSelectTier() {
+    var sel=document.getElementById("dbsSelector");
+    var dbsInst;
+    for(i=0;i<sel.length;i++) {
+        if(sel[i].selected) {
+           dbsInst=sel[i].value;
+           break;
+        }
+    }
+    var sel=document.getElementById("appSelector");
+    var app;
+    for(i=0;i<sel.length;i++) {
+        if(sel[i].selected) {
+           app=sel[i].value;
+           break;
+        }
+    }
+    var sel=document.getElementById("primSelector");
+    var prim;
+    for(i=0;i<sel.length;i++) {
+        if(sel[i].selected) {
+           prim=sel[i].value;
+           ajaxEngine.sendRequest('ajaxSelectTier','dbsInst='+dbsInst,'app='+app,'prim='+prim);
+           return;
+        }
+    }
 }
