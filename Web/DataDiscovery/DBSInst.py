@@ -65,40 +65,12 @@ DBS_DLS_INST= {
    "MCLocal_4/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_4"),
    "Dev/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
    "DevMC/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
-   "RelVal/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
-   "Dev/fanfani":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test")
+   "RelVal/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal")
 #   "Dev/fanfani":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
 #   "MCLocal_5/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_5"),
 #   "MCLocal_6/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_6"),
 #   "MCLocal_7/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_7")
 }
-################################################################################################
-SITE_LIST=[
-"cmsrm-se01.roma1.infn.it",
-"castorsc.grid.sinica.edu.tw",
-"castorsrm.ciemat.es",
-"castorsrm.pic.es",
-"ccsrm.in2p3.fr",
-"cithep59.ultralight.org",
-"cmsdpm.pi.infn.it",
-"cmsrm-se01.roma1.infn.it",
-"cmssrm.fnal.gov",
-"cmssrm.hep.wisc.edu",
-"dcache.rcac.purdue.edu",
-"gridka-dcache.fzk.de",
-"grid-srm.physik.rwth-aachen.de",
-"jupiter.hep.kbfi.ee",
-"lxfs07.jinr.ru",
-"pccms2.cmsfarm1.ba.infn.it",
-"sc.cr.cnaf.infn.it",
-"se01.cmsaf.mit.edu",
-"srm.cern.ch",
-"srm-dcache.desy.de",
-"t2data2.t2.ucsd.edu",
-"t2-srm-01.lnl.infn.it",
-"thpc-1.unl.edu",
-"ufdcache.phys.ufl.edu"
-]
 ################################################################################################
 def getDictOfSites():
     """
@@ -118,18 +90,21 @@ def getDictOfSites():
     f.close()
     dbsList = sDict.keys()
     dbsList.sort()
-    dbsList.remove(DBSGLOBAL)
+    try:
+       dbsList.remove(DBSGLOBAL)
+    except:
+       pass
     dbsList=[DBSGLOBAL]+dbsList
-    s="{ menuList: ["
+    s="{l:["
     for dbsInst in dbsList:
        s+='"%s",'%dbsInst
     s=s[:-1]+"],\n"
-    s+="   nextObj: {"
+    s+="n:{"
     for dbsInst in dbsList:
-        s+='"%s": { menuList: ['%dbsInst
+        s+='"%s":{l: ['%dbsInst
         for item in sDict[dbsInst]:
             s+='"%s",'%item
-        s=s[:-1]+"], nextObj:null},\n"
+        s=s[:-1]+"],n:null},\n"
     s=s[:-2]+"}}"
     return s
 
@@ -163,7 +138,7 @@ class DBSDB(DBSLogger):
   def connect(self):
       t_ini=time.time()
       for dbsInst in DBS_DLS_INST.keys():
-          dbAuth = DBSAuthentication(dbsInst) 
+          dbAuth = DBSAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass = dbAuth.dbInfo()
           eType  = string.lower(dbType)
 
