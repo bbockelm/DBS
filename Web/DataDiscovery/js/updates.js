@@ -36,10 +36,10 @@ function updateLayer(dbsInst) {
   var selectElement = document.createElement("select")
 
   //get the choice made
-  appObj = navDict.nextObj[ dbsInst.value ]
+  appObj = navDict.n[ dbsInst.value ]
 
   //redraw the menu for layer1
-  updateSelection(selectElement, appObj.menuList, _app )
+  updateSelection(selectElement, appObj.l, _app )
   app.appendChild(selectElement)
   //selectElement.setAttribute("onChange",'updateLayer1(this)');
   // The following structure seems to work with Firefox, Safari, IE
@@ -56,10 +56,10 @@ function updateLayer0(selector) {
   var selectElement = document.createElement("select")
 
   //get the choice made
-  appObj = navDict.nextObj[ selector.options[selector.selectedIndex].value ]
+  appObj = navDict.n[ selector.options[selector.selectedIndex].value ]
 
   //redraw the menu for layer1
-  updateSelection(selectElement, appObj.menuList, _app)
+  updateSelection(selectElement, appObj.l, _app)
   app.appendChild(selectElement)
   //selectElement.setAttribute("onChange",'updateLayer1(this)');
   selectElement.onchange=new Function("return updateLayer1(this);");
@@ -75,8 +75,8 @@ function updateLayer1(selector) {
   }
   var selectElement = document.createElement("select")
 
-  primObj = appObj.nextObj[ selector.options[selector.selectedIndex].value ]
-  updateSelection(selectElement, primObj.menuList,_prim)
+  primObj = appObj.n[ selector.options[selector.selectedIndex].value ]
+  updateSelection(selectElement, primObj.l,_prim)
   prim.appendChild(selectElement)
   //selectElement.setAttribute("onChange",'updateLayer2(this)');
   selectElement.onchange=new Function("return updateLayer2(this);");
@@ -91,8 +91,8 @@ function updateLayer2(selector) {
   }
   var selectElement = document.createElement("select")
 
-  tierObj = primObj.nextObj[ selector.options[selector.selectedIndex].value ]
-  updateSelection(selectElement, tierObj.menuList,_tier)
+  tierObj = primObj.n[ selector.options[selector.selectedIndex].value ]
+  updateSelection(selectElement, tierObj.l,_tier)
   selectElement.setAttribute("id",'tierSelector');
   selectElement.setAttribute("name",'tier');
   tier.appendChild(selectElement)
@@ -105,8 +105,8 @@ function updateSites(selector) {
   }
   var selectElement = document.createElement("select");
 
-  siteObj = siteDict.nextObj[ selector.options[selector.selectedIndex].value ];
-  updateSelection(selectElement, siteObj.menuList, _site);
+  siteObj = siteDict.n[ selector.options[selector.selectedIndex].value ];
+  updateSelection(selectElement, siteObj.l, _site);
   site.appendChild(selectElement);
   selectElement.setAttribute("id",'form2_siteSelector');
   selectElement.setAttribute("name",'site');
