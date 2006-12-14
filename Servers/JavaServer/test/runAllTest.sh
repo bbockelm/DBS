@@ -130,7 +130,7 @@ listFileLumis () {
 listDatasetContents () {
 	message="Executing listDatasetContents API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listDatasetContents path=$path_child`
+	out=`$CMD api=listDatasetContents path=$path_child block_name=$block_name`
 	display "$out"
 }
 
@@ -340,6 +340,12 @@ listRuns
 listTiers
 listBlocks
 listFiles
+listDatasetContents
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 													
 echo 
 echo "*************************************************************"

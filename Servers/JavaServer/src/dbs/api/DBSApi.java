@@ -1,6 +1,6 @@
 /**
- $Revision: 1.36 $"
- $Id: DBSApi.java,v 1.36 2006/12/08 20:59:24 sekhri Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSApi.java,v 1.37 2006/12/11 22:34:30 sekhri Exp $"
  *
 */
 
@@ -289,7 +289,8 @@ public class DBSApi {
 				api.listFiles(conn, out, 
 						get(table, "path", false),
 						get(table, "block_name", false),
-						get(table, "pattern_lfn", false)
+						get(table, "pattern_lfn", false),
+						get(table, "detail", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {
 				api.listFileParents(conn, out, 
@@ -394,6 +395,11 @@ public class DBSApi {
 						get(table, "ls_number", true), 
 						dbsUser);
 				
+			} else if (apiStr.equals("insertDatasetContents")) {
+				api.insertDatasetContents(conn, out,
+						parseDatasetContents(getXml(table)), 
+						dbsUser);
+			
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;
@@ -504,8 +510,7 @@ public class DBSApi {
 		Hashtable table = null;
 		for (int i=0; i<allElement.size(); ++i) {
 			Element e = (Element)allElement.elementAt(i);
-			String name = e.name;
-			if (name.equals(key) ) {
+			if (e.name.equals(key) ) {
 				table = e.attributes;
 			} 
 		}
@@ -539,6 +544,66 @@ public class DBSApi {
 		return psDS;
 	}
 	
+	private Hashtable parseDatasetContents(String inputXml) throws Exception {
+		int index = -1;
+		DBSXMLParser dbsParser = new DBSXMLParser();
+		dbsParser.parseString(inputXml); 
+		Vector allElement = dbsParser.getElements();
+		Hashtable table = null;
+		Hashtable psDS = null;
+		Vector topLevel = new Vector();
+		for (int i=0; i<allElement.size(); ++i) {
+			Element e = (Element)allElement.elementAt(i);
+			String name = e.name;
+			if (name.equals("dataset") ) {
+				table = e.attributes;
+			}
+			if (name.equals("primary-dataset") ) {
+				table.put("primary-dataset", e.attributes);
+			}
+			if (name.equals("processed-dataset") ) {
+				psDS = e.attributes;
+				psDS.put("data_tier", new Vector());
+				psDS.put("parent", new Vector());
+				psDS.put("algorithm", new Vector());
+				psDS.put("run", new Vector());
+				psDS.put("block", new Vector());
+			} 
+			if (name.equals("data_tier") ) 
+				((Vector)(psDS.get("data_tier"))).add(e.attributes);
+			if (name.equals("processed-dataset-parent") ) 
+				((Vector)(psDS.get("parent"))).add(e.attributes);
+			if (name.equals("algorithm") ) 
+				((Vector)(psDS.get("algorithm"))).add(e.attributes);
+			if (name.equals("run") ) 
+				((Vector)(psDS.get("run"))).add(e.attributes);
+			if (name.equals("block") ) {
+				((Vector)(psDS.get("block"))).add(e.attributes);
+			}
+			if (name.equals("file") ) {
+				Hashtable file = e.attributes;
+				file.put("lumi_section", new Vector());
+				file.put("data_tier", new Vector());
+				file.put("parent", new Vector());
+				file.put("algorithm", new Vector());
+				topLevel.add(file);
+				++index;
+			} 
+			if (name.equals("file-lumi-section") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
+			if (name.equals("file-data_tier") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("data_tier"))).add(e.attributes);
+			if (name.equals("file-parent") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
+			if (name.equals("file-algorithm") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
+
+		}
+		table.put("processed-dataset", psDS);
+		table.put("file", topLevel);
+		return table;
+	}
+
 	private void insertFiles(Connection conn, Writer out, String inputXml, Hashtable dbsUser) throws Exception {
 		Vector topLevel = new Vector();
 		int index = -1;

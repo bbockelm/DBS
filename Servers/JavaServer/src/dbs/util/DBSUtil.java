@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.5 $"
- $Id: DBSUtil.java,v 1.5 2006/12/05 15:58:16 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSUtil.java,v 1.6 2006/12/05 22:44:31 sekhri Exp $"
  *
 */
 
@@ -66,6 +66,21 @@ public class DBSUtil {
 			return v;
 		}
 		return (Vector)tmp;
+	}
+
+	public static Hashtable getTable(Hashtable table, String key) {
+		Hashtable t = new Hashtable();
+		if(key == null ||  table == null) {
+			return t;
+		}
+		if(!table.containsKey(key)) {
+			return t;
+		}
+		Object tmp = table.get(key);
+		if(tmp == null) {
+			return t;
+		}
+		return (Hashtable)tmp;
 	}
 
 	/**

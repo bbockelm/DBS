@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.8 $"
- $Id: DBManagement.java,v 1.8 2006/12/04 19:02:22 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBManagement.java,v 1.9 2006/12/05 19:39:39 sekhri Exp $"
 
  *
  */
@@ -55,7 +55,7 @@ public class DBManagement {
 				throw new SQLException("Datasource cound not be initialized. Connection pooling failed.");
 			}
 		} catch(javax.naming.NoInitialContextException e) {
-			System.out.println("This must be a standalone client");
+			//System.out.println("This must be a standalone client");
 		}
 	}
 

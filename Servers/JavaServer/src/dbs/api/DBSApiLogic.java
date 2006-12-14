@@ -43,6 +43,8 @@ public class DBSApiLogic {
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
 	//We can store the path id once and everytime the id is needed it can be fetched from this table instead of fetching it through database.
 	private Hashtable globalPDPath = new Hashtable();
+	private Hashtable globalFile = new Hashtable();
+	private Hashtable globalUser = new Hashtable();
 		
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
@@ -164,9 +166,16 @@ public class DBSApiLogic {
 					prevTier = tier;
 				}
 				if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
-					out.write(((String) "\t<algorithm app_version='" + ver + 
-                                                            "' app_family_name='" + fam + "' app_executable_name='" + 
-                                                            exe + "' ps_name='" + pset + "'/>\n"));
+					out.write(((String) "\t<algorithm app_version='" + ver +
+	   							"' app_family_name='" + fam + 
+								"' app_executable_name='" + exe + 
+								"' ps_name='" + pset + 
+								"' ps_hash='" + get(rs, "PS_HASH") +
+								"' ps_version='" + get(rs, "PS_VERSION") +
+								"' ps_type='" + get(rs, "PS_TYPE") +
+								"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+								"' ps_content='" + get(rs, "PS_CONTENT") +
+								"'/>\n"));
 					prevExe = exe;
 					prevFam = fam;
 					prevVer = ver;
@@ -204,7 +213,7 @@ public class DBSApiLogic {
 						"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
 						"' created_by='" + get(rs, "CREATED_BY") +
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-						"'>\n"));
+						"'/>\n"));
 				}
 		} finally { 
 			if (rs != null) rs.close();
@@ -242,6 +251,11 @@ public class DBSApiLogic {
 						"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
 						"' ps_name='" + get(rs, "PS_NAME") +
 						"' ps_hash='" + get(rs, "PS_HASH") +
+						"' ps_hash='" + get(rs, "PS_HASH") +
+						"' ps_version='" + get(rs, "PS_VERSION") +
+						"' ps_type='" + get(rs, "PS_TYPE") +
+						"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+						"' ps_content='" + get(rs, "PS_CONTENT") +
 						"' creation_date='" + get(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' created_by='" + get(rs, "CREATED_BY") +
@@ -332,10 +346,11 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps =  DBSSql.listBlocks(conn, getProcessedDSID(conn, path),  getPattern(patternBlockName, "block_name"));
+			ps =  DBSSql.listBlocks(conn, getProcessedDSID(conn, path),  getBlockPattern(patternBlockName));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<block id='" + get(rs, "ID") +
+					"' path='" + path +
 					"' name='" + get(rs, "NAME") +
 					"' size='" + get(rs, "BLOCKSIZE") +
 					"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
@@ -364,13 +379,10 @@ public class DBSApiLogic {
 	 * @param patternLFN a parameter passed in from the client that can contain wild card characters for logical file name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patternLFN is invalid, the database connection is unavailable or processed dataset or block is not found.
 	 */
-	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN) throws Exception {
+	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN, String detail) throws Exception {
 
-                String prevTier = "";
-		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
-		boolean first = true;
-		String prevFileID = "";
-		
+		//By default a file detail is not needed
+
 		String procDSID = null;
 		String blockID = null;
 		if(!isNull(path)) {
@@ -391,15 +403,9 @@ public class DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
-				String tier = get(rs, "DATA_TIER");
-
-				if( !prevFileID.equals(fileID) && ! first) {
-					out.write( (String) "</file> \n");
-				}
-                         
-				if( !prevFileID.equals(fileID) || first) {  
-					out.write(((String) "<file id='" + fileID +
-					"' lfn='" + get(rs, "LFN") +
+				String lfn = get(rs, "LFN");
+				out.write(((String) "<file id='" + fileID +
+					"' lfn='" + lfn +
 					"' checksum='" + get(rs, "CHECKSUM") +
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
@@ -413,21 +419,22 @@ public class DBSApiLogic {
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'>\n"));
-					first = false;
-					prevFileID = fileID;
+				if (!isNull(detail)) {
+					globalFile = new Hashtable();
+					globalFile.put(lfn, fileID);
+					listFileParents(conn, out, lfn);
+					listFileAlgorithms(conn, out, lfn);
+					listFileTiers(conn, out, lfn);
+					listFileLumis(conn, out, lfn);
 				}
+                		out.write(((String) "</file>\n"));
       
- 				if( !prevTier.equals(tier) || first ) {
-					out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
-					prevTier = tier;
-				}
 			}
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
 
-                if (!first) out.write(((String) "</file>\n"));
 	}
 
 	/**
@@ -442,7 +449,7 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileParents(conn, getID(conn, "Files", "LogicalFileName", lfn, true));
+			ps = DBSSql.listFileParents(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file-parent id='" +  get(rs, "ID") +
@@ -459,7 +466,7 @@ public class DBSApiLogic {
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-					"'>\n"));
+					"'/>\n"));
 			}
 		} finally { 
 			if (rs != null) rs.close();
@@ -479,7 +486,7 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileAlgorithms(conn, getID(conn, "Files", "LogicalFileName", lfn, true));
+			ps = DBSSql.listFileAlgorithms(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file-algorithm id='" + get(rs, "ID") + 
@@ -512,7 +519,7 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileTiers(conn, getID(conn, "Files", "LogicalFileName", lfn, true));
+			ps = DBSSql.listFileTiers(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file-data_tier id='" + get(rs, "ID") +
@@ -542,10 +549,10 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileLumis(conn, getID(conn, "Files", "LogicalFileName", lfn, true));
+			ps = DBSSql.listFileLumis(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<file-lumi id='" +  get(rs, "LFN") +
+				out.write(((String) "<file-lumi-section id='" +  get(rs, "ID") +
 					"' lumi_section_number='" + get(rs, "LUMI_SECTION_NUMBER") +
 					"' run_number='" + get(rs, "RUN_NUMBER") +
 					"' start_event_number='" + get(rs, "START_EVENT_NUMBER") +
@@ -556,7 +563,7 @@ public class DBSApiLogic {
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-					"'>\n"));
+					"'/>\n"));
 
 				}
 		} finally { 
@@ -567,7 +574,7 @@ public class DBSApiLogic {
 
 	/**
 	 * Lists all the contents of a processed dataset in a xml format. This method calls lsitPrimaryDataset, listProcessedDataset, listRuns, listBlocks and listFiles one after another with the given path. This methods is used for propogation dataset from one DBS server to another. It writes a complete snapshot of a processed dataset on the output stream.  A sample XML that is written to the output stream is like <br>
-	 * <code> <"file id='9' lfn='TEST_LFN' checksum='CHKSUM' size='200' queryable_meta_data='any' number_of_events='200' validation_status='1' type='EVD' status='VALID' block_name='/test/test#8a99a0' creation_date='2006-12-07 09:52:55.0' last_modification_date='2006-12-07 09:52:55.0' created_by='ANZARDN' last_modified_by='ANZARDN'"><"data_tier name='HIT'"/><"data_tier name='SIM'"/><"/file"></code>
+	 * <code>  </code>
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
@@ -575,11 +582,16 @@ public class DBSApiLogic {
 	 */
 	public void listDatasetContents(Connection conn, Writer out, String path, String blockName) throws Exception {
 		String data[] = parseDSPath(path);
+		checkBlock(blockName);
+		out.write(((String) "<dataset path='" + path + 
+					"' block_name='" + blockName +
+					"' />\n"));
 		listPrimaryDatasets(conn, out, data[1]);
 		listProcessedDatasets(conn, out, data[1], data[2], data[3], null, null, null, null);
+		listDatasetParents(conn, out, path);
 		listRuns(conn, out, path);
 		listBlocks(conn, out, path, blockName);
-		listFiles(conn, out, path, blockName, null);
+		listFiles(conn, out, path, blockName, null, "true");
 	}
 	
 	
@@ -597,18 +609,18 @@ public class DBSApiLogic {
 		String warMsg ;
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser); 
-		
+		String name = get(dataset, "primary_name", true);
 		String type = get(dataset, "type", false);
 				
 		//Insert a Dataset Type if it does not exists
-		insertName(conn, "PrimaryDSType", "Type", type , userID);
+		insertName(conn, out, "PrimaryDSType", "Type", type , userID);
 		
 		//Insert a Dataset Trigger Desc if it does not exists
 		//FIXME some problem with this table while insertng rows
-		//insertName(conn, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
+		//insertName(conn, out, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
 		
 		//Insert a Dataset Other Desc if it does not exists
-		//insertName(conn, "OtherDescription", "Description", oDesc , userID);
+		//insertName(conn, out, "OtherDescription", "Description", oDesc , userID);
 
 		//TODO Insert MCDesc . Change in the schema is required.
 		//FIXME The schemna should be changed so that PrimaryDatasetDescription should have PrimarYdataset ID as forign key. 
@@ -620,26 +632,25 @@ public class DBSApiLogic {
 		//String tpDesc = get(dataset, "trigger_path_description", false);
 
 		//TODO Insert PrimaryDatasetDescription table also
-		//String primDSID;
-		//if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertPrimaryDataset(conn, 
+		String primDSID;
+		if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertPrimaryDataset(conn, 
 					get(dataset, "annotation", false),
-					get(dataset, "primary_name", true),
-					"",//FIXME 
+					name,
+					"",//FIXME Should not be in the schema
 					get(dataset, "start_date", true),
 					get(dataset, "end_date", false),
 					getID(conn, "PrimaryDSType", "Type", type, true), 
 					userID);
-			ps.execute();
-		} finally { 
-			if (ps != null) ps.close();
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+			}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Primary Dataset " + name + " Already Exists");
 		}
-
-		//} else {
-			//Append Warnning message that run eixts
-		//}
 
 	}
 
@@ -654,21 +665,26 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertRun(conn, 
-				get(run, "run_number", true),
-				get(run, "number_of_events", true),
-				get(run, "number_of_lumi_sections", true),
-				get(run, "total_luminosity", true),
-				get(run, "store_number", true),
-				get(run, "start_of_run", false),
-				get(run, "end_of_run", false),
-				getUserID(conn, dbsUser));
-			ps.execute();
-		} finally { 
-			if (ps != null) ps.close();
-                }
+		String runNumber = get(run, "run_number", true);
+		if(getID(conn, "Runs", "RunNumber", runNumber, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertRun(conn, 
+					runNumber,
+					get(run, "number_of_events", true),
+					get(run, "number_of_lumi_sections", true),
+					get(run, "total_luminosity", true),
+					get(run, "store_number", true),
+					get(run, "start_of_run", false),
+					get(run, "end_of_run", false),
+					getUserID(conn, dbsUser));
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+        	        }
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Run " + runNumber + " Already Exists");
+		}
 
 	}
 
@@ -682,7 +698,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameter tierName is invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertTier(Connection conn, Writer out, String tierName, Hashtable dbsUser) throws Exception {
-		insertName(conn, "DataTier", "Name", tierName , getUserID(conn, dbsUser));
+		insertName(conn, out, "DataTier", "Name", tierName , getUserID(conn, dbsUser));
 	}
 
 
@@ -709,22 +725,26 @@ public class DBSApiLogic {
 		if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
 		checkBlock(name);
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertBlock(conn,
-				"0",// A new block should always have 0 size
-				name,
-				procDSID,
-				"0",// A new block should always have 0 files
-				openForWriting, //openForWriting must be 1 fr a new block
-				getUserID(conn, dbsUser));
 
-			ps.execute();
-		} finally { 
-			if (ps != null) ps.close();
-                }
+		if(getBlockID(conn, name, false, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertBlock(conn,
+					"0",// A new block should always have 0 size
+					name,
+					procDSID,
+					"0",// A new block should always have 0 files
+					openForWriting, //openForWriting must be 1 fr a new block
+					getUserID(conn, dbsUser));
+
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+	                }
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
+		}
 		out.write("<block block_name='" + name + "'/>");
-
 	}
 
 	/**
@@ -751,31 +771,36 @@ public class DBSApiLogic {
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);
 		//Insert the application version if it does not exists
-		insertName(conn, "AppVersion", "Version", version, userID);
+		insertName(conn, out, "AppVersion", "Version", version, userID);
 		
 		//Insert the Application Family if it does not exists
-		insertName(conn, "AppFamily", "FamilyName", family, userID);
+		insertName(conn, out, "AppFamily", "FamilyName", family, userID);
 		
 		//Insert the Application Executable if it does not exists
-		insertName(conn, "AppExecutable", "ExecutableName", exe, userID);
+		insertName(conn, out, "AppExecutable", "ExecutableName", exe, userID);
 
 		//Insert the ParameterSet if it does not exists
 		//insertParameterSet(conn, psHash, psName, psVersion, psType, psAnnotation, psContent, userID);
-		insertParameterSet(conn, algo, userID);
-		
+		insertParameterSet(conn, out, algo, userID);
+			    
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertApplication(conn, 
-				getID(conn, "AppExecutable", "ExecutableName", exe, true), 
-				getID(conn, "AppVersion", "Version", version, true), 
-				getID(conn, "AppFamily", "FamilyName", family, true), 
-				getID(conn, "QueryableParameterSet", "Name", psName, true), 
-				userID);
-			ps.execute();
-		} finally { 
-                  if (ps != null) ps.close();
-	        }
+		if(getAlgorithmID(conn, version, family, exe, psName, false) == null) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertApplication(conn, 
+					getID(conn, "AppExecutable", "ExecutableName", exe, true), 
+					getID(conn, "AppVersion", "Version", version, true), 
+					getID(conn, "AppFamily", "FamilyName", family, true), 
+					getID(conn, "QueryableParameterSet", "Name", psName, true), 
+					userID);
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+	        	}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Algorithm Configuration  " + version + " " + family +  " " + exe + " " + psName + " Already Exists");
+		}
+
        }
 
        /**
@@ -832,7 +857,9 @@ public class DBSApiLogic {
                 else {
                     blockID = dbsManagedBlockID(conn, procDSID, path, dbsUser);
                 }
-
+		//These tables are used to store the types and staus fileds along with thier id
+		//If the id can be fetched from here then we do not have to fietch it from database again and again
+		boolean newFileInserted = false;
 		Hashtable statusTable = new Hashtable();
 		Hashtable typeTable = new Hashtable();
 		Hashtable valStatusTable = new Hashtable();
@@ -842,9 +869,10 @@ public class DBSApiLogic {
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
 		
+			String fileID = "";
 			//String path = get(file, "path");
 			//String blockName = get(file, "block_name");
-			String lfn = getStr(file, "lfn", true);
+			String lfn = get(file, "lfn", true);
 			String fileStatus = get(file, "file_status", false);
 			String type = get(file, "type", false);
 			String valStatus = get(file, "validation_status", false);
@@ -859,15 +887,17 @@ public class DBSApiLogic {
 			if (isNull(valStatus)) valStatus = "VALID";
 			
 			//Insert a File status if it does not exists
-			//insertName(conn, "Status", "Status", fileStatus , userID);
+			//insertName(conn, out, "Status", "Status", fileStatus , userID);
 
 			//Insert a File Validation status if it does not exists
-			//insertName(conn, "Status", "Status", valStatus , userID);
+			//insertName(conn, out, "Status", "Status", valStatus , userID);
 
 			//Insert a File Type if it does not exists
-			//insertName(conn, "Type", "Type", type , userID);
+			//insertName(conn, out, "Type", "Type", type , userID);
+			
 			//Insert a File by fetching the fileStatus, type and validationStatus
-			//if( (fileID = getID(conn, "Files", "LogicalFileName", lfn, false)) == null ) {
+			if( (fileID = getFileID(conn, lfn, false)) == null ) {
+				newFileInserted = true;
 			//TODO Exception of null status or type should be catched and parsed and 
 			//a proper message should be returned back to the user. Different Database can have different error message YUK
 			//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
@@ -897,9 +927,6 @@ public class DBSApiLogic {
 						statusID,
 						typeID,
 						valStatusID,
-						//fileStatus, 
-						//type, 
-						//valStatus, 
 						get(file, "queryable_meta_data", false), 
 						userID);
 				ps.execute();
@@ -907,31 +934,35 @@ public class DBSApiLogic {
 				if (ps != null) ps.close();
                         }
 
-			//}
+			} else {
+				//Write waring message that file exists already
+				writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
+			}
 
-			//if(isNull(fileID)) fileID = getID(conn, "Files", "LogicalFileName", lfn, true);
+			//if(isNull(fileID)) fileID = getFileID(conn, lfn);
 			//Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
 			//FileID is needed if any of the other table information is provided i.e the vector size is > 0
-			String fileID = "";
 			if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0) 
-				fileID = getID(conn, "Files", "LogicalFileName", lfn, true);
+				if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
+				//fileID = getFileID(conn, lfn, true);
 
 			//Insert FileAlgo table by fetching application ID. 
 			//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
 			for (int j = 0; j < algoVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)algoVector.get(j);
-				insertMap(conn, "FileAlgo", "Fileid", "Algorithm", 
+				insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 						fileID, 
 						getAlgorithmID(conn, get(hashTable, "app_version"), 
 								get(hashTable, "app_family_name"), 
 								get(hashTable, "app_executable_name"),
-								get(hashTable, "ps_name")), 
+								get(hashTable, "ps_name"),
+							       	true), 
 						userID);
 			}
 
 			//Insert FileTier table by fetching data tier ID
 			for (int j = 0; j < tierVector.size(); ++j) {
-				insertMap(conn,	"FileTier", "Fileid", "DataTier", 
+				insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
 					fileID, 
 					getID(conn, "DataTier", "Name", 
 						get((Hashtable)tierVector.get(j), "name") , 
@@ -941,11 +972,9 @@ public class DBSApiLogic {
 			
 			//Insert FileParentage table by fetching parent File ID
 			for (int j = 0; j < parentVector.size(); ++j) {
-				insertMap(conn, "FileParentage", "ThisFile", "itsParent", 
+				insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
 						fileID, 
-						getID(conn, "Files", "LogicalFileName", 
-							get((Hashtable)parentVector.get(j), "lfn") , 
-							true), 
+						getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
 						userID);
 			}
 			//TODO Discussion about Lumi section is needed
@@ -954,7 +983,7 @@ public class DBSApiLogic {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
 				insertLumiSection(conn, out, hashTable, userID);
-				insertMap(conn, "FileLumi", "Fileid", "Lumi", 
+				insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
 						userID);
@@ -962,13 +991,15 @@ public class DBSApiLogic {
 		
 		}//For loop
 		//Update Block numberOfFiles and Size
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.updateBlock(conn, blockID);
-			ps.executeUpdate();
-		} finally { 
-			if (ps != null) ps.close();
-                }
+		if (newFileInserted) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.updateBlock(conn, blockID);
+				ps.executeUpdate();
+			} finally { 
+				if (ps != null) ps.close();
+                	}
+		}
 
 	}
 
@@ -994,7 +1025,6 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
-		String warMsg ;
 		//Get the User ID from USERDN
 		String userID = getUserID(conn, dbsUser);
 
@@ -1014,50 +1044,51 @@ public class DBSApiLogic {
 		if (isNull(phyGroupCon)) phyGroupCon = "ANZARDN";//FIXME Some default convenor name should be used
 		
 		//Insert a Processed Dataset status if it does not exists
-		//insertName(conn, "Status", "Status", status , userID);
+		//insertName(conn, out, "Status", "Status", status , userID);
 		
 		//Insert a Physics Group if it does not exists
 		insertPhysicsGroup(conn, out,  phyGroupName, phyGroupCon, userID);
 		
+		String procDSID = "";
 		//Insert a Processed Datatset before by fetching the primDSID, status
-		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertProcessedDatatset(conn, 
+		if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertProcessedDatatset(conn, 
 					procDSName,
 					getID(conn, "PrimaryDataset", "Name", 
-						get(dataset, "primary_datatset_name", true), 
-						true),
+					get(dataset, "primary_datatset_name", true), 
+					true),
 					get(dataset, "open_for_writing", false),
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
 					userID);
-			ps.execute();
-                } finally {
-			if (ps != null) ps.close();
-                }
+				ps.execute();
+        	        } finally {
+				if (ps != null) ps.close();
+	                }
 
-		//} else {
-			//warMsg =+ (String)"ProcessedDataset Name " + procDSName + " already exists but ignored.\n";
-		//}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "ProcessedDataset " + procDSName + " Already Exists");
+		}
 
 
 		//Fetch the Processed Datatset ID that was just inseted or fetched , to be used for subsequent insert of other tables.
 		//FIXME this might use processed datatset with primary datatset combination instead of just proDSName
 		//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
-		String procDSID = "";
 		if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0) 
-			procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
+			if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
 		
 		//Insert ProcAlgoMap table by fetching application ID. 
 		for (int j = 0; j < algoVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
-			insertMap(conn, "ProcAlgo", "Dataset", "Algorithm", 
+			insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
 					procDSID, 
 					getAlgorithmID(conn, get(hashTable, "app_version"), 
 							get(hashTable, "app_family_name"), 
 							get(hashTable, "app_executable_name"),
-							get(hashTable, "ps_name")), 
+							get(hashTable, "ps_name"), 
+							true), 
 					userID);
 		}
 
@@ -1066,8 +1097,8 @@ public class DBSApiLogic {
 			Hashtable hashTable = (Hashtable)tierVector.get(j);
 			String tierName = get(hashTable, "name", true);
 			//Insert DataTier if it does not exists
-			insertName(conn, "DataTier", "Name", tierName , userID);
-			insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
+			insertName(conn, out, "DataTier", "Name", tierName , userID);
+			insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 					procDSID, 
 					getID(conn, "DataTier", "Name", tierName , true), 
 					userID);
@@ -1075,7 +1106,7 @@ public class DBSApiLogic {
 
 		//Insert DatasetParentage table by fetching parent File ID
 		for (int j = 0; j < parentVector.size(); ++j) {
-			insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
+			insertMap(conn, out, "DatasetParentage", "ThisDataset", "ItsParent", 
 					procDSID, 
 					getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path")), 
 					userID);
@@ -1083,7 +1114,7 @@ public class DBSApiLogic {
 
 		//Insert ProcDSRun table by fetching Run ID
 		for (int j = 0; j < runVector.size(); ++j) {
-			insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
+			insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
 					procDSID, 
 					getID(conn, "Runs", "RunNumber", get((Hashtable)runVector.get(j), "run_number") , true), 
 					userID);
@@ -1117,8 +1148,8 @@ public class DBSApiLogic {
 		//FIXME   Make sure that Type and Status fileds are well understood
 		//        will they pre-exist, or user can define as they create AnalysisDS ??     
 
-		insertName(conn, "AnalysisDSType", "Type", type , userID);
-		insertName(conn, "AnalysisDSStatus", "Status", status, userID);
+		insertName(conn, out, "AnalysisDSType", "Type", type , userID);
+		insertName(conn, out, "AnalysisDSStatus", "Status", status, userID);
 
 	        ResultSet rsLumi = null;
                 PreparedStatement psLumi = null; 
@@ -1143,7 +1174,7 @@ public class DBSApiLogic {
 				if (ps != null) ps.close();   
 			 }
 
-			 System.out.println("ANZAR: procDSID="+procDSID);
+			 //System.out.println("ANZAR: procDSID="+procDSID);
 			 //ID of just added AnalysisDS 
 			 String analysisDSID = getID(conn, "AnalysisDataset", "Name", name , true);
                  
@@ -1152,7 +1183,7 @@ public class DBSApiLogic {
 
 			  rsLumi =  psLumi.executeQuery(); 
 			  while(rsLumi.next())    
-				insertMap(conn, "AnalysisDatasetLumi", "AnalysisDataset", "Lumi",  
+				insertMap(conn, out, "AnalysisDatasetLumi", "AnalysisDataset", "Lumi",  
 	 					analysisDSID, 
 						get(rsLumi, "ID"), 
 						userID);
@@ -1175,7 +1206,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertTierInPD(Connection conn, Writer out, String path, String tierName, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "ProcDSTier", "Dataset", "DataTier", 
+		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 				getProcessedDSID(conn, path), 
 				getID(conn, "DataTier", "Name", tierName , true), 
 				getUserID(conn, dbsUser));
@@ -1194,7 +1225,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertParentInPD(Connection conn, Writer out, String path, String parentPath, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "DatasetParentage", "ThisDataset", "ItsParent", 
+		insertMap(conn, out, "DatasetParentage", "ThisDataset", "ItsParent", 
 					getProcessedDSID(conn, path), 
 					getProcessedDSID(conn, parentPath), 
 					getUserID(conn, dbsUser));
@@ -1213,12 +1244,13 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertAlgoInPD(Connection conn, Writer out, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "ProcAlgo", "Dataset", "Algorithm", 
+		insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
 					getProcessedDSID(conn, path), 
 					getAlgorithmID(conn, get(algo, "app_version"), 
 							get(algo, "app_family_name"), 
 							get(algo, "app_executable_name"),
-							get(algo, "ps_name")), 
+							get(algo, "ps_name"), 
+							true), 
 					getUserID(conn, dbsUser));
 	}
 
@@ -1235,7 +1267,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertRunInPD(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "ProcDSRuns", "Dataset", "Run", 
+		insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
 				getProcessedDSID(conn, path), 
 				getID(conn, "Runs", "RunNumber", runNumber , true), 
 				getUserID(conn, dbsUser));
@@ -1253,8 +1285,8 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertTierInFile(Connection conn, Writer out, String lfn, String tierName, Hashtable dbsUser) throws Exception {
-		insertMap(conn,	"FileTier", "Fileid", "DataTier", 
-				getID(conn, "Files", "LogicalFileName", lfn, true), 
+		insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
+				getFileID(conn, lfn, true), 
 				getID(conn, "DataTier", "Name", tierName , true), 
 				getUserID(conn, dbsUser));
 
@@ -1272,9 +1304,9 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertParentInFile(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "FileParentage", "ThisFile", "itsParent", 
-				getID(conn, "Files", "LogicalFileName", lfn, true),
-			 	getID(conn, "Files", "LogicalFileName", parentLFN, true),
+		insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+				getFileID(conn, lfn, true),
+				getFileID(conn, parentLFN, true),
 				getUserID(conn, dbsUser));
 	}
 
@@ -1292,12 +1324,13 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertAlgoInFile(Connection conn, Writer out, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "FileAlgo", "Fileid", "Algorithm", 
-				getID(conn, "Files", "LogicalFileName", lfn, true), 
+		insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
+				getFileID(conn, lfn, true), 
 				getAlgorithmID(conn, get(algo, "app_version"), 
 						get(algo, "app_family_name"), 
 						get(algo, "app_executable_name"),
-						get(algo, "ps_name")), 
+						get(algo, "ps_name"), 
+						true), 
 				getUserID(conn, dbsUser));
 	}
 
@@ -1313,8 +1346,8 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertLumiInFile(Connection conn, Writer out, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
-		insertMap(conn, "FileLumi", "Fileid", "Lumi", 
-				getID(conn, "Files", "LogicalFileName", lfn, true), 
+		insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
+				getFileID(conn, lfn, true), 
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
 				getUserID(conn, dbsUser));
 	}
@@ -1358,8 +1391,42 @@ public class DBSApiLogic {
 			}
 
 		} else {
-			writeWarning(out, "Already Exists", "401", "LumiSection " + lsNumber + " Already Exists");
+			writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
 		}
+	}
+
+	/**
+	 * Insert a complete dataset with all of its contents passedas a  <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the all the processed dataset information awith all the files, algo, run and lumi information. It calls all the other insert API to insert the processed dataset contents
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param table a <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new all of the processed dataset contents. The keys along with its values that it may or may not contain are <br>
+	 * <code>lumi_section_number, run_number, start_event_number, end_event_number, lumi_start_time, lumi_end_time </code> <br>
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
+	 */
+	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		//FIXME dont pass dbsUser instaed get it from the table
+		String path = getPath(table, "path", true);
+		String blockName = getBlock(table, "block_name", true);
+
+		insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary-dataset"), dbsUser);
+		Hashtable pdTable = DBSUtil.getTable(table, "processed-dataset");
+		Vector algoVector = DBSUtil.getVector(pdTable, "algorithm");
+		for (int j = 0; j < algoVector.size(); ++j) 
+			insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser);
+		
+		Vector runVector = DBSUtil.getVector(pdTable, "run");
+		for (int j = 0; j < runVector.size(); ++j) 
+			insertRun(conn, out, (Hashtable)runVector.get(j), dbsUser);
+		
+		insertProcessedDataset(conn, out, pdTable, dbsUser);
+		Vector blockVector = DBSUtil.getVector(pdTable, "block");
+		for (int j = 0; j < blockVector.size(); ++j) 
+			insertBlock(conn, out, (Hashtable)blockVector.get(j), dbsUser);
+		
+		insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
+
+		
 	}
 
 	private static void writeWarning(Writer out, String message, String code, String detail) throws Exception {
@@ -1396,7 +1463,7 @@ public class DBSApiLogic {
 	 * @param value the value to be inserted in the coloumn name of the table.
 	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 */
-	private void insertName(Connection conn, String table, String key, String value, String userID) throws Exception {
+	private void insertName(Connection conn, Writer out, String table, String key, String value, String userID) throws Exception {
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
 		if(isNull(userID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
 		if( getID(conn, table, key, value, false) == null ) {
@@ -1407,7 +1474,10 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
-		}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Table " + table + " " + key + " with value " + value +  " Already Exists");
+		}	
+
 	}
 	
 	/**
@@ -1419,7 +1489,7 @@ public class DBSApiLogic {
 	 * @param value2 the second value to be inserted in the second coloumn name of the table.
 	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 */
-	private void insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String userID) throws Exception {
+	private void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String userID) throws Exception {
 		if( getMapID(conn, tableName, key1, key2, value1, value2, false) == null ) {
 			PreparedStatement ps = null;
 			try {
@@ -1428,6 +1498,8 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " Already Exists");
 		}	
 
 	}
@@ -1444,7 +1516,7 @@ public class DBSApiLogic {
 	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
-	private void insertParameterSet(Connection conn, Hashtable algo, String userID) throws Exception {
+	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String userID) throws Exception {
 		String psName = get(algo, "ps_name", true);
 		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
 			PreparedStatement ps = null;
@@ -1462,7 +1534,10 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
-		}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Parameter Set " + psName +  " Already Exists");
+		}	
+
 	}
 
 	/**
@@ -1490,7 +1565,10 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
-		}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Physics Group " + name + " Already Exists");
+		}	
+
 	}
 
 	/**
@@ -1515,11 +1593,85 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
-		}
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Person " + userDN + " Already Exists");
+		}	
+
 	}
 
+        private String insertBlock(Connection conn, String procDSID, String path, Hashtable dbsUser) throws Exception {
+                String[] data = path.split("/");
+                String name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID();
+                String openForWriting = "1";
+
+                //checkBlock(name);
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertBlock(conn,
+                                "0",// A new block should always have 0 size
+                                name,
+                                procDSID,
+                                "0",// A new block should always have 0 files
+                                openForWriting,
+                                getUserID(conn, dbsUser));
+
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+                return getBlockID(conn, name, false, true);
+        }
+
+        private String dbsManagedBlockID (Connection conn, String procDSID, String path, Hashtable dbsUser) throws Exception {
+                String id = "";
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+                try {
+                        ps = DBSSql.getOpenBlockID(conn, procDSID);
+                        rs =  ps.executeQuery();
+                        if(!rs.next()) {
+                           //Unable to find an Open Block, Create one.
+                           id = insertBlock(conn, procDSID, path, dbsUser);
+                           return id;
+                        }
+                        id = get(rs, "ID");
+
+                        DBSConfig config = DBSConfig.getInstance();
+
+                        int configuredBlkSize = config.getMaxBlockSize();
+                        int configuredNumFiles = config.getMaxBlockFiles();
+                        //System.out.println("configuredBlkSize: "+configuredBlkSize);
+                        //System.out.println("configuredNumFiles: "+configuredNumFiles);
+
+                        int blockSize = Integer.parseInt(get(rs, "BLOCKSIZE"));
+                        int numberOfFiles = Integer.parseInt(get(rs, "NUMBER_OF_FILES"));
+                        if (blockSize > configuredBlkSize || numberOfFiles >= configuredNumFiles ) {
+                           //System.out.println("*********************CLOSING BLOCK****************");
+                           closeBlock(conn, id);
+                           id = insertBlock(conn, procDSID, path, dbsUser);
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+                return id;
+        }
+
+
+        private void closeBlock(Connection conn, String blockID) throws Exception {
+
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.closeBlock(conn, blockID);
+                        ps.executeUpdate();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+       }
+ 
 
 	private String[] parseDSPath(String path) throws Exception {
+		checkPath(path);
 		String[] data = path.split("/");
 		if(data.length != 4) {
 			throw new DBSException("Invalid format", "1007", " Expected a path in format /PRIMARY/TIER/PROCESSED given " + path);
@@ -1534,7 +1686,6 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable, or the processed dataset is not found.
 	 */
 	private String getProcessedDSID(Connection conn, String path) throws Exception {
-		//checkPath(path);
 		String id = "";
 		if(!isNull( id = get(globalPDPath, path) )) {
 			return id;
@@ -1585,7 +1736,7 @@ public class DBSApiLogic {
 	 * @param psName the name of the parameter set whose algorithm configuration id needs to be fetched.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable, or the algorithm is not found.
 	 */
-	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws Exception {
+	private String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName, boolean excep) throws Exception {
 		checkWord(ver, "app_version");
 		checkWord(fam, "app_family_name");
 		checkWord(exe, "app_executable_name");
@@ -1598,7 +1749,8 @@ public class DBSApiLogic {
 			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psName);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psName);
+				if (excep) throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psName);
+				else return null;
 			}
 			id = get(rs, "ID");
 		} finally {
@@ -1624,76 +1776,6 @@ public class DBSApiLogic {
 	}*/
 
 
-        private String insertBlock(Connection conn, String procDSID, String path, Hashtable dbsUser) throws Exception {
-                String[] data = path.split("/");
-                String name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID();
-                String openForWriting = "1";
-
-                //checkBlock(name);
-                PreparedStatement ps = null;
-                try {
-                        ps = DBSSql.insertBlock(conn,
-                                "0",// A new block should always have 0 size
-                                name,
-                                procDSID,
-                                "0",// A new block should always have 0 files
-                                openForWriting,
-                                getUserID(conn, dbsUser));
-
-                        ps.execute();
-                } finally {
-                        if (ps != null) ps.close();
-                }
-                return getBlockID(conn, name, false, true);
-        }
-
-        private String dbsManagedBlockID (Connection conn, String procDSID, String path, Hashtable dbsUser) throws Exception {
-                String id = "";
-                PreparedStatement ps = null;
-                ResultSet rs = null;
-                try {
-                        ps = DBSSql.getOpenBlockID(conn, procDSID);
-                        rs =  ps.executeQuery();
-                        if(!rs.next()) {
-                           //Unable to find an Open Block, Create one.
-                           id = insertBlock(conn, procDSID, path, dbsUser);
-                           return id;
-                        }
-                        id = get(rs, "ID");
-
-                        DBSConfig config = DBSConfig.getInstance();
-
-                        int configuredBlkSize = config.getMaxBlockSize();
-                        int configuredNumFiles = config.getMaxBlockFiles();
-                        System.out.println("configuredBlkSize: "+configuredBlkSize);
-                        System.out.println("configuredNumFiles: "+configuredNumFiles);
-
-                        int blockSize = Integer.parseInt(get(rs, "BLOCKSIZE"));
-                        int numberOfFiles = Integer.parseInt(get(rs, "NUMBER_OF_FILES"));
-                        if (blockSize > configuredBlkSize || numberOfFiles >= configuredNumFiles ) {
-                           System.out.println("*********************CLOSING BLOCK****************");
-                           closeBlock(conn, id);
-                           id = insertBlock(conn, procDSID, path, dbsUser);
-                        }
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-                return id;
-        }
-
-
-        private void closeBlock(Connection conn, String blockID) throws Exception {
-
-                PreparedStatement ps = null;
-                try {
-                        ps = DBSSql.closeBlock(conn, blockID);
-                        ps.executeUpdate();
-                } finally {
-                        if (ps != null) ps.close();
-                }
-       }
- 
 	/**
 	 * Gets a block id from the database by using the block name as the unique key. This actually generates the sql by calling a generic private <code>dbs.sql.DBSSql.getID</code> method. 
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
@@ -1729,7 +1811,18 @@ public class DBSApiLogic {
 		return  id;
 	}
 
-
+	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {
+		String id = "";
+		if(!isNull( id = get(globalFile, lfn) )) {
+			return id;
+		}
+		if( !isNull(id = getID(conn, "Files", "LogicalFileName", lfn, excep)) ) {
+			globalFile = new Hashtable();//Just store one file id only
+			globalFile.put(lfn, id);
+		}
+		return id;
+	}
+	
 	/**
 	 * Gets a id of a table from the given database table using the key value pair specified in the parameters. This method can be called to fetch the id of any table that has just one unique key. The sql is generated by calling a generic private <code>dbs.sql.DBSSql.getID</code> method. 
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
@@ -1746,6 +1839,7 @@ public class DBSApiLogic {
                                                                                  tableName + " : " + key + " : " + value );
                      return null;
                 } 
+		//if(tableName.equals("Files")) System.out.println("key is "+ key + " value is "+ value + " len  is " + value.length() + " excep is " + excep);
 		if (excep) checkWord(value, key);
 		else if(!isNull(value)) checkWord(value, key);
 
@@ -1819,6 +1913,9 @@ public class DBSApiLogic {
 	private String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
 		String id = "";
 		String userDN = get(dbsUser, "user_dn", true);
+		if(!isNull( id = get(globalUser, userDN) )) {
+			return id;
+		}
 		if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
 			//FIXME instead of passing null for out stream writer , pass the actual stream
 			insertPerson(conn, null,  
@@ -1828,6 +1925,7 @@ public class DBSApiLogic {
 					""); //FIXME Get userName and contactInfo also and the userID shoudl be decicde?
 			id = getID(conn, "Person", "DistinguishedName", userDN , true);
 		}
+		globalUser.put(userDN, id);
 		return id;
 	}
 
@@ -1905,6 +2003,21 @@ public class DBSApiLogic {
                 return value;
         }
 
+	private String getBlock(Hashtable table, String key, boolean excep) throws Exception{
+                String value = DBSUtil.get(table, key);
+                if(excep) checkBlock(value);
+                else if(! isNull(value)) checkBlock(value);
+                return value;
+        }
+
+	private String getPath(Hashtable table, String key, boolean excep) throws Exception{
+                String value = DBSUtil.get(table, key);
+                if(excep) checkPath(value);
+                else if(! isNull(value)) checkPath(value);
+                return value;
+        }
+
+
 
 	private String get(Hashtable table, String key) {
 		return DBSUtil.get(table, key);
@@ -1920,6 +2033,12 @@ public class DBSApiLogic {
 		if(isNull(pattern))  return "%";
 		pattern = pattern.replace('*','%');
 		checkWord(pattern,key);
+        	return pattern;
+	}
+	private String getBlockPattern(String pattern) throws Exception {
+		if(isNull(pattern))  return "%";
+		pattern = pattern.replace('*','%');
+		checkBlock(pattern);
         	return pattern;
 	}
 

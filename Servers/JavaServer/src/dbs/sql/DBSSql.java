@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.33 $"
- $Id: DBSSql.java,v 1.33 2006/12/11 22:34:31 sekhri Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSSql.java,v 1.34 2006/12/13 16:58:01 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -397,6 +397,11 @@ public class DBSSql {
 			"af.FamilyName as APP_FAMILY_NAME, \n" +
 			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
 			"ps.Name as PS_NAME, \n" +
+			"ps.Hash as PS_HASH, \n" +
+			"ps.Version as PS_VERSION, \n" +
+			"ps.Type as PS_TYPE, \n" +
+			"ps.Annotation as PS_ANNOTATION, \n" +
+			"ps.Content as PS_CONTENT, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM ProcessedDataset procds \n" +
@@ -514,6 +519,10 @@ public class DBSSql {
 			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
 			"ps.Name as PS_NAME, \n" +
 			"ps.Hash as PS_HASH, \n" +
+			"ps.Version as PS_VERSION, \n" +
+			"ps.Type as PS_TYPE, \n" +
+			"ps.Annotation as PS_ANNOTATION, \n" +
+			"ps.Content as PS_CONTENT, \n" +
 			"algo.CreationDate as CREATION_DATE, \n" +
 			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
@@ -656,7 +665,7 @@ public class DBSSql {
 			"f.CreationDate as CREATION_DATE, \n" +
 			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
-			"f.ValidationStatus as VALIDATION_STATUS, \n" +
+			"vst.Status as VALIDATION_STATUS, \n" +
 			"st.Status as STATUS, \n" +
 			"ty.Type as TYPE, \n" +
                         "b.Name as BLOCK_NAME, \n"+ 
@@ -674,6 +683,8 @@ public class DBSSql {
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
+			"LEFT OUTER JOIN FileStatus vst \n" +
+				"ON vst.id = f.ValidationStatus \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
@@ -718,7 +729,7 @@ public class DBSSql {
 			"ty.Type as TYPE, \n" +
                         "b.Name as BLOCK_NAME, \n"+ 
 			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Files f \n" +
 			"JOIN FileParentage fp \n" +
 				"ON fp.ItsParent = f.ID \n" +
@@ -761,7 +772,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = dt.LastModifiedBy \n";
 		if(fileID != null) {
-			sql += "WHERE ft.File = ? \n";
+			sql += "WHERE ft.Fileid = ? \n";
 		}
 
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -784,8 +795,8 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM AlgorithmConfig algo \n" +
-			"JOIN FileAlgoMap fam \n" +
-				"ON fam.Algorithm = algo.id \n" +
+			"JOIN FileAlgo fa \n" +
+				"ON fa.Algorithm = algo.id \n" +
 			"JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
 			"JOIN AppFamily af \n" +
@@ -799,7 +810,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
 		if(fileID != null) {
-			sql += "WHERE fam.File = ? \n";
+			sql += "WHERE fa.Fileid = ? \n";
 		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(fileID != null) {
@@ -829,7 +840,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = lumi.LastModifiedBy \n";
 		if(fileID != null) {
-			sql += "WHERE fl.File = ? \n";
+			sql += "WHERE fl.Fileid = ? \n";
 		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(fileID != null) {
