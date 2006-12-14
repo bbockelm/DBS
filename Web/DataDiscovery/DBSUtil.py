@@ -9,7 +9,7 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import string, sys, time, types, logging, traceback
+import string, sys, time, types, logging, traceback, random
 
 # import DBS modules
 import dbsException
@@ -18,6 +18,19 @@ from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
 # file created by crontab job, see getDLSsites.sh
 DLS_INFO='dls.all'
+
+# Tips
+TIPS= [
+"to save your history, open history menu and authenticate yourself",
+"to find all data on particular site, use expert site search",
+"DBS only information can be accessed from expert page",
+"don't use 'back' button, use history menu instead",
+"to send found data to your buddy, use 'bare URL' link at bottom of the page"
+]
+
+def tip():
+    idx = random.randint(0,len(TIPS)-1)
+    return TIPS[idx]
 
 def convertListToString(iList):
     s="["
@@ -422,6 +435,9 @@ def addToDict(iDict,key,value):
 #       else:
 #          iDict[key]=[value]
 #    return iDict
+def monthId(month):
+    d={'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12}
+    return d[string.lower(month)[:3]]
 
 class DBSLogger:
   """
@@ -478,4 +494,5 @@ if __name__ == "__main__":
 #   print formattingListPrint([1,2,3,4,5,6,7,8,9,10])
 #   print formattingDictPrint({'test':[1,2,3,4,5,6,7,8,9,10],'vk':[21,22,23,24]})
 #   print getDictOfSites()
-   print convertListToString([1,2,3,4,5,6,7,8,9,10])
+#   print convertListToString([1,2,3,4,5,6,7,8,9,10])
+   print tip()
