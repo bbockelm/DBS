@@ -19,7 +19,7 @@ class DBSAuthentication:
   """
       DBS authentication module constructor. It reads DBS_DBPARAM file and parse it.
   """
-  def __init__(self,pattern):
+  def __init__(self,pattern,verbose=0):
       """
           DBS authentication module constructor. It reads DBS_DBPARAM file and parse it.
           @type  pattern: string
@@ -31,10 +31,13 @@ class DBSAuthentication:
       self.db    = ""
       self.user  = ""
       self.passwd= ""
+      self.verbose = verbose
+      self.dbparam = ""
       try:
           self.dbparam = open(os.environ['DBS_DBPARAM'],'r')
       except:
-          printExcept("No DBS_DBPARAM environment variable found")
+          if self.verbose:
+             printExcept("No DBS_DBPARAM environment variable found")
       found=0
       for s in self.dbparam.readlines():
           line = string.replace(s,"\n","")
