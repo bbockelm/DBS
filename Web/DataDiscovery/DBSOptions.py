@@ -42,6 +42,8 @@ class DBSOptionParser:
          help="be verbose")
     self.parser.add_option("--profile",action="store_true", default=False, dest="profile",
          help="perform profiling of the code")
+    self.parser.add_option("--server",action="store", type="string", default="cgi", dest="server",
+         help="specify server name, e.g. cgi or JavaServer")
          
   def getOpt(self):
     """
