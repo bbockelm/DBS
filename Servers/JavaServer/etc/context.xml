@@ -1,6 +1,6 @@
 <Context path="/servlet/DBSServlet" docBase="DBSServlet" debug="5" reloadable="true" crossContext="true">
 
-	<!--Resource name="jdbc/dbs" 
+	<Resource name="jdbc/dbs" 
 		auth="Container" 
 		type="javax.sql.DataSource" 
 		maxActive="100" 
@@ -9,21 +9,21 @@
 		username="anzar" 
 		password="" 
 		driverClassName="org.gjt.mm.mysql.Driver"
-		url="jdbc:mysql://localhost:3306/dbs_new_era_v05?autoReconnect=true"/-->
+		url="jdbc:mysql://localhost:3306/dbs_new_era_v05?autoReconnect=true"/>
 
-        <Resource name="jdbc/dbs" 
+        <!--Resource name="jdbc/dbs" 
                 auth="Container" 
                 type="javax.sql.DataSource" 
                 maxActive="10" 
                 maxIdle="30" 
                 maxWait="10000"
                 username="cms_dbs_afaq" 
+                password="" 
                 initialSize="5" 
                 removeAbandoned="true"
                 removeAbandonedTimeout="100"
-                password="" 
                 driverClassName="oracle.jdbc.driver.OracleDriver"
-                url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/>
+                url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
 
         <!--Resource name="jdbc/dbs" 
                 auth="Container" 
@@ -32,7 +32,7 @@
                 maxIdle="30" 
                 maxWait="10000"
                 username="cms_dbs_lueking" 
-                password="newpRoRAil54roa" 
+                password="" 
                 initialSize="5" 
                 removeAbandoned="true"
                 removeAbandonedTimeout="100"
