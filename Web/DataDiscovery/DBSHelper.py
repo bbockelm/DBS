@@ -14,8 +14,12 @@ import string, sys, time, types, popen2
 
 # import DBS modules
 import dbsException
-import dbsCgiApi
 import dbsApi
+# we try to load dbsCgiApi, since it exists only for CGI server
+try:
+   import dbsCgiApi
+except:
+   pass
 import DBSOptions
 from   dbsApi  import DbsApi, DbsApiException, InvalidDataTier
 from   DBSInst import * # defines DBS instances and schema
@@ -30,7 +34,7 @@ class DBSHelper(DBSLogger):
   """
       DBSHelper class
   """
-  def __init__(self,dbsInst=DBSGLOBAL,verbose=0,html=0):
+  def __init__(self,dbsInst=DBSGLOBAL,iface="cgi",verbose=0,html=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -42,6 +46,7 @@ class DBSHelper(DBSLogger):
          @return: none
       """
       DBSLogger.__init__(self,"DBSHelper",verbose)
+      self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
       self.verbose     = verbose
@@ -53,7 +58,7 @@ class DBSHelper(DBSLogger):
          self.dbsDBs      = DBSDB(self.verbose)
          self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
       except:
-         print "WARNING: some of the functionality will be disable due to missing authentication"
+         print "WARNING! some of the functionality will be disable due to missing authentication"
          if self.verbose:
             printExcept()
          pass
@@ -74,7 +79,8 @@ class DBSHelper(DBSLogger):
   def setQuiet(self):
       self.quiet=1
 
-  def initJSDict(self,userMode=True):
+#  def initJSDict(self,userMode=True):
+  def initJSDict(self,dbsInst="all"):
       """
          Form dictionary for JavaScript used in presentation layer.
          @type  userMode: boolean 
@@ -83,89 +89,126 @@ class DBSHelper(DBSLogger):
          @rtype : dictionary
          @return: { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
       """
-      if userMode:
-         fileName='dbsDict.global.tmp'
+      if dbsInst!="all":
+         if not self.dbsdls.has_key(dbsInst):
+            print "List of available dbs instances:\n"
+            printListElements(self.dbsdls.keys())
+            msg="No dbs instance '%s' found"%dbsInst
+            raise msg
+            raise msg
+         else:
+            name=string.split(dbsInst,"/")[0]
+            fileName='dbsDict.%s.tmp'%name
       else:
-         fileName='dbsDict.all.tmp'
+         fileName='dbsDict.global.tmp'
+#      if userMode:
+#         fileName='dbsDict.global.tmp'
+#      else:
+#         fileName='dbsDict.all.tmp'
       file=open(fileName,'w')
       # if we're in user mode, we only know about DBSGLOBAL
       # if we're in expert mode, load all DBS instances
       init=time.time()
-      if userMode:
-         dbsList=[DBSGLOBAL]
-      else:
+      if dbsInst=="all":
          dbsList=self.dbsdls.keys()
          dbsList.sort()
-         dbsList.remove(DBSGLOBAL)
+         try:
+            dbsList.remove(DBSGLOBAL)
+         except:
+            pass
          dbsList=[DBSGLOBAL]+dbsList
+      else:
+         dbsList=[dbsInst]
+#      if userMode:
+#         dbsList=[DBSGLOBAL]
+#      else:
+#         dbsList=self.dbsdls.keys()
+#         dbsList.sort()
+#         dbsList.remove(DBSGLOBAL)
+#         dbsList=[DBSGLOBAL]+dbsList
       s = "\n"
-      s+= "{ menuList: [ "
+      s+= "{l:[ "
       for dbs in dbsList:
           s+='\"%s\",'%dbs
       s=s[:-1]+"],\n"
       file.write(s)
+      file.flush()
       s=""
       countIns=0
       for dbs in dbsList:
           if not countIns:
-             s+="nextObj: {\"%s\":"%dbs
+             s+="n:{\"%s\":"%dbs
           else:
-             s+=",\"%s\": "%dbs
+             s+=",\"%s\":"%dbs
           countIns+=1
           self.setDBSDLS(dbs)
           appDict = self.getDatasetsFromApplications()
           appList = appDict.keys()
           appList.sort()
           appList.reverse()
-          s+= "{ menuList: [ "
+          s+= "{l:[ "
           for app in appList:
               s+='\"%s\",'%app
           s=s[:-1]+"],\n"
           file.write(s)
+          file.flush()
           s=""
           countApp=0
           for app in appList:
               if not countApp:
-                 s+="nextObj: {\"%s\": "%app
+                 s+="n:{\"%s\":"%app
               else:
-                 s+=",\"%s\": "%app
+                 s+=",\"%s\":"%app
               countApp+=1
               pList = appDict[app]
               pList.sort()
               pList.reverse()
-              s+= "{ menuList: [ "
+              s+= "{l:[ "
               oldPrimD=""
-              for primD,tier,proc in pList:
+#              for primD,tier,proc in pList:
+              for path in pList:
+                  empty,primD,tier,proc = string.split( path, "/" )
                   if oldPrimD!=primD:
                      s+='\"%s\",'%primD
                      oldPrimD=primD
               s=s[:-1]+"],\n"
               file.write(s)
+              file.flush()
               s=""
               count = 0
               oldPrimD = ""
-              for primD,tier,proc in pList:
+              oldTier  = ""
+#              for primD,tier,proc in pList:
+              for path in pList:
+                  empty,primD,tier,proc = string.split( path, "/" )
 #                  s+="\n# %s %s, %s, %s\n"%(app,primD,tier,proc)
                   if primD!=oldPrimD:
                      oldPrimD=primD
-                     if count: s=s[:-1]+"], nextObj: null}\n"
+                     if count: 
+                        s=s[:-1]+"],n:null}\n"
+                        oldTier=""
                      if not count:
-                        s+=" nextObj : {\"%s\": { menuList: [\"All\", "%primD
+                        s+="n:{\"%s\":{l:[\"All\","%primD
                      else:
-                        s+=",\"%s\": { menuList: [\"All\", "%primD
+                        s+=",\"%s\":{l:[\"All\","%primD
                   count+=1
-                  s+="\"%s\","%tier
-              s=s[:-1]+"], nextObj: null }}}\n"
+                  if tier!=oldTier:
+                     s+="\"%s\","%tier
+                     oldTier=tier
+              s=s[:-1]+"],n:null}}}\n"
+              oldTier=""
               file.write(s)
+              file.flush()
               s=""
-          s+="}\n}\n"
+          s+="}}"
           file.write(s)
+          file.flush()
           s=""
-      s+="}\n}\n"
+      s+="}}"
       file.write(s)
       file.close()
       self.writeLog("initJSDict time: %s"%(time.time()-init))
-      return
+      return fileName
 #      return s
 
   def initJSDict_v1(self,userMode=True):
@@ -195,7 +238,7 @@ class DBSHelper(DBSLogger):
               path=formDatasetPath(ver,family,exe)
               primDict = {}
               tierDict = {}
-              pList = self.api.listDatasetsFromApp(path)
+              pList = self.listDatasetsFromApp(path)
               pList.sort()
 	      tierDict['All']="*"
               oldPrimD="All"
@@ -220,7 +263,7 @@ class DBSHelper(DBSLogger):
       """
       return self.dbsdls
 
-  def setDBSDLS(self,dbsInst,url=DEFAULT_URL):
+  def setDBSDLS(self,dbsInst):
       """
          Set DBS/DLS instance to use at given time. All instances are cached. Its initialization
          is done via L{DBSInst.DBSDB} call. For DBS/DLS we use dbsCgiApi and dlsClient.getDlsApi calls,
@@ -242,7 +285,11 @@ class DBSHelper(DBSLogger):
       self.writeLog("DBS Instnace: %s"%dbsInst)
       # use cache
       if not self.dbsApi.has_key(dbsInst):
-         self.api = dbsCgiApi.DbsCgiApi(url,{'instance':dbsInst})
+         if self.iface=="cgi":
+            self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
+         else: 
+            # new api can be initialized with DbsConfig, but we will use default one
+            self.api = dbsApi.DbsApi()
       else:
          self.api = self.dbsApi[dbsInst]
       if not self.dbsDLS.has_key(dbsInst):
@@ -251,11 +298,6 @@ class DBSHelper(DBSLogger):
          self.dlsApi = dlsClient.getDlsApi(dlsType, endpoint)
       else:
          self.dlsApi = self.dbsDLS[dbsInst]
-      # SQLAlchemy access to dbsInst
-#      if self.con: self.con.close()
-#      self.con = self.dbsDBs.engine[dbsInst].connect()
-#      if not self.dbsDB.has_key(dbsInst):
-#         self.dbsDB[dbsInst] = DBSDB(dbsInst,self.verbose)
  
   def setDLS_LFC(self):
       """
@@ -287,6 +329,40 @@ class DBSHelper(DBSLogger):
       else:
          self.dls_iface = self.dlsInst[(dlsType,endpoint)]
 
+  def listDatasetsFromApp(self,appPath="*"):
+      """
+         Wrapper around dbsApi
+      """
+      if self.iface=="cgi":
+         return self.api.listDatasetsFromApp(appPath)
+      else:
+         empty,ver,family,exe=string.split(appPath,"/")
+         return self.api.listProcessedDatasets(patternVer=ver,patternFam=family,patternExe=exe)
+
+  def listApplications(self,datasetPath="*"):
+      """
+         Wrapper around dbsApi
+      """
+      if self.iface=="cgi":
+         aList = self.api.listApplications(datasetPath)
+         aList.sort()
+         aList.reverse()
+         return aList
+      else:
+         return self.api.listAlgorithms(datasetPath)
+
+  def listBlocks(self,datasetPath="*",app="*",events="yes"):
+      """
+         Wrapper around dbsApi
+      """
+      if self.iface=="cgi":
+         aList = self.api.listBlocks(datasetPath,app,events)
+#         aList.sort()
+#         aList.reverse()
+         return aList
+      else:
+         return self.api.listBlocks(datasetPath)
+
   def getDatasetsFromApplications(self,datasetPath="*"):
       """
          DBS data discovery wrapper around dbsCgiApi.getDatasetsFromApp.
@@ -297,15 +373,23 @@ class DBSHelper(DBSLogger):
          @return: dict[appPath]=[(primD,tier,proc)]
       """
       aDict = {}
-      for item in self.api.listApplications(datasetPath):
-          family = item.get('family')
-          ver    = item.get('version')
-          exe    = item.get('executable')
+      iList = self.listApplications(datasetPath)
+      for item in iList:
+          if self.iface=="cgi":
+             family = item.get('family')
+             ver    = item.get('version')
+             exe    = item.get('executable')
+          else:
+             family = item.get('ApplicationFamily')
+             ver    = item.get('ApplicationVersion')
+             exe    = item.get('ExecutableName')
           path=formDatasetPath(ver,family,exe)
-          pList = self.api.listDatasetsFromApp(path)
+          pList = self.listDatasetsFromApp(path)
           for p in pList:
-              empty,primD,tier,proc = string.split( p['datasetPathName'], "/" )
-              addToDict(aDict,path,(primD,tier,proc))
+#              empty,primD,tier,proc = string.split( p['datasetPathName'], "/" )
+#              addToDict(aDict,path,(primD,tier,proc))
+              procDatasetName = p['datasetPathName']
+              addToDict(aDict,path,procDatasetName)
       return aDict
 
   def getApplications(self,datasetPath="*"):
@@ -317,13 +401,16 @@ class DBSHelper(DBSLogger):
          @return: a list of application in the following form, [(family,version,exe)]
       """
       aList = []
-      dList = self.api.listApplications(datasetPath)
-      dList.sort()
-      dList.reverse()
+      dList = self.listApplications(datasetPath)
       for item in dList:
-          family = item.get('family')
-          ver    = item.get('version')
-          exe    = item.get('executable')
+          if self.iface=="cgi":
+             family = item.get('family')
+             ver    = item.get('version')
+             exe    = item.get('executable')
+          else:
+             family = item.get('ApplicationFamily')
+             ver    = item.get('ApplicationVersion')
+             exe    = item.get('ExecutableName')
           path=formDatasetPath(ver,family,exe)
           if self.html:
 #             path = """<a href="javascript:showWaitingMessage();registerAjaxGetDatasetsFromApplicationCalls();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
@@ -342,7 +429,7 @@ class DBSHelper(DBSLogger):
          @return: a list of datasets from application in the following form, [datasetPathName]
       """
       oList = []
-      dList = self.api.listDatasetsFromApp(datasetPath)
+      dList = self.listDatasetsFromApp(datasetPath)
       dList.sort()
       dList.reverse()
       for entry in dList:
@@ -361,8 +448,14 @@ class DBSHelper(DBSLogger):
       dList = self.api.listPrimaryDatasets(datasetPath)
       dList.sort()
       dList.reverse()
+      if self.verbose:
+         print "For given",datasetPath
+         print printListElements(dList,"Found a list of primary datasets")
       for entry in dList:
-          name = entry.get('datasetName')
+          if self.iface=="cgi":
+             name = entry.get('datasetName')
+          else:
+             name = entry.get('Name')
           if self.html:
 #             name = """<a href="javascript:showWaitingMessage();registerAjaxGetDetailsForPrimDatasetCalls();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
              name = """<a href="javascript:showWaitingMessage();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
@@ -380,13 +473,16 @@ class DBSHelper(DBSLogger):
       """
       oList = []
       if app:
-         dList = self.api.listDatasetsFromApp(datasetPath)
+         dList = self.listDatasetsFromApp(datasetPath)
       else:
          dList = self.api.listProcessedDatasets(datasetPath)
       dList.sort()
       dList.reverse()
       for entry in dList:
-          name = entry.get('datasetPathName')
+          if self.iface=="cgi":
+             name = entry.get('datasetPathName')
+          else:
+             name = entry.get('Name')
           if html:
 #             name = """<a href="javascript:showWaitingMessage();registerAjaxDatasetContentCalls();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
              name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
@@ -468,16 +564,19 @@ class DBSHelper(DBSLogger):
   def getLFNs(self,dbsInst,blockName,dataset):
       self.setDBSDLS(dbsInst)
       res = self.api.getLFNs(blockName,dataset)
-      lfnList = []
-      for item in res:
-	  lfn   = item[0]
-	  fSize = item[1]
-	  status= item[2]
-	  type  = item[3]
-          evts  = item[4]
+      return res
+#      print "### LFN",res[0]
+#      lfnList = []
+#      for item in res:
+#          lfn   = item[0]
+#          fSize = item[1]
+#          status= item[2]
+#          type  = item[3]
+#          evts  = item[4]
           # item=(id,logical_name,fileSize,status,type)
-          lfnList.append((lfn,fSize,status,type,evts))
-      return lfnList
+#          lfnList.append((lfn,fSize,status,type,evts))
+#      print "### new list",lfnList[0]
+#      return lfnList
 
   def getLFNs_bName(self,blockName):
       """
@@ -822,7 +921,8 @@ class DBSHelper(DBSLogger):
       return bDict
 
   def getBlockInfo(self,dataset,app):
-      blocks = self.api.listBlocks(dataset,app,"yes")
+#      blocks = self.api.listBlocks(dataset,app,"yes")
+      blocks = self.listBlocks(dataset,app)
       return blocks
   
   def getDBSSummary(self,dbsInst):
@@ -887,15 +987,32 @@ class DBSHelper(DBSLogger):
       locDict  = {}
       nEvts    = totFiles = totSize = self.dbsTime = self.dlsTime = 0
       # IMPORTANT: I think we need to replace listBlocks(dataset) to listBlocksFromApp(app)
+#      t1 = time.time()
+#      bList=[]
+#      if self.iface=='cgi':
+#         blockInfoDict = self.listBlocks(dataset,app,"yes")
+#         bList = blockInfoDict.values()
+#      else:
+#         bList = self.listBlocks(dataset,app,"yes")
+#      t2 = time.time()
+#      self.dbsTime=(t2-t1)
+
+#      for item in bList:
+#          print "item=",item
+#          if self.iface=='cgi':
+#             blockName = item['blockName']
+#             evts,bStatus,nFiles,bBytes = item
+#          else:
+#             blockName = item['Name']
+#             evts = 0
+#             bStatus = 'N/A'
+#             nFiles = item['NumberOfFiles']
+#             bBytes = item['BlockSize']
+#          
       t1 = time.time()
-      blockInfoDict = self.api.listBlocks(dataset,app,"yes")
+      blockInfoDict = self.listBlocks(dataset,app,"yes")
       t2 = time.time()
       self.dbsTime=(t2-t1)
-
-#      for key in blockInfoDict.keys():
-#          if not blockInfoDict[key][0]:
-#             print "######",key,blockInfoDict[key]
-#             return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
       if string.lower(site)=="all": site="*"
       for blockName in blockInfoDict.keys():
           evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
@@ -1008,13 +1125,13 @@ if __name__ == "__main__":
     if opts.verbose:
        verbose=1
 
-    helper = DBSHelper(dbsInst,verbose)
+    iface="cgi"
+    if opts.server!="cgi":
+       iface = "JavaServer"
+    helper = DBSHelper(dbsInst,iface,verbose)
     
     if opts.dict:
-       if string.lower(opts.dict)=="global":
-          helper.initJSDict(True)
-       else:
-          helper.initJSDict(False)
+       helper.initJSDict(opts.dict)
        sys.exit(0)
 
     if opts.search:
