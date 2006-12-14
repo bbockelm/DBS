@@ -1,6 +1,6 @@
 /**
- $Revision: 1.48 $"
- $Id: DBSApiLogic.java,v 1.48 2006/12/13 16:58:00 sekhri Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApiLogic.java,v 1.50 2006/12/14 20:36:06 sekhri Exp $"
  *
  */
 
@@ -250,7 +250,6 @@ public class DBSApiLogic {
 						"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
 						"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
 						"' ps_name='" + get(rs, "PS_NAME") +
-						"' ps_hash='" + get(rs, "PS_HASH") +
 						"' ps_hash='" + get(rs, "PS_HASH") +
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
