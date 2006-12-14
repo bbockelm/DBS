@@ -76,7 +76,8 @@ templateProvenance="""
     <p>
     <table border="0" cellspacing="0" cellpadding="0" width="100%">
     <tr>
-    <th align="left">$dataset</th>
+#### FIXME, I need to pass here dbsInst
+    <th align="left"><a href="javascript:ajaxGetDataDescription('MCGlobal/Writer','$dataset')">$dataset</a></th>
     </tr>
     #if not len($parentList)
     <tr>
@@ -110,24 +111,71 @@ templateTop = """
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
 <!-- if JavaScripts enables, turn visiable content on -->
-<script type="text/javascript" src="js/setcontent.js"></script>
+<script type="text/javascript" src="yui/build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="yui/build/dom/dom.js"></script>
+<script type="text/javascript" src="yui/build/event/event.js"></script> 
+<script type="text/javascript" src="yui/build/container/container_core.js"></script>
+<script type="text/javascript" src="WEBTOOLS/Common/js/masthead.js"></script>
+<script type="text/javascript" src="WEBTOOLS/Common/js/footer.js"></script>
+
+<script type="text/javascript" src="js/userName.js"></script>
+###<script type="text/javascript" src="js/setcontent.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/sorttable.js"></script>
 <script type="text/javascript" src="js/prototype.js"></script>
 <script type="text/javascript" src="js/rico.js"></script>
 <script type="text/javascript" src="js/ajax_init.js"></script>
+
+<link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css">
+
 </head>
-<body onload="ajaxInit();">
+<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter ('dbs');" id="content">
 
 <noscript>
-<h1>You have disabled Javascript in your browser. This page requires
-Javascript in order to work properly.</h1>
+<h1 class="box_red">Warning:</h1>
+<table width="50%" class="main">
+<tr>
+<td>
+<div class="sectionhead_tight">DBS/DLS discovery page
+is AJAX enabled and require that your browser have scripting 
+enabled and JavaScript support. Your browser either does not support JavaScript, 
+or it has JavaScript support disabled. Please enable JavaScript support or 
+use a different browser with JavaScript support to use this page.
+</div>
+</td>
+</tr>
+</table>
 </noscript>
 
-<hr class="dbs" />
-<table width="100%">
+#import time
+<div id="footer">
+<div class="bd">
+<p>
+<table cellspacing="0" cellpadding="0" width="100%" id='end'>
 <tr>
-<td align="left" class="td3">
+<td>
+<em class="small" align="left">
+CMS data discovery: $time.asctime() 
+</em>
+</td>
+<td class="small" align="right">
+<em>
+Contact: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
+</em>
+</td>
+</tr>
+</table>
+</p>
+</div>
+</div>
+
+#*
+<hr class="dbs" />
+<table width="99%" align="center">
+<tr>
+<td align="left" class="td33">
+<table><tr>
+<td align="left">
 <img src="images/CMSLogo.jpg" alt="CMS logo" />
 </td>
 <td align="left" valign="center">
@@ -135,21 +183,32 @@ Javascript in order to work properly.</h1>
 DBS/DLS DATA DISCOVERY PAGE
 </span>
 </td>
-<td align="right" valign="center">
+</tr></table>
+</td>
+<td align="center" class="td33">
+<span id="Greeting" />
+</td>
+<td align="right" valign="center" class="td33">
 Home page: <a href="$host/">users</a>
 <a href="$host/expert">experts</a>
 </td>
 </tr>
 </table>
 <hr class="dbs" />
+*#
+
+
+<div id="main" class="hide">
+<script type="text/javascript">setMain()</script>
 
 """
 
 templateHistory="""
-<table width="100%"><tr align="left" valign="top"><td class="td12">$time</td><td class="td1">&#8212;</td><td>$action</td></tr></table>
+<table><tr><td align="left">$date</td><td align="left">$time</td><td align="left">&#8212;</td><td align="left">$action</td></tr></table>
 """
 
 templateAjaxInit="""
+#*
 <script type="text/javascript">
 function registerAjaxPrimDatasetsCalls() {
     ajaxEngine.registerRequest('getPrimDatasets','getAllPrimaryDatasets');
@@ -157,16 +216,17 @@ function registerAjaxPrimDatasetsCalls() {
     ajaxEngine.registerAjaxElement('datasets'+'$name');
 #end for
 }
-// put all AJAX registration calls here
-registerAjaxPrimaryDatasetsCalls();
 //registerAjaxGetDetailsForPrimDatasetCalls();
+// put all AJAX registration calls here
+registerAjaxObjectCalls();
+registerAjaxPrimaryDatasetsCalls();
 registerAjaxSummaryCalls();
 registerAjaxHistoryCalls();
 registerAjaxProvenanceCalls();
-registerAjaxObjectCalls();
 registerAjaxProvenanceGraphCalls();
 registerAjaxAppConfigsCalls();
 </script>
+*#
 """
 
 templateIntro="""
@@ -217,7 +277,7 @@ templateLine_OR="""
 templateSiteForm="""
 <script type="text/javascript">
 // siteDict = { DBSInst: { siteDict={ site:null } } }, } }
-// it's going to be inserted here by AJAX call
+// it is going to be inserted here by AJAX call
 siteDict=$siteDict
 var siteObj = null
 var first   = null
@@ -409,7 +469,7 @@ If more information needed please send request to
 # DBS instance, Application, PrimTier
 # dict1= {A:["AA","AB","AC"], B:["BA","BB","BC"],C:["CA","CB","CC"],D:["DD"]}
 # dict2= {AA:["AAA"], AB:["AB"], AC:["AC"], BA:["BA"], BB:["BB"], BC:["BC"], CA:"CA", CB:"CB", CC:"CC", DD:"DD"}
-#templateJS=templateTop+"""
+
 templateJS="""
 <script type="text/javascript">
 // navDict = { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
@@ -441,6 +501,91 @@ var first   = null;
 #end if
 </script>
 <script type="text/javascript" src="js/updates.js"></script>
+"""
+
+templateJSForm_new_allmenus_ajax="""
+<!-- begin outer most table -->
+<table class="lfn">
+<tr valign="top">
+<td valign="top">
+
+####<form action="javascript:replace('navSelector');ajaxGetData();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+<form action="javascript:replace('navSelector');submitNavRequest()" method="get">
+<!-- begin menu table -->
+<table class="small" cellspacing="5">
+<tr>
+<td align="right">
+<b>DBS instance</b>
+</td>
+<td>
+<select id="dbsSelector" onchange="javascript:replace('navSelector');showLoadingMessage('selectApps');replace('selectPrim','to be defined');replace('selectTier','to be defined');ajaxSelectApps()">
+<option value="">Select</option>
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+<script type="text/javascript">resetNavSelection()</script>
+</td>
+</tr>
+
+<tr>
+<td align="right"><b>Tier sites</b>
+</td>
+<td>
+<select name="site" id="siteSelector">
+<option value="All" selected="selected">All</option>
+#for site in $sList:
+<option value="$site">$site</option>
+#end for
+</select>
+</td></tr>
+
+<tr>
+<td align="right">
+<b>Application</b>
+</td>
+<td>
+<span id="selectApps">to be defined</span>
+</td>
+</tr>
+<tr>
+<td align="right">
+<b>Primary datasets</b>
+</td>
+<td>
+<span id="selectPrim">to be defined</span>
+</td>
+</tr>
+<td align="right">
+<b>Data tier</b>
+</td>
+<td>
+<span id="selectTier">to be defined</span>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+###<input type="submit" value="Find" onclick="javascript:checkNavSelection()" />
+<input type="submit" value="Find" />
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>
+<span id="navSelector"></span>
+</td>
+</tr>
+</table>
+
+<!-- end of menu table -->
+</form>
+</td>
+</tr>
+</table>
+<!-- end of outer most table -->
 """
 
 templateJSForm="""
@@ -481,7 +626,8 @@ $msg
 <td align="right">&nbsp;<b>DBS instances</b>
 </td>
 <td>
-<select name="dbsInst" onchange="updateLayer0(this)" id="dbsSelector">
+####<select name="dbsInst" onchange="updateLayer0(this)" id="dbsSelector">
+<select name="dbsInst" onchange="ajaxGenNavigatorMenuDict()" id="dbsSelector">
 #for dbs in $dbsList:
 #if $dbs==$firstDBS
 <option value="$dbs" selected="selected">$dbs</option>
@@ -556,6 +702,13 @@ $msg
 </table>
 <!-- end of outer most table -->
 
+<table>
+<tr>
+<td>
+<span id="navSelector"></span>
+</td>
+</tr>
+</table>
 """
 
 templateLFN = """
@@ -719,14 +872,17 @@ Both
      <th>Location</th>
      <th>Events</th>
      <th>Files</th>
-     <th name="blockInfo" id="blockInfo" class="hide">
+     ###<th name="blockInfo" id="blockInfo" class="hide">
+     <th name="blockInfo" id="blockInfo">
      status
      </th>
      <th>size</th>
-     <th name="blockInfo" id="blockInfo" class="hide">
-     LFN list
+     ###<th name="blockInfo" id="blockInfo" class="hide">
+     <th name="blockInfo" id="blockInfo">
+     LFNs
      </th>
-     <th name="blockInfo" id="blockInfo" class="hide">
+     ###<th name="blockInfo" id="blockInfo" class="hide">
+     <th name="blockInfo" id="blockInfo">
      Block name
      </th>
   </tr>
@@ -760,13 +916,16 @@ Both
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
-     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     ###<td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <td align="center" name="blockInfo" id="blockInfo">
      </td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
-     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     ###<td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <td align="center" name="blockInfo" id="blockInfo">
      <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site',1000)">All</a>
      </td>
-     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     ###<td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <td align="center" name="blockInfo" id="blockInfo">
      <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">All</a>
      </td>
   </tr>
@@ -792,7 +951,8 @@ Both
 #set nFiles  = $item[2]
 #set size    = $item[3]
 #set hostList= $item[4]
-  <tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0" class="hide">
+  #####<tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0" class="hide">
+  <tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0">
      <td>$print_j</td>
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$nEvt</div></td>
@@ -825,69 +985,126 @@ Both
 """
 
 templateBottom="""
-<hr class="dbs" id="hr_results_menu" />
-<table id="results_menu" class="hide" cellspacing="1" width="70%">
+###<hr class="dbs" id="hr_results_menu" />
+
+<table class="table_round_box" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+
+
+<table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="70%">
 <tr>
 <td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>
 <td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
 <td class="td_menu_gray_box" align="center" id="_appConfigs"><a href="javascript:showResMenu('appConfigs')">App configs</a></td>
+<td class="td_menu_gray_box" align="center" id="_dataDescription"><a href="javascript:showResMenu('dataDescription')">Description</a></td>
+#*
 <td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
 <td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
 <td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
+*#
 </tr>
 </table>
+
+</td>
+</tr>
+</table>
+
+
 <br />
 <span id="results" class="show_inline"></span>
 <span id="results_waiting" class="show_inline"></span>
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
+<span id="dataDescription" class="hide"><br /></span>
+
+    <span id="floatDataDescription"></span>
+#*
 <span id="validation" class="hide"><br />... We plan to add some information about found data, e.g. plots, etc. This should be part of validation ...</span>
 <span id="parameterSet" class="hide"><br />... We plan to introduce indexing system and lookup there parameter sets for found dataset ...</span>
 <span id="releaseSpec" class="hide"><br />
 ... Once data been choosen by user we may add a link to release description which has been used to produce this data...
 </span>
-<hr id="results_hr" class="hide" />
-<table>
-<tr align="left">
+*#
+
+
+#*
+<hr id="results_hr" />
+<table cellspacing="0" cellpadding="0" width="100%" id='end'>
+<tr>
 <td>
-<em class="small">
-CMS data discovery. Author: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
-<br />
-This page was generated at: $localtime 
+<em class="small" align="left">
+CMS data discovery: $localtime 
+</em>
+</td>
+<td class="small" align="right">
+<em>
+Contact: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
 </em>
 </td>
 </tr>
-<tr>
-</tr>
 </table>
+*#
 
 
+</div> <!-- end of div with class="main" -->
 </body>
 </html>
 """
 
-templateFrontPage="""
-#if $frontPage
-<!--
-<table width="100%">
+templateFrontPage_test="""
+<table width="100%" cellspacing="0" cellpadding="0">
 <tr>
-<td>
-<div class="sectionhead_tight">WELCOME TO DBS DATA DISCOVERY PAGE</div>
+<!-- menu -->
+<td id="menu_td_fixed" class="menu_td_gray_fixed" valign="top">
+Menu
 </td>
-<td align="right">
-Home page: <a href="$host/">users</a>
-<a href="$host/expert">experts</a>
+<!-- menu content, accordion -->
+<td valign="top">
+
+#*
+<table class="table_box_white" border="1" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+Navigator menu
+</td>
+</tr>
+<tr valign="top">
+<td>
+Test
 </td>
 </tr>
 </table>
-<hr class="dbs" />
--->
-#end if
+*#
 
-<table width="100%">
+<span id="NavigatorDiv" class="hide">
+<table class="table_box_white" border="1" width="100%">
 <tr valign="top">
+<td class="box_darkblue">
+Navigator menu
+</td>
+</tr>
+<tr valign="top">
+<td>
+$navigatorForm
+</td>
+</tr>
+</table>
+</span>
+
+
+</td>
+</tr>
+</table>
+"""
+
+
+templateFrontPage="""
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
 <!-- menu -->
-<td class="menu_td_gray">
+<td id="menu_td_fixed" class="menu_td_gray_fixed" valign="top">
+
 <table width="100%">
 <tr>
 <td class="td_gray_box" id="Navigator_Menu"><a href="javascript:showMenu('Navigator')">Navigator</a></td>
@@ -901,9 +1118,6 @@ Home page: <a href="$host/">users</a>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
-<!--
-<td class="td_gray_box" id="Datasets_Menu"><a href="javascript:showMenu('Datasets');registerAjaxPrimDatasetsCalls();getPrimDatasets();">Datasets</a>
--->
 <td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('MCGlobal/Writer',$dbsShortNames);">DBS info</a>
   <table id="dbsInst_table" class="hide">
 #for name in $dbsShortNames
@@ -916,16 +1130,25 @@ Home page: <a href="$host/">users</a>
   </table>       
 </td>
 </tr>
-
+<!--
 <tr>
 <td class="td_gray_box" id="Summary_Menu">
 <a href="javascript:showMenu('Summary');registerAjaxSummaryCalls();getSummary();">Summary</a>
 </td>
 </tr>
+-->
 #end if
 <tr><td><br /></td></tr>
 <tr>
-<td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History')">History</a></td>
+#set hList=['user','auth','search']
+#set hDict={'user':'Session','auth':'Authentication','search':'Search'}
+<td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
+  <table id="history_table" class="hide"><tr><td>
+#for name in $hList
+      <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);adjustToDate()">$hDict[$name]</a></td></tr>
+#end for
+  </table>       
+</td>
 </tr>
 <tr>
 <td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help');showHelpContent()">Help</a></td>
@@ -934,104 +1157,68 @@ Home page: <a href="$host/">users</a>
 <tr>
 <td class="td_gray_box" id="Hide_Menu"><a href="javascript:HidePanel('$host')">Hide panel</a></td>
 </tr>
+<tr><td><br /><em class="tiny_purple_on_gray">Tip: $tip</em></td></tr>
 </table>
+
 </td>
-
 <!-- menu content, accordion -->
-<td valign="top">
-<div id="NavigatorDiv" class="hide">
-   <div id="navigationPanel1">
-     <div id="navigationHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Navigator menu
-       </span>
-      </div>
-      <div id="navigationContent1">
-      $navigatorForm
-      <div id="navigatorDict"></div>
-      </div>
-   </div>
-   <div id="navigationPanel2">
-     <div id="navigationHeader2" class="accordionTabTitleBar">
-       <span class="menu_title">
-       DBS glossary
-       </span>
-      </div>
-      <div id="navigationContent2">
-      $glossary
-      </div>
-   </div>
-</div>
-<div id="SearchDiv" class="hide">
-   <div id="searchPanel1">
-     <div id="searchHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Data keyword search
-       </span>
-      </div>
-      <div id="searchContent1">
-      $searchForm
-      </div>
-   </div>
+<td valign="top" class="td_top_bottom">
 
-   <div id="searchPanel2">
-     <div id="searchHeader2" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Advanced search
-       </span>
-      </div>
-      <div id="searchContent2">
-      Some topics I would like to cover in advance search are:
-      <ul>
-      <li>Search for details for given processed dataset</li>
-      <li>search where particular LFN exists</li>
-      </ul>
-       ... To be implemented soon ...
-       <br />
-       We plan to extend search capabilites and allow people specify parameter set search keywords,
-       introduce pattern search keywords, e.g. app:CMSSW for concrete search in application, etc.
-       Your feedback are very appreciated.
-      </div>
-   </div>
-</div>
-<div id="SiteDiv" class="hide">
-   <div id="sitePanel1">
-     <div id="siteHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Site search
-       </span>
-     </div>
-     <div id="siteContent1">
-      $siteForm
-      <div id="siteMenuDict"></div>
-     </div>
-   </div>
+<span id="NavigatorDiv" class="hide">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+Navigator menu
+</td>
+</tr>
+<tr valign="top">
+<td>
+$navigatorForm
+</td>
+</tr>
+</table>
+</span>
 
-   <div id="sitePanel2">
-     <div id="siteHeader2" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Description
-       </span>
-     </div>
-     <div id="siteContent2">
-     The site search is mostly dedicated for site admins. Here we a re mostly interesting in
-     information which belong to given site, but not in detailes of data stored there. For last one
-     you need to use either
-     <a href="javascript:showMenu('Navigator')">Navigator</a> or 
-     <a href="javascript:showMenu('Search')">Keyword search</a>.
-     </div>
-   </div>
-</div>
+<span id="SearchDiv" class="hide">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+Keyword search menu
+</td>
+</tr>
+<tr valign="top">
+<td>
+$searchForm
+</td>
+</tr>
+</table>
+</span>
 
+<span id="SiteDiv" class="hide">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+Site search menu
+</td>
+</tr>
+<tr valign="top">
+<td>
+$siteForm
+</td>
+</tr>
+</table>
+</span>
 
-#*
-<div id="DatasetsDiv" class="hide"> 
-$dbsContent
-</div>
-*#
 ###### Replacement for accordion datasets
 #set menuArr=['dbs_prim','dbs_proc','dbs_apps']
 <div id="DBSinfoDiv" class="hide"> 
+
+
+<table class="table_round_box" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+
+
 <table id="dbs_info" class="hide" cellspacing="1" width="50%">
 <tr>
 <td class="td_menu_white_box" align="center" id="_dbs_prim"><a href="javascript:showResMenu('dbs_prim',$menuArr)">Primary datasets</a></td>
@@ -1039,12 +1226,19 @@ $dbsContent
 <td class="td_menu_gray_box" align="center" id="_dbs_apps"><a href="javascript:showResMenu('dbs_apps',$menuArr)">Applications</a></td>
 </tr>
 </table>
+
+
+</td>
+</tr>
+</table>
+
 <span id="dbs_prim" class="hide"><br /></span>
 <span id="dbs_proc" class="hide"><br /></span>
 <span id="dbs_apps" class="hide"><br /></span>
+
 </div>
 ########################
-
+#*
 <div id="SummaryDiv" class="hide">
    <div id="summaryPanel1">
      <div id="summaryHeader1" class="accordionTabTitleBar">
@@ -1057,23 +1251,138 @@ $dbsContent
       </div>
    </div>
 </div>
+*#
+###### Replacement for accordion history
+<div id="HistoryDiv" class="hide"> 
+<span id="userHistory" class="hide">
 
-<div id="HistoryDiv" class="hide">
-   <div id="historyPanel1">
-     <div id="historyHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       Command history
-       </span>
-      </div>
-      <div id="historyContent1">
-      <span id="userHistory"></span>
-      </div>
-   </div>
+<table class="table_round_box" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+
+#set menuArr=['sessionHistory','allHistory']
+<table id="userHistory_info" class="show_table" cellspacing="1" width="50%">
+<tr>
+<td class="td_menu_white_box" align="center" id="_sessionHistory"><a href="javascript:showResMenu('sessionHistory',$menuArr)">Current session</a></td>
+<td class="td_menu_gray_box" align="center" id="_allHistory"><a href="javascript:showResMenu('allHistory',$menuArr)">Last 100</a></td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+<div class="div_scroll">
+<span id="sessionHistory" class="show_inline"></span>
+<span id="allHistory" class="hide"></span>
 </div>
+</span>
+<span id="authHistory" class="hide">
+      <table class="table_box_white" border="0" width="100%">
+      <tr valign="top">
+      <td class="box_darkblue">
+      DBS/DLS data discovery authentication
+      </td>
+      </tr>
+      <tr valign="top">
+      <td>
+      <span class="text">To be able keep your session history you need to authenticate yourself.<br/>
+      This information is NOT associated with either your login name to any CMS nodes<br />
+      or grid certificates and used solely for your authentication with DBS/DLS discovery page.<br />
+      This authentication is completely optional and used to provide persistent history searches.
+      <p>Please use provided form below:<p />
+      <table>
+        <tr>
+        <td>
+        <form action="javascript:ajaxCheckUser()" method="get">
+        <span id="formInputName"></span>
+        <script type="text/javascript">formRequest()</script>
+        <br />
+        <input type="submit" value="Authenticate" onclick="set_name(this.form)" />
+        <br />
+        <div id="formAuthResults"></div>
+        </form>
+        </td>
+        </tr>
+      </table>
+
+      </td></tr></table>
+      </span>
+</span>
+<span id="searchHistory"  class="hide">
+      <table class="table_box_white" border="0" width="100%">
+      <tr valign="top">
+      <td class="box_darkblue">
+      DBS/DLS data discovery history search
+      </td>
+      </tr>
+      <tr>
+      <td>
+      <div class="div_scroll">
+      <br />
+      <form action="javascript:ajaxHistorySearch();" method="get">
+      <table>
+      <tr>
+      <td>
+      From:
+      </td>
+      <td>
+      <select name="in_hSearch_year" id="in_hSearch_year" onchange="adjustToDate();checkToDate()">
+#for year in xrange(2006,2016)
+      <option value="$year">$year</option>
+#end for
+      </select>
+#set mArr=['Jan','Feb','Mar','May','Apr','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+      <select name="in_hSearch_month" id="in_hSearch_month" onchange="adjustToDate();checkToDate()">
+#for month in $mArr
+      <option value="$month">$month</option>
+#end for
+      </select>
+      </td>
+      <td>
+      to:
+      </td>
+      <td>
+      <select name="out_hSearch_year" id="out_hSearch_year" onchange="checkToDate()">
+#for year in xrange(2006,2016)
+      <option value="$year">$year</option>
+#end for
+      </select>
+#set mArr=['Jan','Feb','Mar','May','Apr','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+      <select name="out_hSearch_month" id="out_hSearch_month" onchange="checkToDate()">
+#for month in $mArr
+      <option value="$month">$month</option>
+#end for
+      </select>
+      </td>
+      <td>
+      <input type="submit" value="Find" onclick="javascript:showLoadingMessage('historySearchResults');" />
+      </td>
+      </tr>
+      </table>
+      </form>
+      <hr class="dbs" />
+      <span id="historySearchResults">Here we will provide a basic search of user commands
+
+      </div>
+      </td>
+      </tr>
+      </table>
+</span>
+
+</div>
+
 
 ###### Replacement for accordion help
 #set menuArr=['help_intro','help_glossary','help_resources','help_feedback','help_refs']
 <div id="HelpDiv" class="hide"> 
+
+
+<table class="table_round_box" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+
+
 <table id="help_info" cellspacing="1" width="70%">
 <tr>
 <td class="td_menu_white_box" align="center" id="_help_intro"><a href="javascript:showResMenu('help_intro',$menuArr)">Introduction</a></td>
@@ -1083,6 +1392,11 @@ $dbsContent
 <td class="td_menu_gray_box" align="center" id="_help_refs"><a href="javascript:showResMenu('help_refs',$menuArr)">References</a></td>
 </tr>
 </table>
+
+</td>
+</tr>
+</table>
+
 <span id="help_intro" class="hide">
 <div class="div_scroll">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
@@ -1212,13 +1526,13 @@ All terms used on discovery page are defined in DBS glossary.
 </table>
 <script type="text/javascript">
 var accordionHeight=200;
-new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('SearchDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('SiteDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('SearchDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('SiteDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('ReleasesDiv'), {panelHeight:accordionHeight} );
-new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
+//new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
 //new Rico.Accordion( \$('HelpDiv'), {panelHeight:accordionHeight} );
 #if $frontPage
 showMenu('Navigator');
@@ -1471,6 +1785,39 @@ For given application: $appPath we got
 #end for
 </table>
 </p>
+"""
+
+templateFloatBox="""
+<table class="float_box" width="100%">
+<tr valign="top">
+<td>
+
+<table width="100%">
+<tr>
+<td align="left">
+<span class="sectionhead">
+DATA DESCRIPTION
+</span>
+</td>
+<td align="right">
+<a href="javascript:hideTag('floatDataDescription')">close &#8855;</a>
+</td>
+</tr>
+</table>
+<hr class="dbs" />
+<table>
+<tr>
+<td>
+<div class="div_scroll">
+$description
+</div>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
 """
 
 templateDummy="""

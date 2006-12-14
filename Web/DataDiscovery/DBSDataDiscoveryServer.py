@@ -22,6 +22,7 @@ import cherrypy
 import CheetahDBSTemplate
 from   DBSHelper import *
 from   DBSUtil   import *
+from   DDConfig  import *
  
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
 
@@ -62,16 +63,20 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: none 
         """
         DBSLogger.__init__(self,"DBSDataDiscoveryServer",verbose)
+        self.ddConfig  = DBSDDConfig()
         self.dbs  = DBSGLOBAL
         self.site = ""
         self.app  = ""
         self.primD= ""
         self.tier = ""
-        self.helper     = DBSHelper(self.dbs,verbose,html=1)
+        self.helper     = DBSHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
         self.dbsList.sort()
-        self.dbsList.remove(DBSGLOBAL)
+        try:
+           self.dbsList.remove(DBSGLOBAL)
+        except:
+           pass
         self.dbsList = [DBSGLOBAL]+self.dbsList
         self.dbsShortNames=[]
         for dbs in self.dbsList:
@@ -91,9 +96,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.timer      = self.timerForSummary = time.time()
         self.sumPage    = ""
         self.firstSearch=1
+        self.quiet      = 0
         self.siteDict   = {}
 #        self.host       = urlparse.urljoin(os.environ['DBSDD'],"discovery")
-        self.host       = os.environ['DBSDD']
+#        self.host       = os.environ['DBSDD']
         try:
             self.hostname = socket.gethostbyaddr(socket.gethostname())[0]
         except:
@@ -104,7 +110,14 @@ class DBSDataDiscoveryServer(DBSLogger):
             if string.find(line,'server.socketPort')!=-1:
                self.port=string.strip(string.split(string.replace(line,'\n',''),'=')[1])
                break
-        self.dbsdd      = 'http://'+self.hostname+":"+str(self.port)
+        try:
+            self.dbsdd = self.ddConfig.url()
+            if self.verbose:
+               print "Read from config"
+        except:
+            printExcept()
+            self.dbsdd = 'http://'+self.hostname+":"+str(self.port)
+            print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
         print "DBSDataDiscoveryServer '%s'"%self.dbsdd
@@ -115,6 +128,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 
     def setQuiet(self):
         self.helper.setQuiet()
+        self.quiet=1
         
     def setContentType(self,type):
         """
@@ -210,9 +224,9 @@ class DBSDataDiscoveryServer(DBSLogger):
                     }
         t = Template(CheetahDBSTemplate.templateTop, searchList=[nameSpace])
         page = str(t)
-        nameSpace = {'dbsNames'    : self.dbsShortNames }
-        t = Template(CheetahDBSTemplate.templateAjaxInit, searchList=[nameSpace])
-        page+= str(t)
+#        nameSpace = {'dbsNames'    : self.dbsShortNames }
+#        t = Template(CheetahDBSTemplate.templateAjaxInit, searchList=[nameSpace])
+#        page+= str(t)
         if intro:
            page+=CheetahDBSTemplate.templateIntro
         return page
@@ -334,10 +348,10 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'navigatorForm': menuForm,
                      'searchForm'   : self.searchForm(),
                      'siteForm'     : siteForm,
-                     'dbsContent'   : self.dbsContList(),
                      'dbsShortNames': self.dbsShortNames,
                      'glossary'     : self.glossary(),
-                     'frontPage'    : 0
+                     'frontPage'    : 0,
+                     'tip'          : tip()
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
         return str(t)
@@ -357,10 +371,10 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'navigatorForm': self.genMenuForm(),
                          'searchForm'   : self.searchForm(),
                          'siteForm'     : self.siteForm(),
-                         'dbsContent'   : self.dbsContList(),
                          'dbsShortNames': self.dbsShortNames,
                          'frontPage'    : 1,
-                         'glossary'     : self.glossary()
+                         'glossary'     : self.glossary(),
+                         'tip'          : tip()
                         }
             t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
             return str(t)
@@ -368,14 +382,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in genPanel function")
             pass
             return str(t)
-
-    def dbsContList(self):
-        """
-           Generates template code for DBS instances within accordeon (Rico term) menu
-        """
-        nameSpace={'dbsContList':self.dbsShortNames}
-        t = Template(CheetahDBSTemplate.templateDbsCont, searchList=[nameSpace])
-        return str(t)
 
     def init(self):
         """
@@ -611,7 +617,19 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+="</table>"
         return page
 
-    def getDBSDict(self):
+    def getDBSDict(self,dbsInst):
+        """
+            Read dbsDict file in local directory which contains
+            a JS dictionary for pull down menu.
+        """
+        name = string.split(dbsInst,"/")[0]
+        dbs  = "dbsDict.%s"%name
+        f = open(dbs,'r')
+        self.dbsDict = string.strip(f.read())
+        f.close()
+        return self.dbsDict
+           
+    def getDBSDict_orig(self):
         """
             Read dbsDict.all, dbsDict.all files in local directory which contains
             a JS dictionary for pull down menu.
@@ -649,19 +667,22 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            return self.dbsDict
         
-    def genNavigatorMenuDict(self):
+#    def genNavigatorMenuDict(self):
+    def genNavigatorMenuDict(self,dbsInst,**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="navigatorDict">"""
         endAjaxMsg="</response></ajax-response>"
         try:
-            page+="navDict="+self.getDBSDict()
+#            page+="navDict="+self.getDBSDict()
+            page+="navDict="+self.getDBSDict(dbsInst)
         except:
             t=self.errorReport("Fail in genNavigatorMenuDict function")
             page+=str(t)
             pass
         page+=endAjaxMsg
         if self.verbose:
+#        if 1:
            print page
         return page
     genNavigatorMenuDict.exposed = True
@@ -780,7 +801,8 @@ class DBSDataDiscoveryServer(DBSLogger):
             t=self.errorReport("Fail in getDataFromSelection function")
             page+=str(t)
             pass
-        url="%s/getDataFromSelection?userSelection=%s&amp;ajax=0"%(self.host,userSelection)
+#        url="%s/getDataFromSelection?userSelection=%s&amp;ajax=0"%(self.host,userSelection)
+        url="%s/getDataFromSelection?userSelection=%s&amp;ajax=0"%(self.dbsdd,userSelection)
         page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+=endAjaxMsg
@@ -901,7 +923,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         tierHTML=tier
         if tier=="*":
            tierHTML='All'
-        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
+#        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
+        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,siteHTML,app,primD,tierHTML)
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         return page
 
@@ -964,16 +987,6 @@ class DBSDataDiscoveryServer(DBSLogger):
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
                idPath=string.replace(oldDataset,"/","___")
-#               page+="""
-#<div><a href="javascript:showResMenu('parents')">%s</a> (<a href="javascript:popUp('%s/crabCfg?dataset=%s&amp;totEvt=%s',1000)">crab.cfg</a>)</div>
-#                     """%(oldDataset,self.dbsdd,oldDataset,oldTotEvt)
-
-#               page+="""
-#<div>
-#<a href="javascript:showLoadingMessage('parentGraph');registerAjaxProvenanceCalls();getProvenance('%s')">%s</a>
-#<div id="%s"></div>
-#</div>
-#                     """%(idPath,oldDataset,idPath)
             else:
                if len(bList): 
                   bList.append((dataset,totEvt))
@@ -1096,7 +1109,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                page+= self.genSnapshot(dbsInst,site,app,primD,tier)
             page+="""<hr class="dbs" />"""
             page+= self.lfnToHTML(dbsInst,blockName,dataset)
-            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.host,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
+#            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.host,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
+            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.dbsdd,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
             page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
             page+= self.genBottomHTML()
             return page
@@ -1377,7 +1391,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
-        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.host,dbsInst,primDataset)
+#        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.host,dbsInst,primDataset)
+        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,primDataset)
         page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+="</response></ajax-response>"
@@ -1477,7 +1492,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
         page+=pSum
-        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.host,dbsInst,appPath)
+#        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.host,dbsInst,appPath)
+        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,appPath)
         page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+="</response></ajax-response>"
@@ -1542,7 +1558,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            page = self.genTopHTML()
         page+=self.getDatasetContentHelper(dbsInst,dataset)
-        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.host,dbsInst,dataset)
+#        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.host,dbsInst,dataset)
+        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,dataset)
         page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         if int(ajax):
            page+="</response></ajax-response>"
@@ -1687,24 +1704,146 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     sendFeedback.exposed=True
 
-    def history(self,actionString,**kwargs):
+    def storeHistory(self,actionString,userName='guest',password=''):
+        # update DB history
+        # select cmdid from given history string
+        c = select([t_command.c.id],t_command.c.command==actionString).execute()
+        r = c.fetchone()
+        if r and r[0]:
+           cid = r[0]
+        else:
+           res=t_command.insert().execute(command=actionString)
+           cid=res.last_inserted_ids()[0]
+        # try to insert name/password, if fail get them from DB
+        uid=0
+        try:
+           res=t_user.insert().execute(name=userName,password=password)
+           uid=res.last_inserted_ids()[0]
+        except:
+           c = t_user.select(and_(t_user.c.name==userName,t_user.c.password==password)).execute()
+           r = c.fetchone()
+           if r and r[0]:
+              uid = r[0]
+        if not uid:
+           raise "Fail to find uid in DBS DD history for %s"%(userName,)
+        # insert into t_history date/userid/cmdid
+        iDate=time.strftime("%Y-%m-%d",time.localtime())
+        iTime=time.strftime("%H:%M:%S",time.localtime())
+        t_history.insert().execute(userid=uid,cmdid=cid,date=iDate,time=iTime)
+
+    def historySearch(self,iYear,iMonth,oYear,oMonth,userName='guest',password='',**kwargs):
+        cList=[]
+        try:
+            iDate='%s-%s-%s'%(iYear,monthId(iMonth),'01')
+            oDate='%s-%s-%s'%(oYear,monthId(oMonth),'31')
+            c = select([t_history.c.date,t_history.c.time,t_command.c.command],
+                        and_(
+                             t_history.c.userid==t_user.c.id,
+                             t_history.c.cmdid==t_command.c.id,
+                             t_history.c.date>=iDate,t_history.c.date<=oDate,
+                             t_user.c.name==userName
+                            ),
+                        use_labels=True,distinct=True,
+                        order_by=[desc(t_history.c.date),desc(t_history.c.time)]).execute()
+            cList=c.fetchall()
+        except:
+            if not self.quiet:
+               printExcept()
+            pass
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        # Please note, I'm using object type instead of element, since at startup history tab is
+        # hidden and id="allHistory" is invisible for registration. When I choose history
+        # tab it's class name changed to be visible and my object class can find out
+        # id="allHistory"
+        page="""<ajax-response><response type="element" id="historySearchResults">"""
+        for rows in cList:
+            nameSpace={
+                       'date'      : str(rows[0]),
+                       'time'      : str(rows[1]),
+                       'action'    : str(rows[2])
+                      }
+            t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
+            page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    historySearch.exposed=True
+
+    def getHistory(self,userName='guest',password='',iLimit=100,**kwargs):
+        cList=[]
+        try:
+            c = select([t_history.c.date,t_history.c.time,t_command.c.command],
+                        and_(
+                             t_history.c.userid==t_user.c.id,
+                             t_history.c.cmdid==t_command.c.id,
+                             t_user.c.name==userName
+                            ),
+                        use_labels=True,distinct=True,limit=iLimit,
+                        order_by=[desc(t_history.c.date),desc(t_history.c.time)]).execute()
+        except:
+            if not self.quiet:
+               printExcept()
+            pass
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        # Please note, I'm using object type instead of element, since at startup history tab is
+        # hidden and id="allHistory" is invisible for registration. When I choose history
+        # tab it's class name changed to be visible and my object class can find out
+        # id="allHistory"
+        page="""<ajax-response><response type="object" id="allHistory">"""
+        for rows in cList:
+            nameSpace={
+                       'date'      : str(rows[0]),
+                       'time'      : str(rows[1]),
+                       'action'    : str(rows[2])
+                      }
+            t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
+            page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getHistory.exposed=True
+
+    def history(self,actionString,userName='guest',password='',**kwargs):
         """
             History updater
         """
+        try:
+            self.storeHistory(actionString,userName,password)
+        except:
+            if not self.quiet:
+               printExcept()
+            pass
         # AJAX wants response as "text/xml" type
+        iDate=time.strftime("%Y-%m-%d",time.localtime())
+        iTime=time.strftime("%H:%M:%S",time.localtime())
         self.setContentType('xml')
         nameSpace={
-                   'time'      : time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()), #time.asctime(),
+                   'date'      : iDate, 
+                   'time'      : iTime, 
                    'action'    : actionString
                   }
         t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
-        page="""<ajax-response><response type="object" id="userHistory">"""
+        page="""<ajax-response><response type="object" id="sessionHistory">"""
         page+= str(t)
         page+="</response></ajax-response>"
         if self.verbose:
+#        if 1:
            print page
         return page
     history.exposed=True
+
+    def register(self,nameinput,passinput,**kwargs):
+        """
+           Register users with internal history DB.
+        """
+        return self.index()
+    register.exposed=True
 
     def getAppConfigs(self,appPath,**kwargs):
         """
@@ -1727,6 +1866,147 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getAppConfigs.exposed=True
 
+    def showMessage(self,msg):
+        page=self.genTopHTML()
+        page+=msg
+        page+=self.genBottomHTML()
+        return page
+    showMessage.exposed=True
+
+    def checkUser(self,userName,password,**kwargs):
+        """
+           Check existence of user name in history DB
+        """
+        msg=""
+        # check user name
+        c = select([t_user.c.name],t_user.c.name==userName).execute()
+        r = c.fetchone()
+        if r and r[0]==userName:
+           msg=userName
+           c = t_user.select(and_(t_user.c.name==userName,t_user.c.password==password)).execute()
+           r = c.fetchone()
+           if (not r) or (r and r[2]!=password):
+              msg='wrong password'
+        else:
+           try:
+               res=t_user.insert().execute(name=userName,password=password)
+               msg=userName
+           except:
+               msg="fail";
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="historyUserName">"""
+        page+= msg
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    checkUser.exposed=True
+
+    def selectApplications(self,dbsInst,**kwargs):
+        """
+           Retrieve list of application for given dbs instance
+        """
+        self.helperInit(dbsInst)
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="selectApps">"""
+        page+="""<select id="appSelector" onchange="replace('navSelector');showLoadingMessage('selectPrim');ajaxSelectPrim();replace('selectTier','to be defined')">"""
+        page+='<option value="">Select</option>'
+        aList = self.helper.listApplications('*')
+        aList.reverse()
+        for item in aList:
+            family = item.get('family')
+            ver    = item.get('version')
+            exe    = item.get('executable')
+            appVal = '/%s/%s/%s'%(ver,family,exe)
+            page+='<option value="%s">%s</option>'%(appVal,appVal)
+        page+= '</select>'
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    selectApplications.exposed=True
+
+    def selectPrimaryDatasets(self,dbsInst,app,**kwargs):
+        """
+           Retrieve list of primary data tier for given dbs instance and app
+        """
+        self.helperInit(dbsInst)
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="selectPrim">"""
+        page+="""<select id="primSelector" onchange="replace('navSelector');showLoadingMessage('selectTier');ajaxSelectTier()">"""
+        page+='<option value="">Select</option>'
+        aList = self.helper.listDatasetsFromApp(app)
+        aList.reverse()
+        for item in aList:
+            empty,dataset,tier,proc = string.split( item['datasetPathName'], "/" )
+            page+='<option value="%s">%s</option>'%(dataset,dataset)
+        page+= '</select>'
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    selectPrimaryDatasets.exposed=True
+
+    def selectDataTiers(self,dbsInst,app,prim,**kwargs):
+        """
+           Retrieve list of data tiers for given dbs instance, app, and primD
+        """
+        self.helperInit(dbsInst)
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="selectTier">"""
+        page+="""<select id="tierSelector" onchange="replace('navSelector')">"""
+        page+='<option value="">Select</option>'
+        # in new api we will have listTiers
+#        aList = self.helper.api.listTiers('*')
+
+        # so far all data tiers comes from app and prim
+        aList = self.helper.listDatasetsFromApp(app)
+        aList.reverse()
+        page+='<option value="All">All</option>'
+        for item in aList:
+            empty,dataset,tier,proc = string.split( item['datasetPathName'], "/" )
+            if prim==dataset:
+               page+='<option value="%s">%s</option>'%(tier,tier)
+        page+= '</select>'
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    selectDataTiers.exposed=True
+
+    def getDataDescription(self,dbsInst,primaryDataset="",processedDataset="",**kwargs):
+        """ 
+            Get data description.
+        """
+        self.helperInit(dbsInst)
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="floatDataDescription">"""
+        description=""
+        if processedDataset:
+           description=processedDataset+"<p>description</p>"
+        if primaryDataset:
+           description=primaryDataset+"<p>description</p>"
+        nameSpace={
+                   'description' : description
+                  }
+        t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getDataDescription.exposed=True
+
     def dummy(self,**kwargs):
         page=self.genTopHTML()
         nameSpace = {
@@ -1744,11 +2024,20 @@ if __name__ == "__main__":
     optManager  = DBSOptions.DBSOptionParser()
     (opts,args) = optManager.getOpt()
 
+    # load DBS history tables module
+    try:
+        from   DDTables  import *
+    except:
+        if not opts.quiet:
+           printExcept()
+        print "WARNING! Cannot load DDTables, your persistent history will be turned off"
+        pass
     dbsManager = DBSDataDiscoveryServer(opts.verbose,opts.profile)
     if opts.quiet:
        dbsManager.setQuiet()
     cherrypy.root = dbsManager
     cherrypy.config.update(file="CherryServer.conf")
+    cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
     if opts.profile:
        import hotshot                   # Python profiler
        import hotshot.stats             # profiler statistics
