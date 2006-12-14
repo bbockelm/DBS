@@ -1,3 +1,36 @@
+function setMain() {
+  var id=document.getElementById("main");
+  if (id) {
+      id.className="main";
+  }
+}
+function hideTag(tag) {
+  var id=document.getElementById(tag);
+  if (id) {
+      id.className="hide";
+  }
+}
+function showTag(tag) {
+  var id=document.getElementById(tag);
+  if (id) {
+      id.className="show_inline";
+  }
+}
+function showHistoryMenu(name,histArr) {
+  var id=document.getElementById("history_table");
+  id.className="show_inline";
+  for(i=0;i<histArr.length;i++) {
+      var _id=document.getElementById('_'+histArr[i]+'History'); // menu's
+      var  id=document.getElementById(histArr[i]+'History');     // content's
+      if (histArr[i]==name) {
+          _id.className="td_right";
+           id.className="show_inline";
+      } else {
+          _id.className="show_cell";
+           id.className="hide";
+      }
+  }
+}
 function showHelpContent() {
   var t=document.getElementById("help_intro");
   t.className="show_inline";
@@ -7,9 +40,10 @@ var _ids = new Array();
 _ids[0]='results';
 _ids[1]='parents';
 _ids[2]='appConfigs';
-_ids[3]='validation';
-_ids[4]='parameterSet';
-_ids[5]='releaseSpec';
+_ids[3]='dataDescription';
+//_ids[4]='validation';
+//_ids[5]='parameterSet';
+//_ids[6]='releaseSpec';
 function showResMenu(id,ids) {
    if(!ids) {
       ids=_ids;
@@ -88,7 +122,7 @@ function showWaitingMessage() {
   showLoadingMessage("results_waiting");
   var hr=document.getElementById("results_hr");
   if(hr) {
-     hr.className="dbs";
+     hr.className="hr_end";
   }
 }
 function clearWaitingMessage() {
@@ -117,6 +151,8 @@ function ShowPanel(link) {
    } else {
       alert("Fail to find HiddenPanel");
    }
+   var t=document.getElementById("menu_td_fixed");
+   t.className="menu_td_gray_fixed";
    var p=document.getElementById("GlobalPanel");
    if(p) {
       p.className="show";
@@ -125,7 +161,7 @@ function ShowPanel(link) {
    }
 }
 function HidePanel(link) {
-   msg='<table width="100%"><tr><td class="menu_td_gray"><table><tr><td class="td_gray_box"><span class="sectionhead_tight"><a href="javascript:ShowPanel(\''+link+'\')">show panel</a></span></td><td></td></tr></table> </td></tr></table>';
+   msg='<table width="100%"><tr><td class="menu_td_gray"><table width="100%"><tr><td class="td_gray_box"><a href="javascript:ShowPanel(\''+link+'\')">show panel</a></td><td></td></tr></table> </td></tr></table>';
    var t=document.getElementById("HiddenPanel");
    if(t) {
       t.className="show";
@@ -133,6 +169,8 @@ function HidePanel(link) {
    } else {
       alert("Fail to find HiddenPanel");
    }
+   var t=document.getElementById("menu_td_fixed");
+   t.className="menu_td_gray";
    var p=document.getElementById("GlobalPanel");
    if(p) {
       p.className="hide";
@@ -181,12 +219,17 @@ function hideResultsMenu() {
    if(t) {
       t.className="hide";
    }
+   var t=document.getElementById("results_hr");
+   if(t) {
+      t.className="hr_end";
+   }
    clearResMenu();
 }
 function showResultsMenu() {
    var t=document.getElementById("results_menu");
    if(t) {
-      t.className="show_inline";
+//      t.className="show_inline";
+      t.className="table_round_box";
    }
    var t=document.getElementById("hr_results_menu");
    if(t) {
@@ -200,7 +243,6 @@ function showMenu(menu) {
    menuArr[1]='Search';
    menuArr[2]='Site';
    menuArr[3]='Summary';
-//   menuArr[4]='Datasets';
    menuArr[4]='DBSinfo';
    menuArr[5]='History';
    menuArr[6]='Help';
@@ -214,11 +256,15 @@ function showMenu(menu) {
               var id=document.getElementById("dbsInst_table");
               id.className="hide";
            }
+           if(menuArr[i]=='History') {
+              var id=document.getElementById("history_table");
+              id.className="hide";
+           }
        }
        var t=document.getElementById(menuArr[i]+'Div');
        if (t) {
            if(menuArr[i]==menu) {
-               t.className="show";
+               t.className="show_inline";
            } else {
                t.className="hide";
            }
@@ -335,4 +381,150 @@ function formPopUpCall(h,f,dbs,site,app,prim,tier) {
   var url=h+'/'+f+'?dbsInst='+dbs+'&site='+site+'&app='+app+'&primD='+prim+'&tier='+tier;
   popUp(url);
 }
+function replace(tag,msg) {
+  var id=document.getElementById(tag);
+  if(tag) {
+     if(msg) {
+       id.innerHTML=msg;
+     } else {
+       id.innerHTML='';
+     }
+  }
+}
+function resetNavSelection() {
+  var sel=document.getElementById("dbsSelector");
+  for(i=0;i<sel.length;i++) {
+      if(!sel[i].value) {
+         sel[i].selected="selected";
+         return;
+      }
+  }
+}
+function checkSel(sel) {
+  var opt=null;
+  if(!sel) {return opt;}
+  for(i=0;i<sel.length;i++) {
+      if(sel[i].selected) {
+         opt=sel[i].value;
+         return opt;
+      }
+  }
+  return opt;
+}
+function checkNavSelection() {
+  var id=document.getElementById("navSelector");
+  var sel=document.getElementById("dbsSelector");
+  var dbs=checkSel(sel);
+  if(!dbs) {
+     id.innerHTML='<span class="box_red">Please select <b>DBS instance</b></span>';
+     return null;
+  }
+  var sel=document.getElementById("appSelector");
+  var app=checkSel(sel);
+  if(!app) {
+     id.innerHTML='<span class="box_red">Please select <b>Application</b></span>';
+     return null;
+  }
+  var sel=document.getElementById("primSelector");
+  var prim=checkSel(sel);
+  if(!prim) {
+     id.innerHTML='<span class="box_red">Please select <b>Primary dataset</b></span>';
+     return null;
+  }
+  var sel=document.getElementById("tierSelector");
+  var tier=checkSel(sel);
+  if(!tier) {
+     id.innerHTML='<span class="box_red">Please select <b>Data tier</b></span>';
+     return null;
+  }
+  showResMenu('results');
+  showWaitingMessage();
+  return 1;
+}
+function submitNavRequest() {
+  if(checkNavSelection()==1) {
+     ajaxGetData();
+     ajaxGenParentsGraph();
+     ajaxGenAppConfigs();
+  }
+}
 
+function getMonthIdx(month) {
+  var mArr = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+  for(i=0;i<mArr.length;i++) {
+      if(mArr[i]==month) {
+         return i;
+      }
+  }
+}
+function adjustToDate() {
+  var iSel_y= document.getElementById("in_hSearch_year");
+  var iYear = checkSel(iSel_y);
+  var iSel_m= document.getElementById("in_hSearch_month");
+  var iMonth= checkSel(iSel_m);
+   
+  var oSel_y= document.getElementById("out_hSearch_year");
+  var oYear = checkSel(oSel_y);
+  var oSel_m= document.getElementById("out_hSearch_month");
+  var oMonth= checkSel(oSel_m);
+
+  // adjust 'To: year/month' from the input 'From: year/month'
+  if(iSel_y && oSel_y) {
+      for(i=0;i<iSel_y.length;i++) {
+          if(iSel_y[i].selected) {
+             oSel_y[i].selected="selected";
+          }
+      }
+  }
+  if(iSel_m && oSel_m) {
+      var i_idx, o_idx;
+      for(i=0;i<iSel_m.length;i++) {
+          if(iSel_m[i].selected) {
+             i_idx=i;
+             break;
+          }
+      }
+      for(i=0;i<oSel_m.length;i++) {
+          if(oSel_m[i].selected) {
+             o_idx=i;
+             break;
+          }
+      }
+      if(getMonthIdx(oSel_m[o_idx].value)<getMonthIdx(iSel_m[i_idx].value)) {
+         oSel_m[o_idx].selected=null;
+         oSel_m[i_idx].selected="selected";
+      }
+  }
+}
+function checkToDate() {
+  var iSel_y= document.getElementById("in_hSearch_year");
+  var iYear = checkSel(iSel_y);
+  var iSel_m= document.getElementById("in_hSearch_month");
+  var iMonth= checkSel(iSel_m);
+   
+  var oSel_y= document.getElementById("out_hSearch_year");
+  var oYear = checkSel(oSel_y);
+  var oSel_m= document.getElementById("out_hSearch_month");
+  var oMonth= checkSel(oSel_m);
+  
+  var id=document.getElementById("historySearchResults");
+  if(oYear<iYear || getMonthIdx(oMonth)<getMonthIdx(iMonth) ) {
+     id.innerHTML='<span class="box_red">You choose wrong date order, "From" date should be >= then "To" date</span>';
+  } else {
+    if(id.innerHTML.search("You choose wrong date order")) {
+       id.innerHTML="";
+    }
+  }
+}
+function disableSel(tag) {
+  var sel=document.getElementById(tag);
+  if(sel) {
+     sel.disabled="disabled";
+  }
+}
+function enableSel(tag) {
+  var sel=document.getElementById(tag);
+  if(sel) {
+     sel.disabled="";
+  }
+}
