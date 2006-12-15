@@ -11,7 +11,7 @@ calculateAverage()
    # remove older log file if any, otherwise calculations will be wrong  
    rm -f $2.$3.$4.timelog.txt
    for cycle in 1 2 3 ; do
-     echo "CYCLE $cycle" >> $2.timelog.txt
+     echo "CYCLE $cycle" >> $2.$3.$4.timelog.txt
      
      echo "Time for $1 parallel clients running $2" >> $2.$3.$4.timelog.txt
      for i in `seq 1 $1` ; do
@@ -79,10 +79,9 @@ calculateAverage 30 dbsStressTest.py 1000 10
 echo "30 parallel clients: each inserting 1000 files, 1000 at a time" >> TEST_AVERAGE.txt
 calculateAverage 30 dbsStressTest.py 1000 1
 
-cat TEST_AVERAGE.txt | mail -s "Time Profile Test Done" anzar@fnal.gov
-
 date=`date`
 echo "Test Finishing at $date" >> TEST_AVERAGE.txt
 
+cat TEST_AVERAGE.txt | mail -s "Time Profile Test Done" anzar@fnal.gov
 echo "DONE"
 
