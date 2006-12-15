@@ -1,6 +1,6 @@
 /**
- $Revision: 1.37 $"
- $Id: DBSApi.java,v 1.37 2006/12/11 22:34:30 sekhri Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSApi.java,v 1.38 2006/12/14 20:36:06 sekhri Exp $"
  *
 */
 
@@ -244,10 +244,10 @@ public class DBSApi {
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			if (apiStr.equals("listPrimaryDatasets")) {
-				api.listPrimaryDatasets(conn, out, get(table, "pattern", false));
+				(new DBSApiPrimDSLogic()).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
 			} else if (apiStr.equals("listProcessedDatasets")) {
-				api.listProcessedDatasets(conn, out, 
+				(new DBSApiProcDSLogic()).listProcessedDatasets(conn, out, 
 						get(table, "primary_datatset_name_pattern", false),
 						get(table, "data_tier_name_pattern", false),
 						get(table, "processed_datatset_name_pattern", false),
@@ -257,17 +257,17 @@ public class DBSApi {
 						get(table, "parameterset_name", false)
 						);
 			} else if (apiStr.equals("listDatasetContents")) {
-				api.listDatasetContents(conn, out, 
+				(new DBSApiTransferLogic()).listDatasetContents(conn, out, 
 						get(table, "path", false),
 						get(table, "block_name", false)
 						);
 			} else if (apiStr.equals("listDatasetParents")) {
-				api.listDatasetParents(conn, out, 
+				(new DBSApiProcDSLogic()).listDatasetParents(conn, out, 
 						get(table, "path", true)
 						);
 
 			} else if (apiStr.equals("listAlgorithms")) {
-				api.listAlgorithms(conn, out,
+				(new DBSApiAlgoLogic()).listAlgorithms(conn, out,
 						get(table, "app_version", false),
 						get(table, "app_family_name", false),
 						get(table, "app_executable_name", false),
@@ -275,47 +275,47 @@ public class DBSApi {
 						);
 				
 			} else if (apiStr.equals("listRuns")) {
-				api.listRuns(conn, out, get(table, "path", true));
+				(new DBSApiProcDSLogic()).listRuns(conn, out, get(table, "path", true));
 				
 			} else if (apiStr.equals("listTiers")) {
-				api.listTiers(conn, out, get(table, "path", true));
+				(new DBSApiProcDSLogic()).listTiers(conn, out, get(table, "path", true));
 				
 			} else if (apiStr.equals("listBlocks")) {
-				api.listBlocks(conn, out, 
+				(new DBSApiProcDSLogic()).listBlocks(conn, out, 
 						get(table, "path", true),
 						get(table, "block_name", false)
 						);
 			} else if (apiStr.equals("listFiles")) {
-				api.listFiles(conn, out, 
+				(new DBSApiFileLogic()).listFiles(conn, out, 
 						get(table, "path", false),
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
 						get(table, "detail", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {
-				api.listFileParents(conn, out, 
+				(new DBSApiFileLogic()).listFileParents(conn, out, 
 						get(table, "lfn", true)
 						);
 			} else if (apiStr.equals("listFileAlgorithms")) {
-				api.listFileAlgorithms(conn, out, 
+				(new DBSApiFileLogic()).listFileAlgorithms(conn, out, 
 						get(table, "lfn", true)
 						);
 			} else if (apiStr.equals("listFileTiers")) {
-				api.listFileTiers(conn, out, 
+				(new DBSApiFileLogic()).listFileTiers(conn, out, 
 						get(table, "lfn", true)
 						);
 			} else if (apiStr.equals("listFileLumis")) {
-				api.listFileLumis(conn, out, 
+				(new DBSApiFileLogic()).listFileLumis(conn, out, 
 						get(table, "lfn", true)
 						);
 	
 			} else if (apiStr.equals("insertPrimaryDataset")) {
-				api.insertPrimaryDataset(conn, out,
+				(new DBSApiPrimDSLogic()).insertPrimaryDataset(conn, out,
 						parse( getXml(table), "primary-dataset") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertAlgorithm")) {
-				api.insertAlgorithm(conn, out,
+				(new DBSApiAlgoLogic()).insertAlgorithm(conn, out,
 						parse(getXml(table), "algorithm") , 
 						dbsUser);
 				
@@ -333,14 +333,14 @@ public class DBSApi {
 						dbsUser);
 				
 			} else if (apiStr.equals("insertProcessedDataset")) {
-				api.insertProcessedDataset(conn, out,  parsePD(getXml(table)), dbsUser);
+				(new DBSApiProcDSLogic()).insertProcessedDataset(conn, out,  parsePD(getXml(table)), dbsUser);
 				
 			} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
-				api.createAnalysisDatasetFromPD(conn, out,
+				(new DBSApiAnaDSLogic()).createAnalysisDatasetFromPD(conn, out,
 					parse(getXml(table), "analysis-dataset"),
 					dbsUser);
                         } else if (apiStr.equals("insertBlock")) {
-				api.insertBlock(conn, out,
+				(new DBSApiBlockLogic()).insertBlock(conn, out,
 						parse(getXml(table), "block") , 
 						dbsUser);
 				
@@ -348,55 +348,55 @@ public class DBSApi {
 				insertFiles(conn, out, getXml(table), dbsUser);
 				
 			} else if (apiStr.equals("insertTierInPD")) {
-				api.insertTierInPD(conn, out,
+				(new DBSApiProcDSLogic()).insertTierInPD(conn, out,
 						get(table, "path", true), 
 						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInPD")) {
-				api.insertParentInPD(conn, out,
+				(new DBSApiProcDSLogic()).insertParentInPD(conn, out,
 						get(table, "path", true), 
 						get(table, "parent_path", true), 
 						dbsUser);
 					
 			} else if (apiStr.equals("insertAlgoInPD")) {
-				api.insertAlgoInPD(conn, out,
+				(new DBSApiProcDSLogic()).insertAlgoInPD(conn, out,
 						get(table, "path", true), 
 						parse(getXml(table), "algorithm"), 
 						dbsUser);
 			
 			} else if (apiStr.equals("insertRunInPD")) {
-				api.insertRunInPD(conn, out,
+				(new DBSApiProcDSLogic()).insertRunInPD(conn, out,
 						get(table, "path", true), 
 						get(table, "run_number", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertTierInFile")) {
-				api.insertTierInFile(conn, out,
+				(new DBSApiFileLogic()).insertTierInFile(conn, out,
 						get(table, "lfn", true), 
 						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInFile")) {
-				api.insertParentInFile(conn, out,
+				(new DBSApiFileLogic()).insertParentInFile(conn, out,
 						get(table, "lfn", true), 
 						get(table, "parent_lfn", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertAlgoInFile")) {
-				api.insertAlgoInFile(conn, out,
+				(new DBSApiFileLogic()).insertAlgoInFile(conn, out,
 						get(table, "lfn", true), 
 						parse(getXml(table), "algorithm"), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertLumiInFile")) {
-				api.insertLumiInFile(conn, out,
+				(new DBSApiFileLogic()).insertLumiInFile(conn, out,
 						get(table, "lfn", true), 
 						get(table, "ls_number", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertDatasetContents")) {
-				api.insertDatasetContents(conn, out,
+				(new DBSApiTransferLogic()).insertDatasetContents(conn, out,
 						parseDatasetContents(getXml(table)), 
 						dbsUser);
 			
@@ -465,9 +465,15 @@ public class DBSApi {
 	
 	public void writeException(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
-                message = message.replace('\'',' ');
+		 message = message.replace('\'',' ');
+		message = message.replace('<',' ');
+		message = message.replace('>',' ');
                 detail= detail.replace('\'',' ');
-                code =code.replace('\'',' ');
+		detail = detail.replace('<',' ');
+		detail = detail.replace('>',' ');
+		code = code.replace('\'',' ');
+		code = code.replace('<',' ');
+		code = code.replace('>',' ');
 		out.write("<exception message='" + message + "' "); 
 		out.write(" code ='" + code + "' "); 
 		out.write(" detail ='" + detail + "' />\n"); 
@@ -635,7 +641,7 @@ public class DBSApi {
 				psDS = e.attributes;
 			}
 		}
-		api.insertFiles(conn, out, DBSUtil.get(psDS, "path"), DBSUtil.get(psDS, "block_name"), topLevel, dbsUser);
+		(new DBSApiFileLogic()).insertFiles(conn, out, DBSUtil.get(psDS, "path"), DBSUtil.get(psDS, "block_name"), topLevel, dbsUser);
 	}
 
 	
