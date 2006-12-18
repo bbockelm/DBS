@@ -35,7 +35,8 @@ if __name__ == "__main__":
            hostname = 'localhost'
            pass
        msg ="At %s found %s %s processes on %s.\n"%(time.asctime(),nProc,procName,hostname)
-       msg+="Please take some action, since it indicates that DLS is not responding"
+       msg+="Please take some action, since it indicates that DLS is not responding.\n"
+       msg+="The %s is a part of DBS data discovery and runs as cronjob on %s."%(procName,hostname)
        DBSUtil.sendEmail(msg)
        sys.exit(1)
     # get grid proxy
