@@ -16,27 +16,37 @@ from dbsFile import DbsFile
 from dbsLumiSection import DbsLumiSection
 from dbsOptions import DbsOptionParser
 from dbsUnitTestApi import DbsUnitTestApi
+import random
+#import pdb
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
-if len(args) < 2:
-   print "You must provide number of files <inserted> in how many <iterations>" 
-   print "python dbsStressTest.py <number-of-files> <iterations>"
+
+#pdb.set_trace()
+
+if len(args) < 3:
+   print "You must provide number of files <inserted> in how many <iterations> and <logfile-pretext>" 
+   print "python dbsStressTest.py <number-of-files> <iterations> <logfile-pretext>"
    sys.exit(1)
 else:
    totalfiles=int(args[0]) 
    iters=int(args[1])
-  
+   logext=str(args[2])
+
 api = DbsApi(opts.__dict__)
 mytime = str(time.time())
 
-maxDS = iters
-maxFiles = totalfiles/iters
+maxDS = totalfiles/iters
+maxFiles = totalfiles
 
-f = open("bulkDataResult.txt", "w")
+filename="bulkDataResult."+logext
+#print "FILENAME: "+filename
+f = open(filename, "w")
 fileList = []
 for i in range(maxDS):
-	mytime = str(time.time())
+	#mytime = str(time.time())
+        mytime=os.popen('uuidgen').readline().strip()
+        #mytime = str(random.random())
 	#Insert Primary
 	apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
 	primary = 'TestPrimary' + mytime
@@ -123,8 +133,8 @@ for i in range(maxDS):
 		#mytime = str(time.time())
                 #mytime = os.popen('uuidgen').readline()
 		apiObj = DbsUnitTestApi(api.insertFiles, f)
-		lfn1 = os.popen('uuidgen').readline().strip()
-		lfn2 = os.popen('uuidgen').readline().strip()
+		lfn1 = os.popen('uuidgen').readline().strip()+str(random.random())
+		lfn2 = os.popen('uuidgen').readline().strip()+str(random.random())
 
 		#lfn1 = '1111-0909-9767-8764' + mytime
 		#lfn2 = '1111-0909-9767-876411' + mytime
