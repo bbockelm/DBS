@@ -9,12 +9,14 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import string, sys, time, types, logging, traceback, random
+import os, string, sys, time, types, logging, traceback, random
 
 # import DBS modules
 import dbsException
 import DBSOptions
 from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
+
+SENDMAIL = "/usr/sbin/sendmail" # sendmail location
 
 # file created by crontab job, see getDLSsites.sh
 DLS_INFO='dls.all'
@@ -438,6 +440,19 @@ def addToDict(iDict,key,value):
 def monthId(month):
     d={'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12}
     return d[string.lower(month)[:3]]
+
+def sendEmail(msg):
+    """
+       Send an Email with given message
+    """
+    p = os.popen("%s -t" % SENDMAIL, "w")
+    p.write("To: vk@mail.lns.cornell.edu\n")
+    p.write("Subject: DBS DD error\n")
+    p.write("\n") # blank line separating headers from body
+    p.write("\n"+msg+"\n\n\n")
+    sts = p.close()
+    if sts != 0:
+        print "mail exit status", sts
 
 class DBSLogger:
   """
