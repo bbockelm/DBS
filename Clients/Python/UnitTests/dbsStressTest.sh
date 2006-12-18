@@ -3,7 +3,7 @@
 tstamp=`date +%m%y%d%M%S`
 result_file=$tstamp.TEST_AVERAGE.txt
 
-lculateAverage()
+calculateAverage()
 {
    # $1: First argument is number of parallel clients
    # $2: second argument is the code needs to be run
