@@ -101,10 +101,6 @@ class DBSHelper(DBSLogger):
             fileName='dbsDict.%s.tmp'%name
       else:
          fileName='dbsDict.global.tmp'
-#      if userMode:
-#         fileName='dbsDict.global.tmp'
-#      else:
-#         fileName='dbsDict.all.tmp'
       file=open(fileName,'w')
       # if we're in user mode, we only know about DBSGLOBAL
       # if we're in expert mode, load all DBS instances
@@ -119,13 +115,6 @@ class DBSHelper(DBSLogger):
          dbsList=[DBSGLOBAL]+dbsList
       else:
          dbsList=[dbsInst]
-#      if userMode:
-#         dbsList=[DBSGLOBAL]
-#      else:
-#         dbsList=self.dbsdls.keys()
-#         dbsList.sort()
-#         dbsList.remove(DBSGLOBAL)
-#         dbsList=[DBSGLOBAL]+dbsList
       s = "\n"
       s+= "{l:[ "
       for dbs in dbsList:
@@ -211,48 +200,6 @@ class DBSHelper(DBSLogger):
       return fileName
 #      return s
 
-  def initJSDict_v1(self,userMode=True):
-      """
-         Form dictionary for JavaScript used in presentation layer.
-         @type  userMode: boolean 
-         @param userMode: define which DBS instance(s) to use, in userMode we only use DBS global,
-         for experts others instances has been initialized.
-         @rtype : dictionary
-         @return: { DBSInst: { dbs:appDict={ app:primDict={ primD:tierDict={ tier:null } } }, } }
-      """
-      # if we're in user mode, we only know about DBSGLOBAL
-      # if we're in expert mode, load all DBS instances
-      if userMode:
-         dbsList=[DBSGLOBAL]
-      else:
-         dbsList=self.dbsdls.keys()
-      dbsDict = {}
-      for dbs in dbsList:
-          self.setDBSDLS(dbs)
-          appList = self.getApplications()
-          appDict = {}
-          for app in appList:
-              family = app[0]
-              ver    = app[1]
-              exe    = app[2]
-              path=formDatasetPath(ver,family,exe)
-              primDict = {}
-              tierDict = {}
-              pList = self.listDatasetsFromApp(path)
-              pList.sort()
-	      tierDict['All']="*"
-              oldPrimD="All"
-              for item in pList:
-                  empty,primD,tier,proc = string.split( item['datasetPathName'], "/" )
-	 	  print primD,tier,proc 
-                  if primD!=oldPrimD:
-                     oldPrimD=primD
-                  tierDict[tier]=""
-              primDict[oldPrimD]=tierDict
-              appDict[path]=primDict
-          dbsDict[dbs]=appDict
-      return dbsDict
-
   def getDbsDls(self):
       """
          Returns a list of known DBS/DLS instances
@@ -329,6 +276,34 @@ class DBSHelper(DBSLogger):
       else:
          self.dls_iface = self.dlsInst[(dlsType,endpoint)]
 
+  ### WRAPPER ###
+  def listApplicationConfigs(self,appPath):
+      """
+         Wrapper around dbsApi
+      """
+      res = []
+      if self.iface=="cgi":
+         for item in self.api.listApplicationConfigs(appPath):
+             content = item['parameterSet']['content']
+             res.append(('content',content))
+             hash    = item['parameterSet']['hash']
+             res.append(('hash',hash))
+      else:
+         res = []
+      return res
+
+  def listProcessedDatasets(self,datasetPath="*"):
+      """
+         Wrapper around dbsApi
+      """
+      res = ""
+      if self.iface=="cgi":
+         res = self.api.listProcessedDatasets(datasetPath)
+      else:
+         empty,prim,tier,proc=string.split(datasetPath,"/")
+         res = self.api.listProcessedDatasets(patternPrim=prim,patternDT=tier,patternProc=proc)
+      return res
+
   def listDatasetsFromApp(self,appPath="*"):
       """
          Wrapper around dbsApi
@@ -356,12 +331,13 @@ class DBSHelper(DBSLogger):
          Wrapper around dbsApi
       """
       if self.iface=="cgi":
-         aList = self.api.listBlocks(datasetPath,app,events)
-#         aList.sort()
-#         aList.reverse()
-         return aList
+         return self.api.listBlocks(datasetPath,app,events)
       else:
-         return self.api.listBlocks(datasetPath)
+         print "#### listBlocks",datasetPath
+#         empty,prim,tier,proc = string.split(datasetPath,"/")
+#         dataset = "/%s/%s"%(prim,proc)
+         return self.api.listBlocks(datasetPath,web=1)
+  ### END OF WRAPPER ###
 
   def getDatasetsFromApplications(self,datasetPath="*"):
       """
@@ -475,12 +451,12 @@ class DBSHelper(DBSLogger):
       if app:
          dList = self.listDatasetsFromApp(datasetPath)
       else:
-         dList = self.api.listProcessedDatasets(datasetPath)
+         dList = self.listProcessedDatasets(datasetPath)
       dList.sort()
       dList.reverse()
       for entry in dList:
           if self.iface=="cgi":
-             name = entry.get('datasetPathName')
+             name = entry.get('datasetPathName') # name=/prim/tier/proc
           else:
              name = entry.get('Name')
           if html:
@@ -502,12 +478,6 @@ class DBSHelper(DBSLogger):
           if not p: break
           pList.append(p)
           pList+=self.getDatasetProvenance(p)
-#          while 1:
-#             print "in while search",p
-#             pp=self.getDatasetProvenance(p)
-#             if not pp: break
-#             print "in while child",pp
-#             pList+=pp
       return pList
 
   def exeQuery(self,q):
@@ -565,200 +535,6 @@ class DBSHelper(DBSLogger):
       self.setDBSDLS(dbsInst)
       res = self.api.getLFNs(blockName,dataset)
       return res
-#      print "### LFN",res[0]
-#      lfnList = []
-#      for item in res:
-#          lfn   = item[0]
-#          fSize = item[1]
-#          status= item[2]
-#          type  = item[3]
-#          evts  = item[4]
-          # item=(id,logical_name,fileSize,status,type)
-#          lfnList.append((lfn,fSize,status,type,evts))
-#      print "### new list",lfnList[0]
-#      return lfnList
-
-  def getLFNs_bName(self,blockName):
-      """
-         Get list of LFNs for block name.
-         The following query is invoked:
-         
-         select
-         f.logical_name,
-         f.filesize,
-         fs.name,
-         ft.name
-         from t_block b
-         join t_block_status bs
-         on bs.id = b.status
-         left join t_file f
-         on f.inblock = b.id
-         left join t_file_status fs
-         on fs.id = f.status
-         left join t_file_type ft
-         on ft.id = f.type
-         where b.guid= :bid
-            
-         @type blockName: string
-         @param blockName: name of the file block
-         @rtype : list 
-         @return: list of LFNs
-      """
-      blockbase,blockId = string.split(blockName,"#")
-      guid=""
-      if len(blockId)>4: # this is guid
-         if blockName[0]!='/':
-            guid='/'+blockName
-         else:
-            guid=blockName
-
-      tb  = self.alias('t_block','tb')
-      tbs = self.alias('t_block_status','tbs')
-      tf  = self.alias('t_file','tf')
-      tfs = self.alias('t_file_status','tfs')
-      tft = self.alias('t_file_type','tft')
-      if guid:
-          sel = sqlalchemy.select([tf.c.logical_name,tf.c.filesize,tfs.c.name,tft.c.name],
-                       sqlalchemy.and_( tb.c.guid==guid ),
-                       from_obj=[
-                                  tb.outerjoin(tbs,onclause=tbs.c.id==tb.c.status)
-                                  .outerjoin(tf,onclause=tf.c.inblock==tb.c.id)
-                                  .outerjoin(tfs,onclause=tfs.c.id==tf.c.status)
-                                  .outerjoin(tft,onclause=tft.c.id==tf.c.type)
-                                           ],
-                       order_by=[tf.c.logical_name]
-                                 )
-      else:
-          sel = sqlalchemy.select([tf.c.logical_name,tf.c.filesize,tfs.c.name,tft.c.name],
-                       sqlalchemy.and_( tb.c.id==blockId ),
-                       from_obj=[
-                                  tb.join(tbs,onclause=tbs.c.id==tb.c.status)
-                                  .outerjoin(tf,onclause=tf.c.inblock==tb.c.id)
-                                  .outerjoin(tfs,onclause=tfs.c.id==tf.c.status)
-                                  .outerjoin(tft,onclause=tft.c.id==tf.c.type)
-                                           ],
-                       order_by=[tf.c.logical_name]
-                                 )
-      res = self.getSQLAlchemyResult(sel)
-      lfnList = []
-      for item in res:
-	  lfn   = item[0]
-	  fSize = item[1]
-	  status= item[2]
-	  type  = item[3]
-          # item=(id,logical_name,fileSize,status,type)
-          lfnList.append((lfn,fSize,status,type))
-      return lfnList
-
-  def getLFNs_orig(self,dataset,blockName):
-      """
-         Get list of LFNs for given dataset and block name.
-         The following query is invoked:
-         
-         select
-         f.logical_name,
-         f.filesize,
-         fs.name,
-         ft.name
-         from t_processed_dataset pd
-         join t_processing p
-         on p.primary_dataset = pd.primary_dataset
-         and p.name = pd.name
-         join t_block b
-         on b.processing = p.id
-         join t_block_status bs
-         on bs.id = b.status
-         left join t_file f
-         on f.inblock = b.id
-         left join t_file_status fs
-         on fs.id = f.status
-         left join t_file_type ft
-         on ft.id = f.type
-         where pd.id= :pid and b.id= :bid
-            
-         @type  dataset: string 
-         @param dataset: dataset name 
-         @type blockName: string
-         @param blockName: name of the file block
-         @rtype : list 
-         @return: list of LFNs
-      """
-      pid = self.datasetFromPath(dataset)
-      if not pid:
-         return []
-
-      blockbase,blockId = string.split(blockName,"#")
-
-      tpd = self.alias('t_processed_dataset','tpd')
-      tp  = self.alias('t_processing','tp')
-      tb  = self.alias('t_block','tb')
-      tbs = self.alias('t_block_status','tbs')
-      tf  = self.alias('t_file','tf')
-      tfs = self.alias('t_file_status','tfs')
-      tft = self.alias('t_file_type','tft')
-      sel = sqlalchemy.select([tf.c.logical_name,tf.c.filesize,tfs.c.name,tft.c.name],
-                   sqlalchemy.and_( tpd.c.id==pid,tb.c.id==blockId ),
-                   from_obj=[
-                              tpd.join(tp,onclause=tp.c.primary_dataset==tpd.c.primary_dataset)
-                              .join(tb,onclause=tb.c.processing==tp.c.id)
-                              .join(tbs,onclause=tbs.c.id==tb.c.status)
-                              .outerjoin(tf,onclause=tf.c.inblock==tb.c.id)
-                              .outerjoin(tfs,onclause=tfs.c.id==tf.c.status)
-                              .outerjoin(tft,onclause=tft.c.id==tf.c.type)
-                                       ],
-                   order_by=[tf.c.logical_name]
-                             )
-#      sel.append_whereclause(tfs.c.name!='invalid')
-      res = self.getSQLAlchemyResult(sel)
-      lfnList = []
-      for item in res:
-	  lfn   = item[0]
-	  fSize = item[1]
-	  status= item[2]
-	  type  = item[3]
-          # item=(id,logical_name,fileSize,status,type)
-          lfnList.append((lfn,fSize,status,type))
-      return lfnList
-
-  def datasetFromPath(self,path):
-      """
-         Get dataset path id. The following query has been invoked:
-
-         select procds.id
-         from t_processed_dataset procds
-         join t_primary_dataset primds
-         on primds.id = procds.primary_dataset
-         join t_processing_name proname
-         on proname.id = procds.name
-         join t_data_tier dt
-         on dt.id = procds.data_tier
-         where proname.name = :proname
-         and primds.name = :primD
-         and dt.name = :tier
-              
-         @type  path: string 
-         @param path: path 
-         @rtype : integer
-         @return: path id
-      """
-      empty,prim,tier,proc = string.split(path,"/")
-      # I need to get a few tables
-      tprd = self.alias('t_processed_dataset','tprd')
-      tpm  = self.alias('t_primary_dataset','tpm')
-      tpn  = self.alias('t_processing_name','tpn')
-      tdt  = self.alias('t_data_tier','tdt')
-      
-      sel  = sqlalchemy.select([tprd.c.id],tpm.c.id==tprd.c.primary_dataset,distinct=True)
-      sel.append_whereclause(tpn.c.id==tprd.c.name)
-      sel.append_whereclause(tdt.c.id==tprd.c.data_tier)
-      if proc and proc!="*":
-         sel.append_whereclause(tpn.c.name==proc)
-      if prim and prim!="*":
-         sel.append_whereclause(tpm.c.name==prim)
-      if tier and tier!="*":
-         sel.append_whereclause(tdt.c.name==tier)
-      res = self.getSQLAlchemyResult(sel)
-      return res.fetchone()[0]
 
   def alias(self,tableName,aliasName):
       """
@@ -833,98 +609,6 @@ class DBSHelper(DBSLogger):
              oList.append((self.dbsInstance,)+tup)
       return oList
 
-  def getBlockInfo_orig(self,dataset):
-      """
-         Retrieves information about blocks. What we need to know for data discovery is only
-         block name and total number of events for given dataset.
-         The main query is:
-         
-         select distinct b.id,bs.name,b.files
-         from t_event_collection evc
-         join t_evcoll_file evf
-         on evf.evcoll = evc.id
-         left join t_evcoll_status evs
-         on evs.id = evc.status
-         join t_file f
-         on f.id = evf.fileid
-         join t_block b
-         on b.id = f.inblock
-         join t_block_status bs
-         on bs.id = b.status
-         left join t_file_status fs
-         on fs.id = f.status
-         where evc.processed_dataset = :id ORDER by b.id
-            
-         Also invoke the same query to get total number of events in a block, by replacing select
-         with sum(tevc.events) and specifying blockid.
-         @type dataset: string
-         @param dataset: name of the dataset, e.g. /test_primary/test_tier/test_process 
-         @rtype: dictionary
-         @return: blockDict[blockName]=(nEvt,bStatus,nFiles)
-      """
-      id = self.datasetFromPath(dataset)
-      if not id:
-         return []
-         
-      # get block name (t_primary_dataset.name, t_processing->t_processing_name.name)
-      empty,prim,tier,proc = string.split(dataset,"/")
-      blockbase = "/"+prim+"/"+proc
-      
-      # use SQLAlchemy to do the job, rather then writing pure SQL
-      tevc= self.alias('t_event_collection','tevc')
-      tevf= self.alias('t_evcoll_file','tevf')
-      tevs= self.alias('t_evcoll_status','tevs')
-      tb  = self.alias('t_block','tb')
-      tbs = self.alias('t_block_status','tbs')
-      tf  = self.alias('t_file','tf')
-      tfs = self.alias('t_file_status','tfs')
-      sel = sqlalchemy.select([tb.c.id,tbs.c.name,tb.c.files,tfs.c.name],
-                   sqlalchemy.and_( tevc.c.processed_dataset==id ),
-                   from_obj=[
-                              tevc.join(tevf,onclause=tevf.c.evcoll==tevc.c.id)
-                              .outerjoin(tevs,onclause=tevs.c.id==tevc.c.status)
-                              .join(tf,onclause=tf.c.id==tevf.c.fileid)
-                              .join(tb,onclause=tb.c.id==tf.c.inblock)
-                              .join(tbs,onclause=tbs.c.id==tb.c.status)
-                              .outerjoin(tfs,onclause=tfs.c.id==tf.c.status)
-                                       ],
-                   order_by=[tb.c.id],distinct=True
-                             )
-      result = self.getSQLAlchemyResult(sel)
-      bDict = {}
-      for item in result:
-          blockId = str(item[0])
-          bStatus = item[1]
-          nFiles  = item[2]
-          fStatus = str(item[3])
-          # I need to check file status to be valid
-          if string.lower(fStatus)=='invalid':
-             continue
-          bName   = blockbase+"#"+blockId
-          
-          # use SQLAlchemy to do the work
-          sel = sqlalchemy.select([sqlalchemy.func.sum(tevc.c.events)],
-                   sqlalchemy.and_( tevc.c.processed_dataset==id,tb.c.id==blockId ),
-                   from_obj=[
-                              tevc.join(tevf,onclause=tevf.c.evcoll==tevc.c.id)
-                              .outerjoin(tevs,onclause=tevs.c.id==tevc.c.status)
-                              .join(tf,onclause=tf.c.id==tevf.c.fileid)
-                              .join(tb,onclause=tb.c.id==tf.c.inblock)
-                              .join(tbs,onclause=tbs.c.id==tb.c.status)
-                              .outerjoin(tfs,onclause=tfs.c.id==tf.c.status)
-                                       ],
-                   order_by=[tb.c.id],distinct=True
-                             )
-          result  = self.getSQLAlchemyResult(sel) 
-          nEvt = result.fetchone()[0]
-          bDict[bName]=(nEvt,bStatus,nFiles)
-      return bDict
-
-  def getBlockInfo(self,dataset,app):
-#      blocks = self.api.listBlocks(dataset,app,"yes")
-      blocks = self.listBlocks(dataset,app)
-      return blocks
-  
   def getDBSSummary(self,dbsInst):
       """
          Collect a global summary from DBS/DLS. Currently only two queries invoked
@@ -997,25 +681,26 @@ class DBSHelper(DBSLogger):
 #      t2 = time.time()
 #      self.dbsTime=(t2-t1)
 
-#      for item in bList:
-#          print "item=",item
-#          if self.iface=='cgi':
-#             blockName = item['blockName']
-#             evts,bStatus,nFiles,bBytes = item
-#          else:
-#             blockName = item['Name']
-#             evts = 0
-#             bStatus = 'N/A'
-#             nFiles = item['NumberOfFiles']
-#             bBytes = item['BlockSize']
-#          
       t1 = time.time()
       blockInfoDict = self.listBlocks(dataset,app,"yes")
       t2 = time.time()
       self.dbsTime=(t2-t1)
       if string.lower(site)=="all": site="*"
+
+# new code         
       for blockName in blockInfoDict.keys():
-          evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
+          if self.iface=='cgi':
+             evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
+          else:
+             item = blockInfoDict[blockName]
+             blockName = item['Name']
+             evts = 0
+             bStatus = 'N/A'
+             nFiles = item['NumberOfFiles']
+             bBytes = item['BlockSize']
+# old code         
+#      for blockName in blockInfoDict.keys():
+#          evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
           if evts:
              nEvts+=evts
           else:
