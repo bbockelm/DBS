@@ -6,6 +6,19 @@ GetDataUpdater.prototype = {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     /* we catch string from results with matching pattern, it contains JS code which to
+      * register a new TreeView for parents. Once we found it we evaluate it to perform
+      * java script action.
+      */
+/*
+     if(responseHTML.search("<!-- parents")) {
+        var p=responseHTML.split("<!-- parents");
+        if(p[1].search("-->")) {
+           var js = p[1].split("-->");
+           eval(js[0]); 
+        }
+     }
+*/
      showResultsMenu();
      hideWaitingMessage();
      var t=document.getElementById("results");
@@ -673,3 +686,42 @@ function ajaxSelectTier() {
         }
     }
 }
+/*
+  Below you can find tree updater class and associative AJAX methods.
+  AJAX returns pure JavaScript code which add a new node to existing tree.
+  The registerTreeView needs to be called everytime when new TreeView has to be created.
+  The tree will be placed to "treeDiv" tag in HTML code.
+*/
+var TreeNode=Class.create();
+TreeNode.prototype = {
+   initialize: function(id,name) {
+     this.id=id;
+     this.name=name;
+   }
+}
+var TreeUpdater=Class.create();
+TreeUpdater.prototype = {
+   initialize: function() {
+     this.tree = new YAHOO.widget.TreeView("treeDiv");
+     this.root = this.tree.getRoot();
+     this.nodes = new Array();
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     eval(responseHTML);
+     this.tree.draw();
+     this.tree.expandAll();
+   }
+}
+function ajaxAddTreeElement(parent,node) {
+   //alert('from ajaxAddTreeElement node='+node+' parent='+parent);
+   ajaxEngine.sendRequest('ajaxAddTreeElement','parent='+parent,'node='+node);
+}
+function registerTreeView() {
+   var id = document.getElementById("parents");
+   id.innerHTML='Parents tree. Please click on a node to see its parents.<div id="treeDiv"></div>';
+   ajaxEngine.registerRequest('ajaxAddTreeElement','addTreeElement');
+   var updater = new TreeUpdater();
+   ajaxEngine.registerAjaxObject('treeViewInfo',updater);
+}
+
