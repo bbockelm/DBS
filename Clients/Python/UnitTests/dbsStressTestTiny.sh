@@ -23,7 +23,8 @@ calculateAverage()
        { time python $2 $3 $4 $timeLog.$i.$cycle > /dev/null 2>&1 ; } 2>> $timeLog  & 
      done
      # Give enough time to finish (100 sec ?)
-     sleep 600
+     wait
+     #sleep 600
    done
    maverage=`cat $timeLog |grep real| awk '{print $2}'|awk -Fm '{sum = sum + $1} END {print sum}'| awk '{avg = $1/30} END {print avg }'` 
    saverage=`cat $timeLog |grep real| awk '{print $2}'|awk -Fm '{print $2}'|awk -Fs '{sum = sum + $1} END {print sum}'| awk '{avg = $1/30} END {print avg}'`
@@ -34,8 +35,8 @@ date=`date`
 echo "Test Starting at $date" >> $result_file
 
 # 10 parallel clients: each inserting 1000 files, 1 at a time
-echo "10 parallel clients: each inserting 1000 files, 1 at a time" >> $result_file
-calculateAverage 10 dbsStressTest.py 1000 1000
+echo "10 parallel clients: each inserting 100 files, 100 at a time" >> $result_file
+calculateAverage 10 dbsStressTest.py 1 100
 
 date=`date`
 echo "Test Finishing at $date" >> $result_file

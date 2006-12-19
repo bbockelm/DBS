@@ -17,36 +17,40 @@ from dbsLumiSection import DbsLumiSection
 from dbsOptions import DbsOptionParser
 from dbsUnitTestApi import DbsUnitTestApi
 import random
-#import pdb
+import pdb
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 
-#pdb.set_trace()
 
 if len(args) < 3:
-   print "You must provide number of files <inserted> in how many <iterations> and <logfile-pretext>" 
-   print "python dbsStressTest.py <number-of-files> <iterations> <logfile-pretext>"
+   print "You must provide number of <iterations> each insertinghow <number-of-files> and <logfile-pretext>" 
+   print "python dbsStressTest.py <iterations> <number-of-files> <logfile-pretext>"
+   print "python dbsStressTest.py 1 10 mylog : WILL MEAN 1 Iteration each inserting 10 files"
+   print "python dbsStressTest.py 10 10 mylog : WILL MEAN 10 Iterations each inserting 10 files"
+   print "python dbsStressTest.py 10 100 mylog : WILL MEAN 10 Iterations each inserting 100 files"
    sys.exit(1)
 else:
-   totalfiles=int(args[0]) 
-   iters=int(args[1])
+   maxFiles=int(args[0]) 
+   maxDS=int(args[1])
    logext=str(args[2])
 
 api = DbsApi(opts.__dict__)
-mytime = str(time.time())
 
-maxDS = totalfiles/iters
-maxFiles = totalfiles
+#Get this just once
 
 filename="bulkDataResult."+logext
 #print "FILENAME: "+filename
-f = open(filename, "w")
-fileList = []
+#f = open(filename, "w")
+
+#################  WRITING TO STDOUT COMMENT THIS LINE (UNCOMMENT ABOVE) TO WRITE TO A FILE ###########
+f=sys.stdout
+
 for i in range(maxDS):
-	#mytime = str(time.time())
-        mytime=os.popen('uuidgen').readline().strip()
-        #mytime = str(random.random())
+        # Make this cycle unique
+        mytime = os.popen('uuidgen').readline().strip()
+        mytime += str(i)
+        fileList = []
 	#Insert Primary
 	apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
 	primary = 'TestPrimary' + mytime
@@ -129,15 +133,9 @@ for i in range(maxDS):
 	apiObj.run(lumi2, excep = False)
 
 	#Insert File
-	for j in range(maxFiles/2):
-		#mytime = str(time.time())
-                #mytime = os.popen('uuidgen').readline()
+	for j in range(maxFiles):
 		apiObj = DbsUnitTestApi(api.insertFiles, f)
-		lfn1 = os.popen('uuidgen').readline().strip()+str(random.random())
-		lfn2 = os.popen('uuidgen').readline().strip()+str(random.random())
-
-		#lfn1 = '1111-0909-9767-8764' + mytime
-		#lfn2 = '1111-0909-9767-876411' + mytime
+                lfn1 = mytime+str(j)
 		file1= DbsFile (
 			Checksum= '999',
 			LogicalFileName= lfn1,
@@ -150,20 +148,8 @@ for i in range(maxDS):
 			TierList= tierList,
 			)
 	
-		file2= DbsFile (
-			Checksum= '999',
-			LogicalFileName= lfn2,
-			#QueryableMetadata= 'This is a test file',
-			NumberOfEvents= 10000,
-			FileSize= 12340,
-			Status= 'VALID',
-			FileType= 'EVD',
-			LumiList= [lumi1, lumi2],
-			TierList= tierList,
-			)
 		fileList.append(file1)
-	        fileList.append(file2)
-                       
+        print "\n\n\nNUMBER of FILES with which insertFile API is called: %s" %str(len(fileList))               
 	apiObj.run(proc1 ,fileList, block1,  excep = False)
 
 f.close()
