@@ -14,14 +14,22 @@ import string, os, sys, stat
 
 # DBS modules
 import DBSHelper, DBSInst, DBSUtil
+from DBSOptions import *
 
 #
 # main
 #
 if __name__ == "__main__":
+    optManager  = DBSOptionParser()
+    (opts,args) = optManager.getOpt()
     iface="cgi"
     helper = DBSHelper.DBSHelper()
+    if opts.quiet:
+       helper.setQuiet()
     for dbsInst in DBSInst.DBS_DLS_INST.keys():
+        if opts.dbsInst:
+           if dbsInst!=opts.dbsInst:
+              continue
         try:
             fileName = helper.initJSDict(dbsInst)
             print fileName
