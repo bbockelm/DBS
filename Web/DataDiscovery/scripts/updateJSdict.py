@@ -26,13 +26,17 @@ if __name__ == "__main__":
     helper = DBSHelper.DBSHelper()
     if opts.quiet:
        helper.setQuiet()
+    if opts.dbsInst:
+       if not DBSInst.DBS_DLS_INST.has_key(opts.dbsInst):
+          print "Wrong DBS instances '%s'"%opts.dbsInst
+          DBSUtil.printListElements(DBSInst.DBS_DLS_INST.keys(),"Known DBS instances")
+          sys.exit(1)
     for dbsInst in DBSInst.DBS_DLS_INST.keys():
         if opts.dbsInst:
            if dbsInst!=opts.dbsInst:
               continue
         try:
             fileName = helper.initJSDict(dbsInst)
-            print fileName
             if os.path.isfile(fileName) and os.stat(fileName)[stat.ST_SIZE]>0:
                os.rename(fileName,string.replace(fileName,".tmp",""))
             else:
