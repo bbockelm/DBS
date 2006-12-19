@@ -51,14 +51,22 @@ function showResMenu(id,ids) {
    for(var i=0;i<ids.length;i++) {
       if(ids[i]==id) {
         var t=document.getElementById("_"+id);
-        t.className="td_menu_white_box";
+        if(t) {
+           t.className="td_menu_white_box";
+        }
         var r=document.getElementById(id);
-        r.className="show_inline";
+        if(r) {
+           r.className="show_inline";
+        }
       } else {
         var t=document.getElementById("_"+ids[i]);
-        t.className="td_menu_gray_box";
+        if(t) {
+           t.className="td_menu_gray_box";
+        }
         var r=document.getElementById(ids[i]);
-        r.className="hide";
+        if(r) {
+           r.className="hide";
+        }
       }
    }
 }
