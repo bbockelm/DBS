@@ -28,8 +28,8 @@ if __name__ == "__main__":
             if os.path.isfile(fileName) and os.stat(fileName)[stat.ST_SIZE]>0:
                os.rename(fileName,string.replace(fileName,".tmp",""))
             else:
-               printExcept()
+               DBSUtil.printExcept()
                raise "File %s is corrupted"%fileName
         except:
-            printExcept()
+            DBSUtil.printExcept()
             raise "Fail to generate JS dictionary for dbs instance",dbsInst
