@@ -10,7 +10,7 @@ DBS data discovery server module.
 """
 
 # system modules
-import os, string, logging, types, time, socket, socket, urlparse
+import os, string, logging, types, time, socket, socket, urlparse, random
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -24,8 +24,6 @@ from   DBSHelper import *
 from   DBSUtil   import *
 from   DDConfig  import *
  
-SENDMAIL = "/usr/sbin/sendmail" # sendmail location
-
 class DBSDataDiscoveryServer(DBSLogger): 
     """
        DBS Data discovery server class.
@@ -143,7 +141,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            cherrypy.response.headerMap['Content-Type'] = "text/html"
 
-    def sendErrorReport(self,msg=""):
+    def sendErrorReport(self,iMsg=""):
         """
            Send a complete report with provided msg. Capture internals of
            L{DBSDataDiscoveryServer} and L{DBSHelper}.
@@ -153,37 +151,32 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : none
            @return: none
         """
-        p = os.popen("%s -t" % SENDMAIL, "w")
-        p.write("To: vk@mail.lns.cornell.edu\n")
-        p.write("Subject: DBS DD error\n")
-        p.write("\n") # blank line separating headers from body
-        if msg: p.write("\n"+msg+"\n\n\n")
-        p.write("Request internals:\n")
-        p.write("Request from: %s:%s\n"%(cherrypy.request.remote_host,cherrypy.request.remote_port))
-        p.write("Request url : %s\n"%cherrypy.request.browser_url)
-        p.write("\n\n")
-        p.write("DBSDataDiscoveryServer:\n")
-        p.write("=======================\n")
-        p.write("%s: %s\n"%("DBS Instance   ",self.dbs))
-        p.write("%s: %s\n"%("site           ",self.site))
-        p.write("%s: %s\n"%("application    ",self.site))
-        p.write("%s: %s\n"%("primary dataset",self.primD))
-        p.write("%s: %s\n"%("Data tier      ",self.tier))
-        p.write("\n") # blank line separating headers from body
-        p.write("DBSHelper:\n")
-        p.write("==========\n")
-        p.write("%s: %s\n"%("DBS Instance   ",self.helper.dbsInstance))
+        msg = ""
+        if iMsg: msg+=iMsg
+        msg+="Request internals:\n"
+        msg+="Request from: %s:%s\n"%(cherrypy.request.remote_host,cherrypy.request.remote_port)
+        msg+="Request url : %s\n"%cherrypy.request.browser_url
+        msg+="\n\n"
+        msg+="DBSDataDiscoveryServer:\n"
+        msg+="=======================\n"
+        msg+="%s: %s\n"%("DBS Instance   ",self.dbs)
+        msg+="%s: %s\n"%("site           ",self.site)
+        msg+="%s: %s\n"%("application    ",self.site)
+        msg+="%s: %s\n"%("primary dataset",self.primD)
+        msg+="%s: %s\n"%("Data tier      ",self.tier)
+        msg+="\n" # blank line separating headers from body
+        msg+="DBSHelper:\n"
+        msg+="==========\n"
+        msg+="%s: %s\n"%("DBS Instance   ",self.helper.dbsInstance)
         try:
-           p.write("%s: %s\n"%("engine         ",self.helper.dbsDB))
+           msg+="%s: %s\n"%("engine         ",self.helper.dbsDB)
         except:
            pass
-        p.write("%s: %s\n"%("dbsApi         ",self.helper.dbsApi))
-        p.write("%s: %s\n"%("dbsDLS         ",self.helper.dbsDLS))
-        p.write("%s: %s\n"%("dlsType        ",self.helper.dlsType))
-        p.write("%s: %s\n"%("dlsEndpoint    ",self.helper.endpoint))
-        sts = p.close()
-        if sts != 0:
-            print "mail exit status", sts
+        msg+="%s: %s\n"%("dbsApi         ",self.helper.dbsApi)
+        msg+="%s: %s\n"%("dbsDLS         ",self.helper.dbsDLS)
+        msg+="%s: %s\n"%("dlsType        ",self.helper.dlsType)
+        msg+="%s: %s\n"%("dlsEndpoint    ",self.helper.endpoint)
+        sendEmail(msg)
         
     def helperInit(self,dbsInst):
         """
@@ -970,9 +963,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         t2=time.time()
         self.dbsTime=(t2-t1)
         regList=[]
-        page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
+#        page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
         bList=[]
         id=0
+        jsPage="<!-- parents\n"
         for dataset in dList:
             id+=1
             self.writeLog(dataset)
@@ -983,6 +977,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.dbsTime+=self.helper.dbsTime
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
+            jsPage+="""registerTreeView();ajaxAddTreeElement('root','%s');"""%dataset
             p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
@@ -990,7 +985,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             else:
                if len(bList): 
                   bList.append((dataset,totEvt))
-                  page+=self.blockListToHTML(bList)
+                  page+=self.blockListToHTML(dbsInst,bList)
                   bList=[]
                bList.append((dataset,totEvt))
                page+=prevPage
@@ -999,14 +994,15 @@ class DBSDataDiscoveryServer(DBSLogger):
             oldTotSize=totSize
             oldDataset=dataset
             prevPage = p
-        page+=self.blockListToHTML(bList)
+        page+=self.blockListToHTML(dbsInst,bList)
         page+=prevPage # end of new stuff
+        page+=jsPage+"\n-->\n"
         return page
     getDataHelper.exposed=True
 
-    def blockListToHTML(self,bList):
+    def blockListToHTML(self,dbsInst,bList):
         if not len(bList): return ""
-        nameSpace = {'host': self.dbsdd, 'blockList' : bList}
+        nameSpace = {'host': self.dbsdd, 'dbsInst': dbsInst, 'blockList' : bList}
         t = Template(CheetahDBSTemplate.templateBlockList, searchList=[nameSpace])
         page=str(t)
         return page
@@ -1080,6 +1076,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            page+=self.genBottomHTML()
         if self.verbose:
+#        if 1:
            print page
         return page
     getData.exposed = True 
@@ -1386,7 +1383,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         for dataset in dList:
             id+=1
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            pSum+=self.blockListToHTML([(dataset,totEvt)])
+            pSum+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
             pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
@@ -1487,7 +1484,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         for dataset in dList:
             id+=1
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            pSum+=self.blockListToHTML([(dataset,totEvt)])
+            pSum+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
             pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
         if int(ajax):
            page="""<ajax-response><response type="object" id="results">"""
@@ -1540,7 +1537,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             self.helperInit(dbsInst)
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            page+=self.blockListToHTML([(dataset,totEvt)])
+            page+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
             page+=self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id=0)
         except:
             printExcept()
@@ -1849,12 +1846,11 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
             Application configs retriever
         """
-#        print "### call getAppConfigs",appPath
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         nameSpace={
                    'appPath'   : appPath,
-                   'configList': self.helper.api.listApplicationConfigs(appPath)
+                   'configList': self.helper.listApplicationConfigs(appPath)
                   }
         t = Template(CheetahDBSTemplate.templateAppConfigs, searchList=[nameSpace])
         page="""<ajax-response><response type="object" id="appConfigs">"""
@@ -1988,24 +1984,65 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         self.helperInit(dbsInst)
         # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="floatDataDescription">"""
+#        self.setContentType('xml')
+#        page="""<ajax-response><response type="element" id="floatDataDescription">"""
+        page=self.genTopHTML()
         description=""
+        tmp="<p>Once available data description will be placed here</p>"
         if processedDataset:
-           description=processedDataset+"<p>description</p>"
+           description=processedDataset+tmp
         if primaryDataset:
-           description=primaryDataset+"<p>description</p>"
+           description=primaryDataset+tmp
         nameSpace={
                    'description' : description
                   }
         t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
         page+=str(t)
-        page+="</response></ajax-response>"
+        page+=self.genBottomHTML()
+#        page+="</response></ajax-response>"
         if self.verbose:
 #        if 1:
            print page
         return page
     getDataDescription.exposed=True
+
+    def genTreeElement(self,iParent,dataset):
+        # pass here node,parent pair, as an example we pass 'newNode',node
+        # for DBS DD I need to lookup parent from elsewhere
+        pList = self.helper.getDatasetProvenance(dataset)
+#        page  = "this.nodes.push('%s')"%dataset
+        page  = ""
+        for parent in pList:
+            nodeVar=encode(dataset)
+            href="""href:"javascript:ajaxAddTreeElement('%s','%s')" """%(parent,dataset)
+            if iParent=='root':
+               parent = 'root'
+            else:
+               # update nodes array with new parent (id,dataset) where id autogenerate with
+               # Math.round(100*Math.random()) or somehow get it from array index
+               # lookup an id for given parent and create new name as parent='node_'+id;
+               parent = encode(parent)
+            page+="""var obj= { label: "%s", %s };\nthis.%s= new YAHOO.widget.TextNode(obj,this.%s,false);"""%(dataset,href,nodeVar,parent)
+
+        if not len(pList):
+            nodeVar=encode(dataset)
+            if iParent=='root':
+               parent = 'root'
+            else:
+               parent = encode(iParent)
+            page+="this.%s= new YAHOO.widget.TextNode('%s',this.%s,false);"%(nodeVar,dataset,parent)
+#            page+="this.%s= new YAHOO.widget.HTMLNode('%s &#8212; no parents',this.%s,false);"%(nodeVar,dataset,parent)
+        return page
+
+    def addTreeElement(self,parent,node,**kwargs):
+        cherrypy.response.headerMap['Content-Type'] = "text/xml"
+        p="""<ajax-response><response type="object" id="treeViewInfo">
+%s</response></ajax-response>"""%self.genTreeElement(parent,node)
+#        if self.verbose:
+        if 1:
+           print p
+        return p
+    addTreeElement.exposed=True
 
     def dummy(self,**kwargs):
         page=self.genTopHTML()
