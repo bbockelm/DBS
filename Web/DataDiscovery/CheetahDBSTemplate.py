@@ -77,7 +77,8 @@ templateProvenance="""
     <table border="0" cellspacing="0" cellpadding="0" width="100%">
     <tr>
 #### FIXME, I need to pass here dbsInst
-    <th align="left"><a href="javascript:ajaxGetDataDescription('MCGlobal/Writer','$dataset')">$dataset</a></th>
+#### <th align="left"><a href="javascript:ajaxGetDataDescription('MCGlobal/Writer','$dataset')">$dataset</a></th>
+    <th align="left">$dataset</th>
     </tr>
     #if not len($parentList)
     <tr>
@@ -111,6 +112,8 @@ templateTop = """
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
 <!-- if JavaScripts enables, turn visiable content on -->
+
+<!-- YUI and WEBTOOLS -->
 <script type="text/javascript" src="yui/build/yahoo/yahoo.js"></script>
 <script type="text/javascript" src="yui/build/dom/dom.js"></script>
 <script type="text/javascript" src="yui/build/event/event.js"></script> 
@@ -118,13 +121,19 @@ templateTop = """
 <script type="text/javascript" src="WEBTOOLS/Common/js/masthead.js"></script>
 <script type="text/javascript" src="WEBTOOLS/Common/js/footer.js"></script>
 
+<!-- DBS and RICO -->
 <script type="text/javascript" src="js/userName.js"></script>
-###<script type="text/javascript" src="js/setcontent.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/sorttable.js"></script>
 <script type="text/javascript" src="js/prototype.js"></script>
 <script type="text/javascript" src="js/rico.js"></script>
 <script type="text/javascript" src="js/ajax_init.js"></script>
+
+<!-- TreeView from YUI -->
+<script src = "yui/build/yahoo/yahoo.js" ></script>
+<script src = "yui/build/event/event.js" ></script>
+<script src = "yui/build/treeview/treeview.js" ></script>
+<link rel="stylesheet" type="text/css" href="yui/examples/treeview/css/local/tree.css" />
 
 <link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css">
 
@@ -196,7 +205,6 @@ Home page: <a href="$host/">users</a>
 </table>
 <hr class="dbs" />
 *#
-
 
 <div id="main" class="hide">
 <script type="text/javascript">setMain()</script>
@@ -614,6 +622,7 @@ $msg
 <td valign="top">
 
 <form action="javascript:ajaxGetData();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+#####<form action="javascript:ajaxGetData();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -797,12 +806,39 @@ templateProcDatasets="""
 <hr class="dbs" />
 <p>
 Processed datasets (plain 
-<a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier')">
+<a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier',1000)">
 view</a>):
 </p>
 """
 
 templateBlockList = """
+<hr class="dbs" />
+#if len($blockList)
+<table>
+#for item in $blockList
+#set path=item[0]
+#set idPath=$path.replace("/","___")
+#set evts=item[1]
+<tr>
+<td align="left">
+<b>$path</b>
+</td>
+<td align="center">
+(<a href="javascript:showResMenu('parents')">Parents,</a>
+</td>
+<td align="center">
+<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Description,</a>
+</td>
+<td align="center">
+<a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$evts',1000)">crab.cfg</a>)
+</td>
+</tr>
+#end for
+</table>
+#end if
+"""
+
+templateBlockList_old = """
 <hr class="dbs" />
 #if len($blockList)
 <table>
@@ -997,8 +1033,8 @@ templateBottom="""
 <td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>
 <td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
 <td class="td_menu_gray_box" align="center" id="_appConfigs"><a href="javascript:showResMenu('appConfigs')">App configs</a></td>
-<td class="td_menu_gray_box" align="center" id="_dataDescription"><a href="javascript:showResMenu('dataDescription')">Description</a></td>
 #*
+<td class="td_menu_gray_box" align="center" id="_dataDescription"><a href="javascript:showResMenu('dataDescription')">Description</a></td>
 <td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
 <td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
 <td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
@@ -1014,12 +1050,12 @@ templateBottom="""
 <br />
 <span id="results" class="show_inline"></span>
 <span id="results_waiting" class="show_inline"></span>
-<span id="parents" class="hide"><br /></span>
+<span id="parents" class="hide_white"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
-<span id="dataDescription" class="hide"><br /></span>
 
-    <span id="floatDataDescription"></span>
 #*
+<span id="dataDescription" class="hide"><br /></span>
+<span id="floatDataDescription"></span>
 <span id="validation" class="hide"><br />... We plan to add some information about found data, e.g. plots, etc. This should be part of validation ...</span>
 <span id="parameterSet" class="hide"><br />... We plan to introduce indexing system and lookup there parameter sets for found dataset ...</span>
 <span id="releaseSpec" class="hide"><br />
@@ -1776,19 +1812,24 @@ lfc_home                = /grid/cms
 """
 
 templateAppConfigs="""
-<p>
-For given application: $appPath we got
-<table>
+For given application <b>$appPath</b> we found the following application configs:
+
+<table class="intro">
 #for config in $configList
-#set content=$config['parameterSet']['content']
-<tr><td>$content</td></tr>
+#set name=$config[0]
+#set value=$config[1]
+<tr><td>$name</td><td>$value</td></tr>
 #end for
 </table>
-</p>
+
+<div class="box_red">
+In a future those values will be resolved into real files.
+</div>
 """
 
 templateFloatBox="""
-<table class="float_box" width="100%">
+###<table class="float_box" width="100%">
+<table width="100%">
 <tr valign="top">
 <td>
 
@@ -1799,18 +1840,20 @@ templateFloatBox="""
 DATA DESCRIPTION
 </span>
 </td>
+#*
 <td align="right">
 <a href="javascript:hideTag('floatDataDescription')">close &#8855;</a>
 </td>
+*#
 </tr>
 </table>
 <hr class="dbs" />
 <table>
 <tr>
 <td>
-<div class="div_scroll">
+###<div class="div_scroll">
 $description
-</div>
+###</div>
 </td>
 </tr>
 </table>
