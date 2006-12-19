@@ -34,6 +34,18 @@ def tip():
     idx = random.randint(0,len(TIPS)-1)
     return TIPS[idx]
 
+SYMBOLS_LIST=[('+','__pl__'),('-','__mi__'),('/','__sl__'),('#','__po__')]
+
+def encode(dataset):
+    for s in SYMBOLS_LIST:
+        dataset=string.replace(dataset,s[0],s[1])
+    return dataset
+
+def decode(dataset):
+    for s in SYMBOLS_LIST:
+        dataset=string.replace(dataset,s[1],s[0])
+    return dataset
+
 def convertListToString(iList):
     s="["
     for item in iList:
