@@ -58,8 +58,8 @@ class DBSHelper(DBSLogger):
          self.dbsDBs      = DBSDB(self.verbose)
          self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
       except:
-         print "WARNING! some of the functionality will be disable due to missing authentication"
          if self.verbose:
+            print "WARNING! some of the functionality will be disable due to missing authentication"
             printExcept()
          pass
       self.dbsTime     = 0
