@@ -867,38 +867,13 @@ if __name__ == "__main__":
     print
 
     hostField=0
+    t0=time.time()
     for dataset in appDatasets:
+        t1 = time.time()
         empty,prim,tier,app = string.split(dataset,"/")
         if primaryDataset!="*" and prim!=primaryDataset: continue
         if dataTier!="*" and tier!=dataTier: continue
         locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset,appPath)
-        evtLength = len(str(totEvt))
-        # TMP: redo the following part, since now I got blockDict
-        # parse blockDict={'blockName': (hostList,nEvt,blockStatus,nFiles,blockSize)}
-        #         locDict={'location': [blockName]}
-#        hostField=0
-#        for bName in blockDict.keys():
-#            for item in blockDict[bName]:
-#                siteList = item[0]
-#                for site in siteList:
-#                    if len(site)>hostField: hostField=len(site)
-#        print dataset
-#        for bName in blockDict.keys():
-#            count=0
-#            for item in blockDict[bName]:
-#                siteList = item[0]
-#                evt      = item[1]
-#                bStatus  = item[2]
-
-#                for idx in xrange(0,len(siteList)):
-#                    site=siteList[idx]
-#                    if not idx:
-#                       print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
-#                    else:
-#                       print string.ljust(site,hostField),"replica"
-#        print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
-#        print
-
         evtLength = len(str(totEvt))
         if not hostField:
            for key in locDict.keys():
@@ -907,17 +882,23 @@ if __name__ == "__main__":
         if  not opts.showProcD:
             for bName in blockDict.keys():
                 count=0
-#                print "blockDict",bName,blockDict[bName]
                 if not blockDict[bName][0]:
                    print "contains 0 events, 0 files."
                    continue
-                evt,bStatus,nFiles,bSize,site = blockDict[bName]
-                if not count:
-                   print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
-                   count+=1
-                else:
-                   empty = " "*(hostField)
-                   print empty,string.ljust(str(evt),evtLength),bName
+                evt      = blockDict[bName][0]
+                bStatus  = blockDict[bName][1]
+                nFiles   = blockDict[bName][2]
+                bSize    = blockDict[bName][3]
+                siteList = blockDict[bName][4:]
+                for idx in xrange(0,len(siteList)):
+                    site=siteList[idx]
+                    if not idx:
+                       print string.ljust(site,hostField),string.ljust(str(evt),evtLength),bName
+                    else:
+                       empty = " "*(hostField)
+                       print empty,string.ljust(str(evt),evtLength),bName
             print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
             print
+        print "time: %s sec"%(time.time()-t1)
+    print "total time: %s sec"%(time.time()-t0)
 
