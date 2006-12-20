@@ -536,3 +536,45 @@ function enableSel(tag) {
      sel.disabled="";
   }
 }
+function coverOver(tag) {
+   var id=document.getElementById(tag);
+   id.className="over";
+}
+function coverOut(tag) {
+   var id=document.getElementById(tag);
+   id.className="";
+}
+function refForBar(ref,idx) {
+   return '<a href="javascript:'+ref+'('+idx+')">';
+}
+function buildBar(from,to,total,ref) {
+   var t='<table class="cell"><tr><td>Result pages:</td>';
+   if(to>total) {
+      to=total;
+   }
+   if(from<1) {
+      from=1;
+      if(to<5) {
+         to=5;
+      }
+   }
+   if(from!=1) {
+      var backFrom=from-5;
+      var backTo=from-1;
+      var td='<td id="cell_less" onMouseOver="coverOver(\'cell_less\')" onMouseOut="coverOut(\'cell_less\')"><a href="javascript:buildBar('+backFrom+','+backTo+','+total+')">&#171;</a></td>';
+      t=t+td;
+   }
+   for(i=from;i<=to;i++) {
+      var td='<td id="cell_'+i+'" onMouseOver="coverOver(\'cell_'+i+'\')" onMouseOut="coverOut(\'cell_'+i+'\')">'+refForBar(ref,i)+i+'</a></td>';
+      t=t+td;
+   }
+   if(to!=total) {
+      var nextFrom=to+1;
+      var nextTo=to+5;
+      var td='<td id="cell_more" onMouseOver="coverOver(\'cell_more\')" onMouseOut="coverOut(\'cell_more\')"><a href="javascript:buildBar('+nextFrom+','+nextTo+','+total+')">&#187;</a></td>';
+      t=t+td;
+   }
+   t=t+'</tr></table>';
+   var id=document.getElementById('nextBar');
+   id.innerHTML=t;
+}
