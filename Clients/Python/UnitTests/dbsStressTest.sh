@@ -2,6 +2,7 @@
 
 tstamp=`date +%m%y%d%M%S`
 result_file=$tstamp.TEST_AVERAGE.txt
+SERVER_DESC="Server:cmssrv17,DB:MySQL-cmssrv17,Client:http-cmssrv17"
 
 calculateAverage()
 {
@@ -27,8 +28,8 @@ calculateAverage()
    done
    maverage=`cat $timeLog |grep real| awk '{print $2}'|awk -Fm '{sum = sum + $1} END {print sum}'| awk '{avg = $1/30} END {print avg }'`
    saverage=`cat $timeLog |grep real| awk '{print $2}'|awk -Fm '{print $2}'|awk -Fs '{sum = sum + $1} END {print sum}'| awk '{avg = $1/30} END {print avg}'`
-   echo "Average Time Taken By $2 with $3 files, $3 at a time, is: $maverage MINS : $saverage SECS for $1 parallel clients" >> $result_file
-   echo "Average Time Taken By $2 with $3 files, $3 at a time, is: $maverage MINS : $saverage SECS for $1 parallel clients" |mail -s "DBS Test Complete" anzar@fnal.gov
+   echo "Average Time Taken By $SERVER_DESC inserting $3 files, $3 at a time, is: $maverage MINS : $saverage SECS for $1 parallel clients" >> $result_file
+   echo "Average Time Taken By $SERVER_DESC inserting $3 files, $3 at a time, is: $maverage MINS : $saverage SECS for $1 parallel clients" |mail -s "DBS Test Complete" anzar@fnal.gov
 }
 
 
