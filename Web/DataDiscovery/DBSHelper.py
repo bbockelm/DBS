@@ -305,7 +305,10 @@ class DBSHelper(DBSLogger):
       if self.iface=="cgi":
          res = self.api.listProcessedDatasets(datasetPath)
       else:
-         empty,prim,tier,proc=string.split(datasetPath,"/")
+         if datasetPath=="*":
+            prim=tier=proc="*"
+         else:
+            empty,prim,tier,proc=string.split(datasetPath,"/")
          res = self.api.listProcessedDatasets(patternPrim=prim,patternDT=tier,patternProc=proc)
          oList = []
          for item in res:
@@ -325,20 +328,28 @@ class DBSHelper(DBSLogger):
       if self.iface=="cgi":
          return self.api.listDatasetsFromApp(appPath)
       else:
-         empty,ver,family,exe=string.split(appPath,"/")
+         if appPath=="*":
+            ver=family=exe="*"
+         else:
+            empty,ver,family,exe=string.split(appPath,"/")
          return self.api.listProcessedDatasets(patternVer=ver,patternFam=family,patternExe=exe)
 
-  def listApplications(self,datasetPath="*"):
+  def listApplications(self,appPath="*"):
       """
          Wrapper around dbsApi
       """
       if self.iface=="cgi":
-         aList = self.api.listApplications(datasetPath)
+         aList = self.api.listApplications(appPath)
          aList.sort()
          aList.reverse()
          return aList
       else:
-         return self.api.listAlgorithms(datasetPath)
+         print "#### listApplications",appPath
+         if appPath=="*":
+            ver=family=exe="*"
+         else:
+            empty,ver,family,exe=string.split(appPath,"/")
+         return self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
 
   def listBlocks(self,datasetPath="*",app="*",events="yes"):
       """
