@@ -14,7 +14,12 @@ import string, sys, time, types, popen2
 
 # import DBS modules
 import dbsException
-import dbsApi
+
+# we try to load dbsCgiApi, since it exists only for JavaServer server
+try:
+   import dbsWebApi
+except:
+   pass
 # we try to load dbsCgiApi, since it exists only for CGI server
 try:
    import dbsCgiApi
@@ -236,7 +241,7 @@ class DBSHelper(DBSLogger):
             self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
          else: 
             # new api can be initialized with DbsConfig, but we will use default one
-            self.api = dbsApi.DbsApi()
+            self.api = dbsWebApi.DbsWebApi()
       else:
          self.api = self.dbsApi[dbsInst]
       if not self.dbsDLS.has_key(dbsInst):
@@ -302,6 +307,15 @@ class DBSHelper(DBSLogger):
       else:
          empty,prim,tier,proc=string.split(datasetPath,"/")
          res = self.api.listProcessedDatasets(patternPrim=prim,patternDT=tier,patternProc=proc)
+         oList = []
+         for item in res:
+             proc = item['Name']
+             prim = item['PrimaryDataset']['Name']
+             tiers= item['TierList']
+             for tier in tiers:
+                 oList.append("/%s/%s/%s"%(prim,tier,proc))
+#         print "#### listProcessedDataset",oList
+         res = oList
       return res
 
   def listDatasetsFromApp(self,appPath="*"):
@@ -333,10 +347,11 @@ class DBSHelper(DBSLogger):
       if self.iface=="cgi":
          return self.api.listBlocks(datasetPath,app,events)
       else:
-         print "#### listBlocks",datasetPath
+#         print "#### listBlocks",datasetPath
 #         empty,prim,tier,proc = string.split(datasetPath,"/")
 #         dataset = "/%s/%s"%(prim,proc)
-         return self.api.listBlocks(datasetPath,web=1)
+#         return self.api.listBlocks(datasetPath,web=1)
+         return self.api.listBlocks(datasetPath)
   ### END OF WRAPPER ###
 
   def getDatasetsFromApplications(self,datasetPath="*"):
@@ -396,7 +411,7 @@ class DBSHelper(DBSLogger):
       aList.reverse()
       return aList
 
-  def getDatasetsFromApp(self,datasetPath="*"):
+  def getDatasetsFromApp(self,datasetPath="*",_prim="*",_tier="*"):
       """
          DBS data discovery wrapper around dbsCgiApi.listDatasetsFromApp
          @type  datasetPath: string 
@@ -406,10 +421,16 @@ class DBSHelper(DBSLogger):
       """
       oList = []
       dList = self.listDatasetsFromApp(datasetPath)
-      dList.sort()
-      dList.reverse()
       for entry in dList:
-          oList.append(entry.get('datasetPathName'))
+#          oList.append(entry.get('datasetPathName'))
+
+          dataset = entry.get('datasetPathName')
+          empty,prim,tier,app = string.split(dataset,"/")
+          if _prim!="*" and prim!=_prim: continue
+          if _tier!="*" and tier!=_tier: continue
+          oList.append(dataset)
+      oList.sort()
+      oList.reverse()
       return oList
       
   def getPrimaryDatasets(self,datasetPath="*"):
@@ -458,11 +479,12 @@ class DBSHelper(DBSLogger):
           if self.iface=="cgi":
              name = entry.get('datasetPathName') # name=/prim/tier/proc
           else:
-             name = entry.get('Name')
+             name = entry # now listProcessedDatasets returns plain list, TODO check listDatasetsFromApp
           if html:
 #             name = """<a href="javascript:showWaitingMessage();registerAjaxDatasetContentCalls();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
              name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
           oList.append(name)
+#      print "#### getProcessedDatasets",datasetPath,oList[0]
       return oList
   
   def getDatasetContent(self,dataset):
@@ -682,6 +704,7 @@ class DBSHelper(DBSLogger):
 #      self.dbsTime=(t2-t1)
 
       t1 = time.time()
+#      print "##### getData",dataset,app
       blockInfoDict = self.listBlocks(dataset,app,"yes")
       t2 = time.time()
       self.dbsTime=(t2-t1)
@@ -900,5 +923,5 @@ if __name__ == "__main__":
             print "Summary: %s events, %s files, %s"%(totEvt,totFiles,totSize)
             print
         print "time: %s sec"%(time.time()-t1)
-    print "total time: %s sec"%(time.time()-t0)
+    print "total time: %s sec for %s datasets"%((time.time()-t0),len(appDatasets))
 
