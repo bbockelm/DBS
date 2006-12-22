@@ -17,6 +17,7 @@ import DBSOptions
 from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
+RES_PER_PAGE=5 # number of results per page shown
 
 # file created by crontab job, see getDLSsites.sh
 DLS_INFO='dls.all'
