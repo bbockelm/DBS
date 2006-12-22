@@ -207,7 +207,7 @@ Home page: <a href="$host/">users</a>
 *#
 
 <div id="main" class="hide">
-<script type="text/javascript">setMain()</script>
+<script type="text/javascript">SetMain()</script>
 
 """
 
@@ -596,6 +596,24 @@ templateJSForm_new_allmenus_ajax="""
 <!-- end of outer most table -->
 """
 
+templateNextBar="""
+<table width="100%">
+<tr>
+<td align="left">$leftBar</td>
+<td align="center"><span id="cell_waiting"></span></td>
+#if $tot>$res_page
+<td align="right">
+<span id="nextBar"></span>
+</td>
+#end if
+</tr>
+</table>
+#if $tot>$res_page
+#### Please note, here I use GLOBAL_STEP as a global step, it's defined in js/utils.js
+<script type="text/javascript">BuildBar(1,GLOBAL_STEP,$tot);Choose('cell_1');</script>
+#end if
+"""
+
 templateJSForm="""
 <table class="lfn">
 <tr valign="top">
@@ -622,7 +640,6 @@ $msg
 <td valign="top">
 
 <form action="javascript:ajaxGetData();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
-#####<form action="javascript:ajaxGetData();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -803,12 +820,12 @@ all columns are sortable, move your mouse over the column name and click on it.
 """
 
 templateProcDatasets="""
-<hr class="dbs" />
-<p>
+###<hr class="dbs" />
+###<p>
 Processed datasets (plain 
 <a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier',1000)">
 view</a>):
-</p>
+###</p>
 """
 
 templateBlockList = """
@@ -1050,7 +1067,7 @@ templateBottom="""
 <br />
 <span id="results" class="show_inline"></span>
 <span id="results_waiting" class="show_inline"></span>
-<span id="parents" class="hide_white"><br /></span>
+<span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
 
 #*
@@ -1181,7 +1198,7 @@ templateFrontPage="""
 <td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
   <table id="history_table" class="hide"><tr><td>
 #for name in $hList
-      <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);adjustToDate()">$hDict[$name]</a></td></tr>
+      <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);AdjustToDate()">$hDict[$name]</a></td></tr>
 #end for
   </table>       
 </td>
@@ -1363,13 +1380,13 @@ $siteForm
       From:
       </td>
       <td>
-      <select name="in_hSearch_year" id="in_hSearch_year" onchange="adjustToDate();checkToDate()">
+      <select name="in_hSearch_year" id="in_hSearch_year" onchange="AdjustToDate();CheckToDate()">
 #for year in xrange(2006,2016)
       <option value="$year">$year</option>
 #end for
       </select>
 #set mArr=['Jan','Feb','Mar','May','Apr','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-      <select name="in_hSearch_month" id="in_hSearch_month" onchange="adjustToDate();checkToDate()">
+      <select name="in_hSearch_month" id="in_hSearch_month" onchange="AdjustToDate();CheckToDate()">
 #for month in $mArr
       <option value="$month">$month</option>
 #end for
@@ -1379,13 +1396,13 @@ $siteForm
       to:
       </td>
       <td>
-      <select name="out_hSearch_year" id="out_hSearch_year" onchange="checkToDate()">
+      <select name="out_hSearch_year" id="out_hSearch_year" onchange="CheckToDate()">
 #for year in xrange(2006,2016)
       <option value="$year">$year</option>
 #end for
       </select>
 #set mArr=['Jan','Feb','Mar','May','Apr','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-      <select name="out_hSearch_month" id="out_hSearch_month" onchange="checkToDate()">
+      <select name="out_hSearch_month" id="out_hSearch_month" onchange="CheckToDate()">
 #for month in $mArr
       <option value="$month">$month</option>
 #end for
@@ -1842,7 +1859,7 @@ DATA DESCRIPTION
 </td>
 #*
 <td align="right">
-<a href="javascript:hideTag('floatDataDescription')">close &#8855;</a>
+<a href="javascript:HideTag('floatDataDescription')">close &#8855;</a>
 </td>
 *#
 </tr>
