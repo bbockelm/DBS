@@ -1,16 +1,26 @@
-function setMain() {
+// Global variables
+var GLOBAL_CELL='cell_1';
+var GLOBAL_STEP=5;
+
+function SetMain() {
   var id=document.getElementById("main");
   if (id) {
       id.className="main";
   }
 }
-function hideTag(tag) {
+function HideTag(tag) {
   var id=document.getElementById(tag);
   if (id) {
       id.className="hide";
   }
 }
-function showTag(tag) {
+function ClearTag(tag) {
+  var id=document.getElementById(tag);
+  if (id) {
+      id.innerHTML="";
+  }
+}
+function ShowTag(tag) {
   var id=document.getElementById(tag);
   if (id) {
       id.className="show_inline";
@@ -408,7 +418,7 @@ function resetNavSelection() {
       }
   }
 }
-function checkSel(sel) {
+function CheckSel(sel) {
   var opt=null;
   if(!sel) {return opt;}
   for(i=0;i<sel.length;i++) {
@@ -422,25 +432,25 @@ function checkSel(sel) {
 function checkNavSelection() {
   var id=document.getElementById("navSelector");
   var sel=document.getElementById("dbsSelector");
-  var dbs=checkSel(sel);
+  var dbs=CheckSel(sel);
   if(!dbs) {
      id.innerHTML='<span class="box_red">Please select <b>DBS instance</b></span>';
      return null;
   }
   var sel=document.getElementById("appSelector");
-  var app=checkSel(sel);
+  var app=CheckSel(sel);
   if(!app) {
      id.innerHTML='<span class="box_red">Please select <b>Application</b></span>';
      return null;
   }
   var sel=document.getElementById("primSelector");
-  var prim=checkSel(sel);
+  var prim=CheckSel(sel);
   if(!prim) {
      id.innerHTML='<span class="box_red">Please select <b>Primary dataset</b></span>';
      return null;
   }
   var sel=document.getElementById("tierSelector");
-  var tier=checkSel(sel);
+  var tier=CheckSel(sel);
   if(!tier) {
      id.innerHTML='<span class="box_red">Please select <b>Data tier</b></span>';
      return null;
@@ -457,7 +467,7 @@ function submitNavRequest() {
   }
 }
 
-function getMonthIdx(month) {
+function GetMonthIdx(month) {
   var mArr = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
   for(i=0;i<mArr.length;i++) {
       if(mArr[i]==month) {
@@ -465,16 +475,16 @@ function getMonthIdx(month) {
       }
   }
 }
-function adjustToDate() {
+function AdjustToDate() {
   var iSel_y= document.getElementById("in_hSearch_year");
-  var iYear = checkSel(iSel_y);
+  var iYear = CheckSel(iSel_y);
   var iSel_m= document.getElementById("in_hSearch_month");
-  var iMonth= checkSel(iSel_m);
+  var iMonth= CheckSel(iSel_m);
    
   var oSel_y= document.getElementById("out_hSearch_year");
-  var oYear = checkSel(oSel_y);
+  var oYear = CheckSel(oSel_y);
   var oSel_m= document.getElementById("out_hSearch_month");
-  var oMonth= checkSel(oSel_m);
+  var oMonth= CheckSel(oSel_m);
 
   // adjust 'To: year/month' from the input 'From: year/month'
   if(iSel_y && oSel_y) {
@@ -498,25 +508,25 @@ function adjustToDate() {
              break;
           }
       }
-      if(getMonthIdx(oSel_m[o_idx].value)<getMonthIdx(iSel_m[i_idx].value)) {
+      if(GetMonthIdx(oSel_m[o_idx].value)<GetMonthIdx(iSel_m[i_idx].value)) {
          oSel_m[o_idx].selected=null;
          oSel_m[i_idx].selected="selected";
       }
   }
 }
-function checkToDate() {
+function CheckToDate() {
   var iSel_y= document.getElementById("in_hSearch_year");
-  var iYear = checkSel(iSel_y);
+  var iYear = CheckSel(iSel_y);
   var iSel_m= document.getElementById("in_hSearch_month");
-  var iMonth= checkSel(iSel_m);
+  var iMonth= CheckSel(iSel_m);
    
   var oSel_y= document.getElementById("out_hSearch_year");
-  var oYear = checkSel(oSel_y);
+  var oYear = CheckSel(oSel_y);
   var oSel_m= document.getElementById("out_hSearch_month");
-  var oMonth= checkSel(oSel_m);
+  var oMonth= CheckSel(oSel_m);
   
   var id=document.getElementById("historySearchResults");
-  if(oYear<iYear || getMonthIdx(oMonth)<getMonthIdx(iMonth) ) {
+  if(oYear<iYear || GetMonthIdx(oMonth)<GetMonthIdx(iMonth) ) {
      id.innerHTML='<span class="box_red">You choose wrong date order, "From" date should be >= then "To" date</span>';
   } else {
     if(id.innerHTML.search("You choose wrong date order")) {
@@ -524,30 +534,144 @@ function checkToDate() {
     }
   }
 }
-function disableSel(tag) {
+function DisableSel(tag) {
   var sel=document.getElementById(tag);
   if(sel) {
      sel.disabled="disabled";
   }
 }
-function enableSel(tag) {
+function EnableSel(tag) {
   var sel=document.getElementById(tag);
   if(sel) {
      sel.disabled="";
   }
 }
-function coverOver(tag) {
+function CoverOver(tag) {
    var id=document.getElementById(tag);
-   id.className="over";
+   if(id) {
+      if(id.className!="choosen") {
+         id.className="over";
+      }
+   }
 }
-function coverOut(tag) {
+function CoverOut(tag) {
    var id=document.getElementById(tag);
-   id.className="";
+   if(id) {
+      if(id.className!="choosen") {
+         id.className="fixed";
+      }
+   }
 }
-function refForBar(ref,idx) {
-   return '<a href="javascript:'+ref+'('+idx+')">';
+function ClearCellTag(tag,i,idx) {
+      if( i==idx ) { 
+          var id=document.getElementById(tag);
+          if(id) {
+             id.className="show_inline";
+          }
+      } else {
+          var id=document.getElementById(tag);
+          if(id) {
+             id.className="hide";
+          }
+      }
 }
-function buildBar(from,to,total,ref) {
+function ClearCells(idx,total) {
+   for(i=0;i<total;i++) {
+      var id=document.getElementById('cell_'+i);
+      if(id) {
+         id.className="fixed";
+      }
+      var tag='results_response_'+i
+      ClearCellTag(tag,i,idx)
+      var tag='parents_response_'+i
+      ClearCellTag(tag,i,idx)
+   }
+   Choose('cell_'+(idx+1));
+}
+/*
+ * JumpToResult accept idx which runs from 1-max on a web page
+ * but it should send idx-1 to getData since all response are from 0-max-1
+ */
+function JumpToResult(idx,total) {
+   var found=0;
+   for(i=0;i<total;i++) {
+      var id=document.getElementById('cell_'+i);
+      if(id) {
+         id.className="fixed";
+      }
+      var tag='results_response_'+i
+      if( i==(idx-1) ) { 
+          var id=document.getElementById(tag);
+          if(id) {
+             found=1;
+             ClearCells((idx-1),total)
+             Choose('cell_'+idx);
+             return;
+          }
+      }
+   }
+   Choose('cell_'+idx);
+   if(!found) {
+      showLoadingMessage('cell_waiting');
+      ajaxNextGetData(idx-1);
+      ajaxNextGenParentsGraph(idx-1);
+   }
+}
+function BuildBar(from,to,total) {
+   var t='<table class="cell"><tr><td>Result pages:</td>';
+   var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+');BuildBar(1,'+GLOBAL_STEP+','+total+')">start</a></td>';
+   t=t+td;
+   if(to>total) {
+      to=total;
+   }
+   if(from<1) {
+      from=1;
+      if(to<5) {
+         to=5;
+      }
+   }
+   if(from!=1) {
+      var backFrom=to-5;
+      var backTo=to-1;
+      var td='<td class="fixed" id="cell_less" onMouseOver="CoverOver(\'cell_less\')" onMouseOut="CoverOut(\'cell_less\')"><a href="javascript:BuildBar('+backFrom+','+backTo+','+total+');JumpToResult('+backFrom+','+total+')">&#171;</a></td>';
+      t=t+td;
+   } else {
+      var td='<td class="fixed">&#32;</td>';
+      t=t+td;
+   }
+   for(i=from;i<=to;i++) {
+      var className='class="fixed"';
+      if(('cell_'+i)==GLOBAL_CELL) {
+         className='class="choosen"';
+      }
+      var td='<td '+className+' id="cell_'+i+'" onMouseOver="CoverOver(\'cell_'+i+'\')" onMouseOut="CoverOut(\'cell_'+i+'\')"><a href="javascript:JumpToResult('+i+','+total+')">'+i+'</a></td>';
+      t=t+td;
+   }
+   if(to!=total) {
+      var nextFrom=from+1;
+      var nextTo=from+5;
+      var td='<td class="fixed" id="cell_more" onMouseOver="CoverOver(\'cell_more\')" onMouseOut="CoverOut(\'cell_more\')"><a href="javascript:BuildBar('+nextFrom+','+nextTo+','+total+');JumpToResult('+nextFrom+','+total+')">&#187;</a></td>';
+      t=t+td;
+   } else {
+      var td='<td class="fixed">&#32;</td>';
+      t=t+td;
+   }
+   var td='<td class="fixed" id="cell_end" onMouseOver="CoverOver(\'cell_end\')" onMouseOut="CoverOut(\'cell_end\')"><a href="javascript:JumpToResult('+total+','+total+');BuildBar('+(total-GLOBAL_STEP)+','+total+','+total+')">end</a></td>';
+   t=t+td;
+   t=t+'</tr></table>';
+   var id=document.getElementById('nextBar');
+   if(id) {
+      id.innerHTML=t;
+   }
+}
+function Choose(tag) {
+   GLOBAL_CELL=tag;
+   var id=document.getElementById(tag);
+   if(id) {
+      id.className="choosen";
+   }
+}
+function BuildBar_orig(from,to,total,ref) {
    var t='<table class="cell"><tr><td>Result pages:</td>';
    if(to>total) {
       to=total;
@@ -561,20 +685,42 @@ function buildBar(from,to,total,ref) {
    if(from!=1) {
       var backFrom=from-5;
       var backTo=from-1;
-      var td='<td id="cell_less" onMouseOver="coverOver(\'cell_less\')" onMouseOut="coverOut(\'cell_less\')"><a href="javascript:buildBar('+backFrom+','+backTo+','+total+')">&#171;</a></td>';
+      var td='<td id="cell_less" onMouseOver="CoverOver(\'cell_less\')" onMouseOut="CoverOut(\'cell_less\')"><a href="javascript:BuildBar('+backFrom+','+backTo+','+total+')">&#171;</a></td>';
       t=t+td;
    }
    for(i=from;i<=to;i++) {
-      var td='<td id="cell_'+i+'" onMouseOver="coverOver(\'cell_'+i+'\')" onMouseOut="coverOut(\'cell_'+i+'\')">'+refForBar(ref,i)+i+'</a></td>';
+      var td='<td id="cell_'+i+'" onMouseOver="CoverOver(\'cell_'+i+'\')" onMouseOut="CoverOut(\'cell_'+i+'\')">'+refForBar(ref,i)+i+'</a></td>';
       t=t+td;
    }
    if(to!=total) {
       var nextFrom=to+1;
       var nextTo=to+5;
-      var td='<td id="cell_more" onMouseOver="coverOver(\'cell_more\')" onMouseOut="coverOut(\'cell_more\')"><a href="javascript:buildBar('+nextFrom+','+nextTo+','+total+')">&#187;</a></td>';
+      var td='<td id="cell_more" onMouseOver="CoverOver(\'cell_more\')" onMouseOut="CoverOut(\'cell_more\')"><a href="javascript:BuildBar('+nextFrom+','+nextTo+','+total+')">&#187;</a></td>';
       t=t+td;
    }
    t=t+'</tr></table>';
    var id=document.getElementById('nextBar');
-   id.innerHTML=t;
+   if(id) {
+      id.innerHTML=t;
+   }
+}
+function SearchForJSCode(text) {
+   var pattern1='<script type="text\/javascript">';
+   var pattern2='<script type=\'text\/javascript\'>';
+   var end='<\/script>';
+   var foundCode=SearchForCode(text,pattern1,end);
+   foundCode=foundCode+SearchForCode(text,pattern2,end);
+   return foundCode;
+}
+function SearchForCode(text,begPattern,endPattern) {
+   var foundCode='';
+   while( text && text.search(begPattern) ) {
+       var p=text.split(begPattern);
+       for(i=1;i<p.length;i++) {
+           var n=p[i].split(endPattern);
+           foundCode=foundCode+n[0]+';\n';
+       }
+       return foundCode;
+   }
+   return foundCode;
 }
