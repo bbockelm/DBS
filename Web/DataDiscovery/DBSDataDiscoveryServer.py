@@ -865,12 +865,9 @@ class DBSDataDiscoveryServer(DBSLogger):
             page = self.genTopHTML()
             page+= self.genSnapshot(self.dbs,self.site,self.app,self.primD,self.tier)
             page+="""<hr class="dbs" />"""
-            procList = self.helper.getDatasetsFromApp(app)
+            procList = self.helper.getDatasetsFromApp(app,primD,tier)
             page+= "<pre>"
             for procD in procList:
-                empty,prim,tier,app = string.split(procD,"/")
-                if primaryDataset!="*" and prim!=primaryDataset: continue
-                if dataTier!="*" and tier!=dataTier: continue
                 page+=procD+"\n"
             page+= "</pre>"
             page+= self.genBottomHTML()
@@ -921,7 +918,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
         return page
 
-    def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
+    def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -950,7 +947,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.primD= primD
         self.tier = tier
         
-        page+= self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
+        leftBar = self.showProcDatasetsHTML(dbsInst,site,app,primD,tier)
 
         primaryDataset=primD
         dataTier = tier
@@ -959,25 +956,44 @@ class DBSDataDiscoveryServer(DBSLogger):
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
         t1=time.time()
-        dList = self.helper.getDatasetsFromApp(appPath)
+        datasetsList = self.helper.getDatasetsFromApp(appPath,primD,tier)
+        nDatasets=len(datasetsList)
         t2=time.time()
+        print "#### getDatasetsFromApp",(t2-t1)
         self.dbsTime=(t2-t1)
         regList=[]
-#        page+="""<script type="text/javascript">registerAjaxProvenanceCalls();</script>"""
         bList=[]
         id=0
-        jsPage="<!-- parents\n"
-        for dataset in dList:
+        # the view and process page should be generated once
+        if  not _idx:
+            nameSpace = {
+                         'leftBar' : leftBar,
+                         'idx'     : _idx,
+                         'tot'     : nDatasets,
+                         'res_page': RES_PER_PAGE
+                        }
+            t = Template(CheetahDBSTemplate.templateNextBar, searchList=[nameSpace])
+            page+=str(t)
+
+#        jsPage="<!-- parents\n"
+        # begin of response tag
+        page+="""<span id="results_response_%s" class="show_inline">"""%_idx
+        page+="""<script type="text/javascript">ClearTag('cell_waiting');ClearCells(%s,%s)</script>"""%(_idx,nDatasets)
+        self.dbsTime=(t2-t1)
+        for idx in xrange(0,nDatasets):
+            ttt1 = time.time()
+            dataset = datasetsList[idx]
             id+=1
             self.writeLog(dataset)
-            empty,prim,tier,app = string.split(dataset,"/")
-            if primaryDataset!="*" and prim!=primaryDataset: continue
-            if dataTier!="*" and tier!=dataTier: continue
+
+            # process only RES_PER_PAGE datasets within given (_idx) index range
+            if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
+
             locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
             self.dbsTime+=self.helper.dbsTime
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
-            jsPage+="""registerTreeView();ajaxAddTreeElement('root','%s');"""%dataset
+#            jsPage+="""registerTreeView();ajaxAddTreeElement('root','%s');"""%dataset
             p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
@@ -994,9 +1010,14 @@ class DBSDataDiscoveryServer(DBSLogger):
             oldTotSize=totSize
             oldDataset=dataset
             prevPage = p
+            print "##### %s %s sec"%(dataset,(time.time()-ttt1))
         page+=self.blockListToHTML(dbsInst,bList)
         page+=prevPage # end of new stuff
-        page+=jsPage+"\n-->\n"
+#        page+=jsPage+"\n-->\n"
+        # generate URL link
+        page+=self.getURL(dbsInst,site,app,primD,tier)
+        # end of response tag
+        page+="</span>"
         return page
     getDataHelper.exposed=True
 
@@ -1030,7 +1051,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        page+="</response>\n"
         return page
 
-    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",ajax=1,**kwargs): 
+    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1043,9 +1064,14 @@ class DBSDataDiscoveryServer(DBSLogger):
            @param primD: user selection of the primary dataset, default "*"
            @type  tier: string
            @param tier: user selection of the data tier, default "*"
+           @type  i: integer
+           @param i: index to start with
+           @type  j: integer
+           @param j: index to end with
            @rtype : string
            @return: returns HTML code
         """
+        _idx=int(_idx)
         t1=time.time()
         if int(ajax):
            # AJAX wants response as "text/xml" type
@@ -1062,15 +1088,13 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.writeLog(msg)
             msg=""
             self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-            page+= self.getDataHelper(dbsInst,site,app,primD,tier)
+            page+= self.getDataHelper(dbsInst,site,app,primD,tier,_idx)
         except:
             t=self.errorReport("Fail in getData function")
             page+=str(t)
         t2=time.time()
         if not self.userMode and self.profile:
            page+=self.responseTime(t2-t1)
-        # generate URL link
-        page+=self.getURL(dbsInst,site,app,primD,tier)
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1602,7 +1626,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDatasetProvenance.exposed=True
 
-    def getProvenanceForAllDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*",**kwargs): 
+    def getProvenanceForAllDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,**kwargs): 
         """
            AJAX method to retrieve/build provenance graph once user made a choice to lookup
            data for given input parameters.
@@ -1619,6 +1643,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : string
            @return: returns HTML snippet in AJAX wrapper
         """
+        _idx=int(_idx)
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="parents">"""
@@ -1632,12 +1657,17 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.tier = tier
         primaryDataset=primD
         dataTier = tier
-        dList = self.helper.getDatasetsFromApp(app)
-        for dataset in dList:
-            empty,prim,tier,app = string.split(dataset,"/")
-            if primaryDataset!="*" and prim!=primaryDataset: continue
-            if dataTier!="*" and tier!=dataTier: continue
+        dList = self.helper.getDatasetsFromApp(app,primD,tier)
+        nDatasets=len(dList)
+        page+="""<span id="parents_response_%s" class="show_inline">"""%_idx
+        for idx in xrange(0,nDatasets):
+            dataset = dList[idx]
+
+            # process only RES_PER_PAGE datasets within given (_idx) index range
+            if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
+
             page+=self.getDatasetProvenanceHelper(dataset)
+        page+="</span>"
         page+="</response></ajax-response>"
         if self.verbose:
 #        if 1:
