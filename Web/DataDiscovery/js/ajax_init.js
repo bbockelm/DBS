@@ -6,6 +6,7 @@ GetDataUpdater.prototype = {
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var copyHTML=responseHTML;
      /* we catch string from results with matching pattern, it contains JS code which to
       * register a new TreeView for parents. Once we found it we evaluate it to perform
       * java script action.
@@ -23,6 +24,11 @@ GetDataUpdater.prototype = {
      hideWaitingMessage();
      var t=document.getElementById("results");
      t.innerHTML+=responseHTML;
+     // parse response and search for any JavaScript code there, if found execute it.
+     var jsCode = SearchForJSCode(responseHTML);
+     if(jsCode) {
+        eval(jsCode);
+     }
      sortables_init();
      underlineLink('Both');
      if(responseHTML.search("checkbox")) {
@@ -175,6 +181,28 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
   var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
+}
+function ajaxNextGetData(idx) {
+  var sel;
+  sel=document.getElementById('dbsSelector');
+  if(!sel) return;
+  dbs=sel.value;
+  sel=document.getElementById('siteSelector');
+  if(!sel) return;
+  site=sel.value;
+  sel=document.getElementById('appSelector');
+  if(!sel) return;
+  app=sel.value;
+  sel=document.getElementById('primSelector');
+  if(!sel) return;
+  primD=sel.value;
+  sel=document.getElementById('tierSelector');
+  if(!sel) return;
+  tier=sel.value;
+  ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,'_idx='+idx);
+  var id=document.getElementById('results_response_'+(idx-1));
+//  var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+//  ajaxHistory(action);
 }
 function ajaxGetDataFromSelection(iParamString) {
   var uSelection;
@@ -409,9 +437,9 @@ NavigatorMenuDictUpdater.prototype = {
      eval(responseHTML);
      var dbs = document.getElementById("dbsSelector");
      updateLayer(dbs);
-     enableSel("appSelector");
-     enableSel("primSelector");
-     enableSel("tierSelector");
+     EnableSel("appSelector");
+     EnableSel("primSelector");
+     EnableSel("tierSelector");
      var t=document.getElementById("navSelector");
      t.innerHTML="";
    }
@@ -438,9 +466,9 @@ function ajaxGenNavigatorMenuDict() {
     dbsInst="MCGlobal/Writer"; // default dbs instance
   }
   // de-activate underneath menues (will be activated back once AJAX will arrive
-  disableSel("appSelector");
-  disableSel("primSelector");
-  disableSel("tierSelector");
+  DisableSel("appSelector");
+  DisableSel("primSelector");
+  DisableSel("tierSelector");
   showLoadingMessage('navSelector');
   ajaxEngine.sendRequest('ajaxGenNavigatorMenuDict','dbsInst='+dbsInst);
 // original
@@ -501,7 +529,11 @@ ParentsGraphUpdater.prototype = {
      r.className="td_menu_lavender_box";
      var t=document.getElementById("parents");
      t.innerHTML+=responseHTML;
-     // additional action can come here
+     // parse response and search for any JavaScript code there, if found execute it.
+     var jsCode = SearchForJSCode(responseHTML);
+     if(jsCode) {
+        eval(jsCode);
+     }
    }
 }
 function registerAjaxProvenanceGraphCalls() {
@@ -570,6 +602,25 @@ function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
   var action='<a href="javascript:showWaitingMessage();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
 }
+function ajaxNextGenParentsGraph(idx) {
+  var sel;
+  sel=document.getElementById('dbsSelector');
+  if(!sel) return;
+  dbs=sel.value;
+  sel=document.getElementById('siteSelector');
+  if(!sel) return;
+  site=sel.value;
+  sel=document.getElementById('appSelector');
+  if(!sel) return;
+  app=sel.value;
+  sel=document.getElementById('primSelector');
+  if(!sel) return;
+  primD=sel.value;
+  sel=document.getElementById('tierSelector');
+  if(!sel) return;
+  tier=sel.value;
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"_idx="+idx);
+}
 // keep this for first implementation of provenance calls
 function registerAjaxProvenanceCalls() {
     ajaxEngine.registerRequest('getProvenance','getDatasetProvenance');
@@ -617,7 +668,7 @@ function registerAjaxGetDataDescriptionCalls() {
 }
 function ajaxGetDataDescription(dbsInst,procD) {
     ajaxEngine.sendRequest('ajaxGetDataDescription','dbsInst='+dbsInst,'processedDataset='+procD)
-    showTag('floatDataDescription');
+    ShowTag('floatDataDescription');
 }
 function registerAjaxSelectAppsCalls() {
     ajaxEngine.registerRequest('ajaxSelectApps','selectApplications');
