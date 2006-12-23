@@ -14,7 +14,8 @@ import string, os, sys, stat
 
 # DBS modules
 import DBSHelper, DBSInst, DBSUtil
-from DBSOptions import *
+from   DBSOptions import *
+from   DDConfig   import *
 
 #
 # main
@@ -22,7 +23,6 @@ from DBSOptions import *
 if __name__ == "__main__":
     optManager  = DBSOptionParser()
     (opts,args) = optManager.getOpt()
-    iface="cgi"
     helper = DBSHelper.DBSHelper()
     if opts.quiet:
        helper.setQuiet()

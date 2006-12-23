@@ -18,6 +18,7 @@ import dlsClient
 
 # DBS modules
 import DBSInst, DBSUtil
+from   DDConfig import *
 
 #
 # main
