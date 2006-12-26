@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
  *
  */
 
@@ -48,7 +48,10 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String name = get(dataset, "name", true);
 		String type = get(dataset, "type", true);
 		String status = get(dataset, "status", true);
-		String userID = personApi.getUserID(conn, dbsUser);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
+		String creationDate = get(dataset, "creation_date", false);
+
 		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, get(dataset, "path"));
 
 		//FIXME Parentage of Analysis Datasets (not well understood yet)
@@ -57,8 +60,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		//FIXME   Make sure that Type and Status fileds are well understood
 		//        will they pre-exist, or user can define as they create AnalysisDS ??     
 
-		insertName(conn, out, "AnalysisDSType", "Type", type , userID);
-		insertName(conn, out, "AnalysisDSStatus", "Status", status, userID);
+		insertName(conn, out, "AnalysisDSType", "Type", type , cbUserID, lmbUserID, creationDate);
+		insertName(conn, out, "AnalysisDSStatus", "Status", status, cbUserID, lmbUserID, creationDate);
 
 	        ResultSet rsLumi = null;
                 PreparedStatement psLumi = null; 
@@ -76,7 +79,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
 							get(dataset, "physics_group_name", true), 
 							true), 
-						userID); 
+						cbUserID, lmbUserID, creationDate); 
                                                 
 				ps.execute();
 			 } finally {
@@ -95,7 +98,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				insertMap(conn, out, "AnalysisDatasetLumi", "AnalysisDataset", "Lumi",  
 	 					analysisDSID, 
 						get(rsLumi, "ID"), 
-						userID);
+						cbUserID, lmbUserID, creationDate);
 			  
 		} finally {
                           if (psLumi != null) psLumi.close();

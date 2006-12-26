@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiFileLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
  *
  */
 
@@ -263,7 +263,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
 		
 		//Get the User ID from USERDN
-		String userID = personApi.getUserID(conn, dbsUser);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+
 		/*//Check if all the path is in the files are same.
 		if(files.size() > 0) {
 			String path = get((Hashtable)files.get(0), "path");
@@ -307,6 +308,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String fileStatus = get(file, "file_status", false);
 			String type = get(file, "type", false);
 			String valStatus = get(file, "validation_status", false);
+			String cbUserID = personApi.getUserID(conn, get(file, "created_by", false), dbsUser );
+			String creationDate = get(file, "creation_date", false);
+
 			Vector lumiVector = DBSUtil.getVector(file,"lumi_section");
 			Vector tierVector = DBSUtil.getVector(file,"data_tier");
 			Vector parentVector = DBSUtil.getVector(file,"parent");
@@ -318,52 +322,52 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (isNull(valStatus)) valStatus = "VALID";
 			
 			//Insert a File status if it does not exists
-			//insertName(conn, out, "Status", "Status", fileStatus , userID);
+			//insertName(conn, out, "Status", "Status", fileStatus , lmbUserID);
 
 			//Insert a File Validation status if it does not exists
-			//insertName(conn, out, "Status", "Status", valStatus , userID);
+			//insertName(conn, out, "Status", "Status", valStatus , lmbUserID);
 
 			//Insert a File Type if it does not exists
-			//insertName(conn, out, "Type", "Type", type , userID);
+			//insertName(conn, out, "Type", "Type", type , lmbUserID);
 			
 			//Insert a File by fetching the fileStatus, type and validationStatus
 			if( (fileID = getFileID(conn, lfn, false)) == null ) {
 				newFileInserted = true;
-			//TODO Exception of null status or type should be catched and parsed and 
-			//a proper message should be returned back to the user. Different Database can have different error message YUK
-			//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
-			//User will never know about this YUK
-			if( isNull(statusID = get(statusTable, fileStatus)) ) {
-				statusID = getID(conn, "FileStatus", "Status", fileStatus, true);
-				statusTable.put(fileStatus, statusID);
-			}
-			if( isNull(typeID = get(typeTable, type)) ) {
-				typeID = getID(conn, "FileType", "Type", type, true);
-				typeTable.put(type, typeID);
-			}
-			if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
-				valStatusID = getID(conn, "FileStatus", "Status", valStatus, true);
-				valStatusTable.put(valStatus, valStatusID);
-			}
-
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.insertFile(conn, 
-						procDSID, 
-						blockID, 
-						lfn, 
-						get(file, "checksum", false), 
-						get(file, "number_of_events", false), 
-						get(file, "size", false), 
-						statusID,
-						typeID,
-						valStatusID,
-						get(file, "queryable_meta_data", false), 
-						userID);
-				ps.execute();
-			} finally { 
-				if (ps != null) ps.close();
-                        }
+				//TODO Exception of null status or type should be catched and parsed and 
+				//a proper message should be returned back to the user. Different Database can have different error message YUK
+				//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
+				//User will never know about this YUK
+				if( isNull(statusID = get(statusTable, fileStatus)) ) {
+					statusID = getID(conn, "FileStatus", "Status", fileStatus, true);
+					statusTable.put(fileStatus, statusID);
+				}
+				if( isNull(typeID = get(typeTable, type)) ) {
+					typeID = getID(conn, "FileType", "Type", type, true);
+					typeTable.put(type, typeID);
+				}
+				if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
+					valStatusID = getID(conn, "FileStatus", "Status", valStatus, true);
+					valStatusTable.put(valStatus, valStatusID);
+				}
+	
+				PreparedStatement ps = null;
+				try {
+					ps = DBSSql.insertFile(conn, 
+							procDSID, 
+							blockID, 
+							lfn, 
+							get(file, "checksum", false), 
+							get(file, "number_of_events", false), 
+							get(file, "size", false), 
+							statusID,
+							typeID,
+							valStatusID,
+							get(file, "queryable_meta_data", false), 
+							cbUserID, lmbUserID, creationDate);
+					ps.execute();
+				} finally { 
+					if (ps != null) ps.close();
+				}
 
 			} else {
 				//Write waring message that file exists already
@@ -388,7 +392,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 								get(hashTable, "app_executable_name"),
 								get(hashTable, "ps_name"),
 							       	true), 
-						userID);
+						cbUserID, lmbUserID, creationDate);
 			}
 
 			//Insert FileTier table by fetching data tier ID
@@ -398,7 +402,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					getID(conn, "DataTier", "Name", 
 						get((Hashtable)tierVector.get(j), "name") , 
 						true), 
-					userID);
+					cbUserID, lmbUserID, creationDate);
 			}
 			
 			//Insert FileParentage table by fetching parent File ID
@@ -406,20 +410,21 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
 						fileID, 
 						getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
-						userID);
+						cbUserID, lmbUserID, creationDate);
 			}
 			//TODO Discussion about Lumi section is needed
 			//Insert FileLumi table by first inserting and then fetching Lumi Section ID
 			for (int j = 0; j < lumiVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
-				insertLumiSection(conn, out, hashTable, userID);
+				insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
 				insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
-						userID);
+						cbUserID, lmbUserID, creationDate);
 			}
 		
+			if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
 		}//For loop
 		//Update Block numberOfFiles and Size
 		if (newFileInserted) {
@@ -445,11 +450,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
-	public void insertTierInFile(Connection conn, Writer out, String lfn, String tierName, Hashtable dbsUser) throws Exception {
-		insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
-				getFileID(conn, lfn, true), 
+	public void insertTierInFile(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
+		insertMap(conn, out, "FileTier", "Fileid", "DataTier", 
+				getFileID(conn, get(table, "lfn", true), true), 
 				getID(conn, "DataTier", "Name", tierName , true), 
-				personApi.getUserID(conn, dbsUser));
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false));
 
 	}
 	
@@ -464,11 +471,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
-	public void insertParentInFile(Connection conn, Writer out, String lfn, String parentLFN, Hashtable dbsUser) throws Exception {
+	public void insertParentInFile(Connection conn, Writer out, Hashtable table, String parentLFN, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
-				getFileID(conn, lfn, true),
+				getFileID(conn, get(table, "lfn", true), true),
 				getFileID(conn, parentLFN, true),
-				personApi.getUserID(conn, dbsUser));
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false));
 	}
 
 
@@ -484,15 +493,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
-	public void insertAlgoInFile(Connection conn, Writer out, String lfn, Hashtable algo, Hashtable dbsUser) throws Exception {
+	public void insertAlgoInFile(Connection conn, Writer out, Hashtable table, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
-				getFileID(conn, lfn, true), 
+				getFileID(conn, get(table, "lfn", true), true), 
 				(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(algo, "app_version"), 
 						get(algo, "app_family_name"), 
 						get(algo, "app_executable_name"),
 						get(algo, "ps_name"), 
 						true), 
-				personApi.getUserID(conn, dbsUser));
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false));
 	}
 
 	/**
@@ -506,11 +517,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
-	public void insertLumiInFile(Connection conn, Writer out, String lfn, String lsNumber, Hashtable dbsUser) throws Exception {
+	public void insertLumiInFile(Connection conn, Writer out, Hashtable table, String lsNumber, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
-				getFileID(conn, lfn, true), 
+				getFileID(conn, get(table, "lfn", true), true), 
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
-				personApi.getUserID(conn, dbsUser));
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false));
 	}
 
 

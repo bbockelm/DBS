@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiPersonLogic.java,v 1.1 2006/12/15 20:54:03 sekhri Exp $"
  *
  */
 
@@ -35,15 +35,27 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	 * @param userName the name of the user to be inserted in the database.
 	 * @param userDN the distinguish name of the user to be inserted in the database.
 	 * @param contactInfo the contact infromation  of the user to be inserted in the database.
-	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param lmbUserID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable.
 	 */
-	public void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String userID) throws Exception {
-		//if (isNull(userID)) userID = "0";//0 is user not created by anyone
+	public void insertPerson(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		insertPerson(conn, out, 
+				get(table, "user_name", false),
+				get(table, "user_dn", true),
+				get(table, "contact_info", false),
+				getUserID(conn, get(table, "created_by", false), dbsUser ),
+				getUserID(conn, dbsUser),
+				get(table, "creation_date", false)
+				);
+	}
+	
+	protected void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		//if (isNull(lmbUserID)) lmbUserID = "0";//0 is user not created by anyone
 		if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
 			PreparedStatement ps = null;
 			try {
-				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo,  userID);
+				//FIXME it is not important to store whoi created this person 
+				ps = DBSSql.insertPerson(conn, userName, userDN, contactInfo, cbUserID, lmbUserID, creationDate);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -67,17 +79,29 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 		if(!isNull( id = get(globalUser, userDN) )) {
 			return id;
 		}
+		checkWord(userDN, "user_dn");
 		if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
 			//FIXME instead of passing null for out stream writer , pass the actual stream
 			insertPerson(conn, null,  
 					get(dbsUser, "user_name", false), 
 					userDN, 
-					get(dbsUser, "contact_info", false), 
-					""); //FIXME Get userName and contactInfo also and the userID shoudl be decicde?
+					get(dbsUser, "contact_info", false),
+					"",
+					"",
+					""); //FIXME Get userName and contactInfo also and the lmbUserID shoudl be decicde?
 			id = getID(conn, "Person", "DistinguishedName", userDN , true);
 		}
 		globalUser.put(userDN, id);
 		return id;
+	}
+
+
+	public String getUserID(Connection conn, String userDN, Hashtable dbsUser) throws Exception {
+		if(isNull(userDN)) userDN = get(dbsUser, "user_dn", true);
+		Hashtable tmpDBSUser = new Hashtable();
+		tmpDBSUser.put("user_dn", userDN);//FIXME conatct infor and other things needs to go in this table too
+		return getUserID(conn, tmpDBSUser);
+		
 	}
 
 	

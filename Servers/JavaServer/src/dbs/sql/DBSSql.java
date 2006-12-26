@@ -1,13 +1,14 @@
 
 /**
- $Revision: 1.34 $"
- $Id: DBSSql.java,v 1.34 2006/12/13 16:58:01 sekhri Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSSql.java,v 1.35 2006/12/14 20:36:07 sekhri Exp $"
  *
  */
 package dbs.sql;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import dbs.util.DBSUtil;
@@ -34,25 +35,27 @@ public class DBSSql {
 		return ps;
         }
 
-       	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String userID) throws SQLException {	
+       	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
 		Hashtable table = new Hashtable();
 		table.put(key, value);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, tableName, table);
 	}
 	
-	public static PreparedStatement insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String userID) throws SQLException {
+	public static PreparedStatement insertMap(Connection conn, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put(key1, value1);
 		table.put(key2, value2);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, tableName, table);
 	}
 	
 
-	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String userID) throws SQLException {
+	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Annotation", ann);
 		table.put("Name", name);
@@ -60,12 +63,13 @@ public class DBSSql {
 		table.put("StartDate", startDate);
 		table.put("EndDate", endDate);
 		table.put("Type", typeID);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "PrimaryDataset", table);
 	}
 
-	public static PreparedStatement insertRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String storeNumber, String startOfRun, String endOfRun, String userID) throws SQLException {
+	public static PreparedStatement insertRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String storeNumber, String startOfRun, String endOfRun, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("RunNumber", runNumber);
 		table.put("NumberOfEvents", nOfEvents);
@@ -74,24 +78,26 @@ public class DBSSql {
 		table.put("StoreNumber", storeNumber);
 		table.put("StartOfRun", startOfRun);
 		table.put("EndOfRun", endOfRun);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Runs", table);
 	}
 
-	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String openForWriting, String userID) throws SQLException {
+	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String openForWriting, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("BlockSize", size);
 		table.put("Name", name);
 		table.put("Dataset", procDSID);
 		table.put("NumberOfFiles", nOfFiles);
 		table.put("OpenForWriting", openForWriting);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Block", table);
 	}
 
-	public static PreparedStatement insertLumiSection(Connection conn, String lsNumber, String runID, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String userID) throws SQLException {
+	public static PreparedStatement insertLumiSection(Connection conn, String lsNumber, String runID, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("LumiSectionNumber", lsNumber);
 		table.put("RunNumber", runID);
@@ -99,24 +105,26 @@ public class DBSSql {
 		table.put("EndEventNumber", endEvNumber);
 		table.put("LumiStartTime", lStartTime);
 		table.put("LumiEndTime", lEndTime);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "LumiSection", table);
 	}
 		       
-        public static PreparedStatement insertPerson(Connection conn, String userName, String userDN, String contactInfo, String userID) throws SQLException {
+        public static PreparedStatement insertPerson(Connection conn, String userName, String userDN, String contactInfo, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", userName);
 		table.put("DistinguishedName", userDN);
 		table.put("ContactInfo", contactInfo);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Person", table);
 	}
 
 
 
-	public static PreparedStatement insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String userID) throws SQLException {
+	public static PreparedStatement insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Hash", hash);
 		table.put("Name", name);
@@ -124,43 +132,47 @@ public class DBSSql {
 		table.put("Type", type);
 		table.put("Annotation", annotation);
 		table.put("Content", content);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "QueryableParameterSet", table);
 	}
 				       
-        public static PreparedStatement insertApplication(Connection conn, String exeID, String versionID, String familyID, String psID, String userID) throws SQLException {
+        public static PreparedStatement insertApplication(Connection conn, String exeID, String versionID, String familyID, String psID, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("ExecutableName", exeID);
 		table.put("ApplicationVersion", versionID);
 		table.put("ApplicationFamily", familyID);
 		table.put("ParameterSetID", psID);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "AlgorithmConfig", table);
 	}
 
 	// SQL for inserting ProcessedDatatset and its related tables.
 	// ____________________________________________________
 
-	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String userID) throws SQLException {
+	public static PreparedStatement insertProcessedDatatset(Connection conn, String name, String primDSID, String openForWriting, String phyGroupID, String statusID, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("Name", name);
 		table.put("PrimaryDataset", primDSID);
 		//table.put("OpenForWriting", );OpenForWriting flag can be managed through Status why we duplicate
 		table.put("PhysicsGroup", phyGroupID);
 		table.put("Status", statusID);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "ProcessedDataset", table);
 	}
 	
-	public static PreparedStatement insertPhysicsGroup(Connection conn, String name, String conID, String userID) throws SQLException {
+	public static PreparedStatement insertPhysicsGroup(Connection conn, String name, String conID, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("PhysicsGroupName", name);
 		table.put("PhysicsGroupConvener", conID);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "PhysicsGroup", table);
 	}
 
@@ -168,8 +180,8 @@ public class DBSSql {
 	// SQL for inserting File and its related tables.
 	// ____________________________________________________
 	
-	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) throws SQLException {
-	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String userID) throws SQLException {
+	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID) throws SQLException {
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("LogicalFileName", lfn);
 		table.put("Dataset", procDSID);
@@ -181,8 +193,9 @@ public class DBSSql {
 		table.put("FileType", typeID);
 		table.put("ValidationStatus", valStatusID);
 		table.put("QueryableMetadata", qMetaData);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Files", table);
 	}
 	
@@ -194,7 +207,7 @@ public class DBSSql {
                              String typeID,
                              String statusID, 
                              String phyGroupID, 
-                             String userID) throws SQLException
+                             String cbUserID, String lmbUserID, String cDate) throws SQLException
         {
 		Hashtable table = new Hashtable();
 		table.put("Annotation", ann);
@@ -204,8 +217,9 @@ public class DBSSql {
 		table.put("Type", typeID);
 		table.put("Status", statusID);
 		table.put("PhysicsGroup", phyGroupID);
-		table.put("CreatedBy", userID);
-		table.put("LastModifiedBy", userID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "AnalysisDataset", table);
         }
 
@@ -946,9 +960,14 @@ public class DBSSql {
 		e = table.keys();
                 int columnIndx = 1;
 		while(e.hasMoreElements()) {
-			String value = DBSUtil.get(table, (String)e.nextElement());
+			String key = (String)e.nextElement();
+			String value = DBSUtil.get(table, key);
 			if(!DBSUtil.isNull(value)) {
-				ps.setString(columnIndx++, value);
+				if(key.equals("CreationDate")) {
+					ps.setTimestamp(columnIndx++, new Timestamp(Long.valueOf(value)) );
+				} else {
+					ps.setString(columnIndx++, value);
+				}
 			}
 		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");

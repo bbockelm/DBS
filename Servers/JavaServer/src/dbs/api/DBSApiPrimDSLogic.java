@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.1 2006/12/15 20:54:03 sekhri Exp $"
  *
  */
 
@@ -82,19 +82,22 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 	public void insertPrimaryDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		String warMsg ;
 		//Get the User ID from USERDN
-		String userID = personApi.getUserID(conn, dbsUser); 
+		
+		String lmbUserID = personApi.getUserID(conn, dbsUser); 
+		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
+		String creationDate = get(dataset, "creation_date", false);
 		String name = get(dataset, "primary_name", true);
 		String type = get(dataset, "type", false);
-				
+		System.out.println("creation_date " + creationDate);		
 		//Insert a Dataset Type if it does not exists
-		insertName(conn, out, "PrimaryDSType", "Type", type , userID);
+		insertName(conn, out, "PrimaryDSType", "Type", type , cbUserID, lmbUserID, creationDate);
 		
 		//Insert a Dataset Trigger Desc if it does not exists
 		//FIXME some problem with this table while insertng rows
-		//insertName(conn, out, "TriggerPathDescription", "TriggerPathDescription", tpDesc , userID);
+		//insertName(conn, out, "TriggerPathDescription", "TriggerPathDescription", tpDesc , lmbUserID);
 		
 		//Insert a Dataset Other Desc if it does not exists
-		//insertName(conn, out, "OtherDescription", "Description", oDesc , userID);
+		//insertName(conn, out, "OtherDescription", "Description", oDesc , lmbUserID);
 
 		//TODO Insert MCDesc . Change in the schema is required.
 		//FIXME The schemna should be changed so that PrimaryDatasetDescription should have PrimarYdataset ID as forign key. 
@@ -117,7 +120,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 					get(dataset, "start_date", true),
 					get(dataset, "end_date", false),
 					getID(conn, "PrimaryDSType", "Type", type, true), 
-					userID);
+					cbUserID, lmbUserID, creationDate);
 				ps.execute();
 			} finally { 
 				if (ps != null) ps.close();
@@ -130,14 +133,14 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 
 
 	/*TODO more information needed and change in the schema required,
-	 * private void insertMCDesc(Connection conn, Hashtable table, String userID) throws Exception {
+	 * private void insertMCDesc(Connection conn, Hashtable table, String lmbUserID) throws Exception {
 		String mcDesc = get(table, "mc_channel_description", true);
 		String mcProd = get(table, "mc_production", false);
 		String mcChain = get(table, "mc_decay_chain", false);
 
 		//Insert a new Lumi Section by feting the run ID 
 		if( getMCDescID(conn, mcDesc, mcProd, mcChain) == null ) {
-			DBManagement.execute(conn, DBSSql.insertMCDesc(mcDesc, mcProd, mcChain,	userID));
+			DBManagement.execute(conn, DBSSql.insertMCDesc(mcDesc, mcProd, mcChain,	lmbUserID));
 		}
 	}*/
 

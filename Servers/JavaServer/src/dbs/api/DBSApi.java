@@ -1,6 +1,6 @@
 /**
- $Revision: 1.38 $"
- $Id: DBSApi.java,v 1.38 2006/12/14 20:36:06 sekhri Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSApi.java,v 1.39 2006/12/15 20:54:02 sekhri Exp $"
  *
 */
 
@@ -325,7 +325,7 @@ public class DBSApi {
 						dbsUser);
 				
 			} else if (apiStr.equals("insertTier")) {
-				api.insertTier(conn, out, get(table, "tier_name", true), dbsUser);
+				api.insertTier(conn, out, parse(getXml(table), "tier"), dbsUser);
 				
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,
@@ -349,49 +349,49 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("insertTierInPD")) {
 				(new DBSApiProcDSLogic()).insertTierInPD(conn, out,
-						get(table, "path", true), 
+						parse(getXml(table), "processed_dataset"),
 						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInPD")) {
 				(new DBSApiProcDSLogic()).insertParentInPD(conn, out,
-						get(table, "path", true), 
+						parse(getXml(table), "processed_dataset"),
 						get(table, "parent_path", true), 
 						dbsUser);
 					
 			} else if (apiStr.equals("insertAlgoInPD")) {
 				(new DBSApiProcDSLogic()).insertAlgoInPD(conn, out,
-						get(table, "path", true), 
+						parse(getXml(table), "processed_dataset"),
 						parse(getXml(table), "algorithm"), 
 						dbsUser);
 			
 			} else if (apiStr.equals("insertRunInPD")) {
 				(new DBSApiProcDSLogic()).insertRunInPD(conn, out,
-						get(table, "path", true), 
+						parse(getXml(table), "processed_dataset"),
 						get(table, "run_number", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertTierInFile")) {
 				(new DBSApiFileLogic()).insertTierInFile(conn, out,
-						get(table, "lfn", true), 
+						parse(getXml(table), "file"),
 						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInFile")) {
 				(new DBSApiFileLogic()).insertParentInFile(conn, out,
-						get(table, "lfn", true), 
+						parse(getXml(table), "file"),
 						get(table, "parent_lfn", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertAlgoInFile")) {
 				(new DBSApiFileLogic()).insertAlgoInFile(conn, out,
-						get(table, "lfn", true), 
+						parse(getXml(table), "file"),
 						parse(getXml(table), "algorithm"), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertLumiInFile")) {
 				(new DBSApiFileLogic()).insertLumiInFile(conn, out,
-						get(table, "lfn", true), 
+						parse(getXml(table), "file"),
 						get(table, "ls_number", true), 
 						dbsUser);
 				
@@ -442,7 +442,10 @@ public class DBSApi {
 			writeException(out, "Unexpected execution exception", "4000", ex.getMessage());
 			return;
 		} finally {
-			if(conn != null) conn.close();
+			if(conn != null) {
+				conn.clearWarnings();
+				conn.close();
+			}
 		}
 
 		out.write(DBSConstants.XML_SUCCESS);

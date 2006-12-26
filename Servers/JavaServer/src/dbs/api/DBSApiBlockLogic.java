@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiBlockLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
  *
  */
 
@@ -46,7 +46,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String path = get(block, "path");
 		String name = getBlock(block, "name", false);
 		String openForWriting = get(block, "open_for_writing", false);
-	
+		String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
+		String creationDate = get(block, "creation_date", false);
+
 		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
 		//Set defaults Values
 		String[] data = path.split("/");
@@ -62,7 +64,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					procDSID,
 					"0",// A new block should always have 0 files
 					openForWriting, //openForWriting must be 1 fr a new block
-					personApi.getUserID(conn, dbsUser));
+					cbUserID,
+					personApi.getUserID(conn, dbsUser),
+					creationDate);
 
 				ps.execute();
 			} finally { 
@@ -89,7 +93,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                 procDSID,
                                 "0",// A new block should always have 0 files
                                 openForWriting,
-                                personApi.getUserID(conn, dbsUser));
+				"",
+                                personApi.getUserID(conn, dbsUser),
+				"");
 
                         ps.execute();
                 } finally {

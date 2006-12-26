@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.52 $"
+ $Id: DBSApiLogic.java,v 1.52 2006/12/15 20:54:02 sekhri Exp $"
  *
  */
 
@@ -62,6 +62,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
 		String runNumber = get(run, "run_number", true);
 		if(getID(conn, "Runs", "RunNumber", runNumber, false) == null ) {
 			PreparedStatement ps = null;
@@ -74,7 +75,10 @@ public class DBSApiLogic {
 					get(run, "store_number", true),
 					get(run, "start_of_run", false),
 					get(run, "end_of_run", false),
-					(new DBSApiPersonLogic()).getUserID(conn, dbsUser));
+					personApi.getUserID(conn, get(run, "created_by", false), dbsUser ),
+					personApi.getUserID(conn, dbsUser),
+					get(run, "creation_date", false));
+
 				ps.execute();
 			} finally { 
 				if (ps != null) ps.close();
@@ -94,10 +98,24 @@ public class DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameter tierName is invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-	public void insertTier(Connection conn, Writer out, String tierName, Hashtable dbsUser) throws Exception {
-		insertName(conn, out, "DataTier", "Name", tierName , (new DBSApiPersonLogic()).getUserID(conn, dbsUser));
-	}
+	/*public void insertTier(Connection conn, Writer out, String tierName, Hashtable dbsUser) throws Exception {
+		//insertName(conn, out, "DataTier", "Name", tierName , (new DBSApiPersonLogic()).getUserID(conn, dbsUser));
+		insertTier(conn, out, "DataTier", "Name", tierName , (new DBSApiPersonLogic()).getUserID(conn, dbsUser));
+	}*/
 
+	public void insertTier(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		insertTier(conn, out, 
+				get(table, "name", true),
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false)
+				);
+	}
+	
+	protected void insertTier(Connection conn, Writer out, String tierName, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		insertName(conn, out, "DataTier", "Name", tierName , cbUserID, lmbUserID, creationDate);
+	}
 
 
 	/**
@@ -112,9 +130,14 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
 	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		insertLumiSection(conn, out, table, (new DBSApiPersonLogic()).getUserID(conn, dbsUser));
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		insertLumiSection(conn, out, table, 
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false)
+				);
 	}
-	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String userID) throws Exception {
+	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		String lsNumber = get(lumi, "lumi_section_number", true);
 		//Insert a new Lumi Section by feting the run ID 
 		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
@@ -129,7 +152,9 @@ public class DBSApiLogic {
 						get(lumi, "end_event_number", true),
 						get(lumi, "lumi_start_time", false),
 						get(lumi, "lumi_end_time", false),
-						userID);
+						cbUserID,
+						lmbUserID,
+						creationDate);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -161,15 +186,15 @@ public class DBSApiLogic {
 	 * @param table the table name of the table in the database schema.
 	 * @param key the coloumn name of the table in the database schema that is unique.
 	 * @param value the value to be inserted in the coloumn name of the table.
-	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param lmbUserID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 */
-	protected void insertName(Connection conn, Writer out, String table, String key, String value, String userID) throws Exception {
+	protected void insertName(Connection conn, Writer out, String table, String key, String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
-		if(isNull(userID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
+		if(isNull(lmbUserID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
 		if( getID(conn, table, key, value, false) == null ) {
 			PreparedStatement ps = null;
 			try {
-				ps = DBSSql.insertName(conn, table, key, value, userID);
+				ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -187,13 +212,13 @@ public class DBSApiLogic {
 	 * @param key2 the second coloumn name of the table in the database schema.
 	 * @param value1 the first value to be inserted in the first coloumn name of the table.
 	 * @param value2 the second value to be inserted in the second coloumn name of the table.
-	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param lmbUserID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 */
-	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String userID) throws Exception {
+	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		if( getMapID(conn, tableName, key1, key2, value1, value2, false) == null ) {
 			PreparedStatement ps = null;
 			try {
-				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, userID);
+				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -212,19 +237,33 @@ public class DBSApiLogic {
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param name the name of the phsysics group to be inserted.
 	 * @param phyGroupCon the name of the physics group convenor to be inserted.
-	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param lmbUserID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or the database connection is unavailable.
 	 */
-	public void insertPhysicsGroup(Connection conn, Writer out, String name, String phyGroupCon, String userID) throws Exception {
+	public void insertPhysicsGroup(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		insertPhysicsGroup(conn, out, 
+				get(table, "physics_group_name", true),
+				get(table, "physics_group_convener", true),
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false)
+				);
+
+	}
+
+	protected void insertPhysicsGroup(Connection conn, Writer out, String name, String phyGroupCon, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		//Insert a new Person if it does not exists
-		(new DBSApiPersonLogic()).insertPerson(conn, out,  "", phyGroupCon, "", userID); //FIXME Get userName and contactInfo also
+		(new DBSApiPersonLogic()).insertPerson(conn, out,  "", phyGroupCon, "", cbUserID, lmbUserID, creationDate); //FIXME Get userName and contactInfo also
 		if( getID(conn, "PhysicsGroup", "PhysicsGroupName", name, false) == null ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertPhysicsGroup(conn,
 					name, 
 					getID(conn, "Person", "DistinguishedName", phyGroupCon, true), 
-					userID);
+					cbUserID,
+					lmbUserID,
+					creationDate);
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();

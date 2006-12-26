@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiLogic.java,v 1.51 2006/12/14 21:40:44 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiProcDSLogic.java,v 1.1 2006/12/15 20:54:03 sekhri Exp $"
  *
  */
 
@@ -283,7 +283,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		//Get the User ID from USERDN
-		String userID = personApi.getUserID(conn, dbsUser);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
+		String creationDate = get(dataset, "creation_date", false);
 
 		String procDSName = get(dataset, "processed_datatset_name", true);
 		String phyGroupName = get(dataset, "physics_group_name", false);
@@ -301,10 +303,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		if (isNull(phyGroupCon)) phyGroupCon = "ANZARDN";//FIXME Some default convenor name should be used
 		
 		//Insert a Processed Dataset status if it does not exists
-		//insertName(conn, out, "Status", "Status", status , userID);
-		
+		//insertName(conn, out, "Status", "Status", status , lmbUserID);
+		//FIXME the creation date and created by user id used for other tabes are same as processed dataset table
 		//Insert a Physics Group if it does not exists
-		insertPhysicsGroup(conn, out,  phyGroupName, phyGroupCon, userID);
+		insertPhysicsGroup(conn, out,  phyGroupName, phyGroupCon, cbUserID, lmbUserID, creationDate);
 		
 		String procDSID = "";
 		//Insert a Processed Datatset before by fetching the primDSID, status
@@ -319,7 +321,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					get(dataset, "open_for_writing", false),
 					getID(conn, "PhysicsGroup", "PhysicsGroupName", phyGroupName, true), 
 					getID(conn, "ProcDSStatus", "Status", status, true), 
-					userID);
+					cbUserID,
+					lmbUserID,
+					creationDate);
 				ps.execute();
         	        } finally {
 				if (ps != null) ps.close();
@@ -346,7 +350,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							get(hashTable, "app_executable_name"),
 							get(hashTable, "ps_name"), 
 							true), 
-					userID);
+					cbUserID, lmbUserID, creationDate);
 		}
 
 		//Insert ProcDSTier table by fetching data tier ID
@@ -354,12 +358,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			Hashtable hashTable = (Hashtable)tierVector.get(j);
 			String tierName = get(hashTable, "name", true);
 			//Insert DataTier if it does not exists
-			insertTier(conn, out, tierName, dbsUser);
-			//insertName(conn, out, "DataTier", "Name", tierName , userID);
+			insertTier(conn, out, tierName, cbUserID, lmbUserID, creationDate);
+			//insertName(conn, out, "DataTier", "Name", tierName , lmbUserID);
 			insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 					procDSID, 
 					getID(conn, "DataTier", "Name", tierName , true), 
-					userID);
+					cbUserID, lmbUserID, creationDate);
 		}
 
 		//Insert DatasetParentage table by fetching parent File ID
@@ -367,7 +371,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			insertMap(conn, out, "DatasetParentage", "ThisDataset", "ItsParent", 
 					procDSID, 
 					getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path")), 
-					userID);
+					cbUserID, lmbUserID, creationDate);
 		}
 
 		//Insert ProcDSRun table by fetching Run ID
@@ -375,7 +379,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
 					procDSID, 
 					getID(conn, "Runs", "RunNumber", get((Hashtable)runVector.get(j), "run_number") , true), 
-					userID);
+					cbUserID, lmbUserID, creationDate);
 		}
 
 	}
@@ -392,12 +396,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void insertTierInPD(Connection conn, Writer out, String path, String tierName, Hashtable dbsUser) throws Exception {
+	public void insertTierInPD(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
-				getProcessedDSID(conn, path), 
+				getProcessedDSID(conn, get(table, "path")), 
 				getID(conn, "DataTier", "Name", tierName , true), 
-				personApi.getUserID(conn, dbsUser));
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false));
 	}
+
 
 
 	/**
@@ -411,11 +418,13 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void insertParentInPD(Connection conn, Writer out, String path, String parentPath, Hashtable dbsUser) throws Exception {
+	public void insertParentInPD(Connection conn, Writer out, Hashtable table, String parentPath, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "DatasetParentage", "ThisDataset", "ItsParent", 
-					getProcessedDSID(conn, path), 
+					getProcessedDSID(conn, get(table, "path")), 
 					getProcessedDSID(conn, parentPath), 
-					personApi.getUserID(conn, dbsUser));
+					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+					personApi.getUserID(conn, dbsUser),
+					get(table, "creation_date", false));
 	}
 
 	/**
@@ -430,15 +439,17 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void insertAlgoInPD(Connection conn, Writer out, String path, Hashtable algo, Hashtable dbsUser) throws Exception {
+	public void insertAlgoInPD(Connection conn, Writer out, Hashtable table, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
-					getProcessedDSID(conn, path), 
+					getProcessedDSID(conn, get(table, "path")), 
 					(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(algo, "app_version"), 
 							get(algo, "app_family_name"), 
 							get(algo, "app_executable_name"),
 							get(algo, "ps_name"), 
 							true), 
-					personApi.getUserID(conn, dbsUser));
+					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+					personApi.getUserID(conn, dbsUser),
+					get(table, "creation_date", false));
 	}
 
 
@@ -453,11 +464,13 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void insertRunInPD(Connection conn, Writer out, String path, String runNumber, Hashtable dbsUser) throws Exception {
+	public void insertRunInPD(Connection conn, Writer out, Hashtable table, String runNumber, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
-				getProcessedDSID(conn, path), 
-				getID(conn, "Runs", "RunNumber", runNumber , true), 
-				personApi.getUserID(conn, dbsUser));
+				getProcessedDSID(conn, get(table, "path")), 
+				getID(conn, "Runs", "RunNumber", runNumber , true), 	
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				get(table, "creation_date", false));
 	}
 
 	

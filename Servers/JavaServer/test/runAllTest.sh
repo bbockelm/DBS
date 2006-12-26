@@ -27,10 +27,10 @@ run_number2="9998"
 block_name="/test/test#$rand"
 lfn1="TEST_LFN_1_$rand"
 lfn2="TEST_LFN_2_$rand"
-algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCON_$rand'/>"
-algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand'/>"
-algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand'/>"
-algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='DUMMYCON_$rand'/>"
+algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
 
 
 display () {
@@ -145,13 +145,14 @@ listDatasetParents () {
 insertPrimaryDataset () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 			<dbs>
-				<primary-dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='VALID'>
+				<primary-dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
 				</primary-dataset>
 			</dbs>"
 	message="Executing insertPrimaryDataset API..."
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=insertPrimaryDataset "xmlinput=$xmlString"`
 	display "$out"
+	echo "$out"
 }
 
 
@@ -194,7 +195,12 @@ insertAlgorithm () {
 insertTier () {
 	message="Executing insertTier API..."	
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=insertTier tier_name="This_is_a_test_TIER_$rand"`
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<tier name='This_is_a_test_TIER_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+		</dbs>"
+
+	out=`$CMD api=insertTier "xmlinput=$xmlString"`
 	display "$out"
 }
 
@@ -203,12 +209,12 @@ insertTier () {
 insertRun () {
 	xmlString1="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<run run_number='$run_number1' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec'/>
+			<run run_number='$run_number1' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	
 	xmlString2="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<run run_number='$run_number2' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov_$rand' end_of_run='dec_$rand'/>
+			<run run_number='$run_number2' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov_$rand' end_of_run='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 
 	message="Executing insertRun API 2 times with different inputs..."	
@@ -225,7 +231,7 @@ insertRun () {
 insertLumiSection () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<lumi lumi_section_number='1111' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand'/>
+			<lumi lumi_section_number='1111' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	message="Executing insertLumiSection API..."	
 	echo $message >> $outFile ; echo $message
@@ -237,7 +243,7 @@ insertLumiSection () {
 insertProcessedDataset () {
 	xmlString1="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID'>
+			<processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<data_tier name='$tier_name1'/>
 				$algo1
 				$algo2
@@ -248,7 +254,7 @@ insertProcessedDataset () {
 
 	xmlString2="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='CHILD_$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID'>
+			<processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='CHILD_$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<data_tier name='$tier_name2'/>
 				<data_tier name='TEST_DIGI_$rand'/>
 				<data_tier name='TEST_GEN_$rand'/>
@@ -269,7 +275,7 @@ insertProcessedDataset () {
 insertBlock () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<block path='$path_child' name='$block_name' open_for_writing='1'/>
+			<block path='$path_child' name='$block_name' open_for_writing='1' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	message="Executing insertBlock API ..."	
 	echo $message >> $outFile ; echo $message
@@ -281,7 +287,7 @@ insertFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
 		<processed_datatset path='$path_child' block_name='$block_name'>
-			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
@@ -290,7 +296,7 @@ insertFiles () {
 				$algo1
 				$algo1
 			</file>
-			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
@@ -313,7 +319,7 @@ insertFiles () {
 createAnalysisDatasetFromPD () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path_child' physics_group_name='AnyName_$rand' />
+                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path_child' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDatasetFromPD API..."
         echo $message >> $outFile ; echo $message
