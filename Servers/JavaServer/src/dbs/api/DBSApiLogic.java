@@ -1,12 +1,13 @@
 /**
- $Revision: 1.52 $"
- $Id: DBSApiLogic.java,v 1.52 2006/12/15 20:54:02 sekhri Exp $"
+ $Revision: 1.53 $"
+ $Id: DBSApiLogic.java,v 1.53 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
 package dbs.api;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.regex.Pattern;
@@ -458,10 +459,15 @@ public class DBSApiLogic {
 	}
 
 	protected String get(ResultSet rs, String key) throws Exception {
-
 		String value = rs.getString(key);
 		if(isNull(value)) return "";
 		return value;
+	}
+	
+	protected String getTime(ResultSet rs, String key) throws Exception {
+		Timestamp value = rs.getTimestamp(key);
+		if(value == null) return "";
+		return Long.toString(value.getTime());
 	}
 
 	protected String getPattern(String pattern, String key) throws Exception {

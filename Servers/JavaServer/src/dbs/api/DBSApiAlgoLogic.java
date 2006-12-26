@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiAlgoLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiAlgoLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
@@ -61,7 +61,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_type='" + get(rs, "PS_TYPE") +
 						"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
 						"' ps_content='" + get(rs, "PS_CONTENT") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' created_by='" + get(rs, "CREATED_BY") +
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +

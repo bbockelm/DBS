@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiPrimDSLogic.java,v 1.1 2006/12/15 20:54:03 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
@@ -50,7 +50,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 						"' primary_name='" + get(rs, "PRIMARY_NAME") +
 						"' start_date='" + get(rs, "START_DATE") +
 						"' end_date='" + get(rs, "END_DATE") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' trigger_path_description='" + get(rs, "TRIGGER_PATH_DESCRIPTION") +
 						"' mc_channel_description='" + get(rs, "MC_CHANNEL_DESCRIPTION") +

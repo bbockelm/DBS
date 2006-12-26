@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiProcDSLogic.java,v 1.1 2006/12/15 20:54:03 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiProcDSLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
@@ -87,7 +87,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							//"' path='" +  get(rs, "PATH") +
 							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
 							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
-							"' creation_date='" + get(rs, "CREATION_DATE") +
+							"' creation_date='" + getTime(rs, "CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
 							"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
@@ -145,7 +145,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<processed-dataset-parent id='" + get(rs, "ID") + 
 						"' path='" +  get(rs, "PATH") +
-						"' creation_date='" + get(rs, "CREATION_DATE") +
+						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
 						"' physics_group_convener='" + get(rs, "PHYSICS_GROUP_CONVENER") +
@@ -183,7 +183,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					"' store_number='" + get(rs, "STRORE_NUMBER") +
 					"' start_of_run='" + get(rs, "START_OF_RUN") +
 					"' end_of_run='" + get(rs, "END_OF_RUN") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
@@ -213,7 +213,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<data_tier id='" + get(rs, "ID") +
 					"' name='" + get(rs, "NAME") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
@@ -246,7 +246,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					"' size='" + get(rs, "BLOCKSIZE") +
 					"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
 					//"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +

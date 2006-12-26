@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiFileLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiFileLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
@@ -75,7 +75,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' type='" + get(rs, "TYPE") +
 					"' status='" + get(rs, "STATUS") +
 					"' block_name='" + get(rs, "BLOCK_NAME") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
@@ -123,7 +123,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' type='" + get(rs, "TYPE") +
 					"' status='" + get(rs, "STATUS") +
 					"' block_name='" + get(rs, "BLOCK_NAME") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
@@ -156,7 +156,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
 					"' ps_name='" + get(rs, "PS_NAME") +
 					"' ps_hash='" + get(rs, "PS_HASH") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
@@ -185,7 +185,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			while(rs.next()) {
 				out.write(((String) "<file-data_tier id='" + get(rs, "ID") +
 					"' name='" + get(rs, "NAME") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
@@ -220,7 +220,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' end_event_number='" + get(rs, "END_EVENT_NUMBER") +
 					"' lumi_start_time='" + get(rs, "LUMI_START_TIME") +
 					"' lumi_end_time='" + get(rs, "LUMI_END_TIME") +
-					"' creation_date='" + get(rs, "CREATION_DATE") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
