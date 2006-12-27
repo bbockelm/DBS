@@ -1,6 +1,6 @@
 /**
- $Revision: 1.53 $"
- $Id: DBSApiLogic.java,v 1.53 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSApiLogic.java,v 1.54 2006/12/26 19:33:30 sekhri Exp $"
  *
  */
 
@@ -107,7 +107,7 @@ public class DBSApiLogic {
 	public void insertTier(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
 		insertTier(conn, out, 
-				get(table, "name", true),
+				get(table, "tier_name", true),
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				get(table, "creation_date", false)
