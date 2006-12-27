@@ -865,8 +865,16 @@ class DbsApi(DbsConfig):
     the database, otherwise may raise an DbsApiException.
     """
 
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<tier tier_name='"+ tier_name +"' />"
+    xmlinput += "</dbs>"
+
+    if self.verbose():
+       print "insertTier, xmlinput",xmlinput
+
     data = self._server._call ({ 'api' : 'insertTier', 
-                         'tier_name' : tier_name }, 'POST')
+                         'xmlinput' : xmlinput }, 'POST')
   # ------------------------------------------------------------
 
   def insertLumiSection(self, lumi):
