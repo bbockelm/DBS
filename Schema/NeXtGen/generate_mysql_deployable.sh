@@ -18,7 +18,7 @@ ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
 #  execution starts here
 #
-rm -f DBS-NeXtGen-MySQL.sql.TMP
+rm -f DBS-NeXtGen-MySQL.sql.TMP.*
 #
 date=`date +%m%d%Y%H%M%S`
 if [ -f $ddl_file ]; then
@@ -29,12 +29,13 @@ fi
 #
 echo
 echo "   Inserting auto_increment for mysql"
-cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    int%ID                    int not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP
-
-cat DBS-NeXtGen-MySQL.sql.TMP >> $ddl_file
+cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    int%ID                    int not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
+cat DBS-NeXtGen-MySQL.sql.TMP.1 | sed -e "s%);%) ENGINE = InnoDB ;%g" > DBS-NeXtGen-MySQL.sql.TMP.2
+cat DBS-NeXtGen-MySQL.sql.TMP.2 | sed -e "s%/%;%g" > DBS-NeXtGen-MySQL.sql.TMP.3
+cat DBS-NeXtGen-MySQL.sql.TMP.3 >> $ddl_file
 
 echo "-- =========== TRIGGERS FOR CreationDate =============================="  >> $ddl_file
-table_list=`cat DBS-NeXtGen-MySQL.sql.TMP|grep "CREATE TABLE" | awk '{print $3}'`
+table_list=`cat DBS-NeXtGen-MySQL.sql|grep "CREATE TABLE" | awk '{print $3}'`
 for atable in $table_list; do
    echo   >> $ddl_file
    echo "CREATE TRIGGER TR_TS_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
