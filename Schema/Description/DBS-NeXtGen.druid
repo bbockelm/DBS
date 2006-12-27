@@ -2,15 +2,15 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">500</attrib>
-		<attrib name="serial">309095</attrib>
+		<attrib name="build">508</attrib>
+		<attrib name="serial">311689</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">drop database dbs_new_era_v05;
-create database dbs_new_era_v05;
-use dbs_new_era_v05;
+			<attrib name="preSql">drop database dbs_new_era_v07;
+create database dbs_new_era_v07;
+use dbs_new_era_v07;
 </attrib>
 			<attrib name="postSql"/>
 			<attrib name="ddUseDDEquiv">false</attrib>
@@ -144,19 +144,19 @@ use dbs_new_era_v05;
 			<SqlGenModule>
 				<stdSql>
 					<genPostSQL>Y</genPostSQL>
-					<output>/Users/anzar/DBS/Schema/NeXtGen/DBS-NeXtGen-MySQL.sql</output>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS4.sql</output>
 					<order>s</order>
 					<genComments>N</genComments>
 					<genIndexes>N</genIndexes>
-					<genTriggers>Y</genTriggers>
+					<genTriggers>N</genTriggers>
 					<genDropStmt>N</genDropStmt>
 					<genViews>N</genViews>
 					<genRules>N</genRules>
 					<genFunctions>N</genFunctions>
-					<genProcedures>Y</genProcedures>
-					<genInlineFKs>Y</genInlineFKs>
+					<genProcedures>N</genProcedures>
+					<genInlineFKs>N</genInlineFKs>
 					<genPreSQL>Y</genPreSQL>
-					<genSequences>Y</genSequences>
+					<genSequences>N</genSequences>
 				</stdSql>
 				<oraSql>
 					<output>/Users/anzar/DBS/Schema/NeXtGen/DBS-NeXtGen-Oracle.sql</output>
@@ -436,6 +436,27 @@ use dbs_new_era_v05;
 						<attrib name="name">varchar(250)</attrib>
 						<attrib name="ddEquiv">varchar(250)</attrib>
 						<attrib name="id">308659</attrib>
+					</attribs>
+					<domain>
+						<attribs>
+							<attrib name="minValue"/>
+							<attrib name="outRange">false</attrib>
+							<attrib name="maxValue"/>
+							<attrib name="type">none</attrib>
+						</attribs>
+						<list>
+							<header>
+								<elem>value</elem>
+							</header>
+						</list>
+					</domain>
+					<aliases/>
+				</type>
+				<type>
+					<attribs>
+						<attrib name="name">TEXT</attrib>
+						<attrib name="ddEquiv"/>
+						<attrib name="id">309958</attrib>
 					</attribs>
 					<domain>
 						<attribs>
@@ -5584,9 +5605,33 @@ use dbs_new_era_v05;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">OpenForWriting</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">NumberOfEvents</attrib>
+							<attrib name="id">310822</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">6</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">OpenForWriting</attrib>
 							<attrib name="id">309093</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -9420,7 +9465,7 @@ use dbs_new_era_v05;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -9485,7 +9530,7 @@ use dbs_new_era_v05;
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -9514,7 +9559,7 @@ use dbs_new_era_v05;
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -9561,7 +9606,7 @@ use dbs_new_era_v05;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">136868</attrib>
+							<attrib name="type">309958</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
