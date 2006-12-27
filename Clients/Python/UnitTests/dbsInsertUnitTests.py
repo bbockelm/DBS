@@ -32,8 +32,6 @@ primary = 'TestPrimary' + mytime
 pri1 = DbsPrimaryDataset (Name = primary)
 apiObj.run(pri1, excep = False)
 
-apiObj.run(pri1, excep = True)
-
 pri = DbsPrimaryDataset ()
 apiObj.run(pri, excep = True)
 
@@ -71,7 +69,6 @@ algo1 = DbsAlgorithm (ExecutableName="TestExe01",
 			                              )
 	)
 apiObj.run(algo1, excep = False)
-apiObj.run(algo1, excep = True)
 
 
 algo2 = DbsAlgorithm (ExecutableName="TestExe011", 
@@ -299,7 +296,6 @@ proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 		TierList=tierList,
 		AlgoList=[algo1, algo2])
 apiObj.run(proc1, excep = False)
-apiObj.run(proc1, excep = True)
 
 
 proc2 = DbsProcessedDataset(PrimaryDataset=pri1,
@@ -419,7 +415,6 @@ apiObj.run(path, block,  excep = False)
 block = DbsFileBlock (Name= blockName2)
 apiObj.run(proc1, block,  excep = False)
 
-apiObj.run(path, blockName,  excep = True)
 apiObj.run(path, "/" + mytime + "this/isatestblock016712", excep = True)
 apiObj.run("/absssssssc/dessssssf/hijaaaaaaa", excep = True)
 apiObj.run("/abcaaaa/deaaaaaaf/hiaaaaaaaj", "/this/isatestblock#016712", excep = True)
@@ -449,7 +444,6 @@ run1 = DbsRun (RunNumber=runNumber1,
 		EndOfRun= 'never',
 )
 apiObj.run(run1, excep = False)
-apiObj.run(run1, excep = True)
 
 run2 = DbsRun (RunNumber=runNumber2)
 apiObj.run(run2, excep = True)
@@ -496,7 +490,6 @@ lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
 			RunNumber=runNumber1,
 			)
 
-apiObj.run(lumi1, excep = False)
 apiObj.run(lumi1, excep = False)
 
 lumi2 = DbsLumiSection (LumiSectionNumber=lumiNumber2,
@@ -570,7 +563,6 @@ file2= DbsFile (
 		)
 
 apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
-apiObj.run(proc1 ,[file1,file2], block1,  excep = True)
 
 file3 = DbsFile (LogicalFileName= '1111-0909-9767-8764222' + mytime,
 		Checksum= '999',
