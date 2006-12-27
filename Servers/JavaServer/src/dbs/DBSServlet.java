@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.26 $"
- $Id: DBSServlet.java,v 1.26 2006/12/05 22:44:31 sekhri Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSServlet.java,v 1.27 2006/12/13 16:39:16 afaq Exp $"
 
  */
 package dbs;
@@ -15,12 +15,46 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import dbs.api.DBSApi;
 import dbs.util.DBSUtil;
+import dbs.util.DBSConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
+
 
 /**
 * A Servlet that inherits from <code>javax.servlet.http.HttpServlet</code>. This is the gateway for invoking DBS API. All remote requets pass through this servlet. This class simple implements doPost and doGet method and involes the DBS api that handles the rest.
 * @author sekhri
 */
 public class DBSServlet extends HttpServlet{
+
+        public void init(ServletConfig config) throws ServletException {
+            try {
+                 super.init(config);
+                 ServletContext context = getServletContext();
+                 //context.log("DBS Servlet Initializing..");
+                 System.out.println("DBS Servlet INIT is CALLED");
+
+                 //FIXME: WE must checks the Schema version here
+                 //Verify why can't we make DBSApi object here ??
+                 //Lets get serever parameters here
+                 supportedSchemaVersion = config.getInitParameter("SupportedSchemaVersion");
+                 supportedClientVersions = config.getInitParameter("SupportedClientVersions");
+
+                 System.out.println("supportedSchemaVersion: "+supportedSchemaVersion);
+                 System.out.println("supportedClientVersions: "+supportedClientVersions);
+
+                 System.out.println("SEREVER INFO: "+context.getServerInfo() );
+                 //Instatiate the DBSConfig to it gets parameters from Servlet instead of $DBS_SERVER_CONFIG
+                 DBSConfig dbsconfig = DBSConfig.getInstance(supportedSchemaVersion, supportedClientVersions);
+
+            } catch(Exception e) {
+                        throw new ServletException(e);
+            }
+        }
+
+        private String supportedSchemaVersion;
+        private String supportedClientVersions;
+
+
 	
          //We must have a better way of responding in XML    ANZAR
          //following is interim solution

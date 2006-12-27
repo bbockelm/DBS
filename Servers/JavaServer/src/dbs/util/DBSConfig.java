@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.6 $"
- $Id: DBSConfig.java,v 1.6 2006/12/10 01:53:50 afaq Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSConfig.java,v 1.7 2006/12/13 18:17:43 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -40,6 +40,25 @@ public class DBSConfig {
 
         private static DBSConfig ref;
 
+
+        //Having two different CTORs we can manage how the DBS is Configured, From an XML file
+        // Or from a parameterized CTOR
+        public static synchronized DBSConfig getInstance(String schemaVersion, String clientVersions)
+        throws DBSException
+         {
+           if (ref == null)
+               ref = new DBSConfig(schemaVersion, clientVersions);
+           return ref;
+         }
+
+        private DBSConfig(String schemaVersion, String clientVersions)
+        throws DBSException
+          {
+           supportedSchemaVersion = schemaVersion;
+           supportedClientVersions = clientVersions;
+          }
+
+
         public static synchronized DBSConfig getInstance()
         throws DBSException
          {
@@ -56,7 +75,7 @@ public class DBSConfig {
                 String dbs_config = null;
                 dbs_config = System.getenv("DBS_SERVER_CONFIG");
                 if (dbs_config == null || dbs_config.equals("") ) {
-                   throw new DBSException("Configuration Error", "1050", "Environment variable DBS_SERVER_CONFIG not set ?");
+                   throw new DBSException("Configuration Error", "1050", "Environment variable DBS_SERVER_CONFIG not set, You must not be getting this from Live Server ?");
                 }
 
                 try { 
