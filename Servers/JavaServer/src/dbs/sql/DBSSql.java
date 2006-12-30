@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.35 $"
- $Id: DBSSql.java,v 1.35 2006/12/14 20:36:07 sekhri Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSSql.java,v 1.36 2006/12/26 18:41:55 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -227,6 +227,7 @@ public class DBSSql {
 		String sql = "UPDATE Block \n" +
 			"SET BlockSize = (SELECT SUM(FileSize) FROM Files f WHERE f.Block = ?) , \n" +
 			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = ?) \n" +
+			"NumberOfEvents= (SELECT SUM(NumberOfEvents) FROM Files f WHERE f.Block = ?) \n" +
 			"WHERE ID = ?" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -634,6 +635,7 @@ public class DBSSql {
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName) throws SQLException {
 		String sql = "SELECT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
+                        "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
                         //OpenForWriting flag can be managed through Status why we duplicate 
