@@ -152,6 +152,13 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+  #-------Backward compataible interface used by CRAB ----------
+  def listProcessedDatasetsCRAB(self, datasetPathPattern="*"):
+ 
+
+    return []
+
+
   # ------------------------------------------------------------
   def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",   
                                   patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
@@ -405,7 +412,8 @@ class DbsApi(DbsConfig):
                                        Name=str(attrs['name']), 
                                        BlockSize=int(attrs['size']),
                                        NumberOfFiles=int(attrs['number_of_files']),
-                                       #OpenForWriting=str(attrs['open_for_writing']),
+                                       NumberOfEvents=int(attrs['number_of_events']),
+                                       OpenForWriting=str(attrs['open_for_writing']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
                                        LastModificationDate=str(attrs['last_modification_date']),
@@ -537,7 +545,7 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def getDatasetContents(self, dataset):
+  def getDatasetContentsOLD(self, dataset):
     """
     Retrieve the event collections of dataset by file block.  Returns
     a list of DbsFileBlock objects, with event collection list filled
