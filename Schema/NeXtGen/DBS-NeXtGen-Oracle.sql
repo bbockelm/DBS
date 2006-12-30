@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 499
+REM === Build : 512
 REM ======================================================================
 
 CREATE TABLE Person
@@ -121,6 +121,19 @@ CREATE TABLE LumiSection
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
+  );
+
+REM ======================================================================
+
+CREATE TABLE StorageElement
+  (
+    ID                    int,
+    SEName                varchar(100)                                                      unique not null,
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    primary key(ID)
   );
 
 REM ======================================================================
@@ -248,12 +261,12 @@ REM ======================================================================
 CREATE TABLE QueryableParameterSet
   (
     ID                    int,
-    Hash                  varchar(100)                                                      not null,
+    Hash                  varchar(500)                                                      not null,
     Name                  varchar(100)                                                      not null,
     Version               varchar(100)                                                      not null,
-    Type                  varchar(100)                                                      not null,
-    Annotation            varchar(1000)                                                     not null,
-    Content               varchar(1000)                                                     not null,
+    Type                  varchar(100),
+    Annotation            varchar(1000),
+    Content               CLOB                                                              not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -441,6 +454,7 @@ CREATE TABLE Block
     Dataset               int                                                               not null,
     BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,
+    NumberOfEvents        int                                                               not null,
     OpenForWriting        int                                                               not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
@@ -484,6 +498,20 @@ CREATE TABLE AnalysisDatasetLumi
     LastModifiedBy        int,
     primary key(ID),
     unique(AnalysisDataset,Lumi)
+  );
+
+REM ======================================================================
+
+CREATE TABLE SEBlock
+  (
+    ID                    int,
+    SEID                  int                                                               unique not null,
+    BlockID               int                                                               unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
   );
 
 REM ======================================================================
@@ -674,6 +702,13 @@ ALTER TABLE LumiSection ADD CONSTRAINT
 /
 ALTER TABLE LumiSection ADD CONSTRAINT 
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
@@ -923,6 +958,19 @@ ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT
 /
 ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
     AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE FileTier ADD CONSTRAINT 

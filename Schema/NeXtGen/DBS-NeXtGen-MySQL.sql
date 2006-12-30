@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 507
+-- === Build : 512
 -- ======================================================================
 
 drop database dbs_new_era_v07;
@@ -238,6 +238,20 @@ CREATE TABLE LumiSection
 
 -- ======================================================================
 
+CREATE TABLE StorageElement
+  (
+    ID                    int,
+    SEName                varchar(100)                                                      unique not null,
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID)
+  );
+
+-- ======================================================================
+
 CREATE TABLE AnalysisDSStatus
   (
     ID                    int,
@@ -331,6 +345,21 @@ CREATE TABLE ProcDSStatus
   (
     ID                    int,
     Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE SEBlock
+  (
+    ID                    int,
+    SEID                  int                                                               unique not null,
+    BlockID               int                                                               unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -805,6 +834,13 @@ ALTER TABLE LumiSection ADD CONSTRAINT
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
     AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -858,6 +894,19 @@ ALTER TABLE ProcDSStatus ADD CONSTRAINT
 /
 ALTER TABLE ProcDSStatus ADD CONSTRAINT 
     ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1074,5 +1123,4 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
-
 

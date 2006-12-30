@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 507
+-- === Build : 512
 -- ======================================================================
 
 drop database dbs_new_era_v07;
@@ -238,6 +238,20 @@ CREATE TABLE LumiSection
 
 -- ======================================================================
 
+CREATE TABLE StorageElement
+  (
+    ID                    int not null auto_increment,
+    SEName                varchar(100)                                                      unique not null,
+    CreatedBy             int,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE AnalysisDSStatus
   (
     ID                    int not null auto_increment,
@@ -331,6 +345,21 @@ CREATE TABLE ProcDSStatus
   (
     ID                    int not null auto_increment,
     Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE SEBlock
+  (
+    ID                    int not null auto_increment,
+    SEID                  int                                                               unique not null,
+    BlockID               int                                                               unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -805,6 +834,13 @@ ALTER TABLE LumiSection ADD CONSTRAINT
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
     AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -858,6 +894,19 @@ ALTER TABLE ProcDSStatus ADD CONSTRAINT
 ;
 ALTER TABLE ProcDSStatus ADD CONSTRAINT 
     ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+;
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+;
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1075,7 +1124,6 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-
 -- =========== TRIGGERS FOR CreationDate ==============================
 
 CREATE TRIGGER TR_TS_Person BEFORE INSERT ON Person
@@ -1117,6 +1165,9 @@ FOR EACH ROW SET NEW.CreationDate = NOW();
 CREATE TRIGGER TR_TS_LumiSection BEFORE INSERT ON LumiSection
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
+CREATE TRIGGER TR_TS_StorageElement BEFORE INSERT ON StorageElement
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
 CREATE TRIGGER TR_TS_AnalysisDSStatus BEFORE INSERT ON AnalysisDSStatus
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
@@ -1136,6 +1187,9 @@ CREATE TRIGGER TR_TS_PrimaryDSType BEFORE INSERT ON PrimaryDSType
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 CREATE TRIGGER TR_TS_ProcDSStatus BEFORE INSERT ON ProcDSStatus
+FOR EACH ROW SET NEW.CreationDate = NOW();
+
+CREATE TRIGGER TR_TS_SEBlock BEFORE INSERT ON SEBlock
 FOR EACH ROW SET NEW.CreationDate = NOW();
 
 CREATE TRIGGER TR_TS_AlgorithmConfig BEFORE INSERT ON AlgorithmConfig
@@ -1202,7 +1256,7 @@ FOR EACH ROW SET NEW.CreationDate = NOW();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_03', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
