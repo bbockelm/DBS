@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiBlockLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiBlockLogic.java,v 1.3 2006/12/30 06:27:16 afaq Exp $"
  *
  */
 
@@ -46,6 +46,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String path = get(block, "path");
 		String name = getBlock(block, "name", false);
 		String openForWriting = get(block, "open_for_writing", false);
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+                String userID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
 		String creationDate = get(block, "creation_date", false);
 
@@ -66,7 +68,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                         "0",// A new block should always have 0 events ??
 					openForWriting, //openForWriting must be 1 fr a new block
 					cbUserID,
-					personApi.getUserID(conn, dbsUser),
+					userID,
 					creationDate);
 
 				ps.execute();
@@ -76,6 +78,23 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		} else {
 			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
 		}
+
+
+                //If user did provided SE for this block 
+                //Now we must insert the SE if it doesn't exists and
+                //add SE-Block map entry into SEBlock
+                //Oh that Spaghetti code sucks !
+                String storageElement = get(block, "storage_element");
+                if ( ! isNull(storageElement) ) { 
+                         String seID = getID(conn, "StorageElement", "Name", storageElement, false);
+                         if (isNull(seID)) insertName(conn, out, "StorageElement", "Name", storageElement, cbUserID, userID, creationDate);
+                         insertMap(conn, out, "SEBlock", "SEID", "BlockID",
+                                        getID(conn, "Block", "Name", name , true),
+                                        getID(conn, "StorageElement", "Name", storageElement , true),
+                                        cbUserID, lmbUserID, creationDate);
+
+                }
+                         
 		out.write("<block block_name='" + name + "'/>");
 	}
 
