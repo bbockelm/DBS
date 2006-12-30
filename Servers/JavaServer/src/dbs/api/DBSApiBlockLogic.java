@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiBlockLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiBlockLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
@@ -63,6 +63,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					name,
 					procDSID,
 					"0",// A new block should always have 0 files
+                                        "0",// A new block should always have 0 events ??
 					openForWriting, //openForWriting must be 1 fr a new block
 					cbUserID,
 					personApi.getUserID(conn, dbsUser),
@@ -92,6 +93,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                 name,
                                 procDSID,
                                 "0",// A new block should always have 0 files
+                                "0",// A new block should always have 0 events ??
                                 openForWriting,
 				"",
                                 personApi.getUserID(conn, dbsUser),

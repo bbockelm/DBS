@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiProcDSLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiProcDSLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
  *
  */
 
@@ -245,7 +245,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					"' name='" + get(rs, "NAME") +
 					"' size='" + get(rs, "BLOCKSIZE") +
 					"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
-					//"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+                                        "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+					"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
 					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 					"' created_by='" + get(rs, "CREATED_BY") +

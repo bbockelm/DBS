@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.36 $"
- $Id: DBSSql.java,v 1.36 2006/12/26 18:41:55 sekhri Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSSql.java,v 1.37 2006/12/30 06:11:23 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -84,12 +84,13 @@ public class DBSSql {
 		return getInsertSQL(conn, "Runs", table);
 	}
 
-	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String openForWriting, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String nOfEvts, String openForWriting, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("BlockSize", size);
 		table.put("Name", name);
 		table.put("Dataset", procDSID);
 		table.put("NumberOfFiles", nOfFiles);
+		table.put("NumberOfEvents", nOfEvts);
 		table.put("OpenForWriting", openForWriting);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
@@ -638,8 +639,7 @@ public class DBSSql {
                         "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
-                        //OpenForWriting flag can be managed through Status why we duplicate 
-			//"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
+			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"b.CreationDate as CREATION_DATE, \n" +
 			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
