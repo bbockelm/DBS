@@ -837,7 +837,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def insertBlock(self, dataset, block=None ):
+  def insertBlock(self, dataset, block=None, storage_element="" ):
     """
     Create a new primary dataset.  Instantiates a database entity for
     the dataset, and updates input object for the id of the new row.
@@ -852,6 +852,7 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<block name='"+ name +"'"
+    if (storage_element not in ("", None)) : xmlinput += " storage_element='"+storage_element+"'"
     xmlinput += " path='"+path+"'/>"
     xmlinput += "</dbs>"
 
