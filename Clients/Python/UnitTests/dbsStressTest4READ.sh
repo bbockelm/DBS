@@ -36,7 +36,7 @@ calculateAverage()
 date=`date`
 echo "Test Starting at $date" >> $result_file 
 # In one Client inserting the data that will be used for testing the read operations
-python dbsStressTest4READ.py 1000 1 dbsStressTest4Read  > dbsStressTest4Read_Insert.log 2>&1
+#python dbsStressTest4READ.py 1000 1 dbsStressTest4Read  > dbsStressTest4Read_Insert.log 2>&1
 
 echo "10 parallel clients: each reading 1000 files from the database in one go" >> $result_file
 calculateAverage 10 dbsStressTestListFiles.py
@@ -48,6 +48,8 @@ echo "30 parallel clients: each reading 1000 files from the database in one go" 
 calculateAverage 30 dbsStressTestListFiles.py
 echo "40 parallel clients: each reading 1000 files from the database in one go" >> $result_file
 calculateAverage 40 dbsStressTestListFiles.py
+echo "50 parallel clients: each reading 1000 files from the database in one go" >> $result_file
+calculateAverage 50 dbsStressTestListFiles.py
 
 
 date=`date`

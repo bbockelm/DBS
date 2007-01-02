@@ -41,10 +41,10 @@ api = DbsApi(opts.__dict__)
 
 filename="bulkDataResult."+logext
 #print "FILENAME: "+filename
-#f = open(filename, "w")
+f = open(filename, "w")
 
 #################  WRITING TO STDOUT COMMENT THIS LINE (UNCOMMENT ABOVE) TO WRITE TO A FILE ###########
-f=sys.stdout
+#f=sys.stdout
 
 for i in range(maxDS):
         # Make this cycle unique

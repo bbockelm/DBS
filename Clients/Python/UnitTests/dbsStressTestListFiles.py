@@ -22,11 +22,11 @@ try:
   api = DbsApi(opts.__dict__)
   
   try:
-   
+   print len(api.listFiles("/DBSStressTestPrimaryDataset/DBSStressTestSIM/DBSStressTestProcessedDS", "", "")) 
    #f = open(logfile, "w")
-   print ""
-   for file in api.listFiles("/DBSStressTestPrimaryDataset/DBSStressTestSIM/DBSStressTestProcessedDS/", "", ""):
-     print "\n  %s" % file["LogicalFileName"]
+   #print ""
+   #for file in api.listFiles("/DBSStressTestPrimaryDataset/DBSStressTestSIM/DBSStressTestProcessedDS/", "", ""):
+   #  print "\n  %s" % file["LogicalFileName"]
      #f.write(file["LogicalFileName"])
    #f.close()
 
