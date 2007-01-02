@@ -9,10 +9,10 @@ savePWD=$PWD
 outFile=$savePWD/result.txt
 rm -f $outFile
 cd $BASE/lib
-CLASSPATH=.:$PWD/ojdbc14_g.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI apiversion=v00_00_03"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI apiversion=v00_00_04"
 rand=`uuidgen`
 #$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 block='/TestPrimary1164144491.29/TestProcessed1164144491.29#42665801-a716-487e-9220-057e955f3a39'
@@ -331,27 +331,27 @@ createAnalysisDatasetFromPD () {
 
 
 insertPrimaryDataset
-insertAlgorithm
-insertTier
-insertRun
-insertLumiSection
-insertProcessedDataset
-insertBlock
-insertFiles
-createAnalysisDatasetFromPD
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
-listDatasetContents
-listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
+#insertAlgorithm
+#insertTier
+#insertRun
+#insertLumiSection
+#insertProcessedDataset
+#insertBlock
+#insertFiles
+#createAnalysisDatasetFromPD
+#listPrimaryDatasets
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
+#listDatasetContents
+#listDatasetParents
+#listFileParents
+#listFileAlgorithms
+#listFileTiers
+#listFileLumis
 													
 echo 
 echo "*************************************************************"

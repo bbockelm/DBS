@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiAnaDSLogic.java,v 1.1 2006/12/15 20:54:02 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
  *
  */
 
@@ -50,7 +50,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String status = get(dataset, "status", true);
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
-		String creationDate = get(dataset, "creation_date", false);
+		String creationDate = getTime(dataset, "creation_date", false);
 
 		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, get(dataset, "path"));
 

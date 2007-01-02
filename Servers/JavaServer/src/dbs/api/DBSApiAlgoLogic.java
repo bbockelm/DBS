@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiAlgoLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiAlgoLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
  *
  */
 
@@ -100,7 +100,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		//Get the User ID from USERDN
 		String userID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(algo, "created_by", false), dbsUser );
-		String creationDate = get(algo, "creation_date", false);
+		String creationDate = getTime(algo, "creation_date", false);
 
 		//Insert the application version if it does not exists
 		insertName(conn, out, "AppVersion", "Version", version, cbUserID, userID, creationDate);

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiProcDSLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiProcDSLogic.java,v 1.4 2006/12/30 06:27:16 afaq Exp $"
  *
  */
 
@@ -286,7 +286,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
-		String creationDate = get(dataset, "creation_date", false);
+		String creationDate = getTime(dataset, "creation_date", false);
 
 		String procDSName = get(dataset, "processed_datatset_name", true);
 		String phyGroupName = get(dataset, "physics_group_name", false);
@@ -403,7 +403,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				getID(conn, "DataTier", "Name", tierName , true), 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false));
+				getTime(table, "creation_date", false));
 	}
 
 
@@ -425,7 +425,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getProcessedDSID(conn, parentPath), 
 					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
-					get(table, "creation_date", false));
+					getTime(table, "creation_date", false));
 	}
 
 	/**
@@ -450,7 +450,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							true), 
 					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
-					get(table, "creation_date", false));
+					getTime(table, "creation_date", false));
 	}
 
 
@@ -471,7 +471,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				getID(conn, "Runs", "RunNumber", runNumber , true), 	
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false));
+				getTime(table, "creation_date", false));
 	}
 
 	

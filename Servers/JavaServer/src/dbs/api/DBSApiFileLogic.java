@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiFileLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiFileLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
  *
  */
 
@@ -309,7 +309,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String type = get(file, "type", false);
 			String valStatus = get(file, "validation_status", false);
 			String cbUserID = personApi.getUserID(conn, get(file, "created_by", false), dbsUser );
-			String creationDate = get(file, "creation_date", false);
+			String creationDate = getTime(file, "creation_date", false);
 
 			Vector lumiVector = DBSUtil.getVector(file,"lumi_section");
 			Vector tierVector = DBSUtil.getVector(file,"data_tier");
@@ -456,7 +456,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				getID(conn, "DataTier", "Name", tierName , true), 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false));
+				getTime(table, "creation_date", false));
 
 	}
 	
@@ -477,7 +477,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				getFileID(conn, parentLFN, true),
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false));
+				getTime(table, "creation_date", false));
 	}
 
 
@@ -503,7 +503,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						true), 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false));
+				getTime(table, "creation_date", false));
 	}
 
 	/**
@@ -523,7 +523,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false));
+				getTime(table, "creation_date", false));
 	}
 
 

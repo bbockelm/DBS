@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiBlockLogic.java,v 1.3 2006/12/30 06:27:16 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiBlockLogic.java,v 1.4 2006/12/30 07:04:40 afaq Exp $"
  *
  */
 
@@ -49,7 +49,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
                 String userID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
-		String creationDate = get(block, "creation_date", false);
+		String creationDate = getTime(block, "creation_date", false);
 
 		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
 		//Set defaults Values

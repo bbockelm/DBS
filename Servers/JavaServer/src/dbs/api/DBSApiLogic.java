@@ -1,6 +1,6 @@
 /**
- $Revision: 1.54 $"
- $Id: DBSApiLogic.java,v 1.54 2006/12/26 19:33:30 sekhri Exp $"
+ $Revision: 1.55 $"
+ $Id: DBSApiLogic.java,v 1.55 2006/12/27 19:26:54 afaq Exp $"
  *
  */
 
@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.regex.Pattern;
 import java.util.Hashtable;
+import java.util.Date;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
@@ -23,7 +24,7 @@ import dbs.DBSConstants;
 */
 public class DBSApiLogic {
 	//private static String SAFE_PATH = "[-A-Za-z0-9_./\\p{%}]";
-	//private static String SAFE_NAME = "[-A-Za-z0-9_.]";
+	private static String SAFE_TIME = "[-0-9.]+";
 
 	//A regular expression used to validate a path that will not contain any special characters or blank space but can contain slashes.
 	private static String SAFE_PATH = "[-\\w_\\.%/]+";
@@ -78,7 +79,7 @@ public class DBSApiLogic {
 					get(run, "end_of_run", false),
 					personApi.getUserID(conn, get(run, "created_by", false), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
-					get(run, "creation_date", false));
+					getTime(run, "creation_date", false));
 
 				ps.execute();
 			} finally { 
@@ -110,7 +111,7 @@ public class DBSApiLogic {
 				get(table, "tier_name", true),
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false)
+				getTime(table, "creation_date", false)
 				);
 	}
 	
@@ -135,7 +136,7 @@ public class DBSApiLogic {
 		insertLumiSection(conn, out, table, 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false)
+				getTime(table, "creation_date", false)
 				);
 	}
 	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String cbUserID, String lmbUserID, String creationDate) throws Exception {
@@ -248,7 +249,7 @@ public class DBSApiLogic {
 				get(table, "physics_group_convener", true),
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
-				get(table, "creation_date", false)
+				getTime(table, "creation_date", false)
 				);
 
 	}
@@ -400,7 +401,7 @@ public class DBSApiLogic {
 
 
 	/**
-	 * Checks a word a s whole against a regular expression that validates a english word without any special characters.
+	 * Checks a word as whole against a regular expression that validates a english word without any special characters.
 	 * @param pattern the value of the word that needs to be validated.
 	 * @param key the name of the key which is used to throw an exception in case the word fails to validate. This make the exception message more intutive as it states which key was being checked.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid.
@@ -425,7 +426,20 @@ public class DBSApiLogic {
                         throw new DBSException("Invalid format", "1017", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression " + SAFE_STR);
         }
 
+	/**
+	 * Checks the time against a regular expression that validates a long numberics without any special characters.
+	 * @param pattern the value of the word that needs to be validated.
+	 * @param key the name of the key which is used to throw an exception in case the word fails to validate. This make the exception message more intutive as it states which key was being checked.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid.
+	 */
+	protected void checkTime(String pattern, String key) throws Exception {
+		if(isNull(pattern))
+			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid " + key);
+		if (! Pattern.matches(SAFE_TIME, pattern)) 
+			throw new DBSException("Invalid format", "1036", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression "+ SAFE_TIME);
+	}
 
+	
 	protected boolean isNull(String pattern) {
 		return DBSUtil.isNull(pattern);
 	}
@@ -452,7 +466,16 @@ public class DBSApiLogic {
                 return value;
         }
 
-
+	protected String getTime(Hashtable table, String key, boolean excep) throws Exception{
+                String value = DBSUtil.get(table, key);
+                if(excep) checkTime(value, key);
+                else if(! isNull(value)) { 
+			checkTime(value, key);
+		} else {
+			value = Long.toString( (new Date()).getTime() );
+		}
+                return value;
+        }
 
 	protected String get(Hashtable table, String key) {
 		return DBSUtil.get(table, key);

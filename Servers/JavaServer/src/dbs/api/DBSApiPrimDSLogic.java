@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiPrimDSLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
  *
  */
 
@@ -85,7 +85,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		
 		String lmbUserID = personApi.getUserID(conn, dbsUser); 
 		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
-		String creationDate = get(dataset, "creation_date", false);
+		String creationDate = getTime(dataset, "creation_date", false);
 		String name = get(dataset, "primary_name", true);
 		String type = get(dataset, "type", false);
 		System.out.println("creation_date " + creationDate);		
