@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiBlockLogic.java,v 1.4 2006/12/30 07:04:40 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiBlockLogic.java,v 1.5 2007/01/02 16:55:50 sekhri Exp $"
  *
  */
 
@@ -10,9 +10,11 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.UUID;
 import dbs.sql.DBSSql;
 import dbs.util.DBSConfig;
+import dbs.util.DBSUtil;
 import dbs.DBSException;
 
 /**
@@ -52,6 +54,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String creationDate = getTime(block, "creation_date", false);
 
 		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
+		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 		String[] data = path.split("/");
 		if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
@@ -79,23 +82,35 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
 		}
 
+		String blockID = "";
+       		if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
+		//System.out.println("BLOCK ID is " + blockID);
+		for (int j = 0; j < seVector.size(); ++j) {
+			String seName = get((Hashtable)seVector.get(j), "storage_element_name");
+			//System.out.println("storage_element_name " + seName);
+			insertStorageElement(conn, out, seName , cbUserID, lmbUserID, creationDate);
+			insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
+					getID(conn, "StorageElement", "SEName", seName , true),
+					blockID, 
+					cbUserID, lmbUserID, creationDate);
+		}
 
-                //If user did provided SE for this block 
-                //Now we must insert the SE if it doesn't exists and
-                //add SE-Block map entry into SEBlock
-                //Oh that Spaghetti code sucks !
-                String storageElement = get(block, "storage_element");
-                if ( ! isNull(storageElement) ) { 
-                         String seID = getID(conn, "StorageElement", "Name", storageElement, false);
-                         if (isNull(seID)) insertName(conn, out, "StorageElement", "Name", storageElement, cbUserID, userID, creationDate);
-                         insertMap(conn, out, "SEBlock", "SEID", "BlockID",
-                                        getID(conn, "Block", "Name", name , true),
-                                        getID(conn, "StorageElement", "Name", storageElement , true),
-                                        cbUserID, lmbUserID, creationDate);
-
-                }
-                         
+                        
 		out.write("<block block_name='" + name + "'/>");
+	}
+
+	public void insertStorageElement(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		insertStorageElement(conn, out, 
+				get(table, "storage_element_name", true),
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				getTime(table, "creation_date", false)
+				);
+	}
+	
+	private void insertStorageElement(Connection conn, Writer out, String seName, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		insertName(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
 	}
 
 	

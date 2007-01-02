@@ -27,10 +27,10 @@ run_number2="9998"
 block_name="/test/test#$rand"
 lfn1="TEST_LFN_1_$rand"
 lfn2="TEST_LFN_2_$rand"
-algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
-algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
-algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
-algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMY_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMYa_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='DUMMYCO andy thing N_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMYb_ps_name2_$rand' ps_hash='DUaMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMYc_ps_name2_$rand' ps_hash='DbUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMYd_ps_name2_$rand' ps_hash='DUMcMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='DUMMYCON_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>"
 
 
 display () {
@@ -91,6 +91,7 @@ listBlocks() {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=listBlocks path=$path_child`
 	display "$out"
+	echo "$out"
 }
 
 listFiles () {
@@ -152,7 +153,7 @@ insertPrimaryDataset () {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=insertPrimaryDataset "xmlinput=$xmlString"`
 	display "$out"
-	echo "$out"
+	#echo "$out"
 }
 
 
@@ -276,11 +277,14 @@ insertBlock () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
 			<block path='$path_child' name='$block_name' open_for_writing='1' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<storage_element storage_element_name='SE1_$rand'/>
+			<storage_element storage_element_name='SE2_$rand'/>
 		</dbs>"
 	message="Executing insertBlock API ..."	
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=insertBlock "xmlinput=$xmlString"`
 	display "$out"
+	echo "$out"
 }
 
 insertFiles () {
@@ -331,27 +335,27 @@ createAnalysisDatasetFromPD () {
 
 
 insertPrimaryDataset
-#insertAlgorithm
-#insertTier
-#insertRun
-#insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
-#createAnalysisDatasetFromPD
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
-#listDatasetContents
-#listDatasetParents
-#listFileParents
-#listFileAlgorithms
-#listFileTiers
-#listFileLumis
+insertAlgorithm
+insertTier
+insertRun
+insertLumiSection
+insertProcessedDataset
+insertBlock
+insertFiles
+createAnalysisDatasetFromPD
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
+listDatasetContents
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 													
 echo 
 echo "*************************************************************"

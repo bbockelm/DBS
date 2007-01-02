@@ -1,6 +1,6 @@
 /**
- $Revision: 1.39 $"
- $Id: DBSApi.java,v 1.39 2006/12/15 20:54:02 sekhri Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSApi.java,v 1.40 2006/12/26 18:41:54 sekhri Exp $"
  *
 */
 
@@ -164,7 +164,7 @@ public class DBSApi {
 			} 
 			String suppSchemaVer = supportedSchemaVersions();
 			if (! dbsSchemaVersion.equals(suppSchemaVer) ) {
-				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, $DBS_CONFIG Version is " + suppSchemaVer + " Current schema version in DB is :" + dbsSchemaVersion); 
+				throw new DBSException("Unsupported Schema version", "1002", "Database Schema Mismatch, $DBS_SERVER_CONFIG Version is " + suppSchemaVer + " Current schema version in DB is :" + dbsSchemaVersion); 
 			}
 		} finally {
 			if(conn != null) conn.close();
@@ -283,7 +283,8 @@ public class DBSApi {
 			} else if (apiStr.equals("listBlocks")) {
 				(new DBSApiProcDSLogic()).listBlocks(conn, out, 
 						get(table, "path", true),
-						get(table, "block_name", false)
+						get(table, "block_name", false),
+						get(table, "storage_element_name", false)
 						);
 			} else if (apiStr.equals("listFiles")) {
 				(new DBSApiFileLogic()).listFiles(conn, out, 
@@ -327,6 +328,9 @@ public class DBSApi {
 			} else if (apiStr.equals("insertTier")) {
 				api.insertTier(conn, out, parse(getXml(table), "tier"), dbsUser);
 				
+			} else if (apiStr.equals("insertStorageElement")) {
+				(new DBSApiBlockLogic()).insertStorageElement(conn, out, parse(getXml(table), "storage-element"), dbsUser);
+			
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,
 						parse(getXml(table), "lumi") , 
@@ -341,7 +345,7 @@ public class DBSApi {
 					dbsUser);
                         } else if (apiStr.equals("insertBlock")) {
 				(new DBSApiBlockLogic()).insertBlock(conn, out,
-						parse(getXml(table), "block") , 
+						parseBlock(getXml(table)) , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertFiles")) {
@@ -525,7 +529,25 @@ public class DBSApi {
 		}
 		return table;
 	}
-	
+
+	private Hashtable parseBlock(String inputXml) throws Exception {
+		DBSXMLParser dbsParser = new DBSXMLParser();
+		dbsParser.parseString(inputXml); 
+		Vector allElement = dbsParser.getElements();
+		Hashtable table = null;
+		for (int i=0; i<allElement.size(); ++i) {
+			Element e = (Element)allElement.elementAt(i);
+			String name = e.name;
+			if (name.equals("block") ) {
+				table = e.attributes;
+				table.put("storage_element", new Vector());
+			} 
+			if (name.equals("storage_element") ) 
+				((Vector)(table.get("storage_element"))).add(e.attributes);
+		}
+		return table;
+	}
+
 	private Hashtable parsePD(String inputXml) throws Exception {
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 

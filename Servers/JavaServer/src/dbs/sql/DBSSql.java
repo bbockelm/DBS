@@ -1,14 +1,16 @@
 
 /**
- $Revision: 1.37 $"
- $Id: DBSSql.java,v 1.37 2006/12/30 06:11:23 afaq Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSSql.java,v 1.38 2006/12/30 06:27:17 afaq Exp $"
  *
  */
 package dbs.sql;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.Timestamp;
+//import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import dbs.util.DBSUtil;
@@ -299,12 +301,12 @@ public class DBSSql {
 
 
         public static PreparedStatement getBlockID(Connection conn, String blockName) throws SQLException {
-                String sql = "SELECT blk.ID as ID, \n" +
-                             "blk.BlockSize as BLOCKSIZE, \n" +
-                             "blk.NumberOfFiles as NUMBER_OF_FILES, \n" +
-                             "blk.OpenForWriting as OPEN_FOR_WRITING \n" +
-                             "From Block blk \n" +
-                             " WHERE blk.Name = ?";
+                String sql = "SELECT b.ID as ID, \n" +
+                             "b.BlockSize as BLOCKSIZE, \n" +
+                             "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+                             "b.OpenForWriting as OPEN_FOR_WRITING \n" +
+                             "FROM Block b \n" +
+                             "WHERE b.Name = ?";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, blockName);
@@ -633,42 +635,59 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName) throws SQLException {
+	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName) throws SQLException {
 		String sql = "SELECT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
-                        "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
 			"b.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"b.CreationDate as CREATION_DATE, \n" +
 			"b.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"se.SEName as STORAGE_ELEMENT_NAME, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Block b \n" +
+			"LEFT OUTER JOIN SEBlock seb \n" +
+				"ON seb.BlockID = b.ID \n" +
+			"LEFT OUTER JOIN StorageElement se \n" +
+				"ON se.ID = seb.SEID \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = b.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = b.LastModifiedBy \n";
 
-		if(procDSID != null && blockName != null) {
-			sql += "WHERE b.Dataset = ? AND  b.Name like ? \n";
-		} else if(procDSID != null)  {
-			sql += "WHERE b.Dataset = ? \n";
-		} else if(blockName != null) {
-			sql += "WHERE b.Name like ? \n";
+		boolean useAnd = false;
+		if(procDSID != null || blockName != null || seName != null) {
+			sql += "WHERE \n";
 		}
+		if(procDSID != null) {
+			sql += "b.Dataset = ? \n";
+			useAnd = true;
+		}
+		if(blockName != null) {
+			if(useAnd) sql += " AND ";
+			sql += "b.Name like ? \n";
+			useAnd = true;
+		}
+		if(seName != null) {
+			if(useAnd) sql += " AND ";
+			sql += "se.SEName like ? \n";
+		}
+		
 		sql +=	"ORDER BY NAME DESC";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		if(procDSID != null && blockName != null) {
+		if(procDSID != null) {
 			ps.setString(columnIndx++, procDSID);
-			ps.setString(columnIndx++, blockName);
-		} else if(procDSID != null)  {
-			ps.setString(columnIndx++, procDSID);
-		} else if(blockName != null) {
+		}
+		if(blockName != null) {
 			ps.setString(columnIndx++, blockName);
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		if(seName != null) {
+			ps.setString(columnIndx++, seName);
+		}
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 
@@ -967,6 +986,9 @@ public class DBSSql {
 			if(!DBSUtil.isNull(value)) {
 				if(key.equals("CreationDate")) {
 					ps.setTimestamp(columnIndx++, new Timestamp(Long.valueOf(value)) );
+				} else if(key.equals("Content")) {
+					ps.setCharacterStream(columnIndx++, (new StringReader(value)), value.length());
+					//ps.setClob(columnIndx++, (Clob)(value)) ;
 				} else {
 					ps.setString(columnIndx++, value);
 				}

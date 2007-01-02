@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiProcDSLogic.java,v 1.4 2006/12/30 06:27:16 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiProcDSLogic.java,v 1.5 2007/01/02 16:55:50 sekhri Exp $"
  *
  */
 
@@ -233,26 +233,38 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable  or processed dataset is not found.
 	 */
-	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName) throws Exception {
+	public void listBlocks(Connection conn, Writer out, String path, String patternBlockName, String patternSEName) throws Exception {
+		boolean first = true; 
+		String prevBlock = "";
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps =  DBSSql.listBlocks(conn, getProcessedDSID(conn, path),  getBlockPattern(patternBlockName));
+			ps =  DBSSql.listBlocks(conn, getProcessedDSID(conn, path), getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<block id='" + get(rs, "ID") +
-					"' path='" + path +
-					"' name='" + get(rs, "NAME") +
-					"' size='" + get(rs, "BLOCKSIZE") +
-					"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
-                                        "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
-					"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
-					"' creation_date='" + getTime(rs, "CREATION_DATE") +
-					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + get(rs, "CREATED_BY") +
-					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-					"'/>\n"));
+				String blockID = get(rs, "ID");
+				if( !prevBlock.equals(blockID) && ! first) {
+					out.write(((String) "</block>\n")); 
+				}
+				if( !prevBlock.equals(blockID) || first) {
+					out.write(((String) "<block id='" + get(rs, "ID") +
+						"' path='" + path +
+						"' name='" + get(rs, "NAME") +
+						"' size='" + get(rs, "BLOCKSIZE") +
+						"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +
+						"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+						"' open_for_writing='" + get(rs, "OPEN_FOR_WRITING") +
+						"' creation_date='" + getTime(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+						"' created_by='" + get(rs, "CREATED_BY") +
+						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+						"'/>\n"));
+				}
+				out.write(((String) "\t<storage_element storage_element_name='" + get(rs, "STORAGE_ELEMENT_NAME") +"'/>\n"));
+				prevBlock = blockID;
+				first = false;
 			}
+			if (!first) out.write(((String) "</block>\n"));
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();

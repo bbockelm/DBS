@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiPrimDSLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.4 2007/01/02 16:55:50 sekhri Exp $"
  *
  */
 
@@ -88,7 +88,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		String creationDate = getTime(dataset, "creation_date", false);
 		String name = get(dataset, "primary_name", true);
 		String type = get(dataset, "type", false);
-		System.out.println("creation_date " + creationDate);		
+		//System.out.println("creation_date " + creationDate);		
 		//Insert a Dataset Type if it does not exists
 		insertName(conn, out, "PrimaryDSType", "Type", type , cbUserID, lmbUserID, creationDate);
 		

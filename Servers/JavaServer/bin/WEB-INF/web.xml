@@ -16,7 +16,7 @@
 
       <init-param>
                 <param-name> SupportedSchemaVersion </param-name>
-                <param-value> v00_00_02 </param-value>
+                <param-value> v00_00_03 </param-value>
       </init-param>
 
       <init-param>
