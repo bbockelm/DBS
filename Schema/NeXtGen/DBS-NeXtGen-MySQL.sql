@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 512
+-- === Build : 521
 -- ======================================================================
 
 drop database dbs_new_era_v07;
@@ -252,34 +252,6 @@ CREATE TABLE StorageElement
 
 -- ======================================================================
 
-CREATE TABLE AnalysisDSStatus
-  (
-    ID                    int,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID)
-  );
-
--- ======================================================================
-
-CREATE TABLE AnalysisDSType
-  (
-    ID                    int,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID)
-  );
-
--- ======================================================================
-
 CREATE TABLE Description
   (
     ID                    int,
@@ -290,22 +262,6 @@ CREATE TABLE Description
     LastModifiedBy        int,
 
     primary key(ID)
-  );
-
--- ======================================================================
-
-CREATE TABLE AnalysisDatasetLumi
-  (
-    ID                    int,
-    AnalysisDataset       int                                                               not null,
-    Lumi                  int                                                               not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID),
-    unique(AnalysisDataset,Lumi)
   );
 
 -- ======================================================================
@@ -358,14 +314,15 @@ CREATE TABLE ProcDSStatus
 CREATE TABLE SEBlock
   (
     ID                    int,
-    SEID                  int                                                               unique not null,
-    BlockID               int                                                               unique not null,
+    SEID                  int                                                               not null,
+    BlockID               int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+    unique(SEID,BlockID)
   );
 
 -- ======================================================================
@@ -683,6 +640,50 @@ CREATE TABLE ProcAlgo
 
 -- ======================================================================
 
+CREATE TABLE AnalysisDSType
+  (
+    ID                    int,
+    Type                  varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE AnalysisDSStatus
+  (
+    ID                    int,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID)
+  );
+
+-- ======================================================================
+
+CREATE TABLE AnalysisDatasetLumi
+  (
+    ID                    int,
+    AnalysisDataset       int                                                               not null,
+    Lumi                  int                                                               not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+    unique(AnalysisDataset,Lumi)
+  );
+
+-- ======================================================================
+
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -841,38 +842,11 @@ ALTER TABLE StorageElement ADD CONSTRAINT
     StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
-    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
-    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AnalysisDSType ADD CONSTRAINT 
-    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDSType ADD CONSTRAINT 
-    AnalysisDSTypeLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE Description ADD CONSTRAINT 
     Description_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 ALTER TABLE Description ADD CONSTRAINT 
     Description_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE TimeLog ADD CONSTRAINT 
@@ -1122,5 +1096,32 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSTypeLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
+/
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
 /
 

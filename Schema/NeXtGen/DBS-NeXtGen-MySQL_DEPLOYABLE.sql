@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 512
+-- === Build : 521
 -- ======================================================================
 
 drop database dbs_new_era_v07;
@@ -252,34 +252,6 @@ CREATE TABLE StorageElement
 
 -- ======================================================================
 
-CREATE TABLE AnalysisDSStatus
-  (
-    ID                    int not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE AnalysisDSType
-  (
-    ID                    int not null auto_increment,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE Description
   (
     ID                    int not null auto_increment,
@@ -290,22 +262,6 @@ CREATE TABLE Description
     LastModifiedBy        int,
 
     primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE AnalysisDatasetLumi
-  (
-    ID                    int not null auto_increment,
-    AnalysisDataset       int                                                               not null,
-    Lumi                  int                                                               not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-
-    primary key(ID),
-    unique(AnalysisDataset,Lumi)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -358,14 +314,15 @@ CREATE TABLE ProcDSStatus
 CREATE TABLE SEBlock
   (
     ID                    int not null auto_increment,
-    SEID                  int                                                               unique not null,
-    BlockID               int                                                               unique not null,
+    SEID                  int                                                               not null,
+    BlockID               int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
 
-    primary key(ID)
+    primary key(ID),
+    unique(SEID,BlockID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -683,6 +640,50 @@ CREATE TABLE ProcAlgo
 
 -- ======================================================================
 
+CREATE TABLE AnalysisDSType
+  (
+    ID                    int not null auto_increment,
+    Type                  varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE AnalysisDSStatus
+  (
+    ID                    int not null auto_increment,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE AnalysisDatasetLumi
+  (
+    ID                    int not null auto_increment,
+    AnalysisDataset       int                                                               not null,
+    Lumi                  int                                                               not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+
+    primary key(ID),
+    unique(AnalysisDataset,Lumi)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -841,38 +842,11 @@ ALTER TABLE StorageElement ADD CONSTRAINT
     StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
-    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
-    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE AnalysisDSType ADD CONSTRAINT 
-    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE AnalysisDSType ADD CONSTRAINT 
-    AnalysisDSTypeLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE Description ADD CONSTRAINT 
     Description_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
 ALTER TABLE Description ADD CONSTRAINT 
     Description_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
-;
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
-;
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE TimeLog ADD CONSTRAINT 
@@ -1124,139 +1098,39 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
--- =========== TRIGGERS FOR CreationDate ==============================
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSTypeLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
 
-CREATE TRIGGER TR_TS_Person BEFORE INSERT ON Person
-FOR EACH ROW SET NEW.CreationDate = NOW();
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
+;
 
-CREATE TRIGGER TR_TS_Role BEFORE INSERT ON Role
-FOR EACH ROW SET NEW.CreationDate = NOW();
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
+;
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+;
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
+;
 
-CREATE TRIGGER TR_TS_AssignedRole BEFORE INSERT ON AssignedRole
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_PhysicsGroup BEFORE INSERT ON PhysicsGroup
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_SchemaVersion BEFORE INSERT ON SchemaVersion
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_PrimaryDataset BEFORE INSERT ON PrimaryDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_ProcessedDataset BEFORE INSERT ON ProcessedDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_Runs BEFORE INSERT ON Runs
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AnalysisDataset BEFORE INSERT ON AnalysisDataset
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_Block BEFORE INSERT ON Block
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_Files BEFORE INSERT ON Files
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_DataTier BEFORE INSERT ON DataTier
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_LumiSection BEFORE INSERT ON LumiSection
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_StorageElement BEFORE INSERT ON StorageElement
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AnalysisDSStatus BEFORE INSERT ON AnalysisDSStatus
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AnalysisDSType BEFORE INSERT ON AnalysisDSType
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_Description BEFORE INSERT ON Description
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AnalysisDatasetLumi BEFORE INSERT ON AnalysisDatasetLumi
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_TimeLog BEFORE INSERT ON TimeLog
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_PrimaryDSType BEFORE INSERT ON PrimaryDSType
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_ProcDSStatus BEFORE INSERT ON ProcDSStatus
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_SEBlock BEFORE INSERT ON SEBlock
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AlgorithmConfig BEFORE INSERT ON AlgorithmConfig
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AppFamily BEFORE INSERT ON AppFamily
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AppVersion BEFORE INSERT ON AppVersion
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_AppExecutable BEFORE INSERT ON AppExecutable
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_QueryableParameterSet BEFORE INSERT ON QueryableParameterSet
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_ParameterBinding BEFORE INSERT ON ParameterBinding
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_PrimaryDatasetDescription BEFORE INSERT ON PrimaryDatasetDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_TriggerPathDescription BEFORE INSERT ON TriggerPathDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_MCDescription BEFORE INSERT ON MCDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_OtherDescription BEFORE INSERT ON OtherDescription
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_FileTier BEFORE INSERT ON FileTier
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_FileParentage BEFORE INSERT ON FileParentage
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_FileLumi BEFORE INSERT ON FileLumi
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_FileAlgo BEFORE INSERT ON FileAlgo
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_FileStatus BEFORE INSERT ON FileStatus
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_FileType BEFORE INSERT ON FileType
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_ProcDSRuns BEFORE INSERT ON ProcDSRuns
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_ProcDSTier BEFORE INSERT ON ProcDSTier
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_DatasetParentage BEFORE INSERT ON DatasetParentage
-FOR EACH ROW SET NEW.CreationDate = NOW();
-
-CREATE TRIGGER TR_TS_ProcAlgo BEFORE INSERT ON ProcAlgo
-FOR EACH ROW SET NEW.CreationDate = NOW();
 
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_03', NOW());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());

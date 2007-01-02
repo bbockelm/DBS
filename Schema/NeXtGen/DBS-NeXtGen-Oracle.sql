@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 512
+REM === Build : 521
 REM ======================================================================
 
 CREATE TABLE Person
@@ -133,32 +133,6 @@ CREATE TABLE StorageElement
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE AnalysisDSStatus
-  (
-    ID                    int,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE AnalysisDSType
-  (
-    ID                    int,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
     primary key(ID)
   );
 
@@ -359,6 +333,32 @@ CREATE TABLE FileType
 
 REM ======================================================================
 
+CREATE TABLE AnalysisDSType
+  (
+    ID                    int,
+    Type                  varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE AnalysisDSStatus
+  (
+    ID                    int,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
 CREATE TABLE AlgorithmConfig
   (
     ID                    int,
@@ -487,31 +487,17 @@ CREATE TABLE Files
 
 REM ======================================================================
 
-CREATE TABLE AnalysisDatasetLumi
+CREATE TABLE SEBlock
   (
     ID                    int,
-    AnalysisDataset       int                                                               not null,
-    Lumi                  int                                                               not null,
+    SEID                  int                                                               not null,
+    BlockID               int                                                               not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
     primary key(ID),
-    unique(AnalysisDataset,Lumi)
-  );
-
-REM ======================================================================
-
-CREATE TABLE SEBlock
-  (
-    ID                    int,
-    SEID                  int                                                               unique not null,
-    BlockID               int                                                               unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
-    primary key(ID)
+    unique(SEID,BlockID)
   );
 
 REM ======================================================================
@@ -636,6 +622,21 @@ CREATE TABLE ProcAlgo
 
 REM ======================================================================
 
+CREATE TABLE AnalysisDatasetLumi
+  (
+    ID                    int,
+    AnalysisDataset       int                                                               not null,
+    Lumi                  int                                                               not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             int,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        int,
+    primary key(ID),
+    unique(AnalysisDataset,Lumi)
+  );
+
+REM ======================================================================
+
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -709,20 +710,6 @@ ALTER TABLE StorageElement ADD CONSTRAINT
 /
 ALTER TABLE StorageElement ADD CONSTRAINT 
     StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
-    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
-    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE AnalysisDSType ADD CONSTRAINT 
-    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDSType ADD CONSTRAINT 
-    AnalysisDSTypeLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE Description ADD CONSTRAINT 
@@ -827,6 +814,20 @@ ALTER TABLE FileType ADD CONSTRAINT
 /
 ALTER TABLE FileType ADD CONSTRAINT 
     FileType_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSType ADD CONSTRAINT 
+    AnalysisDSTypeLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSStatus ADD CONSTRAINT 
+    AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -947,19 +948,6 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE SEBlock ADD CONSTRAINT 
     SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
 /
@@ -1075,6 +1063,19 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
+/
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
+    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 
