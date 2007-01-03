@@ -45,7 +45,6 @@ class DbsWebApi(DbsApi):
     type is different, it is dictionary.
     """
 
-    # Invoke Server.
     path = self._path(dataset)
     data = self._server._call ({ 'api' : 'listBlocks', 'path' : path }, 'GET')
 
@@ -55,17 +54,25 @@ class DbsWebApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'block':
-               dbsFileBlock = DbsFileBlock(
-                                       Name=str(attrs['name']), 
-                                       BlockSize=int(attrs['size']),
-                                       NumberOfFiles=int(attrs['number_of_files']),
-                                       #OpenForWriting=str(attrs['open_for_writing']),
-                                       CreationDate=str(attrs['creation_date']),
-                                       CreatedBy=str(attrs['created_by']),
-                                       LastModificationDate=str(attrs['last_modification_date']),
-                                       LastModifiedBy=str(attrs['last_modified_by']),
-                                       )
-               result[dbsFileBlock['Name']]=dbsFileBlock
+#               dbsFileBlock = DbsFileBlock(
+#                                       Name=str(attrs['name']), 
+#                                       BlockSize=int(attrs['size']),
+#                                       NumberOfFiles=int(attrs['number_of_files']),
+#                                       OpenForWriting=str(attrs['open_for_writing']),
+#                                       CreationDate=str(attrs['creation_date']),
+#                                       CreatedBy=str(attrs['created_by']),
+#                                       LastModificationDate=str(attrs['last_modification_date']),
+#                                       LastModifiedBy=str(attrs['last_modified_by']),
+#                                       )
+#               result[dbsFileBlock['Name']]=dbsFileBlock
+               # to be backward compatible I need the following structure
+               # blocks[name]=[evts,str(attrs['status']), long(attrs['files']), long(attrs['bytes'])]
+               # for time being evts=0, once schema will support them I'll update this field
+               evts=1
+               status=str(attrs['open_for_writing'])
+               files=int(attrs['number_of_files'])
+               bytes=long(attrs['size'])
+               result[str(attrs['name'])]=[evts,status,files,bytes]
 
       xml.sax.parseString (data, Handler ())
       return result
