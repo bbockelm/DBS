@@ -50,7 +50,7 @@ try:
     #api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
     #api.insertBlock (proc)
     #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002")
-    api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002/", "/this/hahah#12345")
+    api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002", "/this/hahah#12345")
     print "Result: %s" % primary
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.38 $"
- $Id: DBSSql.java,v 1.38 2006/12/30 06:27:17 afaq Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSSql.java,v 1.39 2007/01/02 22:59:57 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -229,11 +229,12 @@ public class DBSSql {
 	public static PreparedStatement updateBlock(Connection conn, String blockID) throws SQLException {
 		String sql = "UPDATE Block \n" +
 			"SET BlockSize = (SELECT SUM(FileSize) FROM Files f WHERE f.Block = ?) , \n" +
-			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = ?) \n" +
+			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = ?) , \n" +
 			"NumberOfEvents= (SELECT SUM(NumberOfEvents) FROM Files f WHERE f.Block = ?) \n" +
 			"WHERE ID = ?" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
+		ps.setString(columnIndx++, blockID);
 		ps.setString(columnIndx++, blockID);
 		ps.setString(columnIndx++, blockID);
 		ps.setString(columnIndx++, blockID);
@@ -986,8 +987,8 @@ public class DBSSql {
 			if(!DBSUtil.isNull(value)) {
 				if(key.equals("CreationDate")) {
 					ps.setTimestamp(columnIndx++, new Timestamp(Long.valueOf(value)) );
-				} else if(key.equals("Content")) {
-					ps.setCharacterStream(columnIndx++, (new StringReader(value)), value.length());
+				//} else if(key.equals("Content")) {
+				//	ps.setCharacterStream(columnIndx++, (new StringReader(value)), value.length());
 					//ps.setClob(columnIndx++, (Clob)(value)) ;
 				} else {
 					ps.setString(columnIndx++, value);

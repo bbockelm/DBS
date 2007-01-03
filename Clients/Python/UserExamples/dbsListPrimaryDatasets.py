@@ -16,7 +16,8 @@ try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
-  
+  import pdb
+  #pdb.set_trace()
   try:
    # List all parameter sets
    print ""

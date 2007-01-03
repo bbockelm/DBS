@@ -6,13 +6,16 @@ if [ "${JAVA_HOME}" = "" ]; then
 	exit 1
 fi
 savePWD=$PWD
-outFile=$savePWD/result.txt
-rm -f $outFile
+cd $BASE
+source setup.sh
 cd $BASE/lib
 CLASSPATH=.:$PWD/ojdbc14_g.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI apiversion=v00_00_03"
+#FIXME DBS_SERVER_CONFIG is not needed
+export DBS_SERVER_CONFIG=$BASE/etc/context.xml
+#CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI apiversion=v00_00_04"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSCLI"
 if [ $# -eq 1 ] ; then
 	$CMD "$1"
 fi

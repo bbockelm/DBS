@@ -40,7 +40,7 @@ class DbsConfig(object):
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
     login = masterHost =  masterName = masterPort = masterSocket = admin = ""
-    iList=['user','password','driver','url','host','port','servlet','version','dbname','dbsDB','dbtype','verbose']
+    iList=['user','password','driver','url','host','port','servlet','version','dbname','dbsDB','dbtype','verbose','mode', 'dbshome']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -64,6 +64,14 @@ class DbsConfig(object):
     if not self.configDict.has_key('port'):
        raise DbsException(args="DBS configuration missing port parameter")
     return self.configDict['port']
+  def mode(self):
+    if not self.configDict.has_key('mode'):
+       raise DbsException(args="DBS configuration missing mode parameter")
+    return self.configDict['mode']
+  def dbshome(self):
+    if not self.configDict.has_key('dbshome'):
+       raise DbsException(args="DBS configuration missing mode parameter")
+    return self.configDict['dbshome']
   def servlet(self):
     if not self.configDict.has_key('servlet'):
        raise DbsException(args="DBS configuration missing servlet parameter")

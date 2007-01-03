@@ -13,6 +13,7 @@ from cStringIO import StringIO
 
 # DBS specific modules
 from dbsHttpService import DbsHttpService
+from dbsExecService import DbsExecService
 
 from dbsException import DbsException
 from dbsApiException import *
@@ -61,10 +62,16 @@ class DbsApi(DbsConfig):
        print "using port   ",self.port()
        print "using servlet",self.servlet()
        print "using version",self.version()
+       print "using mode   ",self.mode()
+       print "using dbshome   ",self.dbshome()
     #
     # Create the Server proxy
     #
-    self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
+    self._server = ""
+    if self.mode() == "EXEC" :
+	    self._server = DbsExecService(self.dbshome(), self.version(), Args)
+    else :
+            self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
     #
     # 
 
@@ -130,7 +137,7 @@ class DbsApi(DbsConfig):
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
 
-    print data
+    #print data
 
     # Parse the resulting xml output.
     try:

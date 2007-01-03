@@ -1,6 +1,6 @@
 <Context path="/servlet/DBSServlet" docBase="DBSServlet" debug="5" reloadable="true" crossContext="true">
 
-        <Resource name="jdbc/dbs"
+        <!--Resource name="jdbc/dbs"
                 auth="Container"
                 type="javax.sql.DataSource"
                 maxActive="0"
@@ -12,9 +12,9 @@
                 removeAbandoned="true"
                 removeAbandonedTimeout="100"
                 driverClassName="oracle.jdbc.driver.OracleDriver"
-                url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(COMMUNITY=CD)(PROTOCOL=TCP)(Host=uscmsdb03.fnal.gov)(Port = 1521)))(CONNECT_DATA=(SID=cmscald)(GLOBAL_NAME=cmscald.fnal.gov)))"/>
+                url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(COMMUNITY=CD)(PROTOCOL=TCP)(Host=uscmsdb03.fnal.gov)(Port = 1521)))(CONNECT_DATA=(SID=cmscald)(GLOBAL_NAME=cmscald.fnal.gov)))"/-->
 
-	<!--Resource name="jdbc/dbs" 
+	<Resource name="jdbc/dbs" 
 		auth="Container" 
 		type="javax.sql.DataSource" 
 		maxActive="100" 
@@ -23,7 +23,7 @@
 		username="anzar" 
 		password="" 
 		driverClassName="org.gjt.mm.mysql.Driver"
-		url="jdbc:mysql://localhost:3306/dbs_new_era_v07?autoReconnect=true"/-->
+		url="jdbc:mysql://localhost:3306/dbs_new_era_v08?autoReconnect=true"/>
 
         <!--Resource name="jdbc/dbs" 
                 auth="Container" 
@@ -54,7 +54,7 @@
                 url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
 
 
-<SupportedSchemaVersion schemaversion="v00_00_02" />
+<SupportedSchemaVersion schemaversion="v00_00_03" />
 <SupportedClientVersions clientversions="v00_00_04" />
 <DBSBlockConfig maxBlockSize="20000" maxBlockFiles="50" />
 </Context>
