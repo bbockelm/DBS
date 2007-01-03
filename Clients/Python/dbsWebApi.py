@@ -73,3 +73,54 @@ class DbsWebApi(DbsApi):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+  # ------------------------------------------------------------
+  def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",   
+                                  patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
+    """
+    Retrieve list of processed datasets matching a shell glob patterns.
+    Returns a list of DbsProcessedDataset objects.  If the pattern(s) are
+    given, they will be matched against the dataset primary dataset, data tier, application version,  etc. as a shell glob
+    pattern.
+
+    May raise an DbsApiException.
+
+    """
+
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listProcessedDatasets', 
+		    'primary_datatset_name_pattern' : patternPrim, 
+		    'data_tier_name_pattern' : patternDT, 
+		    'processed_datatset_name_pattern' : patternProc, 
+		    'app_version' : patternVer, 
+		    'app_family_name' : patternFam, 
+		    'app_executable_name' : patternExe, 
+		    'parameterset_name' : patternPS }, 
+		    'GET')
+ 
+#    print "Client:API:getProcessedDatasets",data
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        
+	def startElement(self, name, attrs):
+	  if name == 'processed-dataset':
+             self.proc = str(attrs['processed_datatset_name'])
+             self.prim = str(attrs['primary_datatset_name'])
+          if name == 'data_tier':
+             n = "/"+self.prim+"/"+str(attrs['name'])+"/"+self.proc
+             result.append(DbsProcessedDataset(datasetPathName=n))
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except DbsException, ex:
+	raise DbsBadResponse(exception=ex)
+    except Exception, ex:
+	raise DbsBadResponse(exception=ex)
+
+  def getDatasetDetails(self, patternPrim="*", patternDT="*", patternProc="*",   
+                              patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
+      return super(DbsWebApi,self).listProcessedDatasets(
+                         patternPrim=patternPrim,patternDT=patternDT,patternProc=patternProc,
+                         patternVer=patternVer,patternExe=patternExe,patternPS=patternPS)
