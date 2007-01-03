@@ -23,7 +23,11 @@ from   DDConfig   import *
 if __name__ == "__main__":
     optManager  = DBSOptionParser()
     (opts,args) = optManager.getOpt()
-    helper = DBSHelper.DBSHelper()
+    ddConfig    = DBSDDConfig()
+    iface       = ddConfig.iface()
+    if opts.iface:
+       iface=opts.iface
+    helper      = DBSHelper.DBSHelper(iface=iface)
     if opts.quiet:
        helper.setQuiet()
     if opts.dbsInst:
