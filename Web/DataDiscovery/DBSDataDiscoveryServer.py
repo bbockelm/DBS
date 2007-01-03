@@ -959,7 +959,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         datasetsList = self.helper.getDatasetsFromApp(appPath,primD,tier)
         nDatasets=len(datasetsList)
         t2=time.time()
-        print "#### getDatasetsFromApp",(t2-t1)
         self.dbsTime=(t2-t1)
         regList=[]
         bList=[]
@@ -1010,7 +1009,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             oldTotSize=totSize
             oldDataset=dataset
             prevPage = p
-            print "##### %s %s sec"%(dataset,(time.time()-ttt1))
+#            print "##### %s %s sec"%(dataset,(time.time()-ttt1))
         page+=self.blockListToHTML(dbsInst,bList)
         page+=prevPage # end of new stuff
 #        page+=jsPage+"\n-->\n"
@@ -1024,6 +1023,7 @@ class DBSDataDiscoveryServer(DBSLogger):
     def blockListToHTML(self,dbsInst,bList):
         if not len(bList): return ""
         nameSpace = {'host': self.dbsdd, 'dbsInst': dbsInst, 'blockList' : bList}
+#        print "#### blockListToHTML",bList
         t = Template(CheetahDBSTemplate.templateBlockList, searchList=[nameSpace])
         page=str(t)
         return page
@@ -2018,11 +2018,20 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        page="""<ajax-response><response type="element" id="floatDataDescription">"""
         page=self.genTopHTML()
         description=""
-        tmp="<p>Once available data description will be placed here</p>"
+        dList=""
         if processedDataset:
-           description=processedDataset+tmp
+           description=processedDataset
+           dList=self.helper.getDataDescription(processedDataset=processedDataset)
         if primaryDataset:
-           description=primaryDataset+tmp
+           description=primaryDataset
+           dList=self.helper.getDataDescription(primaryDataset=primaryDataset)
+        # get formatted output of dataset details
+        nameSpace={'dList' : dList }
+        t = Template(CheetahDBSTemplate.templateDatasetDetails, searchList=[nameSpace])
+        description+=str(t)
+
+        description+="<p>Once available data description will be placed here</p>"
+
         nameSpace={
                    'description' : description
                   }

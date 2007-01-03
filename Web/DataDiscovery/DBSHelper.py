@@ -310,15 +310,14 @@ class DBSHelper(DBSLogger):
          else:
             empty,prim,tier,proc=string.split(datasetPath,"/")
          res = self.api.listProcessedDatasets(patternPrim=prim,patternDT=tier,patternProc=proc)
-         oList = []
-         for item in res:
-             proc = item['Name']
-             prim = item['PrimaryDataset']['Name']
-             tiers= item['TierList']
-             for tier in tiers:
-                 oList.append("/%s/%s/%s"%(prim,tier,proc))
-#         print "#### listProcessedDataset",oList
-         res = oList
+#         oList = []
+#         for item in res:
+#             proc = item['Name']
+#             prim = item['PrimaryDataset']['Name']
+#             tiers= item['TierList']
+#             for tier in tiers:
+#                 oList.append("/%s/%s/%s"%(prim,tier,proc))
+#         res = oList
       return res
 
   def listDatasetsFromApp(self,appPath="*"):
@@ -344,7 +343,7 @@ class DBSHelper(DBSLogger):
          aList.reverse()
          return aList
       else:
-         print "#### listApplications",appPath
+#         print "#### listApplications",appPath
          if appPath=="*":
             ver=family=exe="*"
          else:
@@ -364,6 +363,13 @@ class DBSHelper(DBSLogger):
 #         return self.api.listBlocks(datasetPath,web=1)
          return self.api.listBlocks(datasetPath)
   ### END OF WRAPPER ###
+  def getDataDescription(self,primaryDataset="",processedDataset=""):
+      if self.iface=="cgi":
+         return {}
+      else:
+         if processedDataset:
+            empty,prim,tier,proc=string.split(processedDataset,"/")
+            return self.api.getDatasetDetails(patternPrim=prim,patternDT=tier,patternProc=proc)
 
   def getDatasetsFromApplications(self,datasetPath="*"):
       """
@@ -490,7 +496,8 @@ class DBSHelper(DBSLogger):
           if self.iface=="cgi":
              name = entry.get('datasetPathName') # name=/prim/tier/proc
           else:
-             name = entry # now listProcessedDatasets returns plain list, TODO check listDatasetsFromApp
+             name = entry.get('datasetPathName') # name=/prim/tier/proc
+#             name = entry # now listProcessedDatasets returns plain list, TODO check listDatasetsFromApp
           if html:
 #             name = """<a href="javascript:showWaitingMessage();registerAjaxDatasetContentCalls();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
              name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
