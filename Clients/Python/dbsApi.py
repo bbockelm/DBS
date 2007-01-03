@@ -63,7 +63,6 @@ class DbsApi(DbsConfig):
        print "using servlet",self.servlet()
        print "using version",self.version()
        print "using mode   ",self.mode()
-       print "using dbshome   ",self.dbshome()
     #
     # Create the Server proxy
     #

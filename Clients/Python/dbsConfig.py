@@ -13,7 +13,7 @@ import os, sys, string, stat, re, types
 from dbsException    import DbsException
 from dbsApiException import *
 
-class DbsConfig(object):
+class DbsConfig:
   def __init__(self,iConfig={}):
     """
        Read and parse content of $HOME/.esdb.conf configuration file
@@ -24,6 +24,7 @@ class DbsConfig(object):
        Comments are started with '#' letter. User can specify login and password
        to provide access to underlying DB, if SQLite is used they're ignored. 
     """
+ 
     uFileName=""
     if os.environ.has_key('DBS_CLIENT_CONFIG'):
        if not os.path.isfile(os.environ['DBS_CLIENT_CONFIG']):

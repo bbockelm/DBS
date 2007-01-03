@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.27 $"
- $Id: DBSServlet.java,v 1.27 2006/12/13 16:39:16 afaq Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSServlet.java,v 1.28 2006/12/27 01:48:18 afaq Exp $"
 
  */
 package dbs;
@@ -36,15 +36,20 @@ public class DBSServlet extends HttpServlet{
                  //FIXME: WE must checks the Schema version here
                  //Verify why can't we make DBSApi object here ??
                  //Lets get serever parameters here
-                 supportedSchemaVersion = config.getInitParameter("SupportedSchemaVersion");
-                 supportedClientVersions = config.getInitParameter("SupportedClientVersions");
+                 //supportedSchemaVersion = config.getInitParameter("SupportedSchemaVersion");
+                 //supportedClientVersions = config.getInitParameter("SupportedClientVersions");
 
-                 System.out.println("supportedSchemaVersion: "+supportedSchemaVersion);
-                 System.out.println("supportedClientVersions: "+supportedClientVersions);
+                 //System.out.println("supportedSchemaVersion: "+supportedSchemaVersion);
+                 //System.out.println("supportedClientVersions: "+supportedClientVersions);
+
+                 String configFilePath = context.getRealPath("META-INF/context.xml");
+                 System.out.println("configFilePath : "+configFilePath);
 
                  System.out.println("SEREVER INFO: "+context.getServerInfo() );
                  //Instatiate the DBSConfig to it gets parameters from Servlet instead of $DBS_SERVER_CONFIG
-                 DBSConfig dbsconfig = DBSConfig.getInstance(supportedSchemaVersion, supportedClientVersions);
+                 //DBSConfig dbsconfig = DBSConfig.getInstance(supportedSchemaVersion, supportedClientVersions);
+                 DBSConfig dbsconfig = DBSConfig.getInstance(configFilePath);
+                 System.out.println("DBS READY");
 
             } catch(Exception e) {
                         throw new ServletException(e);

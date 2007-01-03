@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.7 $"
- $Id: DBSConfig.java,v 1.7 2006/12/13 18:17:43 afaq Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSConfig.java,v 1.8 2006/12/27 01:49:40 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -42,7 +42,8 @@ public class DBSConfig {
 
 
         //Having two different CTORs we can manage how the DBS is Configured, From an XML file
-        // Or from a parameterized CTOR
+        // Or from a parameterized CTOR 
+        //CURRENTLY NOT-USED 
         public static synchronized DBSConfig getInstance(String schemaVersion, String clientVersions)
         throws DBSException
          {
@@ -59,24 +60,42 @@ public class DBSConfig {
           }
 
 
+
+        public static synchronized DBSConfig getInstance(String conf)
+        throws DBSException
+         {
+           if (ref == null)
+               ref = new DBSConfig(conf);
+           return ref;
+         }
+
+
+
+
         public static synchronized DBSConfig getInstance()
         throws DBSException
          {
            if (ref == null)
-               ref = new DBSConfig();
+               ref = new DBSConfig(null);
            return ref;
          }
 
-        private DBSConfig()
+        private DBSConfig(String confPath)
         throws DBSException 
           {
-                FileInputStream property_file = null;
-                // See if DBS_HOME is set
                 String dbs_config = null;
-                dbs_config = System.getenv("DBS_SERVER_CONFIG");
-                if (dbs_config == null || dbs_config.equals("") ) {
-                   throw new DBSException("Configuration Error", "1050", "Environment variable DBS_SERVER_CONFIG not set, You must not be getting this from Live Server ?");
+                //See if configuration file path is passed
+                if ( confPath != null ) {
+                   dbs_config = confPath;
                 }
+                else { 
+                     // See if DBS_SERVER_CONFIG is set instead, use that file
+                     dbs_config = System.getenv("DBS_SERVER_CONFIG");
+                }      
+                if (dbs_config == null || dbs_config.equals("") ) {
+                        throw new DBSException("Configuration Error", "1050", "Environment variable DBS_SERVER_CONFIG not set. OR DBS/META-INF/context.xml is missing or invalid in case you are running under TOMCAT ?");
+                }
+                FileInputStream property_file = null;
 
                 try { 
                     //property_file = new FileInputStream(config_file);   

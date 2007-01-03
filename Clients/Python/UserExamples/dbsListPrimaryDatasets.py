@@ -22,7 +22,7 @@ try:
    # List all parameter sets
    print ""
    print "Primary Datasets"
-   for primary in api.listPrimaryDatasets("*"):
+   for primary in api.listPrimaryDatasets(''):
    #for primary in api.listPrimaryDatasets('ab;bc'):
      print "  %s" % primary
   except DbsDatabaseError,e:

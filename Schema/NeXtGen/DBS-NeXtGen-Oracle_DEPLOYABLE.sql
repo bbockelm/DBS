@@ -3492,7 +3492,7 @@ END;
 /
 
 -- Set the Schema Version -- 
-INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('v00_00_02', SYSTIMESTAMP);
+INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('v00_00_03', SYSTIMESTAMP);
 -- Pre Fill some information into tables ---------
 INSERT INTO AnalysisDSStatus (Status) VALUES ('NEW');
 INSERT INTO FileStatus (Status) VALUES ('VALID');

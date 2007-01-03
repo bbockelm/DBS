@@ -33,10 +33,8 @@ class DbsExecService:
        request_string = './cli.sh apiversion='+self.ApiVersion
 
        for key, value in args.items():
-	       if (key == "xmlinput"):
-		       request_string += ' "' + key + '=' + value + '"'
-	       else :
-		       request_string += ' ' + key + '=' + value
+                   if (value== ''): continue    
+		   request_string += ' "' + key + '=' + value + '"'
            
        print request_string  
        obj = os.popen('cd ' + self.Home + '/test;' + request_string)

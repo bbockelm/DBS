@@ -21,7 +21,7 @@ try:
    # List all parameter sets
    print ""
    print "Algorithms...."
-   for app in api.listAlgorithms():
+   for app in api.listAlgorithms('ab', 's;'):
    #for app in api.listAlgorithms("*"):
      print " %s" % app
   except DbsDatabaseError,e:

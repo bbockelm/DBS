@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiProcDSLogic.java,v 1.5 2007/01/02 16:55:50 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiProcDSLogic.java,v 1.6 2007/01/02 22:59:57 sekhri Exp $"
  *
  */
 
@@ -258,7 +258,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' created_by='" + get(rs, "CREATED_BY") +
 						"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-						"'/>\n"));
+						"'>\n"));
 				}
 				out.write(((String) "\t<storage_element storage_element_name='" + get(rs, "STORAGE_ELEMENT_NAME") +"'/>\n"));
 				prevBlock = blockID;

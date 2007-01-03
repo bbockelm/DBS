@@ -1130,7 +1130,7 @@ ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_02', NOW());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_03', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
