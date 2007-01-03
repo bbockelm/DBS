@@ -1174,9 +1174,13 @@ templateFrontPage="""
 <td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('MCGlobal/Writer',$dbsShortNames);">DBS info</a>
   <table id="dbsInst_table" class="hide">
 #for name in $dbsShortNames
+#if $name[:3]!="dbs"
 #set fullName=$name+"/Writer"
 #if $name=="Dev_fanfani"
 #set fullName="Dev/fanfani"
+#end if
+#else
+#set fullName=$name
 #end if
       <tr><td>&\#187;</td><td id="dbsInst_$name"><a href="javascript:getDbsInfo('$fullName',$dbsShortNames);">$fullName</a></td></tr>
 #end for
@@ -1841,6 +1845,31 @@ For given application <b>$appPath</b> we found the following application configs
 
 <div class="box_red">
 In a future those values will be resolved into real files.
+</div>
+"""
+
+templateDatasetDetails="""
+<div class="myList">
+#for dataset in $dList:
+<ul>
+   <li><b>Processed name:</b> $dataset['Name']
+   <li><b>Primary name:</b> $dataset['PrimaryDataset']['Name']
+   <li><b>Tiers:</b>
+       <ul>
+       #for tier in dataset['TierList']
+       <li>$tier
+       #end for
+       </ul>
+   <li><b>Algorithms:</b>
+       <ul>
+       #for alg in dataset['AlgoList']
+       <li>/$alg['ApplicationFamily']/$alg['ApplicationVersion']/$alg['ExecutableName']
+       #end for
+       </ul>
+   <li><b>Last modified by:</b> $dataset['LastModifiedBy'] on <em>$dataset['LastModificationDate']</em>
+   <li><b>Created by:</b> $dataset['CreatedBy'] on <em>$dataset['CreationDate']</em>
+</ul>
+#end for
 </div>
 """
 
