@@ -363,6 +363,7 @@ class DBSHelper(DBSLogger):
 #         return self.api.listBlocks(datasetPath,web=1)
          return self.api.listBlocks(datasetPath)
   ### END OF WRAPPER ###
+
   def getDataDescription(self,primaryDataset="",processedDataset=""):
       if self.iface=="cgi":
          return {}
@@ -722,26 +723,13 @@ class DBSHelper(DBSLogger):
 #      self.dbsTime=(t2-t1)
 
       t1 = time.time()
-#      print "##### getData",dataset,app
       blockInfoDict = self.listBlocks(dataset,app,"yes")
       t2 = time.time()
       self.dbsTime=(t2-t1)
       if string.lower(site)=="all": site="*"
 
-# new code         
       for blockName in blockInfoDict.keys():
-          if self.iface=='cgi':
-             evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
-          else:
-             item = blockInfoDict[blockName]
-             blockName = item['Name']
-             evts = 0
-             bStatus = 'N/A'
-             nFiles = item['NumberOfFiles']
-             bBytes = item['BlockSize']
-# old code         
-#      for blockName in blockInfoDict.keys():
-#          evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
+          evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
           if evts:
              nEvts+=evts
           else:
