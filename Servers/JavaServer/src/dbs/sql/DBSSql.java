@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.39 $"
- $Id: DBSSql.java,v 1.39 2007/01/02 22:59:57 sekhri Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSSql.java,v 1.40 2007/01/03 19:17:20 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -429,7 +429,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
 			"LEFT OUTER JOIN DataTier dt \n" +
-				"ON dt.id = pdst.DataTier " +
+				"ON dt.id = pdst.DataTier \n" +
 			"LEFT OUTER JOIN PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"LEFT OUTER JOIN Person perpg \n" +
@@ -452,32 +452,62 @@ public class DBSSql {
 				"ON perlm.id = procds.LastModifiedBy \n";
 
 
-		if(patternPrim == null) patternPrim = "%";
+		/*if(patternPrim == null) patternPrim = "%";
 		if(patternDT == null) patternDT = "%";
 		if(patternProc == null) patternProc = "%";
 		if(patternVer == null) patternVer = "%";
 		if(patternFam == null) patternFam = "%";
 		if(patternExe == null) patternExe = "%";
-		if(patternPS == null) patternPS = "%";
+		if(patternPS == null) patternPS = "%";*/
+		boolean useAnd = false;
+		if(!patternPrim.equals("%") || !patternDT.equals("%") || !patternProc.equals("%") || !patternVer.equals("%") || !patternFam.equals("%") || !patternExe.equals("%") || !patternPS.equals("%")) {
+			sql += "WHERE \n";
+		}
+		if(!patternPrim.equals("%")) {
+			sql += " primds.Name like ? \n";
+			useAnd = true;
+		}
+		if(!patternDT.equals("%")) {
+			if(useAnd) sql += " AND ";
+			sql += "dt.Name like ?  \n";
+			useAnd = true;
+		}
+		if(!patternProc.equals("%")) {
+			if(useAnd) sql += " AND ";
+			sql += "procds.name like ? \n";
+			useAnd = true;
+		}
+		if(!patternVer.equals("%")) {
+			if(useAnd) sql += " AND ";
+			sql += "av.Version like ? \n";
+			useAnd = true;
+		}
+		if(!patternFam.equals("%")) {
+			if(useAnd) sql += " AND ";
+			sql += "af.FamilyName like ? \n";
+			useAnd = true;
+		}
+		if(!patternExe.equals("%")) {
+			if(useAnd) sql += " AND ";
+			sql += "ae.ExecutableName like ? \n";
+			useAnd = true;
+		}
+		if(!patternPS.equals("%")) {
+			if(useAnd) sql += " AND ";
+			sql += "ps.Name like ? \n";
+		}
 
-		sql += "WHERE primds.Name like ? \n" +
-			"and dt.Name like ? \n" +
-			"and procds.name like ? \n" +
-			"and av.Version like ? \n" +
-			"and af.FamilyName like ? \n" +
-			"and ae.ExecutableName like ? \n" +
-			"and ps.Name like ? \n" +
-			//"ORDER BY path";
-			"ORDER BY id, APP_VERSION, APP_FAMILY_NAME, APP_EXECUTABLE_NAME, PS_NAME, DATA_TIER DESC";
+
+		sql += "ORDER BY id, APP_VERSION, APP_FAMILY_NAME, APP_EXECUTABLE_NAME, PS_NAME, DATA_TIER DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
-		ps.setString(columnIndx++, patternPrim);
-		ps.setString(columnIndx++, patternDT);
-		ps.setString(columnIndx++, patternProc);
-		ps.setString(columnIndx++, patternVer);
-		ps.setString(columnIndx++, patternFam);
-		ps.setString(columnIndx++, patternExe);
-		ps.setString(columnIndx++, patternPS);
+		if(!patternPrim.equals("%")) ps.setString(columnIndx++, patternPrim);
+		if(!patternDT.equals("%")) ps.setString(columnIndx++, patternDT);
+		if(!patternProc.equals("%")) ps.setString(columnIndx++, patternProc);
+		if(!patternVer.equals("%")) ps.setString(columnIndx++, patternVer);
+		if(!patternFam.equals("%")) ps.setString(columnIndx++, patternFam);
+		if(!patternExe.equals("%")) ps.setString(columnIndx++, patternExe);
+		if(!patternPS.equals("%")) ps.setString(columnIndx++, patternPS);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -560,10 +590,10 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n";
 
-		if(patternVer == null) patternVer = "%";
+		/*if(patternVer == null) patternVer = "%";
 		if(patternFam == null) patternFam = "%";
 		if(patternExe == null) patternExe = "%";
-		if(patternPS == null) patternPS = "%";
+		if(patternPS == null) patternPS = "%";*/
 		
 		sql += "WHERE av.Version like ? \n" +
 			"and af.FamilyName like ? \n" +
@@ -659,8 +689,10 @@ public class DBSSql {
 				"ON perlm.id = b.LastModifiedBy \n";
 
 		boolean useAnd = false;
-		if(procDSID != null || blockName != null || seName != null) {
+		if(procDSID != null || blockName != null) {
 			sql += "WHERE \n";
+		} else if(!seName.equals("%")){//Assumming seName will never be null
+			 sql += "WHERE \n";
 		}
 		if(procDSID != null) {
 			sql += "b.Dataset = ? \n";
@@ -671,7 +703,7 @@ public class DBSSql {
 			sql += "b.Name like ? \n";
 			useAnd = true;
 		}
-		if(seName != null) {
+		if(!seName.equals("%")) {
 			if(useAnd) sql += " AND ";
 			sql += "se.SEName like ? \n";
 		}
@@ -679,15 +711,10 @@ public class DBSSql {
 		sql +=	"ORDER BY NAME DESC";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		if(procDSID != null) {
-			ps.setString(columnIndx++, procDSID);
-		}
-		if(blockName != null) {
-			ps.setString(columnIndx++, blockName);
-		}
-		if(seName != null) {
-			ps.setString(columnIndx++, seName);
-		}
+		if(procDSID != null) ps.setString(columnIndx++, procDSID);
+		if(blockName != null) ps.setString(columnIndx++, blockName);
+		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
+		
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
