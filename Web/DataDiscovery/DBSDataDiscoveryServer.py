@@ -1023,7 +1023,6 @@ class DBSDataDiscoveryServer(DBSLogger):
     def blockListToHTML(self,dbsInst,bList):
         if not len(bList): return ""
         nameSpace = {'host': self.dbsdd, 'dbsInst': dbsInst, 'blockList' : bList}
-#        print "#### blockListToHTML",bList
         t = Template(CheetahDBSTemplate.templateBlockList, searchList=[nameSpace])
         page=str(t)
         return page
@@ -1039,7 +1038,6 @@ class DBSDataDiscoveryServer(DBSLogger):
     crabCfg.exposed=True
     
     def responseTime(self,htmlTime):
-#        page="""\n<response type="object" id="time">"""
         nameSpace = {
                      'dbsTime'  : "%5.3f"%self.dbsTime,
                      'dlsTime'  : "%5.3f"%self.dlsTime,
@@ -1048,7 +1046,6 @@ class DBSDataDiscoveryServer(DBSLogger):
                     }
         t = Template(CheetahDBSTemplate.templateTime, searchList=[nameSpace])
         page=str(t)
-#        page+="</response>\n"
         return page
 
     def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
@@ -1104,6 +1101,74 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getData.exposed = True 
+
+    def getDbsData(self,dbsInst,app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
+        """
+           HTML wrapper for Main worker L{getDataHelper}.
+           @type  dbsInst: string
+           @param dbsInst: user selection of DBS menu
+           @type  site: string
+           @param site: user selection of the site, default "All"
+           @type  app: string
+           @param app: user selection of the application, default "*"
+           @type  primD: string
+           @param primD: user selection of the primary dataset, default "*"
+           @type  tier: string
+           @param tier: user selection of the data tier, default "*"
+           @type  i: integer
+           @param i: index to start with
+           @type  j: integer
+           @param j: index to end with
+           @rtype : string
+           @return: returns HTML code
+        """
+        _idx=int(_idx)
+        t1=time.time()
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="results_dbs">"""
+        else:
+           page=self.genTopHTML()
+        try:
+            if string.lower(tier)=="all": tier="*"
+            self.helperInit(dbsInst)
+            self.htmlInit()
+            self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
+
+            dList = self.helper.getDatasetsFromApp(app,primD,tier)
+            nDatasets=len(dList)
+            page+="""<span id="results_dbs_response_%s" class="show_inline">"""%_idx
+            for idx in xrange(0,nDatasets):
+                tid = 't_dbs_'+str(idx)
+                dataset = dList[idx]
+
+                # process only RES_PER_PAGE datasets within given (_idx) index range
+                if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
+                nameSpace = {
+                             'dbsList'  : self.helper.getDbsData(dataset),
+                             'tableId'  : tid,
+                             'proc'     : dataset
+                            }
+                t = Template(CheetahDBSTemplate.templateDbsInfo, searchList=[nameSpace])
+                page+=str(t)
+
+        except:
+            t=self.errorReport("Fail in getDbsData function")
+            page+=str(t)
+        t2=time.time()
+        page+="</span>"
+        if not self.userMode and self.profile:
+           page+=self.responseTime(t2-t1)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getDbsData.exposed = True 
 
     def getLFNlist(self,dbsInst,blockName,dataset="",iSite="",iApp="",iPrimD="",iTier=""):
         """
