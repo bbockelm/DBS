@@ -1,6 +1,6 @@
 /**
- $Revision: 1.55 $"
- $Id: DBSApiLogic.java,v 1.55 2006/12/27 19:26:54 afaq Exp $"
+ $Revision: 1.56 $"
+ $Id: DBSApiLogic.java,v 1.56 2007/01/02 16:55:50 sekhri Exp $"
  *
  */
 
@@ -34,10 +34,12 @@ public class DBSApiLogic {
 	private static String SAFE_STR = "[-\\w_\\.% ]+";
 	//A regular expression used to validate a block name. This word will not contain any special characters or blank spaces but can contain slashes.
 	private static String SAFE_BLOCK = "[-\\w_\\.%#/]+";
+	private static String SAFE_BLOCK_LIST = "[-\\w_\\.%#/\\%]+";
 	//A regular expression used to validate a path that will contain exactly three slashes.
 	private static String VALID_PATH = "^/([^/]+)/([^/]+)/([^/]+)";
 	//A regular expression used to validate a block name that will contain exactly thw slashes and a hash.
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
+	private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)#([^/]+)|%";
 	//We can store the path id once and everytime the id is needed it can be fetched from this table instead of fetching it through database.
 	protected static Hashtable globalUser = new Hashtable();
 	protected static Hashtable globalFile = new Hashtable();
@@ -400,6 +402,16 @@ public class DBSApiLogic {
 	}
 
 
+        protected void checkBlock4List(String blockName) throws Exception {
+                if(isNull(blockName))
+                        throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid block_name in format /PRIMARY/PROCESSED#GUID");
+                if (! Pattern.matches(VALID_BLOCK_LIST, blockName) )
+                        throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK_LIST + " The given block_name is " + blockName);
+                if( ! Pattern.matches(SAFE_BLOCK_LIST, blockName) )
+                        throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK);
+        }
+
+
 	/**
 	 * Checks a word as whole against a regular expression that validates a english word without any special characters.
 	 * @param pattern the value of the word that needs to be validated.
@@ -510,7 +522,8 @@ public class DBSApiLogic {
 	protected String getBlockPattern(String pattern) throws Exception {
 		if(isNull(pattern))  return "%";
 		pattern = pattern.replace('*','%');
-		(new DBSApiBlockLogic()).checkBlock(pattern);
+		(new DBSApiBlockLogic()).checkBlock4List(pattern);
+		//(new DBSApiBlockLogic()).checkBlock(pattern);
         	return pattern;
 	}
 

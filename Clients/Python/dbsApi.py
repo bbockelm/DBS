@@ -393,7 +393,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listBlocks(self, dataset="*"):
+  def listBlocks(self, dataset="*", block_name="*", storage_element_name="*"):
     """
     Retrieve list of Blocks matching a shell glob pattern.
     Returns a list of DbsFileBlock objects.  If the pattern is
@@ -406,7 +406,7 @@ class DbsApi(DbsConfig):
 
     # Invoke Server.
     path = self._path(dataset)
-    data = self._server._call ({ 'api' : 'listBlocks', 'path' : path }, 'GET')
+    data = self._server._call ({ 'api' : 'listBlocks', 'path' : path, 'block_name' : block_name, 'storage_element_name' : storage_element_name }, 'GET')
 
     # Parse the resulting xml output.
     try:
@@ -843,7 +843,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def insertBlock(self, dataset, block=None, storage_element="" ):
+  def insertBlock(self, dataset, block=None, storage_element=None):
     """
     Create a new primary dataset.  Instantiates a database entity for
     the dataset, and updates input object for the id of the new row.
@@ -858,8 +858,11 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<block name='"+ name +"'"
-    if (storage_element not in ("", None)) : xmlinput += " storage_element='"+storage_element+"'"
-    xmlinput += " path='"+path+"'/>"
+    xmlinput += " path='"+path+"'>"
+    if (storage_element not in ( [], None)) : 
+         for aSe in storage_element:
+            xmlinput += " <storage_element storage_element_name='"+aSe+"'/>"
+    xmlinput += "</block>"  
     xmlinput += "</dbs>"
 
     if self.verbose():

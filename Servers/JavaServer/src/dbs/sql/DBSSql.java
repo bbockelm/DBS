@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.40 $"
- $Id: DBSSql.java,v 1.40 2007/01/03 19:17:20 sekhri Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSSql.java,v 1.41 2007/01/03 22:40:13 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -689,16 +689,16 @@ public class DBSSql {
 				"ON perlm.id = b.LastModifiedBy \n";
 
 		boolean useAnd = false;
-		if(procDSID != null || blockName != null) {
+		if(procDSID != null) {
 			sql += "WHERE \n";
-		} else if(!seName.equals("%")){//Assumming seName will never be null
+		} else if(!seName.equals("%") || !blockName.equals("%") ){//Assumming seName will never be null
 			 sql += "WHERE \n";
 		}
 		if(procDSID != null) {
 			sql += "b.Dataset = ? \n";
 			useAnd = true;
 		}
-		if(blockName != null) {
+		if(!blockName.equals("%")) {
 			if(useAnd) sql += " AND ";
 			sql += "b.Name like ? \n";
 			useAnd = true;
@@ -712,7 +712,7 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(procDSID != null) ps.setString(columnIndx++, procDSID);
-		if(blockName != null) ps.setString(columnIndx++, blockName);
+		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -753,7 +753,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = f.LastModifiedBy \n";
 
-		if(patternLFN == null) patternLFN = "%";
+		//if(patternLFN == null) patternLFN = "%";
 		sql += "WHERE f.LogicalFileName like ? \n" ;
 		if(procDSID != null) {
 			sql += "and f.Dataset = ? \n";
