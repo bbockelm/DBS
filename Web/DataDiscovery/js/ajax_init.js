@@ -2,7 +2,12 @@
 // once response arrived. We put our reponse to "results" tag id found on internal HTML.
 var GetDataUpdater=Class.create();
 GetDataUpdater.prototype = {
-   initialize: function() {
+   initialize: function(tag) {
+      if(tag) {
+         this.tag=tag;
+      } else {
+         this.tag='results';
+      }
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
@@ -22,7 +27,11 @@ GetDataUpdater.prototype = {
 */
      showResultsMenu();
      hideWaitingMessage();
-     var t=document.getElementById("results");
+     if(this.tag=='results_dbs') {
+        var r=document.getElementById("_results_dbs");
+        r.className="td_menu_lavender_box";
+     }
+     var t=document.getElementById(this.tag);
      t.innerHTML+=responseHTML;
      // parse response and search for any JavaScript code there, if found execute it.
      var jsCode = SearchForJSCode(responseHTML);
@@ -77,7 +86,6 @@ function registerAjaxHistoryCalls() {
   ajaxEngine.registerAjaxObject('sessionHistory',sessionHistoryUpdater);
   ajaxEngine.registerRequest('ajaxHistorySearch','historySearch');
   ajaxEngine.registerAjaxElement('historySearchResults');
-//  ajaxEngine.registerAjaxObject('historySearchResults',sessionHistoryUpdater);
   allHistoryUpdater = new HistoryUpdater('all');
   ajaxEngine.registerRequest('ajaxGetHistory','getHistory');
   ajaxEngine.registerAjaxObject('allHistory',allHistoryUpdater);
@@ -135,8 +143,7 @@ function ajaxHistorySearch(iUser,iPass) {
   var oYear  = getSelectedOption(document.getElementById('out_hSearch_year'));
   ajaxEngine.sendRequest('ajaxHistorySearch','iYear='+iYear,'iMonth='+iMonth,'oYear='+oYear,'oMonth='+oMonth,'userName='+getUserName(iUser),'password='+getPassword(iPass));
 }
-// AJAX registration for getDataHelper
-function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
+function getDataFromSelectors(_dbs,_site,_app,_primD,_tier) {
   var sel;
   var dbs;
   if(_dbs) {
@@ -178,11 +185,37 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
       if(!sel) return;
       tier=sel.value;
   }
+  var arr = new Array(dbs,site,app,primD,tier);
+  return arr;
+}
+// AJAX registration for getDataHelper
+function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
+  var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
+  if(!arr) return;
+  var dbs  = arr[0];
+  var site = arr[1];
+  var app  = arr[2];
+  var primD= arr[3];
+  var tier = arr[4];
+  ajaxEngine.sendRequest('ajaxGetDbsData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
+  var action='<a href="javascript:showWaitingMessage();ajaxGetDbsData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  ajaxHistory(action);
+}
+// AJAX registration for getDataHelper
+function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
+  var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
+  if(!arr) return;
+  var dbs  = arr[0];
+  var site = arr[1];
+  var app  = arr[2];
+  var primD= arr[3];
+  var tier = arr[4];
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
   var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
 }
 function ajaxNextGetData(idx) {
+/*
   var sel;
   sel=document.getElementById('dbsSelector');
   if(!sel) return;
@@ -199,10 +232,16 @@ function ajaxNextGetData(idx) {
   sel=document.getElementById('tierSelector');
   if(!sel) return;
   tier=sel.value;
+*/
+  var arr  = getDataFromSelectors();
+  if(!arr) return;
+  var dbs  = arr[0];
+  var site = arr[1];
+  var app  = arr[2];
+  var primD= arr[3];
+  var tier = arr[4];
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,'_idx='+idx);
   var id=document.getElementById('results_response_'+(idx-1));
-//  var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
-//  ajaxHistory(action);
 }
 function ajaxGetDataFromSelection(iParamString) {
   var uSelection;
@@ -229,16 +268,8 @@ function ajaxGetDataFromSelection(iParamString) {
          ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList[i]);
          var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+selList[i]+'\')">data selection ('+selList[i]+')</a>';
          ajaxHistory(actionHistory);
-//         action=action+selList[i]+',';
       }
   }
-/*
-  ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList);
-  var parameters= action.substr(0,action.length-1);
-  var parString = parameters.replace(",",", ");
-  var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+parameters+'\')">data selection ('+parString+')</a>';
-  ajaxHistory(actionHistory);
-*/
 }
 
 // AJAX registration for search
@@ -278,13 +309,14 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxSearch','search');
     ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
     ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
-
-    // new stuff
     ajaxEngine.registerRequest('ajaxGetDetailsForPrimDataset','getDetailsForPrimDataset');
     ajaxEngine.registerRequest('ajaxGetDatasetContent','getDatasetContent');
     ajaxEngine.registerRequest('ajaxGetDatasetsFromApplication','getDatasetsFromApplication');
-
     ajaxEngine.registerAjaxObject('results',getDataUpdater);
+
+    ajaxEngine.registerRequest('ajaxGetDbsData','getDbsData');
+    getDbsDataUpdater = new GetDataUpdater('results_dbs');
+    ajaxEngine.registerAjaxObject('results_dbs',getDbsDataUpdater);
 }
 
 function registerAjaxGetBlocksFromSiteCalls() {
