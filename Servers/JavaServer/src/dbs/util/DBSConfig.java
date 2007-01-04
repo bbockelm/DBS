@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.8 $"
- $Id: DBSConfig.java,v 1.8 2006/12/27 01:49:40 afaq Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSConfig.java,v 1.9 2007/01/03 22:27:53 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -89,8 +89,9 @@ public class DBSConfig {
                    dbs_config = confPath;
                 }
                 else { 
-                     // See if DBS_SERVER_CONFIG is set instead, use that file
-                     dbs_config = System.getenv("DBS_SERVER_CONFIG");
+                     // See if DBS_SERVER_CONFIG is provided when invoking JAVA
+                     dbs_config = System.getProperty("DBS_SERVER_CONFIG");
+                     //dbs_config = System.getenv("DBS_SERVER_CONFIG");
                 }      
                 if (dbs_config == null || dbs_config.equals("") ) {
                         throw new DBSException("Configuration Error", "1050", "Environment variable DBS_SERVER_CONFIG not set. OR DBS/META-INF/context.xml is missing or invalid in case you are running under TOMCAT ?");

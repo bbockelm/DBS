@@ -15,10 +15,11 @@ from xml.sax.saxutils import escape
 class DbsExecService:
 
   """Provides Server connectivity through HTTP"""
-  def __init__(self, Home,  ApiVersion, Args={}):
+  def __init__(self, Home, JavaHome,  ApiVersion, Args={}):
     """ Constructor. """
     
     self.Home = Home
+    self.JavaHome = JavaHome
     self.ApiVersion = ApiVersion
     
   def _call (self, args, type):
@@ -29,15 +30,30 @@ class DbsExecService:
     """
 
     try:
+       #import pdb
+       #pdb.set_trace()
+       classpath=""
+       classpathbase= self.Home+'/lib/' 
+       for ajar in os.listdir(classpathbase):
+           if ajar.endswith('.jar'):
+              classpath+=classpathbase+ajar+':'
+       request_string = self.JavaHome+'/bin/java -classpath '+classpath+ ' -DDBS_SERVER_CONFIG='+self.Home+'/etc/context.xml dbs.test.DBSCLI'
+       
 
-       request_string = './cli.sh apiversion='+self.ApiVersion
+       #request_string = './cli.sh apiversion='+self.ApiVersion
 
        for key, value in args.items():
                    if (value== ''): continue    
 		   request_string += ' "' + key + '=' + value + '"'
            
+       request_string += ' apiversion='+self.ApiVersion
        print request_string  
-       obj = os.popen('cd ' + self.Home + '/test;' + request_string)
+
+       
+       #obj = os.popen('cd ' + self.Home + '/test;' + request_string)
+        
+       obj = os.popen(request_string)
+
        tmp = obj.readline()
        data = tmp
        while(tmp != "") :

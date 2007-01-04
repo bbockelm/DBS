@@ -41,7 +41,7 @@ class DbsConfig(object):
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
     login = masterHost =  masterName = masterPort = masterSocket = admin = ""
-    iList=['user','password','driver','url','host','port','servlet','version','dbname','dbsDB','dbtype','verbose','mode', 'dbshome']
+    iList=['user','password','driver','url','host','port','servlet','version','dbname','dbsDB','dbtype','verbose','mode', 'dbshome', 'javahome']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -101,6 +101,10 @@ class DbsConfig(object):
     if not self.configDict.has_key('dbtype'):
        raise DbsException(args="DBS configuration missing dbtype parameter")
     return self.configDict['dbtype']
+  def javahome(self):
+    if not self.configDict.has_key('javahome'):
+       raise DbsException(args="DBS configuration missing javahome parameter")
+    return self.configDict['javahome']
 
 #
 # main

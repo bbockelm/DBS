@@ -68,7 +68,7 @@ class DbsApi(DbsConfig):
     #
     self._server = ""
     if self.mode() == "EXEC" :
-	    self._server = DbsExecService(self.dbshome(), self.version(), Args)
+	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
             self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
     #
