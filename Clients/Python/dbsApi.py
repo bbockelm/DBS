@@ -507,6 +507,42 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+  #-------------------------------------------------------------------
+
+  def listDatasetContents(self, path, block_name):
+    """
+    May raise an DbsApiException.
+
+    """
+
+    try:
+       # Invoke Server.
+       path = self._path(path)
+       data = self._server._call ({ 'api' : 'listDatasetContents', 'path' : path, 'block_name' : block_name }, 'GET')
+       return data
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+  #-------------------------------------------------------------------
+
+  def insertDatasetContents(self, xmlinput):
+    """
+    May raise an DbsApiException.
+
+    """
+
+    try:
+       # Invoke Server.
+       data = self._server._call ({ 'api' : 'insertDatasetContents', 'xmlinput' : xmlinput }, 'POST')
+       return data
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+
+
   # ------------------------------------------------------------
 
   def getDatasetProvenance(self, dataset, tiers=[]):
