@@ -1,6 +1,6 @@
 /**
- $Revision: 1.42 $"
- $Id: DBSApi.java,v 1.42 2007/01/03 19:17:19 sekhri Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSApi.java,v 1.43 2007/01/04 18:10:58 afaq Exp $"
  *
 */
 
@@ -577,6 +577,7 @@ public class DBSApi {
 	
 	private Hashtable parseDatasetContents(String inputXml) throws Exception {
 		int index = -1;
+		int blockIndex = -1;
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
 		Vector allElement = dbsParser.getElements();
@@ -612,11 +613,13 @@ public class DBSApi {
 				((Vector)(psDS.get("block"))).add(e.attributes);
 			}
 			if (name.equals("block") ) {
-				((Vector)(psDS.get("block"))).add(e.attributes);
-				table.put("storage_element", new Vector());
+				Hashtable block = e.attributes;
+				block.put("storage_element", new Vector());
+				((Vector)(psDS.get("block"))).add(block);
+				++blockIndex;
 			} 
 			if (name.equals("storage_element") ) 
-				((Vector)(table.get("storage_element"))).add(e.attributes);
+				((Vector)((Hashtable)(((Vector)(psDS.get("block"))).get(blockIndex))).get("storage_element")).add(e.attributes);
 
 			if (name.equals("file") ) {
 				Hashtable file = e.attributes;
