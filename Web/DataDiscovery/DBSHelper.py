@@ -693,6 +693,11 @@ class DBSHelper(DBSLogger):
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
+  def getRuns(self,dataset):
+      if self.iface=='cgi':
+         return {}
+      else:
+         return self.api.listRuns(dataset)
   def getDbsData(self,dataset):
       if self.iface=='cgi':
          return {}

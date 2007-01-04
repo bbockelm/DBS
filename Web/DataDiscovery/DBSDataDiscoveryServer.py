@@ -1170,6 +1170,73 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDbsData.exposed = True 
 
+    def getRuns(self,dbsInst,app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
+        """
+           @type  dbsInst: string
+           @param dbsInst: user selection of DBS menu
+           @type  site: string
+           @param site: user selection of the site, default "All"
+           @type  app: string
+           @param app: user selection of the application, default "*"
+           @type  primD: string
+           @param primD: user selection of the primary dataset, default "*"
+           @type  tier: string
+           @param tier: user selection of the data tier, default "*"
+           @type  i: integer
+           @param i: index to start with
+           @type  j: integer
+           @param j: index to end with
+           @rtype : string
+           @return: returns HTML code
+        """
+        _idx=int(_idx)
+        t1=time.time()
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="runs">"""
+        else:
+           page=self.genTopHTML()
+        try:
+            if string.lower(tier)=="all": tier="*"
+            self.helperInit(dbsInst)
+            self.htmlInit()
+            self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
+
+            dList = self.helper.getDatasetsFromApp(app,primD,tier)
+            nDatasets=len(dList)
+            page+="""<span id="runs_response_%s" class="show_inline">"""%_idx
+            for idx in xrange(0,nDatasets):
+                tid = 't_runs_'+str(idx)
+                dataset = dList[idx]
+
+                # process only RES_PER_PAGE datasets within given (_idx) index range
+                if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
+                nameSpace = {
+                             'runList'  : self.helper.getRuns(dataset),
+                             'tableId'  : tid,
+                             'proc'     : dataset
+                            }
+                t = Template(CheetahDBSTemplate.templateRunsInfo, searchList=[nameSpace])
+                page+=str(t)
+
+        except:
+            t=self.errorReport("Fail in getRunsData function")
+            page+=str(t)
+        t2=time.time()
+        page+="</span>"
+        if not self.userMode and self.profile:
+           page+=self.responseTime(t2-t1)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getRuns.exposed = True 
+
     def getLFNlist(self,dbsInst,blockName,dataset="",iSite="",iApp="",iPrimD="",iTier=""):
         """
            Retrieves and represents LFN list. The list is formed by L{lfnToHTML}.

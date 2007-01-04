@@ -49,9 +49,10 @@ function showHelpContent() {
 var _ids = new Array();
 _ids[0]='results';
 _ids[1]='results_dbs';
-_ids[2]='parents';
-_ids[3]='appConfigs';
-_ids[4]='dataDescription';
+_ids[2]='runs';
+_ids[3]='parents';
+_ids[4]='appConfigs';
+_ids[5]='dataDescription';
 //_ids[4]='validation';
 //_ids[5]='parameterSet';
 //_ids[6]='releaseSpec';

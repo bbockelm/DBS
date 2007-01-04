@@ -27,8 +27,8 @@ GetDataUpdater.prototype = {
 */
      showResultsMenu();
      hideWaitingMessage();
-     if(this.tag=='results_dbs') {
-        var r=document.getElementById("_results_dbs");
+     if(this.tag=='results_dbs' || this.tag=="runs") {
+        var r=document.getElementById("_"+this.tag);
         r.className="td_menu_lavender_box";
      }
      var t=document.getElementById(this.tag);
@@ -188,7 +188,20 @@ function getDataFromSelectors(_dbs,_site,_app,_primD,_tier) {
   var arr = new Array(dbs,site,app,primD,tier);
   return arr;
 }
-// AJAX registration for getDataHelper
+// AJAX registration 
+function ajaxGetRuns(_dbs,_site,_app,_primD,_tier) {
+  var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
+  if(!arr) return;
+  var dbs  = arr[0];
+  var site = arr[1];
+  var app  = arr[2];
+  var primD= arr[3];
+  var tier = arr[4];
+  ajaxEngine.sendRequest('ajaxGetRuns',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
+  var action='<a href="javascript:showWaitingMessage();ajaxGetRuns(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  ajaxHistory(action);
+}
+// AJAX registration 
 function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
@@ -201,7 +214,7 @@ function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
   var action='<a href="javascript:showWaitingMessage();ajaxGetDbsData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
 }
-// AJAX registration for getDataHelper
+// AJAX registration
 function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
@@ -317,6 +330,10 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetDbsData','getDbsData');
     getDbsDataUpdater = new GetDataUpdater('results_dbs');
     ajaxEngine.registerAjaxObject('results_dbs',getDbsDataUpdater);
+
+    ajaxEngine.registerRequest('ajaxGetRuns','getRuns');
+    getRunsUpdater = new GetDataUpdater('runs');
+    ajaxEngine.registerAjaxObject('runs',getRunsUpdater);
 }
 
 function registerAjaxGetBlocksFromSiteCalls() {
