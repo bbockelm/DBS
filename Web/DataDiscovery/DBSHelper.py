@@ -429,7 +429,7 @@ class DBSHelper(DBSLogger):
       aList.reverse()
       return aList
 
-  def getDatasetsFromApp(self,datasetPath="*",_prim="*",_tier="*"):
+  def getDatasetsFromApp(self,appPath="*",_prim="*",_tier="*"):
       """
          DBS data discovery wrapper around dbsCgiApi.listDatasetsFromApp
          @type  datasetPath: string 
@@ -438,7 +438,7 @@ class DBSHelper(DBSLogger):
          @return: a list of datasets from application in the following form, [datasetPathName]
       """
       oList = []
-      dList = self.listDatasetsFromApp(datasetPath)
+      dList = self.listDatasetsFromApp(appPath)
       for entry in dList:
 #          oList.append(entry.get('datasetPathName'))
 
@@ -693,6 +693,12 @@ class DBSHelper(DBSLogger):
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
+  def getDbsData(self,dataset):
+      if self.iface=='cgi':
+         return {}
+      else:
+         return self.api.listBlocksFull(dataset)
+
   def getData(self,dataset,app,site="All"):
       """
          Returns 
@@ -711,16 +717,6 @@ class DBSHelper(DBSLogger):
       """
       locDict  = {}
       nEvts    = totFiles = totSize = self.dbsTime = self.dlsTime = 0
-      # IMPORTANT: I think we need to replace listBlocks(dataset) to listBlocksFromApp(app)
-#      t1 = time.time()
-#      bList=[]
-#      if self.iface=='cgi':
-#         blockInfoDict = self.listBlocks(dataset,app,"yes")
-#         bList = blockInfoDict.values()
-#      else:
-#         bList = self.listBlocks(dataset,app,"yes")
-#      t2 = time.time()
-#      self.dbsTime=(t2-t1)
 
       t1 = time.time()
       blockInfoDict = self.listBlocks(dataset,app,"yes")
