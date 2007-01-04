@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiBlockLogic.java,v 1.5 2007/01/02 16:55:50 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiBlockLogic.java,v 1.6 2007/01/02 22:59:57 sekhri Exp $"
  *
  */
 
@@ -83,6 +83,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		}
 
 		String blockID = "";
+		System.out.println("seVector.size() " + seVector.size() );
        		if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
 		//System.out.println("BLOCK ID is " + blockID);
 		for (int j = 0; j < seVector.size(); ++j) {

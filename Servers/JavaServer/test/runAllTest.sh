@@ -91,7 +91,7 @@ listBlocks() {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=listBlocks path=$path_child`
 	display "$out"
-	echo "$out"
+	#echo "$out"
 }
 
 listFiles () {
@@ -198,7 +198,7 @@ insertTier () {
 	echo $message >> $outFile ; echo $message
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<tier name='This_is_a_test_TIER_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<tier tier_name='This_is_a_test_TIER_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 
 	out=`$CMD api=insertTier "xmlinput=$xmlString"`
@@ -284,7 +284,7 @@ insertBlock () {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=insertBlock "xmlinput=$xmlString"`
 	display "$out"
-	echo "$out"
+	#echo "$out"
 }
 
 insertFiles () {
@@ -342,20 +342,20 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-#createAnalysisDatasetFromPD
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
+createAnalysisDatasetFromPD
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
 #listDatasetContents
-#listDatasetParents
-#listFileParents
-#listFileAlgorithms
-#listFileTiers
-#listFileLumis
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 													
 echo 
 echo "*************************************************************"

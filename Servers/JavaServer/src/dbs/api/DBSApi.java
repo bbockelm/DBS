@@ -1,6 +1,6 @@
 /**
- $Revision: 1.41 $"
- $Id: DBSApi.java,v 1.41 2007/01/02 22:59:57 sekhri Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSApi.java,v 1.42 2007/01/03 19:17:19 sekhri Exp $"
  *
 */
 
@@ -611,6 +611,13 @@ public class DBSApi {
 			if (name.equals("block") ) {
 				((Vector)(psDS.get("block"))).add(e.attributes);
 			}
+			if (name.equals("block") ) {
+				((Vector)(psDS.get("block"))).add(e.attributes);
+				table.put("storage_element", new Vector());
+			} 
+			if (name.equals("storage_element") ) 
+				((Vector)(table.get("storage_element"))).add(e.attributes);
+
 			if (name.equals("file") ) {
 				Hashtable file = e.attributes;
 				file.put("lumi_section", new Vector());
