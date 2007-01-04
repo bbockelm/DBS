@@ -21,7 +21,7 @@ try:
    # List all parameter sets
    print ""
    #for file in api.listFiles("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
-   for file in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS002/", "", ""):
+   for file in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS002", "", ""):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e

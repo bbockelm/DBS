@@ -31,6 +31,8 @@ from dbsAlgorithm import DbsAlgorithm
 
 from dbsParent import DbsParent
 from dbsConfig import DbsConfig
+import urlparse
+import urllib2
 
 def getInt(value = None):
 	#print "value is ", value
@@ -58,9 +60,10 @@ class DbsApi(DbsConfig):
     DbsConfig.__init__(self,Args)
     if self.verbose():
        print "configuration dictionary:", self.configDict
-       print "using host   ",self.host()
-       print "using port   ",self.port()
-       print "using servlet",self.servlet()
+       #print "using host   ",self.host()
+       #print "using port   ",self.port()
+       #print "using servlet",self.servlet()
+       print "using url",self.url()
        print "using version",self.version()
        print "using mode   ",self.mode()
     #
@@ -70,7 +73,13 @@ class DbsApi(DbsConfig):
     if self.mode() == "EXEC" :
 	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
-            self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
+	    spliturl = urlparse.urlparse(self.url())
+	    hostport=urllib2.splitport(spliturl[1])  
+	    host=hostport[0]
+	    port=hostport[1]
+	    servlet=spliturl[2] 
+            self._server = DbsHttpService(host, port, servlet, self.version(), Args)
+            #self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
     #
     # 
 
@@ -414,7 +423,7 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'block':
-               result.append(DbsFileBlock(
+               self.currBlock = DbsFileBlock(
                                        Name=str(attrs['name']), 
                                        BlockSize=int(attrs['size']),
                                        NumberOfFiles=int(attrs['number_of_files']),
@@ -425,7 +434,15 @@ class DbsApi(DbsConfig):
                                        LastModificationDate=str(attrs['last_modification_date']),
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        )
-                             )
+          import pdb
+	  #pdb.set_trace()
+          if name == 'storage_element':
+               self.currBlock['StorageElementList'].append(str(attrs['storage_element_name']))
+	       
+        def endElement(self, name):
+          if name == 'block':
+             result.append(self.currBlock)
+  
 
       xml.sax.parseString (data, Handler ())
       return result
@@ -476,7 +493,7 @@ class DbsApi(DbsConfig):
             self.currFile['TierList'].append(str(attrs['name']))
 
           if name == 'lumi_section':
-             self.currFile['lumiList'].append(DbsLumiSection(
+             self.currFile['LumiList'].append(DbsLumiSection(
                                                    LumiSectionNumber=int(attrs['lumi_section_number']),
                                                    StartEventNumber=int(attrs['start_event']),
                                                    EndEventNumber=int(attrs['end_event']),   

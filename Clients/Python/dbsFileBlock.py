@@ -36,7 +36,8 @@ class  DbsFileBlock(DbsBase):
       DbsBase.__init__(self)
       # List type object fileList needs to be initialized
       # to avoid return "None" instead of empty list []
-      self.setdefault('fileList', [])
+      self.setdefault('FileList', [])
+      self.setdefault('StorageElementList', [])
       # Read in all User provided values
       self.update(args)
       # Verifying that data types of user provide parameters is correct

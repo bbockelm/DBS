@@ -31,36 +31,6 @@ class DbsHttpService:
     """ Set low-level debugging. """
     httplib.HTTPConnection.debuglevel = on
 
-  def _encode(self, args):
-    """
-    Encode form (name, value) elements into multi-part/form-data.
-    We don't actually need to know what we are uploading here, so
-    just claim it's all text/plain.
-    """
-
-    boundary = '----------=_DBS_BOUNDARY_=-----------'
-    (body, crlf) = ('', '\r\n')
-    for key, value in args.items():
-      body += '--' + boundary + crlf
-      body += ('Content-disposition: form-data; name="%s"' % key) + crlf
-      body += crlf + value + crlf
-    body += '--' + boundary + '--' + crlf + crlf
-    return ('multipart/form-data; boundary=' + boundary, body)
-
-  def _marshall(self, args, request):
-    """
-    Marshalls the arguments to the server as multi-part/form-data,
-    not the default application/x-www-form-url-encoded.  This improves
-    the transfer of the large inputs and eases command line invocation
-    of the server script.
-    """
-
-    (type, body) = self._encode(args)
-    request.add_header ('Content-type', type)
-    request.add_header ('Content-length', str(len(body)))
-    request.add_data (body)
-    #print "body ", body
-
 
   def _call (self, args, type):
     """
@@ -91,8 +61,7 @@ class DbsHttpService:
                request_string += '&'+key+'='+value 
              continue 
            
-       print request_string  
-
+       print "\n\n" + self.Host + ":" + self.Port  + request_string + "\n\n"
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
