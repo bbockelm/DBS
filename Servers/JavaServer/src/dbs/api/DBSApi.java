@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApi.java,v 1.43 2007/01/04 18:10:58 afaq Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApi.java,v 1.44 2007/01/04 19:24:05 sekhri Exp $"
  *
 */
 
@@ -329,7 +329,7 @@ public class DBSApi {
 				api.insertTier(conn, out, parse(getXml(table), "tier"), dbsUser);
 				
 			} else if (apiStr.equals("insertStorageElement")) {
-				(new DBSApiBlockLogic()).insertStorageElement(conn, out, parse(getXml(table), "storage-element"), dbsUser);
+				(new DBSApiBlockLogic()).insertStorageElement(conn, out, parse(getXml(table), "storage_element"), dbsUser);
 			
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,

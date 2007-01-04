@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiBlockLogic.java,v 1.6 2007/01/02 22:59:57 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiBlockLogic.java,v 1.7 2007/01/04 18:10:58 afaq Exp $"
  *
  */
 
@@ -81,19 +81,15 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		} else {
 			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
 		}
-
+		//Storage Element will be added to an existing block
 		String blockID = "";
-		System.out.println("seVector.size() " + seVector.size() );
+		//System.out.println("seVector.size() " + seVector.size() );
        		if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
 		//System.out.println("BLOCK ID is " + blockID);
 		for (int j = 0; j < seVector.size(); ++j) {
 			String seName = get((Hashtable)seVector.get(j), "storage_element_name");
 			//System.out.println("storage_element_name " + seName);
-			insertStorageElement(conn, out, seName , cbUserID, lmbUserID, creationDate);
-			insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
-					getID(conn, "StorageElement", "SEName", seName , true),
-					blockID, 
-					cbUserID, lmbUserID, creationDate);
+			insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
 		}
 
                         
@@ -101,8 +97,11 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}
 
 	public void insertStorageElement(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		String name = getBlock(table, "block_name", true);
+		String blockID = getBlockID(conn, name, false, true);
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
 		insertStorageElement(conn, out, 
+				blockID,
 				get(table, "storage_element_name", true),
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -110,8 +109,13 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				);
 	}
 	
-	private void insertStorageElement(Connection conn, Writer out, String seName, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+	private void insertStorageElement(Connection conn, Writer out, String blockID, String seName, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		insertName(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
+		insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
+					getID(conn, "StorageElement", "SEName", seName , true),
+					blockID, 
+					cbUserID, lmbUserID, creationDate);
+
 	}
 
 	

@@ -924,6 +924,29 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'insertBlock',
                          'xmlinput' : xmlinput }, 'POST')
 
+   # ------------------------------------------------------------
+
+  def insertStorageElement(self, block, storageElement):
+    """
+    Raises DbsObjectExists if a primary dataset already exists in
+    the database, otherwise may raise an DbsApiException.
+    """
+    name = self._name(block)
+    
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    if (storageElement not in ( '', None)) : 
+          xmlinput += " <storage_element block_name='" + name + "' storage_element_name='"+ storageElement +"'/>"
+    xmlinput += "</dbs>"
+
+    #print "insertStorageElement, xmlinput",xmlinput
+    if self.verbose():
+       print "insertStorageElement, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'insertStorageElement',
+                         'xmlinput' : xmlinput }, 'POST')
+
+
   # ------------------------------------------------------------
 
   def insertTier(self, tier_name):
