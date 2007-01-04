@@ -13,7 +13,7 @@ import os, sys, string, stat, re, types
 from dbsException    import DbsException
 from dbsApiException import *
 
-class DbsConfig:
+class DbsConfig(object):
   def __init__(self,iConfig={}):
     """
        Read and parse content of $HOME/.esdb.conf configuration file
