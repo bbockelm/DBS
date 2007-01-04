@@ -68,7 +68,7 @@ class DbsWebApi(DbsApi):
                # to be backward compatible I need the following structure
                # blocks[name]=[evts,str(attrs['status']), long(attrs['files']), long(attrs['bytes'])]
                # for time being evts=0, once schema will support them I'll update this field
-               evts=1
+               evts=int(attrs['number_of_events'])
                status=str(attrs['open_for_writing'])
                files=int(attrs['number_of_files'])
                bytes=long(attrs['size'])
@@ -158,7 +158,7 @@ class DbsWebApi(DbsApi):
              events=int(attrs['number_of_events'])
              status=str(attrs['status'])
              type=str(attrs['type'])
-             result.append(lfn,size,status,type,events)
+             result.append((lfn,size,status,type,events))
       xml.sax.parseString (data, Handler ())
 #      print "#### getLFNs result",result
       return result
