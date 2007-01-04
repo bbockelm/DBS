@@ -81,6 +81,9 @@ class DbsWebApi(DbsApi):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
+  def listBlocksFull(self, dataset="*"):
+      return super(DbsWebApi,self).listBlocks(dataset)
+  # ------------------------------------------------------------
   def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",   
                                   patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
@@ -142,10 +145,8 @@ class DbsWebApi(DbsApi):
     """
     path = self._path(dataset)
     patternLFN="*"
-    print "#### getLFNs",blockName,dataset,path
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 'block_name' : blockName, 'pattern_lfn' : patternLFN }, 'GET')
-#    print "#### getLFNs",data
 
     # Parse the resulting xml output.
     try:
@@ -160,7 +161,6 @@ class DbsWebApi(DbsApi):
              type=str(attrs['type'])
              result.append((lfn,size,status,type,events))
       xml.sax.parseString (data, Handler ())
-#      print "#### getLFNs result",result
       return result
 
     except Exception, ex:
