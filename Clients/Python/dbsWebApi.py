@@ -131,3 +131,39 @@ class DbsWebApi(DbsApi):
       return super(DbsWebApi,self).listProcessedDatasets(
                          patternPrim=patternPrim,patternDT=patternDT,patternProc=patternProc,
                          patternVer=patternVer,patternExe=patternExe,patternPS=patternPS)
+  # ------------------------------------------------------------
+  def getLFNs(self, blockName , dataset = None):
+    """
+    Retrieve list of LFNs in a dataset and/or in a block
+    Returs a list of lfn,size,status,type,events.
+
+    May raise an DbsApiException.
+
+    """
+    path = self._path(dataset)
+    patternLFN="*"
+    print "#### getLFNs",blockName,dataset,path
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 'block_name' : blockName, 'pattern_lfn' : patternLFN }, 'GET')
+#    print "#### getLFNs",data
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'file':
+             lfn = str(attrs['lfn'])
+             size=int(attrs['size'])
+             events=int(attrs['number_of_events'])
+             status=str(attrs['status'])
+             type=str(attrs['type'])
+             result.append(lfn,size,status,type,events)
+      xml.sax.parseString (data, Handler ())
+#      print "#### getLFNs result",result
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
