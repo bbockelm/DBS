@@ -639,7 +639,7 @@ $msg
 
 <td valign="top">
 
-<form action="javascript:ajaxGetData();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+<form action="javascript:ajaxGetData();ajaxGetDbsData();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -876,6 +876,37 @@ templateBlockList_old = """
 #end if
 """
 
+templateDbsInfo="""
+<b>Processed dataset: $proc</b>
+<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
+<td>Events</td>
+<td>Files</td>
+<td>Status</td>
+<td>Size</td>
+<td>Block name</td>
+<td>Created by</td>
+<td>Creation time</td>
+<td>Modified by</td>
+<td>Modifiction time</td>
+</tr>
+#for dbsDict in $dbsList
+<tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
+<td align="right">$dbsDict['NumberOfEvents']</td>
+<td align="right">$dbsDict['NumberOfFiles']</td>
+<td align="center">$dbsDict['OpenForWriting']</td>
+<td align="right">$dbsDict['BlockSize']</td>
+<td align="left">$dbsDict['Name']</td>
+<td align="right">$dbsDict['CreatedBy']</td>
+<td align="center">$dbsDict['CreationDate']</td>
+<td align="right">$dbsDict['LastModifiedBy']</td>
+<td align="center">$dbsDict['LastModificationDate']</td>
+</tr>
+#end for
+</table>
+<hr class="dbs" />
+"""
+
 templateLFB = """
 ###<hr class="dbs" />
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
@@ -1047,7 +1078,8 @@ templateBottom="""
 
 <table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="70%">
 <tr>
-<td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results</a></td>
+<td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results (DBS/DLS)</a></td>
+<td class="td_menu_gray_box" align="center" id="_results_dbs"><a href="javascript:showResMenu('results_dbs')">Results (DBS only)</a></td>
 <td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
 <td class="td_menu_gray_box" align="center" id="_appConfigs"><a href="javascript:showResMenu('appConfigs')">App configs</a></td>
 #*
@@ -1067,6 +1099,7 @@ templateBottom="""
 <br />
 <span id="results" class="show_inline"></span>
 <span id="results_waiting" class="show_inline"></span>
+<span id="results_dbs" class="hide"></span>
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
 
