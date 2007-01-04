@@ -1,6 +1,6 @@
 /**
- $Revision: 1.56 $"
- $Id: DBSApiLogic.java,v 1.56 2007/01/02 16:55:50 sekhri Exp $"
+ $Revision: 1.57 $"
+ $Id: DBSApiLogic.java,v 1.57 2007/01/04 15:36:37 afaq Exp $"
  *
  */
 
@@ -405,10 +405,10 @@ public class DBSApiLogic {
         protected void checkBlock4List(String blockName) throws Exception {
                 if(isNull(blockName))
                         throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid block_name in format /PRIMARY/PROCESSED#GUID");
-                if (! Pattern.matches(VALID_BLOCK_LIST, blockName) )
-                        throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK_LIST + " The given block_name is " + blockName);
+               // if (! Pattern.matches(VALID_BLOCK_LIST, blockName) )
+               //         throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK_LIST + " The given block_name is " + blockName);
                 if( ! Pattern.matches(SAFE_BLOCK_LIST, blockName) )
-                        throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK);
+                        throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK_LIST);
         }
 
 
