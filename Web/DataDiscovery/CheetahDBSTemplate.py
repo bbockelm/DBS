@@ -841,10 +841,7 @@ templateBlockList = """
 <b>$path</b>
 </td>
 <td align="center">
-(<a href="javascript:showResMenu('parents')">Parents,</a>
-</td>
-<td align="center">
-<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Description,</a>
+(<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Description,</a>
 </td>
 <td align="center">
 <a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$evts',1000)">crab.cfg</a>)
@@ -925,13 +922,14 @@ templateDbsInfo="""
 <td>Modified by</td>
 <td>Modifiction time</td>
 </tr>
+#from DBSUtil import splitString 
 #for dbsDict in $dbsList
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
 <td align="center">$dbsDict['OpenForWriting']</td>
 <td align="right">$dbsDict['BlockSize']</td>
-<td align="left">$dbsDict['Name']</td>
+<td align="left">$splitString($dbsDict['Name'],30)</td>
 <td align="right">$dbsDict['CreatedBy']</td>
 <td align="center">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
@@ -939,6 +937,7 @@ templateDbsInfo="""
 </tr>
 #end for
 </table>
+###<script type="text/javascript">SplitBlockName()</script>
 <hr class="dbs" />
 """
 
@@ -1105,19 +1104,59 @@ Both
 
 templateBottom="""
 ###<hr class="dbs" id="hr_results_menu" />
-
+#*
 <table class="table_round_box" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
+*#
 
-
-<table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="70%">
+<table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="100%">
 <tr>
-<td class="td_menu_white_box" align="center" id="_results"><a href="javascript:showResMenu('results')">Results (DBS/DLS)</a></td>
-<td class="td_menu_gray_box" align="center" id="_results_dbs"><a href="javascript:showResMenu('results_dbs')">Results (DBS only)</a></td>
-<td class="td_menu_gray_box" align="center" id="_parents"><a href="javascript:showResMenu('parents')">Parents</a></td>
-<td class="td_menu_gray_box" align="center" id="_runs"><a href="javascript:showResMenu('runs')">Runs</a></td>
-<td class="td_menu_gray_box" align="center" id="_appConfigs"><a href="javascript:showResMenu('appConfigs')">App configs</a></td>
+<td class="td_menu_gray_box" id="_results">
+<table width="100%"><tr><td>
+<span id="__results"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('results')">Summary</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+<td class="td_menu_gray_box" id="_results_dbs">
+<table width="100%"><tr><td>
+<span id="__results_dbs"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('results_dbs')">Block info</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+<td class="td_menu_gray_box" id="_parents">
+<table width="100%"><tr><td>
+<span id="__parents"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('parents')">Parents</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+<td class="td_menu_gray_box" id="_runs">
+<table width="100%"><tr><td>
+<span id="__runs"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('runs')">Run info</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+<td class="td_menu_gray_box" id="_appConfigs">
+<table width="100%"><tr><td>
+<span id="__appConfigs"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('appConfigs')">App configs</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
 #*
 <td class="td_menu_gray_box" align="center" id="_dataDescription"><a href="javascript:showResMenu('dataDescription')">Description</a></td>
 <td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
@@ -1127,10 +1166,11 @@ templateBottom="""
 </tr>
 </table>
 
+#*
 </td>
 </tr>
 </table>
-
+*#
 
 <br />
 <span id="results" class="show_inline"></span>
