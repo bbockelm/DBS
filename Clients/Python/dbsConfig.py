@@ -39,12 +39,13 @@ class DbsConfig(object):
     if mode!=33152:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
-       os.chmod(uFileName,0600)
+       #os.chmod(uFileName,0600)
     login = masterHost =  masterName = masterPort = masterSocket = admin = ""
     iList=['user','password','driver','url','host','port','servlet','version','dbname','dbsDB','dbtype','verbose','mode', 'dbshome', 'javahome' ]
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
+        line = line.strip()
         if not len(line): continue
         if line[0]=="#": continue
         for item in iList:
