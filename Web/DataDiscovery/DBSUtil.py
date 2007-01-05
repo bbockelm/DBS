@@ -103,6 +103,12 @@ def sizeFormat(i):
             return "%3.1f%s" % (num, x)
         num /=1024.
 
+def splitString(s,size):
+    if len(s)>size:
+       return s[0:size]+' '+splitString(s[size:],size)
+    else:
+       return s
+
 def printDictForJS(dict,space=""):
     """
 Print the dictionary
