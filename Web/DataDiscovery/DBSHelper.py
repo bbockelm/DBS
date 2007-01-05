@@ -357,7 +357,6 @@ class DBSHelper(DBSLogger):
       if self.iface=="cgi":
          return self.api.listBlocks(datasetPath,app,events)
       else:
-#         print "#### listBlocks",datasetPath
 #         empty,prim,tier,proc = string.split(datasetPath,"/")
 #         dataset = "/%s/%s"%(prim,proc)
 #         return self.api.listBlocks(datasetPath,web=1)
@@ -698,6 +697,7 @@ class DBSHelper(DBSLogger):
          return {}
       else:
          return self.api.listRuns(dataset)
+
   def getDbsData(self,dataset):
       if self.iface=='cgi':
          return {}
