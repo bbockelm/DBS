@@ -796,7 +796,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             pass
 #        url="%s/getDataFromSelection?userSelection=%s&amp;ajax=0"%(self.host,userSelection)
         url="%s/getDataFromSelection?userSelection=%s&amp;ajax=0"%(self.dbsdd,userSelection)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
         if int(ajax):
            page+=endAjaxMsg
         else:
@@ -915,7 +915,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            tierHTML='All'
 #        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
         url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,siteHTML,app,primD,tierHTML)
-        page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+        page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
         return page
 
     def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,**kwargs): 
@@ -1264,7 +1264,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             page+= self.lfnToHTML(dbsInst,blockName,dataset)
 #            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.host,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
             url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.dbsdd,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
-            page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+            page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
             page+= self.genBottomHTML()
             return page
         except:
@@ -1546,7 +1546,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+=pSum
 #        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.host,dbsInst,primDataset)
         url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,primDataset)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,stringSplit(url,122))
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1647,7 +1647,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+=pSum
 #        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.host,dbsInst,appPath)
         url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,appPath)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,stringSplit(url,122))
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1713,7 +1713,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+=self.getDatasetContentHelper(dbsInst,dataset)
 #        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.host,dbsInst,dataset)
         url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,dataset)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,url)
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,stringSplit(url,122))
         if int(ajax):
            page+="</response></ajax-response>"
         else:
