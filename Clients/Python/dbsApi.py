@@ -52,22 +52,21 @@ class DbsApi(DbsConfig):
     """ 
     Constructor. 
     Initializes the DBS Api by reading configuration 
-    parameters from dbs.config file.
+    parameters from dbs.config file OR from the parameters 
+    passed through Args as a Python dictionary.
+    Parameters passed through Args take precedence 
+    over parameters in dbs.config
     
-    Creates a http proxy, to be able to talk to DBS Server 
+    For MODE=POST (Default Mode): Creates a http proxy, to be able to talk to DBS Server
     """
 
     DbsConfig.__init__(self,Args)
     if self.verbose():
        print "configuration dictionary:", self.configDict
-       #print "using host   ",self.host()
-       #print "using port   ",self.port()
-       #print "using servlet",self.servlet()
-       print "using url",self.url()
        print "using version",self.version()
        print "using mode   ",self.mode()
     #
-    # Create the Server proxy
+    # Connect to the Server proxy
     #
     self._server = ""
     if self.mode() == "EXEC" :
@@ -78,10 +77,9 @@ class DbsApi(DbsConfig):
 	    host=hostport[0]
 	    port=hostport[1]
 	    servlet=spliturl[2] 
+            if self.verbose():
+               print "using url   ", self.url()
             self._server = DbsHttpService(host, port, servlet, self.version(), Args)
-            #self._server = DbsHttpService(self.host(), self.port(), self.servlet(), self.version(), Args)
-    #
-    # 
 
   def getApiVersion(self):
     """
@@ -94,12 +92,17 @@ class DbsApi(DbsConfig):
     Determine the dataset path of a dataset.  If the argument is a
     string, it's assumed to be the path and is returned.  If the 
     argument is an object, its assumed to be a processed datatset 
-    and this function make a path out of its  primary dataset, 
+    and this function make a path (string) out of its  primary dataset, 
     tier and processed dataset name.
+
+    Note: takes the FIRST Tier from the list of tiers
+          A dataset can have multiple tiers, and however you contruct the path
+          using any tier, still leads to same processed dataset, so picking 
+          first tier doen't havm the operations. 
     """
 
     if dataset == None:
-	    return "";
+	    return ""
     if type(dataset) == type(''):
        return dataset
  
@@ -111,7 +114,8 @@ class DbsApi(DbsConfig):
                return "/" + primary.get('Name') \
                      + "/" + tier[0] + "/" + dataset.get('Name')
 
-    raise InvalidDatasetPathName(Message="The path name is not correct")      
+    # Anything missing (name, primary or tier) thats an error 
+    raise InvalidDatasetPathName(Message="The dataset/path provided is incorrect")      
 
   def _name (self, obj):
     """
@@ -128,7 +132,6 @@ class DbsApi(DbsConfig):
 	    return ""
     return name
 
-
   # ------------------------------------------------------------
   #  dbsApi API Implementation follows
   # ------------------------------------------------------------
@@ -139,13 +142,25 @@ class DbsApi(DbsConfig):
     given, it will be matched against the dataset name as a shell
     glob pattern.
 
-    May raise an DbsApiException.
+    
+    params:
+          pattern:  takes a dataset path pattern, defult value is "*"
+    returns: 
+          list of DbsPrimaryDataset objects  
+    examples: 
+          api.listPrimaryDatasets() : List ALL primary Datasets in DBS
+          api.listPrimaryDatasets("*") : List ALL primary Datasets in DBS
+          api.listPrimaryDatasets('MyPrimaryDataset001') : List MyPrimaryDataset001
+          api.listPrimaryDatasets('MyPrimaryDataset*') : List All Primary datasets whoes names start with MyPrimaryDataset
+
+    raise: DbsApiException, DbsBadResponse
+             
     """
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
-
-    #print data
+    if self.verbose():
+       print data
 
     # Parse the resulting xml output.
     try:
@@ -167,23 +182,35 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
-  #-------Backward compataible interface used by CRAB ----------
-  def listProcessedDatasetsCRAB(self, datasetPathPattern="*"):
- 
-
-    return []
-
-
   # ------------------------------------------------------------
   def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",   
                                   patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
-    Retrieve list of processed datasets matching a shell glob patterns.
-    Returns a list of DbsProcessedDataset objects.  If the pattern(s) are
-    given, they will be matched against the dataset primary dataset, data tier, application version,  etc. as a shell glob
-    pattern.
+    Retrieve list of processed datasets matching shell glob patterns for dataset and application
+    User can provide a comprehensive list of parameters for which he/she want to find dataset(s).
+    The search criteria can be based of a pattern for Primary dataset, Processed Dataset, Data Tier,
+    Application version, Application Family, Application executyable name and ParameterSet name.
 
-    May raise an DbsApiException.
+    Returns a list of DbsProcessedDataset objects.  If the pattern(s) are
+
+    params:
+        patternPrim: glob pattern for Primary Dataset, MyPrimaryDataset001, MyPrimaryDataSets*, *
+        patternDT: glob pattern for Data Tier, SIM, RECO, SIM-DIGI, SIM*, *
+        patternProc: glob pattern for Processed Dataset, MyProcDataset001, MyProcDataset*, *
+        patternVer: glob pattern for Application Version, v00_00_01, *
+        patternFam: glob pattern for Application Family, GEN, *
+        patternExe: glob pattern for Application Executable Name, CMSSW, writeDigi, *
+        patternPS: glob pattern for PSet Name, whatever, *
+ 
+    returns: list of DbsProcessedDataset objects  
+
+    examples:
+           Say I want to list all datasets that have a Primary Dataset of type MyPrimaryDatasets*, with SIM data tier,
+           and application version v00_00_03, produced by Application CMSSW, I can make my call as,
+
+           api.listProcessedDatasets('MyPrimaryDatasets*', 'SIM', '*', 'v00_00_03', '*', 'CMSSW', '*') 
+   
+    raise: DbsApiException, DbsBadResponse
 
     """
 
@@ -229,54 +256,35 @@ class DbsApi(DbsConfig):
       xml.sax.parseString (data, Handler ())
       return result
 
-    except DbsException, ex:
-	raise DbsBadResponse(exception=ex)
     except Exception, ex:
 	raise DbsBadResponse(exception=ex)
-
-  # ------------------------------------------------------------
-  def listParameterSets(self, pattern="*"):
-    """
-    Retrieve list of parameter sets matching a shell glob pattern.
-    Returns a list of DbsParameterSet objects.  If the pattern is
-    given, it will be matched against the content as a shell glob
-    pattern.
-
-    May raise an DbsApiException.
-
-    """
-    # Invoke Server.
-    data = self._server._call ({ 'api' : 'listParameterSets', 'pattern' : pattern }, 'GET')
-
-    # Parse the resulting xml output.
-    try:
-      result = []
-      class Handler (xml.sax.handler.ContentHandler):
-	def startElement(self, name, attrs):
-	  if name == 'parameter-set':
-	    result.append(DbsQueryableParameterSet (
-					   Hash=str(attrs['parameterset_hash']),
-					   content=str(attrs['content']),
-                                           CreationDate=str(attrs['creation_date']),
-                                           CreatedBy=str(attrs['created_by']),
-                                           LastModificationDate=str(attrs['last_modification_date']),
-                                           LastModifiedBy=str(attrs['last_modified_by']),
-                                                   )                        
-                          )
-      xml.sax.parseString (data, Handler ())
-      return result
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
   def listAlgorithms(self, patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
     """
     Retrieve list of applications/algorithms matching a shell glob pattern.
-    Returns a list of DbsApplication objects.  If the pattern is
-    given, it will be matched against the application label as
-    /family/executable/version as a shell glob pattern.
+    User can base his/her search on patters for Application Version, 
+    Application Family, Application Executable Name or Parameter Set.
 
-    May raise an DbsApiException.
+    returns:  list of DbsApplication objects.  
+
+    params:
+        patternVer: glob pattern for Application Version, v00_00_01, *
+        patternFam: glob pattern for Application Family, GEN, *
+        patternExe: glob pattern for Application Executable Name, CMSSW, writeDigi, *
+        patternPS: glob pattern for PSet Name, whatever, *
+ 
+    raise: DbsApiException.
+    examples:
+           Say I want to list all listAlgorithms that have application version v00_00_03, 
+           produced by Application CMSSW, I can make my call as,
+
+                 api.listAlgorithms('v00_00_03', '*', 'CMSSW', '*') 
+
+           List ALL Algorithms know to DBS
+
+                 api.listAlgorithms("*")
+
     """
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listAlgorithms',
@@ -314,12 +322,40 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
   def listRuns(self, dataset="*"):
     """
-    Retrieve list of runs matching a shell glob pattern.
-    Returns a list of DbsRun objects.  If the pattern is
-    given, it will be matched against the content as a shell glob
-    pattern.
+    Retrieve list of runs matching a shell glob pattern within a dataset (Processed Dataset).
 
-    May raise an DbsApiException.
+    returns: list of DbsRun objects.
+  
+    params:
+        dataset: Defaulted to "*" means ALL Runs from All Datasets. If the pattern is
+        given, it will be matched against the content as a shell glob pattern.
+
+    examples: 
+
+        List ALL Runs for Dataset Path /test_primary_anzar_001/SIM/TestProcessedDS002 
+
+           api.listRuns("/test_primary_anzar_001/SIM/TestProcessedDS002")
+        
+        List ALL Runs for ALL Datasets
+       
+           api.listRuns("*")
+                Or
+           api.listRuns() 
+
+       Using a Dataset Object 
+            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+            proc = DbsProcessedDataset (
+                            PrimaryDataset=primary,
+                            Name="TestProcessedDS002",
+                            PhysicsGroup="BPositive",
+                            Status="VALID",
+                            TierList=['SIM', 'RECO'],
+                            AlgoList=[WhateverAlgoObject],
+                            )
+             api.listRuns(proc)
+
+
+    raise: an DbsApiException.
 
     """
     path = self._path(dataset)
@@ -366,12 +402,33 @@ class DbsApi(DbsConfig):
   def listTiers(self, dataset="*"):
 
     """
-    Retrieve list of Tiers matching a shell glob pattern.
-    Returns a list of DbsDataTier objects.  If the pattern is
-    given, it will be matched against the content as a shell glob
-    pattern.
+    Retrieve list of Tiers matching a shell glob pattern for a dataset (Processed Dataset).
 
-    May raise an DbsApiException.
+    returns: list of DbsDataTier objects.
+
+    params:
+        dataset: Defaulted to "*" means ALL Data Tiers from All Datasets. If the pattern is
+        given, it will be matched against the content as a shell glob pattern.
+
+    examples: 
+
+        List ALL Data Tiers for Dataset Path /test_primary_anzar_001/SIM/TestProcessedDS002 
+
+           api.listTiers("/test_primary_anzar_001/SIM/TestProcessedDS002")
+
+       Using a Dataset Object 
+            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+            proc = DbsProcessedDataset (
+                            PrimaryDataset=primary,
+                            Name="TestProcessedDS002",
+                            PhysicsGroup="BPositive",
+                            Status="VALID",
+                            TierList=['SIM', 'RECO'],
+                            AlgoList=[WhateverAlgoObject],
+                            )
+             api.listTiers(proc)
+        
+    raise: DbsApiException.
 
     """
 
@@ -404,12 +461,39 @@ class DbsApi(DbsConfig):
 
   def listBlocks(self, dataset="*", block_name="*", storage_element_name="*"):
     """
-    Retrieve list of Blocks matching a shell glob pattern.
-    Returns a list of DbsFileBlock objects.  If the pattern is
-    given, it will be matched against the content as a shell glob
-    pattern.
+    Retrieve list of Blocks matching shell glob pattern for Block Name and/or 
+    Storage Element Name, for a dataset path (or glob pattern for dataset path).
 
-    May raise an DbsApiException.
+    returns: list of DbsFileBlock objects.
+
+    params:
+        dataset: Defaulted to "*" means Blocks (That match block_name and/or storage_element_name criteria) for all datasets. 
+        If the dataset patterm is given, it will be matched against the content as a shell glob pattern.
+         
+    raise: DbsApiException.
+
+    examples:
+
+      All Blocks from path /test_primary_001/SIM/TestProcessedDS001
+         api.listBlocks("/test_primary_001/SIM/TestProcessedDS001") 
+      Block from path /test_primary_001/SIM/TestProcessedDS001 whoes name is /this/hahah#12345
+           api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah#12345"):
+      All Blocks from path /test_primary_001/SIM/TestProcessedDS001 whoes name starts with /this/*
+           api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/*"):
+
+      Using a Dataset Object 
+            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+            proc = DbsProcessedDataset (
+                            PrimaryDataset=primary,
+                            Name="TestProcessedDS002",
+                            PhysicsGroup="BPositive",
+                            Status="VALID",
+                            TierList=['SIM', 'RECO'],
+                            AlgoList=[WhateverAlgoObject],
+                            )
+             api.listBlocks(proc)
+
+
 
     """
 
@@ -434,8 +518,6 @@ class DbsApi(DbsConfig):
                                        LastModificationDate=str(attrs['last_modification_date']),
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        )
-          import pdb
-	  #pdb.set_trace()
           if name == 'storage_element':
                self.currBlock['StorageElementList'].append(str(attrs['storage_element_name']))
 	       
@@ -453,16 +535,46 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, dataset, blockName, patternLFN="*"):
+  def listFiles(self, dataset, blockName="", patternLFN="*"):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
-    or any combinition of dataset, block and or LFN pattern
-    Returns a list of DbsParameterSet objects.  If the pattern is
-    given, it will be matched against the content as a shell glob
-    pattern.
+    or any combinition of dataset, block and or LFN pattern.
 
-    May raise an DbsApiException.
+    returns: list of DbsFile objects
 
+    params: 
+        dataset: Defaulted to "*" means files (That match blockName and/or LFN pattern criteria). 
+        If the dataset patterm is given, it will be matched against the content as a shell glob pattern.
+         
+        blockName: Defaulted to "" means files (That match dataset and/or LFN pattern criteria). 
+        If the blockName is given, it will be matched against the block name.
+         
+        patternLFN: Defaulted to "*" means files (That match dataset and/or LFN pattern criteria). 
+        If the patternLFN patterm is given, it will be matched against the content as a shell glob pattern.
+         
+    raise: DbsApiException.
+
+    examples:
+          List all files in path /PrimaryDS_01/SIM/procds-01
+             api.listFiles("/PrimaryDS_01/SIM/procds-01")
+          List all files in path /PrimaryDS_01/SIM/procds-01, with LFNs that start with 'GoodFile'
+             api.listFiles("/PrimaryDS_01/SIM/procds-01", "", "GoodFile*")
+          List all files in block /this/block#1230-87698
+             api.listFiles("", "/this/block#1230-87698")
+
+          Using a Dataset Object 
+            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+            proc = DbsProcessedDataset (
+                            PrimaryDataset=primary,
+                            Name="TestProcessedDS002",
+                            PhysicsGroup="BPositive",
+                            Status="VALID",
+                            TierList=['SIM', 'RECO'],
+                            AlgoList=[WhateverAlgoObject],
+                            )
+             api.listFiles(proc)
+
+          etc etc.
     """
     path = self._path(dataset)
     # Invoke Server.
@@ -528,7 +640,31 @@ class DbsApi(DbsConfig):
 
   def listDatasetContents(self, path, block_name):
     """
-    May raise an DbsApiException.
+    Dumps contents of a block in dataset in XML format.
+    This API call is used for insertDatasetContents, which actually use this XML dump and
+    repopulates (another) instance of DBS with same dataset 
+
+    params: 
+        path : Not Defaulted. Its the dataset path for which API is being invoked (can be provided as dataset object).
+        block_name : Name of the Block thats being dumped.
+
+    examples:
+        Dump the contents of Block /this/block#1230-87698 for Dataset /PrimaryDS_01/SIM/procds-01
+                  api.listDatasetContents("/PrimaryDS_01/SIM/procds-01", "/this/block#1230-87698") 
+        
+        Using a Dataset Object 
+            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+            proc = DbsProcessedDataset (
+                            PrimaryDataset=primary,
+                            Name="TestProcessedDS002",
+                            PhysicsGroup="BPositive",
+                            Status="VALID",
+                            TierList=['SIM', 'RECO'],
+                            AlgoList=[WhateverAlgoObject],
+                            )
+             api.listDatasetContents(proc, "/this/block#1230-87698")
+ 
+    raisei: DbsApiException.
 
     """
 
@@ -545,6 +681,32 @@ class DbsApi(DbsConfig):
 
   def insertDatasetContents(self, xmlinput):
     """
+
+    This API call is used for inserting Dataset from XML dump generated by listDatasetContents
+    The APIrepopulates (another) instance of DBS with same dataset as 
+    produced by the listDatasetContents counterpart 
+
+    params: 
+        xmlinput : XML dump generated by listDatasetContents
+
+    examples:
+
+        Dump the contents of Block /this/block#1230-87698 for Dataset /PrimaryDS_01/SIM/procds-01
+                  api.listDatasetContents("/PrimaryDS_01/SIM/procds-01", "/this/block#1230-87698") 
+        
+        Using a Dataset Object 
+            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+            proc = DbsProcessedDataset (
+                            PrimaryDataset=primary,
+                            Name="TestProcessedDS002",
+                            PhysicsGroup="BPositive",
+                            Status="VALID",
+                            TierList=['SIM', 'RECO'],
+                            AlgoList=[WhateverAlgoObject],
+                            )
+             xmldataset = api.listDatasetContents(proc, "/this/block#1230-87698")
+             api.insertDatasetContents(xmldataset)
+
     May raise an DbsApiException.
 
     """
@@ -556,8 +718,6 @@ class DbsApi(DbsConfig):
 
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
-
-
 
 
  # ------------------------------------------------------------
@@ -1034,7 +1194,7 @@ class DbsApi(DbsConfig):
 
   def insertStorageElement(self, block, storageElement):
 	  
-  """
+    """
     Inserts a new storage element in a given block. 
     
     param: 
@@ -1076,7 +1236,7 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
 
   def insertTier(self, tier_name):
-  """
+    """
     Inserts a new tier in the DBS databse. 
     
     param: 
