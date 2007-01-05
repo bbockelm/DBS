@@ -560,112 +560,23 @@ class DbsApi(DbsConfig):
 
 
 
-  # ------------------------------------------------------------
-
-  def getDatasetProvenance(self, dataset, tiers=[]):
-    """
-    Retrieve the dataset parents of the dataset.  If tiers is an
-    empty list, retrieves all parents.  Otherwise returns only the
-    data tiers that match.  The result is a list of DbsParents
-    with parentage type set and referring to DbsProcessedDatasets
-    with path name and data tier filled in.
-
-    The input dataset should be an DbsProcessedDataset with path
-    set, or primary dataset, tier and processed dataset name
-    filled in.  For backwards compatibility a simple dataset path
-    name string is also accepted.
-
-    Raises InvalidDataTier if tiers includes an unknown data tier,
-    InvalidDatasetPathName if the dataset path is invalid,
-    otherwise may raise an DbsApiException.
-    """
-    # Check path.
-    path = self._path (dataset)
-    verifyDatasetPathName(path)
-
-    # Invoke Server.
-    args = { 'api' : 'getDatasetProvenance', 'path' : path }
-    if len(tiers): args['datatier'] = string.join(tiers, ",")
-    data = self._server._call (args)
-
-    # Parse the resulting xml output.
-    try:
-      parents = []
-      class Handler (xml.sax.handler.ContentHandler):
-	def startElement(self, name, attrs):
-	  if name == 'parent':
-	    p = DbsProcessedDataset(datasetPathName=str(attrs['path']),
-			            dataTier=str(attrs['tier']))
-	    parents.append(DbsParent(parent=p, type=str(attrs['type'])))
-      xml.sax.parseString (data, Handler ())
-      return parents
-
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
-  # ------------------------------------------------------------
-  def getDatasetContentsOLD(self, dataset):
-    """
-    Retrieve the event collections of dataset by file block.  Returns
-    a list of DbsFileBlock objects, with event collection list filled
-    with DbsEventCollection objects.
-
-    The input dataset should be an DbsProcessedDataset with path set,
-    or a DbsProcessedDataset with primary dataset, tier and processed
-    dataset name filled in.  For backwards compatibility a simple
-    dataset path name string is also accepted.
-
-    Raises InvalidDatasetPathName if the path is invalid, otherwise
-    may raise an DbsApiException.
-
-    See getDatasetFiles() for a version that returns files.
-    """
-    # Check path.
-    path = self._path(dataset)
-    verifyDatasetPathName(path)
-
-    # Invoke Server.
-    data = self._server._call ({ 'api' : 'getDatasetContents', 'path' : path })
-
-    # Parse the resulting xml output.  The output consits of a list of blocks,
-    # each with its list of event collections.
-    try:
-      fileBlocks = {}
-      class Handler (xml.sax.handler.ContentHandler):
-	def __init__ (self):
-	  self._block = None
-	def startElement(self, name, attrs):
-	  if name == 'block':
-	    id = attrs['id']
-	    if not fileBlocks.has_key (id):
-	      fileBlocks[id] = DbsFileBlock(objectId=long(id), blockName=str(attrs['name']))
-	    self._block = fileBlocks[id]
-          elif name == 'event-collection':
-	    f =  DbsFile (     fileBlockId=long(attrs['inblock']),
-                                guid=str(attrs['guid']),
-                                logicalFileName=str(attrs['lfn']),
-                                fileStatus=str(attrs['fstatus']),
-                                checkSum=str(attrs['checksum']),
-                                fileSize=long(attrs['size']))
-	    self._block['eventCollectionList'].append (DbsEventCollection(fileList=[f], 
-	      collectionName=str(attrs['name']), numberOfEvents=long(attrs['events'])))
-
-      xml.sax.parseString (data, Handler ())
-      return fileBlocks.values ()
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
-
-
-  # ------------------------------------------------------------
+ # ------------------------------------------------------------
 
   def insertPrimaryDataset(self, dataset):
     """
-    Create a new primary dataset.  Instantiates a database entity for
-    the dataset, and updates input object for the id of the new row.
-    The input object should be a DbsPrimaryDataset with the name set.
+    Inserts a new primary dataset in the DBS databse. 
+    
+    param: 
+	dataset : The primary dataset passed in as DbsPrimaryDataset object.  The following are mandatory and should be present
+	          in the dbs primary dataset object:  primary_name	  
+		  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+         api.insertPrimaryDataset (primary)
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
     """
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
@@ -686,17 +597,34 @@ class DbsApi(DbsConfig):
   def insertAlgorithm(self, algorithm):
 
     """
-    Create a new processing.  Instantiates a database entity for the
-    processing, and updates input object for the id of the new row.
-    The input object should be a DbsProcessing duly filled in, with
-    a reference to a primary dataset and application configuration,
-    and optionally a parent.  Application-related information is
-    automatically instantiated in the database if it doesn't exist.
+    Inserts a new dbs algorithm/application . An algorithm is uniquely identified by appverion, appfamily , 
+    appexecutable and parametersetname collectively. If the algorithm already exist then it just displays a warnning.
+    
+    param: 
+        algorithm : The dbs algorithm passed in as an DbsAlgorithm object. The following are mandatory and should be present
+	          in the dbs algorithm object:
+		  app_version, app_family_name, app_executable_name and ps_name
+		  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         algo = DbsAlgorithm (
+                ExecutableName="TestExe01",
+                ApplicationVersion= "TestVersion01",
+                ApplicationFamily="AppFamily01",
+                ParameterSetID=DbsQueryableParameterSet(
+                     Hash="001234565798685",
+                     Name="MyFirstParam01",
+                     Version="V001",
+                     Type="test",
+                     Annotation="This is test",
+                     Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+                )
+         )
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, DbsNoObject if the primary dataset, or parent
-    if one was specified, doesn't exist in the database, otherwise
-    may raise an DbsApiException.
+         api.insertAlgorithm (algo)
+	
     """
     # Prepare XML description of the input
 
@@ -726,17 +654,47 @@ class DbsApi(DbsConfig):
 
   def insertProcessedDataset(self, dataset):
     """
-    Create a new processed dataset.  Instantiates a database entity
-    for the dataset, and updates input object for the id of the new
-    row.  The input object should be a DbsProcessedDataset filled in,
-    referring to a DbsPrimaryDataset and having data tier and dataset
-    name set.  On return the dataset's id will be updated.
+    Inserts a new dbs processed dataset in an existing primary dataset . It insert all the parents of the processed dataset, 
+    insert and assocaite  all the tiers of the processed dataset, associate all the algorithms of the processed dataset and 
+    associate all the runs of the processed dataset. 
+    The parents, algorithms and runs of the processed dataset should exist before the  processed dataset could be inserted.
+    
+    param: 
+        dataset : The procsssed dataset can be passed as an DbsProcessedDataset object. The following are mandatory and should be present
+	          in the dbs procsssed dataset object:
+		  processed_datatset_name and primary_datatset_name
+		  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         algo = DbsAlgorithm (
+                ExecutableName="TestExe01",
+                ApplicationVersion= "TestVersion01",
+                ApplicationFamily="AppFamily01",
+                ParameterSetID=DbsQueryableParameterSet(
+                     Hash="001234565798685",
+                     Name="MyFirstParam01",
+                     Version="V001",
+                     Type="test",
+                     Annotation="This is test",
+                     Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+                )
+         )
 
-    Raises DbsObjectExists if the dataset already exists, or
-    DbsNoObject if required path components, the primary dataset
-    and the processing name created through createProcessing(), do
-    not exist in the database; otherwise may raise an
-    DbsApiException.
+         primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+	 
+         proc = DbsProcessedDataset (
+                PrimaryDataset=primary, 
+                Name="TestProcessedDS002", 
+                PhysicsGroup="BPositive",
+                Status="Valid",
+                TierList=['SIM', 'RECO'],
+                AlgoList=[algo],
+         )
+
+         api.insertProcessedDataset (proc)
+	 
     """
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>" 
@@ -788,12 +746,30 @@ class DbsApi(DbsConfig):
   def insertRun(self, run):
 
     """
-    Create a new primary dataset.  Instantiates a database entity for
-    the dataset, and updates input object for the id of the new row.
-    The input object should be a DbsPrimaryDataset with the name set.
+    Inserts a new run in the DBS databse. 
+    
+    param: 
+	run : The dbs run passed in as DbsRun object. The following are mandatory and should be present
+	      in the dbs run object: 
+	      RunNumber, number_of_events, number_of_lumi_sections, total_luminosity and store_number
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+    
+         run = DbsRun (
+                 RunNumber=1,
+                 NumberOfEvents= 100,
+                 NumberOfLumiSections= 20,
+                 TotalLuminosity= 2222,
+                 StoreNumber= 123,
+                 StartOfRun= 'now',
+                 EndOfRun= 'never',
+         )
+ 
+         api.insertRun (run)
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
     """
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
@@ -816,17 +792,113 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
  
   # ------------------------------------------------------------
-  def insertFiles(self, dataset, files, block=None):
-    """
-    Insert files to an existing block.  Instantiates a database row
-    for each element of the file list.  The objects are *not* updated
-    for database id on return. The block should be a DbsFileBlock.
-    The files should be DbsFile objects fully described, including
-    name, file size, checksum, type and optionally status.
+  def insertFiles(self, dataset, files, block):
+    """ 
+    Inserts a new dbs file in an existing block in a given processed dataset. It also insertes lumi sections
+    assocated with the file. It insert all the parents of the file, assocaite  all the tiers of the file and 
+    associate all the algorithms of the file. The parents, tiers and algorithms of the file should exist before 
+    the file could be inserted.
+    
+    param: 
+        dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
+	          path in the format of /prim/dt/proc
+	
+	files : The list of dbs files in the format of DbsFile obejct. The following are mandatory and should be present 
+		in the dbs file object:	lfn
+		  
+	block : The dbs file block passed in as an DbsFileBlock obejct. This object can be passed in also, 
+        	as a string containing the block name, instead of DbsFileBlock object. The following fields 
+		are mandatory and should be present in the dbs file block object: block_name
+			  
+		  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         algo = DbsAlgorithm (
+                ExecutableName="TestExe01",
+                ApplicationVersion= "TestVersion01",
+                ApplicationFamily="AppFamily01",
+                ParameterSetID=DbsQueryableParameterSet(
+                     Hash="001234565798685",
+                     Name="MyFirstParam01",
+                     Version="V001",
+                     Type="test",
+                     Annotation="This is test",
+                     Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+                )
+         )
 
-    Raises DbsObjectExists if any of the files already exists, or
-    DbsNoObject if the block does not exist in the database;
-    otherwise may raise an DbsApiException.
+         primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+	 
+         proc = DbsProcessedDataset (
+                PrimaryDataset=primary, 
+                Name="TestProcessedDS002", 
+                PhysicsGroup="BPositive",
+                Status="Valid",
+                TierList=['SIM', 'RECO'],
+                AlgoList=[algo],
+         )
+
+         lumi1 = DbsLumiSection (
+                 LumiSectionNumber=1222,
+                 StartEventNumber=100,
+                 EndEventNumber=200,
+                 LumiStartTime='notime',
+                 LumiEndTime='neverending',
+                 RunNumber=1,
+         )
+
+         lumi2 = DbsLumiSection (
+                 LumiSectionNumber=1333,
+                 StartEventNumber=100,
+                 EndEventNumber=200,
+                 LumiStartTime='notime',
+                 LumiEndTime='neverending',
+                 RunNumber=1,
+         )
+
+         myfile1= DbsFile (
+                Checksum= '999',
+                LogicalFileName= 'aaa1122-0909-9767-8764aaa',
+                NumberOfEvents= 10000,
+                FileSize= 12340,
+                Status= 'VALID',
+        	ValidationStatus = 'VALID',
+                FileType= 'EVD',
+                Dataset= proc,
+                LumiList= [lumi1, lumi2],
+                TierList= ['SIM', 'RECO'],
+         )
+
+
+        myfile2= DbsFile (
+                 Checksum= '000',
+                 LogicalFileName= 'aaaa2233-0909-9767-8764aaa',
+                 NumberOfEvents= 10000,
+                 FileSize= 12340,
+                 Status= 'VALID',
+         	 ValidationStatus = 'VALID',
+                 FileType= 'EVD',
+                 Dataset= proc,
+                 TierList= ['SIM', 'RECO'],
+                 AlgoList = [algo],
+                 ParentList = ['aaa1122-0909-9767-8764aaa']  
+         )
+                            
+         block = DbsFileBlock (
+                 Name="/this/hahah#12345"
+         )
+
+         api.insertFiles (proc, [myfile1, myfile2], block)
+
+         api.insertFiles ("/test_primary_anzar_001/SIM/TestProcessedDS002",[myfile1, myfile2], "/this/hahah#12345")
+	 
+         api.insertFiles (proc, [myfile1, myfile2], "/this/hahah#12345")
+   
+         api.insertFiles ("/test_primary_anzar_001/SIM/TestProcessedDS002", [myfile1, myfile2],  block)
+
+
     """
     # Prepare XML description of the input
 
@@ -898,13 +970,47 @@ class DbsApi(DbsConfig):
 
   def insertBlock(self, dataset, block=None, storage_element=None):
     """
-    Create a new primary dataset.  Instantiates a database entity for
-    the dataset, and updates input object for the id of the new row.
-    The input object should be a DbsPrimaryDataset with the name set.
+    Inserts a new dbs file block in a given processed dataset. 
+    
+    param: 
+        dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
+	          path in the format of /prim/dt/proc
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
+	block : The dbs file block passed in as a string containing the block name. This field is not mandatory.
+	        If the block name is not provided the server creates one based on the primary dataset name, processed
+		dataset name and a random GUID. It retuirns back this newly created block
+			  
+	storage_element : The list of storage element names in the string format. This field is not mandatory. If 
+	                  this field is not provided then just the block is inserted without any storage element 
+			  associated with it.
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+	 proc = DbsProcessedDataset (
+               PrimaryDataset=primary,
+               Name="TestProcessedDS002",
+               TierList=['SIM', 'RECO'],
+         )
+         api.insertBlock (proc)
+
+         api.insertBlock (proc, "/this/hahah#12345")
+    
+         api.insertBlock (proc, "/this/hahah#12345",  ['se1', 'se2', 'se3'])
+	 
+         api.insertBlock (proc, "",  ['se1', 'se2', 'se3'])
+    
+         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345")
+    
+         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345",  ['se1', 'se2', 'se3'])
+	 
+         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "",  ['se1', 'se2', 'se3'])
+    
+
     """
+
     path = self._path(dataset)
     name = self._name(block)
     
@@ -927,10 +1033,30 @@ class DbsApi(DbsConfig):
    # ------------------------------------------------------------
 
   def insertStorageElement(self, block, storageElement):
+	  
+  """
+    Inserts a new storage element in a given block. 
+    
+    param: 
+	block : The dbs file block passed in as an DbsFileBlock obejct. This object can be  passed in also, 
+	        as a string containing the block name, instead of DbsFileBlock object. The following fields 
+		are mandatory and should be present in the dbs file block object: 
+		block_name and storage_element_name
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         block = DbsFileBlock (
+                Name="/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48"
+         )
+	 api.insertStorageElement ( block , 'se1')
+	 
+	 api.insertStorageElement ( "/this/hahah#12345" , 'se2')
+
     """
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
-    """
+
+
     name = self._name(block)
     
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
@@ -950,15 +1076,22 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
 
   def insertTier(self, tier_name):
-    """
-    Create a new primary dataset.  Instantiates a database entity for
-    the dataset, and updates input object for the id of the new row.
-    The input object should be a DbsPrimaryDataset with the name set.
+  """
+    Inserts a new tier in the DBS databse. 
+    
+    param: 
+	tier_name : The data tier name passed in as string 
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         tier_name = "GEN-SIM-TEST"
+         api.insertTier (tier_name)
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
     """
 
+ 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<tier tier_name='"+ tier_name +"' />"
@@ -972,15 +1105,31 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
 
   def insertLumiSection(self, lumi):
+	  
+    """
+    Inserts a new lumi section in the DBS databse. 
+    
+    param: 
+	lumi : The lumi section passed as an DbsLumiSection obejct. The following fields 
+	       are mandatory and should be present in the lumi section object : 
+               lumi_section_number, run_number, start_event_number and end_event_number
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         lumi = DbsLumiSection (
+                LumiSectionNumber=99,
+                StartEventNumber=100,
+                EndEventNumber=200,
+                LumiStartTime='notime',
+                LumiEndTime='neverending',
+                RunNumber=1,
+         )
+         api.insertLumiSection(lumi)
 
     """
-    Create a new primary dataset.  Instantiates a database entity for
-    the dataset, and updates input object for the id of the new row.
-    The input object should be a DbsPrimaryDataset with the name set.
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
-    """
   
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -1002,14 +1151,33 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
 
   def createAnalysisDatasetFromPD(self, dataset, analysisdataset ):
-    """
-    Create a new primary dataset.  Instantiates a database entity for
-    the dataset, and updates input object for the id of the new row.
-    The input object should be a DbsPrimaryDataset with the name set.
 
-    Raises DbsObjectExists if a primary dataset already exists in
-    the database, otherwise may raise an DbsApiException.
     """
+    Creates a new analysis dataset dataset from a given processed dataset. This analysis dataset will have 
+    the same contents as that of the processed dataset. 
+    
+    param: 
+    	dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
+	          path in the format of /prim/dt/proc
+	analysisdataset : The analysis dataset object passed as an DbsAnalysisDataset obejct. The following 
+	                  fields are mandatory and should be present in the analysis dataset object : 
+			  name, type, status, path, physics_group_name and annotation
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+	analysis = DbsAnalysisDataset(
+		Name='TestAnalysisDataset001',
+		Annotation='This is a test analysis dataset',
+		Type='KnowTheType',
+		Status='VALID',
+		PhysicsGroup='BPositive'
+	)
+	api.createAnalysisDatasetFromPD ("/test_primary_anzar_001/SIM/TestProcessedDS002/", analysis)
+
+    """
+    
     path = self._path(dataset)
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
@@ -1030,7 +1198,6 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'createAnalysisDatasetFromPD',
                          'xmlinput' : xmlinput }, 'POST')
 
-  # ------------------------------------------------------------
 
 
   # ------------------------------------------------------------
@@ -1048,55 +1215,7 @@ class DbsApi(DbsConfig):
 		         'xmlinput' : input })
 
  
-  # ------------------------------------------------------------
-  def getDatasetInfo(self, dataset, blockName=None):
-    """
-    Retrieve the complete DBS snapshpot of a processed dataset with 
-    event collections , files ,processing and blocks
+   
 
-    The input dataset should be an DbsProcessedDataset with path set,
-    or a DbsProcessedDataset with primary dataset, tier and processed
-    dataset name filled in.  For backwards compatibility a simple
-    dataset path name string is also accepted.
-
-    Raises InvalidDatasetPathName if the path is invalid, otherwise
-    may raise an DbsApiException.
-
-    """
-    # Check path.
-    path = self._path(dataset)
-    verifyDatasetPathName(path)
-
-    # Invoke Server.
-    if(blockName != None) :
-	print "blockName ",blockName
-	return  self._server._call ({ 'api' : 'getDatasetInfo', 'path' : path , 'blockName' : blockName})
-    else :
-    	return  self._server._call ({ 'api' : 'getDatasetInfo', 'path' : path })
-    
-
-  # ------------------------------------------------------------
-  def insertDatasetInfo(self, xmlinput):
-    # Check path.
-    #path = self._path(dataset)
-    #verifyDatasetPathName(path)
-
-    # Invoke Server.
-    #data = self._server._call ({ 'api' : 'export', 'path' : path })
-    data = self._server._call ({ 'api' : 'insertDatasetInfo', 'xmlinput' : xmlinput })
-    return data
- # ------------------------------------------------------------
-  
-  def setFileStatus(self, name, status=None):
-   if (status != None) :
-    data = self._server._call ({ 'api' : 'setFileStatus',
-		         'name' : name, 
-		         'status' : status 
-			 })
-   else:
-    data = self._server._call ({ 'api' : 'setFileStatus',
-		         'name' : name, 
-			 })
-	   
-##############################################################################
+#############################################################################
 # Unit testing: see $PWD/UnitTests
