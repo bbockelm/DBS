@@ -30,11 +30,13 @@ class DbsConfig(object):
        if not os.path.isfile(os.environ['DBS_CLIENT_CONFIG']):
           raise DbsException(args="The '%s' config file does not exists"%os.environ['DBS_CLIENT_CONFIG'])
        uFileName=os.environ['DBS_CLIENT_CONFIG']
+    else:
+       raise DbsException(args="No DBS_CLIENT_CONFIG environment is defined")
     #else:
     #   uFileName = os.path.normpath(os.environ["HOME"]+"/.dbs.conf")
     self.configFile=uFileName
     if not os.path.isfile(uFileName):
-       raise DbsException(args="The '%s' config file does not exists"%uFileName)
+       raise DbsException(args="The DBS_CLIENT_CONFIG='%s' config file does not exists"%uFileName)
     mode = os.stat(uFileName)[stat.ST_MODE]
     if mode!=33152:
        # mode is not -rw-------
