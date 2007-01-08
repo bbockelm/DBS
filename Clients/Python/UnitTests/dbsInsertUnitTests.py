@@ -284,6 +284,54 @@ apiObj.run(tierName1, "",  excep = True)
 
 f.write("\n***********************insertTier API tests***************************")
 
+apiObj = DbsUnitTestApi(api.insertRun, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************insertRun API tests***************************")
+runNumber1 = 101 + int(time.time()%10000)
+runNumber2 = 102 + int(time.time()%10000)
+runNumber3 = 103 + int(time.time()%10000)
+
+run1 = DbsRun (RunNumber=runNumber1,
+		NumberOfEvents= 100,
+		NumberOfLumiSections= 20,
+		TotalLuminosity= 2222,
+		StoreNumber= 123,
+		StartOfRun= 'now',
+		EndOfRun= 'never',
+)
+apiObj.run(run1, excep = False)
+
+run2 = DbsRun (RunNumber=runNumber2)
+apiObj.run(run2, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		StartOfRun= 'no*w')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		StartOfRun= 'no w')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		StartOfRun= 'no;w')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		EndOfRun= 'nev*er')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		EndOfRun= 'nev er')
+apiObj.run(run, excep = True)
+
+run = DbsRun (RunNumber=runNumber3,
+		EndOfRun= 'nev;er')
+apiObj.run(run, excep = True)
+
+f.write("\n***********************insertRun API tests***************************")
+
+
+
 f.write("\n\n***********************insertProcessedDataset API tests***************************")
 tierList = [tierName1, tierName2]
 
@@ -295,7 +343,7 @@ proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Status="VALID",
 		TierList=tierList,
 		AlgoList=[algo1, algo2],
-                RunList=['1','2'],
+                RunList=[str(runNumber1)],
                 )
 apiObj.run(proc1, excep = False)
 
@@ -429,53 +477,6 @@ apiObj.run("/ddd/hd/hd;hd", excep = True)
 
 
 f.write("\n***********************insertBlock API tests***************************")
-
-apiObj = DbsUnitTestApi(api.insertRun, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************insertRun API tests***************************")
-runNumber1 = 101 + int(time.time()%10000)
-runNumber2 = 102 + int(time.time()%10000)
-runNumber3 = 103 + int(time.time()%10000)
-
-run1 = DbsRun (RunNumber=runNumber1,
-		NumberOfEvents= 100,
-		NumberOfLumiSections= 20,
-		TotalLuminosity= 2222,
-		StoreNumber= 123,
-		StartOfRun= 'now',
-		EndOfRun= 'never',
-)
-apiObj.run(run1, excep = False)
-
-run2 = DbsRun (RunNumber=runNumber2)
-apiObj.run(run2, excep = True)
-
-run = DbsRun (RunNumber=runNumber3,
-		StartOfRun= 'no*w')
-apiObj.run(run, excep = True)
-
-run = DbsRun (RunNumber=runNumber3,
-		StartOfRun= 'no w')
-apiObj.run(run, excep = True)
-
-run = DbsRun (RunNumber=runNumber3,
-		StartOfRun= 'no;w')
-apiObj.run(run, excep = True)
-
-run = DbsRun (RunNumber=runNumber3,
-		EndOfRun= 'nev*er')
-apiObj.run(run, excep = True)
-
-run = DbsRun (RunNumber=runNumber3,
-		EndOfRun= 'nev er')
-apiObj.run(run, excep = True)
-
-run = DbsRun (RunNumber=runNumber3,
-		EndOfRun= 'nev;er')
-apiObj.run(run, excep = True)
-
-f.write("\n***********************insertRun API tests***************************")
-
 
 apiObj = DbsUnitTestApi(api.insertLumiSection, f)
 apiObj.setVerboseLevel(opts.verbose)
