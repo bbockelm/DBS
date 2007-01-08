@@ -891,6 +891,10 @@ class DbsApi(DbsConfig):
            xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
            xmlinput += " ps_content='"+pset.get('Content', "")+"'"
         xmlinput += "/>"
+
+    for run in dataset.get('RunList',[]):
+        xmlinput += "<run run_number='"+run+"'/>"
+
     xmlinput += "</processed-dataset>"
     xmlinput += "</dbs>"
 

@@ -294,7 +294,9 @@ proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 		PhysicsGroup="BPositive",
 		Status="VALID",
 		TierList=tierList,
-		AlgoList=[algo1, algo2])
+		AlgoList=[algo1, algo2],
+                RunList=['1','2'],
+                )
 apiObj.run(proc1, excep = False)
 
 

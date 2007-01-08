@@ -73,6 +73,7 @@ ValidationTable = {
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "ParentList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
+         "RunList" : { "Comment" : "User may need to provide run list", "Validator" : isListType },
          "CreationDate" : { "Comment" : "Time stamp when this object was created in database", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "DN of user who created this object in database", "Validator" : isStringType },
          "LastModificationDate" : { "Comment" : "Time stamp when this object was last modified in database", "Validator" : isStringType },
