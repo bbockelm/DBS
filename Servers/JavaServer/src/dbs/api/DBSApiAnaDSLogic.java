@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiAnaDSLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.3 2007/01/02 16:55:49 sekhri Exp $"
  *
  */
 
@@ -16,13 +16,13 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 
 /**
-* A class that has the core business logic of the DBS API for Analysis datasets. 
+* A class that has the core business logic of all the Analysis datasets APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
 * @author sekhri
 */
 public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
 	/**
-	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
+	* Constructs a DBSApiLogic object that can be used to invoke several APIs.
 	*/
 	DBSApiPersonLogic personApi = null;
 	public DBSApiAnaDSLogic() {
@@ -40,7 +40,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param dataset a  <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new analysis dataset. The keys along with its values that it may or may not contain are <br>
-	 * <code>name, type, status, annotation, physics_group_name </code> <br>
+	 * <code>name, type, status, annotation, physics_group_name, created_by, creation_date </code> <br>
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */

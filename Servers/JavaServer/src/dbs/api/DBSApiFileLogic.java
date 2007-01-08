@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiFileLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiFileLogic.java,v 1.4 2007/01/02 16:55:50 sekhri Exp $"
  *
  */
 
@@ -16,13 +16,13 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 
 /**
-* A class that has the core business logic of the DBS API for Files. 
+* A class that has the core business logic of all the File APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
 * @author sekhri
 */
 public class DBSApiFileLogic extends DBSApiLogic {
 		
 	/**
-	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
+	* Constructs a DBSApiLogic object that can be used to invoke several APIs.
 	*/
 	DBSApiPersonLogic personApi = null;
 	public DBSApiFileLogic() {
@@ -38,6 +38,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
 	 * @param blockName a block name in the format of /primary/processed#GUID. This block name is used to find the existing block id.
 	 * @param patternLFN a parameter passed in from the client that can contain wild card characters for logical file name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
+	 * @param detail a parameter to determine whether the details of the files needs to be listed or not.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patternLFN is invalid, the database connection is unavailable or processed dataset or block is not found.
 	 */
 	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN, String detail) throws Exception {
@@ -247,7 +248,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param files a <code>java.util.Vector</code> that contains a list of <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new file. The keys along with its values that it may or may not contain are <br>
-	 * <code>lfn, checksum, number_of_events, size, queryable_meta_data, file_status, type, validation_status, lumi_section, data_tier, parent, algorithm </code> <br>
+	 * <code>lfn, checksum, number_of_events, size, queryable_meta_data, file_status, type, validation_status, lumi_section, data_tier, parent, algorithm, created_by, creation_date </code> <br>
 	 * Further the keys <code>lumi_section, data_tier, parent, algorithm </code> are itself vector of Hashtable. <br>
 	 * The key that <code>parent </code> hashtable may or may not contain is <code>lfn</code> <br>
 	 * The key that <code>data_tier </code> hashtable may or may not contain is <code>name</code> <br>
@@ -445,7 +446,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * Then it inserts entry into just one table FileTier by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param table a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single file. The keys along with its values that it may or may not contain are <br>
+	 * <code>lfn, created_by, creation_date </code> <br>
+	 * If this lfn is not provided or the file id could not be found then an exception is thrown.
 	 * @param tierName a data tier name which is assumed to be already present in the database.
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
@@ -466,7 +469,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * Then it inserts entry into just one table FileParentage by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param table a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single file. The keys along with its values that it may or may not contain are <br>
+	 * <code>lfn, created_by, creation_date </code> <br>
+	 * If this lfn is not provided or the file id could not be found then an exception is thrown.
 	 * @param parentLFN a logical file name of the parent file.
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
@@ -487,7 +492,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * Then it inserts entry into just one table FileAlgoMap by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param table a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single file. The keys along with its values that it may or may not contain are <br>
+	 * <code>lfn, created_by, creation_date </code> <br>
+	 * If this lfn is not provided or the file id could not be found then an exception is thrown.
 	 * @param algo a <code>java.util.Hashtable</code> that conatin the parameter that defines an algorithm. The keys that <code>algo </code> hashtable may or may not contain are <br> 
 	 * <code>app_version, app_family_name, app_executable_name, ps_name</code> <br>
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
@@ -512,7 +519,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * Then it inserts entry into just one table FileLumi by calling a generic private <code>insertMap</code> method. It first fetches the file id by calling a generic private getID method.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param lfn a logical file name that unquely identifies a file. If this lfn is not provided or the file id could not be found then an exception is thrown.
+	 * @param table a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single file. The keys along with its values that it may or may not contain are <br>
+	 * <code>lfn, created_by, creation_date </code> <br>
+	 * If this lfn is not provided or the file id could not be found then an exception is thrown.
 	 * @param lsNumber a lumi section number that uniquely identifies a lumi section.
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.

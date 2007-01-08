@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiPersonLogic.java,v 1.2 2006/12/26 18:41:54 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiPersonLogic.java,v 1.3 2007/01/02 16:55:50 sekhri Exp $"
  *
  */
 
@@ -15,13 +15,13 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 
 /**
-* A class that has the core business logic of the DBS API for Person
+* A class that has the core business logic of all the Person APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
 * @author sekhri
 */
 public class DBSApiPersonLogic extends DBSApiLogic {
 		
 	/**
-	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
+	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does nothing.
 	*/
 	public DBSApiPersonLogic() {}
 
@@ -32,10 +32,10 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	 * Then it insert a new user if it does not already exist.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param userName the name of the user to be inserted in the database.
-	 * @param userDN the distinguish name of the user to be inserted in the database.
-	 * @param contactInfo the contact infromation  of the user to be inserted in the database.
+	 * @param table  a <code>java.util.Hastable</code> that contain all the necessary key value pairs required for inserting a new person. The keys along with its values that it may or may not contain are <br>.
+	 * <code>user_name, user_dn, contact_info, created_by, creation_date </code> <br>
 	 * @param lmbUserID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable.
 	 */
 	public void insertPerson(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {

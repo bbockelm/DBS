@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiAlgoLogic.java,v 1.3 2006/12/26 19:33:30 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiAlgoLogic.java,v 1.4 2007/01/02 16:55:49 sekhri Exp $"
  *
  */
 
@@ -14,12 +14,12 @@ import dbs.sql.DBSSql;
 import dbs.DBSException;
 
 /**
-* A class that has the core business logic of the DBS API. Here all the API is defined and implemented. The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. 
+* A class that has the core business logic of all the algorithm APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
 * @author sekhri
 */
 public class DBSApiAlgoLogic extends DBSApiLogic {
 	/**
-	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
+	* Constructs a DBSApiLogic object that can be used to invoke several APIs. 
 	*/
 	DBSApiPersonLogic personApi = null;
 	public DBSApiAlgoLogic() {
@@ -87,7 +87,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param algo a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for inserting a new algorithm. The keys along with its values that it may or may not contain are <br>
-	 * <code>app_version, app_family_name, app_executable_name, ps_name, ps_hash, ps_version, ps_type, ps_annotation, ps_content</code>
+	 * <code>app_version, app_family_name, app_executable_name, ps_name, ps_hash, ps_version, ps_type, ps_annotation, ps_content, created_by, creation_date</code>
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
@@ -144,7 +144,9 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param algo a <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new parameter set. The keys along with its values that it may or may not contain are <br>
 	 * <code>ps_name, ps_hash, ps_version, ps_type, ps_annotation, ps_content</code> <br>
-	 * @param userID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param cbUserID a user id of the person who is inserting this new row into this given database table.
+	 * @param userID a user id of the person who is inserting this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
 	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String cbUserID, String userID, String creationDate) throws Exception {
