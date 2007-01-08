@@ -1,6 +1,6 @@
 /**
- $Revision: 1.58 $"
- $Id: DBSApiLogic.java,v 1.58 2007/01/04 15:59:58 afaq Exp $"
+ $Revision: 1.59 $"
+ $Id: DBSApiLogic.java,v 1.59 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -213,7 +213,7 @@ public class DBSApiLogic {
 	
 	/**
 	 * This is a private generic method that can insert entry into any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks of the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.
-	 * @param table the table name of the table in the database schema.
+	 * @param tableName the table name of the table in the database schema.
 	 * @param key1 the first coloumn name of the table in the database schema.
 	 * @param key2 the second coloumn name of the table in the database schema.
 	 * @param value1 the first value to be inserted in the first coloumn name of the table.
@@ -245,10 +245,6 @@ public class DBSApiLogic {
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param table a <code>java.util.Hastable</code> that contain all the necessary key value pairs required for inserting a new physics group. The keys along with its values that it may or may not contain are <br>
 	* <code>physics_group_name, physics_group_convener, created_by, creation_date </code> <br> 
-	 *          
-	 * @param cbUserID a user id of the person who is inserting this new row into this given database table.
-	 * @param lmbUserID a user id of the person who is updating this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
-	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or the database connection is unavailable.
 	 */
 	public void insertPhysicsGroup(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiTransferLogic.java,v 1.1 2006/12/15 20:54:03 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiTransferLogic.java,v 1.2 2007/01/02 22:59:57 sekhri Exp $"
  *
  */
 
@@ -15,13 +15,13 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 
 /**
-* A class that has the core business logic of the DBS API for transfer. 
+* A class that has the core business logic of all the transfer APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
 * @author sekhri
 */
 public class DBSApiTransferLogic extends  DBSApiLogic {
 		
 	/**
-	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
+	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does nothing.
 	*/
 	public DBSApiTransferLogic() {}
 
@@ -37,7 +37,8 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 */
 	public void listDatasetContents(Connection conn, Writer out, String path, String blockName) throws Exception {
 		String data[] = parseDSPath(path);
-		(new DBSApiBlockLogic()).checkBlock(blockName);
+		DBSApiBlockLogic bApi = new DBSApiBlockLogic();
+		bApi.checkBlock(blockName);
 		out.write(((String) "<dataset path='" + path + 
 					"' block_name='" + blockName +
 					"' />\n"));
@@ -46,7 +47,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		pdApi.listProcessedDatasets(conn, out, data[1], data[2], data[3], null, null, null, null);
 		pdApi.listDatasetParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
-		pdApi.listBlocks(conn, out, path, blockName, null);
+		bApi.listBlocks(conn, out, path, blockName, null);
 		(new DBSApiFileLogic()).listFiles(conn, out, path, blockName, null, "true");
 	}
 	
@@ -57,8 +58,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 * Insert a complete dataset with all of its contents passedas a  <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the all the processed dataset information awith all the files, algo, run and lumi information. It calls all the other insert API to insert the processed dataset contents
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param table a <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new all of the processed dataset contents. The keys along with its values that it may or may not contain are <br>
-	 * <code>lumi_section_number, run_number, start_event_number, end_event_number, lumi_start_time, lumi_end_time </code> <br>
+	 * @param table a <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new all of the processed dataset contents.
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */

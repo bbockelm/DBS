@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiPrimDSLogic.java,v 1.4 2007/01/02 16:55:50 sekhri Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.5 2007/01/02 22:59:57 sekhri Exp $"
  *
  */
 
@@ -15,13 +15,13 @@ import dbs.util.DBSUtil;
 import dbs.DBSException;
 
 /**
-* A class that has the core business logic of the DBS API. Here all the API is defined and implemented. The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. 
+* A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
 * @author sekhri
 */
 public class DBSApiPrimDSLogic extends DBSApiLogic {
 		
 	/**
-	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
+	* Constructs a DBSApiLogic object that can be used to invoke several APIs.
 	*/
 	DBSApiPersonLogic personApi = null;
 	public DBSApiPrimDSLogic() {
@@ -75,7 +75,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param dataset a <code>java.util.Hashtable</code> that contains all the necessary key value pairs required for inserting a new primary dataset. The keys along with its values that it may or may not contain are <br>
-	 * <code>type, annotation, primary_name, start_date, end_date</code>
+	 * <code>type, annotation, primary_name, start_date, end_date, created_by, creation_date</code>
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */

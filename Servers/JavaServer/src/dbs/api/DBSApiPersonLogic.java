@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiPersonLogic.java,v 1.3 2007/01/02 16:55:50 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiPersonLogic.java,v 1.4 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -34,7 +34,6 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param table  a <code>java.util.Hastable</code> that contain all the necessary key value pairs required for inserting a new person. The keys along with its values that it may or may not contain are <br>.
 	 * <code>user_name, user_dn, contact_info, created_by, creation_date </code> <br>
-	 * @param lmbUserID a user id of the person who is insertin this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable.
 	 */
