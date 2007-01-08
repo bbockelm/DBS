@@ -266,7 +266,9 @@ class DBSHelper(DBSLogger):
       if (time.time()-self.voms_timer)>12*60*60: # more then 12 hours
          self.voms_timer=time.time()
 #         res = popen2.Popen4("voms-proxy-init -voms cms -q")
-         res = popen2.Popen4("cat $HOME/.globus/pp.txt | grid-proxy-init -pwstdin -q")
+#         res = popen2.Popen4("cat $HOME/.globus/pp.txt | grid-proxy-init -pwstdin -q")
+         cmd="cat /data/DBSDataDiscovery/COMP/DBS/Web/DataDiscovery/pp.txt | grid-proxy-init -cert /data/vk/cert/usercert.pem -key /data/vk/cert/userkey.pem -pwstdin -q"
+         res = popen2.Popen4(cmd)
          res.wait()
          result=res.fromchild.read()
          if result:
@@ -694,15 +696,22 @@ class DBSHelper(DBSLogger):
 
   def getRuns(self,dataset):
       if self.iface=='cgi':
-         return {}
+         return []
       else:
          return self.api.listRuns(dataset)
 
   def getDbsData(self,dataset):
       if self.iface=='cgi':
-         return {}
+         return []
       else:
-         return self.api.listBlocksFull(dataset)
+         return self.api.listBlocksFull(dataset=dataset)
+  def getDbsBlockData(self,blockName):
+      if self.iface=='cgi':
+         return []
+#         d=[{'OpenForWriting': '1', 'CreationDate': '1167939056000', 'Name': blockName, 'NumberOfEvents': 0, 'BlockSize': 0, 'NumberOfFiles': 0, 'FileList': [], 'LastModifiedBy': 'ANZARDN', 'CreatedBy': 'ANZARDN', 'StorageElementList': [], 'LastModificationDate': '2007-01-04 14:30:56.0'}]
+#         return [d]
+      else:
+         return self.api.listBlocksFull(block_name=blockName)
 
   def getData(self,dataset,app,site="All"):
       """
