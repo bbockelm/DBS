@@ -1148,7 +1148,9 @@ class DBSDataDiscoveryServer(DBSLogger):
                 nameSpace = {
                              'dbsList'  : self.helper.getDbsData(dataset),
                              'tableId'  : tid,
-                             'proc'     : dataset
+                             'proc'     : dataset,
+                             'host'     : self.dbsdd,
+                             'dbsInst'  : dbsInst
                             }
                 t = Template(CheetahDBSTemplate.templateDbsInfo, searchList=[nameSpace])
                 page+=str(t)
@@ -1412,6 +1414,48 @@ class DBSDataDiscoveryServer(DBSLogger):
 	page+=str(t)
         return page
         
+    def getFileBlocks(self,dbsInst,site,**kwargs):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results">"""
+        page+="""
+<table id="tableSiteBlocks" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<tr valign="top" align="center" id="tr_tableSiteBlock" name="tr_tableSiteBlock" class="sortable_gray">
+<td>Block name</td>
+<td>Events</td>
+<td>Files</td>
+<td>Status</td>
+<td>Size</td>
+<td>Created by</td>
+<td>Creation time</td>
+<td>Modified by</td>
+<td>Modifiction time</td>
+</tr>
+"""
+        self.helper.setDBSDLS(dbsInst)
+        self.helper.setDLS_LFC()
+        # code stolen from DLS, TODO: add try/except and handle error conditions
+        partialList = self.helper.dls_iface._getEntriesFromDir("/", site, True)
+        for i in partialList:
+            if(not i.fileBlock.name.startswith('/')): i.fileBlock.name = '/' + i.fileBlock.name
+            blockName = i.fileBlock.name
+            nameSpace = {
+                         'dbsList'  : self.helper.getDbsBlockData(blockName),
+                         'tableId'  : 'blockInfo_'+blockName,
+                         'host'     : self.dbsdd,
+                         'dbsInst'  : dbsInst
+                        }
+            t = Template(CheetahDBSTemplate.templateDbsInfoTableEntry, searchList=[nameSpace])
+            # query DBS and get more info about blocks
+            page+=str(t)
+        page+= str(t)
+        page+="</table>"
+        page+="</response></ajax-response>"
+        if self.verbose:
+           print page
+        return page
+    getFileBlocks.exposed=True
+
     def getBlocksFromSiteHelper(self,dbsInst,site):
         """
            Generates AJAX response to get all primary datasets available in all DBS instances
