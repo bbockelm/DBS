@@ -135,10 +135,14 @@ templateTop = """
 <script src = "yui/build/treeview/treeview.js" ></script>
 <link rel="stylesheet" type="text/css" href="yui/examples/treeview/css/local/tree.css" />
 
+<!--
+<link rel="stylesheet" type="text/css" href="css/masthead_add.css">
+-->
 <link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css">
 
 </head>
-<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter ('dbs');" id="content">
+####<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
+<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs')" id="content">
 
 <noscript>
 <h1 class="box_red">Warning:</h1>
@@ -912,11 +916,11 @@ templateDbsInfo="""
 <b>Processed dataset: $proc</b>
 <table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
+<td>Block name</td>
 <td>Events</td>
 <td>Files</td>
 <td>Status</td>
 <td>Size</td>
-<td>Block name</td>
 <td>Created by</td>
 <td>Creation time</td>
 <td>Modified by</td>
@@ -924,12 +928,24 @@ templateDbsInfo="""
 </tr>
 #from DBSUtil import splitString 
 #for dbsDict in $dbsList
+#set bName=$dbsDict['Name']
+#set sName=$splitString($dbsDict['Name'],30,"\\n")
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
+<td align="left" class="td20">
+<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)">$sName</a>
+<br /><b>LFNs:</b> 
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)" alt="cff format">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',900)" alt="file list format">plain</a>
+
+</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
-<td align="center">$dbsDict['OpenForWriting']</td>
+#if int($dbsDict['OpenForWriting'])==1
+<td align="center" style="background-color:AliceBlue;">OPEN</td>
+#else
+<td align="center" style="background-color:AntiqueWhite;">CLOSED</td>
+#end if
 <td align="right">$dbsDict['BlockSize']</td>
-<td align="left">$splitString($dbsDict['Name'],30)</td>
 <td align="right">$dbsDict['CreatedBy']</td>
 <td align="center">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
@@ -939,6 +955,34 @@ templateDbsInfo="""
 </table>
 ###<script type="text/javascript">SplitBlockName()</script>
 <hr class="dbs" />
+"""
+
+templateDbsInfoTableEntry="""
+#from DBSUtil import splitString 
+#for dbsDict in $dbsList
+#set bName=$dbsDict['Name']
+#set sName=$splitString($dbsDict['Name'],30,"\\n")
+<tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
+<td align="left" class="td20">
+<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">$sName</a>
+<br /><b>LFNs:</b> 
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)" alt="cff format">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)" alt="file list format">plain</a>
+</td>
+<td align="right">$dbsDict['NumberOfEvents']</td>
+<td align="right">$dbsDict['NumberOfFiles']</td>
+#if int($dbsDict['OpenForWriting'])==1
+<td align="center" style="background-color:AliceBlue;">OPEN</td>
+#else
+<td align="center" style="background-color:AntiqueWhite;">CLOSED</td>
+#end if
+<td align="right">$dbsDict['BlockSize']</td>
+<td align="right">$dbsDict['CreatedBy']</td>
+<td align="center">$dbsDict['CreationDate']</td>
+<td align="right">$dbsDict['LastModifiedBy']</td>
+<td align="center">$dbsDict['LastModificationDate']</td>
+</tr>
+#end for
 """
 
 templateLFB = """
@@ -1075,10 +1119,10 @@ Both
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$nEvt</div></td>
      <td align="right"><div class="dbs_cell">$nFiles</div></td>
-     #if $bStatus!="OPEN"
-     <td align="center" class="dbs_cell_r"><div class="dbs_cell_r">$bStatus</div></td>
+     #if $bStatus=="OPEN" or $bStatus==1:
+     <td align="center" style="background-color:AliceBlue;"><div class="dbs_cell">OPEN</div></td>
      #else
-     <td align="center"><div class="dbs_cell">$bStatus</div></td>
+     <td align="center" style="background-color:AntiqueWhite;"><div class="dbs_cell">CLOSED</div></td>
      #end if
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
@@ -1088,7 +1132,8 @@ Both
      </td>
      <td align="left">
      <div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">$name</a>
+#from DBSUtil import splitString 
+     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">$splitString($name,30,"\\n")</a>
      </div>
      </td>
   </tr>
@@ -1130,20 +1175,20 @@ templateBottom="""
 </td></tr></table>
 </td>
 
-<td class="td_menu_gray_box" id="_parents">
-<table width="100%"><tr><td>
-<span id="__parents"><table class="image"><tr><td></td></tr></table></span>
-</td><td align="center">
-<a href="javascript:showResMenu('parents')">Parents</a>
-</td><td><table class="image"><tr><td></td></tr></table>
-</td></tr></table>
-</td>
-
 <td class="td_menu_gray_box" id="_runs">
 <table width="100%"><tr><td>
 <span id="__runs"><table class="image"><tr><td></td></tr></table></span>
 </td><td align="center">
 <a href="javascript:showResMenu('runs')">Run info</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+<td class="td_menu_gray_box" id="_parents">
+<table width="100%"><tr><td>
+<span id="__parents"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('parents')">Parents</a>
 </td><td><table class="image"><tr><td></td></tr></table>
 </td></tr></table>
 </td>
@@ -1176,6 +1221,7 @@ templateBottom="""
 <span id="results" class="show_inline"></span>
 <span id="results_waiting" class="show_inline"></span>
 <span id="results_dbs" class="hide"></span>
+<span id="results_site" class="hide"></span>
 <span id="runs" class="hide"></span>
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
