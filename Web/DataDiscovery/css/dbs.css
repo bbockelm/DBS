@@ -620,6 +620,9 @@ table.sortable a.sortheader {
   border-color: #eee;
 }
 table.sortable a.sortheader:hover { color: #996699; }
+table.sortable td.td20 {
+  width:20%;
+}
 
 .sortable_yellow {
   font-weight: normal;
@@ -666,7 +669,8 @@ table.sortable span.sortarrow {
 .dbs_cell_r {
   padding-left: 0.5ex; 
   padding-right: 0.5ex;
-  background-color: #DEB0AF;
+/*  background-color: #DEB0AF;*/
+  background-color: AntiqueWhite; /* FAEBD7 */
 }
 
 .dbs_cell_u {
