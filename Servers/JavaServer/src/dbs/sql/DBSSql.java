@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.41 $"
- $Id: DBSSql.java,v 1.41 2007/01/03 22:40:13 sekhri Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSSql.java,v 1.42 2007/01/04 15:36:38 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -380,11 +380,9 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = pd.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
-				"ON perlm.id = pd.LastModifiedBy \n";
-		if(pattern != null) {
-			sql += "WHERE pd.Name like ?\n" +
+				"ON perlm.id = pd.LastModifiedBy \n" +
+			"WHERE pd.Name like ?\n" +
 				"ORDER BY PRIMARY_NAME DESC";
-		}
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, pattern);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
