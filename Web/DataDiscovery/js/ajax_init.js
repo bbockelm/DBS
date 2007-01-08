@@ -2,11 +2,21 @@
 // once response arrived. We put our reponse to "results" tag id found on internal HTML.
 var GetDataUpdater=Class.create();
 GetDataUpdater.prototype = {
-   initialize: function(tag) {
+   initialize: function(tag,mode,nores) {
       if(tag) {
          this.tag=tag;
       } else {
          this.tag='results';
+      }
+      if(mode && mode=='update') {
+         this.mode=mode;
+      } else {
+         this.mode=replace;
+      }
+      if(nores) {
+         this.nores=1;
+      } else {
+         this.nores=0;
       }
    },
    ajaxUpdate: function(ajaxResponse) {
@@ -25,12 +35,11 @@ GetDataUpdater.prototype = {
         }
      }
 */
-     showResultsMenu();
-     hideWaitingMessage();
-     if(this.tag=='results_dbs' || this.tag=="runs") {
-        var r=document.getElementById("_"+this.tag);
-        r.className="td_menu_lavender_box";
+     if(!this.nores) {
+        showResultsMenu();
      }
+     hideWaitingMessage();
+     HideWheel("__"+this.tag);
      var t=document.getElementById(this.tag);
      t.innerHTML+=responseHTML;
      // parse response and search for any JavaScript code there, if found execute it.
@@ -190,6 +199,7 @@ function getDataFromSelectors(_dbs,_site,_app,_primD,_tier) {
 }
 // AJAX registration 
 function ajaxGetRuns(_dbs,_site,_app,_primD,_tier) {
+  ShowWheel("__runs");
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -203,6 +213,7 @@ function ajaxGetRuns(_dbs,_site,_app,_primD,_tier) {
 }
 // AJAX registration 
 function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
+  ShowWheel("__results_dbs");
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -216,6 +227,7 @@ function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
 }
 // AJAX registration
 function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
+  ShowWheel("__results");
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -317,22 +329,25 @@ function ajaxSiteSearch(_dbs,_site) {
   ajaxHistory(action);
 }
 function registerAjaxObjectCalls() {
-    getDataUpdater = new GetDataUpdater();
+    getDataUpdater = new GetDataUpdater('results','update');
     ajaxEngine.registerRequest('ajaxGetData','getData');
     ajaxEngine.registerRequest('ajaxSearch','search');
-    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
     ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
     ajaxEngine.registerRequest('ajaxGetDetailsForPrimDataset','getDetailsForPrimDataset');
     ajaxEngine.registerRequest('ajaxGetDatasetContent','getDatasetContent');
     ajaxEngine.registerRequest('ajaxGetDatasetsFromApplication','getDatasetsFromApplication');
     ajaxEngine.registerAjaxObject('results',getDataUpdater);
 
+    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
+    siteUpdater = new GetDataUpdater('results','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('results_site',siteUpdater);
+
     ajaxEngine.registerRequest('ajaxGetDbsData','getDbsData');
-    getDbsDataUpdater = new GetDataUpdater('results_dbs');
+    getDbsDataUpdater = new GetDataUpdater('results_dbs','update');
     ajaxEngine.registerAjaxObject('results_dbs',getDbsDataUpdater);
 
     ajaxEngine.registerRequest('ajaxGetRuns','getRuns');
-    getRunsUpdater = new GetDataUpdater('runs');
+    getRunsUpdater = new GetDataUpdater('runs','update');
     ajaxEngine.registerAjaxObject('runs',getRunsUpdater);
 }
 
@@ -586,9 +601,10 @@ ParentsGraphUpdater.prototype = {
    }
 }
 function registerAjaxProvenanceGraphCalls() {
-  parentsGraphUpdater = new ParentsGraphUpdater();
+//  parentsGraphUpdater = new ParentsGraphUpdater();
   ajaxEngine.registerRequest('ajaxGenParentsGraph','getProvenanceForAllDatasets');
-  ajaxEngine.registerAjaxObject('parents',parentsGraphUpdater);
+  updater = new GetDataUpdater('parents','update');
+  ajaxEngine.registerAjaxObject('parents',updater);
 }
 function ajaxGenParentsGraphFromSelection() {
   uSelection=document.getElementsByName('userSelection');
@@ -606,6 +622,7 @@ function ajaxGenParentsGraphFromSelection() {
   }
 }
 function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
+  ShowWheel("__parents");
   var sel;
   var dbs;
   if(_dbs) {
@@ -691,11 +708,13 @@ AppConfigsUpdater.prototype = {
    }
 }
 function registerAjaxAppConfigsCalls() {
-  appConfigsUpdater = new AppConfigsUpdater();
+//  appConfigsUpdater = new AppConfigsUpdater();
   ajaxEngine.registerRequest('ajaxGenAppConfigs','getAppConfigs');
-  ajaxEngine.registerAjaxObject('appConfigs',appConfigsUpdater);
+  updater = new GetDataUpdater('appConfigs','replace');
+  ajaxEngine.registerAjaxObject('appConfigs',updater);
 }
 function ajaxGenAppConfigs(_app) {
+  ShowWheel("__appConfigs");
   var app;
   if(_app) {
       app=_app;
