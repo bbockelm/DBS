@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiAlgoLogic.java,v 1.5 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiAlgoLogic.java,v 1.6 2007/01/09 17:16:49 sekhri Exp $"
  *
  */
 
@@ -43,7 +43,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		patternVer	= getPattern(patternVer, "app_version");
 		patternFam	= getPattern(patternFam, "app_family_name");
 		patternExe	= getPattern(patternExe, "app_executable_name");
-		patternPS 	= getPattern(patternPS, "parameterset_hash");
+		patternPS 	= getPattern(patternPS, "ps_hash");
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;

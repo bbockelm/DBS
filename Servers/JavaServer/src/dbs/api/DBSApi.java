@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApi.java,v 1.47 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApi.java,v 1.48 2007/01/09 17:16:49 sekhri Exp $"
  *
 */
 
@@ -256,7 +256,7 @@ public class DBSApi {
 						get(table, "app_version", false),
 						get(table, "app_family_name", false),
 						get(table, "app_executable_name", false),
-						get(table, "parameterset_name", false)
+						get(table, "ps_name", false)
 						);
 			} else if (apiStr.equals("listDatasetContents")) {
 				(new DBSApiTransferLogic()).listDatasetContents(conn, out, 
@@ -273,7 +273,7 @@ public class DBSApi {
 						get(table, "app_version", false),
 						get(table, "app_family_name", false),
 						get(table, "app_executable_name", false),
-						get(table, "parameterset_hash", false)
+						get(table, "ps_hash", false)
 						);
 				
 			} else if (apiStr.equals("listRuns")) {

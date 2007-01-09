@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiProcDSLogic.java,v 1.9 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiProcDSLogic.java,v 1.10 2007/01/09 17:16:49 sekhri Exp $"
  *
  */
 
@@ -68,7 +68,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getPattern(patternVer, "app_version"), 
 					getPattern(patternFam, "app_family_name"), 
 					getPattern(patternExe, "app_executable_name"), 
-					getPattern(patternPS, "parameterset_name"));
+					getPattern(patternPS, "ps_hash"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
@@ -77,7 +77,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				String fam = get(rs, "APP_FAMILY_NAME");
 				String exe = get(rs, "APP_EXECUTABLE_NAME");
 				String ver = get(rs, "APP_VERSION");
-				String pset = get(rs, "PS_NAME");
+				String pset = get(rs, "PS_HASH");
 	
 				if( !prevDS.equals(procDSID) && ! first) {
 					out.write(((String) "</processed-dataset>\n")); 
@@ -107,12 +107,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					out.write(((String) "\t<algorithm app_version='" + ver +
 	   							"' app_family_name='" + fam + 
 								"' app_executable_name='" + exe + 
-								"' ps_name='" + pset + 
+								//"' ps_name='" + pset + 
 								"' ps_hash='" + get(rs, "PS_HASH") +
-								"' ps_version='" + get(rs, "PS_VERSION") +
-								"' ps_type='" + get(rs, "PS_TYPE") +
-								"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
-								"' ps_content='" + get(rs, "PS_CONTENT") +
+								//"' ps_version='" + get(rs, "PS_VERSION") +
+								//"' ps_type='" + get(rs, "PS_TYPE") +
+								//"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+								//"' ps_content='" + get(rs, "PS_CONTENT") +
 								"'/>\n"));
 					prevExe = exe;
 					prevFam = fam;
