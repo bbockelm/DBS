@@ -525,11 +525,11 @@ function ajaxGenNavigatorMenuDict(_dbs) {
             break;
          }
      }
-     if(!dbsInst) {
-         dbsInst="MCGlobal/Writer"; // default dbs instance
-     }
-  } else {
-    dbsInst="MCGlobal/Writer"; // default dbs instance
+//     if(!dbsInst) {
+//         dbsInst="MCGlobal/Writer"; // default dbs instance
+//     }
+//  } else {
+//    dbsInst="MCGlobal/Writer"; // default dbs instance
   }
   // de-activate underneath menues (will be activated back once AJAX will arrive
   DisableSel("appSelector");
