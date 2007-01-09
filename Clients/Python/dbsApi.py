@@ -8,6 +8,7 @@
 
 # system modules
 import os, re, string, xml.sax, xml.sax.handler
+import base64
 from xml.sax.saxutils import escape
 from cStringIO import StringIO
 
@@ -222,7 +223,7 @@ class DbsApi(DbsConfig):
 		    'app_version' : patternVer, 
 		    'app_family_name' : patternFam, 
 		    'app_executable_name' : patternExe, 
-		    'parameterset_name' : patternPS }, 
+		    'ps_hash' : patternPS }, 
 		    'GET')
  
     # Parse the resulting xml output.
@@ -291,7 +292,7 @@ class DbsApi(DbsConfig):
 		    'app_version' : patternVer, 
 		    'app_family_name' : patternFam, 
 		    'app_executable_name' : patternExe, 
-		    'parameterset_name' : patternPS }, 
+		    'ps_hash' : patternPS }, 
 		    'GET')
  
 
@@ -305,9 +306,14 @@ class DbsApi(DbsConfig):
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name']),
                                                          ParameterSetID=DbsQueryableParameterSet
-                                                                           (
-                                                                             hash=str(attrs['ps_hash'])
-                                                                           ),
+                                                          (
+                                                           Hash=str(attrs['ps_hash']),
+                                                           Name=str(attrs['ps_name']),
+                                                           Version=str(attrs['ps_version']),
+                                                           Type=str(attrs['ps_type']),
+                                                           Annotation=str(attrs['ps_annotation']),
+                                                           Content=base64.decodestring(str(attrs['ps_content']))
+                                                           ),
                                                          CreationDate=str(attrs['creation_date']),
                                                          CreatedBy=str(attrs['created_by']),
                                                          LastModificationDate=str(attrs['last_modification_date']),
@@ -320,15 +326,14 @@ class DbsApi(DbsConfig):
 
 
   # ------------------------------------------------------------
-  def listRuns(self, dataset="*"):
+  def listRuns(self, dataset):
     """
     Retrieve list of runs matching a shell glob pattern within a dataset (Processed Dataset).
 
     returns: list of DbsRun objects.
   
     params:
-        dataset: Defaulted to "*" means ALL Runs from All Datasets. If the pattern is
-        given, it will be matched against the content as a shell glob pattern.
+        dataset: No Default user has to provide a value. 
 
     examples: 
 
@@ -361,7 +366,7 @@ class DbsApi(DbsConfig):
     path = self._path(dataset)
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listRuns', 'path' : path }, 'GET')
-    print data
+    #print data
 
     # Parse the resulting xml output.
     try:
@@ -399,7 +404,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listTiers(self, dataset="*"):
+  def listTiers(self, dataset):
 
     """
     Retrieve list of Tiers matching a shell glob pattern for a dataset (Processed Dataset).
@@ -407,8 +412,7 @@ class DbsApi(DbsConfig):
     returns: list of DbsDataTier objects.
 
     params:
-        dataset: Defaulted to "*" means ALL Data Tiers from All Datasets. If the pattern is
-        given, it will be matched against the content as a shell glob pattern.
+        dataset: Not Defaulted user need to provide a dataset path.
 
     examples: 
 
@@ -459,7 +463,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listBlocks(self, dataset="*", block_name="*", storage_element_name="*"):
+  def listBlocks(self, dataset, block_name="*", storage_element_name="*"):
     """
     Retrieve list of Blocks matching shell glob pattern for Block Name and/or 
     Storage Element Name, for a dataset path (or glob pattern for dataset path).
@@ -467,8 +471,9 @@ class DbsApi(DbsConfig):
     returns: list of DbsFileBlock objects.
 
     params:
-        dataset: Defaulted to "*" means Blocks (That match block_name and/or storage_element_name criteria) for all datasets. 
-        If the dataset patterm is given, it will be matched against the content as a shell glob pattern.
+        dataset: Not Defaulted user need to provide a dataset path 
+        block_name: pattern, if provided it will be matched against the content as a shell glob pattern
+        storage_element_name: pattern, if provided it will be matched against the content as a shell glob pattern
          
     raise: DbsApiException.
 
@@ -492,8 +497,6 @@ class DbsApi(DbsConfig):
                             AlgoList=[WhateverAlgoObject],
                             )
              api.listBlocks(proc)
-
-
 
     """
 
@@ -543,8 +546,7 @@ class DbsApi(DbsConfig):
     returns: list of DbsFile objects
 
     params: 
-        dataset: Defaulted to "*" means files (That match blockName and/or LFN pattern criteria). 
-        If the dataset patterm is given, it will be matched against the content as a shell glob pattern.
+        dataset: Not Defaulted User must provide a value
          
         blockName: Defaulted to "" means files (That match dataset and/or LFN pattern criteria). 
         If the blockName is given, it will be matched against the block name.
@@ -801,10 +803,11 @@ class DbsApi(DbsConfig):
        xmlinput += " ps_version='"+pset.get('Version', "")+"'"
        xmlinput += " ps_type='"+pset.get('Type', "")+"'"
        xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
-       xmlinput += " ps_content='"+pset.get('Content', "")+"'"
+       # Converting Content to base64 encoded string, otherwise it can leave the xml invalid
+       xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
     xmlinput += "/>"
     xmlinput += "</dbs>"
-
+    #print xmlinput 
     if self.verbose():
        print "insertAlgorithm, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertAlgorithm',
@@ -1354,7 +1357,7 @@ class DbsApi(DbsConfig):
     xmlinput += " path='"+path+"'/>"
     xmlinput += "</dbs>"
 
-    print xmlinput
+    #print xmlinput
 
     if self.verbose(): 
        print "createAnalysisDatasetFromPD, xmlinput",xmlinput

@@ -27,26 +27,29 @@ class DbsUnitTestApi:
         def printTestStatus(self,info,status,iMsg,timeDiff,exp=None):
             msg = "\n\nType : %s"%str(self.lapiObj.im_func.func_name)
             msg+= "\nDone "+info
-            msg+="\nComment      : %s"%iMsg
-            msg+="\nException    : %s"%exp
-            msg+=   "\nTest ended   : [%6s]"%status
-            msg+=   "\nTest LAPSED  : [%06s] seconds" % (str(timeDiff))
+            msg+= "\nComment      : %s"%iMsg
+            msg+= "\nException    : %s"%exp
+            msg+= "\nTest ended   : [%6s]"%status
+            msg+= "\nTest LAPSED  : [%06s] seconds" % (str(timeDiff))
+            msg+= "\nTest Number : "+str(self.index)
             self.f.write(msg)
             self.f.flush() 
             print msg 
 
 	def run(self, *listArgs, **dictArgs):
 		try:
-
-			self.index = self.index + 1
+			self.index +=  1
 			info =  str(self.lapiObj.im_func.func_name) + str(listArgs)
 			#info =  str(self.lapiObj.im_func.func_name) + str(listArgs[1:])
 			#print info
 			excep = dictArgs['excep']
                         startTime = time.mktime(datetime.datetime.now().timetuple()) 
-                        print "\nTest Starting: "+ str(self.lapiObj.im_func.func_name)+" test number " \
-                              + str(self.index)+  \
-                              " started at: " + str(datetime.datetime.fromtimestamp(startTime)) 
+                        #log_msg ="\nTest Starting: "+ str(self.lapiObj.im_func.func_name)+" test number " \
+                        #      + str(self.index)+  \
+                        #      " started at: " + str(datetime.datetime.fromtimestamp(startTime))
+                        #print log_msg
+                        #info+=log_msg
+                        #self.f.write(log_msg)
 			self.lapiObj(*listArgs)
                         endTime = time.mktime(datetime.datetime.now().timetuple())
                         timeDiff = endTime - startTime
@@ -61,6 +64,7 @@ class DbsUnitTestApi:
 			else:
                                 self.printTestStatus(info,"PASSED","AN EXCEPTION WAS NOT EXPECTED AND NONE WAS RAISED", timeDiff)
 		except:
+                        #self.index += 1
                         endTime = time.mktime(datetime.datetime.now().timetuple())
                         timeDiff = endTime - startTime
 			exception =  str(sys.exc_info()[0]) + " : " +  str(sys.exc_info()[1])

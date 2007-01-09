@@ -90,38 +90,33 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
+       print data
 
        # Error message would arrive in XML, if any
        class Handler (xml.sax.handler.ContentHandler):
-        def startElement(self, name, attrs):
-          if name == 'exception':
-             statusCode = attrs['code']
-             exmsg = "DBS Server Raised An Error: %s, %s" \
+           def startElement(self, name, attrs):
+             if name == 'exception':
+                statusCode = attrs['code']
+                exmsg = "DBS Server Raised An Error: %s, %s" \
                                  %(attrs['message'], attrs['detail'])
 
-             if (int(statusCode) < 2000 and  int(statusCode) > 1000 ): 
-                raise DbsBadRequest (args=exmsg, code=statusCode)
+                if (int(statusCode) < 2000 and  int(statusCode) > 1000 ): 
+                   raise DbsBadRequest (args=exmsg, code=statusCode)
 
-             if (int(statusCode) < 3000 and  int(statusCode) > 2000 ):
-                raise DbsDatabaseError (args=exmsg, code=statusCode) 
+                if (int(statusCode) < 3000 and  int(statusCode) > 2000 ):
+                   raise DbsDatabaseError (args=exmsg, code=statusCode) 
              
-             if (int(statusCode) < 4000 and  int(statusCode) > 3000 ):
-                raise DbsBadXMLData (args=exmsg, code=statusCode)
+                if (int(statusCode) < 4000 and  int(statusCode) > 3000 ):
+                   raise DbsBadXMLData (args=exmsg, code=statusCode)
 
-             else: raise DbsExecutionError (args=exmsg, code=statusCode)
-  
-             #print "Error Message: " + attrs['message']
-             #print "Error Details: " + attrs['detail'] 
-             #print "\n\n\n"
-             # For now I am just raising an exception this must be done with proper codes
-             #raise DbsException(args=attrs['detail'], code=statusCode)
+                else: raise DbsExecutionError (args=exmsg, code=statusCode)
 
-          if name == 'warning':
-             print "Waring Message: " + attrs['message']
-             print "Warning Detail: " + attrs['detail']
-             print "\n\n\n"
-             #raise DbsObjectExists (args=exmsg)
- 
+             if name == 'warning':
+                print "Waring Message: " + attrs['message']
+                print "Warning Detail: " + attrs['detail']
+                print "\n\n\n"
+                #raise DbsObjectExists (args=exmsg)
+
        xml.sax.parseString (data, Handler ())
 
        #f = open("out.txt", "w")
@@ -134,18 +129,19 @@ class DbsHttpService:
        # All is ok, return the data
        return data
 
-    except DbsException, ex:
+    #except DbsException, ex:
       # One of our own errors, re-raise
-      raise ex
+    #  raise ex
 
-    except DbsToolError, ex:
+    #except DbsToolError, ex:
       # One of our own errors, re-raise
-      raise ex
+    #  raise ex
 
     except Exception, ex:
       #if ex.get('code', "") == "" :
       #   raise DbsToolError (exception=ex, code='unknown')
-      #raise DbsException(exception=ex)
+      raise DbsException(exception=ex, code='unknow')
+            
       # URL access failed, raise an exception
-      raise DbsToolError (exception=ex, code='unknown')
+    #  raise DbsToolError (exception=ex, code='unknown')
 

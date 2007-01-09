@@ -82,11 +82,11 @@ algo2 = DbsAlgorithm (ExecutableName="TestExe011",
 	)
 apiObj.run(algo2, excep = False)
 
-
+# Selection based on HASh, But hash is missing, must raise exception
 algo = DbsAlgorithm (ExecutableName="TestExe01", 
 		ApplicationVersion= "TestVersion01" + mytime, 
 		ApplicationFamily="AppFamily01", 
-		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
+		ParameterSetID=DbsQueryableParameterSet(Name="001234565798685", 
 							Version="V001", 
 							Type="test", 
                                                         Annotation="This is test",
@@ -167,7 +167,7 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
                                                         Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
-apiObj.run(algo, excep = True)
+apiObj.run(algo, excep = False)
 
 
 algo = DbsAlgorithm (ExecutableName="TestExe01", 
@@ -206,13 +206,13 @@ algo = DbsAlgorithm (ExecutableName="TestEDDDe01",
 							Version="V001", 
 							Type="test", 
                                                         Annotation="This is test",
-                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
+                          Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
 apiObj.run(algo, excep = True)
 
-
-algo = DbsAlgorithm (ExecutableName="TestExe01", 
+# ; is not allowed in ExecutableName
+algo = DbsAlgorithm (ExecutableName="Test;Exe01", 
 		ApplicationVersion= "Tewwwrsion01" + mytime, 
 		ApplicationFamily="AppFamily01", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
@@ -226,7 +226,7 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 apiObj.run(algo, excep = True)
 
 
-algo = DbsAlgorithm (ExecutableName="TestExe01", 
+algo = DbsAlgorithm (ExecutableName="Test/Exe/01", 
 		ApplicationVersion= "TestVezzzn01" + mytime, 
 		ApplicationFamily="AppFamily01", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
