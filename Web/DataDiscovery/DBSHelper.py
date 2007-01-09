@@ -423,8 +423,11 @@ class DBSHelper(DBSLogger):
              exe    = item.get('ExecutableName')
           path=formDatasetPath(ver,family,exe)
           if self.html:
-#             path = """<a href="javascript:showWaitingMessage();registerAjaxGetDatasetsFromApplicationCalls();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
-             path = """<a href="javascript:showWaitingMessage();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
+#             path = """<a href="javascript:showWaitingMessage();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
+             dataInfo ="ajaxGetDatasetsFromApplication('%s','%s')"%(self.dbsInstance,path)
+             blockInfo="ajaxGetDbsData('%s','all','%s','*','*')"%(self.dbsInstance,path)
+             runInfo  ="ajaxGetRuns('%s','all','%s','*','*')"%(self.dbsInstance,path)
+             path="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,path)
           aList.append(path)
       aList.sort()
       aList.reverse()
@@ -473,8 +476,11 @@ class DBSHelper(DBSLogger):
           else:
              name = entry.get('Name')
           if self.html:
-#             name = """<a href="javascript:showWaitingMessage();registerAjaxGetDetailsForPrimDatasetCalls();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-             name = """<a href="javascript:showWaitingMessage();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+#             name = """<a href="javascript:showWaitingMessage();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+             dataInfo ="ajaxGetDetailsForPrimDataset('%s','%s')"%(self.dbsInstance,name)
+             blockInfo="ajaxGetDbsData('%s','all','*','%s','*')"%(self.dbsInstance,name)
+             runInfo  ="ajaxGetRuns('%s','all','*','%s','*')"%(self.dbsInstance,name)
+             name="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,name)
           oList.append(name)
       return oList
       
@@ -501,8 +507,11 @@ class DBSHelper(DBSLogger):
              name = entry.get('datasetPathName') # name=/prim/tier/proc
 #             name = entry # now listProcessedDatasets returns plain list, TODO check listDatasetsFromApp
           if html:
-#             name = """<a href="javascript:showWaitingMessage();registerAjaxDatasetContentCalls();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-             name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+#             name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
+             dataInfo ="ajaxGetDatasetContent('%s','%s')"%(self.dbsInstance,name)
+             blockInfo="ajaxGetDbsData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
+             runInfo  ="ajaxGetRuns('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
+             name="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,name)
           oList.append(name)
 #      print "#### getProcessedDatasets",datasetPath,oList[0]
       return oList
