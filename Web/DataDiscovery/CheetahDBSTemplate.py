@@ -143,6 +143,7 @@ templateTop = """
 </head>
 ####<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
 <body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs')" id="content">
+###<body onload="setGreeting();ajaxInit('$dbsGlobal');" id="content">
 
 <noscript>
 <h1 class="box_red">Warning:</h1>
@@ -1148,13 +1149,6 @@ Both
 """
 
 templateBottom="""
-###<hr class="dbs" id="hr_results_menu" />
-#*
-<table class="table_round_box" border="0" width="100%">
-<tr valign="top">
-<td class="box_darkblue">
-*#
-
 <table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td class="td_menu_gray_box" id="_results">
@@ -1202,20 +1196,8 @@ templateBottom="""
 </td></tr></table>
 </td>
 
-#*
-<td class="td_menu_gray_box" align="center" id="_dataDescription"><a href="javascript:showResMenu('dataDescription')">Description</a></td>
-<td class="td_menu_gray_box" align="center" id="_validation"><a href="javascript:showResMenu('validation')">Validation</a></td>
-<td class="td_menu_gray_box" align="center" id="_parameterSet"><a href="javascript:showResMenu('parameterSet')">Parameter Set</a></td>
-<td class="td_menu_gray_box" align="center" id="_releaseSpec"><a href="javascript:showResMenu('releaseSpec')">Release Specs</a></td>
-*#
 </tr>
 </table>
-
-#*
-</td>
-</tr>
-</table>
-*#
 
 <br />
 <span id="results" class="show_inline"></span>
@@ -1225,35 +1207,6 @@ templateBottom="""
 <span id="runs" class="hide"></span>
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
-
-#*
-<span id="dataDescription" class="hide"><br /></span>
-<span id="floatDataDescription"></span>
-<span id="validation" class="hide"><br />... We plan to add some information about found data, e.g. plots, etc. This should be part of validation ...</span>
-<span id="parameterSet" class="hide"><br />... We plan to introduce indexing system and lookup there parameter sets for found dataset ...</span>
-<span id="releaseSpec" class="hide"><br />
-... Once data been choosen by user we may add a link to release description which has been used to produce this data...
-</span>
-*#
-
-
-#*
-<hr id="results_hr" />
-<table cellspacing="0" cellpadding="0" width="100%" id='end'>
-<tr>
-<td>
-<em class="small" align="left">
-CMS data discovery: $localtime 
-</em>
-</td>
-<td class="small" align="right">
-<em>
-Contact: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
-</em>
-</td>
-</tr>
-</table>
-*#
 
 
 </div> <!-- end of div with class="main" -->
@@ -1426,45 +1379,45 @@ $siteForm
 #set menuArr=['dbs_prim','dbs_proc','dbs_apps']
 <div id="DBSinfoDiv" class="hide"> 
 
-
-<table class="table_round_box" border="0" width="100%">
-<tr valign="top">
-<td class="box_darkblue">
-
-
-<table id="dbs_info" class="hide" cellspacing="1" width="50%">
+<table id="dbs_info" class="hide" cellspacing="0" cellpadding="0" width="100%">
 <tr>
-<td class="td_menu_white_box" align="center" id="_dbs_prim"><a href="javascript:showResMenu('dbs_prim',$menuArr)">Primary datasets</a></td>
-<td class="td_menu_gray_box" align="center" id="_dbs_proc"><a href="javascript:showResMenu('dbs_proc',$menuArr)">Processed datasets</a></td>
-<td class="td_menu_gray_box" align="center" id="_dbs_apps"><a href="javascript:showResMenu('dbs_apps',$menuArr)">Applications</a></td>
-</tr>
-</table>
 
-
+<td class="td_menu_gray_box" id="_dbs_prim">
+<table width="100%"><tr><td>
+<span id="__dbs_prim"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('dbs_prim',$menuArr)">Primary datasets</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
 </td>
+
+<td class="td_menu_gray_box" id="_dbs_proc">
+<table width="100%"><tr><td>
+<span id="__dbs_proc"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('dbs_proc',$menuArr)">Processed datasets</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+<td class="td_menu_gray_box" id="_dbs_apps">
+<table width="100%"><tr><td>
+<span id="__dbs_apps"><table class="image"><tr><td></td></tr></table></span>
+</td><td align="center">
+<a href="javascript:showResMenu('dbs_apps',$menuArr)">Applications</a>
+</td><td><table class="image"><tr><td></td></tr></table>
+</td></tr></table>
+</td>
+
+
 </tr>
 </table>
 
-<span id="dbs_prim" class="hide"><br /></span>
-<span id="dbs_proc" class="hide"><br /></span>
-<span id="dbs_apps" class="hide"><br /></span>
+<span id="dbs_prim" class="hide"></span>
+<span id="dbs_proc" class="hide"></span>
+<span id="dbs_apps" class="hide"></span>
 
 </div>
-########################
-#*
-<div id="SummaryDiv" class="hide">
-   <div id="summaryPanel1">
-     <div id="summaryHeader1" class="accordionTabTitleBar">
-       <span class="menu_title">
-       DBS summary page
-       </span>
-      </div>
-      <div id="summaryContent1">
-      <div id="summary"><script type="text/javascript">showLoadingMessage("summary");</script></div>
-      </div>
-   </div>
-</div>
-*#
 ###### Replacement for accordion history
 <div id="HistoryDiv" class="hide"> 
 <span id="userHistory" class="hide">
