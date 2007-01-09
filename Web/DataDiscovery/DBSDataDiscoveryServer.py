@@ -1593,7 +1593,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+=pSum
 #        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.host,dbsInst,primDataset)
         url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,primDataset)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,stringSplit(url,122))
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1648,7 +1648,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.helperInit(dbsInst)
         dList = self.helper.getApplications()
         nameSpace = {
-                     'msg'     : "%s: processed datasets"%dbsInst,
+                     'msg'     : "%s: applications"%dbsInst,
                      'dbsInst' : dbsInst,
                      'dList'   : dList
                     }
@@ -1694,7 +1694,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+=pSum
 #        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.host,dbsInst,appPath)
         url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,appPath)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,stringSplit(url,122))
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
         if int(ajax):
            page+="</response></ajax-response>"
         else:
@@ -1760,7 +1760,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+=self.getDatasetContentHelper(dbsInst,dataset)
 #        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.host,dbsInst,dataset)
         url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,dataset)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,stringSplit(url,122))
+        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
         if int(ajax):
            page+="</response></ajax-response>"
         else:
