@@ -213,6 +213,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace = {
                      'host'        : self.dbsdd,
                      'title'       : 'DBS Data Discovery Page',
+                     'dbsGlobal'   : DBSGLOBAL,
                      'userMode'    : self.userMode
                     }
         t = Template(CheetahDBSTemplate.templateTop, searchList=[nameSpace])
@@ -344,6 +345,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'dbsShortNames': self.dbsShortNames,
                      'glossary'     : self.glossary(),
                      'frontPage'    : 0,
+                     'dbsGlobal'    : DBSGLOBAL,
                      'tip'          : tip()
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
@@ -366,6 +368,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'siteForm'     : self.siteForm(),
                          'dbsShortNames': self.dbsShortNames,
                          'frontPage'    : 1,
+                         'dbsGlobal'    : DBSGLOBAL,
                          'glossary'     : self.glossary(),
                          'tip'          : tip()
                         }

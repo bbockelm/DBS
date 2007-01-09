@@ -142,7 +142,7 @@ templateTop = """
 
 </head>
 ####<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
-<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs')" id="content">
+<body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs')" id="content">
 
 <noscript>
 <h1 class="box_red">Warning:</h1>
@@ -1327,7 +1327,7 @@ templateFrontPage="""
 </tr>
 <tr><td><br /></td></tr>
 <tr>
-<td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('MCGlobal/Writer',$dbsShortNames);">DBS info</a>
+<td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsShortNames);">DBS info</a>
   <table id="dbsInst_table" class="hide">
 #for name in $dbsShortNames
 #if $name[:3]!="dbs"

@@ -338,7 +338,8 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetDatasetsFromApplication','getDatasetsFromApplication');
     ajaxEngine.registerAjaxObject('results',getDataUpdater);
 
-    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
+    ajaxEngine.registerRequest('ajaxSiteSearch','getFileBlocks');
+//    ajaxEngine.registerRequest('ajaxSiteSearch','getBlocksFromSite');
     siteUpdater = new GetDataUpdater('results','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('results_site',siteUpdater);
 
@@ -513,8 +514,9 @@ function registerAjaxGenNavigatorMenuDictCalls() {
   ajaxEngine.registerRequest('ajaxGenNavigatorMenuDict','genNavigatorMenuDict');
   ajaxEngine.registerAjaxObject('navigatorDict',navigatorUpdater);
 }
-function ajaxGenNavigatorMenuDict() {
+function ajaxGenNavigatorMenuDict(_dbs) {
   var dbsInst;
+  if(_dbs) { dbsInst=_dbs; }
   var sel=document.getElementById("dbsSelector");
   if(sel) {
      for(i=0;i<sel.length;i++) {
@@ -560,7 +562,7 @@ function ajaxGenSiteMenuDict() {
 }
 
 // method which should be called on page load, to initialize all AJAX calls
-function ajaxInit() {
+function ajaxInit(_dbs) {
   registerAjaxSelectAppsCalls();
   registerAjaxSelectPrimCalls();
   registerAjaxSelectTierCalls();
@@ -574,7 +576,7 @@ function ajaxInit() {
   registerAjaxGenNavigatorMenuDictCalls();
   registerAjaxGetDataDescriptionCalls();
 
-  ajaxGenNavigatorMenuDict();
+  ajaxGenNavigatorMenuDict(_dbs);
 
 
 //  registerAjaxGenSiteMenuDictCalls();
