@@ -11,7 +11,7 @@ GetDataUpdater.prototype = {
       if(mode && mode=='update') {
          this.mode=mode;
       } else {
-         this.mode=replace;
+         this.mode='replace';
       }
       if(nores) {
          this.nores=1;
@@ -41,7 +41,11 @@ GetDataUpdater.prototype = {
      hideWaitingMessage();
      HideWheel("__"+this.tag);
      var t=document.getElementById(this.tag);
-     t.innerHTML+=responseHTML;
+     if(this.mode=='update') {
+        t.innerHTML+=responseHTML;
+     } else {
+        t.innerHTML=responseHTML;
+     }
      // parse response and search for any JavaScript code there, if found execute it.
      var jsCode = SearchForJSCode(responseHTML);
      if(jsCode) {
@@ -198,7 +202,7 @@ function getDataFromSelectors(_dbs,_site,_app,_primD,_tier) {
   return arr;
 }
 // AJAX registration 
-function ajaxGetRuns(_dbs,_site,_app,_primD,_tier) {
+function ajaxGetRuns(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__runs");
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
@@ -207,12 +211,13 @@ function ajaxGetRuns(_dbs,_site,_app,_primD,_tier) {
   var app  = arr[2];
   var primD= arr[3];
   var tier = arr[4];
-  ajaxEngine.sendRequest('ajaxGetRuns',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
-  var action='<a href="javascript:showWaitingMessage();ajaxGetRuns(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  if(!proc) {proc="*";}
+  ajaxEngine.sendRequest('ajaxGetRuns',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
+  var action='<a href="javascript:showWaitingMessage();ajaxGetRuns(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
   ajaxHistory(action);
 }
 // AJAX registration 
-function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
+function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__results_dbs");
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
@@ -221,8 +226,9 @@ function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier) {
   var app  = arr[2];
   var primD= arr[3];
   var tier = arr[4];
-  ajaxEngine.sendRequest('ajaxGetDbsData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
-  var action='<a href="javascript:showWaitingMessage();ajaxGetDbsData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  if(!proc) {proc="*";}
+  ajaxEngine.sendRequest('ajaxGetDbsData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
+  var action='<a href="javascript:showWaitingMessage();ajaxGetDbsData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
   ajaxHistory(action);
 }
 // AJAX registration
@@ -240,24 +246,6 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier) {
   ajaxHistory(action);
 }
 function ajaxNextGetData(idx) {
-/*
-  var sel;
-  sel=document.getElementById('dbsSelector');
-  if(!sel) return;
-  dbs=sel.value;
-  sel=document.getElementById('siteSelector');
-  if(!sel) return;
-  site=sel.value;
-  sel=document.getElementById('appSelector');
-  if(!sel) return;
-  app=sel.value;
-  sel=document.getElementById('primSelector');
-  if(!sel) return;
-  primD=sel.value;
-  sel=document.getElementById('tierSelector');
-  if(!sel) return;
-  tier=sel.value;
-*/
   var arr  = getDataFromSelectors();
   if(!arr) return;
   var dbs  = arr[0];
@@ -384,20 +372,6 @@ function getPrimDatasets_old() {
   var action='<a href="javascript:showMenu(\'Datasets\');getPrimDatasets()">Get all primary datasets</a>';
   ajaxHistory(action);
 }
-var DBSInfoUpdater=Class.create();
-DBSInfoUpdater.prototype = {
-   initialize: function(tag) {
-     this.tag=tag;
-   },
-   ajaxUpdate: function(ajaxResponse) {
-     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
-     var r=document.getElementById("_"+this.tag);
-     r.className="td_menu_lavender_box";
-     var t=document.getElementById(this.tag);
-     t.innerHTML=responseHTML;
-     // additional action can come here
-   }
-}
 function getDbsInfo(dbsInst,dbsArr) {
   var arr = new Array();
   arr[0]='dbs_prim';
@@ -408,7 +382,7 @@ function getDbsInfo(dbsInst,dbsArr) {
       id.className="hide";
   }
   showResMenu('dbs_prim',arr);
-  showLoadingMessage('dbs_prim');
+//  showLoadingMessage('dbs_prim');
   registerAjaxPrimaryDatasetsCalls();
   registerAjaxProcessedDatasetsCalls();
   registerAjaxApplicationsCalls();
@@ -435,31 +409,35 @@ function getDbsInfo(dbsInst,dbsArr) {
   ajaxGetApplications(dbsInst);
 }
 function ajaxGetPrimaryDatasets(dbsInst) {
+  ShowWheel("__dbs_prim");
   ajaxEngine.sendRequest('ajaxGetPrimaryDatasets',"dbsInst="+dbsInst);
   var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetPrimaryDatasets(\''+dbsInst+'\')">Get all primary datasets (\''+dbsInst+'\')</a>';
   ajaxHistory(action);
 }
 function registerAjaxPrimaryDatasetsCalls() {
+    dbsInfoUpdater = new GetDataUpdater("dbs_prim",'replace','noResultsMenu');
     ajaxEngine.registerRequest('ajaxGetPrimaryDatasets','getPrimaryDatasets');
-    ajaxEngine.registerAjaxElement('dbs_prim');
+    ajaxEngine.registerAjaxObject('dbs_prim',dbsInfoUpdater);
 }
 function ajaxGetProcessedDatasets(dbsInst) {
+    ShowWheel("__dbs_proc");
     ajaxEngine.sendRequest('ajaxGetProcessedDatasets',"dbsInst="+dbsInst);
     var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetProcessedDatasets(\''+dbsInst+'\')">Get all processed datasets (\''+dbsInst+'\')</a>';
     ajaxHistory(action);
 }
 function registerAjaxProcessedDatasetsCalls() {
-    dbsInfoUpdater = new DBSInfoUpdater("dbs_proc");
+    dbsInfoUpdater = new GetDataUpdater("dbs_proc",'replace','noResultsMenu');
     ajaxEngine.registerRequest('ajaxGetProcessedDatasets','getProcessedDatasets');
     ajaxEngine.registerAjaxObject('dbs_proc',dbsInfoUpdater);
 }
 function ajaxGetApplications(dbsInst) {
+    ShowWheel("__dbs_apps");
     ajaxEngine.sendRequest('ajaxGetApplications',"dbsInst="+dbsInst);
     var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetApplications(\''+dbsInst+'\')">Get all applications (\''+dbsInst+'\')</a>';
     ajaxHistory(action);
 }
 function registerAjaxApplicationsCalls() {
-    dbsInfoUpdater = new DBSInfoUpdater("dbs_apps");
+    dbsInfoUpdater = new GetDataUpdater("dbs_apps",'replace','noResultsMenu');
     ajaxEngine.registerRequest('ajaxGetApplications','getApplications');
     ajaxEngine.registerAjaxObject('dbs_apps',dbsInfoUpdater);
 }
@@ -468,17 +446,7 @@ function ajaxGetDatasetContent(dbsInst,dataset) {
     var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetDatasetContent(\''+dbsInst+'\')">Get dataset content (\''+dbsInst+'\',\''+dataset+'\')</a>';
     ajaxHistory(action);
 }
-//function registerAjaxDatasetContentCalls() {
-//    ajaxEngine.registerRequest('ajaxGetDatasetContent','getDatasetContent');
-//    ajaxEngine.registerAjaxElement('results');
-//}
-//function registerAjaxGetDatasetsFromApplicationCalls() {
-//  ajaxEngine.registerRequest('ajaxGetDatasetsFromApplication','getDatasetsFromApplication');
-//  ajaxEngine.registerAjaxElement('results');
-//}
 function ajaxGetDatasetsFromApplication(dbsInst,appPath) {
-//  var r=document.getElementById("results_menu");
-//  r.className="show_inline";
   showResultsMenu();
   var id=document.getElementById("results");
   id.className="show_cell";
