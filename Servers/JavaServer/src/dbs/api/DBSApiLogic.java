@@ -1,6 +1,6 @@
 /**
- $Revision: 1.60 $"
- $Id: DBSApiLogic.java,v 1.60 2007/01/08 17:48:22 sekhri Exp $"
+ $Revision: 1.61 $"
+ $Id: DBSApiLogic.java,v 1.61 2007/01/09 17:16:49 sekhri Exp $"
  *
  */
 
@@ -509,11 +509,11 @@ public class DBSApiLogic {
 	}
 
 	protected String getPattern(String pattern, String key) throws Exception {
-		System.out.println("pattern  in getPattern is " + pattern);
+		//System.out.println("pattern  in getPattern is " + pattern);
 		if(isNull(pattern))  return "%";
 		pattern = pattern.replace('*','%');
 		checkWord(pattern,key);
-		System.out.println("pattern before returnning  in getPattern is " + pattern);
+		//System.out.println("pattern before returnning  in getPattern is " + pattern);
         	return pattern;
 	}
 
