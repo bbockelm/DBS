@@ -4,4 +4,4 @@
 
 # run actual script
 cd $DBSHOME/Web/DataDiscovery
-`dirname $0`/getDLSsites.py $*
+python `dirname $0`/getDLSsites.py $*
