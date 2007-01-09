@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiAlgoLogic.java,v 1.6 2007/01/09 17:16:49 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiAlgoLogic.java,v 1.7 2007/01/09 17:28:28 sekhri Exp $"
  *
  */
 
@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.Hashtable;
 import dbs.sql.DBSSql;
+import codec.Base64;
 import dbs.DBSException;
 
 /**
@@ -60,7 +61,8 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
 						"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
-						"' ps_content='" + get(rs, "PS_CONTENT") +
+						//"' ps_content='" + get(rs, "PS_CONTENT") +
+						"' ps_content='" + Base64.encodeBytes(get(rs, "PS_CONTENT").getBytes()) +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' created_by='" + get(rs, "CREATED_BY") +
@@ -161,6 +163,13 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		if( getID(conn, "QueryableParameterSet", "Hash", psHash, false) == null ) {
 			PreparedStatement ps = null;
 			try {
+				String content = get(algo, "ps_content");
+				String contentBase64 =  "";
+				if(!isNull(content)) {
+					contentBase64 = new String(Base64.decode(get(algo, "ps_content")));
+				}
+				//String c =  new String(Base64.decode(get(algo, "ps_content")));
+				//System.out.println("CONTENT    ---> " + c);
 				ps = DBSSql.insertParameterSet(conn,
 						//get(algo, "ps_hash", true), 
 						psHash,
@@ -172,7 +181,8 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						//getStr(algo, "ps_annotation", true), 
 						get(algo, "ps_annotation"), 
                                                 //FIXME We are allowing every thing in content, need to fix it
-						get(algo, "ps_content"), 
+						//get(algo, "ps_content"), 
+						contentBase64, 
 						cbUserID, userID, creationDate);
 				ps.execute();
 			} finally {

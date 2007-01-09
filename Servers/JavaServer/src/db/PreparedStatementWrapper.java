@@ -57,14 +57,29 @@ public class PreparedStatementWrapper implements PreparedStatement {
 	 * @return a <code>java.lang.String</code>  that conatins the SQL query that is executed by the driver
 	 */
 	private String toString(String sql) {
-		String logStr = sql;
+		String logStr = "";
 		int i = 1;
-		while (logStr.indexOf('?') >= 0) {
-                        Object obj = bindParams.get(new Integer(i++));
+		//while (logStr.indexOf('?') >= 0) {
+		int count = 0;
+		for (int j = 0 ; j != sql.length(); ++j) {
+			char c = sql.charAt(j);
+			if(c == '?') { 
+				++count;
+				Object obj = bindParams.get(new Integer(count));
+				String value="";
+				if ( obj != null ) value = obj.toString();
+				logStr += "'" + value  + "'";
+			} else {
+				logStr += String.valueOf(c);
+			}
+		}
+		
+		/*for (int j = 0; j != count; ++j) {
+                        Object obj = bindParams.get(new Integer(j+1));
                         String value="";
                         if ( obj != null ) value = obj.toString();
 			logStr = logStr.replaceFirst("\\?", "'" + value  + "'");
-        	}
+        	}*/
 		return logStr;
 		//System.out.println("QUERY is "+ logStr);
 	}
