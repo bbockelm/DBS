@@ -81,8 +81,8 @@ class DbsWebApi(DbsApi):
       raise DbsBadResponse(exception=ex)
 
   # ------------------------------------------------------------
-  def listBlocksFull(self, dataset="*"):
-      return super(DbsWebApi,self).listBlocks(dataset)
+  def listBlocksFull(self, dataset="*",block_name="*",storage_element_name="*"):
+      return super(DbsWebApi,self).listBlocks(dataset,block_name,storage_element_name)
   # ------------------------------------------------------------
   def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",   
                                   patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
@@ -117,7 +117,7 @@ class DbsWebApi(DbsApi):
 	  if name == 'processed-dataset':
              self.proc = str(attrs['processed_datatset_name'])
              self.prim = str(attrs['primary_datatset_name'])
-          if name == 'data_tier':
+          if name == 'data_tier' and str(attrs['name']):
              n = "/"+self.prim+"/"+str(attrs['name'])+"/"+self.proc
              result.append(DbsProcessedDataset(datasetPathName=n))
 
