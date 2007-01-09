@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiAlgoLogic.java,v 1.4 2007/01/02 16:55:49 sekhri Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiAlgoLogic.java,v 1.5 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -43,7 +43,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		patternVer	= getPattern(patternVer, "app_version");
 		patternFam	= getPattern(patternFam, "app_family_name");
 		patternExe	= getPattern(patternExe, "app_executable_name");
-		patternPS 	= getPattern(patternPS, "parameterset_name");
+		patternPS 	= getPattern(patternPS, "parameterset_hash");
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -95,7 +95,8 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		String version = get(algo, "app_version", true);
 		String family = get(algo, "app_family_name", true);
 		String exe = get(algo, "app_executable_name", true);
-		String psName = get(algo, "ps_name", true);
+		//String psName = get(algo, "ps_name", true);
+		String psHash = get(algo, "ps_hash", true);
 		
 		//Get the User ID from USERDN
 		String userID = personApi.getUserID(conn, dbsUser);
@@ -113,24 +114,27 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 
 		//Insert the ParameterSet if it does not exists
 		//insertParameterSet(conn, psHash, psName, psVersion, psType, psAnnotation, psContent, userID);
+		//insertParameterSet(conn, out, algo, cbUserID, userID, creationDate);
 		insertParameterSet(conn, out, algo, cbUserID, userID, creationDate);
 			    
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
-		if(getAlgorithmID(conn, version, family, exe, psName, false) == null) {
+		//if(getAlgorithmID(conn, version, family, exe, psName, false) == null) {
+		if(getAlgorithmID(conn, version, family, exe, psHash, false) == null) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertApplication(conn, 
 					getID(conn, "AppExecutable", "ExecutableName", exe, true), 
 					getID(conn, "AppVersion", "Version", version, true), 
 					getID(conn, "AppFamily", "FamilyName", family, true), 
-					getID(conn, "QueryableParameterSet", "Name", psName, true), 
+					//getID(conn, "QueryableParameterSet", "Name", psName, true), 
+					getID(conn, "QueryableParameterSet", "Hash", psHash, true), 
 					cbUserID, userID, creationDate);
 				ps.execute();
 			} finally { 
 				if (ps != null) ps.close();
 	        	}
 		} else {
-			writeWarning(out, "Already Exists", "1020", "Algorithm Configuration  " + version + " " + family +  " " + exe + " " + psName + " Already Exists");
+			writeWarning(out, "Already Exists", "1020", "Algorithm Configuration  " + version + " " + family +  " " + exe + " " + psHash + " Already Exists");
 		}
 
        }
@@ -150,17 +154,23 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
 	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String cbUserID, String userID, String creationDate) throws Exception {
-		String psName = get(algo, "ps_name", true);
+		//String psName = get(algo, "ps_name", true);
+		String psHash = get(algo, "ps_hash", true);
 
-		if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
+		//if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
+		if( getID(conn, "QueryableParameterSet", "Hash", psHash, false) == null ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertParameterSet(conn,
-						get(algo, "ps_hash", true), 
-						psName, 
-						getStr(algo, "ps_version", true), 
-						getStr(algo, "ps_type", true), 
-						getStr(algo, "ps_annotation", true), 
+						//get(algo, "ps_hash", true), 
+						psHash,
+						get(algo, "ps_name"), 
+						//getStr(algo, "ps_version", true), 
+						get(algo, "ps_version"), 
+						//getStr(algo, "ps_type", true), 
+						get(algo, "ps_type"), 
+						//getStr(algo, "ps_annotation", true), 
+						get(algo, "ps_annotation"), 
                                                 //FIXME We are allowing every thing in content, need to fix it
 						get(algo, "ps_content"), 
 						cbUserID, userID, creationDate);
@@ -169,7 +179,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 				if (ps != null) ps.close();
 			}
 		} else {
-			writeWarning(out, "Already Exists", "1020", "Parameter Set " + psName +  " Already Exists");
+			writeWarning(out, "Already Exists", "1020", "Parameter Set " + psHash +  " Already Exists");
 		}	
 
 	}
@@ -180,23 +190,25 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param ver the name of the application version whose algorithm configuration id needs to be fetched.
 	 * @param fam the name of the application family whose algorithm configuration id needs to be fetched.
 	 * @param exe the name of the application executable whose algorithm configuration id needs to be fetched.
-	 * @param psName the name of the parameter set whose algorithm configuration id needs to be fetched.
+	 * @param psHash the hash of the parameter set whose algorithm configuration id needs to be fetched.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable, or the algorithm is not found.
 	 */
-	protected String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName, boolean excep) throws Exception {
+	//protected String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName, boolean excep) throws Exception {
+	protected String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash, boolean excep) throws Exception {
 		checkWord(ver, "app_version");
 		checkWord(fam, "app_family_name");
 		checkWord(exe, "app_executable_name");
-		checkWord(psName, "ps_name");
+		checkWord(psHash, "ps_hash");
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getAlgorithmID(ver, fam, exe, ps));
 		String id = "";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psName);
+			//ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psName);
+			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psHash);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
-				if (excep) throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psName);
+				if (excep) throw new DBSException("Unavailable data", "1009", "No such algorithm version: " + ver + " family: " + fam + " executable: " + exe + " parameter set: " + psHash);
 				else return null;
 			}
 			id = get(rs, "ID");

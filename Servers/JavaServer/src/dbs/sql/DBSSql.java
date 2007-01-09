@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.42 $"
- $Id: DBSSql.java,v 1.42 2007/01/04 15:36:38 afaq Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSSql.java,v 1.43 2007/01/08 22:46:02 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -596,7 +596,7 @@ public class DBSSql {
 		sql += "WHERE av.Version like ? \n" +
 			"and af.FamilyName like ? \n" +
 			"and ae.ExecutableName like ? \n" +
-			"and ps.Name like ? \n" +
+			"and ps.Hash like ? \n" +
 			"ORDER BY APP_FAMILY_NAME, APP_EXECUTABLE_NAME, APP_VERSION, PS_NAME DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -959,7 +959,8 @@ public class DBSSql {
 	}
 
 
-	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {
+	//public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {
+	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws SQLException {
 		String sql = "SELECT algo.id \n" +
 			"FROM AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
@@ -973,13 +974,13 @@ public class DBSSql {
 			"WHERE av.Version = ? \n" +
 			"and af.FamilyName = ? \n" +
 			"and ae.ExecutableName = ? \n" +
-			"and ps.Name = ? \n" ;
+			"and ps.Hash = ? \n" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, ver);
 		ps.setString(columnIndx++, fam);
 		ps.setString(columnIndx++, exe);
-		ps.setString(columnIndx++, psName);
+		ps.setString(columnIndx++, psHash);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiProcDSLogic.java,v 1.8 2007/01/04 22:37:13 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiProcDSLogic.java,v 1.9 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -314,7 +314,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(hashTable, "app_version"), 
 							get(hashTable, "app_family_name"), 
 							get(hashTable, "app_executable_name"),
-							get(hashTable, "ps_name"), 
+							get(hashTable, "ps_hash"), 
 							true), 
 					cbUserID, lmbUserID, creationDate);
 		}
@@ -417,7 +417,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(algo, "app_version"), 
 							get(algo, "app_family_name"), 
 							get(algo, "app_executable_name"),
-							get(algo, "ps_name"), 
+							get(algo, "ps_hash"), 
 							true), 
 					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 					personApi.getUserID(conn, dbsUser),

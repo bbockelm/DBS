@@ -69,7 +69,7 @@ listAlgorithms () {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=listAlgorithms`
 	display "$out"
-	#$CMD api=listAlgorithms app_version=* app_family_name=* app_executable_name=* parameterset_name=* 
+	#$CMD api=listAlgorithms app_version=* app_family_name=* app_executable_name=* parameterset_hash=* 
 }
 
 listRuns() {
