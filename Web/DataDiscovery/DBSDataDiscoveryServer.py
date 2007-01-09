@@ -1105,7 +1105,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getData.exposed = True 
 
-    def getDbsData(self,dbsInst,app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
+    def getDbsData(self,dbsInst,app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1139,7 +1139,11 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
 
-            dList = self.helper.getDatasetsFromApp(app,primD,tier)
+            dList=[]
+            if proc and proc!="*":
+               dList=[proc]
+            else:
+               dList = self.helper.getDatasetsFromApp(app,primD,tier)
             nDatasets=len(dList)
             page+="""<span id="results_dbs_response_%s" class="show_inline">"""%_idx
             for idx in xrange(0,nDatasets):
@@ -1175,7 +1179,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDbsData.exposed = True 
 
-    def getRuns(self,dbsInst,app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
+    def getRuns(self,dbsInst,app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
         """
            @type  dbsInst: string
            @param dbsInst: user selection of DBS menu
@@ -1208,7 +1212,11 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
 
-            dList = self.helper.getDatasetsFromApp(app,primD,tier)
+            dList=[]
+            if proc and proc!="*":
+               dList=[proc]
+            else:
+               dList = self.helper.getDatasetsFromApp(app,primD,tier)
             nDatasets=len(dList)
             page+="""<span id="runs_response_%s" class="show_inline">"""%_idx
             for idx in xrange(0,nDatasets):
@@ -1561,11 +1569,12 @@ class DBSDataDiscoveryServer(DBSLogger):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="<ajax-response>"
-        page+="""<response type="element" id="dbs_prim">"""
+        page+="""<response type="object" id="dbs_prim">"""
         page+="""<div class="div_scroll">"""+self.getPrimaryDatasetsHelper(dbsInst)+"</div>"
         page+="</response>\n"
         page+="</ajax-response>"
         if self.verbose:
+#        if 1:
            print page
         return page
     getPrimaryDatasets.exposed=True
