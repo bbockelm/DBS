@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.43 $"
- $Id: DBSSql.java,v 1.43 2007/01/08 22:46:02 sekhri Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSSql.java,v 1.44 2007/01/09 17:16:49 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -404,7 +404,7 @@ public class DBSSql {
 			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
 			"dt.Name as DATA_TIER, \n" +
 			"procds.name as PROCESSED_DATATSET_NAME, \n" +
-                        //OpenForWriting could be managed by Status we don't need that
+                        //Could be managed by Status field
 			//"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +

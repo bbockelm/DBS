@@ -235,7 +235,7 @@ class DbsApi(DbsConfig):
 	  if name == 'processed-dataset':
             self.currDataset = DbsProcessedDataset ( 
                                                 Name=str(attrs['processed_datatset_name']),     
-                                                #OpenForWriting=str(attrs['open_for_writing']), 
+                                                #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name'])),
                                                 CreationDate=str(attrs['creation_date']),
                                                 CreatedBy=str(attrs['created_by']),
@@ -873,7 +873,7 @@ class DbsApi(DbsConfig):
        raise DbsApiException(ErrorMsg="Serious Error Primary Dataset not specified")
     xmlinput += " primary_datatset_name='"+primary.get('Name', "")+"'" 
     xmlinput += " processed_datatset_name='"+dataset.get('Name', "")+"'"
-    #xmlinput += " open_for_writing='y'"
+    xmlinput += " open_for_writing='"+dataset.get('OpenForWriting', "")+"'"
     xmlinput += " physics_group_name='"+dataset.get('PhysicsGroup', "")+"'"
     xmlinput += " physics_group_convener='"+dataset.get('Convener', "")+"'"
     xmlinput += " status='"+dataset.get('Status', "")+"'>" 
@@ -1140,7 +1140,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def insertBlock(self, dataset, block=None, storage_element=None):
+  def insertBlock(self, dataset, block=None, storage_element=None, open_for_writing='y'):
     """
     Inserts a new dbs file block in a given processed dataset. 
     
@@ -1189,6 +1189,8 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<block name='"+ name +"'"
+    if type(block) != type("str") and block != None :
+       xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
     xmlinput += " path='"+path+"'>"
     if (storage_element not in ( [], None)) : 
          for aSe in storage_element:
