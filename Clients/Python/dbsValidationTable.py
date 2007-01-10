@@ -2,19 +2,6 @@
 # Revision: 0.0 $"
 # Id: dbsValidationTable.py,v 0.0 2006/1/1 18:26:04 afaq Exp $"
 #
-""" This file is generated on Wed Nov  8 13:50:06 2006 """ 
-
-"""SERIOUS WARNING:
-
-         This file is a generated file,
-         in case you have made manual changes to  
-         any of generated files, make sure you DO NOT
-         end up over-writting them by re-running the
-         generator and copying them here.
-
-         Either make changes to generator, or carefully
-         preserve the manual changes. 
-"""
 
 from dbsValidateTools import *
 ValidationTable = {
@@ -24,8 +11,8 @@ ValidationTable = {
          "Name" : { "Comment" : "A required variable, UNIQUE", "Validator" : isStringType },
          "StartDate" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "EndDate" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
-         "Type" : { "Comment" : "A required variable", "Validator" : isDictType },
-         "Description" : { "Comment" : "User may not need to set this variable always", "Validator" : isDictType },
+         "Type" : { "Comment" : "A required variable", "Validator" : isStringType },
+         "Description" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

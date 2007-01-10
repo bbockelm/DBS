@@ -54,7 +54,7 @@ for i in range(maxDS):
 	#Insert Primary
 	apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
 	primary = 'DBSStressTestPrimaryDataset' 
-	pri1 = DbsPrimaryDataset (Name = primary)
+	pri1 = DbsPrimaryDataset (Name = primary, Type="TEST")
 	apiObj.run(pri1, excep = False)
 
 	#Insert Algorithm

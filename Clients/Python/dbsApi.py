@@ -750,9 +750,11 @@ class DbsApi(DbsConfig):
     #xmlinput += " trigger_path_description='"+dataset.get('TriggerPathDesc', '')+"'"
     #xmlinput += " mc_channel_description='"+dataset.get('McChannelDesc', '')+"' mc_production='"+dataset.get('McProdDesc', '')+"'"
     #xmlinput += " mc_decay_chain='"+dataset.get('McDecayChain', '')+"' other_description='"+dataset.get('OtherDesc', '')
-    xmlinput += "' type='"+dataset.get('Type', '')+"'>"
+    xmlinput += " type='"+dataset.get('Type', '')+"'>"
     xmlinput += " </primary-dataset>"
     xmlinput += "</dbs>"
+
+    print xmlinput
 
     if self.verbose():
        print "insertPrimaryDataset, xmlinput",xmlinput

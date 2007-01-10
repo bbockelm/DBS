@@ -29,7 +29,7 @@ f.write("\n\n***********************insertPrimaryDataset API tests**************
 
 primary = 'TestPrimary' + mytime
 
-pri1 = DbsPrimaryDataset (Name = primary)
+pri1 = DbsPrimaryDataset (Name = primary, Type="TEST")
 apiObj.run(pri1, excep = False)
 
 apiObj.run(pri1, excep = True)
@@ -37,19 +37,19 @@ apiObj.run(pri1, excep = True)
 pri = DbsPrimaryDataset ()
 apiObj.run(pri, excep = True)
 
-pri = DbsPrimaryDataset (Name = "Test Het")
+pri = DbsPrimaryDataset (Name = "Test Het", Type="TEST")
 apiObj.run(pri, excep = True)
 
-pri = DbsPrimaryDataset (Name = "Test;Het")
+pri = DbsPrimaryDataset (Name = "Test;Het", Type="TEST")
 apiObj.run(pri, excep = True)
 
-pri = DbsPrimaryDataset (Name = "Test*Het")
+pri = DbsPrimaryDataset (Name = "Test*Het", Type="TEST")
 apiObj.run(pri, excep = True)
 
-pri = DbsPrimaryDataset (Name = "Ta/estHet")
+pri = DbsPrimaryDataset (Name = "Ta/estHet", Type="TEST")
 apiObj.run(pri, excep = True)
 
-pri = DbsPrimaryDataset (Name = primary)
+pri = DbsPrimaryDataset (Name = primary, Type="TEST")
 apiObj.run(pri,"", excep = True)
 
 f.write("\n***********************insertPrimaryDataset API tests***************************")
@@ -306,20 +306,20 @@ proc2 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessed1" + mytime)
 apiObj.run(proc2, excep = False)
 
-proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta/estHet"),
+proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta/estHet", Type="TEST"),
 		Name="TestProcessed2" + mytime)
 apiObj.run(proc, excep = True)
 
 
-proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta estHet"),
+proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta estHet", Type="TEST"),
 		Name="TestProcessed2" + mytime)
 apiObj.run(proc, excep = True)
 
-proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta*estHet"),
+proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta*estHet", Type="TEST"),
 		Name="TestProcessed2" + mytime)
 apiObj.run(proc, excep = True)
 
-proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Taes;tHet"),
+proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Taes;tHet", Type="TEST"),
 		Name="TestProcessed2" + mytime)
 apiObj.run(proc, excep = True)
 
