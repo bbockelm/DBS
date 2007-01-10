@@ -743,12 +743,15 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<primary-dataset annotation='aaaa' "
-    xmlinput += "primary_name='"+dataset.get('Name')+"' "
-    xmlinput += "start_date='NOV' end_date='DEC' trigger_path_description='anyTD' "
-    xmlinput += "mc_channel_description='MCDesc' mc_production='MCProd' "
-    xmlinput += "mc_decay_chain='DC' other_description='OD' type='PDS'>"
-    xmlinput += "</primary-dataset>"
+    xmlinput += "<primary-dataset annotation='"+dataset.get('Annotation', '')+"' "
+    xmlinput += " primary_name='"+dataset.get('Name', '')+"' "
+    xmlinput += " start_date='"+dataset.get('StartDate', '')+"' end_date='"+dataset.get('EndDate', '')+"'"
+    xmlinput += " description='"+dataset.get('Description', '')+"'"
+    #xmlinput += " trigger_path_description='"+dataset.get('TriggerPathDesc', '')+"'"
+    #xmlinput += " mc_channel_description='"+dataset.get('McChannelDesc', '')+"' mc_production='"+dataset.get('McProdDesc', '')+"'"
+    #xmlinput += " mc_decay_chain='"+dataset.get('McDecayChain', '')+"' other_description='"+dataset.get('OtherDesc', '')
+    xmlinput += "' type='"+dataset.get('Type', '')+"'>"
+    xmlinput += " </primary-dataset>"
     xmlinput += "</dbs>"
 
     if self.verbose():
