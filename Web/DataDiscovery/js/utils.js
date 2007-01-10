@@ -280,6 +280,7 @@ function showResultsMenu() {
    }
 }
 function showMenu(menu) {
+   ClearTag('progressBar');
    hideWaitingMessage();
    var menuArr = new Array();
    menuArr[0]='Navigator';
@@ -606,10 +607,16 @@ function ClearCells(idx,total) {
       if(id) {
          id.className="fixed";
       }
-      var tag='results_response_'+i
-      ClearCellTag(tag,i,idx)
-      var tag='parents_response_'+i
-      ClearCellTag(tag,i,idx)
+//      var tag='results_response_'+i
+//      ClearCellTag(tag,i,idx)
+//      var tag='parents_response_'+i
+//      ClearCellTag(tag,i,idx)
+
+      var tagArr = new Array('results_response_'+i,'results_dbs_response_'+i,'runs_response_'+i,'parents_response_'+i,'appConfig_response_'+i);
+      for(j=0;j<tagArr.length;j++) {
+          tag=tagArr[j];
+          ClearCellTag(tag,i,idx)
+      }
    }
    Choose('cell_'+(idx+1));
 }
@@ -617,34 +624,45 @@ function ClearCells(idx,total) {
  * JumpToResult accept idx which runs from 1-max on a web page
  * but it should send idx-1 to getData since all response are from 0-max-1
  */
-function JumpToResult(idx,total) {
+function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
    var found=0;
    for(i=0;i<total;i++) {
       var id=document.getElementById('cell_'+i);
       if(id) {
          id.className="fixed";
       }
-      var tag='results_response_'+i
-      if( i==(idx-1) ) { 
-          var id=document.getElementById(tag);
-          if(id) {
-             found=1;
-             ClearCells((idx-1),total)
-             Choose('cell_'+idx);
-             return;
+//      var tag='results_response_'+i
+      var tagArr = new Array('results_response_'+i,'results_dbs_response_'+i,'runs_response_'+i,'parents_response_'+i,'appConfig_response_'+i);
+      for(j=0;j<tagArr.length;j++) {
+          tag=tagArr[j];
+          if( i==(idx-1) ) { 
+              var id=document.getElementById(tag);
+              if(id) {
+                 found=1;
+                 ClearCells((idx-1),total)
+                 Choose('cell_'+idx);
+                 return;
+              }
           }
       }
    }
    Choose('cell_'+idx);
    if(!found) {
-      showLoadingMessage('cell_waiting');
-      ajaxNextGetData(idx-1);
-      ajaxNextGenParentsGraph(idx-1);
+//      showLoadingMessage('cell_waiting');
+      ShowWheel('__results');
+      ShowWheel('__results_dbs');
+      ShowWheel('__runs');
+      // not ready yet, FIXME, TODO
+//      ShowWheel('__parents');
+//      ShowWheel('__appConfigs');
+      ajaxNextGetData(dbs,site,app,prim,tier,proc,idx-1);
+//      ajaxNextGenParentsGraph(idx-1,dbs,site,app,prim,tier,proc);
    }
 }
-function BuildBar(from,to,total) {
+function BuildBar(from,to,total,dbs,site,app,prim,tier,proc) {
+   args=',\''+dbs+'\',\''+site+'\',\''+app+'\',\''+prim+'\',\''+tier+'\',\''+proc+'\'';
    var t='<table class="cell"><tr><td>Result pages:</td>';
-   var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+');BuildBar(1,'+GLOBAL_STEP+','+total+')">start</a></td>';
+   var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+args+');BuildBar(1,'+GLOBAL_STEP+','+total+args+')">start</a></td>';
    t=t+td;
    if(to>total) {
       to=total;
@@ -658,7 +676,7 @@ function BuildBar(from,to,total) {
    if(from!=1) {
       var backFrom=to-5;
       var backTo=to-1;
-      var td='<td class="fixed" id="cell_less" onMouseOver="CoverOver(\'cell_less\')" onMouseOut="CoverOut(\'cell_less\')"><a href="javascript:BuildBar('+backFrom+','+backTo+','+total+');JumpToResult('+backFrom+','+total+')">&#171;</a></td>';
+      var td='<td class="fixed" id="cell_less" onMouseOver="CoverOver(\'cell_less\')" onMouseOut="CoverOut(\'cell_less\')"><a href="javascript:BuildBar('+backFrom+','+backTo+','+total+args+');JumpToResult('+backFrom+','+total+args+')">&#171;</a></td>';
       t=t+td;
    } else {
       var td='<td class="fixed">&#32;</td>';
@@ -669,24 +687,24 @@ function BuildBar(from,to,total) {
       if(('cell_'+i)==GLOBAL_CELL) {
          className='class="choosen"';
       }
-      var td='<td '+className+' id="cell_'+i+'" onMouseOver="CoverOver(\'cell_'+i+'\')" onMouseOut="CoverOut(\'cell_'+i+'\')"><a href="javascript:JumpToResult('+i+','+total+')">'+i+'</a></td>';
+      var td='<td '+className+' id="cell_'+i+'" onMouseOver="CoverOver(\'cell_'+i+'\')" onMouseOut="CoverOut(\'cell_'+i+'\')"><a href="javascript:JumpToResult('+i+','+total+args+')">'+i+'</a></td>';
       t=t+td;
    }
    if(to!=total) {
       var nextFrom=from+1;
       var nextTo=from+5;
-      var td='<td class="fixed" id="cell_more" onMouseOver="CoverOver(\'cell_more\')" onMouseOut="CoverOut(\'cell_more\')"><a href="javascript:BuildBar('+nextFrom+','+nextTo+','+total+');JumpToResult('+nextFrom+','+total+')">&#187;</a></td>';
+      var td='<td class="fixed" id="cell_more" onMouseOver="CoverOver(\'cell_more\')" onMouseOut="CoverOut(\'cell_more\')"><a href="javascript:BuildBar('+nextFrom+','+nextTo+','+total+args+');JumpToResult('+nextFrom+','+total+args+')">&#187;</a></td>';
       t=t+td;
    } else {
       var td='<td class="fixed">&#32;</td>';
       t=t+td;
    }
-   var td='<td class="fixed" id="cell_end" onMouseOver="CoverOver(\'cell_end\')" onMouseOut="CoverOut(\'cell_end\')"><a href="javascript:JumpToResult('+total+','+total+');BuildBar('+(total-GLOBAL_STEP)+','+total+','+total+')">end</a></td>';
+   var td='<td class="fixed" id="cell_end" onMouseOver="CoverOver(\'cell_end\')" onMouseOut="CoverOut(\'cell_end\')"><a href="javascript:JumpToResult('+total+','+total+args+');BuildBar('+(total-GLOBAL_STEP)+','+total+','+total+args+')">end</a></td>';
    t=t+td;
    t=t+'</tr></table>';
-   var id=document.getElementById('nextBar');
+   var id=document.getElementById('progressBar');
    if(id) {
-      id.innerHTML=t;
+      id.innerHTML='<hr class="dbs" />'+t;
    }
 }
 function Choose(tag) {
@@ -724,7 +742,7 @@ function BuildBar_orig(from,to,total,ref) {
       t=t+td;
    }
    t=t+'</tr></table>';
-   var id=document.getElementById('nextBar');
+   var id=document.getElementById('progressBar');
    if(id) {
       id.innerHTML=t;
    }

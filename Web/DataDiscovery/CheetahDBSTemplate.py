@@ -601,21 +601,18 @@ templateJSForm_new_allmenus_ajax="""
 <!-- end of outer most table -->
 """
 
-templateNextBar="""
+templateLeftBar="""
 <table width="100%">
 <tr>
 <td align="left">$leftBar</td>
-<td align="center"><span id="cell_waiting"></span></td>
-#if $tot>$res_page
-<td align="right">
-<span id="nextBar"></span>
-</td>
-#end if
 </tr>
 </table>
+"""
+
+templateNextBar="""
 #if $tot>$res_page
 #### Please note, here I use GLOBAL_STEP as a global step, it's defined in js/utils.js
-<script type="text/javascript">BuildBar(1,GLOBAL_STEP,$tot);Choose('cell_1');</script>
+<script type="text/javascript">BuildBar(1,GLOBAL_STEP,$tot,'$dbsInst','$site','$app','$prim','$tier','$proc');Choose('cell_1');</script>
 #end if
 """
 
@@ -1208,6 +1205,9 @@ templateBottom="""
 <span id="parents" class="hide"><br /></span>
 <span id="appConfigs" class="hide"><br /></span>
 
+<div align="center">
+<span id="progressBar"></span>
+</div>
 
 </div> <!-- end of div with class="main" -->
 </body>

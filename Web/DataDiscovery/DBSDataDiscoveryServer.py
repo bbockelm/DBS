@@ -908,7 +908,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateProcDatasets, searchList=[nameSpace])
         return str(t)
     
-    def getURL(self,dbsInst,site="All",app="*",primD="*",tier="*"): 
+    def getURL(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*"): 
         # add URL link to the page
         siteHTML=site
         if site=="*":
@@ -916,12 +916,27 @@ class DBSDataDiscoveryServer(DBSLogger):
         tierHTML=tier
         if tier=="*":
            tierHTML='All'
-#        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.host,dbsInst,siteHTML,app,primD,tierHTML)
-        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,siteHTML,app,primD,tierHTML)
+        url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,siteHTML,app,primD,tierHTML,proc)
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
         return page
 
-    def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,**kwargs): 
+    def getDatasetList(self,app="*",prim="*",tier="*",proc="*"):
+        """
+           Call different APIs for given list of app/prim/tier/proc. Return a list of processed
+           datasets.
+        """
+        dList=[]
+        if (proc and proc!="*") and app=="*" and prim=="*":
+           dList=[proc]
+        elif proc=="*" and (app and app!="*") and (prim and prim!="*"):
+           dList = self.helper.getDatasetsFromApp(app,prim,tier)
+        elif proc=="*" and app=="*" and (prim and prim!="*"):
+           dList=self.helper.getProcessedDatasets("/"+prim+"/*/*",app=0)
+        elif proc=="*" and (app and app!="*") and prim=="*":
+           dList=self.helper.getProcessedDatasets(app,app=1)
+        return dList
+
+    def getDataHelper(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*",_idx=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -959,19 +974,31 @@ class DBSDataDiscoveryServer(DBSLogger):
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
         t1=time.time()
-        datasetsList = self.helper.getDatasetsFromApp(appPath,primD,tier)
+#        datasetsList = self.helper.getDatasetsFromApp(appPath,primD,tier)
+        datasetsList = self.getDatasetList(app=appPath,prim=primD,tier=tier,proc=proc)
         nDatasets=len(datasetsList)
         t2=time.time()
         self.dbsTime=(t2-t1)
         regList=[]
         bList=[]
         id=0
+
+
         # the view and process page should be generated once
         if  not _idx:
+            nameSpace = {'leftBar' : leftBar}
+            t = Template(CheetahDBSTemplate.templateLeftBar, searchList=[nameSpace])
+            page+=str(t)
+
             nameSpace = {
-                         'leftBar' : leftBar,
                          'idx'     : _idx,
                          'tot'     : nDatasets,
+                         'dbsInst' : dbsInst,
+                         'site'    : site,
+                         'app'     : app,
+                         'prim'    : primD,
+                         'tier'    : tier,
+                         'proc'    : proc,
                          'res_page': RES_PER_PAGE
                         }
             t = Template(CheetahDBSTemplate.templateNextBar, searchList=[nameSpace])
@@ -999,10 +1026,8 @@ class DBSDataDiscoveryServer(DBSLogger):
             p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
-               idPath=string.replace(oldDataset,"/","___")
             else:
                if len(bList): 
-                  bList.append((dataset,totEvt))
                   page+=self.blockListToHTML(dbsInst,bList)
                   bList=[]
                bList.append((dataset,totEvt))
@@ -1012,14 +1037,17 @@ class DBSDataDiscoveryServer(DBSLogger):
             oldTotSize=totSize
             oldDataset=dataset
             prevPage = p
+
 #            print "##### %s %s sec"%(dataset,(time.time()-ttt1))
         page+=self.blockListToHTML(dbsInst,bList)
         page+=prevPage # end of new stuff
+
 #        page+=jsPage+"\n-->\n"
         # generate URL link
         page+=self.getURL(dbsInst,site,app,primD,tier)
         # end of response tag
         page+="</span>"
+
         return page
     getDataHelper.exposed=True
 
@@ -1051,7 +1079,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page=str(t)
         return page
 
-    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",_idx=0,ajax=1,**kwargs): 
+    def getData(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1088,7 +1116,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.writeLog(msg)
             msg=""
             self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-            page+= self.getDataHelper(dbsInst,site,app,primD,tier,_idx)
+            page+= self.getDataHelper(dbsInst,site,app,primD,tier,proc,_idx)
         except:
             t=self.errorReport("Fail in getData function")
             page+=str(t)
@@ -1105,7 +1133,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getData.exposed = True 
 
-    def getDbsData(self,dbsInst,app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
+    def getDbsData(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1139,11 +1167,12 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
 
-            dList=[]
-            if proc and proc!="*":
-               dList=[proc]
-            else:
-               dList = self.helper.getDatasetsFromApp(app,primD,tier)
+            dList=self.getDatasetList(app=app,prim=primD,tier=tier,proc=proc)
+#            dList=[]
+#            if proc and proc!="*":
+#               dList=[proc]
+#            else:
+#               dList = self.helper.getDatasetsFromApp(app,primD,tier)
             nDatasets=len(dList)
             page+="""<span id="results_dbs_response_%s" class="show_inline">"""%_idx
             for idx in xrange(0,nDatasets):
@@ -1161,12 +1190,11 @@ class DBSDataDiscoveryServer(DBSLogger):
                             }
                 t = Template(CheetahDBSTemplate.templateDbsInfo, searchList=[nameSpace])
                 page+=str(t)
-
+            page+="</span>"
         except:
             t=self.errorReport("Fail in getDbsData function")
             page+=str(t)
         t2=time.time()
-        page+="</span>"
         if not self.userMode and self.profile:
            page+=self.responseTime(t2-t1)
         if int(ajax):
@@ -1179,7 +1207,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDbsData.exposed = True 
 
-    def getRuns(self,dbsInst,app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
+    def getRuns(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
         """
            @type  dbsInst: string
            @param dbsInst: user selection of DBS menu
@@ -1212,11 +1240,12 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
 
-            dList=[]
-            if proc and proc!="*":
-               dList=[proc]
-            else:
-               dList = self.helper.getDatasetsFromApp(app,primD,tier)
+            dList=self.getDatasetList(app=app,prim=primD,tier=tier,proc=proc)
+#            dList=[]
+#            if proc and proc!="*":
+#               dList=[proc]
+#            else:
+#               dList = self.helper.getDatasetsFromApp(app,primD,tier)
             nDatasets=len(dList)
             page+="""<span id="runs_response_%s" class="show_inline">"""%_idx
             for idx in xrange(0,nDatasets):
@@ -1232,12 +1261,11 @@ class DBSDataDiscoveryServer(DBSLogger):
                             }
                 t = Template(CheetahDBSTemplate.templateRunsInfo, searchList=[nameSpace])
                 page+=str(t)
-
+            page+="</span>"
         except:
             t=self.errorReport("Fail in getRunsData function")
             page+=str(t)
         t2=time.time()
-        page+="</span>"
         if not self.userMode and self.profile:
            page+=self.responseTime(t2-t1)
         if int(ajax):
@@ -1579,38 +1607,36 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getPrimaryDatasets.exposed=True
 
-    def getDetailsForPrimDataset(self,dbsInst,primDataset,ajax=1,**kwargs):
-        """
-           Generates AJAX response to get all primary datasets available in all DBS instances
-        """
-        if int(ajax):
-           # AJAX wants response as "text/xml" type
-           self.setContentType('xml')
-        else:
-           page=self.genTopHTML()
-        self.helperInit(dbsInst)
-        dList=self.helper.getProcessedDatasets("/"+primDataset+"/*/*",app=0)
-        pSum=""
-        id=0
-        for dataset in dList:
-            id+=1
-            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            pSum+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
-            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
-        if int(ajax):
-           page="""<ajax-response><response type="object" id="results">"""
-        page+=pSum
-#        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.host,dbsInst,primDataset)
-        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,primDataset)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
-        if int(ajax):
-           page+="</response></ajax-response>"
-        else:
-           page+=self.genBottomHTML()
-        if self.verbose:
-           print page
-        return page
-    getDetailsForPrimDataset.exposed=True
+#    def getDetailsForPrimDataset(self,dbsInst,primDataset,ajax=1,**kwargs):
+#        """
+#           Generates AJAX response to get all primary datasets available in all DBS instances
+#        """
+#        if int(ajax):
+#           self.setContentType('xml')
+#        else:
+#           page=self.genTopHTML()
+#        self.helperInit(dbsInst)
+#        dList=self.helper.getProcessedDatasets("/"+primDataset+"/*/*",app=0)
+#        pSum=""
+#        id=0
+#        for dataset in dList:
+#            id+=1
+#            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+#            pSum+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
+#            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
+#        if int(ajax):
+#           page="""<ajax-response><response type="object" id="results">"""
+#        page+=pSum
+#        url="""%s/getDetailsForPrimDataset?dbsInst=%s&amp;primDataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,primDataset)
+#        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
+#        if int(ajax):
+#           page+="</response></ajax-response>"
+#        else:
+#           page+=self.genBottomHTML()
+#        if self.verbose:
+#           print page
+#        return page
+#    getDetailsForPrimDataset.exposed=True
 
     def getProcessedDatasetsHelper(self,dbsInst):
         """
@@ -1642,6 +1668,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+="</response>\n"
         page+="</ajax-response>"
         if self.verbose:
+#        if 1:
            print page
         return page
     getProcessedDatasets.exposed=True
@@ -1680,38 +1707,36 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getApplications.exposed=True
 
-    def getDatasetsFromApplication(self,dbsInst,appPath,ajax=1,**kwargs):
-        """
-           Generates AJAX response to get datasets available for given application
-        """
-        if int(ajax):
-           # AJAX wants response as "text/xml" type
-           self.setContentType('xml')
-        else:
-           page=self.genTopHTML()
-        self.helperInit(dbsInst)
-        dList=self.helper.getProcessedDatasets(appPath,app=1)
-        pSum=""
-        id=0
-        for dataset in dList:
-            id+=1
-            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
-            pSum+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
-            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
-        if int(ajax):
-           page="""<ajax-response><response type="object" id="results">"""
-        page+=pSum
-#        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.host,dbsInst,appPath)
-        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,appPath)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
-        if int(ajax):
-           page+="</response></ajax-response>"
-        else:
-           page+=self.genBottomHTML()
-        if self.verbose:
-           print page
-        return page
-    getDatasetsFromApplication.exposed=True
+#    def getDatasetsFromApplication(self,dbsInst,appPath,ajax=1,**kwargs):
+#        """
+#           Generates AJAX response to get datasets available for given application
+#        """
+#        if int(ajax):
+#           self.setContentType('xml')
+#        else:
+#           page=self.genTopHTML()
+#        self.helperInit(dbsInst)
+#        datasetsList = self.getDatasetList(app=appPath)
+#        pSum=""
+#        id=0
+#        for dataset in dList:
+#            id+=1
+#            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+#            pSum+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
+#            pSum+= self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
+#        if int(ajax):
+#           page="""<ajax-response><response type="object" id="results">"""
+#        page+=pSum
+#        url="""%s/getDatasetsFromApplication?dbsInst=%s&amp;appPath=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,appPath)
+#        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
+#        if int(ajax):
+#           page+="</response></ajax-response>"
+#        else:
+#           page+=self.genBottomHTML()
+#        if self.verbose:
+#           print page
+#        return page
+#    getDatasetsFromApplication.exposed=True
 
     def getDatasets(self):
         """
@@ -1756,28 +1781,26 @@ class DBSDataDiscoveryServer(DBSLogger):
             page="""<hr class="dbs" />No information found for dataset '%s' in DBS='%s'"""%(dataset,dbsInst)
         return page
 
-    def getDatasetContent(self,dbsInst,dataset,ajax=1,**kwargs):
-        """
-           Generates AJAX response to get dataset content
-        """
-        if int(ajax):
-           # AJAX wants response as "text/xml" type
-           self.setContentType('xml')
-           page ="""<ajax-response><response type="object" id="results">"""
-        else:
-           page = self.genTopHTML()
-        page+=self.getDatasetContentHelper(dbsInst,dataset)
-#        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.host,dbsInst,dataset)
-        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,dataset)
-        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
-        if int(ajax):
-           page+="</response></ajax-response>"
-        else:
-           page+= self.genBottomHTML()
-        if self.verbose:
-           print page
-        return page
-    getDatasetContent.exposed=True
+#    def getDatasetContent(self,dbsInst,dataset,ajax=1,**kwargs):
+#        """
+#           Generates AJAX response to get dataset content
+#        """
+#        if int(ajax):
+#           self.setContentType('xml')
+#           page ="""<ajax-response><response type="object" id="results">"""
+#        else:
+#           page = self.genTopHTML()
+#        page+=self.getDatasetContentHelper(dbsInst,dataset)
+#        url="""%s/getDatasetContent?dbsInst=%s&amp;dataset=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,dataset)
+#        page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
+#        if int(ajax):
+#           page+="</response></ajax-response>"
+#        else:
+#           page+= self.genBottomHTML()
+#        if self.verbose:
+#           print page
+#        return page
+#    getDatasetContent.exposed=True
 
     def getDatasetProvenanceHelper(self,dataset,**kwargs):
         """
