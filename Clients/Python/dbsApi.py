@@ -892,7 +892,7 @@ class DbsApi(DbsConfig):
            xmlinput += " ps_version='"+pset.get('Version', "")+"'"
            xmlinput += " ps_type='"+pset.get('Type', "")+"'"
            xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
-           xmlinput += " ps_content='"+pset.get('Content', "")+"'"
+           xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
         xmlinput += "/>"
 
     for run in dataset.get('RunList',[]):
@@ -1118,7 +1118,7 @@ class DbsApi(DbsConfig):
               xmlinput += " ps_version='"+pset.get('Version', "")+"'"
               xmlinput += " ps_type='"+pset.get('Type', "")+"'"
               xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
-              xmlinput += " ps_content='"+pset.get('Content', "")+"'"
+              xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
               xmlinput += "/>"
        xmlinput += "</file>"
        xmlinput += "\n"
