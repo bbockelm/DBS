@@ -104,6 +104,17 @@ def sizeFormat(i):
         num /=1024.
 
 def splitString(s,size,separator=' '):
+    # take care of HTML symbols, like &amp; by looking around for & and ;
+    if len(s)>size:
+       if string.find(s[:size],"&")!=-1:
+          n=len(s)
+          if n>size+5: n = size+5
+          pos = string.find(s[0:n],";")
+          if pos!=-1: size=pos+1
+       return s[0:size]+separator+splitString(s[size:],size)
+    else:
+       return s
+def splitString_orig(s,size,separator=' '):
     if len(s)>size:
        return s[0:size]+separator+splitString(s[size:],size)
     else:
