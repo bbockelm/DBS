@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiPrimDSLogic.java,v 1.5 2007/01/02 22:59:57 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.6 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -117,7 +117,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 					get(dataset, "annotation", false),
 					name,
 					"",//FIXME Should not be in the schema
-					get(dataset, "start_date", true),
+					get(dataset, "start_date", false),
 					get(dataset, "end_date", false),
 					getID(conn, "PrimaryDSType", "Type", type, true), 
 					cbUserID, lmbUserID, creationDate);
