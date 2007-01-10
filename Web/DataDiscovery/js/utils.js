@@ -607,11 +607,6 @@ function ClearCells(idx,total) {
       if(id) {
          id.className="fixed";
       }
-//      var tag='results_response_'+i
-//      ClearCellTag(tag,i,idx)
-//      var tag='parents_response_'+i
-//      ClearCellTag(tag,i,idx)
-
       var tagArr = new Array('results_response_'+i,'results_dbs_response_'+i,'runs_response_'+i,'parents_response_'+i,'appConfig_response_'+i);
       for(j=0;j<tagArr.length;j++) {
           tag=tagArr[j];
@@ -631,7 +626,6 @@ function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
       if(id) {
          id.className="fixed";
       }
-//      var tag='results_response_'+i
       var tagArr = new Array('results_response_'+i,'results_dbs_response_'+i,'runs_response_'+i,'parents_response_'+i,'appConfig_response_'+i);
       for(j=0;j<tagArr.length;j++) {
           tag=tagArr[j];
@@ -648,7 +642,6 @@ function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
    }
    Choose('cell_'+idx);
    if(!found) {
-//      showLoadingMessage('cell_waiting');
       ShowWheel('__results');
       ShowWheel('__results_dbs');
       ShowWheel('__runs');

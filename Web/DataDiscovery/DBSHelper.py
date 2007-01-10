@@ -423,8 +423,6 @@ class DBSHelper(DBSLogger):
              exe    = item.get('ExecutableName')
           path=formDatasetPath(ver,family,exe)
           if self.html:
-#             path = """<a href="javascript:showWaitingMessage();ajaxGetDatasetsFromApplication('%s','%s')">%s</a>"""%(self.dbsInstance,path,path)
-#             dataInfo ="ajaxGetDatasetsFromApplication('%s','%s')"%(self.dbsInstance,path)
              dataInfo ="ajaxGetData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
              blockInfo="ajaxGetDbsData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
              runInfo  ="ajaxGetRuns('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
@@ -477,8 +475,6 @@ class DBSHelper(DBSLogger):
           else:
              name = entry.get('Name')
           if self.html:
-#             name = """<a href="javascript:showWaitingMessage();ajaxGetDetailsForPrimDataset('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-#             dataInfo ="ajaxGetDetailsForPrimDataset('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
              blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
              runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
@@ -500,7 +496,6 @@ class DBSHelper(DBSLogger):
          dList = self.listDatasetsFromApp(datasetPath)
       else:
          dList = self.listProcessedDatasets(datasetPath)
-#      print "#### getProcessedDatasets",datasetPath,app,dList
       dList.sort()
       dList.reverse()
       for entry in dList:
@@ -508,16 +503,12 @@ class DBSHelper(DBSLogger):
              name = entry.get('datasetPathName') # name=/prim/tier/proc
           else:
              name = entry.get('datasetPathName') # name=/prim/tier/proc
-#             name = entry # now listProcessedDatasets returns plain list, TODO check listDatasetsFromApp
           if html:
-#             name = """<a href="javascript:showWaitingMessage();ajaxGetDatasetContent('%s','%s')">%s</a>"""%(self.dbsInstance,name,name)
-#             dataInfo ="ajaxGetDatasetContent('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
              blockInfo="ajaxGetDbsData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
              runInfo  ="ajaxGetRuns('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
              name="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,name)
           oList.append(name)
-#      print "#### getProcessedDatasets",datasetPath,oList[0]
       return oList
   
   def getDatasetContent(self,dataset):
