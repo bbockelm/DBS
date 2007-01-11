@@ -7,10 +7,10 @@ from dbsException import DbsException
 from dbsApiException import *
 from dbsExecHandler import DbsExecHandler
 
-
 import os, re, string, xml.sax, xml.sax.handler
 from xml.sax.saxutils import escape
 
+import logging
 
 class DbsHttpService:
 
@@ -61,7 +61,9 @@ class DbsHttpService:
                request_string += '&'+key+'='+value 
              continue 
            
-       print "\n\n" + self.Host + ":" + self.Port  + request_string + "\n\n"
+       conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n"
+       logging.info(conto); 
+        
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
@@ -73,7 +75,7 @@ class DbsHttpService:
           result = conn.request(type, request_string)
 
        response = conn.getresponse() 
- 
+
        # See if HTTP call succeeded 
        responseCode = int(response.status)
        if responseCode != 200:
@@ -90,16 +92,21 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       print data
+       #loggin.info(data)
 
-       # Error message would arrive in XML, if any
-       class Handler (xml.sax.handler.ContentHandler):
+    except Exception, ex:
+      msg = "HTTP ERROR, Unable to make API call: %s" % conto
+      raise DbsConnectionError (args=msg, code="401")            
+
+
+    # Error message would arrive in XML, if any
+    class Handler (xml.sax.handler.ContentHandler):
            def startElement(self, name, attrs):
              if name == 'exception':
                 statusCode = attrs['code']
                 exmsg = "DBS Server Raised An Error: %s, %s" \
                                  %(attrs['message'], attrs['detail'])
-
+                
                 if (int(statusCode) < 2000 and  int(statusCode) > 1000 ): 
                    raise DbsBadRequest (args=exmsg, code=statusCode)
 
@@ -112,36 +119,13 @@ class DbsHttpService:
                 else: raise DbsExecutionError (args=exmsg, code=statusCode)
 
              if name == 'warning':
-                print "Waring Message: " + attrs['message']
-                print "Warning Detail: " + attrs['detail']
-                print "\n\n\n"
-                #raise DbsObjectExists (args=exmsg)
+                warn  = "DBS Raised a warning message"
+                warn += "Waring Message: " + attrs['message']
+                warn += "Warning Detail: " + attrs['detail']+"\n"
+                logging.warning(warn)
 
-       xml.sax.parseString (data, Handler ())
+    xml.sax.parseString (data, Handler ())
+    # All is ok, return the data
+    return data
 
-       #f = open("out.txt", "w")
-       #print "\n\ndata ->>>>>>>>", data
-       #if response.getheader ('Content-encoding', '') == 'gzip':
-       #  data = gzip.GzipFile (fileobj=StringIO(data)).read ()
-       #f.write(data);
-       #f.close();
-
-       # All is ok, return the data
-       return data
-
-    #except DbsException, ex:
-      # One of our own errors, re-raise
-    #  raise ex
-
-    #except DbsToolError, ex:
-      # One of our own errors, re-raise
-    #  raise ex
-
-    except Exception, ex:
-      #if ex.get('code', "") == "" :
-      #   raise DbsToolError (exception=ex, code='unknown')
-      raise DbsException(exception=ex, code='unknow')
-            
-      # URL access failed, raise an exception
-    #  raise DbsToolError (exception=ex, code='unknown')
 

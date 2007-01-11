@@ -23,10 +23,9 @@ try:
    print "Processed Datasets"
    print "This API's parameters MUST Change"
    print "**********\n\n\n"
-   #for proc in api.listProcessedDatasets("/PrimaryDS_ANZAR_01/*/anzar-procds-05/*/*/*/*"):
-   #for proc in api.listProcessedDatasets("/*/*/anzar-procds-05/*/*/*/*"):
-   #for proc in api.listProcessedDatasets("/*/*/anzar-procds-05"):
-   for proc in api.listProcessedDatasets("*"):
+   #NEGATIVE TEST for proc in api.listProcessedDatasets("/DBS2-TEST-QCD_pt_0_15/*/*"):
+   #for proc in api.listProcessedDatasets("DBS2-TEST-QCD_pt_0_15", "*", "*"):
+
    #for proc in api.listProcessedDatasets("*"):
      print "  %s" % proc
   except DbsDatabaseError,e:

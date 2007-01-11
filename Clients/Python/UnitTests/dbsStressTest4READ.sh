@@ -2,7 +2,7 @@
 
 tstamp=`date +%m%y%d%M%S`
 result_file=$tstamp.TEST_AVERAGE.txt
-SERVER_DESC="Server:cmslcgco01,DB:ORACLE-devdb10,Client:http-cmssrv17"
+SERVER_DESC="Server:cmssrv17,DB:MySQL-CMSSRV17,Client:http-cmssrv17"
 
 calculateAverage()
 {
@@ -36,7 +36,7 @@ calculateAverage()
 date=`date`
 echo "Test Starting at $date" >> $result_file 
 # In one Client inserting the data that will be used for testing the read operations
-#python dbsStressTest4READ.py 1000 1 dbsStressTest4Read  > dbsStressTest4Read_Insert.log 2>&1
+python dbsStressTest4READ.py 1000 1 dbsStressTest4Read  > dbsStressTest4Read_Insert.log 2>&1
 
 echo "10 parallel clients: each reading 1000 files from the database in one go" >> $result_file
 calculateAverage 10 dbsStressTestListFiles.py

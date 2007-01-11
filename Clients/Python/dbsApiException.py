@@ -6,7 +6,9 @@
 # DBS API exceptions.
 #
 #
- 
+#
+import logging
+#
 from dbsException import DbsException
  
 class DbsApiException(DbsException):
@@ -14,6 +16,10 @@ class DbsApiException(DbsException):
   def __init__ (self, **kwargs):
     """ Initialization. """
     DbsException.__init__(self, **kwargs)
+    msg = "\nCaught API Exception %s: %s "  % (self.getClassName(), self.getErrorMessage() )
+    if self.getErrorCode() not in (None, ""):
+       msg += "\nDBS Exception Error Code: %s " % str(self.getErrorCode())
+    logging.error(msg)
   
 class InvalidDatasetPathName(DbsApiException):
     
