@@ -119,9 +119,9 @@ class DbsHttpService:
                 else: raise DbsExecutionError (args=exmsg, code=statusCode)
 
              if name == 'warning':
-                warn  = "DBS Raised a warning message"
-                warn += "Waring Message: " + attrs['message']
-                warn += "Warning Detail: " + attrs['detail']+"\n"
+                warn  = "\n DBS Raised a warning message"
+                warn += "\n Waring Message: " + attrs['message']
+                warn += "\n Warning Detail: " + attrs['detail']+"\n"
                 logging.warning(warn)
 
     xml.sax.parseString (data, Handler ())
