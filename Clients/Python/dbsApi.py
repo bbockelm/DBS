@@ -1204,6 +1204,22 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'insertBlock',
                          'xmlinput' : xmlinput }, 'POST')
 
+    # Parse the resulting xml output.
+    try:
+     global result 
+     result = ""
+     class Handler (xml.sax.handler.ContentHandler):
+      def startElement(self, name, attrs):
+        if name == 'block':
+             global result
+             result+=str(attrs['block_name']) 
+             #result.append(str(attrs['block_name']))
+             #print result  
+     xml.sax.parseString (data, Handler ())
+     return result  
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
    # ------------------------------------------------------------
 
   def insertStorageElement(self, block, storageElement):

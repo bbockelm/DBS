@@ -49,10 +49,11 @@ try:
     #api.insertBlock (proc, block)
     #api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
     #api.insertBlock (proc)
-    api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345" , ['se1', 'se2', 'se3'])
+    print api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002", block=None, storage_element=["thisIsMyOnlySE"])
+    #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345" , ['se1', 'se2', 'se3'])
     #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahaah#12345" , ['sea1', 'sea2', 'sea3'])
     #api.insertBlock ("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah#12345", ['se1', 'se2', 'se3'])
-    print "Result: %s" % primary
+    #print "Result: %s" % primary
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
