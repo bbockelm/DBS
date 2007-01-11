@@ -1,6 +1,6 @@
 /**
- $Revision: 1.61 $"
- $Id: DBSApiLogic.java,v 1.61 2007/01/09 17:16:49 sekhri Exp $"
+ $Revision: 1.62 $"
+ $Id: DBSApiLogic.java,v 1.62 2007/01/09 22:55:54 sekhri Exp $"
  *
  */
 
@@ -424,8 +424,10 @@ public class DBSApiLogic {
 	protected void checkWord(String pattern, String key) throws Exception {
 		if(isNull(pattern))
 			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid " + key);
-		if (! Pattern.matches(SAFE_WORD, pattern)) 
-			throw new DBSException("Invalid format", "1016", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression "+ SAFE_WORD);
+		//if (! Pattern.matches(SAFE_WORD, pattern)) 
+		if (! Pattern.matches(SAFE_PATH, pattern)) 
+			//throw new DBSException("Invalid format", "1016", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression "+ SAFE_WORD);
+			throw new DBSException("Invalid format", "1016", "Invalid Characters in " + pattern + " for " + key + " Expected a valid " + key + " which should satisfy the regular expression "+ SAFE_PATH);
 	}
 	
 	/**
