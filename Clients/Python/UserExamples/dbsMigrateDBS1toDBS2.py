@@ -145,6 +145,10 @@ try:
 					
 				name = attrs['lfn'].split('/')
 				length = len(name) - 1
+				noOfEvents = 0
+				rootName = name[length]
+				if (rootName in self.evc.keys()):
+					noOfEvents = self.evc[rootName]
 				tmp =  str(attrs['checksum']).split(':')
 				if (len(tmp) == 1):
 					checkSum = tmp[0]
@@ -154,7 +158,7 @@ try:
 				self.dbsfile = DbsFile (
 						Checksum = checkSum,
 						LogicalFileName = str(attrs['lfn']),
-						NumberOfEvents = self.evc[name[length]],
+						NumberOfEvents = noOfEvents,
 						FileSize = int(attrs['size']),
 						Status = str(attrs['status']),
 						ValidationStatus = 'VALID',
@@ -174,6 +178,6 @@ try:
 								
 	xml.sax.parseString (data, Handler ())
 except Exception, ex:
-	print ex
+	print "Exception %s " % ex
 print "Done"
 
