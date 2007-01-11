@@ -7,8 +7,9 @@ from dbsCgiApi import DbsCgiApi, DbsCgiDatabaseError
 from dbsException import DbsException
 from dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
+DEFAULT_URL = "http://lxgate40.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery"
 #DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
-DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
+#DEFAULT_URL = "exec:../../Servers/CGIServer/prodquerytest2"
 #DEFAULT_URL = "http://cmslcgco01.cern.ch/cms/test/aprom/DBS/CGIServer/prodquerytest2"
 
 try:
