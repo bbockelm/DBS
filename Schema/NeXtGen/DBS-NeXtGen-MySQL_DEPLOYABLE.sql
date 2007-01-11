@@ -3,10 +3,9 @@
 -- ===
 -- === Build : 521
 -- ======================================================================
-
-drop database dbs_new_era_v07;
-create database dbs_new_era_v07;
-use dbs_new_era_v07;
+drop database dbs_new_era_v09;
+create database dbs_new_era_v09;
+use dbs_new_era_v09;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -165,7 +164,7 @@ CREATE TABLE AnalysisDataset
 CREATE TABLE Block
   (
     ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      unique not null,
+    Name                  varchar(500)                                                      unique not null,
     Dataset               int                                                               not null,
     BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,

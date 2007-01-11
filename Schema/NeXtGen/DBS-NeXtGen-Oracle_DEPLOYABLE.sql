@@ -454,7 +454,7 @@ REM ======================================================================
 CREATE TABLE Block
   (
     ID                    int,
-    Name                  varchar(100)                                                      unique not null,
+    Name                  varchar(500)                                                      unique not null,
     Dataset               int                                                               not null,
     BlockSize             int                                                               not null,
     NumberOfFiles         int                                                               not null,
