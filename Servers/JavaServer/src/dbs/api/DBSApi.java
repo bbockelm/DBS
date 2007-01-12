@@ -1,6 +1,6 @@
 /**
- $Revision: 1.50 $"
- $Id: DBSApi.java,v 1.50 2007/01/09 21:26:45 sekhri Exp $"
+ $Revision: 1.51 $"
+ $Id: DBSApi.java,v 1.51 2007/01/12 16:18:29 sekhri Exp $"
  *
 */
 
@@ -245,7 +245,7 @@ public class DBSApi {
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			if (apiStr.equals("listPrimaryDatasets")) {
-				System.out.println("Pattern is "+ get(table, "pattern", false));
+				//System.out.println("Pattern is "+ get(table, "pattern", false));
 				(new DBSApiPrimDSLogic()).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
 			} else if (apiStr.equals("listProcessedDatasets")) {
