@@ -1,23 +1,24 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 521
+-- === Build : 538
 -- ======================================================================
-drop database dbs_new_era_v09;
-create database dbs_new_era_v09;
-use dbs_new_era_v09;
+
+drop database dbs_new_era_v10;
+create database dbs_new_era_v10;
+use dbs_new_era_v10;
 -- ======================================================================
 
 CREATE TABLE Person
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(100),
-    DistinguishedName     varchar(100)                                                      unique not null,
-    ContactInfo           varchar(100),
+    DistinguishedName     varchar(500)                                                      unique not null,
+    ContactInfo           varchar(250),
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -26,13 +27,13 @@ CREATE TABLE Person
 
 CREATE TABLE Role
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     RoleName              varchar(100)                                                      unique not null,
-    RoleDescription       varchar(100)                                                      not null,
+    RoleDescription       varchar(500)                                                      not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -41,13 +42,13 @@ CREATE TABLE Role
 
 CREATE TABLE AssignedRole
   (
-    ID                    int not null auto_increment,
-    PersonID              int                                                               not null,
-    RoleID                int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    PersonID              BIGINT UNSIGNED                                                   not null,
+    RoleID                BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -56,13 +57,13 @@ CREATE TABLE AssignedRole
 
 CREATE TABLE PhysicsGroup
   (
-    ID                    int not null auto_increment,
-    PhysicsGroupName      varchar(100)                                                      unique not null,
-    PhysicsGroupConvener  int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    PhysicsGroupName      varchar(500)                                                      unique not null,
+    PhysicsGroupConvener  BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -71,12 +72,12 @@ CREATE TABLE PhysicsGroup
 
 CREATE TABLE SchemaVersion
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     SchemaVersion         varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -85,17 +86,17 @@ CREATE TABLE SchemaVersion
 
 CREATE TABLE PrimaryDataset
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(100)                                                      unique not null,
     Annotation            varchar(1000)                                                     not null,
-    Description           int,
+    Description           BIGINT UNSIGNED,
     StartDate             varchar(100),
     EndDate               varchar(100),
-    Type                  int                                                               not null,
-    CreatedBy             int,
+    Type                  BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -104,14 +105,14 @@ CREATE TABLE PrimaryDataset
 
 CREATE TABLE ProcessedDataset
   (
-    ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      not null,
-    PrimaryDataset        int                                                               not null,
-    PhysicsGroup          int                                                               not null,
-    Status                int                                                               not null,
-    CreatedBy             int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)                                                      not null,
+    PrimaryDataset        BIGINT UNSIGNED                                                   not null,
+    PhysicsGroup          BIGINT UNSIGNED                                                   not null,
+    Status                BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
@@ -122,17 +123,17 @@ CREATE TABLE ProcessedDataset
 
 CREATE TABLE Runs
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     RunNumber             int                                                               unique not null,
-    NumberOfEvents        int                                                               not null,
+    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
     NumberOfLumiSections  int                                                               not null,
-    TotalLuminosity       int                                                               not null,
+    TotalLuminosity       BIGINT UNSIGNED                                                   not null,
     StoreNumber           int                                                               not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -142,18 +143,17 @@ CREATE TABLE Runs
 
 CREATE TABLE AnalysisDataset
   (
-    ID                    int not null auto_increment,
-    Name                  varchar(100)                                                      unique not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)                                                      unique not null,
     Annotation            varchar(1000)                                                     not null,
-    Query                 varchar(1000)                                                     not null,
-    ProcessedDS           int                                                               not null,
-    Type                  int                                                               not null,
-    PhysicsGroup          int                                                               not null,
-    Status                int                                                               not null,
-    Parent                int,
-    CreatedBy             int,
+    ProcessedDS           BIGINT UNSIGNED                                                   not null,
+    Type                  BIGINT UNSIGNED                                                   not null,
+    PhysicsGroup          BIGINT UNSIGNED                                                   not null,
+    Status                BIGINT UNSIGNED                                                   not null,
+    Parent                BIGINT UNSIGNED,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -163,16 +163,16 @@ CREATE TABLE AnalysisDataset
 
 CREATE TABLE Block
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(500)                                                      unique not null,
-    Dataset               int                                                               not null,
-    BlockSize             int                                                               not null,
-    NumberOfFiles         int                                                               not null,
-    NumberOfEvents        int                                                               not null,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    BlockSize             BIGINT UNSIGNED                                                   not null,
+    NumberOfFiles         BIGINT UNSIGNED                                                   not null,
+    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
     OpenForWriting        int                                                               not null,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -182,20 +182,20 @@ CREATE TABLE Block
 
 CREATE TABLE Files
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     LogicalFileName       varchar(500)                                                      unique not null,
-    Dataset               int                                                               not null,
-    Block                 int                                                               not null,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    Block                 BIGINT UNSIGNED                                                   not null,
     Checksum              varchar(100)                                                      not null,
     NumberOfEvents        int                                                               not null,
     FileSize              int                                                               not null,
-    FileStatus            int                                                               not null,
-    FileType              int                                                               not null,
-    ValidationStatus      int,
+    FileStatus            BIGINT UNSIGNED                                                   not null,
+    FileType              BIGINT UNSIGNED                                                   not null,
+    ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000),
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -205,12 +205,12 @@ CREATE TABLE Files
 
 CREATE TABLE DataTier
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(100)                                                      unique not null,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -219,16 +219,16 @@ CREATE TABLE DataTier
 
 CREATE TABLE LumiSection
   (
-    ID                    int not null auto_increment,
-    LumiSectionNumber     int                                                               not null,
-    RunNumber             int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    LumiSectionNumber     BIGINT UNSIGNED                                                   not null,
+    RunNumber             BIGINT UNSIGNED                                                   not null,
     StartEventNumber      int                                                               not null,
     EndEventNumber        int                                                               not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
@@ -239,12 +239,26 @@ CREATE TABLE LumiSection
 
 CREATE TABLE StorageElement
   (
-    ID                    int not null auto_increment,
-    SEName                varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    SEName                varchar(500)                                                      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE Branch
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)                                                      unique not null,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -253,12 +267,12 @@ CREATE TABLE StorageElement
 
 CREATE TABLE Description
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -267,15 +281,15 @@ CREATE TABLE Description
 
 CREATE TABLE TimeLog
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Action                varchar(100)                                                      not null,
     Cause                 varchar(100)                                                      not null,
     Effect                varchar(100)                                                      not null,
-    Description           varchar(100)                                                      not null,
+    Description           varchar(500)                                                      not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -284,12 +298,12 @@ CREATE TABLE TimeLog
 
 CREATE TABLE PrimaryDSType
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -298,12 +312,12 @@ CREATE TABLE PrimaryDSType
 
 CREATE TABLE ProcDSStatus
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -312,13 +326,13 @@ CREATE TABLE ProcDSStatus
 
 CREATE TABLE SEBlock
   (
-    ID                    int not null auto_increment,
-    SEID                  int                                                               not null,
-    BlockID               int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    SEID                  BIGINT UNSIGNED                                                   not null,
+    BlockID               BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(SEID,BlockID)
@@ -328,15 +342,15 @@ CREATE TABLE SEBlock
 
 CREATE TABLE AlgorithmConfig
   (
-    ID                    int not null auto_increment,
-    ExecutableName        int                                                               not null,
-    ApplicationVersion    int                                                               not null,
-    ApplicationFamily     int                                                               not null,
-    ParameterSetID        int                                                               not null,
-    CreatedBy             int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ExecutableName        BIGINT UNSIGNED                                                   not null,
+    ApplicationVersion    BIGINT UNSIGNED                                                   not null,
+    ApplicationFamily     BIGINT UNSIGNED                                                   not null,
+    ParameterSetID        BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID)
@@ -346,11 +360,11 @@ CREATE TABLE AlgorithmConfig
 
 CREATE TABLE AppFamily
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     FamilyName            varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -360,11 +374,11 @@ CREATE TABLE AppFamily
 
 CREATE TABLE AppVersion
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Version               varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -374,11 +388,11 @@ CREATE TABLE AppVersion
 
 CREATE TABLE AppExecutable
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     ExecutableName        varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -388,32 +402,31 @@ CREATE TABLE AppExecutable
 
 CREATE TABLE QueryableParameterSet
   (
-    ID                    int not null auto_increment,
-    Hash                  varchar(500)                                                      not null,
-    Name                  varchar(100)                                                      not null,
-    Version               varchar(100)                                                      not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Hash                  varchar(500)                                                      unique not null,
+    Name                  varchar(100),
+    Version               varchar(100),
     Type                  varchar(100),
     Annotation            varchar(1000),
-    Content               TEXT                                                              not null,
+    Content               TEXT,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
-    primary key(ID),
-    unique(Hash,Name,Version)
+    primary key(ID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
 
 CREATE TABLE ParameterBinding
   (
-    ID                    int not null auto_increment,
-    Self                  int                                                               not null,
-    Contains              int                                                               not null,
-    CreatedBy             int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Self                  BIGINT UNSIGNED                                                   not null,
+    Contains              BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -423,13 +436,13 @@ CREATE TABLE ParameterBinding
 
 CREATE TABLE PrimaryDatasetDescription
   (
-    ID                      int,
-    TriggerDescriptionID    int,
-    MCChannelDescriptionID  int,
-    OtherDescriptionID      int,
-    CreatedBy               int,
+    ID                      BIGINT UNSIGNED,
+    TriggerDescriptionID    BIGINT UNSIGNED,
+    MCChannelDescriptionID  BIGINT UNSIGNED,
+    OtherDescriptionID      BIGINT UNSIGNED,
+    CreatedBy               BIGINT UNSIGNED,
     CreationDate            TIMESTAMP DEFAULT 0,
-    LastModifiedBy          int,
+    LastModifiedBy          BIGINT UNSIGNED,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
@@ -440,11 +453,11 @@ CREATE TABLE PrimaryDatasetDescription
 
 CREATE TABLE TriggerPathDescription
   (
-    ID                      int,
+    ID                      BIGINT UNSIGNED,
     TriggerPathDescription  varchar(100)                                                      unique not null,
-    CreatedBy               int,
+    CreatedBy               BIGINT UNSIGNED,
     CreationDate            TIMESTAMP DEFAULT 0,
-    LastModifiedBy          int,
+    LastModifiedBy          BIGINT UNSIGNED,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -454,13 +467,13 @@ CREATE TABLE TriggerPathDescription
 
 CREATE TABLE MCDescription
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     MCChannelDescription  varchar(100)                                                      not null,
     MCProduction          varchar(100),
     MCDecayChain          varchar(100),
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
@@ -471,11 +484,11 @@ CREATE TABLE MCDescription
 
 CREATE TABLE OtherDescription
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Description           varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID)
@@ -485,13 +498,13 @@ CREATE TABLE OtherDescription
 
 CREATE TABLE FileTier
   (
-    ID                    int not null auto_increment,
-    Fileid                int                                                               not null,
-    DataTier              int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Fileid                BIGINT UNSIGNED                                                   not null,
+    DataTier              BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(Fileid,DataTier)
@@ -501,12 +514,12 @@ CREATE TABLE FileTier
 
 CREATE TABLE FileParentage
   (
-    ID                    int not null auto_increment,
-    ThisFile              int                                                               not null,
-    ItsParent             int                                                               not null,
-    CreatedBy             int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ThisFile              BIGINT UNSIGNED                                                   not null,
+    ItsParent             BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
@@ -517,13 +530,13 @@ CREATE TABLE FileParentage
 
 CREATE TABLE FileLumi
   (
-    ID                    int not null auto_increment,
-    Fileid                int                                                               not null,
-    Lumi                  int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Fileid                BIGINT UNSIGNED                                                   not null,
+    Lumi                  BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(Fileid,Lumi)
@@ -533,13 +546,13 @@ CREATE TABLE FileLumi
 
 CREATE TABLE FileAlgo
   (
-    ID                    int not null auto_increment,
-    Fileid                int                                                               not null,
-    Algorithm             int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Fileid                BIGINT UNSIGNED                                                   not null,
+    Algorithm             BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(Fileid,Algorithm)
@@ -549,12 +562,12 @@ CREATE TABLE FileAlgo
 
 CREATE TABLE FileStatus
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -563,27 +576,43 @@ CREATE TABLE FileStatus
 
 CREATE TABLE FileType
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
 
+CREATE TABLE FileBranch
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Fileid                BIGINT UNSIGNED                                                   not null,
+    Branch                BIGINT UNSIGNED                                                   not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Fileid,Branch)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE ProcDSRuns
   (
-    ID                    int not null auto_increment,
-    Dataset               int                                                               not null,
-    Run                   int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    Run                   BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(Dataset,Run)
@@ -593,13 +622,13 @@ CREATE TABLE ProcDSRuns
 
 CREATE TABLE ProcDSTier
   (
-    ID                    int not null auto_increment,
-    Dataset               int                                                               not null,
-    DataTier              int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    DataTier              BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(Dataset,DataTier)
@@ -607,14 +636,14 @@ CREATE TABLE ProcDSTier
 
 -- ======================================================================
 
-CREATE TABLE DatasetParentage
+CREATE TABLE ProcDSParent
   (
-    ID                    int not null auto_increment,
-    ThisDataset           int                                                               not null,
-    ItsParent             int                                                               not null,
-    CreatedBy             int,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ThisDataset           BIGINT UNSIGNED                                                   not null,
+    ItsParent             BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     primary key(ID),
@@ -625,13 +654,13 @@ CREATE TABLE DatasetParentage
 
 CREATE TABLE ProcAlgo
   (
-    ID                    int not null auto_increment,
-    Dataset               int                                                               not null,
-    Algorithm             int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    Algorithm             BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(Dataset,Algorithm)
@@ -641,12 +670,12 @@ CREATE TABLE ProcAlgo
 
 CREATE TABLE AnalysisDSType
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -655,12 +684,12 @@ CREATE TABLE AnalysisDSType
 
 CREATE TABLE AnalysisDSStatus
   (
-    ID                    int not null auto_increment,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -669,16 +698,32 @@ CREATE TABLE AnalysisDSStatus
 
 CREATE TABLE AnalysisDatasetLumi
   (
-    ID                    int not null auto_increment,
-    AnalysisDataset       int                                                               not null,
-    Lumi                  int                                                               not null,
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    AnalysisDataset       BIGINT UNSIGNED                                                   not null,
+    Lumi                  BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
     unique(AnalysisDataset,Lumi)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE AnalysisDSDef
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)                                                      unique not null,
+    Query                 TEXT                                                              not null,
+    Description           varchar(1000)                                                     not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -839,6 +884,13 @@ ALTER TABLE StorageElement ADD CONSTRAINT
 ;
 ALTER TABLE StorageElement ADD CONSTRAINT 
     StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
 
 ALTER TABLE Description ADD CONSTRAINT 
@@ -1045,6 +1097,19 @@ ALTER TABLE FileType ADD CONSTRAINT
     FileType_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_Fileid_FK foreign key(Fileid) references Files(ID)
+;
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_Branch_FK foreign key(Branch) references Branch(ID)
+;
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
 ;
@@ -1071,17 +1136,17 @@ ALTER TABLE ProcDSTier ADD CONSTRAINT
     ProcDSTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentageThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID)
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID)
 ;
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentage_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID)
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID)
 ;
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentage_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
-ALTER TABLE DatasetParentage ADD CONSTRAINT 
-    DatasetParentageLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
@@ -1124,12 +1189,19 @@ ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT
     AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE AnalysisDSDef ADD CONSTRAINT 
+    AnalysisDSDef_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE AnalysisDSDef ADD CONSTRAINT 
+    AnalysisDSDefLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_03', NOW());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_04', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());

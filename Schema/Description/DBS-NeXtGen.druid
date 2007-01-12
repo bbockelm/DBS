@@ -2,15 +2,15 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">524</attrib>
-		<attrib name="serial">315777</attrib>
+		<attrib name="build">538</attrib>
+		<attrib name="serial">330284</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">drop database dbs_new_era_v07;
-create database dbs_new_era_v07;
-use dbs_new_era_v07;
+			<attrib name="preSql">drop database dbs_new_era_v10;
+create database dbs_new_era_v10;
+use dbs_new_era_v10;
 </attrib>
 			<attrib name="postSql"/>
 			<attrib name="ddUseDDEquiv">false</attrib>
@@ -38,6 +38,11 @@ use dbs_new_era_v07;
 					<elem>0.4</elem>
 					<elem>2007-01-02 11:34:09</elem>
 					<elem>More tables for Analysis Dataset and Files</elem>
+				</row>
+				<row>
+					<elem>0.5</elem>
+					<elem>2007-01-12 10:20:29</elem>
+					<elem>Adding Analysis Dataset Definition Table, Adding ROOT-Branches tables, and Changing data types of IDs to long and filenumber eventnumber</elem>
 				</row>
 			</list>
 		</revisions>
@@ -138,7 +143,7 @@ use dbs_new_era_v07;
 					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/DBS.pdf</output>
 				</pdf>
 				<html>
-					<output>/Users/anzar/DBSSchemaFridayThe13thOct2006/XHTML</output>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\XHTML</output>
 				</html>
 			</DocsGenModule>
 			<SummaryGenModule>
@@ -396,7 +401,7 @@ use dbs_new_era_v07;
 				</type>
 				<type>
 					<attribs>
-						<attrib name="name">int</attrib>
+						<attrib name="name">BIGINT UNSIGNED</attrib>
 						<attrib name="ddEquiv"/>
 						<attrib name="id">285090</attrib>
 					</attribs>
@@ -2008,19 +2013,6 @@ use dbs_new_era_v07;
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">Status</attrib>
-						<attrib name="colorId">222529</attrib>
-						<attrib name="locY">365</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">947</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="135353"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">FileType</attrib>
 						<attrib name="colorId">222529</attrib>
 						<attrib name="locY">610</attrib>
@@ -2069,6 +2061,19 @@ use dbs_new_era_v07;
 					<modsConfig/>
 					<tables>
 						<table id="275516"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">FileStatus</attrib>
+						<attrib name="colorId">222529</attrib>
+						<attrib name="locY">395</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1018</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="285964"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2774,7 +2779,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -2803,7 +2808,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">308659</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3059,7 +3064,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -3543,7 +3548,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -4415,7 +4420,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -4743,7 +4748,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -4791,7 +4796,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -5085,7 +5090,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -5106,36 +5111,6 @@ use dbs_new_era_v07;
 							<attrib name="refField">0</attrib>
 							<attrib name="name">Annotation</attrib>
 							<attrib name="id">134948</attrib>
-							<attrib name="onDelete">n</attrib>
-							<attrib name="onUpdate">n</attrib>
-							<attrib name="refTable">0</attrib>
-							<attrib name="type">136868</attrib>
-						</attribs>
-						<modsConfig/>
-						<docs>
-							<p>
-								<t>Annotaion provided by the user describing the AnalysisDataset.
-</t>
-							</p>
-						</docs>
-					</field>
-					<field>
-						<fieldAttribs>
-							<attribs>
-								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
-								<attrib name="15">false</attrib>
-								<attrib name="339"/>
-								<attrib name="338">false</attrib>
-								<attrib name="340">true</attrib>
-							</attribs>
-						</fieldAttribs>
-						<attribs>
-							<attrib name="comment"/>
-							<attrib name="matchType">s</attrib>
-							<attrib name="refField">0</attrib>
-							<attrib name="name">Query</attrib>
-							<attrib name="id">285485</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
@@ -5513,7 +5488,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -5571,7 +5546,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -5600,7 +5575,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -5630,7 +5605,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6570,7 +6545,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6902,7 +6877,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6999,6 +6974,227 @@ use dbs_new_era_v07;
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
 							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">Branch</attrib>
+						<attrib name="id">318960</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<docs>
+						<p>
+							<t>DataTier: is infact related with the AppConfig via ParameterSet. But we need DataTier linked with Files also , since a physicists would require to know all the file in a dataset which has a certain DataTier. If DataTier would just be an ProcessedDataset Attribute, then the above query could not be executed. This is because a ProcessedDataset can spawn multiple DataTiers. If there is a restriction that a ProcessedDataset would only have a single DataTier then we would not required DataTier linkage with files at all. Also a File can have muliple DataTiers also, that iss why all the more reasons to link DataTier with File. Note that FileTier is enough for associating and determining the DataTier with in a file as well as within a ProcessedDataset. So why would we need linkage of DataTier with a ProcessedDataset. The reason is same as that of File Parentage and ProcessedDataset Parentage. This is just an optimization for determining the DataTier with in a DataSet. One has to traverse all the files otherwise to know the DataTiers.</t>
+						</p>
+					</docs>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">318961</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">285090</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">true</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Name</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">318962</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">281403</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">318963</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">318964</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">318965</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">318966</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7418,7 +7614,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -7818,7 +8014,7 @@ use dbs_new_era_v07;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">238995</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -9255,10 +9451,10 @@ use dbs_new_era_v07;
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
+								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -9278,11 +9474,11 @@ use dbs_new_era_v07;
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -9307,11 +9503,11 @@ use dbs_new_era_v07;
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
-								<attrib name="338">true</attrib>
+								<attrib name="338">false</attrib>
 								<attrib name="340">false</attrib>
 							</attribs>
 						</fieldAttribs>
@@ -9395,7 +9591,7 @@ use dbs_new_era_v07;
 					<field>
 						<fieldAttribs>
 							<attribs>
-								<attrib name="17">true</attrib>
+								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
@@ -12212,6 +12408,251 @@ use dbs_new_era_v07;
 						<modsConfig/>
 					</field>
 				</table>
+				<table>
+					<vars>
+						<list>
+							<header>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+								<elem>name</elem>
+								<elem>type</elem>
+								<elem>value</elem>
+								<elem>descr</elem>
+							</header>
+						</list>
+					</vars>
+					<triggers/>
+					<rules/>
+					<attribs>
+						<attrib name="comment"/>
+						<attrib name="name">FileBranch</attrib>
+						<attrib name="id">319451</attrib>
+						<attrib name="schema"/>
+						<attrib name="tempPK"/>
+						<attrib name="tempFK"/>
+						<attrib name="tempOther"/>
+						<attrib name="sqlCommands"/>
+					</attribs>
+					<modsConfig>
+						<SqlGenModule>
+							<stdSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+										</row>
+									</list>
+								</idx>
+							</stdSql>
+							<oraSql>
+								<idx type="l">
+									<list>
+										<header>
+											<elem type="i">id</elem>
+											<elem type="s">index</elem>
+											<elem type="s">name</elem>
+											<elem type="i">ts</elem>
+											<elem type="b">bitmap</elem>
+											<elem type="b">stats</elem>
+											<elem type="b">noSort</elem>
+										</header>
+										<row>
+											<elem>340</elem>
+											<elem>Idx1</elem>
+											<elem/>
+											<elem>0</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+											<elem>false</elem>
+										</row>
+									</list>
+								</idx>
+							</oraSql>
+						</SqlGenModule>
+					</modsConfig>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">true</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">ID</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319452</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">285090</attrib>
+						</attribs>
+						<modsConfig/>
+						<docs>
+							<p>
+								<t>Primary key row id.</t>
+							</p>
+						</docs>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Fileid</attrib>
+							<attrib name="refField">134965</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319453</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134964</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">Branch</attrib>
+							<attrib name="refField">318961</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319454</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">318960</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319455</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">240057</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">CreatedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319456</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModificationDate</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319457</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">239351</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">false</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="name">LastModifiedBy</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="matchType">s</attrib>
+							<attrib name="id">319458</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134523</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+				</table>
 			</folder>
 			<folder>
 				<attribs>
@@ -12715,7 +13156,7 @@ use dbs_new_era_v07;
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">DatasetParentage</attrib>
+						<attrib name="name">ProcDSParent</attrib>
 						<attrib name="id">190550</attrib>
 						<attrib name="schema"/>
 						<attrib name="tempPK"/>
@@ -13871,10 +14312,6 @@ use dbs_new_era_v07;
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -13947,9 +14384,9 @@ use dbs_new_era_v07;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">314842</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -13962,7 +14399,7 @@ use dbs_new_era_v07;
 						<fieldAttribs>
 							<attribs>
 								<attrib name="17">true</attrib>
-								<attrib name="16">false</attrib>
+								<attrib name="16">true</attrib>
 								<attrib name="15">false</attrib>
 								<attrib name="339"/>
 								<attrib name="338">false</attrib>
@@ -13971,16 +14408,21 @@ use dbs_new_era_v07;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Description</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
-							<attrib name="id">314843</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Name</attrib>
+							<attrib name="id">318494</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">7</attrib>
+							<attrib name="type">281403</attrib>
 						</attribs>
 						<modsConfig/>
+						<docs>
+							<p>
+								<t>User text desribing what is in the primary dataset.</t>
+							</p>
+						</docs>
 					</field>
 					<field>
 						<fieldAttribs>
@@ -14009,6 +14451,30 @@ use dbs_new_era_v07;
 					<field>
 						<fieldAttribs>
 							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">false</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Description</attrib>
+							<attrib name="id">314843</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">0</attrib>
+							<attrib name="type">136868</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
 								<attrib name="17">false</attrib>
 								<attrib name="16">false</attrib>
 								<attrib name="15">false</attrib>
@@ -14019,9 +14485,9 @@ use dbs_new_era_v07;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">314844</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -14043,9 +14509,9 @@ use dbs_new_era_v07;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">314845</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -14067,9 +14533,9 @@ use dbs_new_era_v07;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">314846</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -14091,9 +14557,9 @@ use dbs_new_era_v07;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">314847</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>

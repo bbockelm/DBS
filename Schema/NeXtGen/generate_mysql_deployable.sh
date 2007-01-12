@@ -10,7 +10,7 @@
 #  M. Anzar Afaq (anzar@fnal[.NOSPAM]gov
 #
 #
-SchemaVersion=v00_00_02
+SchemaVersion=v00_00_04
 #
 ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
@@ -29,7 +29,8 @@ fi
 #
 echo
 echo "   Inserting auto_increment for mysql"
-cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    int%ID                    int not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
+#cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    int%ID                    int not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
+cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    BIGINT UNSIGNED%ID                    BIGINT UNSIGNED not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
 cat DBS-NeXtGen-MySQL.sql.TMP.1 | sed -e "s%);%) ENGINE = InnoDB ;%g" > DBS-NeXtGen-MySQL.sql.TMP.2
 cat DBS-NeXtGen-MySQL.sql.TMP.2 | sed -e "s%/%;%g" > DBS-NeXtGen-MySQL.sql.TMP.3
 cat DBS-NeXtGen-MySQL.sql.TMP.3 >> $ddl_file

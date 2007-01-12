@@ -9,7 +9,7 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=v00_00_02
+SchemaVersion=v00_00_04
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
@@ -39,6 +39,9 @@ fi
 # TEXT to CLOB
 cat DBS-NeXtGen-Oracle.sql|sed -e "s%TEXT%CLOB%g" > DBS-NeXtGen-Oracle.sql.clob
 mv DBS-NeXtGen-Oracle.sql.clob DBS-NeXtGen-Oracle.sql
+# BIGINT to int
+cat DBS-NeXtGen-Oracle.sql | sed -e "s%BIGINT UNSIGNED%int%g" > DBS-NeXtGen-Oracle.sql.nobig
+mv DBS-NeXtGen-Oracle.sql.nobig DBS-NeXtGen-Oracle.sql
 #
 #
 echo "-- ====================================================" >> $ddl_file
