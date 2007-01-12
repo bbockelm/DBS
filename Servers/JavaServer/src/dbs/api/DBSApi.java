@@ -1,6 +1,6 @@
 /**
- $Revision: 1.49 $"
- $Id: DBSApi.java,v 1.49 2007/01/09 17:28:28 sekhri Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApi.java,v 1.50 2007/01/09 21:26:45 sekhri Exp $"
  *
 */
 
@@ -405,7 +405,12 @@ public class DBSApi {
 				(new DBSApiTransferLogic()).insertDatasetContents(conn, out,
 						parseDatasetContents(getXml(table)), 
 						dbsUser);
-			
+	
+			} else if (apiStr.equals("closeBlock")) {
+				(new DBSApiBlockLogic()).closeBlock(conn, out,
+						get(table, "block_name", true) 
+						);
+		
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;

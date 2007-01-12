@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.44 $"
- $Id: DBSSql.java,v 1.44 2007/01/09 17:16:49 sekhri Exp $"
+ $Revision: 1.45 $"
+ $Id: DBSSql.java,v 1.45 2007/01/10 23:18:30 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -244,15 +244,15 @@ public class DBSSql {
 
 
 
-        public static PreparedStatement closeBlock(Connection conn, String blockID) throws SQLException {
-                String sql = "UPDATE Block \n" +
-                        "SET OpenForWriting=0 \n" +
-                        "WHERE ID = ?" ;
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-                ps.setString(columnIndx++, blockID);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                return ps;
+	public static PreparedStatement closeBlock(Connection conn, String blockID) throws SQLException {
+		String sql = "UPDATE Block \n" +
+			"SET OpenForWriting=0 \n" +
+			"WHERE ID = ?" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, blockID);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
         }
 
 	//FIXME Just use this and delete all other getBlockIds

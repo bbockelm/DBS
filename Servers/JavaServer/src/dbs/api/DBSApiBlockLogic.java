@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiBlockLogic.java,v 1.8 2007/01/04 23:13:13 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiBlockLogic.java,v 1.9 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -241,17 +241,19 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 return id;
         }
 
+	public void closeBlock(Connection conn, Writer out, String name) throws Exception {
+		closeBlock(conn, getBlockID(conn, name, false, true));
+	}
 
-        private void closeBlock(Connection conn, String blockID) throws Exception {
-
-                PreparedStatement ps = null;
-                try {
-                        ps = DBSSql.closeBlock(conn, blockID);
-                        ps.executeUpdate();
-                } finally {
-                        if (ps != null) ps.close();
-                }
-       }
+	private void closeBlock(Connection conn, String blockID) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.closeBlock(conn, blockID);
+			ps.executeUpdate();
+		} finally {
+			if (ps != null) ps.close();
+		}
+	}
  
 
 
