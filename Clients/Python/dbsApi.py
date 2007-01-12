@@ -45,6 +45,13 @@ def getInt(value = None):
 		return 0
 	return int(value)
 
+def getLong(value = None):
+	if (value == None ) :
+		return 0
+	if (len(value) < 1 ) :
+		return 0
+	return long(value)
+
 class DbsApi(DbsConfig):
   """
   DbsApi class, provides access to DBS Server, 
@@ -425,11 +432,11 @@ class DbsApi(DbsConfig):
         def startElement(self, name, attrs):
           if name == 'run':
                self.currRun= DbsRun (
-                                   RunNumber=getInt(attrs['run_number']),
-                                   NumberOfEvents=getInt(attrs['number_of_events']),
-                                   NumberOfLumiSections=getInt(attrs['number_of_lumi_sections']),
-                                   TotalLuminosity=getInt(attrs['total_luminosity']),
-                                   StoreNumber=getInt(attrs['store_number']),
+                                   RunNumber=getLong(attrs['run_number']),
+                                   NumberOfEvents=getLong(attrs['number_of_events']),
+                                   NumberOfLumiSections=getLong(attrs['number_of_lumi_sections']),
+                                   TotalLuminosity=getLong(attrs['total_luminosity']),
+                                   StoreNumber=getLong(attrs['store_number']),
                                    StartOfRun=str(attrs['start_of_run']),
                                    EndOfRun=str(attrs['end_of_run']),
                                    CreationDate=str(attrs['creation_date']),
@@ -568,9 +575,9 @@ class DbsApi(DbsConfig):
           if name == 'block':
                self.currBlock = DbsFileBlock(
                                        Name=str(attrs['name']), 
-                                       BlockSize=int(attrs['size']),
-                                       NumberOfFiles=int(attrs['number_of_files']),
-                                       NumberOfEvents=int(attrs['number_of_events']),
+                                       BlockSize=long(attrs['size']),
+                                       NumberOfFiles=long(attrs['number_of_files']),
+                                       NumberOfEvents=long(attrs['number_of_events']),
                                        OpenForWriting=str(attrs['open_for_writing']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
@@ -651,8 +658,8 @@ class DbsApi(DbsConfig):
           if name == 'file':
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
-                                       FileSize=int(attrs['size']),
-                                       NumberOfEvents=int(attrs['number_of_events']),
+                                       FileSize=long(attrs['size']),
+                                       NumberOfEvents=long(attrs['number_of_events']),
                                        Status=str(attrs['status']),
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
@@ -669,12 +676,12 @@ class DbsApi(DbsConfig):
 
           if name == 'lumi_section':
              self.currFile['LumiList'].append(DbsLumiSection(
-                                                   LumiSectionNumber=int(attrs['lumi_section_number']),
-                                                   StartEventNumber=int(attrs['start_event']),
-                                                   EndEventNumber=int(attrs['end_event']),   
+                                                   LumiSectionNumber=long(attrs['lumi_section_number']),
+                                                   StartEventNumber=long(attrs['start_event']),
+                                                   EndEventNumber=long(attrs['end_event']),   
                                                    LumiStartTime=str(attrs['lumi_start']),
                                                    LumiEndTime=str(attrs['lumi_end']),
-                                                   RunNumber=int(attrs['run_number']),
+                                                   RunNumber=long(attrs['run_number']),
                                                    CreationDate=str(attrs['creation_date']),
                                                    CreatedBy=str(attrs['created_by']),
                                                    LastModificationDate=str(attrs['last_modification_date']),

@@ -47,5 +47,8 @@ def isLongType(inObj) :
   """ Type Checking for LIST Type """
   if type(inObj) ==  type(long(1)):
      return True
+  else:
+     if type(inObj) ==  type(int(1)):
+        return True
   return False
 
