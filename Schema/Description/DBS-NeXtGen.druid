@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">538</attrib>
-		<attrib name="serial">330284</attrib>
+		<attrib name="build">541</attrib>
+		<attrib name="serial">333462</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -154,7 +154,7 @@ use dbs_new_era_v10;
 			<SqlGenModule>
 				<stdSql>
 					<genPostSQL>Y</genPostSQL>
-					<output>C:\Documents and Settings\ANZAR\Desktop\DBS_mysql.sql</output>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS\DBSTest.sql</output>
 					<order>s</order>
 					<genComments>N</genComments>
 					<genIndexes>N</genIndexes>
@@ -164,12 +164,12 @@ use dbs_new_era_v10;
 					<genRules>N</genRules>
 					<genFunctions>N</genFunctions>
 					<genProcedures>N</genProcedures>
-					<genInlineFKs>N</genInlineFKs>
+					<genInlineFKs>Y</genInlineFKs>
 					<genPreSQL>Y</genPreSQL>
 					<genSequences>N</genSequences>
 				</stdSql>
 				<oraSql>
-					<output>C:\Documents and Settings\ANZAR\Desktop\DBS_ORACLE.sql</output>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS\DBS_ORACLE.sql</output>
 					<genComments>Y</genComments>
 					<genDropStmt>N</genDropStmt>
 					<genViews>Y</genViews>
@@ -673,9 +673,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">FileParentage</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">252</attrib>
+						<attrib name="locY">277</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1799</attrib>
+						<attrib name="locX">1508</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -953,6 +953,32 @@ use dbs_new_era_v10;
 					<modsConfig/>
 					<tables>
 						<table id="134946"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">FileBranch</attrib>
+						<attrib name="colorId">175671</attrib>
+						<attrib name="locY">344</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1799</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="319451"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">Branch</attrib>
+						<attrib name="colorId">175671</attrib>
+						<attrib name="locY">353</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">2035</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="318960"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -1522,9 +1548,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">ProcessedDataset</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">471</attrib>
+						<attrib name="locY">481</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">498</attrib>
+						<attrib name="locX">501</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1639,9 +1665,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">FileAlgo</attrib>
 						<attrib name="colorId">220779</attrib>
-						<attrib name="locY">61</attrib>
+						<attrib name="locY">63</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">881</attrib>
+						<attrib name="locX">961</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1685,6 +1711,32 @@ use dbs_new_era_v10;
 					<modsConfig/>
 					<tables>
 						<table id="275516"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">FileBranch</attrib>
+						<attrib name="colorId">220779</attrib>
+						<attrib name="locY">498</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1228</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="319451"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">Branch</attrib>
+						<attrib name="colorId">220779</attrib>
+						<attrib name="locY">262</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1225</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="318960"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2013,19 +2065,6 @@ use dbs_new_era_v10;
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">FileType</attrib>
-						<attrib name="colorId">222529</attrib>
-						<attrib name="locY">610</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">979</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="145372"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">FileLumi</attrib>
 						<attrib name="colorId">222529</attrib>
 						<attrib name="locY">919</attrib>
@@ -2067,13 +2106,52 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">FileStatus</attrib>
 						<attrib name="colorId">222529</attrib>
-						<attrib name="locY">395</attrib>
+						<attrib name="locY">358</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1018</attrib>
+						<attrib name="locX">846</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="285964"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">FileType</attrib>
+						<attrib name="colorId">222529</attrib>
+						<attrib name="locY">386</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1071</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="286394"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">FileBranch</attrib>
+						<attrib name="colorId">222529</attrib>
+						<attrib name="locY">624</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">909</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="319451"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">Branch</attrib>
+						<attrib name="colorId">222529</attrib>
+						<attrib name="locY">643</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1145</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="318960"/>
 					</tables>
 				</erEntity>
 			</erView>
