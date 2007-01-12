@@ -40,7 +40,7 @@ proc = DbsProcessedDataset (
 
 
 block = DbsFileBlock (
-         Name="/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48"
+         Name="/this/hahah#12345"
          )
 
 print "Creating block %s" % block
