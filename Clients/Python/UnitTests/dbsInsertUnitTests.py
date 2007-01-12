@@ -44,8 +44,9 @@ apiObj.run(pri, excep = True)
 pri = DbsPrimaryDataset (Name = "Test*Het", Type="TEST")
 apiObj.run(pri, excep = True)
 
+# / is allowed
 pri = DbsPrimaryDataset (Name = "Ta/estHet", Type="TEST")
-apiObj.run(pri, excep = True)
+apiObj.run(pri, excep = False)
 
 pri = DbsPrimaryDataset (Name = primary, Type="TEST")
 apiObj.run(pri,"", excep = True)
@@ -171,20 +172,6 @@ apiObj.run(algo, excep = False)
 
 
 algo = DbsAlgorithm (ExecutableName="TestExe01", 
-		ApplicationVersion= "Tea/stVe/rsion01" + mytime, 
-		ApplicationFamily="AppFamily01", 
-		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
-							Name="MyFirstParam01", 
-							Version="V001", 
-							Type="test", 
-                                                        Annotation="This is test",
-                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
-			                              )
-	)
-apiObj.run(algo, excep = True)
-
-
-algo = DbsAlgorithm (ExecutableName="TestExe01", 
 		ApplicationVersion= "TestVersQQQ01" + mytime, 
 		ApplicationFamily="AppFami;ly01", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
@@ -217,20 +204,6 @@ algo = DbsAlgorithm (ExecutableName="Test;Exe01",
 		ApplicationFamily="AppFamily01", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
 							Name="MyFirstP;aram01", 
-							Version="V001", 
-							Type="test", 
-                                                        Annotation="This is test",
-                                                        Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
-			                              )
-	)
-apiObj.run(algo, excep = True)
-
-
-algo = DbsAlgorithm (ExecutableName="Test/Exe/01", 
-		ApplicationVersion= "TestVezzzn01" + mytime, 
-		ApplicationFamily="AppFamily01", 
-		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
-							Name="MyFir/stP/aram01", 
 							Version="V001", 
 							Type="test", 
                                                         Annotation="This is test",
@@ -352,11 +325,6 @@ proc2 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProcessed1" + mytime)
 apiObj.run(proc2, excep = False)
 
-proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta/estHet", Type="TEST"),
-		Name="TestProcessed2" + mytime)
-apiObj.run(proc, excep = True)
-
-
 proc = DbsProcessedDataset(PrimaryDataset=DbsPrimaryDataset (Name = "Ta estHet", Type="TEST"),
 		Name="TestProcessed2" + mytime)
 apiObj.run(proc, excep = True)
@@ -379,7 +347,7 @@ apiObj.run(proc, excep = True)
 
 proc = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestProce/ssed2" + mytime)
-apiObj.run(proc, excep = True)
+apiObj.run(proc, excep = False)
 
 proc = DbsProcessedDataset(PrimaryDataset=pri1,
 		Name="TestPro;cessed2" + mytime)
