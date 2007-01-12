@@ -46,9 +46,9 @@ while(x):
 try:
 	class Handler (xml.sax.handler.ContentHandler):
 		def __init__ (self):
-			#get tierList from provenence
-			self.tierList = ['DIGI','GEN', 'SIM']
+			self.tierList = []
 			self.evc = {}
+			self.parent = {}
 			self.first = True
 			self.fileList = []
 			self.block = None
@@ -61,12 +61,12 @@ try:
 			if name == 'processed-dataset':
 				print "processed-dataset found %s " % str(attrs['path'])
 				path = str(attrs['path']).split('/')
+				self.tierList = [path[2]]
 				self.processed = DbsProcessedDataset (
 						PrimaryDataset = self.primary,
 						Name = path[3],
 						PhysicsGroup = "PRODUCTION",
 						Status = "VALID",
-						#TierList=[path[2]]
 						TierList = self.tierList
 						)
 				
@@ -74,9 +74,19 @@ try:
 				print "event-collection found %s " % str(attrs['name'])
 				name = str(attrs['name']).split('/')
 				length = len(name) - 1
-				import pdb
-				#pdb.set_trace()
-				self.evc[name[length] + '.root'] = int(attrs['events'])
+				self.fileName = name[length] + '.root'
+				self.evc[self.fileName] = int(attrs['events'])
+				
+			if name == 'parent':
+				print "parent found %s " % str(attrs['name'])
+				name = str(attrs['name']).split('_')[1:]
+				pName = str(name[0])
+				for tmp in name[1:]:
+					pName = pName + '_' + str(tmp)
+				pName += '.root'
+				length = len(name) - 1
+				self.parent[self.fileName] = pName
+				
 				
 			if name == 'processing':
 				print "processing found %s " % str(attrs['executable'])
@@ -130,7 +140,7 @@ try:
 						ofw = '1'
 					self.block = DbsFileBlock (
 						Name = str(attrs['name']),
-						OpenForWriting = ofw
+						#OpenForWriting = ofw
 						)
 					print "Inserting block  %s " % self.block
 					api.insertBlock (self.processed, self.block)
@@ -149,6 +159,12 @@ try:
 				rootName = name[length]
 				if (rootName in self.evc.keys()):
 					noOfEvents = self.evc[rootName]
+					
+				parentName = ''
+				if (rootName in self.parent.keys()):
+					parentName = self.parent[rootName]
+
+					
 				tmp =  str(attrs['checksum']).split(':')
 				if (len(tmp) == 1):
 					checkSum = tmp[0]
@@ -164,6 +180,7 @@ try:
 						ValidationStatus = 'VALID',
 						FileType = str(attrs['type']),
 						#Dataset = self.processed,
+						ParentList = [parentName],
 						AlgoList = [self.algo],
 						TierList = self.tierList
 						)

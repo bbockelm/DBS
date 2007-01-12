@@ -11,12 +11,17 @@ else
 	tmpIFrom=${instanceFrom//\//_}
 	tmpITo=${instanceTo//\//_}
 	fileName="${tmpIFrom}_${tmpITo}${tmp}.xml"
-	#echo $fileName
-	cd ../../PythonAPI/
-	echo "Fetching dataset conetents from DBS-1"
-	python dbsCgiMigrate.py $instanceFrom $instanceTo $dataset get
-	mv $fileName ../Python/UserExamples/
-	cd -
+	if [ -f $fileName ] ; then
+		echo "WARNNING $fileName already exists and will be used instead of fetcihng the dataset again"
+	else
+		#echo $fileName
+		cd ../../PythonAPI/
+		echo "Fetching dataset conetents from DBS-1"
+		python dbsCgiMigrate.py $instanceFrom $instanceTo $dataset get
+		mv $fileName ../Python/UserExamples/
+		cd -
+	fi	
 	echo "Inserting dataset into DBS-2"
-	python dbsMigrateDBS1toDBS2.py $fileName
+	python dbsMigrateDBS1toDBS2.py $fileName &> ${fileName}.log
+	echo "Log of transfer is written in ${fileName}.log"
 fi
