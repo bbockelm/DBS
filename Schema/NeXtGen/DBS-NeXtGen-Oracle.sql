@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 538
+REM === Build : 547
 REM ======================================================================
 
 CREATE TABLE Person
@@ -460,10 +460,11 @@ CREATE TABLE AnalysisDataset
     Name                  varchar(500)                                                      unique not null,
     Annotation            varchar(1000)                                                     not null,
     ProcessedDS           int                                                   not null,
+    Definition            int                                                   not null,
     Type                  int                                                   not null,
-    PhysicsGroup          int                                                   not null,
     Status                int                                                   not null,
     Parent                int,
+    PhysicsGroup          int                                                   not null,
     CreatedBy             int,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModifiedBy        int,
@@ -953,16 +954,19 @@ ALTER TABLE AnalysisDataset ADD CONSTRAINT
     AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Type_FK foreign key(Type) references AnalysisDSType(ID)
+    AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDatasetPhysicsGroup_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
+    AnalysisDataset_Type_FK foreign key(Type) references AnalysisDSType(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_Parent_FK foreign key(Parent) references AnalysisDataset(ID)
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDatasetPhysicsGroup_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
