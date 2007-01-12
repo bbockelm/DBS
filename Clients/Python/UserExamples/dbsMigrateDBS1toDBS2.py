@@ -51,6 +51,7 @@ try:
 			self.parent = {}
 			self.first = True
 			self.fileList = []
+			self.blockList = []
 			self.block = None
 			print "Initilized"
 
@@ -135,9 +136,10 @@ try:
 						self.fileList = []
 						
 				if (attrs['files'] != '0'):
-					ofw = '0';
-					if (str(attrs['status']) == 'OPEN'):
-						ofw = '1'
+					#ofw = '0';
+					if (str(attrs['status']).upper() != 'OPEN'):
+						self.blockList.append(str(attrs['name']))
+						#ofw = '1'
 					self.block = DbsFileBlock (
 						Name = str(attrs['name']),
 						#OpenForWriting = ofw
@@ -147,7 +149,7 @@ try:
 				
 			if name == 'afile':
 				print "afile found %s " % str(attrs['lfn'])
-				if (len(self.fileList) == 30) :
+				if (len(self.fileList) == 50) :
 					print "Inserting files  %s " % self.fileList
 					print "block  %s " % self.block
 					api.insertFiles (self.processed, self.fileList, self.block)
@@ -170,7 +172,7 @@ try:
 					checkSum = tmp[0]
 				else:
 					checkSum = tmp[1]
-				
+
 				self.dbsfile = DbsFile (
 						Checksum = checkSum,
 						LogicalFileName = str(attrs['lfn']),
@@ -179,11 +181,11 @@ try:
 						Status = str(attrs['status']),
 						ValidationStatus = 'VALID',
 						FileType = str(attrs['type']),
-						#Dataset = self.processed,
-						ParentList = [parentName],
 						AlgoList = [self.algo],
 						TierList = self.tierList
 						)
+				if len(parentName) > 0 :
+					self.dbsfile['ParentList'] =  [parentName]
 				self.fileList.append(self.dbsfile)
 				
 		def endElement(self, name):
@@ -192,6 +194,9 @@ try:
 					print "Inserting files  %s " % self.fileList
 					print "block  %s " % self.block
 					api.insertFiles (self.processed, self.fileList, self.block)
+				for b in self.blockList:
+					print "Closing block &s " % b
+					api.closeBlock (b)
 								
 	xml.sax.parseString (data, Handler ())
 except Exception, ex:
