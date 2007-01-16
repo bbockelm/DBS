@@ -68,7 +68,7 @@ lumi2 = DbsLumiSection (
 
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'aaa1122-0909-9767-8764aaa',
+        LogicalFileName= 'ccccccccc1122-0909-9767-8764aaa',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -83,7 +83,7 @@ myfile1= DbsFile (
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'aaaa2233-0909-9767-8764aaa',
+        LogicalFileName= 'aaaa2233-uuuuu-9767-8764aaa',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -96,11 +96,13 @@ myfile2= DbsFile (
         TierList= ['SIM', 'RECO'],
         AlgoList = [algo],
         #ParentList = ['lfn01', 'lfn02']  
+        BranchList=['testbranch01', 'testbranch02']
          )
                             
 block = DbsFileBlock (
          #Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db"
-         Name="/this/hahah#12345"
+         Name="/test_primary_anzar_001/TestProcessedDS002#337da02b-8dc9-4437-8490-bca5c670ea40"
+         #Name="/this/hahah#12345"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"

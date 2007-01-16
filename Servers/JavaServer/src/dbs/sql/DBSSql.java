@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.45 $"
- $Id: DBSSql.java,v 1.45 2007/01/10 23:18:30 afaq Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSSql.java,v 1.46 2007/01/12 16:18:30 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -843,6 +843,32 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+        public static PreparedStatement listFileBranches(Connection conn, String fileID) throws SQLException {
+                String sql = "SELECT br.ID as ID, \n " +
+                        "br.Name as NAME, \n" +
+                        "br.CreationDate as CREATION_DATE, \n" +
+                        "br.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM Branch br \n" +
+                        "JOIN FileBranch fb \n" +
+                                "ON fb.Branch = br.id \n" +
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = br.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = br.LastModifiedBy \n";
+                if(fileID != null) {
+                        sql += "WHERE fb.Fileid = ? \n";
+                }
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if(fileID != null) {
+                        ps.setString(1, fileID);
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 	public static PreparedStatement listFileAlgorithms(Connection conn, String fileID) throws SQLException {
 		String sql = "SELECT algo.id as ID, \n" +

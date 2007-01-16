@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApi.java,v 1.51 2007/01/12 16:18:29 sekhri Exp $"
+ $Revision: 1.52 $"
+ $Id: DBSApi.java,v 1.52 2007/01/12 20:31:15 afaq Exp $"
  *
 */
 
@@ -637,7 +637,7 @@ public class DBSApi {
 				topLevel.add(file);
 				++index;
 			} 
-			if (name.equals("file-lumi-section") ) 
+			if (name.equals("file-lumi_section") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
 			if (name.equals("file-data_tier") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("data_tier"))).add(e.attributes);
@@ -668,6 +668,7 @@ public class DBSApi {
 				file.put("data_tier", new Vector());
 				file.put("parent", new Vector());
 				file.put("algorithm", new Vector());
+				file.put("branch", new Vector());
 				topLevel.add(file);
 				++index;
 			} 
@@ -679,6 +680,8 @@ public class DBSApi {
 				((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
 			if (name.equals("algorithm") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
+                        if (name.equals("branch") ) 
+                                ((Vector)(((Hashtable)topLevel.get(index)).get("branch"))).add(e.attributes);
 			if (name.equals("processed_datatset") ) {
 				psDS = e.attributes;
 			}

@@ -23,7 +23,7 @@ algo = DbsAlgorithm (
          ApplicationVersion= "TestVersion01",
          ApplicationFamily="AppFamily01",
          ParameterSetID=DbsQueryableParameterSet(
-                              Hash="0010987457918447598798685", 
+                              Hash="001234565798685",
                               Name="MyFirstParam01", 
                               Version="V001",
                               Type="test",
@@ -31,6 +31,7 @@ algo = DbsAlgorithm (
                               Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
                               )
          )
+
 
 print "Creating an algorithm %s" % algo
 

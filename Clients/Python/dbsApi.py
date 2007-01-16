@@ -601,7 +601,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, dataset, blockName="", patternLFN="*"):
+  def listFiles(self, dataset, blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -616,6 +616,8 @@ class DbsApi(DbsConfig):
          
         patternLFN: Defaulted to "*" means files (That match dataset and/or LFN pattern criteria). 
         If the patternLFN patterm is given, it will be matched against the content as a shell glob pattern.
+
+        details: if not None, then server will return details like list of Tier, Parents, etc etc.
          
     raise: DbsApiException.
 
@@ -646,7 +648,14 @@ class DbsApi(DbsConfig):
 
     path = self._path(dataset)
     # Invoke Server.
-    data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 'block_name' : blockName, 'pattern_lfn' : patternLFN }, 'GET')
+    if details not in ("", None):
+       data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
+                                    'block_name' : blockName, 
+                                    'pattern_lfn' : patternLFN, 'detail' : 'true' }, 'GET')
+    else:
+       data = self._server._call ({ 'api' : 'listFiles', 
+                                    'path' : path, 'block_name' : blockName, 
+                                    'pattern_lfn' : patternLFN}, 'GET')
     logging.info(data)
 
 
@@ -671,23 +680,26 @@ class DbsApi(DbsConfig):
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        )
 
-          if name == 'data_tier':
+          if name == 'file-data_tier':
             self.currFile['TierList'].append(str(attrs['name']))
 
-          if name == 'lumi_section':
+          if name == 'file-branch':
+            self.currFile['BranchList'].append(str(attrs['name']))
+
+          if name == 'file-lumi_section':
              self.currFile['LumiList'].append(DbsLumiSection(
                                                    LumiSectionNumber=long(attrs['lumi_section_number']),
-                                                   StartEventNumber=long(attrs['start_event']),
-                                                   EndEventNumber=long(attrs['end_event']),   
-                                                   LumiStartTime=str(attrs['lumi_start']),
-                                                   LumiEndTime=str(attrs['lumi_end']),
+                                                   StartEventNumber=long(attrs['start_event_number']),
+                                                   EndEventNumber=long(attrs['end_event_number']),   
+                                                   LumiStartTime=str(attrs['lumi_start_time']),
+                                                   LumiEndTime=str(attrs['lumi_end_time']),
                                                    RunNumber=long(attrs['run_number']),
                                                    CreationDate=str(attrs['creation_date']),
                                                    CreatedBy=str(attrs['created_by']),
                                                    LastModificationDate=str(attrs['last_modification_date']),
                                                    LastModifiedBy=str(attrs['last_modified_by']), 
                                               ))
-          if name == 'algorithm':
+          if name == 'file-algorithm':
             self.currFile['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name']),
@@ -696,6 +708,22 @@ class DbsApi(DbsConfig):
                                                          LastModificationDate=str(attrs['last_modification_date']),
                                                          LastModifiedBy=str(attrs['last_modified_by']),
                                               ) ) 
+          if name == 'file-parent':
+             self.currFile['ParentList'].append(DbsFile (
+                                       LogicalFileName=str(attrs['lfn']),
+                                       FileSize=long(attrs['size']),
+                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       Status=str(attrs['status']),
+                                       Block=DbsFileBlock(Name=str(attrs['block_name'])),
+                                       FileType=str(attrs['type']),
+                                       Checksum=str(attrs['checksum']),
+                                       QueryableMetadata=str(attrs['queryable_meta_data']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       ))
+
         def endElement(self, name):
           if name == 'file':
              result.append(self.currFile)
@@ -1211,6 +1239,9 @@ class DbsApi(DbsConfig):
 
        for tier in file.get('TierList',[]):
             xmlinput += "<data_tier name='"+tier+"'/>"
+
+       for branch in file.get('BranchList',[]):
+            xmlinput += "<branch name='"+branch+"'/>"
     
        # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
        for parent in file.get('ParentList',[]):

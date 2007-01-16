@@ -34,8 +34,8 @@ class  DbsFile(DbsBase):
               ValidationStatus, User may not need to set this variable always
               Dataset, User may not need to set this variable always
               Block, User may not need to set this variable always
-              lumiList, User may not need to set this variable always
-              tierList, User may not need to set this variable always
+              LumiList, User may not need to set this variable always
+              TierList, User may not need to set this variable always
    """
    def __init__(self, **args):
       DbsBase.__init__(self)
@@ -47,6 +47,7 @@ class  DbsFile(DbsBase):
       self.setdefault('TierList', [])
       self.setdefault('AlgoList', [])
       self.setdefault('ParentList', [])
+      self.setdefault('BranchList', [])
       # Read in all User provided values
       self.update(args)
       # Verifying that data types of user provide parameters is correct
