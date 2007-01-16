@@ -20,6 +20,9 @@ ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
 rm -f DBS-NeXtGen-MySQL.sql.TMP.*
 #
+dos2unix DBS-NeXtGen-MySQL.sql
+#
+#
 date=`date +%m%d%Y%H%M%S`
 if [ -f $ddl_file ]; then
    mv ${ddl_file}  ${ddl_file}.SAVED.${date}

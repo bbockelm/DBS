@@ -30,6 +30,9 @@ stamp_trig=trig_ts_ddl.tmp
 rm -f $seq_ddl
 rm -f $trig_ddl
 #
+#
+dos2unix DBS-NeXtGen-Oracle.sql
+#
 date=`date +%m%d%Y%H%M%S`
 if [ -f $ddl_file ]; then
    mv ${ddl_file}  ${ddl_file}.SAVED.${date}
