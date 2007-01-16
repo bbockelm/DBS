@@ -195,7 +195,7 @@ try:
 					print "block  %s " % self.block
 					api.insertFiles (self.processed, self.fileList, self.block)
 				for b in self.blockList:
-					print "Closing block &s " % b
+					print "Closing block %s " % b
 					api.closeBlock (b)
 								
 	xml.sax.parseString (data, Handler ())
