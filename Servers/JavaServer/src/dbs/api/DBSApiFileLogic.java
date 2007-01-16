@@ -204,12 +204,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
          public void listFileBranches(Connection conn, Writer out, String lfn) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
-                System.out.println("listFileBranches:::::::");
                 try {
                         ps = DBSSql.listFileBranches(conn, getFileID(conn, lfn, true));
                         rs =  ps.executeQuery();
                         while(rs.next()) {
-                                System.out.println("listFileBranches::rs.next()");
                                 out.write(((String) "<file-branch id='" + get(rs, "ID") +
                                         "' name='" + get(rs, "NAME") +
                                         "' creation_date='" + getTime(rs, "CREATION_DATE") +
