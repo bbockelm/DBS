@@ -1,8 +1,8 @@
 // Global variables
 var GLOBAL_CELL='cell_1';
-var GLOBAL_STEP=5;
-var DBSDD='http://cmsdbs.cern.ch/discovery/';
-var DBSDD_EXPERT=DBSDD+'expert';
+//var GLOBAL_STEP=5;
+//var DBSDD='http://cmsdbs.cern.ch/discovery/';
+//var DBSDD_EXPERT=DBSDD+'expert';
 
 // Override masthead
 YAHOO.namespace("cms.dmwt");
@@ -337,7 +337,7 @@ function underlineLink(tag) {
   }
 }
 function ShowBlockInfo(tableId){
-  underlineLink("Blocks");
+  underlineLink("Both");
   var elem=document.getElementsByName("blockInfo");
   for(var i=0;i<elem.length;i++) {
       elem[i].className="show_cell";
@@ -620,6 +620,9 @@ function ClearCells(idx,total) {
  * but it should send idx-1 to getData since all response are from 0-max-1
  */
 function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
+   UpdateResultIndex(idx,total);
+   // invoke next chunk of data
+   ajaxNextGetData(dbs,site,app,prim,tier,proc,idx);
    var found=0;
    for(i=0;i<total;i++) {
       var id=document.getElementById('cell_'+i);
@@ -649,27 +652,41 @@ function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
 //      ShowWheel('__parents');
 //      ShowWheel('__appConfigs');
       ajaxNextGetData(dbs,site,app,prim,tier,proc,idx-1);
-//      ajaxNextGenParentsGraph(idx-1,dbs,site,app,prim,tier,proc);
    }
 }
-function BuildBar(from,to,total,dbs,site,app,prim,tier,proc) {
+function nPages(tot,max) {
+    if(tot%max) {
+       return (tot-tot%max)/max+1;
+    }
+    return tot/max
+}
+function BuildBar(from,to,total,GLOBAL_STEP,dbs,site,app,prim,tier,proc) {
+//alert('BuildBar to='+to+' tot='+total+' step='+GLOBAL_STEP);
+//   var STEP=nPages(total,GLOBAL_STEP);
+//   if(STEP>total) {
+//      STEP=total;
+//      if(to>STEP) {
+//         to=STEP;
+//      }
+//   }
+//alert('BuildBar to='+to+' tot='+total+' step='+STEP);
    args=',\''+dbs+'\',\''+site+'\',\''+app+'\',\''+prim+'\',\''+tier+'\',\''+proc+'\'';
    var t='<table class="cell"><tr><td>Result pages:</td>';
-   var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+args+');BuildBar(1,'+GLOBAL_STEP+','+total+args+')">start</a></td>';
+   var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+args+');BuildBar(1,'+GLOBAL_STEP+','+total+','+GLOBAL_STEP+args+')">start</a></td>';
    t=t+td;
    if(to>total) {
       to=total;
    }
    if(from<1) {
       from=1;
-      if(to<5) {
-         to=5;
+      if(to<GLOBAL_STEP) {
+         to=GLOBAL_STEP;
       }
    }
    if(from!=1) {
-      var backFrom=to-5;
+      var backFrom=to-GLOBAL_STEP;
       var backTo=to-1;
-      var td='<td class="fixed" id="cell_less" onMouseOver="CoverOver(\'cell_less\')" onMouseOut="CoverOut(\'cell_less\')"><a href="javascript:BuildBar('+backFrom+','+backTo+','+total+args+');JumpToResult('+backFrom+','+total+args+')">&#171;</a></td>';
+      var td='<td class="fixed" id="cell_less" onMouseOver="CoverOver(\'cell_less\')" onMouseOut="CoverOut(\'cell_less\')"><a href="javascript:BuildBar('+backFrom+','+backTo+','+total+','+GLOBAL_STEP+args+');JumpToResult('+backFrom+','+total+args+')">&#171;</a></td>';
       t=t+td;
    } else {
       var td='<td class="fixed">&#32;</td>';
@@ -685,14 +702,14 @@ function BuildBar(from,to,total,dbs,site,app,prim,tier,proc) {
    }
    if(to!=total) {
       var nextFrom=from+1;
-      var nextTo=from+5;
-      var td='<td class="fixed" id="cell_more" onMouseOver="CoverOver(\'cell_more\')" onMouseOut="CoverOut(\'cell_more\')"><a href="javascript:BuildBar('+nextFrom+','+nextTo+','+total+args+');JumpToResult('+nextFrom+','+total+args+')">&#187;</a></td>';
+      var nextTo=from+GLOBAL_STEP;
+      var td='<td class="fixed" id="cell_more" onMouseOver="CoverOver(\'cell_more\')" onMouseOut="CoverOut(\'cell_more\')"><a href="javascript:BuildBar('+nextFrom+','+nextTo+','+total+','+GLOBAL_STEP+args+');JumpToResult('+nextFrom+','+total+args+')">&#187;</a></td>';
       t=t+td;
    } else {
       var td='<td class="fixed">&#32;</td>';
       t=t+td;
    }
-   var td='<td class="fixed" id="cell_end" onMouseOver="CoverOver(\'cell_end\')" onMouseOut="CoverOut(\'cell_end\')"><a href="javascript:JumpToResult('+total+','+total+args+');BuildBar('+(total-GLOBAL_STEP)+','+total+','+total+args+')">end</a></td>';
+   var td='<td class="fixed" id="cell_end" onMouseOver="CoverOver(\'cell_end\')" onMouseOut="CoverOut(\'cell_end\')"><a href="javascript:JumpToResult('+total+','+total+args+');BuildBar('+(total-GLOBAL_STEP)+','+total+','+total+','+GLOBAL_STEP+args+')">end</a></td>';
    t=t+td;
    t=t+'</tr></table>';
    var id=document.getElementById('progressBar');
@@ -703,8 +720,24 @@ function BuildBar(from,to,total,dbs,site,app,prim,tier,proc) {
 function Choose(tag) {
    GLOBAL_CELL=tag;
    var id=document.getElementById(tag);
-   if(id) {
+   if (id) {
       id.className="choosen";
+   }
+}
+function UpdateResultIndex(idx,tot) {
+   var id=document.getElementById('results_index');
+   if (id) {
+      id.className=idx+"_"+tot;
+   }
+}
+function ShowPageResults() {
+   var id=document.getElementById('results_index');
+   if (id) {
+       var s = id.className; 
+       var arr = s.split("_");
+       var idx = arr[0];
+       var tot = arr[1];
+       ClearCells(idx-1,tot);
    }
 }
 function BuildBar_orig(from,to,total,ref) {
@@ -778,4 +811,58 @@ function SplitBlockName() {
       var bName = arr[i].innerHTML;
       arr[i].innerHTML=divideName(bName);
   }
+}
+function PutKeyword(key) {
+  var id=document.getElementById('keywordSelector');
+  if(id) {
+     var v = id.value;
+     if(v!='...') {
+        id.value=v+key+':\"<value>\" AND ';
+     }
+  }
+}
+function ClearKeywordsSelector() {
+  var id=document.getElementById('keywordSearch_keywordsSelector');
+  if (id) {
+      var childrens=id.childNodes;
+      for(i=0;i<id.childNodes.length;i++) {
+          if(id.childNodes[i].value=='...') {
+             id.childNodes[i].selected="selected";
+          } else {
+             id.childNodes[i].selected="";
+          }
+      } 
+  } 
+}
+function ClearKeywordsInputValue() {
+  var id=document.getElementById('keywordSelector');
+  if(id) {
+     id.value="";
+  }
+}
+function KeywordHelp(help) {
+  var id=document.getElementById('kw_help');
+  if(id) {
+     id.innerHTML='<div class="float_gray_box">'+help+'</div>';
+  }
+}
+function GetValue(tag) {
+  var id=document.getElementById(tag);
+  if(id) {
+     return id.value;
+  }
+  return;
+}
+function ClearTextInForm(tag) {
+  var id=document.getElementById(tag);
+  if (id) {
+      id.text="";
+  }
+}
+function ClearKeywordForm() {
+  ClearTextInForm('kw_algoSelector');
+  ClearTextInForm('kw_primSelector');
+  ClearTextInForm('kw_procSelector');
+  ClearTextInForm('kw_tierSelector');
+  ClearTextInForm('kw_runsSelector');
 }
