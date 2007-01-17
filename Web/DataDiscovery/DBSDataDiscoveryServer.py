@@ -121,7 +121,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         print "DBSDataDiscoveryServer '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
-                           'siteForm': ("","") # (dbsInst,site)
+                           'siteForm': ("",""), # (dbsInst,site)
+                           'searchForm': ("",) # (dbsInst,)
                           }
 
     def setQuiet(self):
@@ -335,17 +336,21 @@ class DBSDataDiscoveryServer(DBSLogger):
         menuForm=self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
         dbsInst,site=self.formDict['siteForm']
         siteForm=self.siteForm(dbsInst,site)
+        dbsInst=self.formDict['searchForm']
+        searchForm=self.searchForm(dbsInst)
            
         nameSpace = {
                      'host'         : self.dbsdd,
                      'userMode'     : self.userMode,
                      'navigatorForm': menuForm,
-                     'searchForm'   : self.searchForm(),
+                     'searchForm'   : searchForm,
                      'siteForm'     : siteForm,
                      'dbsShortNames': self.dbsShortNames,
                      'glossary'     : self.glossary(),
                      'frontPage'    : 0,
                      'dbsGlobal'    : DBSGLOBAL,
+                     'DBSDD'        : self.dbsdd,
+                     'step'         : GLOBAL_STEP,
                      'tip'          : tip()
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
@@ -441,7 +446,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     summary.exposed = True
     
-    def searchHelper(self,keywords="",restrictDict={}):
+    def searchHelper(self,keywords=""):
         """
            Helper function which invoke L{DBSHelper.search} to find out data based on input keywords.
            @type keywords: string
@@ -449,31 +454,46 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype: list
            @return: a list of [(primD,tier,App version, App family, App exe)]
         """
-        pList=[]
-#        if len(keywords):
-#           pList=string.split(keywords)
-#        oList = self.helper.search(pList,restrictDict)
-        oList = self.helper.search(keywords,pList,restrictDict)
+        oList = self.helper.search(keywords)
         return oList
         
-    def searchForm(self):
+    def searchForm(self,firstDBS=""):
         """
            Search any match in DB for given keywords. The search done over
            meta-data tables.
         """
-        t = Template(CheetahDBSTemplate.templateSearchTable, searchList=[{}])
+#        t = Template(CheetahDBSTemplate.templateKeywords, searchList=[])
+#        help=str(t)
+
+        if self.ddConfig.iface()=='cgi': searchFunc="javascript:ajaxSearch()"
+        else: searchFunc="javascript:ClearTag('progressBar');ajaxKeywordSearch()"
+
+        # FIXME, TODO: firstDBS should be passed here
+        if not firstDBS: firstDBS='dbs_new_era_v07'
+        keyList=['run','block','lfn','tier','release','primDS','procDS','lumiSection']
+        keyList.sort()
+        nameSpace = {
+                     'firstDBS' : firstDBS,
+                     'dbsList'  : self.dbsList,
+                     'keyList'  : keyList,
+                     'searchFunction': searchFunc
+                    }
+        t = Template(CheetahDBSTemplate.templateSearchTable, searchList=[nameSpace])
         page = str(t)
         self.firstSearch=0
         return page
         
-    def search(self,keywords="",**kwargs):
+    def search(self,dbsInst,keywords="",**kwargs):
         """
            Search any match in DB for given keywords. The search done over
            meta-data tables.
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results">"""
+        if  self.helper.iface=='cgi':
+            page="""<ajax-response><response type="object" id="results">"""
+        else:
+            page="""<ajax-response><response type="object" id="results_kw">"""
         endAjaxMsg="</response></ajax-response>"
         self.firstSearch=0
         if keywords and not validator(keywords):
@@ -486,104 +506,49 @@ class DBSDataDiscoveryServer(DBSLogger):
         oList= []
         # parse keywords and search for DBSINST
         dbsList=appList=tierList=siteList=primList=[]
-        if self.userMode:
-           self.helperInit(DBSGLOBAL)
-           oList=self.searchHelper(keywords)
-        else:
-           if  not len(dbsList):
+        if  string.lower(dbsInst)=='all':
+            if self.userMode:
+               dbsList.append(DBSGLOBAL)
+            else:
                dbsList=self.dbsList
-           for dbsInst in dbsList:
-               print "dbs",dbsInst
-               self.helperInit(dbsInst)
-               oList+=self.searchHelper(keywords)
-        nameSpace = {
-                     'firstSearch': self.firstSearch, 
-                     'oList'      : oList, 
-                     'userMode'   : self.userMode,
-                     'keywords'   : keywords
-                    }
-        t = Template(CheetahDBSTemplate.templateDataFromSelection, searchList=[nameSpace])
-        page+= str(t)
+        else:
+            if not self.dbsList.count(dbsInst):
+               msg="Wrong DBS isntance, '%s'\nList of known DBS instances:\n"%dbsInst
+               msg+=formattingListPrint(self.dbsList)
+               page+=msg+endAjaxMsg
+               return page
+            dbsList=[dbsInst]
+        if  self.helper.iface=='cgi':
+            for dbsInst in dbsList:
+                self.helperInst(dbsInst)
+                oList+=self.searchHelper(keywords)
+            nameSpace = {
+                         'firstSearch': self.firstSearch, 
+                         'oList'      : oList, 
+                         'userMode'   : self.userMode,
+                         'keywords'   : keywords
+                        }
+            t = Template(CheetahDBSTemplate.templateDataFromSelection, searchList=[nameSpace])
+            page+= str(t)
+        else:
+            for dbsInst in dbsList:
+                self.helperInit(dbsInst)
+                oList=self.searchHelper(keywords)
+                nameSpace = {
+                             'firstSearch': self.firstSearch, 
+                             'oList'      : oList, 
+                             'userMode'   : self.userMode,
+                             'keywords'   : keywords,
+                             'dbs'        : dbsInst
+                            }
+                t = Template(CheetahDBSTemplate.templateDataFromKeywordSelection, searchList=[nameSpace])
+                page+= str(t)
         page+=endAjaxMsg
-        if self.verbose:
+#        if self.verbose:
+        if 1:
            print page
         return page
     search.exposed = True
-
-    def advancedSearch(self,keywords="",**kwargs):
-        """
-           Search any match in DB for given keywords. The search done over
-           meta-data tables.
-        """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results">"""
-        endAjaxMsg="</response></ajax-response>"
-#        page = self.genTopHTML()
-        self.firstSearch=0
-#        page+= self.genVisiblePanel('Search')
-        if keywords and not validator(keywords):
-           page+="""
-<hr class="dbs" />
-<div class="show_red_bold">Your search expression <p><em>%s</em></p> is not valid</div>
-"""%keywords
-#           page+= self.genBottomHTML()
-           page+=endAjaxMsg
-           return page
-        oList= []
-        # parse keywords and search for DBSINST
-        dbsList=appList=tierList=siteList=primList=[]
-#        pList=[]
-#        if len(keywords):
-#           pList=string.split(keywords)
-#        for word in pList:
-#            if string.find(string.lower(word),":")>-1:
-#               p,w = string.split(string.lower(word),":")
-#               print p,w
-#               if p=="dbs":
-#                  for dbs in self.dbsList:
-#                      if string.lower(dbs)==w:
-#                         dbsList.append(dbs)
-#               elif p=="app":
-#                  appList.append(w)
-#               elif p=="tier":
-#                  tierList.append(w)
-#               elif p=="site":
-#                  siteList.append(w)
-#               elif p=="prim":
-#                  primList.append(w)
-#        restrictDict={}
-#        restrictDict["dbs"] =dbsList
-#        restrictDict["site"]=siteList
-#        restrictDict["app"] =appList
-#        restrictDict["prim"]=primList
-#        restrictDict["tier"]=tierList
-        if self.userMode:
-#           oList=self.searchHelper(keywords,restrictDict)
-           self.helperInit(DBSGLOBAL)
-           oList=self.searchHelper(keywords)
-        else:
-           if  not len(dbsList):
-               dbsList=self.dbsList
-           for dbsInst in dbsList:
-               print "dbs",dbsInst
-               self.helperInit(dbsInst)
-               oList+=self.searchHelper(keywords)
-        nameSpace = {
-                     'firstSearch': self.firstSearch, 
-                     'oList'      : oList, 
-                     'userMode'   : self.userMode,
-                     'keywords'   : keywords
-                    }
-        t = Template(CheetahDBSTemplate.templateDataFromSelection, searchList=[nameSpace])
-        page+= str(t)
-#        page+= self.genBottomHTML()
-        page+=endAjaxMsg
-        if self.verbose:
-#        if 1:
-           print page
-        return page
-    advancedSearch.exposed = True
 
     def getSummary(self):
         """
@@ -915,7 +880,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         if tier=="*":
            tierHTML='All'
         url="""%s/getData?dbsInst=%s&amp;site=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;ajax=0"""%(self.dbsdd,dbsInst,siteHTML,app,primD,tierHTML,proc)
-        page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
+        page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
         return page
 
     def getDatasetList(self,app="*",prim="*",tier="*",proc="*"):
@@ -925,7 +890,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         dList=[]
         if (proc and proc!="*") and app=="*" and prim=="*":
-           dList=[proc]
+           dList=string.split(proc,",")
         elif proc=="*" and (app and app!="*") and (prim and prim!="*"):
            dList = self.helper.getDatasetsFromApp(app,prim,tier)
         elif proc=="*" and app=="*" and (prim and prim!="*"):
@@ -972,25 +937,34 @@ class DBSDataDiscoveryServer(DBSLogger):
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
         t1=time.time()
-#        datasetsList = self.helper.getDatasetsFromApp(appPath,primD,tier)
         datasetsList = self.getDatasetList(app=appPath,prim=primD,tier=tier,proc=proc)
         nDatasets=len(datasetsList)
+
+#        print "\n\n##### n=",nDatasets,_idx,proc,datasetsList,"\n\n"
+        if _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
+           return ""
+
         t2=time.time()
         self.dbsTime=(t2-t1)
         regList=[]
         bList=[]
         id=0
 
-
+#        print "\n\n#### getDataHelper",nDatasets,nPages(nDatasets,RES_PER_PAGE)
         # the view and process page should be generated once
         if  not _idx:
             nameSpace = {'leftBar' : leftBar}
             t = Template(CheetahDBSTemplate.templateLeftBar, searchList=[nameSpace])
             page+=str(t)
 
+            step=GLOBAL_STEP
+            pages = nPages(nDatasets,RES_PER_PAGE)
+            if step>pages: step=pages
             nameSpace = {
                          'idx'     : _idx,
-                         'tot'     : nDatasets,
+                         'step'    : step,
+                         'tot'     : pages,
+#                         'tot'     : nDatasets,
                          'dbsInst' : dbsInst,
                          'site'    : site,
                          'app'     : app,
@@ -1004,8 +978,16 @@ class DBSDataDiscoveryServer(DBSLogger):
 
 #        jsPage="<!-- parents\n"
         # begin of response tag
-        page+="""<span id="results_response_%s" class="show_inline">"""%_idx
-        page+="""<script type="text/javascript">ClearTag('cell_waiting');ClearCells(%s,%s)</script>"""%(_idx,nDatasets)
+
+#        page+="""<span id="results_response_%s" class="show_inline">"""%_idx
+#        page+="""<script type="text/javascript">ClearTag('cell_waiting');ClearCells(%s,%s)</script>"""%(_idx,nDatasets)
+
+        className="hide"
+        if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
+           className="show_inline"
+        className
+        page+="""<span id="results_response_%s" class="%s">"""%(_idx,className)
+        page+="""<script type="text/javascript">ShowPageResults()</script>"""
         self.dbsTime=(t2-t1)
         for idx in xrange(0,nDatasets):
             ttt1 = time.time()
@@ -2150,7 +2132,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace={
                    'description' : description
                   }
-        t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+        t = Template(CheetahDBSTemplate.templateDescription, searchList=[nameSpace])
         page+=str(t)
         page+=self.genBottomHTML()
 #        page+="</response></ajax-response>"
@@ -2159,6 +2141,26 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getDataDescription.exposed=True
+
+    def getFloatBox(self,title="",description="",**kwargs):
+        """ 
+            Get data description.
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="floatDataDescription">"""
+        nameSpace={
+                   'title'       : title,
+                   'description' : description
+                  }
+        t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getFloatBox.exposed=True
 
     def genTreeElement(self,iParent,dataset):
         # pass here node,parent pair, as an example we pass 'newNode',node
@@ -2198,14 +2200,24 @@ class DBSDataDiscoveryServer(DBSLogger):
         return p
     addTreeElement.exposed=True
 
-    def dummy(self,**kwargs):
-        page=self.genTopHTML()
+    def dummy(self,arr=[],**kwargs):
+#        print "\n\n#### dummy",arr,type(arr)
+        iList=string.split(arr,",")
+        print iList
+        print "\n\n"
+#        page=self.genTopHTML()
+        cherrypy.response.headerMap['Content-Type'] = "text/xml"
+        page="""<ajax-response><response type="object" id="dummy">"""
         nameSpace = {
                      'firstSearch': 0 
                     }
         t = Template(CheetahDBSTemplate.templateDummy, searchList=[nameSpace])
         page+= str(t)
-        page+=self.genBottomHTML()
+        page+="</response></ajax-response>"
+#        page+=self.genBottomHTML()
+#        if self.verbose:
+        if 1:
+           print page
         return page
     dummy.exposed=True
 #
