@@ -60,8 +60,8 @@ class DBSHelper(DBSLogger):
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
       try:
-         self.dbsDBs      = DBSDB(self.verbose)
-         self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
+         self.dbsDBs      = DBSDB(self.iface,self.verbose)
+#         self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
       except:
          if self.verbose:
             print "WARNING! some of the functionality will be disable due to missing authentication"
@@ -359,9 +359,6 @@ class DBSHelper(DBSLogger):
       if self.iface=="cgi":
          return self.api.listBlocks(datasetPath,app,events)
       else:
-#         empty,prim,tier,proc = string.split(datasetPath,"/")
-#         dataset = "/%s/%s"%(prim,proc)
-#         return self.api.listBlocks(datasetPath,web=1)
          return self.api.listBlocks(datasetPath)
   ### END OF WRAPPER ###
 
@@ -537,17 +534,33 @@ class DBSHelper(DBSLogger):
       """
       result=""
       try:
-         result= self.dbsDB[self.dbsInstance].dbsEngine.execute(q)
+         result= self.dbsDBs.engine[self.dbsInstance].execute(q)
       except:
          # if we fail because of connection drop let's reconnect again
 	 try:
             self.setDBSDLS(self.dbsInstance)
-	    result= self.dbsDB[self.dbsInstance].dbsEngine.execute(q)
+	    result= self.dbsDBs.engine[self.dbsInstance].execute(q)
 	 except:
             printExcept()
             raise "Fail to execute \n\n%s\n\n"%q
 	 pass
       return result
+
+  def connectToDB(self):
+      self.setDBSDLS(self.dbsInstance)
+      con=""
+      try:
+          con = self.dbsDBs.connect(self.dbsInstance)
+      except Exception, ex:
+         # if we fail because of connection drop let's reconnect again
+	 try:
+             # try second time, but sleep for 2 seconds before retry
+             time.sleep(2)
+             con = self.dbsDBs.connect(self.dbsInstance)
+         except Exception, ex:
+             raise DbsDatabaseError(args=ex)
+         pass
+      return con
 
   def getSQLAlchemyResult(self,sel):
       """
@@ -558,9 +571,31 @@ class DBSHelper(DBSLogger):
          @rtype : SQLAlchemy query object 
          @return: results of the query
       """
+      res = []
+      try:
+          con = self.connectToDB()
+          res = con.execute(sel)
+          con.close()
+      except:
+          msg="While connecting to %s exception was thrown:\n"%self.dbsInstance
+          msg+=getExcept()
+          res=[msg]
+          pass
+      return res
+
+  def getSQLAlchemyResult_orig(self,sel):
+      """
+         Set DBS instance and
+         execute given query, if fails throws exception, including query
+         @type  sel: SQLAlchemy select object
+         @param sel: SQL query written in SQLAlchemy
+         @rtype : SQLAlchemy query object 
+         @return: results of the query
+      """
       self.setDBSDLS(self.dbsInstance)
       try:
-          con = self.dbsDBs.engine[self.dbsInstance].connect()
+#          con = self.dbsDBs.engine[self.dbsInstance].connect()
+          con = self.dbsDBs.connect(self.dbsInstance)
           res = con.execute(sel)
           con.close()
       except Exception, ex:
@@ -569,7 +604,8 @@ class DBSHelper(DBSLogger):
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
              self.dbsDBs.connect()
-             con = self.dbsDBs.engine[self.dbsInstance].connect()
+#             con = self.dbsDBs.engine[self.dbsInstance].connect()
+             con = self.dbsDBs.connect(self.dbsInstance)
              res = con.execute(sel)
              con.close()
          except Exception, ex:
@@ -592,9 +628,9 @@ class DBSHelper(DBSLogger):
          @rtype : SQLAlchemy table object
          @return: table alias
       """
-      return self.dbsDBs.getTable(tableName,aliasName)
+      return self.dbsDBs.getTable(self.dbsInstance,tableName,aliasName)
       
-  def search(self,searchString,pList=[],rDict={}):
+  def search(self,searchString):
       """
          Retrieves a summary information from DB. It makes join over
          primary Dataset, data tier, application. The idea is simlar to iTunes.
@@ -617,43 +653,104 @@ class DBSHelper(DBSLogger):
          @rtype: list
          @return: a list of [(primD,tier,App version, App family, App exe)]
       """
-      if not validator(searchString):
-         msg = "Wrong expression '%s'"%searchString
-         raise msg
-      tprd = self.alias('t_processed_dataset','tprd')
-      tpm  = self.alias('t_primary_dataset','tpm')
-      tpn  = self.alias('t_processing_name','tpn')
-      tp   = self.alias('t_processing','tp')
-      tdt  = self.alias('t_data_tier','tdt')
-      tapp = self.alias('t_application','tapp')
-      tapc = self.alias('t_app_config','tapc')
-      tapf = self.alias('t_app_family','tapf')
-      tpset= self.alias('t_parameter_set','tpset')
-      sel = sqlalchemy.select([tpm.c.name,tdt.c.name,tapp.c.app_version,
-                               tapf.c.name,tapp.c.executable],
-                   from_obj=[
-                              tprd.outerjoin(tdt,onclause=tdt.c.id==tprd.c.data_tier)
-                              .outerjoin(tpn,onclause=tpn.c.id==tprd.c.name)
-                              .outerjoin(tpm,onclause=tpm.c.id==tprd.c.primary_dataset)
-                              .outerjoin(tp,onclause=tp.c.primary_dataset==tpm.c.id)
-                              .outerjoin(tapc,onclause=tp.c.app_config==tapc.c.id)
-                              .outerjoin(tpset,onclause=tapc.c.parameter_set==tpset.c.id)
-                              .outerjoin(tapp,onclause=tapc.c.application==tapp.c.id)
-                              .outerjoin(tapf,onclause=tapp.c.app_family==tapf.c.id)
-                            ],
-                   order_by=[tpm.c.name,tdt.c.name,
-                             tapp.c.app_version,tapf.c.name,tapp.c.executable],distinct=True
-                             )
-      result = self.getSQLAlchemyResult(sel)
+      if  not validator(searchString):
+          msg = "Wrong expression '%s'"%searchString
+          raise msg
+
+      self.connectToDB()
+
       oList  = []
-      # loop over results and find a match to list of keywords from pList.
-      for iTup in result:
-          tup = iTup.__dict__['_RowProxy__row'] # get real tuple, rather then instance from SQL object
-          searchList=toLower(tupleToList(tup))
-#          print searchList,searchString,constructExpression(searchString,'searchList')
-          if eval(constructExpression(searchString,'searchList')):
-             oList.append((self.dbsInstance,)+tup)
+      if  self.iface=='cgi':
+          tprd = self.alias('t_processed_dataset','tprd')
+          tpm  = self.alias('t_primary_dataset','tpm')
+          tpn  = self.alias('t_processing_name','tpn')
+          tp   = self.alias('t_processing','tp')
+          tdt  = self.alias('t_data_tier','tdt')
+          tapp = self.alias('t_application','tapp')
+          tapc = self.alias('t_app_config','tapc')
+          tapf = self.alias('t_app_family','tapf')
+          tpset= self.alias('t_parameter_set','tpset')
+          sel = sqlalchemy.select([tpm.c.name,tdt.c.name,tapp.c.app_version,
+                                   tapf.c.name,tapp.c.executable],
+                       from_obj=[
+                                  tprd.outerjoin(tdt,onclause=tdt.c.id==tprd.c.data_tier)
+                                  .outerjoin(tpn,onclause=tpn.c.id==tprd.c.name)
+                                  .outerjoin(tpm,onclause=tpm.c.id==tprd.c.primary_dataset)
+                                  .outerjoin(tp,onclause=tp.c.primary_dataset==tpm.c.id)
+                                  .outerjoin(tapc,onclause=tp.c.app_config==tapc.c.id)
+                                  .outerjoin(tpset,onclause=tapc.c.parameter_set==tpset.c.id)
+                                  .outerjoin(tapp,onclause=tapc.c.application==tapp.c.id)
+                                  .outerjoin(tapf,onclause=tapp.c.app_family==tapf.c.id)
+                                ],
+                       order_by=[tpm.c.name,tdt.c.name,
+                                 tapp.c.app_version,tapf.c.name,tapp.c.executable],distinct=True
+                                 )
+          result = self.getSQLAlchemyResult(sel)
+          # loop over results and find a match to list of keywords from pList.
+          for iTup in result:
+              tup = iTup.__dict__['_RowProxy__row']# tuple, rather then instance from SQL object
+              searchList=toLower(tupleToList(tup))
+              if eval(constructExpression(searchString,'searchList')):
+                 oList.append((self.dbsInstance,)+tup)
+      else: # JavaServer, DBS-2
+          tproc = self.alias('ProcessedDataset','tproc')
+          tprim = self.alias('PrimaryDataset','tprim')
+          tpdst = self.alias('ProcDSTier','tpdst')
+          tpdsr = self.alias('ProcDSRuns','tpdsr')
+          talgo = self.alias('ProcAlgo','talgo')
+          ttier = self.alias('DataTier','ttier')
+          sel=sqlalchemy.select([tprim.c.Name,ttier.c.Name,tproc.c.Name],
+                       from_obj=[
+                                  tproc.outerjoin(tprim,onclause=tprim.c.ID==tproc.c.PrimaryDataset)
+                                  .outerjoin(tpdst,onclause=tpdst.c.Dataset==tproc.c.ID)
+                                  .outerjoin(tpdsr,onclause=tpdsr.c.Dataset==tproc.c.ID)
+                                  .outerjoin(talgo,onclause=talgo.c.Dataset==tproc.c.ID)
+                                  .outerjoin(ttier,onclause=tpdst.c.DataTier==ttier.c.ID)
+                                ],
+                       order_by=[tprim.c.Name,ttier.c.Name,tproc.c.Name],
+                       distinct=True
+                                 )
+          for item in string.split(searchString,'___'):
+              if not item: continue
+              key,value=string.split(item,":")
+              if not value: continue
+              if key=='tier':
+                 res = self.searchTier(value)
+              if key=='runs':
+                 res = self.searchRuns(value)
+              if key=='proc':
+                 res = self.searchProc(value)
+              if key=='prim':
+                 res = self.searchPrim(value)
+              if key=='algo':
+                 res = self.searchAlgo(value)
+              if res:
+                 self.append_whereclause(res)
+        
+          result = self.getSQLAlchemyResult(sel)
+          d="" # we will return "v1,v2,v3" string instead of list for easy access in JS
+          for item in result:
+              print "\n\n####",item
+              prim=item[0]
+              tier=item[1]
+              proc=item[2]
+              if not proc or not tier or not proc: continue
+              d+="/%s/%s/%s,"%(prim,tier,proc)
+          oList=d[:-1] # remove last ","
       return oList
+
+  def searchTier(self,input):
+      print "\n\n#### tier %s\n\n"%input
+  def searchRuns(self,input):
+      print "\n\n#### runs %s\n\n"%input
+      res=""
+      return res
+  def searchProc(self,input):
+      print "\n\n#### proc %s\n\n"%input
+  def searchPrim(self,input):
+      print "\n\n#### prim %s\n\n"%input
+  def searchAlgo(self,input):
+      print "\n\n#### algo %s\n\n"%input
 
   def getDBSSummary(self,dbsInst):
       """
@@ -709,6 +806,7 @@ class DBSHelper(DBSLogger):
          return []
       else:
          return self.api.listBlocksFull(dataset=dataset)
+
   def getDbsBlockData(self,blockName):
       if self.iface=='cgi':
          return []
@@ -773,8 +871,6 @@ class DBSHelper(DBSLogger):
               pass
           # end of DLS query
           blockInfoDict[blockName]+=hostList
-#      print "+++",blockInfoDict
-#      print "###",locDict
       if self.verbose:
          print "### time =",self.dbsTime,self.dlsTime,(time.time()-t1)
       return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
