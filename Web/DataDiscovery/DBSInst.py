@@ -66,7 +66,7 @@ DBS_DLS_INST= {
    "Dev/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
    "DevMC/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
    "RelVal/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
-#   "dbs_new_era_v07":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
+   "dbs_new_era_v07":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
 #   "Dev/fanfani":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
 #   "MCLocal_5/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_5"),
 #   "MCLocal_6/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_6"),
@@ -120,7 +120,7 @@ class DBSDB(DBSLogger):
      http://www.sqlalchemy.org
                                 
   """
-  def __init__(self,verbose=0):
+  def __init__(self,iface='cgi',verbose=0):
       """
          DBSDD constructor. 
          @type verbose: boolean or integer
@@ -130,17 +130,19 @@ class DBSDB(DBSLogger):
       """
       DBSLogger.__init__(self,"DBSDD",verbose)
       self.engine = {}
+      self.iface=iface
       if verbose:
          self.verbose=True
       else:
          self.verbose=False
-      self.connect()
+      self.dbTables = {}
+#      self.connect()
       
-  def connect(self):
+  def connect(self,dbsInst):
       t_ini=time.time()
-      for dbsInst in DBS_DLS_INST.keys():
+      if  not self.engine.has_key(dbsInst):
           dbAuth = DBSAuthentication(dbsInst,self.verbose) 
-          dbType, dbName, dbUser, dbPass = dbAuth.dbInfo()
+          dbType, dbName, dbUser, dbPass, host = dbAuth.dbInfo()
           eType  = string.lower(dbType)
 
           # Initialize SQLAlchemy engines
@@ -152,7 +154,7 @@ class DBSDB(DBSLogger):
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
-             query="show tables" # MySQL way to show tables
+             eName = "%s://%s:%s@%s/%s"%(eType,dbUser,dbPass,host,dbName)
           else:
              printExcept("Unsupported DB engine backend")
 
@@ -161,25 +163,41 @@ class DBSDB(DBSLogger):
                                                           threaded=True,
                                                           echo=self.verbose)
       dbsMeta = sqlalchemy.DynamicMetaData()
-      dbsMeta.connect(self.engine[DBSGLOBAL])
+      dbsMeta.connect(self.engine[dbsInst])
 
-      tList = [
+      if self.iface=='cgi':
+         tList = [
                't_processing','t_processing_name','t_app_config','t_app_family','t_application',
                't_parameter_set','t_primary_dataset','t_block','t_block_status',
                't_evcoll_file','t_evcoll_parentage',
                't_file','t_file_status','t_file_type','t_event_collection',
                't_evcoll_status','t_parentage_type','t_processed_dataset','t_data_tier'
-              ]
+                 ]
+      else:
+         tList = [
+               'AlgorithmConfig','AnalysisDSStatus','AnalysisDSType','AnalysisDataset',
+               'AnalysisDatasetLumi','AppExecutable','AppFamily','AppVersion',
+               'AssignedRole','Block','DataTier','DatasetParentage','Description',
+               'FileAlgo','FileLumi','FileParentage','FileStatus','FileTier','FileType',
+               'Files','LumiSection','MCDescription','OtherDescription','ParameterBinding',
+               'Person','PhysicsGroup','PrimaryDSType','PrimaryDataset','PrimaryDatasetDescription',
+               'ProcAlgo','ProcDSRuns','ProcDSStatus','ProcDSTier','ProcessedDataset',
+               'QueryableParameterSet','Role','Runs','SEBlock','SchemaVersion',
+               'StorageElement','TimeLog','TriggerPathDescription'
+                 ]
 
-      # auto load all tables from DB
-      self.tables = {}
-      for t in tList:
-          # autoload tables from DB, may be slow over network link
-          self.tables[t]=sqlalchemy.Table(t, dbsMeta, autoload=True)
+      if  not self.dbTables.has_key(dbsInst):
+          # auto load all tables from DB
+          tables = {}
+          for t in tList:
+              # autoload tables from DB, may be slow over network link
+              tables[t]=sqlalchemy.Table(t, dbsMeta, autoload=True)
+          self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
+      return self.engine[dbsInst].connect()
 
-  def getTable(self,tableName,tableAlias=""):
+  def getTable(self,dbsInst,tableName,tableAlias=""):
       """
          Returns table and/or alias to the table. 
          @type  tableName: string
@@ -189,12 +207,13 @@ class DBSDB(DBSLogger):
          @rtype : string
          @return: SQLAlchemy table object
       """
+      tables = self.dbTables[dbsInst]
       if tableAlias:
          # return alias to the table
-         return self.tables[tableName].alias(tableAlias)
+         return tables[tableName].alias(tableAlias)
       else:
          # return table itself
-         return self.tables[tableName]
+         return tables[tableName]
 
   def getTableNames(self):
       """
