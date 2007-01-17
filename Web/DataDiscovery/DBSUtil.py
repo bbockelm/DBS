@@ -18,6 +18,7 @@ from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
 RES_PER_PAGE=5 # number of results per page shown
+GLOBAL_STEP =5 # number of iterators shown in Results bar
 
 # file created by crontab job, see getDLSsites.sh
 DLS_INFO='dls.all'
@@ -46,6 +47,11 @@ def decode(dataset):
     for s in SYMBOLS_LIST:
         dataset=string.replace(dataset,s[1],s[0])
     return dataset
+
+def nPages(tot,max):
+    if tot%max:
+       return (tot-tot%max)/max+1
+    return tot/max
 
 def convertListToString(iList):
     s="["
@@ -104,6 +110,7 @@ def sizeFormat(i):
         num /=1024.
 
 def splitString(s,size,separator=' '):
+    _size=size
     # take care of HTML symbols, like &amp; by looking around for & and ;
     if len(s)>size:
        if string.find(s[:size],"&")!=-1:
@@ -111,7 +118,7 @@ def splitString(s,size,separator=' '):
           if n>size+5: n = size+5
           pos = string.find(s[0:n],";")
           if pos!=-1: size=pos+1
-       return s[0:size]+separator+splitString(s[size:],size)
+       return s[0:size]+separator+splitString(s[size:],_size,separator)
     else:
        return s
 def splitString_orig(s,size,separator=' '):
