@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiFileLogic.java,v 1.6 2007/01/09 17:16:49 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApiFileLogic.java,v 1.8 2007/01/16 21:57:40 afaq Exp $"
  *
  */
 
@@ -201,27 +201,27 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 }
 
 
-         public void listFileBranches(Connection conn, Writer out, String lfn) throws Exception {
-                PreparedStatement ps = null;
-                ResultSet rs =  null;
-                try {
-                        ps = DBSSql.listFileBranches(conn, getFileID(conn, lfn, true));
-                        rs =  ps.executeQuery();
-                        while(rs.next()) {
-                                out.write(((String) "<file-branch id='" + get(rs, "ID") +
-                                        "' name='" + get(rs, "NAME") +
-                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
-                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-                                        "' created_by='" + get(rs, "CREATED_BY") +
-                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-                                        "'/>\n"));
-
-                        }
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-         }
+	public void listFileBranches(Connection conn, Writer out, String lfn) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listFileBranches(conn, getFileID(conn, lfn, true));
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<file-branch id='" + get(rs, "ID") +
+							"' name='" + get(rs, "NAME") +
+							"' creation_date='" + getTime(rs, "CREATION_DATE") +
+							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+							"' created_by='" + get(rs, "CREATED_BY") +
+							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+							"'/>\n"));
+				
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
 
 
  	 /**
@@ -450,18 +450,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
 						cbUserID, lmbUserID, creationDate);
 			}
-
-                        //Insert Branch and then FileBranch (Map)
-                        for (int j = 0; j < branchVector.size(); ++j) {
+			//Insert Branch and then FileBranch (Map)
+			for (int j = 0; j < branchVector.size(); ++j) {
 				//insert Branch, if not already there
 				String branchName = get((Hashtable)branchVector.get(j), "name");
-                                insertName(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
+				insertName(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
 				//insert File-Branch Map now.
-                                insertMap(conn, out,  "FileBranch", "Fileid", "Branch",
-                                        fileID,
-                                        getID(conn, "Branch", "Name", branchName, true),
-                                                     cbUserID, lmbUserID, creationDate);
-                        }
+				insertMap(conn, out,  "FileBranch", "Fileid", "Branch",
+						fileID,
+						getID(conn, "Branch", "Name", branchName, true),
+						cbUserID, lmbUserID, creationDate);
+			}
 
 			if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
 		}//For loop

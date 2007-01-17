@@ -1,6 +1,6 @@
 /**
- $Revision: 1.52 $"
- $Id: DBSApi.java,v 1.52 2007/01/12 20:31:15 afaq Exp $"
+ $Revision: 1.53 $"
+ $Id: DBSApi.java,v 1.53 2007/01/16 17:41:36 afaq Exp $"
  *
 */
 
@@ -634,6 +634,7 @@ public class DBSApi {
 				file.put("data_tier", new Vector());
 				file.put("parent", new Vector());
 				file.put("algorithm", new Vector());
+				file.put("branch", new Vector());
 				topLevel.add(file);
 				++index;
 			} 
@@ -645,6 +646,8 @@ public class DBSApi {
 				((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
 			if (name.equals("file-algorithm") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
+			if (name.equals("file-branch") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("branch"))).add(e.attributes);
 
 		}
 		table.put("processed-dataset", psDS);

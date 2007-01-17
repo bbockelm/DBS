@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiTransferLogic.java,v 1.2 2007/01/02 22:59:57 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiTransferLogic.java,v 1.3 2007/01/08 17:45:39 sekhri Exp $"
  *
  */
 
@@ -79,10 +79,25 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		
 		(new DBSApiProcDSLogic()).insertProcessedDataset(conn, out, pdTable, dbsUser);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");
-		for (int j = 0; j < blockVector.size(); ++j) 
-			(new DBSApiBlockLogic()).insertBlock(conn, out, (Hashtable)blockVector.get(j), dbsUser);
+		Vector closeBlockVector = new Vector();
+		DBSApiBlockLogic blockApi = new DBSApiBlockLogic();
+		for (int j = 0; j < blockVector.size(); ++j) {
+			Hashtable block = (Hashtable)blockVector.get(j);
+			String name = getBlock(block, "name", true);
+			String openForWriting = get(block, "open_for_writing", false);
+			if(openForWriting.equals("0")) {
+				closeBlockVector.add("name");
+				block.remove("open_for_writing");
+			}
+			blockApi.insertBlock(conn, out, block, dbsUser);
+		}
 		
 		(new DBSApiFileLogic()).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
+		
+		//Close all the block which were created as open block
+		for (int j = 0; j < closeBlockVector.size(); ++j) {
+			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j));
+		}
 
 		
 	}
