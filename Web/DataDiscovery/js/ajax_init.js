@@ -51,8 +51,8 @@ GetDataUpdater.prototype = {
      if(jsCode) {
         eval(jsCode);
      }
-     sortables_init();
-     underlineLink('Both');
+     underlineLink('Summary');
+     //sortables_init();
      if(responseHTML.search("checkbox")) {
         UnSelectAll();
      }
@@ -232,6 +232,11 @@ function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier,proc) {
   ajaxHistory(action);
 }
 // AJAX registration
+function SendAjaxCalls(dbs,site,app,prim,tier,proc) {
+  ajaxGetData(dbs,site,app,prim,tier,proc);
+  ajaxGetDbsData(dbs,site,app,prim,tier,proc);
+  ajaxGetRuns(dbs,site,app,prim,tier,proc);
+}
 function ajaxGetData(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__results");
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
@@ -245,11 +250,27 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier,proc) {
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
   var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
+  // invoke next chunk of data
+  ajaxNextGetData(dbs,site,app,primD,tier,proc,1);
 }
 function ajaxNextGetData(dbs,site,app,primD,tier,proc,idx) {
+  var id=document.getElementById('results_response'+idx);
+  if(!id) {
+//  alert('ajaxGetData idx='+idx);
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'_idx='+idx);
+  }
+
+  var id=document.getElementById('results_dbs_response'+idx);
+  if(!id) {
+//  alert('ajaxGetiDbsData idx='+idx);
   ajaxEngine.sendRequest('ajaxGetDbsData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'_idx='+idx);
+  }
+
+  var id=document.getElementById('runs_response'+idx);
+  if(!id) {
+//  alert('ajaxGetRuns idx='+idx);
   ajaxEngine.sendRequest('ajaxGetRuns',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'_idx='+idx);
+  }
 }
 function ajaxGetDataFromSelection(iParamString) {
   var uSelection;
@@ -281,15 +302,44 @@ function ajaxGetDataFromSelection(iParamString) {
 }
 
 // AJAX registration for search
-function ajaxSearch(iWords) {
+function ajaxKeywordSearch(_dbs) {
+  var dbsInst;
+  if(_dbs) {
+      dbsInst=_dbs;
+  } else {
+      dbsInst=document.getElementById('keywordSearch_dbsSelector').value;
+  }
+  var keywords='';
+  var algo =GetValue('kw_algoSelector');
+  var prim =GetValue('kw_primSelector');
+  var proc =GetValue('kw_procSelector');
+  var tier =GetValue('kw_tierSelector');
+  var runs =GetValue('kw_runsSelector');
+  if(algo) {keywords=keywords+'algo:'+algo+'___';}
+  if(prim) {keywords=keywords+'prim:'+prim+'___';}
+  if(proc) {keywords=keywords+'proc:'+proc+'___';}
+  if(tier) {keywords=keywords+'tier:'+tier+'___';}
+  if(runs) {keywords=keywords+'runs:'+runs+'___';}
+  ajaxEngine.sendRequest('ajaxKeywordSearch',"dbsInst="+dbsInst,"keywords="+keywords);
+  var action='<a href="javascript:showWaitingMessage();ajaxKeywordSearch(\''+dbsInst+'\',\''+keywords+'\')">Keyword search ('+dbsInst+','+keywords+')</a>';
+  ajaxHistory(action);
+}
+
+function ajaxSearch(_dbs,iWords) {
+  var dbsInst;
+  if(_dbs) {
+      dbsInst=_dbs;
+  } else {
+      dbsInst=document.getElementById('keywordSearch_dbsSelector').value;
+  }
   var keywords;
   if(iWords) {
       keywords=iWords;
   } else {
       keywords=document.getElementById('keywordSelector').value;
   }
-  ajaxEngine.sendRequest('ajaxSearch',"keywords="+keywords);
-  var action='<a href="javascript:showWaitingMessage();ajaxSearch(\''+keywords+'\')">Keyword search ('+keywords+')</a>';
+  ajaxEngine.sendRequest('ajaxSearch',"dbsInst="+dbsInst,"keywords="+keywords);
+  var action='<a href="javascript:showWaitingMessage();ajaxSearch(\''+dbsInst+'\',\''+keywords+'\')">Keyword search ('+dbsInst+','+keywords+')</a>';
   ajaxHistory(action);
 }
 
@@ -316,7 +366,12 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetData','getData');
     ajaxEngine.registerRequest('ajaxSearch','search');
     ajaxEngine.registerRequest('ajaxGetDataFromSelection','getDataFromSelection');
+    ajaxEngine.registerRequest('ajaxGetDummyData','dummy');
     ajaxEngine.registerAjaxObject('results',getDataUpdater);
+
+    ajaxEngine.registerRequest('ajaxKeywordSearch','search');
+    kwUpdater = new GetDataUpdater('results_kw','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('results_kw',kwUpdater);
 
     ajaxEngine.registerRequest('ajaxSiteSearch','getFileBlocks');
     siteUpdater = new GetDataUpdater('results','replace','noResultsMenu');
@@ -508,7 +563,8 @@ function ajaxInit(_dbs) {
   registerAjaxProvenanceGraphCalls();
   registerAjaxAppConfigsCalls();
   registerAjaxGenNavigatorMenuDictCalls();
-  registerAjaxGetDataDescriptionCalls();
+//  registerAjaxGetDataDescriptionCalls();
+  registerAjaxGetFloatBoxCalls();
 
   ajaxGenNavigatorMenuDict(_dbs);
 }
@@ -644,12 +700,12 @@ function ajaxGenAppConfigs(_app) {
   var action='<a href="javascript:showWaitingMessage();ajaxGenAppConfigs(\''+app+'\')">AppConfigs ('+app+')</a>';
   ajaxHistory(action);
 }
-function registerAjaxGetDataDescriptionCalls() {
-    ajaxEngine.registerRequest('ajaxGetDataDescription','getDataDescription');
+function registerAjaxGetFloatBoxCalls() {
+    ajaxEngine.registerRequest('ajaxFloatBox','getFloatBox');
     ajaxEngine.registerAjaxElement('floatDataDescription');
 }
-function ajaxGetDataDescription(dbsInst,procD) {
-    ajaxEngine.sendRequest('ajaxGetDataDescription','dbsInst='+dbsInst,'processedDataset='+procD)
+function ajaxFloatBox(title,desc) {
+    ajaxEngine.sendRequest('ajaxFloatBox','title='+title,'description='+desc);
     ShowTag('floatDataDescription');
 }
 function registerAjaxSelectAppsCalls() {
@@ -757,4 +813,7 @@ function registerTreeView() {
    var updater = new TreeUpdater();
    ajaxEngine.registerAjaxObject('treeViewInfo',updater);
 }
-
+function ajaxGetDummyData() {
+  arr='test1,test2';
+  ajaxEngine.sendRequest('ajaxGetDummyData',"arr="+arr);
+}
