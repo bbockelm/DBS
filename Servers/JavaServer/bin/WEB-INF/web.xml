@@ -3,7 +3,7 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-    <display-name>DBS2</display-name>
+    <display-name>DBS</display-name>
     <description>DataSet Bookkeeping Service</description>
     <session-config>
      <session-timeout>300</session-timeout>    <!-- 300 minutes -->
