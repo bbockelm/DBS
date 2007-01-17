@@ -130,15 +130,15 @@ templateTop = """
 <script type="text/javascript" src="js/ajax_init.js"></script>
 
 <!-- TreeView from YUI -->
-<script src = "yui/build/yahoo/yahoo.js" ></script>
-<script src = "yui/build/event/event.js" ></script>
-<script src = "yui/build/treeview/treeview.js" ></script>
+<script type="text/javascript" src="yui/build/yahoo/yahoo.js" ></script>
+<script type="text/javascript" src="yui/build/event/event.js" ></script>
+<script type="text/javascript" src="yui/build/treeview/treeview.js" ></script>
 <link rel="stylesheet" type="text/css" href="yui/examples/treeview/css/local/tree.css" />
 
 <!--
-<link rel="stylesheet" type="text/css" href="css/masthead_add.css">
+<link rel="stylesheet" type="text/css" href="css/masthead_add.css" />
 -->
-<link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css">
+<link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css" />
 
 </head>
 ####<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
@@ -164,11 +164,11 @@ use a different browser with JavaScript support to use this page.
 #import time
 <div id="footer">
 <div class="bd">
-<p>
-<table cellspacing="0" cellpadding="0" width="100%" id='end'>
+
+<table cellspacing="0" cellpadding="0" width="100%" id='end' style="margin-top:8px;">
 <tr>
-<td>
-<em class="small" align="left">
+<td class="small"align="left">
+<em>
 CMS data discovery: $time.asctime() 
 </em>
 </td>
@@ -179,7 +179,7 @@ Contact: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
 </td>
 </tr>
 </table>
-</p>
+
 </div>
 </div>
 
@@ -255,25 +255,175 @@ move your mouse over the column name and click on it to sort entries.
 <hr class="dbs" />
 """
 
+templateKeywords="""
+<table>
+<tr>
+<td>
+Keywords
+</td>
+<td>
+Description
+</td>
+</tr>
+
+<tr>
+<td>
+run
+</td>
+<td>
+run number
+</td>
+</tr>
+
+<tr>
+<td>
+prim
+</td>
+<td>
+Primary dataset name
+</td>
+</tr>
+
+<tr>
+<td>
+proc
+</td>
+<td>
+Processed dataset name
+</td>
+</tr>
+
+<tr>
+<td>
+release
+</td>
+<td>
+Software release, e.g. CMSSW_1_2_0
+</td>
+</tr>
+
+</table>
+"""
+
 templateSearchTable="""
-<!--
-<form action="search" method="get">
-<form action="javascript:registerAjaxSearchCalls();ajaxSearch();" method="get">
--->
-<form action="javascript:ajaxSearch();" method="get">
+###<form action="javascript:ajaxSearch();" method="get">
+<form action="$searchFunction" method="get">
 <p>
+Use this form to search in particular DBS instance by keywords.
+<br />
 The search is case insensitive and the following special symbols are supported:
 <span class="box">'(', ')', 'and', 'or' and 'not'</span>.
-</p>
-<p>
+<br />
 You may use boolean expressions, e.g.,
 <span class="box">( word1 or (word3 and word4) and not word2 )</span>
 </p>
+
+<hr class="dbs" />
+#*
 <p>
-Any keywords:
-<input type="text" name="keywords" size="60" id="keywordSelector" />
-<input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
+Choose DBS instance:
+<select name="keywordsSearch_dbsInst" id="keywordSearch_dbsSelector">
+#for dbs in $dbsList
+#if $dbs==$firstDBS
+<option value="$dbs" selected="selected">$dbs</option>
+#else
+<option value="$dbs">$dbs</option>
+#end if
+#end for
+<option value="All">All</option>
+</select>
+Keywords:
+<select id="keywordSearch_keywordsSelector" onchange="PutKeyword(this.value);ClearKeywordsSelector()">
+<option value="None" selected="selected">...</option>
+#for key in $keyList
+<option value="$key">$key</option>
+#end for
+</select>
 </p>
+
+<p>
+<input type="text" name="keywords" size="60" id="keywordSelector" />
+###<textarea rows="5" cols="100" id="keywordSelector"></textarea>
+</p>
+<script type="text/javascript">ClearKeywordsSelector();ClearKeywordsInputValue()</script>
+<hr class="dbs" />
+*#
+
+<table>
+<tr>
+<td align="right">DBS instance:</td>
+<td><span class="gray_box" onMouseOver="KeywordHelp('DBS description')" onMouseOut="ClearTag('kw_help')">?</span></td>
+<td>
+<select name="keywordsSearch_dbsInst" id="keywordSearch_dbsSelector">
+#for dbs in $dbsList
+#if $dbs==$firstDBS
+<option value="$dbs" selected="selected">$dbs</option>
+#else
+<option value="$dbs">$dbs</option>
+#end if
+#end for
+<option value="All">All</option>
+</select>
+</td>
+
+<td rowspan="8" valign="top"><span id="kw_help"></span></td>
+</tr>
+
+<tr>
+<td><hr class="dbs" /></td>
+<td></td>
+<td></td>
+</tr>
+
+<tr>
+<td align="right">Software release:</td>
+<td><span class="gray_box" onMouseOver="KeywordHelp('software description')" onMouseOut="ClearTag('kw_help')">?</span></td>
+<td><input type="text" size="60" name="kw_app" id="kw_algoSelector" /></td>
+</tr>
+
+<tr>
+<td align="right">Primary dataset:</td>
+<td><span class="gray_box" onMouseOver="KeywordHelp('Primary dataset description')" onMouseOut="ClearTag('kw_help')">?</span></td>
+<td><input type="text" size="60" name="kw_prim" id="kw_primSelector" /></td>
+</tr>
+
+<tr>
+<td align="right">Data Type:</td>
+<td><span class="gray_box" onMouseOver="KeywordHelp('Data type description')" onMouseOut="ClearTag('kw_help')">?</span></td>
+<td><input type="text" size="60" name="kw_tier" id="kw_tierSelector" /></td>
+</tr>
+
+<tr>
+<td align="right">Run:</td>
+<td><span class="gray_box" onMouseOver="KeywordHelp('Run description')" onMouseOut="ClearTag('kw_help')">?</span></td>
+<td><input type="text" size="60" name="kw_run" id="kw_runsSelector" /></td>
+</tr>
+
+<tr>
+<td><hr class="dbs" /></td>
+<td></td>
+<td></td>
+</tr>
+
+<tr>
+<td align="right">Processed dataset:</td>
+<td><span class="gray_box" onMouseOver="KeywordHelp('Processed dataset description')" onMouseOut="ClearTag('kw_help')">?</span></td>
+<td><input type="text" size="60" name="kw_proc" id="kw_procSelector" /></td>
+</tr>
+
+
+<tr>
+<td></td>
+<td></td>
+<td>
+<input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
+&nbsp;
+<input type="reset" value="Clear form" id="kw_clear_button"  />
+###<input type="reset" value="Clear form" id="kw_clear_button" onclick="javascript:ClearKeywordForm();" />
+</td>
+</tr>
+</table>
+
 </form>
 """
 
@@ -316,7 +466,7 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <!--
 <form action="getBlocksFromSite" method="get">
 -->
-<form action="javascript:ajaxSiteSearch()" method="get">
+<form action="javascript:ClearTag('progressBar');ajaxSiteSearch()" method="get">
 <table>
 <tr>
 <td>Choose DBS instance</td>
@@ -375,10 +525,21 @@ templateFileBlocksFromSite="""
 #end for
 </table>
 """
+templateDataFromKeywordSelection="""
+#if len($oList)
+<script type="text/javascript">
+ajaxGetData('$dbs','all','*','*','*','$oList');
+ajaxGetDbsData('$dbs','all','*','*','*','$oList');
+ajaxGetRuns('$dbs','all','*','*','*','$oList');
+</script>
+#else
+No match found for your request, please refine your search.
+#end if
+"""
 
 templateDataFromSelection="""
 <p><b>
-Upon your search:
+Based on your search criteria:
 <em>$keywords</em>
 </b>
 </p>
@@ -610,9 +771,17 @@ templateLeftBar="""
 """
 
 templateNextBar="""
-#if $tot>$res_page
+#if $tot>1
 #### Please note, here I use GLOBAL_STEP as a global step, it's defined in js/utils.js
-<script type="text/javascript">BuildBar(1,GLOBAL_STEP,$tot,'$dbsInst','$site','$app','$prim','$tier','$proc');Choose('cell_1');</script>
+<script type="text/javascript">
+//var GLOBAL_STEP=$step;
+//var GLOBAL_CELL='cell_1';
+BuildBar(1,$step,$tot,$step,'$dbsInst','$site','$app','$prim','$tier','$proc');
+UpdateResultIndex(1,$tot);
+Choose('cell_1');
+</script>
+####if $tot>$res_page
+###<script type="text/javascript">BuildBar(1,GLOBAL_STEP,$tot,'$dbsInst','$site','$app','$prim','$tier','$proc');UpdateResultIndex(1,$tot);Choose('cell_1');</script>
 #end if
 """
 
@@ -641,7 +810,7 @@ $msg
 
 <td valign="top">
 
-<form action="javascript:ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+<form action="javascript:ClearTag('progressBar');ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -824,16 +993,17 @@ all columns are sortable, move your mouse over the column name and click on it.
 templateProcDatasets="""
 ###<hr class="dbs" />
 ###<p>
-Processed datasets (plain 
+All processed datasets: 
 <a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier',1000)">
-view</a>):
+list</a>
 ###</p>
 """
 
 templateBlockList = """
 <hr class="dbs" />
 #if len($blockList)
-<table>
+Processed datasets:
+<table class="offset_left">
 #for item in $blockList
 #set path=item[0]
 #set idPath=$path.replace("/","___")
@@ -876,7 +1046,10 @@ templateBlockList_old = """
 """
 
 templateRunsInfo="""
-<b>Processed dataset: $proc</b>
+Processed dataset:<br /> 
+<span class="offset_left">
+<b>$proc</b>
+</span>
 <table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Run</td>
@@ -911,7 +1084,10 @@ templateRunsInfo="""
 """
 
 templateDbsInfo="""
-<b>Processed dataset: $proc</b>
+Processed dataset:<br /> 
+<span class="offset_left">
+<b>$proc</b>
+</span>
 <table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Block name</td>
@@ -995,9 +1171,9 @@ templateLFB = """
 <div id="$idPath"></div>
 *#
 
-<p>
+###<p>
 contains $nEvents events, $totFiles files, $totSize. 
-</p>
+###</p>
 <p>
 <span id="parentGraph"></span>
 </p>
@@ -1008,19 +1184,22 @@ contains $nEvents events, $totFiles files, $totSize.
 <table>
 <tr>
 <td>Show:</td>
+#*
 <td id="td_Blocks" name="td_Blocks" class="td_plain">
 <a href="javascript:HideSumInfo('$tableId');ShowBlockInfo('$tableId')">
 Blocks
 </a>
 </td>
+*#
 <td id="td_Summary" name="td_Summary" class="td_plain">
-<a href="javascript:HideBlockInfo('$tableId');ShowSumInfo('$tableId');">
+<a href="javascript:HideBlockInfo('$tableId');ShowSumInfo('$tableId')">
 Summary
 </a>
 </td>
 <td id="td_Both" name="td_Both" class="td_plain">
-<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');underlineLink('Both')">
-Both
+<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');">
+##<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');underlineLink('Both')">
+Detailed
 </a>
 </td>
 </tr>
@@ -1028,23 +1207,14 @@ Both
 <!-- Main table -->
 <table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
   <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
-     <th>row</th>
+     ###<th>row</th>
      <th>Location</th>
      <th>Events</th>
      <th>Files</th>
-     ###<th name="blockInfo" id="blockInfo" class="hide">
-     <th name="blockInfo" id="blockInfo">
-     status
-     </th>
      <th>size</th>
-     ###<th name="blockInfo" id="blockInfo" class="hide">
-     <th name="blockInfo" id="blockInfo">
-     LFNs
-     </th>
-     ###<th name="blockInfo" id="blockInfo" class="hide">
-     <th name="blockInfo" id="blockInfo">
-     Block name
-     </th>
+     <th>LFNs</th>
+     <th name="blockInfo" id="blockInfo" class="hide">status</th>
+     <th name="blockInfo" id="blockInfo" class="hide">Block name</th>
   </tr>
 ## HERE blockDict[blockName]=(nEvt,blockStatus,nFiles,blockSize,hostList)
 ## HERE   locDict[siteName]=blockList
@@ -1072,21 +1242,18 @@ Both
 #set siteTotSize+=$blockDict[$bName][3]
 #end for
   <tr valign="top" bgcolor="#FFFADC" name="row_sumInfo" id="row_sumInfo">
-     <td>$print_i</td>
+     ###<td>$print_i</td>
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
-     ###<td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <td align="center" name="blockInfo" id="blockInfo">
-     </td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
-     ###<td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <td align="center" name="blockInfo" id="blockInfo">
+     <td align="center">
      <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site',1000)">All</a>
      </td>
-     ###<td align="center" name="blockInfo" id="blockInfo" class="hide">
-     <td align="center" name="blockInfo" id="blockInfo">
-     <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">All</a>
+     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     </td>
+     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">all blocks</a>
      </td>
   </tr>
 #set j=0
@@ -1111,28 +1278,28 @@ Both
 #set nFiles  = $item[2]
 #set size    = $item[3]
 #set hostList= $item[4]
-  #####<tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0" class="hide">
-  <tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0">
-     <td>$print_j</td>
+  <tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0" class="hide">
+     ###<td>$print_j</td>
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$nEvt</div></td>
      <td align="right"><div class="dbs_cell">$nFiles</div></td>
-     #if $bStatus=="OPEN" or $bStatus==1:
-     <td align="center" style="background-color:AliceBlue;"><div class="dbs_cell">OPEN</div></td>
-     #else
-     <td align="center" style="background-color:AntiqueWhite;"><div class="dbs_cell">CLOSED</div></td>
-     #end if
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
      <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)" alt="cff format">cff</a>, 
      <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)" alt="file list format">plain</a>
      </div>
      </td>
+     #if $bStatus=="OPEN" or $bStatus==1:
+     <td align="center" style="background-color:AliceBlue;"><div class="dbs_cell">OPEN</div></td>
+     #else
+     <td align="center" style="background-color:AntiqueWhite;"><div class="dbs_cell">CLOSED</div></td>
+     #end if
      <td align="left">
-     <div class="dbs_cell">
+     ###<div class="dbs_cell">
 #from DBSUtil import splitString 
-     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">$splitString($name,30,"\\n")</a>
-     </div>
+#set sName=$splitString($name,30,"\\n")
+     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">$sName</a>
+     ###</div>
      </td>
   </tr>
 #end for
@@ -1146,11 +1313,12 @@ Both
 """
 
 templateBottom="""
+<span id="floatDataDescription"></span>
 <table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td class="td_menu_gray_box" id="_results">
 <table width="100%"><tr><td>
-<span id="__results"><table class="image"><tr><td></td></tr></table></span>
+<div id="__results"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('results')">Summary</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1159,7 +1327,7 @@ templateBottom="""
 
 <td class="td_menu_gray_box" id="_results_dbs">
 <table width="100%"><tr><td>
-<span id="__results_dbs"><table class="image"><tr><td></td></tr></table></span>
+<div id="__results_dbs"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('results_dbs')">Block info</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1168,7 +1336,7 @@ templateBottom="""
 
 <td class="td_menu_gray_box" id="_runs">
 <table width="100%"><tr><td>
-<span id="__runs"><table class="image"><tr><td></td></tr></table></span>
+<div id="__runs"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('runs')">Run info</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1177,7 +1345,7 @@ templateBottom="""
 
 <td class="td_menu_gray_box" id="_parents">
 <table width="100%"><tr><td>
-<span id="__parents"><table class="image"><tr><td></td></tr></table></span>
+<div id="__parents"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('parents')">Parents</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1186,7 +1354,7 @@ templateBottom="""
 
 <td class="td_menu_gray_box" id="_appConfigs">
 <table width="100%"><tr><td>
-<span id="__appConfigs"><table class="image"><tr><td></td></tr></table></span>
+<div id="__appConfigs"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('appConfigs')">App configs</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1197,16 +1365,18 @@ templateBottom="""
 </table>
 
 <br />
-<span id="results" class="show_inline"></span>
-<span id="results_waiting" class="show_inline"></span>
-<span id="results_dbs" class="hide"></span>
-<span id="results_site" class="hide"></span>
-<span id="runs" class="hide"></span>
-<span id="parents" class="hide"><br /></span>
-<span id="appConfigs" class="hide"><br /></span>
+<div id="results_index"></div>
+<div id="results" class="show_inline"></div>
+<div id="results_waiting" class="show_inline"></div>
+<div id="results_kw" class="hide"></div>
+<div id="results_dbs" class="hide"></div>
+<div id="results_site" class="hide"></div>
+<div id="runs" class="hide"></div>
+<div id="parents" class="hide"><br /></div>
+<div id="appConfigs" class="hide"><br /></div>
 
-<div align="center">
-<span id="progressBar"></span>
+<div class="align_center">
+<div id="progressBar"></div>
 </div>
 
 </div> <!-- end of div with class="main" -->
@@ -1262,6 +1432,11 @@ $navigatorForm
 
 
 templateFrontPage="""
+<script type="text/javascript">
+var DBSDD='$DBSDD';
+var DBSDD_EXPERT='$DBSDD/expert';
+var GLOBAL_STEP=$step
+</script>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
 <!-- menu -->
@@ -1296,20 +1471,13 @@ templateFrontPage="""
   </table>       
 </td>
 </tr>
-<!--
-<tr>
-<td class="td_gray_box" id="Summary_Menu">
-<a href="javascript:showMenu('Summary');registerAjaxSummaryCalls();getSummary();">Summary</a>
-</td>
-</tr>
--->
 #end if
 <tr><td><br /></td></tr>
 <tr>
 #set hList=['user','auth','search']
 #set hDict={'user':'Session','auth':'Authentication','search':'Search'}
 <td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
-  <table id="history_table" class="hide"><tr><td>
+  <table id="history_table" class="hide">
 #for name in $hList
       <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);AdjustToDate()">$hDict[$name]</a></td></tr>
 #end for
@@ -1317,7 +1485,7 @@ templateFrontPage="""
 </td>
 </tr>
 <tr>
-<td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help');showHelpContent()">Help</a></td>
+<td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help');showHelpContent();">Help</a></td>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
@@ -1330,7 +1498,8 @@ templateFrontPage="""
 <!-- menu content, accordion -->
 <td valign="top" class="td_top_bottom">
 
-<span id="NavigatorDiv" class="hide">
+<!-- NavigatorDiv -->
+<div id="NavigatorDiv" class="hide">
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
@@ -1343,9 +1512,11 @@ $navigatorForm
 </td>
 </tr>
 </table>
-</span>
+</div>
+<!-- END NavigatorDiv -->
 
-<span id="SearchDiv" class="hide">
+<!-- SearchDiv -->
+<div id="SearchDiv" class="hide">
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
@@ -1358,9 +1529,11 @@ $searchForm
 </td>
 </tr>
 </table>
-</span>
+</div>
+<!-- END SearchDiv -->
 
-<span id="SiteDiv" class="hide">
+<!-- SiteDiv -->
+<div id="SiteDiv" class="hide">
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
@@ -1373,8 +1546,10 @@ $siteForm
 </td>
 </tr>
 </table>
-</span>
+</div>
+<!--END SiteDiv -->
 
+<!-- DBSinfoDiv -->
 ###### Replacement for accordion datasets
 #set menuArr=['dbs_prim','dbs_proc','dbs_apps']
 <div id="DBSinfoDiv" class="hide"> 
@@ -1384,7 +1559,7 @@ $siteForm
 
 <td class="td_menu_gray_box" id="_dbs_prim">
 <table width="100%"><tr><td>
-<span id="__dbs_prim"><table class="image"><tr><td></td></tr></table></span>
+<div id="__dbs_prim"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('dbs_prim',$menuArr)">Primary datasets</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1393,7 +1568,7 @@ $siteForm
 
 <td class="td_menu_gray_box" id="_dbs_proc">
 <table width="100%"><tr><td>
-<span id="__dbs_proc"><table class="image"><tr><td></td></tr></table></span>
+<div id="__dbs_proc"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('dbs_proc',$menuArr)">Processed datasets</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1402,7 +1577,7 @@ $siteForm
 
 <td class="td_menu_gray_box" id="_dbs_apps">
 <table width="100%"><tr><td>
-<span id="__dbs_apps"><table class="image"><tr><td></td></tr></table></span>
+<div id="__dbs_apps"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
 <a href="javascript:showResMenu('dbs_apps',$menuArr)">Applications</a>
 </td><td><table class="image"><tr><td></td></tr></table>
@@ -1418,9 +1593,14 @@ $siteForm
 <span id="dbs_apps" class="hide"></span>
 
 </div>
+<!-- END DBSinfoDiv -->
+
+<!-- HistoryDiv -->
 ###### Replacement for accordion history
 <div id="HistoryDiv" class="hide"> 
-<span id="userHistory" class="hide">
+
+<!-- userHistory -->
+<div id="userHistory" class="hide">
 
 <table class="table_round_box" border="0" width="100%">
 <tr valign="top">
@@ -1442,8 +1622,12 @@ $siteForm
 <span id="sessionHistory" class="show_inline"></span>
 <span id="allHistory" class="hide"></span>
 </div>
-</span>
-<span id="authHistory" class="hide">
+
+</div>
+<!-- END userHistory -->
+
+<!-- authHistory -->
+<div id="authHistory" class="hide">
       <table class="table_box_white" border="0" width="100%">
       <tr valign="top">
       <td class="box_darkblue">
@@ -1452,30 +1636,30 @@ $siteForm
       </tr>
       <tr valign="top">
       <td>
-      <span class="text">To be able keep your session history you need to authenticate yourself.<br/>
+      <div class="text">To be able keep your session history you need to authenticate yourself.<br/>
       This information is NOT associated with either your login name to any CMS nodes<br />
       or grid certificates and used solely for your authentication with DBS/DLS discovery page.<br />
       This authentication is completely optional and used to provide persistent history searches.
-      <p>Please use provided form below:<p />
-      <table>
-        <tr>
-        <td>
-        <form action="javascript:ajaxCheckUser()" method="get">
-        <span id="formInputName"></span>
-        <script type="text/javascript">formRequest()</script>
-        <br />
-        <input type="submit" value="Authenticate" onclick="set_name(this.form)" />
-        <br />
-        <div id="formAuthResults"></div>
-        </form>
-        </td>
-        </tr>
-      </table>
+      <p>Please use provided form below:</p>
+      </div>
+
+      <form action="javascript:ajaxCheckUser()" method="get">
+      <div id="formInputName"></div>
+      <script type="text/javascript">formRequest()</script>
+      <p>
+      <input type="submit" value="Authenticate" onclick="set_name(this.form)" />
+      </p>
+      <p></p>
+      <div id="formAuthResults"></div>
+      </form>
 
       </td></tr></table>
-      </span>
-</span>
-<span id="searchHistory"  class="hide">
+      ##</div>
+</div>
+<!-- END authHistory -->
+
+<!-- searchHistory -->
+<div id="searchHistory"  class="hide">
       <table class="table_box_white" border="0" width="100%">
       <tr valign="top">
       <td class="box_darkblue">
@@ -1485,7 +1669,7 @@ $siteForm
       <tr>
       <td>
       <div class="div_scroll">
-      <br />
+      <p></p>
       <form action="javascript:ajaxHistorySearch();" method="get">
       <table>
       <tr>
@@ -1528,17 +1712,20 @@ $siteForm
       </table>
       </form>
       <hr class="dbs" />
-      <span id="historySearchResults">Here we will provide a basic search of user commands
+      <span id="historySearchResults">Here we will provide a basic search of user commands</span>
 
       </div>
       </td>
       </tr>
       </table>
-</span>
+</div>
+<!-- END searchHistory -->
 
 </div>
+<!-- END HistoryDiv -->
 
 
+<!-- HelpDiv -->
 ###### Replacement for accordion help
 #set menuArr=['help_intro','help_glossary','help_resources','help_feedback','help_refs']
 <div id="HelpDiv" class="hide"> 
@@ -1563,7 +1750,7 @@ $siteForm
 </tr>
 </table>
 
-<span id="help_intro" class="hide">
+<div id="help_intro" class="hide">
 <div class="div_scroll">
 <div class="sectionhead">DATA DISCOVERY PAGE</div>
 <p>
@@ -1603,9 +1790,11 @@ move your mouse over the column name and click on it to sort entries.
 All terms used on discovery page are defined in DBS glossary.
 </p>
 </div>
-</span>
-<span id="help_glossary" class="hide"><div class="div_scroll">$glossary</div></span>
-<span id="help_resources" class="hide">
+</div>
+
+<div id="help_glossary" class="hide"><div class="div_scroll">$glossary</div></div>
+
+<div id="help_resources" class="hide">
 <div class="div_scroll">
           <table>
               <tr><td>&\#187;</td>
@@ -1642,8 +1831,9 @@ All terms used on discovery page are defined in DBS glossary.
               </tr>
           </table>
 </div>
-</span>
-<span id="help_feedback" class="hide">
+</div>
+
+<div id="help_feedback" class="hide">
 <div class="div_scroll">
          <p></p>
          <form action="sendFeedback" method="post">
@@ -1659,8 +1849,9 @@ All terms used on discovery page are defined in DBS glossary.
          </p>
          </form>
 </div>
-</span>
-<span id="help_refs" class="hide">
+</div>
+
+<div id="help_refs" class="hide">
 <div class="div_scroll">
        <table>
          <tr><td>&\#187;</td>
@@ -1684,22 +1875,16 @@ All terms used on discovery page are defined in DBS glossary.
          </tr>
        </table>
 </div>
-</span>
 </div>
+
+</div>
+<!-- END HelpDiv -->
 
 </td>
 </tr>
 </table>
+
 <script type="text/javascript">
-var accordionHeight=200;
-//new Rico.Accordion( \$('NavigatorDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('SearchDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('SiteDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('SummaryDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('DatasetsDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('ReleasesDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('HistoryDiv'), {panelHeight:accordionHeight} );
-//new Rico.Accordion( \$('HelpDiv'), {panelHeight:accordionHeight} );
 #if $frontPage
 showMenu('Navigator');
 #end if
@@ -1983,6 +2168,39 @@ templateDatasetDetails="""
 """
 
 templateFloatBox="""
+<table class="float_box" width="100%">
+<tr valign="top">
+<td>
+
+<table width="100%">
+<tr>
+<td align="left">
+<span class="sectionhead">
+$title
+</span>
+</td>
+<td align="right">
+<a href="javascript:HideTag('floatDataDescription')">close &#8855;</a>
+</td>
+</tr>
+</table>
+<hr class="dbs" />
+<table>
+<tr>
+<td>
+<div class="div_scroll">
+$description
+</div>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+"""
+
+templateDescription="""
 ###<table class="float_box" width="100%">
 <table width="100%">
 <tr valign="top">
