@@ -1,6 +1,6 @@
 /**
- $Revision: 1.62 $"
- $Id: DBSApiLogic.java,v 1.62 2007/01/09 22:55:54 sekhri Exp $"
+ $Revision: 1.63 $"
+ $Id: DBSApiLogic.java,v 1.63 2007/01/11 21:16:43 sekhri Exp $"
  *
  */
 
@@ -41,15 +41,17 @@ public class DBSApiLogic {
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
 	private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)#([^/]+)|%";
 	//We can store the path id once and everytime the id is needed it can be fetched from this table instead of fetching it through database.
-	protected static Hashtable globalUser = new Hashtable();
+	/*protected static Hashtable globalUser = new Hashtable();
 	protected static Hashtable globalFile = new Hashtable();
-	protected static Hashtable globalPDPath = new Hashtable();
+	protected static Hashtable globalPDPath = new Hashtable();*/
 		
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
 	*/
 	//DBSApiPersonLogic personApi = null;
-	public DBSApiLogic() {
+	DBSApiData data = null;
+	public DBSApiLogic(DBSApiData data) {
+		this.data = data;
 		//personApi = new DBSApiPersonLogic();
 	}
 
@@ -66,7 +68,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
-		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		String runNumber = get(run, "run_number", true);
 		if(getID(conn, "Runs", "RunNumber", runNumber, false) == null ) {
 			PreparedStatement ps = null;
@@ -108,7 +110,7 @@ public class DBSApiLogic {
 	}*/
 
 	public void insertTier(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertTier(conn, out, 
 				get(table, "tier_name", true),
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
@@ -134,7 +136,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
 	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertLumiSection(conn, out, table, 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -248,7 +250,7 @@ public class DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or the database connection is unavailable.
 	 */
 	public void insertPhysicsGroup(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertPhysicsGroup(conn, out, 
 				get(table, "physics_group_name", true),
 				get(table, "physics_group_convener", true),
@@ -261,7 +263,7 @@ public class DBSApiLogic {
 
 	protected void insertPhysicsGroup(Connection conn, Writer out, String name, String phyGroupCon, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		//Insert a new Person if it does not exists
-		(new DBSApiPersonLogic()).insertPerson(conn, out,  "", phyGroupCon, "", cbUserID, lmbUserID, creationDate); //FIXME Get userName and contactInfo also
+		(new DBSApiPersonLogic(this.data)).insertPerson(conn, out,  "", phyGroupCon, "", cbUserID, lmbUserID, creationDate); //FIXME Get userName and contactInfo also
 		if( getID(conn, "PhysicsGroup", "PhysicsGroupName", name, false) == null ) {
 			PreparedStatement ps = null;
 			try {
@@ -529,7 +531,7 @@ public class DBSApiLogic {
 	protected String getBlockPattern(String pattern) throws Exception {
 		if(isNull(pattern))  return "%";
 		pattern = pattern.replace('*','%');
-		(new DBSApiBlockLogic()).checkBlock4List(pattern);
+		(new DBSApiBlockLogic(this.data)).checkBlock4List(pattern);
 		//(new DBSApiBlockLogic()).checkBlock(pattern);
         	return pattern;
 	}

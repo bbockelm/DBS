@@ -1,6 +1,6 @@
 /**
- $Revision: 1.7 $"
- $Id: DBSApiAlgoLogic.java,v 1.7 2007/01/09 17:28:28 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApiAlgoLogic.java,v 1.8 2007/01/09 21:26:45 sekhri Exp $"
  *
  */
 
@@ -23,8 +23,11 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. 
 	*/
 	DBSApiPersonLogic personApi = null;
-	public DBSApiAlgoLogic() {
-		personApi = new DBSApiPersonLogic();
+	DBSApiData data = null;
+	public DBSApiAlgoLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+		personApi = new DBSApiPersonLogic(data);
 	}
 
 

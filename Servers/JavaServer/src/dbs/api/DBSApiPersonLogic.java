@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiPersonLogic.java,v 1.4 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiPersonLogic.java,v 1.5 2007/01/08 17:48:22 sekhri Exp $"
  *
  */
 
@@ -23,7 +23,12 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does nothing.
 	*/
-	public DBSApiPersonLogic() {}
+	
+	DBSApiData data = null;
+	public DBSApiPersonLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+	}
 
 
 	/**
@@ -75,7 +80,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	public String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
 		String id = "";
 		String userDN = get(dbsUser, "user_dn", true);
-		if(!isNull( id = get(globalUser, userDN) )) {
+		if(!isNull( id = get(this.data.globalUser, userDN) )) {
 			return id;
 		}
 		checkWord(userDN, "user_dn");
@@ -90,7 +95,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 					""); //FIXME Get userName and contactInfo also and the lmbUserID shoudl be decicde?
 			id = getID(conn, "Person", "DistinguishedName", userDN , true);
 		}
-		globalUser.put(userDN, id);
+		this.data.globalUser.put(userDN, id);
 		return id;
 	}
 

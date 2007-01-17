@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiTransferLogic.java,v 1.3 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiTransferLogic.java,v 1.4 2007/01/17 17:51:32 sekhri Exp $"
  *
  */
 
@@ -23,7 +23,11 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does nothing.
 	*/
-	public DBSApiTransferLogic() {}
+	DBSApiData data = null;
+	public DBSApiTransferLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+	}
 
 
 
@@ -37,18 +41,18 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 */
 	public void listDatasetContents(Connection conn, Writer out, String path, String blockName) throws Exception {
 		String data[] = parseDSPath(path);
-		DBSApiBlockLogic bApi = new DBSApiBlockLogic();
+		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
 		out.write(((String) "<dataset path='" + path + 
 					"' block_name='" + blockName +
 					"' />\n"));
-		(new DBSApiPrimDSLogic()).listPrimaryDatasets(conn, out, data[1]);
-		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic();
+		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
+		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
 		pdApi.listProcessedDatasets(conn, out, data[1], data[2], data[3], null, null, null, null);
 		pdApi.listDatasetParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null);
-		(new DBSApiFileLogic()).listFiles(conn, out, path, blockName, null, "true");
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, blockName, null, "true");
 	}
 	
 	
@@ -65,22 +69,22 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		//FIXME dont pass dbsUser instaed get it from the table
 		String path = getPath(table, "path", true);
-		String blockName = (new DBSApiBlockLogic()).getBlock(table, "block_name", true);
+		String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
 
-		(new DBSApiPrimDSLogic()).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary-dataset"), dbsUser);
+		(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary-dataset"), dbsUser);
 		Hashtable pdTable = DBSUtil.getTable(table, "processed-dataset");
 		Vector algoVector = DBSUtil.getVector(pdTable, "algorithm");
 		for (int j = 0; j < algoVector.size(); ++j) 
-			(new DBSApiAlgoLogic()).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser);
+			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser);
 		
 		Vector runVector = DBSUtil.getVector(pdTable, "run");
 		for (int j = 0; j < runVector.size(); ++j) 
 			insertRun(conn, out, (Hashtable)runVector.get(j), dbsUser);
 		
-		(new DBSApiProcDSLogic()).insertProcessedDataset(conn, out, pdTable, dbsUser);
+		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");
 		Vector closeBlockVector = new Vector();
-		DBSApiBlockLogic blockApi = new DBSApiBlockLogic();
+		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
 		for (int j = 0; j < blockVector.size(); ++j) {
 			Hashtable block = (Hashtable)blockVector.get(j);
 			String name = getBlock(block, "name", true);
@@ -92,7 +96,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			blockApi.insertBlock(conn, out, block, dbsUser);
 		}
 		
-		(new DBSApiFileLogic()).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
+		(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
 		
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiFileLogic.java,v 1.8 2007/01/16 21:57:40 afaq Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiFileLogic.java,v 1.9 2007/01/17 17:51:32 sekhri Exp $"
  *
  */
 
@@ -24,9 +24,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs.
 	*/
+
 	DBSApiPersonLogic personApi = null;
-	public DBSApiFileLogic() {
-		personApi = new DBSApiPersonLogic();
+	DBSApiData data = null;
+	public DBSApiFileLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+		personApi = new DBSApiPersonLogic(data);
 	}
 
 
@@ -48,10 +52,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String procDSID = null;
 		String blockID = null;
 		if(!isNull(path)) {
-			procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, path);
+			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);
 		}
 		if(!isNull(blockName)) {
-			blockID = (new DBSApiBlockLogic()).getBlockID(conn, blockName, false, true);
+			blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
                         //FIXME: We need to make sure that we MUST have ONLY an OPEN Block for adding a file to !
                        
 		}
@@ -82,8 +86,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'>\n"));
 				if (!isNull(detail)) {
-					globalFile = new Hashtable();
-					globalFile.put(lfn, fileID);
+					this.data.globalFile = new Hashtable();
+					this.data.globalFile.put(lfn, fileID);
 					listFileParents(conn, out, lfn);
 					listFileAlgorithms(conn, out, lfn);
 					listFileTiers(conn, out, lfn);
@@ -302,18 +306,18 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			
 			}
 		}*/
-		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, path);
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);
                 String blockID;
 
                 //If user INSIST to provide a BlockName
                 if ( ! isNull(blockName) && !(blockName.equals("")) ) {
-		    blockID = (new DBSApiBlockLogic()).getBlockID(conn, blockName, true, true);
+		    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
                     //FIXME: We must need to verify that Block is OpenForWriting
                     
                 }
                 //Let DBS choose the Block
                 else {
-                    blockID = (new DBSApiBlockLogic()).dbsManagedBlockID(conn, procDSID, path, dbsUser);
+                    blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, procDSID, path, dbsUser);
                 }
 		//These tables are used to store the types and staus fileds along with thier id
 		//If the id can be fetched from here then we do not have to fietch it from database again and again
@@ -414,7 +418,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				Hashtable hashTable = (Hashtable)algoVector.get(j);
 				insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 						fileID, 
-						(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(hashTable, "app_version"), 
+						(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"), 
 								get(hashTable, "app_family_name"), 
 								get(hashTable, "app_executable_name"),
 								get(hashTable, "ps_hash"),
@@ -540,7 +544,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	public void insertAlgoInFile(Connection conn, Writer out, Hashtable table, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 				getFileID(conn, get(table, "lfn", true), true), 
-				(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(algo, "app_version"), 
+				(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(algo, "app_version"), 
 						get(algo, "app_family_name"), 
 						get(algo, "app_executable_name"),
 						//get(algo, "ps_name"), 
@@ -577,12 +581,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {
 		String id = "";
-		if(!isNull( id = get(globalFile, lfn) )) {
+		if(!isNull( id = get(this.data.globalFile, lfn) )) {
 			return id;
 		}
 		if( !isNull(id = getID(conn, "Files", "LogicalFileName", lfn, excep)) ) {
-			globalFile = new Hashtable();//Just store one file id only
-			globalFile.put(lfn, id);
+			this.data.globalFile = new Hashtable();//Just store one file id only
+			this.data.globalFile.put(lfn, id);
 		}
 		return id;
 	}

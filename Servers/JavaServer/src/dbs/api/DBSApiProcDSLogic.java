@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiProcDSLogic.java,v 1.10 2007/01/09 17:16:49 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApiProcDSLogic.java,v 1.11 2007/01/09 17:28:28 sekhri Exp $"
  *
  */
 
@@ -24,9 +24,13 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs.
 	*/
+
 	DBSApiPersonLogic personApi = null;
-	public DBSApiProcDSLogic() {
-		personApi = new DBSApiPersonLogic();
+	DBSApiData data = null;
+	public DBSApiProcDSLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+		personApi = new DBSApiPersonLogic(data);
 	}
 
 	/**
@@ -311,7 +315,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
 			insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
 					procDSID, 
-					(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(hashTable, "app_version"), 
+					(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"), 
 							get(hashTable, "app_family_name"), 
 							get(hashTable, "app_executable_name"),
 							get(hashTable, "ps_hash"), 
@@ -414,7 +418,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	public void insertAlgoInPD(Connection conn, Writer out, Hashtable table, Hashtable algo, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
 					getProcessedDSID(conn, get(table, "path")), 
-					(new DBSApiAlgoLogic()).getAlgorithmID(conn, get(algo, "app_version"), 
+					(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(algo, "app_version"), 
 							get(algo, "app_family_name"), 
 							get(algo, "app_executable_name"),
 							get(algo, "ps_hash"), 
@@ -456,12 +460,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	public String getProcessedDSID(Connection conn, String path) throws Exception {
 		String id = "";
-		if(!isNull( id = get(globalPDPath, path) )) {
+		if(!isNull( id = get(this.data.globalPDPath, path) )) {
 			return id;
 		}
 		String[] data = parseDSPath(path);
 		id = getProcessedDSID(conn, data[1], data[2], data[3]);
-		globalPDPath.put(path, id);
+		this.data.globalPDPath.put(path, id);
 		return  id;
 	}
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiBlockLogic.java,v 1.9 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiBlockLogic.java,v 1.10 2007/01/12 16:18:29 sekhri Exp $"
  *
  */
 
@@ -26,9 +26,13 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does notthing.
 	*/
+
 	DBSApiPersonLogic personApi = null;
-	public DBSApiBlockLogic() {
-		personApi = new DBSApiPersonLogic();
+	DBSApiData data = null;
+	public DBSApiBlockLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+		personApi = new DBSApiPersonLogic(data);
 	}
 
 	/**
@@ -47,7 +51,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps =  DBSSql.listBlocks(conn, (new DBSApiProcDSLogic()).getProcessedDSID(conn, path), getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
+			ps =  DBSSql.listBlocks(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path), getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String blockID = get(rs, "ID");
@@ -103,7 +107,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
 		String creationDate = getTime(block, "creation_date", false);
 
-		String procDSID = (new DBSApiProcDSLogic()).getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 		String[] data = path.split("/");
@@ -160,7 +164,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	public void insertStorageElement(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		String name = getBlock(table, "block_name", true);
 		String blockID = getBlockID(conn, name, false, true);
-		DBSApiPersonLogic personApi = new DBSApiPersonLogic();
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertStorageElement(conn, out, 
 				blockID,
 				get(table, "storage_element_name", true),

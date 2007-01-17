@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiPrimDSLogic.java,v 1.8 2007/01/10 22:28:42 afaq Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.9 2007/01/10 22:55:19 afaq Exp $"
  *
  */
 
@@ -23,9 +23,13 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 	/**
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs.
 	*/
+
 	DBSApiPersonLogic personApi = null;
-	public DBSApiPrimDSLogic() {
-		personApi = new DBSApiPersonLogic();
+	DBSApiData data = null;
+	public DBSApiPrimDSLogic(DBSApiData data) {
+		super(data);
+		this.data = data;
+		personApi = new DBSApiPersonLogic(data);
 	}
 
 	
