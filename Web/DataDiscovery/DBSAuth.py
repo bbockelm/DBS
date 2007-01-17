@@ -36,8 +36,8 @@ class DBSAuthentication:
       try:
           self.dbparam = open(os.environ['DBS_DBPARAM'],'r')
       except:
-          if self.verbose:
-             printExcept("No DBS_DBPARAM environment variable found")
+          printExcept("No DBS_DBPARAM environment variable found")
+          raise "Fail to open $DBS_DBPARAM"
       found=0
       for s in self.dbparam.readlines():
           line = string.replace(s,"\n","")
@@ -58,6 +58,8 @@ class DBSAuthentication:
                 self.user = lines[1]
              if lines[0]=="AuthDBPassword":
                 self.passwd = lines[1]
+             if lines[0]=="Host":
+                self.host = lines[1]
   def dbInfo(self):
       """
           @type  self: class object
@@ -65,7 +67,7 @@ class DBSAuthentication:
           @rtype : tuple
           @return: tuple (iface,db,user,passwd)
       """
-      return (self.iface, self.db, self.user, self.passwd)
+      return (self.iface, self.db, self.user, self.passwd, self.host)
 #
 # main
 #
