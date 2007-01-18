@@ -785,9 +785,16 @@ class DbsApi(DbsConfig):
 
  
       xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
 
 
   #-------------------------------------------------------------------
+
   def listFileAlgorithms(self, lfn):
     """
     Retrieves the list of algorithms of the given file lfn.
@@ -836,6 +843,10 @@ class DbsApi(DbsConfig):
 
       xml.sax.parseString (data, Handler ())
       return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
 
       
 
@@ -987,6 +998,11 @@ class DbsApi(DbsConfig):
 
       xml.sax.parseString (data, Handler ())
       return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
 
 
   #-------------------------------------------------------------------
