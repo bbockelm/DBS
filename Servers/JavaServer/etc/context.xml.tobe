@@ -22,7 +22,7 @@
 		username="anzar" 
 		password="" 
 		driverClassName="org.gjt.mm.mysql.Driver"
-		url="jdbc:mysql://localhost:3306/dbs_new_era_v07?autoReconnect=true"/>
+		url="jdbc:mysql://localhost:3306/dbs_new_era_v10?autoReconnect=true"/>
 
         <!--Resource name="jdbc/dbs" 
                 auth="Container" 
@@ -54,8 +54,8 @@
 
 
 <SupportedSchemaVersion schemaversion="v00_00_04" />
-<SupportedClientVersions clientversions="v00_00_04" />
-<DBSBlockConfig maxBlockSize="20000" maxBlockFiles="50" />
+<SupportedClientVersions clientversions="v00_00_05" />
+<DBSBlockConfig maxBlockSize="20000000" maxBlockFiles="100" />
 </Context>
 					       
 
