@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiTransferLogic.java,v 1.5 2007/01/17 23:06:56 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiTransferLogic.java,v 1.6 2007/01/18 16:57:46 afaq Exp $"
  *
  */
 
@@ -43,15 +43,16 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
-                /*
+                
 		out.write(((String) "<dataset path='" + path + 
 					"' block_name='" + blockName +
 					"' />\n"));
-                */
+                
                 //Format of insertFile xml has modified slightly, hance changed required here, AA 01/18/2007
-                out.write(((String) "<dataset path='" + path + "'>\n" +
-                                    "<block block_name='" + blockName +"' />\n"+
-                                    "</block>\n"));
+               /* out.write(((String) "<dataset path='" + path + "'/>\n" +
+                                    "<block block_name='" + blockName +"'>\n"+
+                                    "</block>\n")); */
+
                 //FIXME: We need to add storage_elemnts in above xml as well,  AA 01/18/2007 
 
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
@@ -79,8 +80,9 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		String path = getPath(table, "path", true);
 
                 //FIXME: Confirm with Vijay -- Change made by AA 01/18/2007, Block is passed as a separate object now.
-		//String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
-                Hashtable fileblock = DBSUtil.getTable(table, "block");
+		String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
+                Hashtable fileblock = new Hashtable();
+                fileblock.put("block_name", blockName);
                   
                 //FIXME: We need to accomodate storage_elements for Block in migrate also ??
 

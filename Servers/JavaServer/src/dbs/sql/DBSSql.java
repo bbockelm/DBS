@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.46 $"
- $Id: DBSSql.java,v 1.46 2007/01/12 16:18:30 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSSql.java,v 1.47 2007/01/16 17:41:37 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -537,7 +537,7 @@ public class DBSSql {
 				"ON dt.id = pdst.DataTier \n" +
 			"LEFT OUTER JOIN PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
-			"JOIN DatasetParentage dp \n" +
+			"JOIN ProcDSParent dp \n" +
 				"ON dp.ItsParent = procds.id \n" +
 			"LEFT OUTER JOIN Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +

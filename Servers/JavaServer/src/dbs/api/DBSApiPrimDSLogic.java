@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiPrimDSLogic.java,v 1.9 2007/01/10 22:55:19 afaq Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.10 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -92,9 +92,9 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		String creationDate = getTime(dataset, "creation_date", false);
 		String name = get(dataset, "primary_name", true);
 		String type = get(dataset, "type", false);
-                String annotation = get(dataset, "annotation", false);
-                String start_date = get(dataset, "start_date", false);
-                String end_date = get(dataset, "end_date", false);
+                String annotation = getStr(dataset, "annotation", false);
+                String start_date = getStr(dataset, "start_date", false);
+                String end_date = getStr(dataset, "end_date", false);
 
                 if (isNull(annotation)) annotation = "NO ANNOTATION PROVIDED";
                 if (isNull(start_date)) start_date = "NO START_DATE PROVIDED";
