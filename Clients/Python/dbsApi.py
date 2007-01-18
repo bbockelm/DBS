@@ -734,6 +734,261 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+
+  #-------------------------------------------------------------------
+  def listFileParents(self, lfn):
+    """
+    Retrieves the list of parents of the given file lfn.
+    Returns a list of DbsFile objects.  If the lfn is not
+    given, then it will raise an exception.
+
+    
+    params:
+          lfn:  the logical file name of the file whose parents needs to be listed. There is no default value for lfn.
+    returns: 
+          list of DbsFile objects  
+    examples: 
+          api.listFileParents("aaaa2233-uuuuu-9767-8764aaaa") : List ALL parents for given LFN
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+ 
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listFileParents', 'lfn' : lfn  }, 'GET')
+
+    logging.info(data)
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'file-parent':
+             result.append( DbsFile (
+                                       LogicalFileName=str(attrs['lfn']),
+                                       FileSize=long(attrs['size']),
+                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       Status=str(attrs['status']),
+                                       Block=DbsFileBlock(Name=str(attrs['block_name'])),
+                                       FileType=str(attrs['type']),
+                                       Checksum=str(attrs['checksum']),
+                                       QueryableMetadata=str(attrs['queryable_meta_data']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       ))
+
+ 
+      xml.sax.parseString (data, Handler ())
+
+
+  #-------------------------------------------------------------------
+  def listFileAlgorithms(self, lfn):
+    """
+    Retrieves the list of algorithms of the given file lfn.
+    Returns a list of DbsAlgorithmFile objects.  If the lfn is not
+    given, then it will raise an exception.
+
+    
+    params:
+          lfn:  the logical file name of the file whose algorithms needs to be listed. There is no default value for lfn.
+    returns: 
+          list of DbsAlgorithm objects  
+    examples: 
+          api.listFileAlgorithms("aaaa2233-uuuuu-9767-8764aaaa") : List ALL algorithm for given LFN
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+ 
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listFileAlgorithms', 'lfn' : lfn  }, 'GET')
+
+    logging.info(data)
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+	   if name == 'file-algorithm':
+              result.append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
+                                                         ApplicationVersion=str(attrs['app_version']),
+                                                         ApplicationFamily=str(attrs['app_family_name']),
+                                                         ParameterSetID=DbsQueryableParameterSet
+                                                          (
+                                                           Hash=str(attrs['ps_hash']),
+                                                           Name=str(attrs['ps_name']),
+                                                           ),
+                                                         CreationDate=str(attrs['creation_date']),
+                                                         CreatedBy=str(attrs['created_by']),
+                                                         LastModificationDate=str(attrs['last_modification_date']),
+                                                         LastModifiedBy=str(attrs['last_modified_by']),
+                                                        ) )
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+      
+
+  #-------------------------------------------------------------------
+  def listFileTiers(self, lfn):
+    """
+    Retrieves the list of tiers of the given file lfn.
+    Returns a list of DbsFile objects.  If the lfn is not
+    given, then it will raise an exception.
+
+    
+    params:
+          lfn:  the logical file name of the file whose tiers needs to be listed. There is no default value for lfn.
+    returns: 
+          list of DbsDataTier objects  
+    examples: 
+          api.listFileTiers("aaaa2233-uuuuu-9767-8764aaaa") : List ALL tiers for given LFN
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+ 
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listFileTiers', 'lfn' : lfn  }, 'GET')
+
+    logging.info(data)
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'file-data_tier':
+             result.append(DbsDataTier (
+                                       Name=str(attrs['name']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       ))
+
+  
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+
+  #-------------------------------------------------------------------
+  def listFileBranches(self, lfn):
+    """
+    Retrieves the list of Branches of the given file lfn.
+    Returns a list of DbsFile objects.  If the lfn is not
+    given, then it will raise an exception.
+
+    
+    params:
+          lfn:  the logical file name of the file whose branches needs to be listed. There is no default value for lfn.
+    returns: 
+          list of DbsFileBranch objects  
+    examples: 
+          api.listFileParents("aaaa2233-uuuuu-9767-8764aaaa") : List ALL branches for given LFN
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+ 
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listFileBranches', 'lfn' : lfn  }, 'GET')
+
+    logging.info(data)
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'file-branch':
+	      result.append(DbsFileBranch (
+                                       Name=str(attrs['name']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       ))
+
+
+  
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+  #-------------------------------------------------------------------
+  def listFileLumis(self, lfn):
+    """
+    Retrieves the list of parents of the given file lfn.
+    Returns a list of DbsLumiSection objects.  If the lfn is not
+    given, then it will raise an exception.
+
+    
+    params:
+          lfn:  the logical file name of the file whose lumi sections needs to be listed. There is no default value for lfn.
+    returns: 
+          list of DbsLumiSection objects  
+    examples: 
+          api.listFileParents("aaaa2233-uuuuu-9767-8764aaaa") : List ALL lumi sections for given LFN
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+ 
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listFileLumis', 'lfn' : lfn  }, 'GET')
+
+    logging.info(data)
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'file-lumi_section':
+             result.append(DbsLumiSection (
+                                                   LumiSectionNumber=long(attrs['lumi_section_number']),
+                                                   StartEventNumber=long(attrs['start_event_number']),
+                                                   EndEventNumber=long(attrs['end_event_number']),   
+                                                   LumiStartTime=str(attrs['lumi_start_time']),
+                                                   LumiEndTime=str(attrs['lumi_end_time']),
+                                                   RunNumber=long(attrs['run_number']),
+                                                   CreationDate=str(attrs['creation_date']),
+                                                   CreatedBy=str(attrs['created_by']),
+                                                   LastModificationDate=str(attrs['last_modification_date']),
+                                                   LastModifiedBy=str(attrs['last_modified_by']), 
+                                              ))
+
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+
   #-------------------------------------------------------------------
 
   def listDatasetContents(self, path, block_name):

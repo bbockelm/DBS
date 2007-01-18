@@ -45,7 +45,7 @@ proc = DbsProcessedDataset (
                             Status="VALID",
                             TierList=['SIM', 'RECO'],
                             AlgoList=[algo],
-                            RunList=['1', '2'],   # Provide a Run Number List that goes with this ProcDS                   
+                            RunList=['1'],   # Provide a Run Number List that goes with this ProcDS                   
                             )
                              
 print "Creating a processed dataset %s" % proc
