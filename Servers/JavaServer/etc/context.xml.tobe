@@ -53,7 +53,7 @@
                 url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
 
 
-<SupportedSchemaVersion schemaversion="v00_00_03" />
+<SupportedSchemaVersion schemaversion="v00_00_04" />
 <SupportedClientVersions clientversions="v00_00_04" />
 <DBSBlockConfig maxBlockSize="20000" maxBlockFiles="50" />
 </Context>

@@ -68,7 +68,7 @@ ValidationTable = {
           },
 "DbsFileBlock" : {
          "Name" : { "Comment" : "Required and UNIQUE", "Validator" : isStringType },
-         "StorageElement" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "StorageElementList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "BlockSize" : { "Comment" : "User may not need to set this variable always", "Validator" : isLongType },
          "NumberOfFiles" : { "Comment" : "Optional, Defaulted to ZERO for new block", "Validator" : isLongType },
          "NumberOfEvents" : { "Comment" : "Optional, Defaulted to ZERO for new block", "Validator" : isLongType },

@@ -64,11 +64,9 @@ lumi2 = DbsLumiSection (
          RunNumber=1,
          )
 
-
-
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'ccccccccc1122-0909-9767-8764aaa',
+        LogicalFileName= 'NEW-AUTO-BLOCk-011',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -83,7 +81,7 @@ myfile1= DbsFile (
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'aaaa2233-uuuuu-9767-8764aaa',
+        LogicalFileName= 'NEW-AUTO-BLOCK-002',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -92,16 +90,21 @@ myfile2= DbsFile (
         FileType= 'EVD',
         Dataset= proc,
         #Block= isDictType,
-        #LumiList= [lumi1, lumi2],
+        LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'RECO'],
         AlgoList = [algo],
         #ParentList = ['lfn01', 'lfn02']  
         BranchList=['testbranch01', 'testbranch02']
          )
-                            
+         
+# Need to provide Block name if YOU want to control Block management (The block named must pre-exist), if NOT then DBS will throw this file in
+# Open Block for this Dataset, and will do the Block management too.
+# Make a choice
+                   
 block = DbsFileBlock (
-         #Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db"
-         Name="/test_primary_anzar_001/TestProcessedDS002#337da02b-8dc9-4437-8490-bca5c670ea40"
+         Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db",
+         #Name="/test_primary_anzar_001/TestProcessedDS002#337da02b-8dc9-4437-8490-bca5c670ea40",
+         StorageElement=['test1', 'test3']
          #Name="/this/hahah#12345"
          )
 
@@ -112,6 +115,7 @@ print "In future it will be an optional parameter"
 print "Inserting files in processDS %s" % proc
 
 try:
+    #api.insertFiles (proc, [myfile1], block)
     api.insertFiles (proc, [myfile1, myfile2], block)
     print "Result: %s" % proc
 

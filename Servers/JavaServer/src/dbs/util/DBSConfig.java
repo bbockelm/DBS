@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.9 $"
- $Id: DBSConfig.java,v 1.9 2007/01/03 22:27:53 afaq Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSConfig.java,v 1.10 2007/01/04 17:44:29 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -35,8 +35,8 @@ public class DBSConfig {
         private String dbURL;
         private String supportedSchemaVersion;
         private String supportedClientVersions;
-        private int maxBlockSize;
-        private int maxBlockFiles;
+        private int maxBlockSize = 100000;
+        private int maxBlockFiles = 100;
 
         private static DBSConfig ref;
 
@@ -135,12 +135,14 @@ public class DBSConfig {
                           if (maxBlkSize == null ) {
                              throw new DBSException("Configuration Error", "1058", "maxBlockSize not found in Config File");
                           }
+                          DBSUtil.writeLog("maxBlockSize: "+maxBlkSize);
                           maxBlockSize = Integer.parseInt(maxBlkSize);
 
                           String maxBlkFiles = (String)atribs.get("maxBlockFiles");
                           if (maxBlkFiles == null ) {
                           throw new DBSException("Configuration Error", "1059", "maxBlockFiles not found in Config File");
                           }
+                          DBSUtil.writeLog("maxBlkFiles: "+maxBlkFiles);
                           maxBlockFiles = Integer.parseInt(maxBlkFiles);
 
                        }
@@ -166,14 +168,7 @@ public class DBSConfig {
                     if (supportedClientVersions == null ) {
                       throw new DBSException("Configuration Error", "1057", "Supported CLIENT_VERSIONS not found in Config File");
                     }
-                    /*if (maxBlockSize == null ) {
-                      throw new DBSException("Configuration Error", "1058", "maxBlockSize not found in Config File");
-                    }
-                       if (maxBlockFiles == null ) {
-                      throw new DBSException("Configuration Error", "1059", "maxBlockFiles not found in Config File");
-                    }*/
 
-                    DBSUtil.writeLog("dbUserName: "+dbUserName); 
                     DBSUtil.writeLog("dbUserName: "+dbUserName);
                     DBSUtil.writeLog("dbUserPasswd: "+dbUserPasswd);
                     DBSUtil.writeLog("dbDriver: "+dbDriver);
@@ -181,11 +176,6 @@ public class DBSConfig {
                     DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);
                     DBSUtil.writeLog("supportedClientVersions: "+supportedClientVersions);
 
-                //} catch (IOException ex) {
-                //  throw new DBSException("Configuration Error", "1051","Unable to read configuration file dbs.config "+  ex.getMessage()); 
-                //}catch (DBSException ex) {
-                //  throw new DBSException(ex.getMessage(), ex.getCode(), ex.getDetail());
-                 
                 } catch (Exception ex) {
                   throw new DBSException("Configuration Error", "1051","Unable to read configuration file dbs.config"+
                                                                                                               ex.getMessage()); 

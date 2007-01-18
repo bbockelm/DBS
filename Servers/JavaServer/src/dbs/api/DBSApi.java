@@ -1,6 +1,6 @@
 /**
- $Revision: 1.54 $"
- $Id: DBSApi.java,v 1.54 2007/01/17 17:51:32 sekhri Exp $"
+ $Revision: 1.55 $"
+ $Id: DBSApi.java,v 1.55 2007/01/17 23:06:56 sekhri Exp $"
  *
 */
 
@@ -665,6 +665,8 @@ public class DBSApi {
 		dbsParser.parseString(inputXml); 
     		Vector allElement = dbsParser.getElements();
 		Hashtable psDS = null;
+                Hashtable block = null;
+
 		for (int i=0; i<allElement.size(); ++i) {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
@@ -678,6 +680,15 @@ public class DBSApi {
 				topLevel.add(file);
 				++index;
 			} 
+                        //ONLY One Block for this Procssed Dataset, as ALL files belong to same block
+                        if (name.equals("block") ) {
+                                block = e.attributes;
+                                //Keep the storage_elements
+                                block.put("storage_element", new Vector());
+                        }
+                        if (name.equals("storage_element") )
+                                ((Vector)block.get("storage_element")).add(e.attributes);
+
 			if (name.equals("lumi_section") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
 			if (name.equals("data_tier") ) 
@@ -692,7 +703,7 @@ public class DBSApi {
 				psDS = e.attributes;
 			}
 		}
-		(new DBSApiFileLogic(this.data)).insertFiles(conn, out, DBSUtil.get(psDS, "path"), DBSUtil.get(psDS, "block_name"), topLevel, dbsUser);
+                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, DBSUtil.get(psDS, "path"), block, topLevel, dbsUser);
 	}
 
 	

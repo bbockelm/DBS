@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiTransferLogic.java,v 1.4 2007/01/17 17:51:32 sekhri Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiTransferLogic.java,v 1.5 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -43,9 +43,17 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
+                /*
 		out.write(((String) "<dataset path='" + path + 
 					"' block_name='" + blockName +
 					"' />\n"));
+                */
+                //Format of insertFile xml has modified slightly, hance changed required here, AA 01/18/2007
+                out.write(((String) "<dataset path='" + path + "'>\n" +
+                                    "<block block_name='" + blockName +"' />\n"+
+                                    "</block>\n"));
+                //FIXME: We need to add storage_elemnts in above xml as well,  AA 01/18/2007 
+
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
 		pdApi.listProcessedDatasets(conn, out, data[1], data[2], data[3], null, null, null, null);
@@ -69,7 +77,12 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		//FIXME dont pass dbsUser instaed get it from the table
 		String path = getPath(table, "path", true);
-		String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
+
+                //FIXME: Confirm with Vijay -- Change made by AA 01/18/2007, Block is passed as a separate object now.
+		//String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
+                Hashtable fileblock = DBSUtil.getTable(table, "block");
+                  
+                //FIXME: We need to accomodate storage_elements for Block in migrate also ??
 
 		(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary-dataset"), dbsUser);
 		Hashtable pdTable = DBSUtil.getTable(table, "processed-dataset");
@@ -96,8 +109,9 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			blockApi.insertBlock(conn, out, block, dbsUser);
 		}
 		
-		(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
-		
+		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
+                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, fileblock, DBSUtil.getVector(table, "file"), dbsUser);
+ 
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {
 			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j));

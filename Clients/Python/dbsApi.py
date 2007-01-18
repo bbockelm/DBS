@@ -1209,14 +1209,17 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += " <processed_datatset path='"+self._path(dataset)+"'"
+    xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
     if block != None:
-       #if (block.get("Name", "") == ""):
-       #     print "BLOCK NAME IS NULL"
-       xmlinput += " block_name='"+block.get("Name", "")+"'"
-       
-    xmlinput += " >"
-    
+       xmlinput += "<block block_name='"+ block.get("Name", "") +"'>"
+    if type(block) != type("str") and block != None :
+       #xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
+       #xmlinput += " path='"+path+"'>"
+       if (block['StorageElementList'] not in ( [], None)) :
+         for aSe in block['StorageElementList']:
+            xmlinput += " <storage_element storage_element_name='"+aSe+"'/>"
+    xmlinput += "</block>"
+
     for file in files:
        xmlinput += " <file lfn='"+file.get('LogicalFileName', '')+"'"
        xmlinput += " checksum='"+file.get('Checksum', '')+"'"

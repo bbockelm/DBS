@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiFileLogic.java,v 1.9 2007/01/17 17:51:32 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiFileLogic.java,v 1.10 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -290,7 +290,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-	public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
+        public void insertFiles(Connection conn, Writer out, String path, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
+	//public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
+                //Get the Block name (if provided)
+                String blockName = DBSUtil.get(block, "block_name");
 		
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
@@ -307,17 +310,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			}
 		}*/
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);
-                String blockID;
+                String blockID = null;
 
                 //If user INSIST to provide a BlockName
                 if ( ! isNull(blockName) && !(blockName.equals("")) ) {
 		    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
                     //FIXME: We must need to verify that Block is OpenForWriting
                     
-                }
-                //Let DBS choose the Block
-                else {
-                    blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, procDSID, path, dbsUser);
                 }
 		//These tables are used to store the types and staus fileds along with thier id
 		//If the id can be fetched from here then we do not have to fietch it from database again and again
@@ -380,6 +379,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					valStatusID = getID(conn, "FileStatus", "Status", valStatus, true);
 					valStatusTable.put(valStatus, valStatusID);
 				}
+                                if( isNull(blockID) ) {
+                                        //Let DBS choose the Block, And that could be slow
+                                        //We need to have Storage Element List here !!!!!!!
+                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, procDSID, path, block, dbsUser);
+                                }
 	
 				PreparedStatement ps = null;
 				try {
