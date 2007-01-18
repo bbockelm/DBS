@@ -50,7 +50,8 @@ fi
 
 export PYTHONPATH=/data/DBSDataDiscovery/install/lib/python${ver}/site-packages:$PYTHONPATH
 export PYTHONPATH=$DLSHOME/Client/lib:$PYTHONPATH
-export PYTHONPATH=$DBSHOME/Clients/Python/lib:$DBSHOME/Clients/Python/:$PYTHONPATH
+export PYTHONPATH=$DBSHOME/Web/DataDiscovery:$PYTHONPATH
+export PYTHONPATH=$DBSHOME/Clients/Python/:$PYTHONPATH
 #export PYTHONPATH=$DBSHOME/Clients/PythonAPI/lib:$DBSHOME/Clients/PythonAPI/:$PYTHONPATH
 
 export CVSROOT=:pserver:anonymous@cmscvs.cern.ch:/cvs_server/repositories/CMSSW
