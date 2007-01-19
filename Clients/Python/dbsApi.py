@@ -282,10 +282,12 @@ class DbsApi(DbsConfig):
         
 	def startElement(self, name, attrs):
 	  if name == 'processed-dataset':
+	    self.procName = str(attrs['processed_datatset_name'])	  
+	    self.primName = str(attrs['primary_datatset_name'])	  
             self.currDataset = DbsProcessedDataset ( 
-                                                Name=str(attrs['processed_datatset_name']),     
+                                                Name=self.procName,     
                                                 #openForWriting=str(attrs['open_for_writing']), 
-                                                PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name'])),
+                                                PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
                                                 CreationDate=str(attrs['creation_date']),
                                                 CreatedBy=str(attrs['created_by']),
                                                 LastModificationDate=str(attrs['last_modification_date']),
@@ -293,6 +295,7 @@ class DbsApi(DbsConfig):
                                                 )
           if name == 'data_tier':
             self.currDataset['TierList'].append(str(attrs['name']))
+            self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
 
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
@@ -913,7 +916,7 @@ class DbsApi(DbsConfig):
     returns: 
           list of DbsFileBranch objects  
     examples: 
-          api.listFileParents("aaaa2233-uuuuu-9767-8764aaaa") : List ALL branches for given LFN
+          api.listFileBranches("aaaa2233-uuuuu-9767-8764aaaa") : List ALL branches for given LFN
 
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsException	
@@ -963,7 +966,7 @@ class DbsApi(DbsConfig):
     returns: 
           list of DbsLumiSection objects  
     examples: 
-          api.listFileParents("aaaa2233-uuuuu-9767-8764aaaa") : List ALL lumi sections for given LFN
+          api.listFileLumis("aaaa2233-uuuuu-9767-8764aaaa") : List ALL lumi sections for given LFN
 
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsException	

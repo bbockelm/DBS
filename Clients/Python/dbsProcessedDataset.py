@@ -40,6 +40,7 @@ class  DbsProcessedDataset(DbsBase):
       # List type object tierList needs to be initialized
       # to avoid return "None" instead of empty list []
       self.setdefault('TierList', [])
+      self.setdefault('PathList', [])
       self.setdefault('RunList', [])
       self.setdefault('ParentList', [])
       # Read in all User provided values

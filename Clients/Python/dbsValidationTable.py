@@ -59,6 +59,7 @@ ValidationTable = {
          "PrimaryDataset" : { "Comment" : "A required variable", "Validator" : isDictType },
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "PathList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "ParentList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
          "RunList" : { "Comment" : "User may need to provide run list", "Validator" : isListType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

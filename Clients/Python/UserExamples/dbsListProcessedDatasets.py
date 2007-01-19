@@ -26,7 +26,7 @@ try:
    #NEGATIVE TEST for proc in api.listProcessedDatasets("/DBS2-TEST-QCD_pt_0_15/*/*"):
    #for proc in api.listProcessedDatasets("DBS2-TEST-QCD_pt_0_15", "*", "*"):
 
-   #for proc in api.listProcessedDatasets("*"):
+   for proc in api.listProcessedDatasets("*","*","CMSSW_0_9_0-RAW-Run-000033*"):
      print "  %s" % proc
   except DbsDatabaseError,e:
    print e
