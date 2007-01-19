@@ -38,8 +38,6 @@ GetDataUpdater.prototype = {
      if(!this.nores) {
         showResultsMenu();
      }
-     hideWaitingMessage();
-     HideWheel("__"+this.tag);
      var t=document.getElementById(this.tag);
      if(this.mode=='update') {
         t.innerHTML+=responseHTML;
@@ -51,10 +49,14 @@ GetDataUpdater.prototype = {
      if(jsCode) {
         eval(jsCode);
      }
-     underlineLink('Summary');
+//     underlineLink('Summary');
      //sortables_init();
-     if(responseHTML.search("checkbox")) {
-        UnSelectAll();
+//     if(responseHTML.search("checkbox")) {
+//        UnSelectAll();
+//     }
+     HideWheel("__"+this.tag);
+     if(this.tag=='results') {
+        hideWaitingMessage();
      }
    }
 }
@@ -204,6 +206,7 @@ function getDataFromSelectors(_dbs,_site,_app,_primD,_tier) {
 // AJAX registration 
 function ajaxGetRuns(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__runs");
+//  showLoadingMessage('runs');
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -219,6 +222,7 @@ function ajaxGetRuns(_dbs,_site,_app,_primD,_tier,proc) {
 // AJAX registration 
 function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__results_dbs");
+//  showLoadingMessage('results_dbs');
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -239,6 +243,7 @@ function SendAjaxCalls(dbs,site,app,prim,tier,proc) {
 }
 function ajaxGetData(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__results");
+//  showLoadingMessage('results','Wait');
   var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
