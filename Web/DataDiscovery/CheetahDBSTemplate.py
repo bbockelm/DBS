@@ -466,7 +466,7 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <!--
 <form action="getBlocksFromSite" method="get">
 -->
-<form action="javascript:ClearTag('progressBar');ajaxSiteSearch()" method="get">
+<form action="javascript:ResetAllResults();ajaxSiteSearch()" method="get">
 <table>
 <tr>
 <td>Choose DBS instance</td>
@@ -514,12 +514,11 @@ templateFileBlocksFromSite="""
 #for name in $bList
 #set bName=$name.replace('#','%23')
 <tr>
-    <td>
-    <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">$name</a>
-    </td>
+    <td>$name</td>
     <td align="center">
     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)">cff</a>,
-    <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',1000)">plain</a>
+    <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',1000)">txt</a>,
+    <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">details</a>
     </td>
 </tr>
 #end for
@@ -810,7 +809,7 @@ $msg
 
 <td valign="top">
 
-<form action="javascript:ClearTag('progressBar');ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+<form action="javascript:ResetAllResults();ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -932,12 +931,46 @@ Block name: <b>$blockName</b>
 <td>$type</td>
 <td>$evts</td>
 <td>$colorSizeHTMLFormat($size)</td>
-<td>$name</td>
+<td>
+$name<br />
+<table>
+<tr>
+<td><a href="$host/getLFN_Branches?dbsInst=$dbsInst&lfn=$name">ROOT branches</a></td>
+<td>|</td>
+<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
+<td>|</td>
+<td><a href="$host/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
+<td>|</td>
+<td><a href="$host/getLFN_Tiers?dbsInst=$dbsInst&lfn=$name">Tiers</a></td>
+<td>|</td>
+<td><a href="$host/getLFN_Parents?dbsInst=$dbsInst&lfn=$name">Parents</a></td>
+</tr>
+</table>
+</td>
 </tr>
 #end for
 </table>
 <!-- end of main table -->
 <script type="text/javascript">sortables_init();</script>
+"""
+
+templateTable="""
+<table>
+<tr>
+#for item in $header
+<td>$item</td>
+#end for
+</tr>
+#content
+</table>
+"""
+
+templateTableBody="""
+<tr>
+#for item in $branch
+<td>$item</td>
+#end for
+</tr>
 """
 
 templateSnapshot="""
@@ -951,7 +984,7 @@ templateSnapshot="""
 <table class="small" bgcolor="#DDDDDD">
 #if not $userMode
 <tr>
-<td>DBS instantes:</td>
+<td align="right">DBS instantse:</td>
 <td>$dbsInst</td>
 </tr>
 #end if
@@ -1093,8 +1126,9 @@ Processed dataset:<br />
 <td>Block name</td>
 <td>Events</td>
 <td>Files</td>
-<td>Status</td>
 <td>Size</td>
+<td>LFNs</td>
+<td>Status</td>
 <td>Created by</td>
 <td>Creation time</td>
 <td>Modified by</td>
@@ -1105,21 +1139,20 @@ Processed dataset:<br />
 #set bName=$dbsDict['Name']
 #set sName=$splitString($dbsDict['Name'],30,"\\n")
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
-<td align="left" class="td20">
-<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)">$sName</a>
-<br /><b>LFNs:</b> 
-<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)" alt="cff format">cff</a>, 
-<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',900)" alt="file list format">plain</a>
-
-</td>
+<td align="left" class="td20">$sName</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
+<td align="right">$dbsDict['BlockSize']</td>
+<td align="center">
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)" alt="cff format">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',900)" alt="file list format">txt</a>,
+<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)">details</a>
+</td>
 #if int($dbsDict['OpenForWriting'])==1
 <td align="center" style="background-color:AliceBlue;">OPEN</td>
 #else
 <td align="center" style="background-color:AntiqueWhite;">CLOSED</td>
 #end if
-<td align="right">$dbsDict['BlockSize']</td>
 <td align="right">$dbsDict['CreatedBy']</td>
 <td align="center">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
@@ -1137,20 +1170,20 @@ templateDbsInfoTableEntry="""
 #set bName=$dbsDict['Name']
 #set sName=$splitString($dbsDict['Name'],30,"\\n")
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
-<td align="left" class="td20">
-<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">$sName</a>
-<br /><b>LFNs:</b> 
-<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)" alt="cff format">cff</a>, 
-<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)" alt="file list format">plain</a>
-</td>
+<td align="left" class="td20">$sName</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
+<td align="right">$dbsDict['BlockSize']</td>
+<td align="center">
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)" alt="cff format">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)" alt="file list format">txt</a>,
+<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">details</a>
+</td>
 #if int($dbsDict['OpenForWriting'])==1
 <td align="center" style="background-color:AliceBlue;">OPEN</td>
 #else
 <td align="center" style="background-color:AntiqueWhite;">CLOSED</td>
 #end if
-<td align="right">$dbsDict['BlockSize']</td>
 <td align="right">$dbsDict['CreatedBy']</td>
 <td align="center">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
@@ -1164,12 +1197,6 @@ templateLFB = """
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #set tot=len($blockDict.keys())
 #set idPath=$path.replace("/","___")
-#*
-<div>
-<a href="javascript:showResMenu('parents')">$path</a> (<a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$nEvents',1000)">crab.cfg</a>)
-</div>
-<div id="$idPath"></div>
-*#
 
 ###<p>
 contains $nEvents events, $totFiles files, $totSize. 
@@ -1181,68 +1208,66 @@ contains $nEvents events, $totFiles files, $totSize.
 #if $nEvents
 ##
 #set tableId="table_"+str($tid)
+
 <table>
 <tr>
 <td>Show:</td>
-#*
-<td id="td_Blocks" name="td_Blocks" class="td_plain">
-<a href="javascript:HideSumInfo('$tableId');ShowBlockInfo('$tableId')">
-Blocks
-</a>
-</td>
-*#
-<td id="td_Summary" name="td_Summary" class="td_plain">
-<a href="javascript:HideBlockInfo('$tableId');ShowSumInfo('$tableId')">
+<td>
+
+<table id="Sum_$tableId" class="td_underline">
+<tr>
+<td>
+<a href="javascript:HideTag('det_$tableId');ShowTag('sum_$tableId');switchLink('Sum','$tableId')">
 Summary
-</a>
-</td>
-<td id="td_Both" name="td_Both" class="td_plain">
-<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');">
-##<a href="javascript:ShowSumInfo('$tableId');ShowBlockInfo('$tableId');underlineLink('Both')">
-Detailed
 </a>
 </td>
 </tr>
 </table>
-<!-- Main table -->
-<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
-  <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
-     ###<th>row</th>
+
+</td>
+<td>
+
+<table id="Det_$tableId" class="td_plain">
+<tr>
+<td>
+<a href="javascript:ShowTag('det_$tableId');HideTag('sum_$tableId');switchLink('Det','$tableId')">
+Details
+</a>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+<script type="text/javascript">switchLink('Sum','$tableId')</script>
+
+<!-- Summary -->
+<div id="sum_$tableId">
+<table cellspacing="0" cellpadding="0" border="1">
+  <tr valign="top" align="center">
      <th>Location</th>
      <th>Events</th>
      <th>Files</th>
      <th>size</th>
      <th>LFNs</th>
-     <th name="blockInfo" id="blockInfo" class="hide">status</th>
-     <th name="blockInfo" id="blockInfo" class="hide">Block name</th>
   </tr>
-## HERE blockDict[blockName]=(nEvt,blockStatus,nFiles,blockSize,hostList)
-## HERE   locDict[siteName]=blockList
-#set i=0
-#set imax=len($locDict.keys())
-#for site in $locDict.keys()
-#set i+=1
-#if $imax<10
-#set print_i="%01d"%$i
-#elif $imax<100
-#set print_i="%02d"%$i
-#elif $imax<1000
-#set print_i="%03d"%$i
-#end if
-#set blockList=$locDict[$site]
+#for site in $siteList
 #set siteTotEvt=0
 #set siteTotFiles=0
 #set siteTotSize=0
+## HERE blockDict[blockName]=(nEvt,blockStatus,nFiles,blockSize,hostList)
 ##
 ## Sum total events,files,size for given site
 ##
-#for bName in $blockList
+#for bName in $blockDict.keys()
+#if $blockDict[$bName][4:].count($site)
 #set siteTotEvt+=$blockDict[$bName][0]
 #set siteTotFiles+=$blockDict[$bName][2]
 #set siteTotSize+=$blockDict[$bName][3]
+#end if
 #end for
   <tr valign="top" bgcolor="#FFFADC" name="row_sumInfo" id="row_sumInfo">
-     ###<td>$print_i</td>
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
@@ -1256,19 +1281,25 @@ Detailed
      <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">all blocks</a>
      </td>
   </tr>
-#set j=0
-#set jmax=len($blockList)
-#for name in $blockList
-#set j+=1
-#if $jmax<10
-#set print_j="%s_%01d"%($print_i,$j)
-#elif $jmax<100
-#set print_j="%s_%02d"%($print_i,$j)
-#elif $jmax<1000
-#set print_j="%s_%03d"%($print_i,$j)
-#elif $jmax<10000
-#set print_j="%s_%04d"%($print_i,$j)
-#end if
+#end for
+</table>
+</div>
+<!-- End of Summary table -->
+
+<!-- Detailed -->
+<div id="det_$tableId" class="hide">
+<table cellspacing="0" cellpadding="0" border="1">
+  <tr valign="top" align="center">
+     <td>Location</td>
+     <td>Events</td>
+     <td>Files</td>
+     <td>size</td>
+     <td>LFNs</td>
+     <td>status</td>
+     <td>Block name</td>
+  </tr>
+## HERE blockDict[blockName]=(nEvt,blockStatus,nFiles,blockSize,hostList)
+#for name in $blockDict.keys()
 #set item    = $blockDict[$name]
 #set bName   = $name.replace('#','%23')
 #set escName = $name.replace('#','\#')
@@ -1277,35 +1308,41 @@ Detailed
 #set bStatus = $item[1]
 #set nFiles  = $item[2]
 #set size    = $item[3]
-#set hostList= $item[4]
-  <tr valign="top" name="row_blockInfo" id="row_blockInfo" bgcolor="#F0F0F0" class="hide">
-     ###<td>$print_j</td>
-     <td><div class="dbs_cell">$site</div></td>
+#set hostList= $item[4:]
+  <tr valign="top" bgcolor="#F0F0F0">
+     <td><div class="dbs_cell">
+#for site in $hostList
+      $site
+      #if $site!=$hostList[-1]
+      <br />
+      #end if
+#end for
+     </div></td>
      <td align="right"><div class="dbs_cell">$nEvt</div></td>
      <td align="right"><div class="dbs_cell">$nFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
      <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)" alt="cff format">cff</a>, 
-     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)" alt="file list format">plain</a>
+     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)" alt="file list format">txt</a>,
+     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">details</a>
      </div>
      </td>
-     #if $bStatus=="OPEN" or $bStatus==1:
+#if $bStatus=="OPEN" or $bStatus==1
      <td align="center" style="background-color:AliceBlue;"><div class="dbs_cell">OPEN</div></td>
-     #else
+#else
      <td align="center" style="background-color:AntiqueWhite;"><div class="dbs_cell">CLOSED</div></td>
-     #end if
-     <td align="left">
-     ###<div class="dbs_cell">
+#end if
+     <td align="left" class="td20">
 #from DBSUtil import splitString 
 #set sName=$splitString($name,30,"\\n")
-     <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">$sName</a>
-     ###</div>
+     $sName
      </td>
   </tr>
 #end for
-#end for
 </table>
-<!-- End of Main table -->
+</div>
+<!-- End of Detailed table -->
+
 <br />
 ##
 #end if
@@ -1315,6 +1352,7 @@ Detailed
 templateBottom="""
 <span id="floatDataDescription"></span>
 <table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="100%">
+###<table id="results_menu" cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td class="td_menu_gray_box" id="_results">
 <table width="100%"><tr><td>
@@ -1366,6 +1404,17 @@ templateBottom="""
 
 <br />
 <div id="results_index"></div>
+<div id="results"></div>
+<div id="results_waiting"></div>
+<div id="results_kw"></div>
+<div id="results_dbs"></div>
+<div id="results_site"></div>
+<div id="runs"></div>
+<div id="parents"><br /></div>
+<div id="appConfigs"><br /></div>
+
+#*
+<div id="results_index"></div>
 <div id="results" class="show_inline"></div>
 <div id="results_waiting" class="show_inline"></div>
 <div id="results_kw" class="hide"></div>
@@ -1374,6 +1423,7 @@ templateBottom="""
 <div id="runs" class="hide"></div>
 <div id="parents" class="hide"><br /></div>
 <div id="appConfigs" class="hide"><br /></div>
+*#
 
 <div class="align_center">
 <div id="progressBar"></div>
