@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 552
+-- === Build : 555
 -- ======================================================================
 
-drop database dbs_new_era_v10;
-create database dbs_new_era_v10;
-use dbs_new_era_v10;
+drop database dbs_new_era_v11;
+create database dbs_new_era_v11;
+use dbs_new_era_v11;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -697,18 +697,19 @@ CREATE TABLE AnalysisDSStatus
 
 -- ======================================================================
 
-CREATE TABLE AnalysisDatasetLumi
+CREATE TABLE AnalysisDSFileLumi
   (
     ID                    BIGINT UNSIGNED,
     AnalysisDataset       BIGINT UNSIGNED                                                   not null,
     Lumi                  BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
-    unique(AnalysisDataset,Lumi)
+    unique(AnalysisDataset,Lumi,Fileid)
   );
 
 -- ======================================================================
@@ -1180,17 +1181,20 @@ ALTER TABLE AnalysisDSStatus ADD CONSTRAINT
     AnalysisDSStatusLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumiAnalysisD_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
 /
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
 /
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumi_Fileid_FK foreign key(Fileid) references Files(ID)
 /
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumiCreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumiLastModif_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AnalysisDSDef ADD CONSTRAINT 

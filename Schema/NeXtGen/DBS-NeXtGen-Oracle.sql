@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 547
+REM === Build : 555
 REM ======================================================================
 
 CREATE TABLE Person
@@ -664,17 +664,18 @@ CREATE TABLE ProcAlgo
 
 REM ======================================================================
 
-CREATE TABLE AnalysisDatasetLumi
+CREATE TABLE AnalysisDSFileLumi
   (
     ID                    int,
     AnalysisDataset       int                                                   not null,
     Lumi                  int                                                   not null,
+    Fileid                int                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             int,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        int,
     primary key(ID),
-    unique(AnalysisDataset,Lumi)
+    unique(AnalysisDataset,Lumi,Fileid)
   );
 
 REM ======================================================================
@@ -1137,17 +1138,20 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiAnalysis_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumiAnalysisD_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
 /
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
 /
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiCreatedB_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumi_Fileid_FK foreign key(Fileid) references Files(ID)
 /
-ALTER TABLE AnalysisDatasetLumi ADD CONSTRAINT 
-    AnalysisDatasetLumiLastModi_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumiCreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
+    AnalysisDSFileLumiLastModif_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 

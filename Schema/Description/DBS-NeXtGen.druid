@@ -2,15 +2,15 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">546</attrib>
-		<attrib name="serial">335301</attrib>
+		<attrib name="build">560</attrib>
+		<attrib name="serial">338040</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">drop database dbs_new_era_v10;
-create database dbs_new_era_v10;
-use dbs_new_era_v10;
+			<attrib name="preSql">drop database dbs_new_era_v11;
+create database dbs_new_era_v11;
+use dbs_new_era_v11;
 </attrib>
 			<attrib name="postSql"/>
 			<attrib name="ddUseDDEquiv">false</attrib>
@@ -43,6 +43,11 @@ use dbs_new_era_v10;
 					<elem>0.5</elem>
 					<elem>2007-01-12 10:20:29</elem>
 					<elem>Adding Analysis Dataset Definition Table, Adding ROOT-Branches tables, and Changing data types of IDs to long and filenumber eventnumber</elem>
+				</row>
+				<row>
+					<elem>0.6</elem>
+					<elem>2007-01-19 10:49:52</elem>
+					<elem>Adding  AnalysisDatasetFileLumi Table (Replacing AnalysisDatasetLumi)</elem>
 				</row>
 			</list>
 		</revisions>
@@ -146,45 +151,45 @@ use dbs_new_era_v10;
 					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\XHTML</output>
 				</html>
 			</DocsGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
 			<SqlGenModule>
 				<stdSql>
 					<genPostSQL>Y</genPostSQL>
-					<output>C:\Documents and Settings\ANZAR\Desktop\DBS\DBSTest.sql</output>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\DBS-NeXtGen-MySQL.sql</output>
 					<order>s</order>
 					<genComments>N</genComments>
 					<genIndexes>N</genIndexes>
 					<genTriggers>N</genTriggers>
 					<genDropStmt>N</genDropStmt>
-					<genViews>N</genViews>
-					<genRules>N</genRules>
 					<genFunctions>N</genFunctions>
+					<genRules>N</genRules>
+					<genViews>N</genViews>
 					<genProcedures>N</genProcedures>
-					<genInlineFKs>Y</genInlineFKs>
+					<genInlineFKs>N</genInlineFKs>
 					<genPreSQL>Y</genPreSQL>
 					<genSequences>N</genSequences>
 				</stdSql>
 				<oraSql>
-					<output>C:\Documents and Settings\ANZAR\Desktop\DBS\DBS_ORACLE.sql</output>
-					<genComments>Y</genComments>
-					<genDropStmt>N</genDropStmt>
-					<genViews>Y</genViews>
 					<genFunctions>Y</genFunctions>
-					<genProcedures>Y</genProcedures>
-					<genInlineFKs>N</genInlineFKs>
+					<genViews>Y</genViews>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\DBS-NeXtGen-Oracle.sql</output>
 					<genSequences>N</genSequences>
+					<genDropStmt>N</genDropStmt>
+					<genInlineFKs>N</genInlineFKs>
+					<genProcedures>Y</genProcedures>
+					<genComments>Y</genComments>
 				</oraSql>
 			</SqlGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
 			<module name="DocsGenModule.html"/>
-			<module name="SqlGenModule.stdSql"/>
 			<module name="DocsGenModule.pdf"/>
+			<module name="SqlGenModule.stdSql"/>
 			<module name="SqlGenModule.oraSql"/>
 		</modsUsage>
 		<dataTypes>
@@ -595,9 +600,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">File</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">571</attrib>
+						<attrib name="locY">558</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1799</attrib>
+						<attrib name="locX">2008</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -634,9 +639,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">DataTier</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">773</attrib>
+						<attrib name="locY">754</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1147</attrib>
+						<attrib name="locX">1152</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -660,9 +665,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">FileTier</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">754</attrib>
+						<attrib name="locY">758</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1577</attrib>
+						<attrib name="locX">1498</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -673,9 +678,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">FileParentage</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">277</attrib>
+						<attrib name="locY">220</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1508</attrib>
+						<attrib name="locX">1718</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -712,9 +717,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">ParameterBinding</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">45</attrib>
+						<attrib name="locY">48</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">49</attrib>
+						<attrib name="locX">41</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -790,26 +795,13 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">ProcDSTier</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">765</attrib>
+						<attrib name="locY">750</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">923</attrib>
+						<attrib name="locX">937</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="189889"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">DatasetParentage</attrib>
-						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">644</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">324</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="190550"/>
 					</tables>
 				</erEntity>
 				<erEntity>
@@ -831,7 +823,7 @@ use dbs_new_era_v10;
 						<attrib name="colorId">175671</attrib>
 						<attrib name="locY">1017</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1387</attrib>
+						<attrib name="locX">1377</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -842,9 +834,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">SchemaVersion</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1376</attrib>
+						<attrib name="locY">1524</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1642</attrib>
+						<attrib name="locX">1672</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -866,24 +858,11 @@ use dbs_new_era_v10;
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">AnalysisDatasetLumi</attrib>
-						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1336</attrib>
-						<attrib name="details">af</attrib>
-						<attrib name="locX">863</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="233534"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">FileLumi</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1364</attrib>
+						<attrib name="locY">980</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1388</attrib>
+						<attrib name="locX">1588</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -894,9 +873,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">Runs</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1008</attrib>
+						<attrib name="locY">986</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1133</attrib>
+						<attrib name="locX">1126</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -907,9 +886,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">ProcDSRuns</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1054</attrib>
+						<attrib name="locY">961</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">898</attrib>
+						<attrib name="locX">897</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -959,9 +938,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">FileBranch</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">344</attrib>
+						<attrib name="locY">201</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1799</attrib>
+						<attrib name="locX">1999</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -972,9 +951,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">Branch</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">353</attrib>
+						<attrib name="locY">207</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">2035</attrib>
+						<attrib name="locX">2253</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -985,13 +964,39 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">AnalysisDSDef</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1375</attrib>
+						<attrib name="locY">1388</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">583</attrib>
+						<attrib name="locX">667</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="314841"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">ProcDSParent</attrib>
+						<attrib name="colorId">175671</attrib>
+						<attrib name="locY">641</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">362</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="190550"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AnalysisDSFileLumi</attrib>
+						<attrib name="colorId">175671</attrib>
+						<attrib name="locY">1519</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">1386</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="233534"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -1315,9 +1320,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">AnalysisDataset</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">814</attrib>
+						<attrib name="locY">787</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">34</attrib>
+						<attrib name="locX">229</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1404,24 +1409,11 @@ use dbs_new_era_v10;
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">AnalysisDatasetLumi</attrib>
-						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">1070</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">492</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="233534"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">AnalysisDSStatus</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">1343</attrib>
+						<attrib name="locY">934</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">209</attrib>
+						<attrib name="locX">0</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1432,9 +1424,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">AnalysisDSType</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">1139</attrib>
+						<attrib name="locY">703</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">273</attrib>
+						<attrib name="locX">0</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1484,13 +1476,26 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">AnalysisDSDef</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">1220</attrib>
+						<attrib name="locY">1185</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">10</attrib>
+						<attrib name="locX">30</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
 						<table id="314841"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">AnalysisDSFileLumi</attrib>
+						<attrib name="colorId">219752</attrib>
+						<attrib name="locY">1134</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">487</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="233534"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -1594,19 +1599,6 @@ use dbs_new_era_v10;
 					<modsConfig/>
 					<tables>
 						<table id="135503"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
-						<attrib name="name">DatasetParentage</attrib>
-						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">501</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">31</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="190550"/>
 					</tables>
 				</erEntity>
 				<erEntity>
@@ -1763,6 +1755,19 @@ use dbs_new_era_v10;
 					<modsConfig/>
 					<tables>
 						<table id="318960"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">ProcDSParent</attrib>
+						<attrib name="colorId">220779</attrib>
+						<attrib name="locY">507</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">110</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="190550"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2002,9 +2007,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">ProcessedDataset</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">582</attrib>
+						<attrib name="locY">556</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">30</attrib>
+						<attrib name="locX">13</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2119,9 +2124,9 @@ use dbs_new_era_v10;
 					<attribs>
 						<attrib name="name">ProcDSRuns</attrib>
 						<attrib name="colorId">222529</attrib>
-						<attrib name="locY">827</attrib>
+						<attrib name="locY">831</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">0</attrib>
+						<attrib name="locX">15</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -5265,9 +5270,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Definition</attrib>
-							<attrib name="refField">314842</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">314842</attrib>
+							<attrib name="name">Definition</attrib>
 							<attrib name="id">333918</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -7114,10 +7119,6 @@ use dbs_new_era_v10;
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -7195,9 +7196,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">318961</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -7219,9 +7220,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Name</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Name</attrib>
 							<attrib name="id">318962</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -7243,9 +7244,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">318963</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -7267,9 +7268,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">318964</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -7291,9 +7292,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">318965</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -7315,9 +7316,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">318966</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12544,10 +12545,6 @@ use dbs_new_era_v10;
 								<elem>type</elem>
 								<elem>value</elem>
 								<elem>descr</elem>
-								<elem>name</elem>
-								<elem>type</elem>
-								<elem>value</elem>
-								<elem>descr</elem>
 							</header>
 						</list>
 					</vars>
@@ -12620,9 +12617,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">ID</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">ID</attrib>
 							<attrib name="id">319452</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12649,9 +12646,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Fileid</attrib>
-							<attrib name="refField">134965</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134965</attrib>
+							<attrib name="name">Fileid</attrib>
 							<attrib name="id">319453</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12673,9 +12670,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Branch</attrib>
-							<attrib name="refField">318961</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">318961</attrib>
+							<attrib name="name">Branch</attrib>
 							<attrib name="id">319454</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12697,9 +12694,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">CreationDate</attrib>
 							<attrib name="id">319455</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12721,9 +12718,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">CreatedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">CreatedBy</attrib>
 							<attrib name="id">319456</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12745,9 +12742,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModificationDate</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">LastModificationDate</attrib>
 							<attrib name="id">319457</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -12769,9 +12766,9 @@ use dbs_new_era_v10;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">LastModifiedBy</attrib>
-							<attrib name="refField">134524</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134524</attrib>
+							<attrib name="name">LastModifiedBy</attrib>
 							<attrib name="id">319458</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
@@ -14211,7 +14208,7 @@ use dbs_new_era_v10;
 					<rules/>
 					<attribs>
 						<attrib name="comment"/>
-						<attrib name="name">AnalysisDatasetLumi</attrib>
+						<attrib name="name">AnalysisDSFileLumi</attrib>
 						<attrib name="id">233534</attrib>
 						<attrib name="schema"/>
 						<attrib name="tempPK"/>
@@ -14331,6 +14328,30 @@ use dbs_new_era_v10;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">135310</attrib>
+							<attrib name="type">0</attrib>
+						</attribs>
+						<modsConfig/>
+					</field>
+					<field>
+						<fieldAttribs>
+							<attribs>
+								<attrib name="17">true</attrib>
+								<attrib name="16">false</attrib>
+								<attrib name="15">false</attrib>
+								<attrib name="339"/>
+								<attrib name="338">true</attrib>
+								<attrib name="340">false</attrib>
+							</attribs>
+						</fieldAttribs>
+						<attribs>
+							<attrib name="comment"/>
+							<attrib name="matchType">s</attrib>
+							<attrib name="refField">134965</attrib>
+							<attrib name="name">Fileid</attrib>
+							<attrib name="id">336214</attrib>
+							<attrib name="onDelete">n</attrib>
+							<attrib name="onUpdate">n</attrib>
+							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
 						</attribs>
 						<modsConfig/>
