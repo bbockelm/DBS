@@ -36,6 +36,31 @@ function ShowTag(tag) {
       id.className="show_inline";
   }
 }
+function ResetTag(tag) {
+  ClearTag(tag);
+  ShowTag(tag);
+}
+function ResetAllResults() {
+  ClearTag('progressBar');
+//  ResetTag('results_index');
+//  ResetTag('results');
+//  ResetTag('results_waiting');
+
+//  ClearTag('results_kw');
+//  ClearTag('results_dbs');
+//  ClearTag('results_site');
+//  ClearTag('runs');
+//  ClearTag('parents');
+//  ClearTag('appConfigs');
+
+//  HideTag('results_kw');
+//  HideTag('results_dbs');
+//  HideTag('results_site');
+//  HideTag('runs');
+//  HideTag('parents');
+//  HideTag('appConfigs');
+//  showWaitingMessage('results');
+}
 function showHistoryMenu(name,histArr) {
   var id=document.getElementById("history_table");
   id.className="show_inline";
@@ -63,9 +88,6 @@ _ids[2]='runs';
 _ids[3]='parents';
 _ids[4]='appConfigs';
 _ids[5]='dataDescription';
-//_ids[4]='validation';
-//_ids[5]='parameterSet';
-//_ids[6]='releaseSpec';
 function showResMenu(id,ids) {
    if(!ids) {
       ids=_ids;
@@ -282,6 +304,8 @@ function showResultsMenu() {
 function showMenu(menu) {
    ClearTag('progressBar');
    hideWaitingMessage();
+   hideResultsMenu();
+
    var menuArr = new Array();
    menuArr[0]='Navigator';
    menuArr[1]='Search';
@@ -291,7 +315,6 @@ function showMenu(menu) {
    menuArr[5]='History';
    menuArr[6]='Help';
    menuArr[7]='Hide';
-   hideResultsMenu();
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
@@ -334,6 +357,20 @@ function underlineLink(tag) {
              id[j].className="td_plain"
           }
       }
+  }
+}
+function switchLink(tag,tableId) {
+  var _tag;
+  if(tag=='Det') {_tag='Sum'}
+  if(tag=='Sum') {_tag='Det'}
+
+  var id=document.getElementById(tag+'_'+tableId);
+  if (id) {
+      id.className="td_underline";
+  }
+  var id=document.getElementById(_tag+'_'+tableId);
+  if (id) {
+      id.className="td_plain";
   }
 }
 function ShowBlockInfo(tableId){
