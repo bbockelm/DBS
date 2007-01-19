@@ -392,6 +392,7 @@ class DBSHelper(DBSLogger):
              exe    = item.get('ExecutableName')
           path=formDatasetPath(ver,family,exe)
           pList = self.listDatasetsFromApp(path)
+#          print "\n\n#### getDatasetsFromApplications",item,pList
           for p in pList:
 #              empty,primD,tier,proc = string.split( p['datasetPathName'], "/" )
 #              addToDict(aDict,path,(primD,tier,proc))
@@ -618,6 +619,31 @@ class DBSHelper(DBSLogger):
       res = self.api.getLFNs(blockName,dataset)
       return res
 
+  def getLFN_Branches(self,dbsInst,lfn):
+      self.setDBSDLS(dbsInst)
+      res = self.api.listFileBranches(lfn)
+      return res
+
+  def getLFN_Lumis(self,dbsInst,lfn):
+      self.setDBSDLS(dbsInst)
+      res = self.api.listFileLumis(lfn)
+      return res
+
+  def getLFN_Algos(self,dbsInst,lfn):
+      self.setDBSDLS(dbsInst)
+      res = self.api.listFileAlgorithms(lfn)
+      return res
+
+  def getLFN_Tiers(self,dbsInst,lfn):
+      self.setDBSDLS(dbsInst)
+      res = self.api.listFileTiers(lfn)
+      return res
+
+  def getLFN_Parents(self,dbsInst,lfn):
+      self.setDBSDLS(dbsInst)
+      res = self.api.listFileParents(lfn)
+      return res
+
   def alias(self,tableName,aliasName):
       """
          Helper function to get table alias from SQLAlchemy for current DBS instance
@@ -840,6 +866,7 @@ class DBSHelper(DBSLogger):
       self.dbsTime=(t2-t1)
       if string.lower(site)=="all": site="*"
 
+      siteList=[]
       for blockName in blockInfoDict.keys():
           evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
           if evts:
@@ -860,20 +887,23 @@ class DBSHelper(DBSLogger):
                   for loc in entry.locations:
                       dlsHost = str(loc.host)
                       if site=="*" or dlsHost==site:
-                         hostList.append(str(loc.host))
-                         addToDict(locDict,str(loc.host),blockName)
+                         hostList.append(dlsHost)
+                      if not siteList.count(dlsHost): siteList.append(dlsHost)
+#                         addToDict(locDict,str(loc.host),blockName)
           except:
               if not self.quiet:
                  printExcept()
               if site=="*":
                  hostList.append('N/A')
-                 addToDict(locDict,'N/A',blockName)
+              if not siteList.count('N/A'): siteList.append('N/A')
+#                 addToDict(locDict,'N/A',blockName)
               pass
           # end of DLS query
           blockInfoDict[blockName]+=hostList
       if self.verbose:
          print "### time =",self.dbsTime,self.dlsTime,(time.time()-t1)
-      return locDict,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
+      siteList.sort()
+      return siteList,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
 
   def getBlocksFromSite(self,site):
       """
