@@ -28,6 +28,7 @@ from dbsLumiSection import DbsLumiSection
 from dbsFile import DbsFile
 from dbsFileBlock import DbsFileBlock
 from dbsDataTier import DbsDataTier 
+from dbsFileBranch import DbsFileBranch 
 from dbsAlgorithm import DbsAlgorithm
 
 from dbsParent import DbsParent

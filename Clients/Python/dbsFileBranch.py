@@ -20,7 +20,7 @@ from dbsBaseObject import *
 
 class  DbsFileBranch(DbsBase):
    """ 
-   Class for DataTier
+   Class for FileBranch
 
    Following input parameters:
 

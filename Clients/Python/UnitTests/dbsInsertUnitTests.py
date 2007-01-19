@@ -597,6 +597,10 @@ pathfile.close()
 blockfile=open('blockfile', 'w')
 blockfile.write(blockName)
 blockfile.close()
+lfnfile=open('lfnfile', 'w')
+lfnfile.write(lfn2)
+lfnfile.close()
+
 ###########################
 
 f.close()
