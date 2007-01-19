@@ -466,10 +466,10 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        help=str(t)
 
         if self.ddConfig.iface()=='cgi': searchFunc="javascript:ajaxSearch()"
-        else: searchFunc="javascript:ClearTag('progressBar');ajaxKeywordSearch()"
+        else: searchFunc="javascript:ResetAllResults();ajaxKeywordSearch()"
 
         # FIXME, TODO: firstDBS should be passed here
-        if not firstDBS: firstDBS='dbs_new_era_v07'
+        if not firstDBS: firstDBS=DBSGLOBAL
         keyList=['run','block','lfn','tier','release','primDS','procDS','lumiSection']
         keyList.sort()
         nameSpace = {
@@ -998,12 +998,12 @@ class DBSDataDiscoveryServer(DBSLogger):
             # process only RES_PER_PAGE datasets within given (_idx) index range
             if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
 
-            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
+            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
             self.dbsTime+=self.helper.dbsTime
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
 #            jsPage+="""registerTreeView();ajaxAddTreeElement('root','%s');"""%dataset
-            p = self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id)
+            p = self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
             else:
@@ -1316,11 +1316,15 @@ class DBSDataDiscoveryServer(DBSLogger):
             print "getLFNsForSite",dbsInst,site
             self.htmlInit()
             page ="""<html><body><pre>\n"""
-            for blockName in self.siteDict[site]:
-                lfnList = self.helper.getLFNs(dbsInst,blockName,"")
-                for item in lfnList:
-                    lfn=item[0]
-                    page+="%s\n"%lfn
+            try:
+                for blockName in self.siteDict[site]:
+                    lfnList = self.helper.getLFNs(dbsInst,blockName,"")
+                    for item in lfnList:
+                        lfn=item[0]
+                        page+="%s\n"%lfn
+            except:
+                page+="No LFNs found for site '%s'"%site
+                pass
             page+="\n</pre></body></html>"
             return page
         except:
@@ -1387,13 +1391,15 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
         nameSpace = {
+                     'host'      : self.dbsdd,
+                     'dbsInst'   : dbsInst,
                      'blockName' : blockName,
                      'lfnList'   : lfnList
                     }
         t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
         return str(t)
         
-    def dataToHTML(self,dbsInst,path,locDict,blockDict,totEvt,totFiles,totSize,id):
+    def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id):
         """
            Forms output tables.
            @type  path: string 
@@ -1402,15 +1408,15 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
 
-        # keep in cache locDict
-        self.siteDict=locDict
+        # keep in cache siteList
+        self.siteDict=siteList
         page=""
         nameSpace = {
                      'host'       : self.dbsdd,
                      'path'       : path,
                      'firstSearch': self.firstSearch,
                      'dbsInst'    : dbsInst,
-                     'locDict'    : locDict,
+                     'siteList'   : siteList,
                      'blockDict'  : blockDict,
                      'nEvents'    : totEvt,
                      'totFiles'   : totFiles,
@@ -1432,8 +1438,9 @@ class DBSDataDiscoveryServer(DBSLogger):
 <td>Block name</td>
 <td>Events</td>
 <td>Files</td>
-<td>Status</td>
 <td>Size</td>
+<td>LFNs</td>
+<td>Status</td>
 <td>Created by</td>
 <td>Creation time</td>
 <td>Modified by</td>
@@ -1680,9 +1687,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         page=""
         try:
             self.helperInit(dbsInst)
-            locDict, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
             page+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
-            page+=self.dataToHTML(dbsInst,dataset,locDict,blockDict,totEvt,totFiles,totSize,id=0)
+            page+=self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id=0)
         except:
             printExcept()
             page="""<hr class="dbs" />No information found for dataset '%s' in DBS='%s'"""%(dataset,dbsInst)
@@ -2141,6 +2148,51 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getDataDescription.exposed=True
+
+    def getTableTemplate(self,func,dbsInst,lfn,msg):
+        self.htmlInit()
+        iList=func(dbsInst,lfn)
+        page=content=""
+        try:
+            for dict in iList:
+                nameSpace={'branch':dict.values()}
+                t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
+                content+=str(t)
+                idx+=1
+            nameSpace={'header':iList[0].keys(),'content':content}
+            t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
+            page=str(t)
+        except:
+            page="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
+#        if self.verbose:
+        if 1:
+           print page
+        return page
+
+    def getLFN_Branches(self,dbsInst,lfn):
+        page=self.getTableTemplate(self.helper.getLFN_Branches,dbsInst,lfn,'ROOT branches')
+        return page
+    getLFN_Branches.exposed=True
+
+    def getLFN_Lumis(self,dbsInst,lfn):
+        page=self.getTableTemplate(self.helper.getLFN_Lumis,dbsInst,lfn,'LFN lumis')
+        return page
+    getLFN_Lumis.exposed=True
+
+    def getLFN_Algos(self,dbsInst,lfn):
+        page=self.getTableTemplate(self.helper.getLFN_Algos,dbsInst,lfn,'LFN algorithms')
+        return page
+    getLFN_Algos.exposed=True
+
+    def getLFN_Tiers(self,dbsInst,lfn):
+        page=self.getTableTemplate(self.helper.getLFN_Tiers,dbsInst,lfn,'LFN tiers')
+        return page
+    getLFN_Tiers.exposed=True
+
+    def getLFN_Parents(self,dbsInst,lfn):
+        page=self.getTableTemplate(self.helper.getLFN_Parents,dbsInst,lfn,'LFN parents')
+        return page
+    getLFN_Parents.exposed=True
 
     def getFloatBox(self,title="",description="",**kwargs):
         """ 
