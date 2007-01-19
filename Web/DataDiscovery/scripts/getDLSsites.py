@@ -41,7 +41,8 @@ if __name__ == "__main__":
        DBSUtil.sendEmail(msg)
        sys.exit(1)
     # get grid proxy
-    cmd="cat $HOME/.globus/pp.txt | grid-proxy-init -pwstdin -q"
+#    cmd="cat $HOME/.globus/pp.txt | grid-proxy-init -pwstdin -q"
+    cmd="cat /data/DBSDataDiscovery/COMP/DBS/Web/DataDiscovery/pp.txt | grid-proxy-init -cert /data/vk/cert/usercert.pem -key /data/vk/cert/userkey.pem -pwstdin -q"
     os.system(cmd)
     file = open('dls.all.tmp','w')
     for dbsInst in DBSInst.DBS_DLS_INST.keys():
