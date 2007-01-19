@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiProcDSLogic.java,v 1.12 2007/01/17 23:06:56 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiProcDSLogic.java,v 1.13 2007/01/18 18:07:10 afaq Exp $"
  *
  */
 
@@ -50,14 +50,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
 		String prevDS = "";
-		String prevTier = "";
+		/*String prevTier = "";
 		String prevExe = "";
 		String prevFam = "";
 		String prevVer = "";
-		String prevPS = "";
+		String prevPS = "";*/
 		// When data is returned from the database, a bunch of tiers and application are returned in random order, so we need
 		// to store all of them in a vector so that while writing xml, previously written data tier does not get written again.
 		Vector dtVec = null; 
+		Vector algoVec = null; 
 		
 		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true; 
@@ -101,27 +102,32 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					first = false;
 					prevDS = procDSID;
 					dtVec = new Vector();// Or dtVec.removeAllElements();
+					algoVec = new Vector();// Or algoVec.removeAllElements();
 				}
-				if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
+				//if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
+				if( !dtVec.contains(tier) && !isNull(tier) ) {
 					out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
 					dtVec.add(tier);
-					prevTier = tier;
+					//prevTier = tier;
 				}
-				if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
+				//if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
+				String uniqueAlgo = ver + exe + fam + pset;
+				if(!algoVec.contains(uniqueAlgo)) {
 					out.write(((String) "\t<algorithm app_version='" + ver +
 	   							"' app_family_name='" + fam + 
 								"' app_executable_name='" + exe + 
 								//"' ps_name='" + pset + 
-								"' ps_hash='" + get(rs, "PS_HASH") +
+								"' ps_hash='" + pset +
 								//"' ps_version='" + get(rs, "PS_VERSION") +
 								//"' ps_type='" + get(rs, "PS_TYPE") +
 								//"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
 								//"' ps_content='" + get(rs, "PS_CONTENT") +
 								"'/>\n"));
-					prevExe = exe;
+					algoVec.add(uniqueAlgo);
+					/*prevExe = exe;
 					prevFam = fam;
 					prevVer = ver;
-					prevPS = pset;
+					prevPS = pset;*/
 				}
 			}
 		} finally { 
