@@ -1,6 +1,6 @@
 /**
- $Revision: 1.56 $"
- $Id: DBSApi.java,v 1.56 2007/01/18 16:57:46 afaq Exp $"
+ $Revision: 1.57 $"
+ $Id: DBSApi.java,v 1.57 2007/01/19 19:45:49 sekhri Exp $"
  *
 */
 
@@ -23,6 +23,7 @@ import dbs.util.DBSUtil;
 import db.DBManagement;
 import java.sql.ResultSet;
 import dbs.util.DBSConfig;
+import dbs.api.parser.DBSApiParser;
 
 /**
  * This class encapsulate <code>dbs.api.DBSApiLogic</code> , handles database connection management,handle XML parsing for the input provided by the clients, checks the match between schema and api version and handles exceptions. This class works as the higher level dispatcher for DBS API. All the DBS API calls are invoked vias a public method call. The interface of this class is this call method which can take a hashtable of key value pairs. It invokes the API call depending upon the value of the api key in the hashtable. The reason for having this higher level class is to separate the lovel level business logic from database connection management and xml parsing.<br>
@@ -321,96 +322,96 @@ public class DBSApi {
 
 			} else if (apiStr.equals("insertPrimaryDataset")) {
 				(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out,
-						parse( getXml(table), "primary-dataset") , 
+						DBSApiParser.parse( getXml(table), "primary-dataset") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertAlgorithm")) {
 				(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out,
-						parse(getXml(table), "algorithm") , 
+						DBSApiParser.parse(getXml(table), "algorithm") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertRun")) {
 				api.insertRun(conn, out,
-						parse(getXml(table), "run") , 
+						DBSApiParser.parse(getXml(table), "run") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertTier")) {
-				api.insertTier(conn, out, parse(getXml(table), "tier"), dbsUser);
+				api.insertTier(conn, out, DBSApiParser.parse(getXml(table), "tier"), dbsUser);
 				
 			} else if (apiStr.equals("insertStorageElement")) {
-				(new DBSApiBlockLogic(this.data)).insertStorageElement(conn, out, parse(getXml(table), "storage_element"), dbsUser);
+				(new DBSApiBlockLogic(this.data)).insertStorageElement(conn, out, DBSApiParser.parse(getXml(table), "storage_element"), dbsUser);
 			
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,
-						parse(getXml(table), "lumi") , 
+						DBSApiParser.parse(getXml(table), "lumi") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertProcessedDataset")) {
-				(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out,  parsePD(getXml(table)), dbsUser);
+				(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out,  DBSApiParser.parsePD(getXml(table)), dbsUser);
 				
 			} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetFromPD(conn, out,
-					parse(getXml(table), "analysis-dataset"),
+					DBSApiParser.parse(getXml(table), "analysis-dataset"),
 					dbsUser);
                         } else if (apiStr.equals("insertBlock")) {
 				(new DBSApiBlockLogic(this.data)).insertBlock(conn, out,
-						parseBlock(getXml(table)) , 
+						DBSApiParser.parseBlock(getXml(table)) , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertFiles")) {
-				insertFiles(conn, out, getXml(table), dbsUser);
+				DBSApiParser.insertFiles(conn, out, getXml(table), dbsUser);
 				
 			} else if (apiStr.equals("insertTierInPD")) {
 				(new DBSApiProcDSLogic(this.data)).insertTierInPD(conn, out,
-						parse(getXml(table), "processed_dataset"),
+						DBSApiParser.parse(getXml(table), "processed_dataset"),
 						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInPD")) {
 				(new DBSApiProcDSLogic(this.data)).insertParentInPD(conn, out,
-						parse(getXml(table), "processed_dataset"),
+						DBSApiParser.parse(getXml(table), "processed_dataset"),
 						get(table, "parent_path", true), 
 						dbsUser);
 					
 			} else if (apiStr.equals("insertAlgoInPD")) {
 				(new DBSApiProcDSLogic(this.data)).insertAlgoInPD(conn, out,
-						parse(getXml(table), "processed_dataset"),
-						parse(getXml(table), "algorithm"), 
+						DBSApiParser.parse(getXml(table), "processed_dataset"),
+						DBSApiParser.parse(getXml(table), "algorithm"), 
 						dbsUser);
 			
 			} else if (apiStr.equals("insertRunInPD")) {
 				(new DBSApiProcDSLogic(this.data)).insertRunInPD(conn, out,
-						parse(getXml(table), "processed_dataset"),
+						DBSApiParser.parse(getXml(table), "processed_dataset"),
 						get(table, "run_number", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertTierInFile")) {
 				(new DBSApiFileLogic(this.data)).insertTierInFile(conn, out,
-						parse(getXml(table), "file"),
+						DBSApiParser.parse(getXml(table), "file"),
 						get(table, "tier_name", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertParentInFile")) {
 				(new DBSApiFileLogic(this.data)).insertParentInFile(conn, out,
-						parse(getXml(table), "file"),
+						DBSApiParser.parse(getXml(table), "file"),
 						get(table, "parent_lfn", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertAlgoInFile")) {
 				(new DBSApiFileLogic(this.data)).insertAlgoInFile(conn, out,
-						parse(getXml(table), "file"),
-						parse(getXml(table), "algorithm"), 
+						DBSApiParser.parse(getXml(table), "file"),
+						DBSApiParser.parse(getXml(table), "algorithm"), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertLumiInFile")) {
 				(new DBSApiFileLogic(this.data)).insertLumiInFile(conn, out,
-						parse(getXml(table), "file"),
+						DBSApiParser.parse(getXml(table), "file"),
 						get(table, "ls_number", true), 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertDatasetContents")) {
 				(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
-						parseDatasetContents(getXml(table)), 
+						DBSApiParser.parseDatasetContents(getXml(table)), 
 						dbsUser);
 	
 			} else if (apiStr.equals("closeBlock")) {
@@ -528,7 +529,7 @@ public class DBSApi {
 		}
 		
 	}
-	
+	/*
 	private Hashtable parse(String inputXml, String key) throws Exception {
 		//	checkXML(inputXml);
 		DBSXMLParser dbsParser = new DBSXMLParser();
@@ -709,13 +710,7 @@ public class DBSApi {
 		}
                 (new DBSApiFileLogic(this.data)).insertFiles(conn, out, DBSUtil.get(psDS, "path"), block, topLevel, dbsUser);
 	}
-
-	
-	private void put(Hashtable table, String key, String value) {
-		if(isNull(value)) table.put(key, "");
-		else table.put(key, value);
-	}
-	
+*/
 
 	private boolean isNull(String pattern) {
 		return DBSUtil.isNull(pattern);
