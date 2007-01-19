@@ -75,8 +75,12 @@ try:
 				print "event-collection found %s " % str(attrs['name'])
 				name = str(attrs['name']).split('/')
 				length = len(name) - 1
-				self.fileName = name[length] + '.root'
+				if name[length].endswith(".root"):
+					self.fileName = name[length]
+				else:
+					self.fileName = name[length] + '.root'
 				self.evc[self.fileName] = int(attrs['events'])
+				print "Saving  events for " + self.fileName + " = " + str(self.evc[self.fileName])
 				
 			if name == 'parent':
 				print "parent found %s " % str(attrs['name'])
@@ -159,8 +163,10 @@ try:
 				length = len(name) - 1
 				noOfEvents = 0
 				rootName = name[length]
+				#print "checking no of events for " + rootName
 				if (rootName in self.evc.keys()):
 					noOfEvents = self.evc[rootName]
+					print "Found noOfEvents = " + str(noOfEvents)
 					
 				parentName = ''
 				if (rootName in self.parent.keys()):
