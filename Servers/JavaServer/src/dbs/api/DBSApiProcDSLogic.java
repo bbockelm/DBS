@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiProcDSLogic.java,v 1.13 2007/01/18 18:07:10 afaq Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiProcDSLogic.java,v 1.14 2007/01/19 17:02:37 sekhri Exp $"
  *
  */
 
@@ -112,7 +112,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				}
 				//if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
 				String uniqueAlgo = ver + exe + fam + pset;
-				if(!algoVec.contains(uniqueAlgo)) {
+				if(!algoVec.contains(uniqueAlgo) && !isNull(uniqueAlgo) ) {
 					out.write(((String) "\t<algorithm app_version='" + ver +
 	   							"' app_family_name='" + fam + 
 								"' app_executable_name='" + exe + 
