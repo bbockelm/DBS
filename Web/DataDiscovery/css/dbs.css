@@ -557,12 +557,12 @@ table.image td.size {
 /*  border-color: gray gray gray gray; */
 }
 .td_plain {
-  padding: 1px 5px 1px 5px;
+/*  padding: 1px 5px 1px 5px;*/
   color: #000000;
   background-color: #FFFFFF;
 }
 .td_underline {
-  padding: 1px 5px 1px 5px;
+/*  padding: 1px 5px 1px 5px;*/
   color: #000000;
   background-color: #E0E0E0;
 }
@@ -704,6 +704,9 @@ table.sortable span.sortarrow {
 }
 .box_green {
   color: #00FF00;
+}
+.box_lavender {
+  color: #CCCCFF;
 }
 .box_darkgreen {
   color: #666699;
