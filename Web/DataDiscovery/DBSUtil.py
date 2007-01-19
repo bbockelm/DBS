@@ -96,6 +96,9 @@ def colorSizeHTMLFormat(i):
     # MB are in green
     elif string.find(n,'MB')!=-1:
        return string.replace(n,'MB','<span class="box_green">MB</span>')
+    # KB are in lavender
+    elif string.find(n,'KB')!=-1:
+       return string.replace(n,'KB','<span class="box_lavender">KB</span>')
     else:
        return n
     
