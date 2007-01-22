@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.47 $"
- $Id: DBSSql.java,v 1.47 2007/01/16 17:41:37 afaq Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSSql.java,v 1.48 2007/01/18 18:07:10 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -257,7 +257,7 @@ public class DBSSql {
 
 	//FIXME Just use this and delete all other getBlockIds
 	public static PreparedStatement getBlock(Connection conn, String procDSID,  String blockName) throws SQLException {
-		String sql = "SELECT b.ID as ID, \n " +
+		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
@@ -288,7 +288,7 @@ public class DBSSql {
 
 
         public static PreparedStatement getOpenBlockID(Connection conn, String processedDSID) throws SQLException {
-                String sql = "SELECT blk.ID as ID, \n" +
+                String sql = "SELECT DISTINCT blk.ID as ID, \n" +
                              "blk.BlockSize as BLOCKSIZE, \n" +
                              "blk.NumberOfFiles as NUMBER_OF_FILES \n" +
                              "From Block blk \n" +
@@ -302,7 +302,7 @@ public class DBSSql {
 
 
         public static PreparedStatement getBlockID(Connection conn, String blockName) throws SQLException {
-                String sql = "SELECT b.ID as ID, \n" +
+                String sql = "SELECT DISTINCT b.ID as ID, \n" +
                              "b.BlockSize as BLOCKSIZE, \n" +
                              "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
                              "b.OpenForWriting as OPEN_FOR_WRITING \n" +
@@ -324,7 +324,7 @@ public class DBSSql {
         throws SQLException
         {
               //We can expand this query if we need, for now we don't !
-              String sql = "SELECT ls.id as ID \n "+
+              String sql = "SELECT DISTINCT ls.id as ID \n "+
                            "FROM LumiSection ls \n"+
                            "WHERE ls.RunNumber = ? \n";
               PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -335,7 +335,7 @@ public class DBSSql {
 
         public static PreparedStatement listLumiSections(Connection conn, String procDSID) throws SQLException {
 		//FIXME We can expand this query if we need, for now we don't !
-		String sql = "SELECT ls.id as ID, \n " +
+		String sql = "SELECT DISTINCT ls.id as ID, \n " +
 			"ls.LumiSectionNumber as LUMISECTIONNUMBER, \n " +
 			"ls.RunNumber as RUNNUMBER \n" +
 			"FROM LumiSection ls \n" +
@@ -351,7 +351,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listPrimaryDatasets(Connection conn, String pattern) throws SQLException {
-		String sql = "SELECT pd.ID as ID, \n" +
+		String sql = "SELECT DISTINCT pd.ID as ID, \n" +
 			"pd.Annotation as ANNOTATION, \n" +
 			"pd.Name as PRIMARY_NAME, \n" +
 			"pd.StartDate as START_DATE, \n"  +
@@ -511,7 +511,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
-		String sql = "SELECT procds.id as id, \n" +
+		String sql = "SELECT DISTINCT procds.id as id, \n" +
 			"concat( \n" +
 				"concat( \n" +
 					"concat( \n" +
@@ -609,7 +609,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listRuns(Connection conn, String procDSID) throws SQLException {
-		String sql = "SELECT run.ID as ID, \n " +
+		String sql = "SELECT DISTINCT run.ID as ID, \n " +
 			"run.RunNumber as RUN_NUMBER, \n" +
 			"run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"run.NumberOfLumiSections as NUMBER_OF_LUMI_SECTIONS, \n" +
@@ -640,7 +640,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listTiers(Connection conn, String procDSID) throws SQLException {
-		String sql = "SELECT dt.ID as ID, \n " +
+		String sql = "SELECT DISTINCT dt.ID as ID, \n " +
 			"dt.Name as NAME, \n" +
 			"dt.CreationDate as CREATION_DATE, \n" +
 			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -665,7 +665,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName) throws SQLException {
-		String sql = "SELECT b.ID as ID, \n " +
+		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
@@ -718,7 +718,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String patternLFN) throws SQLException {
-		String sql = "SELECT f.ID as ID, \n " +
+		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
 			"f.FileSize as FILESIZE, \n" +
@@ -730,7 +730,7 @@ public class DBSSql {
 			"st.Status as STATUS, \n" +
 			"ty.Type as TYPE, \n" +
                         "b.Name as BLOCK_NAME, \n"+ 
-			"dt.Name as DATA_TIER, \n"+ 
+			//"dt.Name as DATA_TIER, \n"+ 
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Files f \n" +
@@ -738,8 +738,8 @@ public class DBSSql {
 				"ON b.id = f.Block \n "+  
 			"LEFT OUTER JOIN FileTier fdt \n" +
 				"ON fdt.Fileid = f.id \n" +
-			"LEFT OUTER JOIN DataTier dt \n" +
-				"ON dt.id = fdt.DataTier " +
+			//"LEFT OUTER JOIN DataTier dt \n" +
+			//	"ON dt.id = fdt.DataTier " +
 			"LEFT OUTER JOIN FileType ty \n" +
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN FileStatus st \n" +
@@ -777,7 +777,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listFileParents(Connection conn, String fileID) throws SQLException {
-		String sql = "SELECT f.ID as ID, \n " +
+		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
 			"f.FileSize as FILESIZE, \n" +
@@ -819,7 +819,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listFileTiers(Connection conn, String fileID) throws SQLException {
-		String sql = "SELECT dt.ID as ID, \n " +
+		String sql = "SELECT DISTINCT dt.ID as ID, \n " +
 			"dt.Name as NAME, \n" +
 			"dt.CreationDate as CREATION_DATE, \n" +
 			"dt.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -845,7 +845,7 @@ public class DBSSql {
 	}
 
         public static PreparedStatement listFileBranches(Connection conn, String fileID) throws SQLException {
-                String sql = "SELECT br.ID as ID, \n " +
+                String sql = "SELECT DISTINCT br.ID as ID, \n " +
                         "br.Name as NAME, \n" +
                         "br.CreationDate as CREATION_DATE, \n" +
                         "br.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -871,7 +871,7 @@ public class DBSSql {
         }
 
 	public static PreparedStatement listFileAlgorithms(Connection conn, String fileID) throws SQLException {
-		String sql = "SELECT algo.id as ID, \n" +
+		String sql = "SELECT DISTINCT algo.id as ID, \n" +
 			"av.Version as APP_VERSION, \n" +
 			"af.FamilyName as APP_FAMILY_NAME, \n" +
 			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
@@ -908,7 +908,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listFileLumis(Connection conn, String fileID) throws SQLException {
-		String sql = "SELECT lumi.id as ID, \n" +
+		String sql = "SELECT DISTINCT lumi.id as ID, \n" +
 			"lumi.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
 			"lumi.RunNumber as RUN_NUMBER, \n" +
 			"lumi.StartEventNumber as START_EVENT_NUMBER, \n" +
@@ -938,7 +938,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement getID(Connection conn, String table, String key, String value) throws SQLException {
-		String sql = "SELECT ID \n " +
+		String sql = "SELECT DISTINCT ID \n " +
 			"FROM " + table + "\n " +
 			"WHERE " + key + " = ? \n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -949,7 +949,7 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement getMapID(Connection conn, String table, String key1, String key2, String value1, String value2) throws SQLException {
-		String sql = "SELECT ID \n " +
+		String sql = "SELECT DISTINCT ID \n " +
 			"FROM " + table + "\n " +
 			"WHERE " + key1 + " = ? \n" +
 			"AND " + key2 + " = ? \n" ;
@@ -961,7 +961,7 @@ public class DBSSql {
 		return ps;
 	}
 	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
-		String sql = "SELECT procds.ID as ID \n" +
+		String sql = "SELECT DISTINCT procds.ID as ID \n" +
 				"FROM ProcessedDataset procds \n" +
 				"JOIN PrimaryDataset primds \n" +
 					"ON primds.id = procds.PrimaryDataset \n" +
@@ -987,7 +987,7 @@ public class DBSSql {
 
 	//public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {
 	public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws SQLException {
-		String sql = "SELECT algo.id \n" +
+		String sql = "SELECT DISTINCT algo.id \n" +
 			"FROM AlgorithmConfig algo \n" +
 			"JOIN AppVersion av \n" +
 				"ON av.id = algo.ApplicationVersion \n" +
