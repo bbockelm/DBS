@@ -4,7 +4,7 @@
 -- === Build : 555
 -- ======================================================================
 
---drop database dbs_new_era_v11;
+drop database if exists dbs_new_era_v11;
 create database dbs_new_era_v11;
 use dbs_new_era_v11;
 -- ======================================================================
