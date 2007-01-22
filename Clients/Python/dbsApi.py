@@ -652,10 +652,10 @@ class DbsApi(DbsConfig):
 
     path = self._path(dataset)
     # Invoke Server.
-    if details not in ("", None):
+    if details not in ("", None, False):
        data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
                                     'block_name' : blockName, 
-                                    'pattern_lfn' : patternLFN, 'detail' : 'true' }, 'GET')
+                                    'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
                                     'path' : path, 'block_name' : blockName, 
