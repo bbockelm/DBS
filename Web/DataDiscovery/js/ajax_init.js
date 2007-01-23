@@ -143,6 +143,12 @@ function ajaxGetHistory(iUser,iPass,iLimit) {
   }
   ajaxEngine.sendRequest('ajaxGetHistory','userName='+getUserName(iUser),'password='+getPassword(iPass),'limit='+limit);
 }
+function GetSessionHistory() {
+  var id=document.getElementById('sessionHistory');
+  if (id) {
+      ajaxFloatBox('Session history',id.innerHTML,'float_help_box');
+  }
+}
 function getSelectedOption(iArr) {
   for(i=0;i<iArr.length;i++) {
      if(iArr[i].selected) {
@@ -216,7 +222,7 @@ function ajaxGetRuns(_dbs,_site,_app,_primD,_tier,proc) {
   var tier = arr[4];
   if(!proc) {proc="*";}
   ajaxEngine.sendRequest('ajaxGetRuns',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
-  var action='<a href="javascript:showWaitingMessage();ajaxGetRuns(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxGetRuns(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
   ajaxHistory(action);
 }
 // AJAX registration 
@@ -232,7 +238,7 @@ function ajaxGetDbsData(_dbs,_site,_app,_primD,_tier,proc) {
   var tier = arr[4];
   if(!proc) {proc="*";}
   ajaxEngine.sendRequest('ajaxGetDbsData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
-  var action='<a href="javascript:showWaitingMessage();ajaxGetDbsData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxGetDbsData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
   ajaxHistory(action);
 }
 // AJAX registration
@@ -252,8 +258,16 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier,proc) {
   var primD= arr[3];
   var tier = arr[4];
   if(!proc) {proc="*";}
+  // Set Cookies about current snapshot of data
+  SetCookie('dbsInst',dbs);
+  SetCookie('site',site);
+  SetCookie('app',app);
+  SetCookie('primD',primD);
+  SetCookie('tier',tier);
+  SetCookie('proc',proc);
+
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
-  var action='<a href="javascript:showWaitingMessage();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
   // invoke next chunk of data
   ajaxNextGetData(dbs,site,app,primD,tier,proc,1);
@@ -326,7 +340,7 @@ function ajaxKeywordSearch(_dbs) {
   if(tier) {keywords=keywords+'tier:'+tier+'___';}
   if(runs) {keywords=keywords+'runs:'+runs+'___';}
   ajaxEngine.sendRequest('ajaxKeywordSearch',"dbsInst="+dbsInst,"keywords="+keywords);
-  var action='<a href="javascript:showWaitingMessage();ajaxKeywordSearch(\''+dbsInst+'\',\''+keywords+'\')">Keyword search ('+dbsInst+','+keywords+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxKeywordSearch(\''+dbsInst+'\',\''+keywords+'\')">Keyword search ('+dbsInst+','+keywords+')</a>';
   ajaxHistory(action);
 }
 
@@ -344,7 +358,7 @@ function ajaxSearch(_dbs,iWords) {
       keywords=document.getElementById('keywordSelector').value;
   }
   ajaxEngine.sendRequest('ajaxSearch',"dbsInst="+dbsInst,"keywords="+keywords);
-  var action='<a href="javascript:showWaitingMessage();ajaxSearch(\''+dbsInst+'\',\''+keywords+'\')">Keyword search ('+dbsInst+','+keywords+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxSearch(\''+dbsInst+'\',\''+keywords+'\')">Keyword search ('+dbsInst+','+keywords+')</a>';
   ajaxHistory(action);
 }
 
@@ -363,7 +377,7 @@ function ajaxSiteSearch(_dbs,_site) {
       site=document.getElementById('form2_siteSelector').value;
   }
   ajaxEngine.sendRequest('ajaxSiteSearch',"dbsInst="+dbsInst,"site="+site);
-  var action='<a href="javascript:showWaitingMessage();ajaxSiteSearch(\''+dbsInst+'\',\''+site+'\')">site search ('+dbsInst+','+site+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxSiteSearch(\''+dbsInst+'\',\''+site+'\')">site search ('+dbsInst+','+site+')</a>';
   ajaxHistory(action);
 }
 function registerAjaxObjectCalls() {
@@ -430,22 +444,17 @@ function getDbsInfo(dbsInst,dbsArr) {
   registerAjaxPrimaryDatasetsCalls();
   registerAjaxProcessedDatasetsCalls();
   registerAjaxApplicationsCalls();
-  // get short name for dbs instance
-  var shortName=dbsInst.split("/")[0];
-  if(dbsInst.match('fanfani')) {
-    shortName = shortName+'_fanfani';
-  }
   for(i=0;i<dbsArr.length;i++) {
-      if (dbsArr[i]==shortName) {
-          var id=document.getElementById('dbsInst_'+shortName);
+      var sName=dbsArr[i].replace(/\//g,"___")
+      var id=document.getElementById('dbsInst_'+sName);
+      if (dbsArr[i]==dbsInst) {
           id.className="td_right";
       } else {
-          var id=document.getElementById('dbsInst_'+dbsArr[i]);
           id.className="show_cell";
       }
   }
   var id=document.getElementById("dbsInst_table");
-  id.className="show_inline";
+  id.className="show_table";
   var id=document.getElementById("dbs_info");
   id.className="show_table";
   ajaxGetPrimaryDatasets(dbsInst);
@@ -455,7 +464,7 @@ function getDbsInfo(dbsInst,dbsArr) {
 function ajaxGetPrimaryDatasets(dbsInst) {
   ShowWheel("__dbs_prim");
   ajaxEngine.sendRequest('ajaxGetPrimaryDatasets',"dbsInst="+dbsInst);
-  var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetPrimaryDatasets(\''+dbsInst+'\')">Get all primary datasets (\''+dbsInst+'\')</a>';
+  var action='<a href="javascript:ResetAllResults();showMenu(\'DBSinfo\');ajaxGetPrimaryDatasets(\''+dbsInst+'\')">Get all primary datasets (\''+dbsInst+'\')</a>';
   ajaxHistory(action);
 }
 function registerAjaxPrimaryDatasetsCalls() {
@@ -466,7 +475,7 @@ function registerAjaxPrimaryDatasetsCalls() {
 function ajaxGetProcessedDatasets(dbsInst) {
     ShowWheel("__dbs_proc");
     ajaxEngine.sendRequest('ajaxGetProcessedDatasets',"dbsInst="+dbsInst);
-    var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetProcessedDatasets(\''+dbsInst+'\')">Get all processed datasets (\''+dbsInst+'\')</a>';
+    var action='<a href="javascript:ResetAllResults();showMenu(\'DBSinfo\');ajaxGetProcessedDatasets(\''+dbsInst+'\')">Get all processed datasets (\''+dbsInst+'\')</a>';
     ajaxHistory(action);
 }
 function registerAjaxProcessedDatasetsCalls() {
@@ -477,7 +486,7 @@ function registerAjaxProcessedDatasetsCalls() {
 function ajaxGetApplications(dbsInst) {
     ShowWheel("__dbs_apps");
     ajaxEngine.sendRequest('ajaxGetApplications',"dbsInst="+dbsInst);
-    var action='<a href="javascript:showMenu(\'DBSinfo\');ajaxGetApplications(\''+dbsInst+'\')">Get all applications (\''+dbsInst+'\')</a>';
+    var action='<a href="javascript:ResetAllResults();showMenu(\'DBSinfo\');ajaxGetApplications(\''+dbsInst+'\')">Get all applications (\''+dbsInst+'\')</a>';
     ajaxHistory(action);
 }
 function registerAjaxApplicationsCalls() {
@@ -570,6 +579,8 @@ function ajaxInit(_dbs) {
   registerAjaxGenNavigatorMenuDictCalls();
 //  registerAjaxGetDataDescriptionCalls();
   registerAjaxGetFloatBoxCalls();
+  registerAjaxGetLumisCalls();
+  registerAjaxGetAlgosCalls();
 
   ajaxGenNavigatorMenuDict(_dbs);
 }
@@ -657,7 +668,7 @@ function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
       tier=sel.value;
   }
   ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
-  var action='<a href="javascript:showWaitingMessage();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
 }
 function ajaxNextGenParentsGraph(dbs,site,app,primD,tier,proc,idx) {
@@ -702,15 +713,19 @@ function ajaxGenAppConfigs(_app) {
       app='/'+parts[2]+'/'+parts[3]+'/'+parts[1];
   }
   ajaxEngine.sendRequest('ajaxGenAppConfigs',"appPath="+app);
-  var action='<a href="javascript:showWaitingMessage();ajaxGenAppConfigs(\''+app+'\')">AppConfigs ('+app+')</a>';
+  var action='<a href="javascript:ResetAllResults();ajaxGenAppConfigs(\''+app+'\')">AppConfigs ('+app+')</a>';
   ajaxHistory(action);
 }
 function registerAjaxGetFloatBoxCalls() {
     ajaxEngine.registerRequest('ajaxFloatBox','getFloatBox');
     ajaxEngine.registerAjaxElement('floatDataDescription');
 }
-function ajaxFloatBox(title,desc) {
-    ajaxEngine.sendRequest('ajaxFloatBox','title='+title,'description='+desc);
+function ajaxFloatBox(title,desc,className) {
+    var c=className;
+    if(!className) {
+        c='float_box';
+    }
+    ajaxEngine.sendRequest('ajaxFloatBox','title='+title,'description='+desc,'className='+c);
     ShowTag('floatDataDescription');
 }
 function registerAjaxSelectAppsCalls() {
@@ -821,4 +836,21 @@ function registerTreeView() {
 function ajaxGetDummyData() {
   arr='test1,test2';
   ajaxEngine.sendRequest('ajaxGetDummyData',"arr="+arr);
+}
+
+function registerAjaxGetLumisCalls() {
+    ajaxEngine.registerRequest('ajaxGetLumis','getLFN_Lumis');
+    ajaxEngine.registerAjaxElement('floatDataDescription');
+}
+function ajaxGetLumis(dbs,lfn) {
+    ajaxEngine.sendRequest('ajaxGetLumis','dbsInst='+dbs,'lfn='+lfn,'ajax=1');
+    ShowTag('floatDataDescription');
+}
+function registerAjaxGetAlgosCalls() {
+    ajaxEngine.registerRequest('ajaxGetAlgos','getLFN_Algos');
+    ajaxEngine.registerAjaxElement('floatDataDescription');
+}
+function ajaxGetAlgos(dbs,lfn) {
+    ajaxEngine.sendRequest('ajaxGetAlgos','dbsInst='+dbs,'lfn='+lfn,'ajax=1');
+    ShowTag('floatDataDescription');
 }
