@@ -886,4 +886,26 @@ table.sortable span.sortarrow {
   opacity: 0.4;               /* newer Mozilla and CSS-3 */
 }
 
+.float_help_box {
+  position: absolute; 
+  left: 30%;
+  top: 80px; 
+  height: 400px; 
+  width: 68%;
+  padding: 1em;
+  overflow:auto;
+
+  border-width: 1px 1px 1px 1px;
+  border-spacing: 4px;
+  /* border-style: top right bottom left */
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  border-collapse: separate;
+  background-color: rgb(248, 248, 248);
+  color: #000000;
+
+  filter:alpha(opacity=80);   /* Internet Explorer       */
+  -moz-opacity:0.8;           /* Mozilla 1.6 and below   */
+  opacity: 0.8;               /* newer Mozilla and CSS-3 */
+}
 
