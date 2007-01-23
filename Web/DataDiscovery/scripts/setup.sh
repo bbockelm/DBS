@@ -31,7 +31,11 @@ ver=`python -V 2>&1 | awk '{split($2,a,"."); print ""a[1]"."a[2]""}'`
 
 # LFC setup, CERN screw up and I need to invoke upfront, but after I determine
 # python version, since afs setup python2.2. and I need to put it at the end of the path
-h=`hostname | gawk '{z=split($1,a,"."); print ""a[z-1]"."a[z]""}'`
+if [ `uname -s` == 'Linux' ]; then
+   h=`hostname -f | gawk '{z=split($1,a,"."); print ""a[z-1]"."a[z]""}'`
+else
+   h=`hostname | gawk '{z=split($1,a,"."); print ""a[z-1]"."a[z]""}'`
+fi
 if [ $h == 'cern.ch' ]; then
 #   . /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh
    . /afs/cern.ch/project/gd/LCG-share/3.0.0/etc/profile.d/grid_env.sh
