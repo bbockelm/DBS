@@ -113,8 +113,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
          public void insertAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_name", true);
 		String path = get(table, "path", false);
-		String userCut = get(table, "user_cut", false);
-		String desc = get(table, "description", false);
+		String userCut = get(table, "user_cut");
+		String desc = getStr(table, "description", true);
 		Vector lumiVector = DBSUtil.getVector(table, "lumi_section");
 		Vector runVector = DBSUtil.getVector(table, "run");
 		Vector tierVector = DBSUtil.getVector(table, "data_tier");
@@ -133,29 +133,45 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		for (int j = 0; j < lumiVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)lumiVector.get(j);
-			String lumiNumber = get(hashTable, "lumi_section_number", false);
-			String lumiRange = get(hashTable, "lumi_section_range", false);
-			if(!isNull(lumiNumber)) lumiNumberList += "," + lumiNumber;
-			if(!isNull(lumiRange)) lumiRangeList += "," + lumiRange;
+			String lumiNumber = get(hashTable, "lumi_section_number");
+			String lumiRange = get(hashTable, "lumi_section_range");
+			if(!isNull(lumiNumber)) {
+				if(!isNull(lumiNumberList)) lumiNumberList += ",";
+				lumiNumberList += lumiNumber;
+			}
+			if(!isNull(lumiRange)) {
+				if(!isNull(lumiRangeList)) lumiRangeList += ",";
+			       	lumiRangeList += "(" + lumiRange + ")";
+			}
 	 	}
 		for (int j = 0; j < runVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)runVector.get(j);
-			String runNumber = get(hashTable, "run_number", false);
-			String runRange = get(hashTable, "run_range", false);
-			if(!isNull(runNumber)) runNumberList += "," + runNumber;
-			if(!isNull(runRange)) runRangeList += "," + runRange;
+			String runNumber = get(hashTable, "run_number");
+			String runRange = get(hashTable, "run_range");
+			if(!isNull(runNumber)) {
+				if(!isNull(runNumberList)) runNumberList += ",";
+			       	runNumberList += runNumber;
+			}
+			if(!isNull(runRange)) {
+				if(!isNull(runRangeList)) runRangeList += ",";
+				runRangeList += "(" + runRange + ")";
+			}
 	 	}
 		for (int j = 0; j < tierVector.size(); ++j) {
-			tierList += "," + get((Hashtable)tierVector.get(j), "tier_name", true);
+			if(!isNull(tierList)) tierList += ",";
+			tierList += get((Hashtable)tierVector.get(j), "tier_name", true);
 	 	}
 		for (int j = 0; j < fileVector.size(); ++j) {
-			fileList += "," + get((Hashtable)fileVector.get(j), "lfn", true);
+			if(!isNull(fileList)) fileList += ",";
+			fileList += get((Hashtable)fileVector.get(j), "lfn", true);
 	 	}
 		for (int j = 0; j < adsVector.size(); ++j) {
-			adsList += "," + get((Hashtable)adsVector.get(j), "analysis_dataset_name", true);
+			if(!isNull(adsList)) adsList += ",";
+			adsList += get((Hashtable)adsVector.get(j), "analysis_dataset_name", true);
 	 	}
 		for (int j = 0; j < algoVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
+			if(!isNull(algoList)) algoList += ",";
 			algoList += "(" + get(hashTable, "app_version", true) + 
 				"," + get(hashTable, "app_family_name", true) + 
 				"," + get(hashTable, "app_executable_name", true) + 

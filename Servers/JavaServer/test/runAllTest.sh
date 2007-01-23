@@ -12,7 +12,7 @@ cd $BASE/lib
 CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=v00_00_04"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=v00_00_05"
 rand=`uuidgen`
 #$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 block='/TestPrimary1164144491.29/TestProcessed1164144491.29#42665801-a716-487e-9220-057e955f3a39'
@@ -332,6 +332,29 @@ createAnalysisDatasetFromPD () {
         display "$out"
 }
 
+insertAnalysisDatasetDefination () {
+        xmlString="<?xml version='1.0' standalone='yes'?>
+                        <dbs>
+                                <analysis-dataset-defination analysisds_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
+				<run run_number='$run_number1, $run_number2' run_range='1,10'/>
+				<run run_number='$run_number2' run_range='12,18'/>
+				<lumi_section lumi_section_number='9997' lumi_section_range='1,10'/>
+				<lumi_section lumi_section_number='9996' lumi_section_range='9995,9997'/>
+				<file lfn='$lfn1'/>
+				<file lfn='$lfn2'/>
+				<data_tier tier_name='$tier_name1'/>
+				<data_tier tier_name='$tier_name2'/>
+				$algo1
+				$algo2
+				<analysis-dataset analysis_dataset_name='AnalysisDS_$rand'/>
+                        </dbs>"
+	echo "$xmlString"
+        message="Executing  insertAnalysisDatasetDefination API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=insertAnalysisDatasetDefination "xmlinput=$xmlString"`
+        display "$out"
+}
+
 
 
 
@@ -343,21 +366,23 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-createAnalysisDatasetFromPD
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
-#listDatasetContents
-listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
-													
+#createAnalysisDatasetFromPD
+insertAnalysisDatasetDefination
+
+#listPrimaryDatasets
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
+##listDatasetContents
+#listDatasetParents
+#listFileParents
+#listFileAlgorithms
+#listFileTiers
+#listFileLumis
+#													
 echo 
 echo "*************************************************************"
 echo "For more detail and the output of the APIs look in $outFile"
