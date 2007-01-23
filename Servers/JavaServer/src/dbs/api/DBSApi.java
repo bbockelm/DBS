@@ -1,6 +1,6 @@
 /**
- $Revision: 1.59 $"
- $Id: DBSApi.java,v 1.59 2007/01/19 21:25:52 sekhri Exp $"
+ $Revision: 1.60 $"
+ $Id: DBSApi.java,v 1.60 2007/01/23 19:21:20 sekhri Exp $"
  *
 */
 
@@ -31,8 +31,8 @@ import dbs.api.parser.DBSApiParser;
  * <b>insertPrimaryDataset</b> <br>
 	<"?xml version='1.0' standalone='yes'?"> <br>
 			<"dbs"> <br>
-				<"primary-dataset annotation='aaaa' primary_name='abcd' start_date='NOV' end_date='DEC' trigger_path_description='anyTD' mc_channel_description='MCDesc' mc_production='MCProd' mc_decay_chain='DC' other_description='OD' type='VALID'">
-				<"/primary-dataset"> <br>
+				<"primary_dataset annotation='aaaa' primary_name='abcd' start_date='NOV' end_date='DEC' trigger_path_description='anyTD' mc_channel_description='MCDesc' mc_production='MCProd' mc_decay_chain='DC' other_description='OD' type='VALID'">
+				<"/primary_dataset"> <br>
  			<"/dbs"> <br>
  * <br>		
  * <br>		
@@ -42,6 +42,7 @@ import dbs.api.parser.DBSApiParser;
 			<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE1' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
 		<"/dbs"> <br>
 		
+
  * <br>		
  * <br>		
  * <b>insertRun</b> <br>
@@ -55,7 +56,7 @@ import dbs.api.parser.DBSApiParser;
  * <b>insertLumiSection</b> <br>
 		<"?xml version='1.0' standalone='yes'?"> <br>
 		<"dbs"> <br>
-			<"lumi lumi_section_number='1111' run_number='11' start_event_number='20' end_event_number='200' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
+			<"lumi_section lumi_section_number='1111' run_number='11' start_event_number='20' end_event_number='200' lumi_start_time='nov' lumi_end_time='dec'/"> <br>
 		<"/dbs"> <br>
 
  * <br>		
@@ -63,13 +64,13 @@ import dbs.api.parser.DBSApiParser;
  * <b>insertProcessedDataset</b>  <br>
 		<"?xml version='1.0' standalone='yes'?"> <br>
 		<"dbs"> <br>
-			<"processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='VALID'"> <br>
+			<"processed_dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName' physics_group_convener='ANZARDN' status='VALID'"> <br>
 				<"data_tier name='$tier_name1'/"> <br>
 				<"algorithm app_version='MyVersion1' app_family_name='MyFamily1' app_executable_name='MyExe1' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY1' ps_type='DUMMYTYPE1' ps_annotation='ANN1' ps_content='DUMMYCON'/"> <br>
 				<"algorithm app_version='MyVersion2' app_family_name='MyFamily2' app_executable_name='MyExe2' ps_name='DUMMY_ps_name2' ps_hash='DUMMY_HASH' ps_version='DUMMY2' ps_type='DUMMYTYPE2' ps_annotation='ANN2' ps_content='DUMMYCON'/"> <br>
 				<"run run_number='222'/"> <br>
 				<"run run_number='111'/"> <br>
-			<"/processed-dataset"> <br>
+			<"/processed_dataset"> <br>
 		<"/dbs"> <br>
 
  * <br>		
@@ -322,7 +323,7 @@ public class DBSApi {
 
 			} else if (apiStr.equals("insertPrimaryDataset")) {
 				(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out,
-						DBSApiParser.parse( getXml(table), "primary-dataset") , 
+						DBSApiParser.parse( getXml(table), "primary_dataset") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertAlgorithm")) {
@@ -343,7 +344,7 @@ public class DBSApi {
 			
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,
-						DBSApiParser.parse(getXml(table), "lumi") , 
+						DBSApiParser.parse(getXml(table), "lumi_section") , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertProcessedDataset")) {
@@ -351,7 +352,7 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetFromPD(conn, out,
-					DBSApiParser.parse(getXml(table), "analysis-dataset"),
+					DBSApiParser.parse(getXml(table), "analysis_dataset"),
 					dbsUser);
 				
 			} else if (apiStr.equals("insertAnalysisDatasetDefination")) {

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiAnaDSLogic.java,v 1.5 2007/01/17 23:06:56 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.7 2007/01/23 20:12:05 sekhri Exp $"
  *
  */
 
@@ -120,7 +120,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		Vector tierVector = DBSUtil.getVector(table, "data_tier");
 		Vector algoVector = DBSUtil.getVector(table, "algorithm");
 		Vector fileVector = DBSUtil.getVector(table, "file");
-		Vector adsVector = DBSUtil.getVector(table, "analysis-dataset");
+		Vector adsVector = DBSUtil.getVector(table, "analysis_dataset");
 
 		String lumiNumberList = "";
 		String lumiRangeList = "";

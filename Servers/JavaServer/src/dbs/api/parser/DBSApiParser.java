@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiParser.java,v 1.1 2007/01/19 21:21:06 sekhri Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiParser.java,v 1.2 2007/01/23 19:21:21 sekhri Exp $"
  *
 */
 
@@ -71,7 +71,7 @@ public class DBSApiParser {
 		for (int i=0; i<allElement.size(); ++i) {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
-			if (name.equals("processed-dataset") ) {
+			if (name.equals("processed_dataset") ) {
 				psDS = e.attributes;
 				psDS.put("data_tier", new Vector());
 				psDS.put("parent", new Vector());
@@ -105,10 +105,10 @@ public class DBSApiParser {
 			if (name.equals("dataset") ) {
 				table = e.attributes;
 			}
-			if (name.equals("primary-dataset") ) {
-				table.put("primary-dataset", e.attributes);
+			if (name.equals("primary_dataset") ) {
+				table.put("primary_dataset", e.attributes);
 			}
-			if (name.equals("processed-dataset") ) {
+			if (name.equals("processed_dataset") ) {
 				psDS = e.attributes;
 				psDS.put("data_tier", new Vector());
 				psDS.put("parent", new Vector());
@@ -118,7 +118,7 @@ public class DBSApiParser {
 			} 
 			if (name.equals("data_tier") ) 
 				((Vector)(psDS.get("data_tier"))).add(e.attributes);
-			if (name.equals("processed-dataset-parent") ) 
+			if (name.equals("processed_dataset_parent") ) 
 				((Vector)(psDS.get("parent"))).add(e.attributes);
 			if (name.equals("algorithm") ) 
 				((Vector)(psDS.get("algorithm"))).add(e.attributes);
@@ -146,19 +146,19 @@ public class DBSApiParser {
 				topLevel.add(file);
 				++index;
 			} 
-			if (name.equals("file-lumi_section") ) 
+			if (name.equals("file_lumi_section") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
-			if (name.equals("file-data_tier") ) 
+			if (name.equals("file_data_tier") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("data_tier"))).add(e.attributes);
-			if (name.equals("file-parent") ) 
+			if (name.equals("file_parent") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
-			if (name.equals("file-algorithm") ) 
+			if (name.equals("file_algorithm") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
-			if (name.equals("file-branch") ) 
+			if (name.equals("file_branch") ) 
 				((Vector)(((Hashtable)topLevel.get(index)).get("branch"))).add(e.attributes);
 
 		}
-		table.put("processed-dataset", psDS);
+		table.put("processed_dataset", psDS);
 		table.put("file", topLevel);
 		return table;
 	}
@@ -219,14 +219,14 @@ public class DBSApiParser {
 		for (int i=0; i<allElement.size(); ++i) {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
-			if (name.equals("analysis-dataset-defination") ) {
+			if (name.equals("analysis_dataset_defination") ) {
 				table = e.attributes;
 				table.put("lumi_section", new Vector());
 				table.put("run", new Vector());
 				table.put("data_tier", new Vector());
 				table.put("algorithm", new Vector());
 				table.put("file", new Vector());
-				table.put("analysis-dataset", new Vector());
+				table.put("analysis_dataset", new Vector());
 			} 
 			if (name.equals("lumi_section") ) 
 				((Vector)(table.get("lumi_section"))).add(e.attributes);
@@ -238,8 +238,8 @@ public class DBSApiParser {
 				((Vector)(table.get("algorithm"))).add(e.attributes);
 			if (name.equals("file") ) 
 				((Vector)(table.get("file"))).add(e.attributes);
-			if (name.equals("analysis-dataset") ) 
-				((Vector)(table.get("analysis-dataset"))).add(e.attributes);
+			if (name.equals("analysis_dataset") ) 
+				((Vector)(table.get("analysis_dataset"))).add(e.attributes);
 
 		}
 		return table;

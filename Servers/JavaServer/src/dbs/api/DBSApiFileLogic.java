@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiFileLogic.java,v 1.10 2007/01/17 23:06:56 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApiFileLogic.java,v 1.11 2007/01/18 16:57:46 afaq Exp $"
  *
  */
 
@@ -119,7 +119,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileParents(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<file-parent id='" +  get(rs, "ID") +
+				out.write(((String) "<file_parent id='" +  get(rs, "ID") +
 					"' lfn='" + get(rs, "LFN") +
 					"' checksum='" + get(rs, "CHECKSUM") +
 					"' size='" + get(rs, "FILESIZE") +
@@ -156,7 +156,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileAlgorithms(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<file-algorithm id='" + get(rs, "ID") + 
+				out.write(((String) "<file_algorithm id='" + get(rs, "ID") + 
 					"' app_version='" + get(rs, "APP_VERSION") +
 					"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
 					"' app_executable_name='" + get(rs, "APP_EXECUTABLE_NAME") +
@@ -189,7 +189,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileTiers(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<file-data_tier id='" + get(rs, "ID") +
+				out.write(((String) "<file_data_tier id='" + get(rs, "ID") +
 					"' name='" + get(rs, "NAME") +
 					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -212,7 +212,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileBranches(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<file-branch id='" + get(rs, "ID") +
+				out.write(((String) "<file_branch id='" + get(rs, "ID") +
 							"' name='" + get(rs, "NAME") +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -243,7 +243,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ps = DBSSql.listFileLumis(conn, getFileID(conn, lfn, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
-				out.write(((String) "<file-lumi_section id='" +  get(rs, "ID") +
+				out.write(((String) "<file_lumi_section id='" +  get(rs, "ID") +
 					"' lumi_section_number='" + get(rs, "LUMI_SECTION_NUMBER") +
 					"' run_number='" + get(rs, "RUN_NUMBER") +
 					"' start_event_number='" + get(rs, "START_EVENT_NUMBER") +

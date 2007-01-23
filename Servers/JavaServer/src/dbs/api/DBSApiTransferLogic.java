@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiTransferLogic.java,v 1.6 2007/01/18 16:57:46 afaq Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiTransferLogic.java,v 1.7 2007/01/18 18:07:10 afaq Exp $"
  *
  */
 
@@ -86,8 +86,8 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
                   
                 //FIXME: We need to accomodate storage_elements for Block in migrate also ??
 
-		(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary-dataset"), dbsUser);
-		Hashtable pdTable = DBSUtil.getTable(table, "processed-dataset");
+		(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out, DBSUtil.getTable(table, "primary_dataset"), dbsUser);
+		Hashtable pdTable = DBSUtil.getTable(table, "processed_dataset");
 		Vector algoVector = DBSUtil.getVector(pdTable, "algorithm");
 		for (int j = 0; j < algoVector.size(); ++j) 
 			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser);
