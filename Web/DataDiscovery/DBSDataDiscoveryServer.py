@@ -76,12 +76,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         except:
            pass
         self.dbsList = [DBSGLOBAL]+self.dbsList
-        self.dbsShortNames=[]
-        for dbs in self.dbsList:
-            name=string.split(dbs,"/")[0]
-            if string.find(dbs,'fanfani')!=-1:
-               name+="_fanfani"
-            self.dbsShortNames.append(name)
         self.dbsTime    = 0
         self.dlsTime    = 0
         self.htmlTime   = 0
@@ -219,9 +213,6 @@ class DBSDataDiscoveryServer(DBSLogger):
                     }
         t = Template(CheetahDBSTemplate.templateTop, searchList=[nameSpace])
         page = str(t)
-#        nameSpace = {'dbsNames'    : self.dbsShortNames }
-#        t = Template(CheetahDBSTemplate.templateAjaxInit, searchList=[nameSpace])
-#        page+= str(t)
         if intro:
            page+=CheetahDBSTemplate.templateIntro
         return page
@@ -345,12 +336,13 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'navigatorForm': menuForm,
                      'searchForm'   : searchForm,
                      'siteForm'     : siteForm,
-                     'dbsShortNames': self.dbsShortNames,
+                     'dbsNames'     : self.dbsList,
                      'glossary'     : self.glossary(),
                      'frontPage'    : 0,
                      'dbsGlobal'    : DBSGLOBAL,
                      'DBSDD'        : self.dbsdd,
                      'step'         : GLOBAL_STEP,
+                     'iface'        : self.ddConfig.iface(),
                      'tip'          : tip()
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
@@ -371,7 +363,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                          'navigatorForm': self.genMenuForm(),
                          'searchForm'   : self.searchForm(),
                          'siteForm'     : self.siteForm(),
-                         'dbsShortNames': self.dbsShortNames,
+                         'dbsNames'     : self.dbsList,
                          'frontPage'    : 1,
                          'dbsGlobal'    : DBSGLOBAL,
                          'glossary'     : self.glossary(),
@@ -803,7 +795,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     getDataFromSelection_useForm.exposed = True 
 
-    def showProcDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*"):
+    def showProcDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*"):
         """
            Get all processed datasets for given set of input parameters
            @type  dbsInst: string
@@ -821,20 +813,24 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         try:
             self.helperInit(dbsInst)
-            self.dbs  = dbsInst
-            self.site = site
-            self.app  = app
-            self.primD= primD
-            self.tier = tier
-            primaryDataset=primD
-            dataTier = tier
+#            self.dbs  = dbsInst
+#            self.site = site
+#            self.app  = app
+#            self.primD= primD
+#            self.tier = tier
+#            primaryDataset=primD
+#            dataTier = tier
             page = self.genTopHTML()
-            page+= self.genSnapshot(self.dbs,self.site,self.app,self.primD,self.tier)
-            page+="""<hr class="dbs" />"""
-            procList = self.helper.getDatasetsFromApp(app,primD,tier)
+#            page+= self.genSnapshot(self.dbs,self.site,self.app,self.primD,self.tier)
+#            page+= self.genSnapshot(self.dbs,site,app,primD,tier)
+#            page+="""<hr class="dbs" />"""
             page+= "<pre>"
-            for procD in procList:
-                page+=procD+"\n"
+            if  len(proc) and proc!="*":
+                page+=proc+"\n"
+            else:
+                procList = self.helper.getDatasetsFromApp(app,primD,tier)
+                for procD in procList:
+                    page+=procD+"\n"
             page+= "</pre>"
             page+= self.genBottomHTML()
             return page
@@ -950,6 +946,17 @@ class DBSDataDiscoveryServer(DBSLogger):
         bList=[]
         id=0
 
+        nameSpace = {
+                     'userMode': self.userMode,
+                     'dbsInst' : dbsInst,
+                     'site'    : site,
+                     'app'     : app,
+                     'primD'   : primD,
+                     'tier'    : tier,
+                     'proc'    : proc
+                    }
+        t = Template(CheetahDBSTemplate.templateSnapshot, searchList=[nameSpace])
+        snapshot=str(t)
 #        print "\n\n#### getDataHelper",nDatasets,nPages(nDatasets,RES_PER_PAGE)
         # the view and process page should be generated once
         if  not _idx:
@@ -985,8 +992,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         className="hide"
         if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
            className="show_inline"
-        className
-        page+="""<span id="results_response_%s" class="%s">"""%(_idx,className)
+        page+="""<div id="results_response_%s" class="%s">"""%(_idx,className)
         page+="""<script type="text/javascript">ShowPageResults()</script>"""
         self.dbsTime=(t2-t1)
         for idx in xrange(0,nDatasets):
@@ -1003,7 +1009,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
 #            jsPage+="""registerTreeView();ajaxAddTreeElement('root','%s');"""%dataset
-            p = self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id)
+            p = self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
             else:
@@ -1026,7 +1032,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         # generate URL link
         page+=self.getURL(dbsInst,site,app,primD,tier)
         # end of response tag
-        page+="</span>"
+        page+="</div>"
 
         return page
     getDataHelper.exposed=True
@@ -1149,7 +1155,10 @@ class DBSDataDiscoveryServer(DBSLogger):
 
             dList=self.getDatasetList(app=app,prim=primD,tier=tier,proc=proc)
             nDatasets=len(dList)
-            page+="""<span id="results_dbs_response_%s" class="show_inline">"""%_idx
+            className="hide"
+            if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
+               className="show_inline"
+            page+="""<div id="results_dbs_response_%s" class="%s">"""%(_idx,className)
             for idx in xrange(0,nDatasets):
                 tid = 't_dbs_'+str(idx)
                 dataset = dList[idx]
@@ -1165,7 +1174,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                             }
                 t = Template(CheetahDBSTemplate.templateDbsInfo, searchList=[nameSpace])
                 page+=str(t)
-            page+="</span>"
+            page+="</div>"
         except:
             t=self.errorReport("Fail in getDbsData function")
             page+=str(t)
@@ -1217,7 +1226,10 @@ class DBSDataDiscoveryServer(DBSLogger):
 
             dList=self.getDatasetList(app=app,prim=primD,tier=tier,proc=proc)
             nDatasets=len(dList)
-            page+="""<span id="runs_response_%s" class="show_inline">"""%_idx
+            className="hide"
+            if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
+               className="show_inline"
+            page+="""<div id="runs_response_%s" class="%s">"""%(_idx,className)
             for idx in xrange(0,nDatasets):
                 tid = 't_runs_'+str(idx)
                 dataset = dList[idx]
@@ -1231,7 +1243,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                             }
                 t = Template(CheetahDBSTemplate.templateRunsInfo, searchList=[nameSpace])
                 page+=str(t)
-            page+="</span>"
+            page+="</div>"
         except:
             t=self.errorReport("Fail in getRunsData function")
             page+=str(t)
@@ -1248,7 +1260,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getRuns.exposed = True 
 
-    def getLFNlist(self,dbsInst,blockName,dataset="",iSite="",iApp="",iPrimD="",iTier=""):
+    def getLFNlist(self,dbsInst,blockName,dataset=""):
         """
            Retrieves and represents LFN list. The list is formed by L{lfnToHTML}.
            @type  dataset: string 
@@ -1261,19 +1273,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             self.htmlInit()
             page = self.genTopHTML()
-            if dataset:
-               if iSite: site=iSite
-               else: site=self.site
-               if iApp: app=iApp
-               else: app=self.app
-               if iPrimD: primD=iPrimD
-               else: primD=self.primD
-               if iTier: tier=iTier
-               else: tier=self.tier
-               page+= self.genSnapshot(dbsInst,site,app,primD,tier)
-            page+="""<hr class="dbs" />"""
+            page+="""<div id="_snapshot"></div><hr class="dbs" /><br />"""
+            page+="""<script type="text/javascript">GetParentNavBar()</script>"""
             page+= self.lfnToHTML(dbsInst,blockName,dataset)
-            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s&amp;iSite=%s&amp;iApp=%s&amp;iPrimD=%s&amp;iTier=%s"""%(self.dbsdd,dbsInst,string.replace(blockName,'#','%23'),dataset,self.site,self.app,self.primD,self.tier)
+            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s"""%(self.dbsdd,dbsInst,string.replace(blockName,'#','%23'),dataset)
             page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
             page+= self.genBottomHTML()
             return page
@@ -1399,7 +1402,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
         return str(t)
         
-    def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id):
+    def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot=""):
         """
            Forms output tables.
            @type  path: string 
@@ -1422,7 +1425,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'totFiles'   : totFiles,
                      'totSize'    : totSize,
                      'userMode'   : self.userMode,
-                     'tid'        : id
+                     'tid'        : id,
+                     'snapshot'   : snapshot
                     }
         t = Template(CheetahDBSTemplate.templateLFB, searchList=[nameSpace])
 	page+=str(t)
@@ -1763,7 +1767,10 @@ class DBSDataDiscoveryServer(DBSLogger):
         dataTier = tier
         dList = self.helper.getDatasetsFromApp(app,primD,tier)
         nDatasets=len(dList)
-        page+="""<span id="parents_response_%s" class="show_inline">"""%_idx
+        className="hide"
+        if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
+           className="show_inline"
+        page+="""<div id="parents_response_%s" class="%s">"""%(_idx,className)
         for idx in xrange(0,nDatasets):
             dataset = dList[idx]
 
@@ -1771,7 +1778,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
 
             page+=self.getDatasetProvenanceHelper(dataset)
-        page+="</span>"
+        page+="</div>"
         page+="</response></ajax-response>"
         if self.verbose:
 #        if 1:
@@ -2149,10 +2156,16 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDataDescription.exposed=True
 
-    def getTableTemplate(self,func,dbsInst,lfn,msg):
+    def getTableTemplate(self,func,dbsInst,lfn,msg,ajax,**kwargs):
         self.htmlInit()
         iList=func(dbsInst,lfn)
-        page=content=""
+        p=content=""
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="element" id="floatDataDescription">"""
+        else:
+           page=self.genTopHTML()
         try:
             for dict in iList:
                 nameSpace={'branch':dict.values()}
@@ -2161,40 +2174,47 @@ class DBSDataDiscoveryServer(DBSLogger):
                 idx+=1
             nameSpace={'header':iList[0].keys(),'content':content}
             t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
-            page=str(t)
+            p=str(t)
         except:
-            page="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
-#        if self.verbose:
-        if 1:
+            p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
+        if int(ajax):
+           nameSpace={'title':msg,'description':p,'className':'float_help_box'}
+           t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+           page+=str(t)+"</response></ajax-response>"
+        else:
+           page+=p
+           page+=self.genBottomHTML()
+        if self.verbose:
+#        if 1:
            print page
         return page
 
-    def getLFN_Branches(self,dbsInst,lfn):
-        page=self.getTableTemplate(self.helper.getLFN_Branches,dbsInst,lfn,'ROOT branches')
+    def getLFN_Branches(self,dbsInst,lfn,ajax=0,**kwargs):
+        page=self.getTableTemplate(self.helper.getLFN_Branches,dbsInst,lfn,'ROOT branches',ajax)
         return page
     getLFN_Branches.exposed=True
 
-    def getLFN_Lumis(self,dbsInst,lfn):
-        page=self.getTableTemplate(self.helper.getLFN_Lumis,dbsInst,lfn,'LFN lumis')
+    def getLFN_Lumis(self,dbsInst,lfn,ajax=0,**kwargs):
+        page=self.getTableTemplate(self.helper.getLFN_Lumis,dbsInst,lfn,'LFN lumis',ajax)
         return page
     getLFN_Lumis.exposed=True
 
-    def getLFN_Algos(self,dbsInst,lfn):
-        page=self.getTableTemplate(self.helper.getLFN_Algos,dbsInst,lfn,'LFN algorithms')
+    def getLFN_Algos(self,dbsInst,lfn,ajax=0,**kwargs):
+        page=self.getTableTemplate(self.helper.getLFN_Algos,dbsInst,lfn,'LFN algorithms',ajax)
         return page
     getLFN_Algos.exposed=True
 
-    def getLFN_Tiers(self,dbsInst,lfn):
-        page=self.getTableTemplate(self.helper.getLFN_Tiers,dbsInst,lfn,'LFN tiers')
+    def getLFN_Tiers(self,dbsInst,lfn,ajax=0,**kwargs):
+        page=self.getTableTemplate(self.helper.getLFN_Tiers,dbsInst,lfn,'LFN tiers',ajax)
         return page
     getLFN_Tiers.exposed=True
 
-    def getLFN_Parents(self,dbsInst,lfn):
-        page=self.getTableTemplate(self.helper.getLFN_Parents,dbsInst,lfn,'LFN parents')
+    def getLFN_Parents(self,dbsInst,lfn,ajax=0,**kwargs):
+        page=self.getTableTemplate(self.helper.getLFN_Parents,dbsInst,lfn,'LFN parents',ajax)
         return page
     getLFN_Parents.exposed=True
 
-    def getFloatBox(self,title="",description="",**kwargs):
+    def getFloatBox(self,title="",description="",className="",**kwargs):
         """ 
             Get data description.
         """
@@ -2203,7 +2223,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         page="""<ajax-response><response type="element" id="floatDataDescription">"""
         nameSpace={
                    'title'       : title,
-                   'description' : description
+                   'description' : description,
+                   'className'   : className
                   }
         t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
         page+=str(t)
