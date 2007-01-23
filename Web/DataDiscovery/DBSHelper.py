@@ -241,11 +241,13 @@ class DBSHelper(DBSLogger):
             self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
          else: 
             # new api can be initialized with DbsConfig, but we will use default one
-            self.api = dbsWebApi.DbsWebApi()
+            url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
+            self.api = dbsWebApi.DbsWebApi({'url':url})
+         self.dbsApi[dbsInst]=self.api
       else:
          self.api = self.dbsApi[dbsInst]
       if not self.dbsDLS.has_key(dbsInst):
-         dlsType,endpoint = DBS_DLS_INST[dbsInst]
+         url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
          self.writeLog("DLS Instance: %s %s"%(dlsType,endpoint))
          self.dlsApi = dlsClient.getDlsApi(dlsType, endpoint)
       else:
@@ -259,7 +261,7 @@ class DBSHelper(DBSLogger):
          12 hour cycle, we invoke voms-proxy-init call to get new credentials. Then we iniliaze
          appropriate DLS LFC instance and cache it.
       """
-      dlsType,endpoint = DBS_DLS_INST[self.dbsInstance]
+      url,dlsType,endpoint = DBS_DLS_INST[self.dbsInstance]
       # replace DLI type with LFC
       if dlsType=="DLS_TYPE_DLI":
          dlsType ="DLS_TYPE_LFC"
@@ -421,10 +423,11 @@ class DBSHelper(DBSLogger):
              exe    = item.get('ExecutableName')
           path=formDatasetPath(ver,family,exe)
           if self.html:
+             navBar   ="MakeNavBarApp('%s','%s')"%(self.dbsInstance,path)
              dataInfo ="ajaxGetData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
              blockInfo="ajaxGetDbsData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
              runInfo  ="ajaxGetRuns('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
-             path="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,path)
+             path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,path)
           aList.append(path)
       aList.sort()
       aList.reverse()
@@ -473,10 +476,11 @@ class DBSHelper(DBSLogger):
           else:
              name = entry.get('Name')
           if self.html:
+             navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
              blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
              runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
-             name="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,name)
+             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
       return oList
       
@@ -502,10 +506,11 @@ class DBSHelper(DBSLogger):
           else:
              name = entry.get('datasetPathName') # name=/prim/tier/proc
           if html:
+             navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
              blockInfo="ajaxGetDbsData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
              runInfo  ="ajaxGetRuns('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
-             name="""<a href="javascript:showWaitingMessage();%s;%s;%s">%s</a>"""%(dataInfo,blockInfo,runInfo,name)
+             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
       return oList
   
