@@ -42,23 +42,23 @@ function ResetTag(tag) {
 }
 function ResetAllResults() {
   ClearTag('progressBar');
-//  ResetTag('results_index');
-//  ResetTag('results');
-//  ResetTag('results_waiting');
+  ResetTag('results_index');
+  ResetTag('results');
+  ResetTag('results_waiting');
 
-//  ClearTag('results_kw');
-//  ClearTag('results_dbs');
-//  ClearTag('results_site');
-//  ClearTag('runs');
-//  ClearTag('parents');
-//  ClearTag('appConfigs');
+  ClearTag('results_kw');
+  ClearTag('results_dbs');
+  ClearTag('results_site');
+  ClearTag('runs');
+  ClearTag('parents');
+  ClearTag('appConfigs');
 
-//  HideTag('results_kw');
-//  HideTag('results_dbs');
-//  HideTag('results_site');
-//  HideTag('runs');
-//  HideTag('parents');
-//  HideTag('appConfigs');
+  HideTag('results_kw');
+  HideTag('results_dbs');
+  HideTag('results_site');
+  HideTag('runs');
+  HideTag('parents');
+  HideTag('appConfigs');
 //  showWaitingMessage('results');
 }
 function showHistoryMenu(name,histArr) {
@@ -303,6 +303,7 @@ function showResultsMenu() {
 }
 function showMenu(menu) {
    ClearTag('progressBar');
+   ClearTag('navBar');
    hideWaitingMessage();
    hideResultsMenu();
 
@@ -444,8 +445,8 @@ function SelectAll(){
   }
 }
 function popUp(URL,WIDTH,HEIGHT) {
-  day = new Date();
-  id = day.getTime();
+  var day = new Date();
+  var id = day.getTime();
   var w=640;
   var h=480;
   if(WIDTH) {
@@ -456,7 +457,13 @@ function popUp(URL,WIDTH,HEIGHT) {
   }
   // we need to replace in URL the # sign since it's part of blockName
   var url=URL.replace('#','%23');
-  eval("page" + id + " = window.open(url, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');");
+//  eval("page" + id + " = window.open(url, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');");
+  var winName='page'+id;
+  var page = window.open(url,winName, 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');
+  var j = page.document.getElementById('_snapshot');
+  if (j) {
+      j.innerHTML='test';
+  }
 }
 function formPopUpCall(h,f,dbs,site,app,prim,tier) {
   var url=h+'/'+f+'?dbsInst='+dbs+'&site='+site+'&app='+app+'&primD='+prim+'&tier='+tier;
@@ -639,7 +646,7 @@ function ClearCellTag(tag,i,idx) {
       }
 }
 function ClearCells(idx,total) {
-   for(i=0;i<total;i++) {
+   for(i=0;i<=total;i++) {
       var id=document.getElementById('cell_'+i);
       if(id) {
          id.className="fixed";
@@ -659,36 +666,46 @@ function ClearCells(idx,total) {
 function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
    UpdateResultIndex(idx,total);
    // invoke next chunk of data
-   ajaxNextGetData(dbs,site,app,prim,tier,proc,idx);
+   advanceResults((idx-1),total,dbs,site,app,prim,tier,proc);
    var found=0;
    for(i=0;i<total;i++) {
       var id=document.getElementById('cell_'+i);
-      if(id) {
-         id.className="fixed";
+      if (id) {
+          id.className="fixed";
       }
       var tagArr = new Array('results_response_'+i,'results_dbs_response_'+i,'runs_response_'+i,'parents_response_'+i,'appConfig_response_'+i);
       for(j=0;j<tagArr.length;j++) {
           tag=tagArr[j];
           if( i==(idx-1) ) { 
               var id=document.getElementById(tag);
-              if(id) {
+              if (id) {
                  found=1;
                  ClearCells((idx-1),total)
                  Choose('cell_'+idx);
-                 return;
+                 break;
               }
           }
       }
+      if(found) {break;}
+
    }
    Choose('cell_'+idx);
    if(!found) {
-      ShowWheel('__results');
-      ShowWheel('__results_dbs');
-      ShowWheel('__runs');
-      // not ready yet, FIXME, TODO
-//      ShowWheel('__parents');
-//      ShowWheel('__appConfigs');
+      ShowWheel("__results");
+      ShowWheel("__results_dbs");
+      ShowWheel("__runs");
       ajaxNextGetData(dbs,site,app,prim,tier,proc,idx-1);
+   }
+}
+function advanceResults(idx,total,dbs,site,app,prim,tier,proc) {
+   if (idx+1!=total) {
+       var id=document.getElementById('results_response_'+(idx+1));
+       if (!id) {
+           ShowWheel("__results");
+           ShowWheel("__results_dbs");
+           ShowWheel("__runs");
+           ajaxNextGetData(dbs,site,app,prim,tier,proc,idx+1);;
+       }
    }
 }
 function nPages(tot,max) {
@@ -697,16 +714,10 @@ function nPages(tot,max) {
     }
     return tot/max
 }
+function GetCurrentIndexPosition(total) {
+   return GLOBAL_CELL.split('cell_')[1];
+}
 function BuildBar(from,to,total,GLOBAL_STEP,dbs,site,app,prim,tier,proc) {
-//alert('BuildBar to='+to+' tot='+total+' step='+GLOBAL_STEP);
-//   var STEP=nPages(total,GLOBAL_STEP);
-//   if(STEP>total) {
-//      STEP=total;
-//      if(to>STEP) {
-//         to=STEP;
-//      }
-//   }
-//alert('BuildBar to='+to+' tot='+total+' step='+STEP);
    args=',\''+dbs+'\',\''+site+'\',\''+app+'\',\''+prim+'\',\''+tier+'\',\''+proc+'\'';
    var t='<table class="cell"><tr><td>Result pages:</td>';
    var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+args+');BuildBar(1,'+GLOBAL_STEP+','+total+','+GLOBAL_STEP+args+')">start</a></td>';
@@ -902,4 +913,80 @@ function ClearKeywordForm() {
   ClearTextInForm('kw_procSelector');
   ClearTextInForm('kw_tierSelector');
   ClearTextInForm('kw_runsSelector');
+}
+function GenSnapshot() {
+  var msg='<div class="sectionhead">RESULTS FOR:</div>';
+  msg=msg+'<table class="small" bgcolor="#DDDDDD">';
+  var id=document.getElementById('snapshot_dbsInst');
+  if (id) {
+      msg=msg+'<tr><td align="right"><b>DBS instance:</b></td><td>'+id.value+'</td></tr>';
+  }
+  var id=document.getElementById('snapshot_site');
+  if (id) {
+      msg=msg+'<tr><td align="right"><b>Site: </b></td><td>'+id.value+'</td></tr>';
+  }
+  var id=document.getElementById('snapshot_app');
+  if (id) {
+      msg=msg+'<tr><td align="right"><b>Application: </b></td><td>'+id.value+'</td></tr>';
+  }
+  var id=document.getElementById('snapshot_prim');
+  if (id) {
+      msg=msg+'<tr><td align="right"><b>Primary dataset: </b></td><td>'+id.value+'</td></tr>';
+  }
+  var id=document.getElementById('snapshot_tier');
+  if (id) {
+      msg=msg+'<tr><td align="right"><b>Data tier: </b></td><td>'+id.value+'</td></tr>';
+  }
+  var id=document.getElementById('snapshot_proc');
+  if (id) {
+      msg=msg+'<tr><td align="right"><b>Processed dataset: </b></td><td>'+id.value+'</td></tr>';
+  }
+  msg=msg+'</table>';
+  alert('GenSnapshot msg='+msg);
+//  var id=document.getElementById('_snapshot');
+//  if (id) {
+//alert('Found');
+//      id.innerHTML=msg;
+//  }
+  return msg;
+}
+function MakeNavBar() {
+  var arr  = getDataFromSelectors();
+  if(!arr) return;
+  var dbs  = arr[0];
+  var site = arr[1];
+  var app  = arr[2];
+  var prim = arr[3];
+  var tier = arr[4];
+  var id=document.getElementById('navBar');
+  if (id) {
+      id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:Navigator</b></span> &#187; <b>DBS instance:</b>'+dbs+' &#187; <b>Site:</b>'+site+' &#187; <b>Application:</b>'+app+' &#187; <b>Primary Dataset:</b>'+prim+' &#187; <b>Data tier:</b>'+tier;
+  }
+}
+function MakeNavBarPrimDS(dbs,prim) {
+  var id=document.getElementById('navBar');
+  if (id) {
+      id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:DBS info</b>:'+dbs+'</span> &#187; <b>Primary dataset:</b>'+prim;
+  } 
+}
+function MakeNavBarProcDS(dbs,proc) {
+  var id=document.getElementById('navBar');
+  if (id) {
+      id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:DBS info</b>:'+dbs+'</span> &#187; <b>Processed dataset:</b>'+proc;
+  } 
+}
+function MakeNavBarApp(dbs,app) {
+  var id=document.getElementById('navBar');
+  if (id) {
+      id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:DBS info:</b>'+dbs+'</span> &#187; <b>Application:</b>'+app;
+  } 
+}
+function GetParentNavBar() {
+  var id=opener.document.getElementById('navBar');
+  if (id) {
+      var j=document.getElementById('_snapshot');
+      if (j) {
+          j.innerHTML=id.innerHTML;
+      }
+  }
 }
