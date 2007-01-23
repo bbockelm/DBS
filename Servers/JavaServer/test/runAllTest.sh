@@ -364,18 +364,18 @@ insertTier
 insertRun
 insertLumiSection
 insertProcessedDataset
-insertBlock
-insertFiles
+#insertBlock
+#insertFiles
 #createAnalysisDatasetFromPD
 #insertAnalysisDatasetDefination
 
 #listPrimaryDatasets
-#listProcessedDatasets
+listProcessedDatasets
 #listAlgorithms
 #listRuns
 #listTiers
 #listBlocks
-listFiles
+#listFiles
 ##listDatasetContents
 #listDatasetParents
 #listFileParents

@@ -429,6 +429,7 @@ public class DBSSql {
 			"procds.name as PROCESSED_DATATSET_NAME, \n" +
                         //Could be managed by Status field
 			//"procds.OpenForWriting as OPEN_FOR_WRITING, \n" +
+			"pds.Status as STATUS, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
 			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
@@ -467,6 +468,8 @@ public class DBSSql {
 				"ON ae.id = algo.ExecutableName \n" +
 			"LEFT OUTER JOIN QueryableParameterSet ps \n" +
 				"ON ps.id = algo.ParameterSetID \n" +
+			"LEFT OUTER JOIN ProcDSStatus pds \n" +
+				"ON pds.id = procds.Status \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = procds.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
@@ -481,9 +484,8 @@ public class DBSSql {
 		if(patternExe == null) patternExe = "%";
 		if(patternPS == null) patternPS = "%";*/
 		boolean useAnd = false;
-		if(!patternPrim.equals("%") || !patternDT.equals("%") || !patternProc.equals("%") || !patternVer.equals("%") || !patternFam.equals("%") || !patternExe.equals("%") || !patternPS.equals("%")) {
+		//if(!patternPrim.equals("%") || !patternDT.equals("%") || !patternProc.equals("%") || !patternVer.equals("%") || !patternFam.equals("%") || !patternExe.equals("%") || !patternPS.equals("%")) {
 			sql += "WHERE \n";
-		}
 		if(!patternPrim.equals("%")) {
 			sql += " primds.Name like ? \n";
 			useAnd = true;
@@ -520,7 +522,9 @@ public class DBSSql {
 		}
 
 
-		sql += "ORDER BY id, APP_VERSION, APP_FAMILY_NAME, APP_EXECUTABLE_NAME, PS_NAME, DATA_TIER DESC";
+		if(useAnd) sql += " AND ";
+		sql +=	"pds.Status <> 'INVALID' \n" +
+			"ORDER BY id, APP_VERSION, APP_FAMILY_NAME, APP_EXECUTABLE_NAME, PS_NAME, DATA_TIER DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		if(!patternPrim.equals("%")) ps.setString(columnIndx++, patternPrim);
