@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.50 $"
- $Id: DBSSql.java,v 1.50 2007/01/23 19:21:21 sekhri Exp $"
+ $Revision: 1.51 $"
+ $Id: DBSSql.java,v 1.51 2007/01/23 22:24:24 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -516,6 +516,7 @@ public class DBSSql {
 		if(!patternPS.equals("%")) {
 			if(useAnd) sql += " AND ";
 			sql += "ps.Name like ? \n";
+			useAnd = true;
 		}
 
 
@@ -786,7 +787,8 @@ public class DBSSql {
 			sql += "and fdt.DataTier = ? \n";
 		}
 
-		sql +=	"ORDER BY LFN DESC";
+		sql +=	"and st.Status <> 'INVALID' \n" +
+			"ORDER BY LFN DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
