@@ -217,7 +217,8 @@ Home page: <a href="$host/">users</a>
 """
 
 templateHistory="""
-<table><tr><td align="left">$date</td><td align="left">$time</td><td align="left">&#8212;</td><td align="left">$action</td></tr></table>
+#####<table><tr><td align="left">$date</td><td align="left">$time</td><td align="left">&#8212;</td><td align="left">$action</td></tr></table>
+<table><tr><td align="left">$date</td><td align="left">$time</td><td align="left">--</td><td align="left">$action</td></tr></table>
 """
 
 templateAjaxInit="""
@@ -809,7 +810,7 @@ $msg
 
 <td valign="top">
 
-<form action="javascript:ResetAllResults();ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+<form action="javascript:ResetAllResults();MakeNavBar();ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -937,9 +938,11 @@ $name<br />
 <tr>
 <td><a href="$host/getLFN_Branches?dbsInst=$dbsInst&lfn=$name">ROOT branches</a></td>
 <td>|</td>
-<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
+###<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
+<td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis</a></td>
 <td>|</td>
-<td><a href="$host/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
+###<td><a href="$host/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
+<td><a href="javascript:ajaxGetAlgos('$dbsInst','$name')">Algorithms</a></td>
 <td>|</td>
 <td><a href="$host/getLFN_Tiers?dbsInst=$dbsInst&lfn=$name">Tiers</a></td>
 <td>|</td>
@@ -1026,9 +1029,9 @@ all columns are sortable, move your mouse over the column name and click on it.
 templateProcDatasets="""
 ###<hr class="dbs" />
 ###<p>
-All processed datasets: 
+For a list of processed datasets within this request click 
 <a href="javascript:popUp('$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier',1000)">
-list</a>
+here</a>
 ###</p>
 """
 
@@ -1134,6 +1137,7 @@ Processed dataset:<br />
 <td>Modified by</td>
 <td>Modifiction time</td>
 </tr>
+#from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #from DBSUtil import splitString 
 #for dbsDict in $dbsList
 #set bName=$dbsDict['Name']
@@ -1142,7 +1146,7 @@ Processed dataset:<br />
 <td align="left" class="td20">$sName</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
-<td align="right">$dbsDict['BlockSize']</td>
+<td align="right">$colorSizeHTMLFormat($dbsDict['BlockSize'])</td>
 <td align="center">
 <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)" alt="cff format">cff</a>, 
 <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',900)" alt="file list format">txt</a>,
@@ -1165,6 +1169,7 @@ Processed dataset:<br />
 """
 
 templateDbsInfoTableEntry="""
+#from DBSUtil import sizeFormat, colorSizeHTMLFormat
 #from DBSUtil import splitString 
 #for dbsDict in $dbsList
 #set bName=$dbsDict['Name']
@@ -1173,7 +1178,7 @@ templateDbsInfoTableEntry="""
 <td align="left" class="td20">$sName</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
-<td align="right">$dbsDict['BlockSize']</td>
+<td align="right">$colorSizeHTMLFormat($dbsDict['BlockSize'])</td>
 <td align="center">
 <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)" alt="cff format">cff</a>, 
 <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)" alt="file list format">txt</a>,
@@ -1190,6 +1195,15 @@ templateDbsInfoTableEntry="""
 <td align="center">$dbsDict['LastModificationDate']</td>
 </tr>
 #end for
+"""
+
+templateSnapshotParameters="""
+<span id="snapshot_dbsInst" class="hide">$dbsInst</span>
+<span id="snapshot_site"    class="hide">$site</span>
+<span id="snapshot_app"     class="hide">$app </span>
+<span id="snapshot_prim"    class="hide">$prim</span>
+<span id="snapshot_tier"    class="hide">$tier</span>
+<span id="snapshot_proc"    class="hide">$proc</span>
 """
 
 templateLFB = """
@@ -1403,6 +1417,7 @@ templateBottom="""
 </table>
 
 <br />
+<div id="navBar" class="hide"></div>
 <div id="results_index"></div>
 <div id="results"></div>
 <div id="results_waiting"></div>
@@ -1505,18 +1520,11 @@ var GLOBAL_STEP=$step
 </tr>
 <tr><td><br /></td></tr>
 <tr>
-<td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsShortNames);">DBS info</a>
+<td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsNames);">DBS info</a>
   <table id="dbsInst_table" class="hide">
-#for name in $dbsShortNames
-#if $name[:3]!="dbs"
-#set fullName=$name+"/Writer"
-#if $name=="Dev_fanfani"
-#set fullName="Dev/fanfani"
-#end if
-#else
-#set fullName=$name
-#end if
-      <tr><td>&\#187;</td><td id="dbsInst_$name"><a href="javascript:getDbsInfo('$fullName',$dbsShortNames);">$fullName</a></td></tr>
+#for iName in $dbsNames
+#set name=iName.replace("/","___")
+      <tr><td>&\#187;</td><td id="dbsInst_$name"><a href="javascript:getDbsInfo('$iName',$dbsNames);">$iName</a></td></tr>
 #end for
   </table>       
 </td>
@@ -1524,8 +1532,14 @@ var GLOBAL_STEP=$step
 #end if
 <tr><td><br /></td></tr>
 <tr>
+<td class="td_gray_box" id="SessionHistory_Menu">
+<a href="javascript:GetSessionHistory();">Session History</a>
+</td>
+</tr>
+<tr>
 #set hList=['user','auth','search']
 #set hDict={'user':'Session','auth':'Authentication','search':'Search'}
+########<td class="td_gray_box" id="History_Menu"><a href="javascript:GetSessionHistory();">History</a>
 <td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
   <table id="history_table" class="hide">
 #for name in $hList
@@ -2218,7 +2232,7 @@ templateDatasetDetails="""
 """
 
 templateFloatBox="""
-<table class="float_box" width="100%">
+<table class="$className" width="100%">
 <tr valign="top">
 <td>
 
