@@ -58,7 +58,7 @@ class DbsHttpService:
              request_string += '&'+key+'='+value
           else: 
              if type != 'POST':
-               request_string += '&'+key+'='+value 
+               request_string += '&'+key+'='+urllib.quote(value) 
              continue 
            
        conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n"
@@ -96,7 +96,8 @@ class DbsHttpService:
 
     except Exception, ex:
       msg = "HTTP ERROR, Unable to make API call: %s" % conto
-      raise DbsConnectionError (args=msg, code="401")            
+      msg += "%s" % ex
+      raise DbsConnectionError (args=msg, code="505")            
 
 
     # Error message would arrive in XML, if any
