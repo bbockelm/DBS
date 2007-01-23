@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.49 $"
- $Id: DBSSql.java,v 1.49 2007/01/22 18:04:45 sekhri Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSSql.java,v 1.50 2007/01/23 19:21:21 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -740,7 +740,7 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String patternLFN) throws SQLException {
+	public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String tierID, String patternLFN) throws SQLException {
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
@@ -776,25 +776,33 @@ public class DBSSql {
 
 		//if(patternLFN == null) patternLFN = "%";
 		sql += "WHERE f.LogicalFileName like ? \n" ;
-		if(procDSID != null) {
+		if(!DBSUtil.isNull(procDSID)){
 			sql += "and f.Dataset = ? \n";
 		}
-		if(blockID != null) {
+		if(!DBSUtil.isNull(blockID)){
 			sql += "and f.Block = ? \n";
 		}
+		if(!DBSUtil.isNull(tierID)){
+			sql += "and fdt.DataTier = ? \n";
+		}
+
 		sql +=	"ORDER BY LFN DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
   
 		ps.setString(columnIndx++, patternLFN);
-		if(procDSID != null) {
+		if(!DBSUtil.isNull(procDSID)){
 			ps.setString(columnIndx++, procDSID);
 		}
-		if(blockID != null) {
+		if(!DBSUtil.isNull(blockID)){
 			ps.setString(columnIndx++, blockID);
+		}
+		if(!DBSUtil.isNull(tierID)){
+			ps.setString(columnIndx++, tierID);
 
 		}
+
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}

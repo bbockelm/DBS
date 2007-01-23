@@ -146,8 +146,8 @@ listDatasetParents () {
 insertPrimaryDataset () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 			<dbs>
-				<primary-dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
-				</primary-dataset>
+				<primary_dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
+				</primary_dataset>
 			</dbs>"
 	message="Executing insertPrimaryDataset API..."
 	echo $message >> $outFile ; echo $message
@@ -233,7 +233,7 @@ insertRun () {
 insertLumiSection () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<lumi lumi_section_number='1111' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<lumi_section lumi_section_number='1111' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	message="Executing insertLumiSection API..."	
 	echo $message >> $outFile ; echo $message
@@ -245,25 +245,25 @@ insertLumiSection () {
 insertProcessedDataset () {
 	xmlString1="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
+			<processed_dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<data_tier name='$tier_name1'/>
 				$algo1
 				$algo2
 				<run run_number='$run_number1'/>
 				<run run_number='$run_number2'/>
-			</processed-dataset>
+			</processed_dataset>
 		</dbs>"
 
 	xmlString2="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<processed-dataset primary_datatset_name='$primary_name' processed_datatset_name='CHILD_$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
+			<processed_dataset primary_datatset_name='$primary_name' processed_datatset_name='CHILD_$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<data_tier name='$tier_name2'/>
 				<data_tier name='TEST_DIGI_$rand'/>
 				<data_tier name='TEST_GEN_$rand'/>
 				<parent path='$path'/>
 				$algo3
 				<run run_number='$run_number1'/>
-			</processed-dataset>
+			</processed_dataset>
 		</dbs>"
 
 	message="Executing insertProcessedDataset API 2 times with different inputs..."	
@@ -324,7 +324,7 @@ insertFiles () {
 createAnalysisDatasetFromPD () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis-dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path_child' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path_child' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDatasetFromPD API..."
         echo $message >> $outFile ; echo $message
@@ -335,7 +335,7 @@ createAnalysisDatasetFromPD () {
 insertAnalysisDatasetDefination () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis-dataset-defination analysisds_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
+                                <analysis_dataset_defination analysisds_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
 				<run run_number='$run_number1, $run_number2' run_range='1,10'/>
 				<run run_number='$run_number2' run_range='12,18'/>
 				<lumi_section lumi_section_number='9997' lumi_section_range='1,10'/>
@@ -346,7 +346,7 @@ insertAnalysisDatasetDefination () {
 				<data_tier tier_name='$tier_name2'/>
 				$algo1
 				$algo2
-				<analysis-dataset analysis_dataset_name='AnalysisDS_$rand'/>
+				<analysis_dataset analysis_dataset_name='AnalysisDS_$rand'/>
                         </dbs>"
 	echo "$xmlString"
         message="Executing  insertAnalysisDatasetDefination API..."
@@ -375,7 +375,7 @@ insertAnalysisDatasetDefination
 #listRuns
 #listTiers
 #listBlocks
-#listFiles
+listFiles
 ##listDatasetContents
 #listDatasetParents
 #listFileParents
