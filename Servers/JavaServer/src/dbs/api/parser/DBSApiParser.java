@@ -1,6 +1,6 @@
 /**
- $Revision: 1.57 $"
- $Id: DBSApiParser.java,v 1.57 2007/01/19 19:45:49 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiParser.java,v 1.1 2007/01/19 21:21:06 sekhri Exp $"
  *
 */
 
@@ -209,6 +209,40 @@ public class DBSApiParser {
 			}
 		}
                 (new DBSApiFileLogic(new DBSApiData())).insertFiles(conn, out, DBSUtil.get(psDS, "path"), block, topLevel, dbsUser);
+	}
+
+	public static Hashtable parseADD(String inputXml) throws Exception {
+		DBSXMLParser dbsParser = new DBSXMLParser();
+		dbsParser.parseString(inputXml); 
+		Vector allElement = dbsParser.getElements();
+		Hashtable table = null;
+		for (int i=0; i<allElement.size(); ++i) {
+			Element e = (Element)allElement.elementAt(i);
+			String name = e.name;
+			if (name.equals("analysis-dataset-defination") ) {
+				table = e.attributes;
+				table.put("lumi_section", new Vector());
+				table.put("run", new Vector());
+				table.put("data_tier", new Vector());
+				table.put("algorithm", new Vector());
+				table.put("file", new Vector());
+				table.put("analysis-dataset", new Vector());
+			} 
+			if (name.equals("lumi_section") ) 
+				((Vector)(table.get("lumi_section"))).add(e.attributes);
+			if (name.equals("run") ) 
+				((Vector)(table.get("run"))).add(e.attributes);
+			if (name.equals("data_tier") ) 
+				((Vector)(table.get("data_tier"))).add(e.attributes);
+			if (name.equals("algorithm") ) 
+				((Vector)(table.get("algorithm"))).add(e.attributes);
+			if (name.equals("file") ) 
+				((Vector)(table.get("file"))).add(e.attributes);
+			if (name.equals("analysis-dataset") ) 
+				((Vector)(table.get("analysis-dataset"))).add(e.attributes);
+
+		}
+		return table;
 	}
 
 	

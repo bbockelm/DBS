@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiAnaDSLogic.java,v 1.4 2007/01/08 17:45:39 sekhri Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.5 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -110,4 +110,102 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		}
          }
 	
+         public void insertAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
+		String adsDefName = get(table, "analysisds_name", true);
+		String path = get(table, "path", false);
+		String userCut = get(table, "user_cut", false);
+		String desc = get(table, "description", false);
+		Vector lumiVector = DBSUtil.getVector(table, "lumi_section");
+		Vector runVector = DBSUtil.getVector(table, "run");
+		Vector tierVector = DBSUtil.getVector(table, "data_tier");
+		Vector algoVector = DBSUtil.getVector(table, "algorithm");
+		Vector fileVector = DBSUtil.getVector(table, "file");
+		Vector adsVector = DBSUtil.getVector(table, "analysis-dataset");
+
+		String lumiNumberList = "";
+		String lumiRangeList = "";
+		String runNumberList = "";
+		String runRangeList = "";
+		String tierList = "";
+		String algoList = "";
+		String fileList = "";
+		String adsList = "";
+
+		for (int j = 0; j < lumiVector.size(); ++j) {
+			Hashtable hashTable = (Hashtable)lumiVector.get(j);
+			String lumiNumber = get(hashTable, "lumi_section_number", false);
+			String lumiRange = get(hashTable, "lumi_section_range", false);
+			if(!isNull(lumiNumber)) lumiNumberList += "," + lumiNumber;
+			if(!isNull(lumiRange)) lumiRangeList += "," + lumiRange;
+	 	}
+		for (int j = 0; j < runVector.size(); ++j) {
+			Hashtable hashTable = (Hashtable)runVector.get(j);
+			String runNumber = get(hashTable, "run_number", false);
+			String runRange = get(hashTable, "run_range", false);
+			if(!isNull(runNumber)) runNumberList += "," + runNumber;
+			if(!isNull(runRange)) runRangeList += "," + runRange;
+	 	}
+		for (int j = 0; j < tierVector.size(); ++j) {
+			tierList += "," + get((Hashtable)tierVector.get(j), "tier_name", true);
+	 	}
+		for (int j = 0; j < fileVector.size(); ++j) {
+			fileList += "," + get((Hashtable)fileVector.get(j), "lfn", true);
+	 	}
+		for (int j = 0; j < adsVector.size(); ++j) {
+			adsList += "," + get((Hashtable)adsVector.get(j), "analysis_dataset_name", true);
+	 	}
+		for (int j = 0; j < algoVector.size(); ++j) {
+			Hashtable hashTable = (Hashtable)algoVector.get(j);
+			algoList += "(" + get(hashTable, "app_version", true) + 
+				"," + get(hashTable, "app_family_name", true) + 
+				"," + get(hashTable, "app_executable_name", true) + 
+				"," + get(hashTable, "ps_hash", true) + 
+				")";
+	 	}
+		insertAnalysisDatasetDefination(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
+				runNumberList, runRangeList, tierList, fileList, adsList, algoList, userCut, desc,
+				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, dbsUser),
+				getTime(table, "creation_date", false) );
+
+	 }
+	 
+         private void insertAnalysisDatasetDefination(Connection conn, Writer out, 
+			 String adsDefName, String path,
+			 String lumiNumberList, String lumiRangeList, 
+			 String runNumberList, String runRangeList, 
+			 String tierList, String fileList, 
+			 String adsList, String algoList, 
+			 String userCut, String desc,
+			 String cbUserID, String lmbUserID, 
+			 String creationDate) throws Exception { 
+		 if( getID(conn, "AnalysisDSDef", "Name", adsDefName, false) == null ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertAnalysisDatasetDefination(conn, 
+						adsDefName, 
+						path, 
+						lumiNumberList, 
+						lumiRangeList, 
+						runNumberList, 
+						runRangeList, 
+						tierList, 
+						fileList, 
+						adsList, 
+						algoList, 
+						userCut,
+						desc,
+						cbUserID, 
+						lmbUserID, 
+						creationDate);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
+
+		} else {
+			writeWarning(out, "Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
+		}
+
+	 }
 }

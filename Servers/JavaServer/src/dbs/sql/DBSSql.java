@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.48 $"
- $Id: DBSSql.java,v 1.48 2007/01/18 18:07:10 afaq Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSSql.java,v 1.49 2007/01/22 18:04:45 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -225,6 +225,29 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "AnalysisDataset", table);
         }
+
+	public static PreparedStatement insertAnalysisDatasetDefination(Connection conn, String adsDefName, 
+			String path, String lumiNumberList, String lumiRangeList, String runNumberList, String runRangeList, 
+			String tierList, String fileList, String adsList, String algoList, String userCut, String desc,
+			String cbUserID, String lmbUserID, String cDate) throws SQLException {
+		Hashtable table = new Hashtable();
+		table.put("Name", adsDefName);
+		table.put("LumiSections", lumiNumberList);
+		table.put("LumiSectionRanges", lumiRangeList);
+		table.put("Runs", runNumberList);
+		table.put("RunsRanges", runRangeList);
+		table.put("Algorithms", algoList);
+		table.put("LFNs", fileList);
+		table.put("Path", path);
+		table.put("Tiers", tierList);
+		table.put("AnalysisDatasets", adsList);
+		table.put("UserCut", userCut);
+		table.put("Description", desc);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
+		return getInsertSQL(conn, "AnalysisDSDef", table);
+	}
 
 	public static PreparedStatement updateBlock(Connection conn, String blockID) throws SQLException {
 		String sql = "UPDATE Block \n" +
