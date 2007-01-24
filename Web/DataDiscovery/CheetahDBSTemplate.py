@@ -108,6 +108,7 @@ templateTop = """
 <head>
 <title>DBS data discovery page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="alternate" type="application/rss+xml" title="Everything RSS" href="rss" />
 <link rel="stylesheet" type="text/css" href="css/dbs.css" />
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
@@ -2298,6 +2299,46 @@ $description
 </td>
 </tr>
 </table>
+"""
+
+templateRSS="""
+#import time
+<?xml version="1.0" ?>
+<rss version="2.0">
+
+<channel>
+
+<title>$title</title>
+<description>$title_description</description>
+<link>$title_link</link>
+<language>en-us</language>
+<pubDate>$time.strftime("%a, %d %b %Y %H:%M:%S GMT",$time.gmtime())</pubDate>
+<lastBuildDate>$time.strftime("%a, %d %b %Y %H:%M:%S GMT",$time.gmtime())</lastBuildDate>
+<docs>http://en.wikipedia.org/wiki/RSS_(file_format)</docs>
+<generator>DBS discovery page</generator>
+<managingEditor>vk@mail.lns.cornell.edu</managingEditor>
+<webMaster>vk@mail.lns.cornell.edu</webMaster>
+
+#for item in $pList
+#set path=item
+#set evt=0
+#set link='http://localhost'
+#*
+#set path=$item[0]
+#set evt=$item[1]
+#set link=$item[2]
+*#
+<item>
+<title>$path</title>
+<description>Number of events: $evt</description>
+<link>$link</link>
+<pubDate>$time.strftime("%a, %d %b %Y %H:%M:%S GMT",$time.gmtime())</pubDate>
+<guid>$link</guid>
+</item>
+#end for
+
+</channel>
+</rss>
 """
 
 templateDummy="""
