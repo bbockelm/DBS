@@ -315,7 +315,8 @@ function showMenu(menu) {
    menuArr[4]='DBSinfo';
    menuArr[5]='History';
    menuArr[6]='Help';
-   menuArr[7]='Hide';
+   menuArr[7]='Rss';
+   menuArr[8]='Hide';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
