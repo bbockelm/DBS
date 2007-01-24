@@ -91,7 +91,7 @@ class DBSHelper(DBSLogger):
       self.setDBSDLS(dbsInst)
       aList = self.listApplications()
       for app in aList:
-          app_link="""%s/getData?dbsInst=%s&site=All&app=%s&primD=*&tier=All&proc=*&ajax=0"""%(url,dbsInst,app)
+          app_link="""%s/getData?dbsInst=%s&amp;site=All&amp;app=%s&amp;primD=*&amp;tier=All&amp;proc=*&amp;ajax=0"""%(url,dbsInst,app)
           appPath=string.replace(app,"/","___")
           gmt=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime())
           page="""<?xml version="1.0" ?>
@@ -119,7 +119,7 @@ class DBSHelper(DBSLogger):
               evt=0
               for item in fList:
                   evt+=item['NumberOfEvents']
-              link="""%s/getData?dbsInst=%s&site=All&app=*&primD=*&tier=All&proc=%s&ajax=0"""%(url,dbsInst,datasetName)
+              link="""%s/getData?dbsInst=%s&amp;site=All&amp;app=*&amp;primD=*&amp;tier=All&amp;proc=%s&amp;ajax=0"""%(url,dbsInst,datasetName)
               page+="""
 <title>%s</title>
 <description>Number of events: %s</description>
