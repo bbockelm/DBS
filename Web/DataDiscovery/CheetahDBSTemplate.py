@@ -1951,10 +1951,24 @@ All terms used on discovery page are defined in DBS glossary.
 
 <!-- RssDiv -->
 <div id="RssDiv" class="hide">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+RSS feeds
+</td>
+</tr>
+
+<tr>
+<td>
+
 <div class="div_scroll">
 <div id="rss_list"></div>
 </div>
 </div>
+
+</td>
+</tr>
+</table>
 <!--END RssDiv -->
 
 </td>
@@ -2315,9 +2329,11 @@ $description
 
 templateRssList="""
 <table>
+#if not $userMode
 <tr>
-<td><span class="sectionhead_tight">RSS feeds for: $dbs instance</span></td>
+<td><span class="sectionhead_tight">$dbs</span></td>
 </tr>
+#end if
 #for item in $rssList
 <tr>
 #set l=$item.split("/")
@@ -2327,6 +2343,7 @@ templateRssList="""
 </tr>
 #end for
 </table>
+<hr class="dbs" />
 """
 
 templateRSS="""
