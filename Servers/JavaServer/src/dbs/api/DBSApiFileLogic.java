@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiFileLogic.java,v 1.12 2007/01/23 21:20:49 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiFileLogic.java,v 1.13 2007/01/23 22:24:24 sekhri Exp $"
  *
  */
 
@@ -51,8 +51,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		String procDSID = null;
 		String blockID = null;
+
+                String tierID = null;
 		if(!isNull(path)) {
 			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);
+                        tierID = getID(conn, "DataTier", "Name",  parseDSPath(path)[2], true);  
 		}
 		if(!isNull(blockName)) {
 			blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
@@ -62,10 +65,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		if(blockID == null && procDSID == null) {
 			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset or a Block");
 		}
+
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFiles(conn, procDSID, blockID, getID(conn, "DataTier", "Name",  parseDSPath(path)[2], true), getPattern(patternLFN, "pattern_lfn"));
+			ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");

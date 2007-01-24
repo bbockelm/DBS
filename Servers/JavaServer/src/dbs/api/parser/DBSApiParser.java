@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiParser.java,v 1.2 2007/01/23 19:21:21 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiParser.java,v 1.3 2007/01/23 21:20:50 sekhri Exp $"
  *
 */
 
@@ -219,7 +219,7 @@ public class DBSApiParser {
 		for (int i=0; i<allElement.size(); ++i) {
 			Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
-			if (name.equals("analysis_dataset_defination") ) {
+			if (name.equals("analysis_dataset_definition") ) {
 				table = e.attributes;
 				table.put("lumi_section", new Vector());
 				table.put("run", new Vector());

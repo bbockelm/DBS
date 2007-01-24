@@ -1,6 +1,6 @@
 /**
- $Revision: 1.7 $"
- $Id: DBSApiAnaDSLogic.java,v 1.7 2007/01/23 20:12:05 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.8 2007/01/23 21:20:48 sekhri Exp $"
  *
  */
 
@@ -110,8 +110,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		}
          }
 	
-         public void insertAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
-		String adsDefName = get(table, "analysisds_name", true);
+         public void createAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
+		String adsDefName = get(table, "analysisds_def_name", true);
 		String path = get(table, "path", false);
 		String userCut = get(table, "user_cut");
 		String desc = getStr(table, "description", true);
@@ -178,7 +178,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				"," + get(hashTable, "ps_hash", true) + 
 				")";
 	 	}
-		insertAnalysisDatasetDefination(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
+		createAnalysisDatasetDefination(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
 				runNumberList, runRangeList, tierList, fileList, adsList, algoList, userCut, desc,
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -186,7 +186,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 	 }
 	 
-         private void insertAnalysisDatasetDefination(Connection conn, Writer out, 
+         private void createAnalysisDatasetDefination(Connection conn, Writer out, 
 			 String adsDefName, String path,
 			 String lumiNumberList, String lumiRangeList, 
 			 String runNumberList, String runRangeList, 
