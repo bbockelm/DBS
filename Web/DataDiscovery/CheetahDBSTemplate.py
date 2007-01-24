@@ -108,7 +108,7 @@ templateTop = """
 <head>
 <title>DBS data discovery page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link rel="alternate" type="application/rss+xml" title="Everything RSS" href="rss" />
+####<link rel="alternate" type="application/rss+xml" title="Data discovery RSS" href="rss" />
 <link rel="stylesheet" type="text/css" href="css/dbs.css" />
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
@@ -1554,6 +1554,10 @@ var GLOBAL_STEP=$step
 </tr>
 <tr><td><br /></td></tr>
 <tr>
+<td class="td_gray_box" id="Rss_Menu"><a href="javascript:showMenu('Rss');ajaxGetRss();">RSS list</a></td>
+</tr>
+<tr><td><br /></td></tr>
+<tr>
 <td class="td_gray_box" id="Hide_Menu"><a href="javascript:HidePanel('$host')">Hide panel</a></td>
 </tr>
 <tr><td><br /><em class="tiny_purple_on_gray">Tip: $tip</em></td></tr>
@@ -1945,6 +1949,14 @@ All terms used on discovery page are defined in DBS glossary.
 </div>
 <!-- END HelpDiv -->
 
+<!-- RssDiv -->
+<div id="RssDiv" class="hide">
+<div class="div_scroll">
+<div id="rss_list"></div>
+</div>
+</div>
+<!--END RssDiv -->
+
 </td>
 </tr>
 </table>
@@ -2298,6 +2310,22 @@ $description
 
 </td>
 </tr>
+</table>
+"""
+
+templateRssList="""
+<table>
+<tr>
+<td><span class="sectionhead_tight">RSS feeds for: $dbs instance</span></td>
+</tr>
+#for item in $rssList
+<tr>
+#set l=$item.split("/")
+#set app=$l[2].replace("___","/")
+#set prim=$l[3]
+<td><a href="$host/$item"><img src="images/rss_blue.gif" alt="RSS" /></a> <b>Application:</b>$app, <b>Primary dataset:</b>$prim</td>
+</tr>
+#end for
 </table>
 """
 
