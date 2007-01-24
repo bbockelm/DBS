@@ -2235,6 +2235,26 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getFloatBox.exposed=True
 
+    def getRss(self):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="rss_list">"""
+        for dbs in self.dbsList:
+            rssList=findRssFiles('rss/%s'%dbs)
+            nameSpace={
+                       'host'        : self.dbsdd,
+                       'dbs'         : dbs,
+                       'rssList'     : rssList
+                      }
+            t = Template(CheetahDBSTemplate.templateRssList, searchList=[nameSpace])
+            page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getRss.exposed=True
+
     def genTreeElement(self,iParent,dataset):
         # pass here node,parent pair, as an example we pass 'newNode',node
         # for DBS DD I need to lookup parent from elsewhere
