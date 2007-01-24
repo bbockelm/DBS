@@ -53,6 +53,13 @@ def nPages(tot,max):
        return (tot-tot%max)/max+1
     return tot/max
 
+def findRssFiles(dir):
+    oList=[]
+    for item in os.walk(dir):
+        if item[2] and len(item[2])==1 and item[2][0]=='rss.xml':
+           oList.append('%s/%s'%(item[0],item[2][0]))
+    return oList
+
 def convertListToString(iList):
     s="["
     for item in iList:
