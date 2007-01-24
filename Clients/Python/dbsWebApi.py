@@ -84,6 +84,7 @@ class DbsWebApi(DbsApi):
     May raise an DbsApiException.
 
     """
+#    return super(DbsWebApi,self).listProcessedDatasets(patternPrim,patternDT,patternProc,patternVer,patternFam,patternExe,patternPS)
 
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listProcessedDatasets', 
@@ -93,7 +94,7 @@ class DbsWebApi(DbsApi):
 		    'app_version' : patternVer, 
 		    'app_family_name' : patternFam, 
 		    'app_executable_name' : patternExe, 
-		    'parameterset_name' : patternPS }, 
+		    'ps_hash' : patternPS }, 
 		    'GET')
  
     # Parse the resulting xml output.
@@ -102,16 +103,16 @@ class DbsWebApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
         
 	def startElement(self, name, attrs):
-	  if name == 'processed-dataset':
-             self.proc = str(attrs['processed_datatset_name'])
-             self.prim = str(attrs['primary_datatset_name'])
+	  if name == 'processed_dataset':
+             self.procName = str(attrs['processed_datatset_name'])
+             self.primName = str(attrs['primary_datatset_name'])
           if name == 'data_tier':
              # FIXME: so far in test some datasets doesn't have tiers, I don't know what to do
              # about them since we don't decided what would be dataset name means, either
              # dataset=/prim/tier/proc or dataset=/prim/proc. The following block need to be fixed
              # once decision is made
              if str(attrs['name']):
-                n = "/"+self.prim+"/"+str(attrs['name'])+"/"+self.proc
+                n = "/"+self.primName+"/"+str(attrs['name'])+"/"+self.procName
                 result.append(DbsProcessedDataset(datasetPathName=n))
 #             else:
 #                 n = "/"+self.prim+"/"+'None'+"/"+self.proc
