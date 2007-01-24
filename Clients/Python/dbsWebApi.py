@@ -54,17 +54,6 @@ class DbsWebApi(DbsApi):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'block':
-#               dbsFileBlock = DbsFileBlock(
-#                                       Name=str(attrs['name']), 
-#                                       BlockSize=int(attrs['size']),
-#                                       NumberOfFiles=int(attrs['number_of_files']),
-#                                       OpenForWriting=str(attrs['open_for_writing']),
-#                                       CreationDate=str(attrs['creation_date']),
-#                                       CreatedBy=str(attrs['created_by']),
-#                                       LastModificationDate=str(attrs['last_modification_date']),
-#                                       LastModifiedBy=str(attrs['last_modified_by']),
-#                                       )
-#               result[dbsFileBlock['Name']]=dbsFileBlock
                # to be backward compatible I need the following structure
                # blocks[name]=[evts,str(attrs['status']), long(attrs['files']), long(attrs['bytes'])]
                # for time being evts=0, once schema will support them I'll update this field
@@ -107,7 +96,6 @@ class DbsWebApi(DbsApi):
 		    'parameterset_name' : patternPS }, 
 		    'GET')
  
-#    print "Client:API:getProcessedDatasets",data
     # Parse the resulting xml output.
     try:
       result = []
@@ -117,9 +105,17 @@ class DbsWebApi(DbsApi):
 	  if name == 'processed-dataset':
              self.proc = str(attrs['processed_datatset_name'])
              self.prim = str(attrs['primary_datatset_name'])
-          if name == 'data_tier' and str(attrs['name']):
-             n = "/"+self.prim+"/"+str(attrs['name'])+"/"+self.proc
-             result.append(DbsProcessedDataset(datasetPathName=n))
+          if name == 'data_tier':
+             # FIXME: so far in test some datasets doesn't have tiers, I don't know what to do
+             # about them since we don't decided what would be dataset name means, either
+             # dataset=/prim/tier/proc or dataset=/prim/proc. The following block need to be fixed
+             # once decision is made
+             if str(attrs['name']):
+                n = "/"+self.prim+"/"+str(attrs['name'])+"/"+self.proc
+                result.append(DbsProcessedDataset(datasetPathName=n))
+#             else:
+#                 n = "/"+self.prim+"/"+'None'+"/"+self.proc
+#                 result.append(DbsProcessedDataset(datasetPathName=n))
 
       xml.sax.parseString (data, Handler ())
       return result
@@ -166,4 +162,41 @@ class DbsWebApi(DbsApi):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+
+  # ------------------------------------------------------------
+  def listApplications(self, patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
+    """
+    Retrieve list of applications/algorithms matching a shell glob pattern.
+    User can base his/her search on patters for Application Version, 
+    Application Family, Application Executable Name or Parameter Set.
+
+    returns:  list of DbsApplication objects.  
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+
+
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listAlgorithms',
+		    'app_version' : patternVer, 
+		    'app_family_name' : patternFam, 
+		    'app_executable_name' : patternExe, 
+		    'ps_hash' : patternPS }, 
+		    'GET')
+    logging.info(data) 
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+	def startElement(self, name, attrs):
+
+	  if name == 'algorithm':
+             app = "/%s/%s/%s"%(str(attrs['app_version']),str(attrs['app_family_name']),str(attrs['app_executable_name']))
+             if not result.count(app):
+                result.append(app)
+
+      xml.sax.parseString (data, Handler ())
+      return result
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
 
