@@ -89,6 +89,7 @@ class DBSHelper(DBSLogger):
       aList = self.listApplications()
       for app in aList:
           app_link="http://localhost"
+          appPath=string.replace(app,"/","___")
           gmt=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime())
           page="""<?xml version="1.0" ?>
 <rss version="2.0">
@@ -109,8 +110,8 @@ class DBSHelper(DBSLogger):
               page+="<item>"
               datasetName = p['datasetPathName']
               empty,prim,tier,proc = string.split(datasetName,"/")
-              if not os.path.isdir('rss/%s/%s/%s'%(dbsInst,prim,proc)):
-                 os.makedirs(os.path.join(os.getcwd(),'rss/%s/%s/%s'%(dbsInst,prim,proc)))
+              if not os.path.isdir('rss/%s/%s/%s'%(dbsInst,appPath,prim)):
+                 os.makedirs(os.path.join(os.getcwd(),'rss/%s/%s/%s'%(dbsInst,appPath,prim)))
               fList = self.api.listFiles(datasetName)
               evt=0
               for item in fList:
@@ -125,7 +126,7 @@ class DBSHelper(DBSLogger):
 </item>
 """%(datasetName,evt,link,gmt,link)
           page+="</channel></rss>"
-          fName=os.path.join(os.getcwd(),'rss/%s/%s/%s/rss.xml'%(dbsInst,prim,proc))
+          fName=os.path.join(os.getcwd(),'rss/%s/%s/%s/rss.xml'%(dbsInst,appPath,prim))
           f=open(fName,'w')
           f.write(page)
           f.close()
