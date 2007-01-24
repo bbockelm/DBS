@@ -84,7 +84,63 @@ class DBSHelper(DBSLogger):
   def setQuiet(self):
       self.quiet=1
 
-#  def initJSDict(self,userMode=True):
+  def rssMaker(self,dbsInst):
+      self.setDBSDLS(dbsInst)
+      aList = self.listApplications()
+      for app in aList:
+          app_link="http://localhost"
+          gmt=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime())
+          page="""<?xml version="1.0" ?>
+<rss version="2.0">
+<channel>
+<title>%s</title>
+<description>%s</description>
+<link>%s</link>
+<language>en-us</language>
+<pubDate>%s</pubDate>
+<lastBuildDate>%s</lastBuildDate>
+<docs>http://en.wikipedia.org/wiki/RSS_(file_format)</docs>
+<generator>DBS discovery page</generator>
+<managingEditor>vk@mail.lns.cornell.edu</managingEditor>
+<webMaster>vk@mail.lns.cornell.edu</webMaster>
+"""%(app,'app description',app_link,gmt,gmt)
+          pList = self.listDatasetsFromApp(app)
+          for p in pList:
+              page+="<item>"
+              datasetName = p['datasetPathName']
+              empty,prim,tier,proc = string.split(datasetName,"/")
+              if not os.path.isdir('rss/%s/%s/%s'%(dbsInst,prim,proc)):
+                 os.makedirs(os.path.join(os.getcwd(),'rss/%s/%s/%s'%(dbsInst,prim,proc)))
+              fList = self.api.listFiles(datasetName)
+              evt=0
+              for item in fList:
+                  evt+=item['NumberOfEvents']
+              link="http://localhost%s"%datasetName
+              page+="""
+<title>%s</title>
+<description>Number of events: %s</description>
+<link>%s</link>
+<pubDate>%s</pubDate>
+<guid>%s</guid>
+</item>
+"""%(datasetName,evt,link,gmt,link)
+          page+="</channel></rss>"
+          fName=os.path.join(os.getcwd(),'rss/%s/%s/%s/rss.xml'%(dbsInst,prim,proc))
+          f=open(fName,'w')
+          f.write(page)
+          f.close()
+#      appDict = self.getDatasetsFromApplications()
+#      for app in appDict.keys():
+#          pList=appDict[app]
+#          nameSpace = {
+#                       'title':app,
+#                       'title_description': "app description",
+#                       'title_link' : 'http://localhost',
+#                       'pList':oList
+#                      }
+#          t = Template(CheetahDBSTemplate.templateRSS, searchList=[nameSpace])
+#          print str(t)
+
   def initJSDict(self,dbsInst="all"):
       """
          Form dictionary for JavaScript used in presentation layer.
@@ -352,7 +408,10 @@ class DBSHelper(DBSLogger):
             ver=family=exe="*"
          else:
             empty,ver,family,exe=string.split(appPath,"/")
-         return self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
+         res = self.api.listApplications(patternVer=ver,patternFam=family,patternExe=exe)
+#         print "\n\n\#### listApplications",res
+#         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
+         return res
 
   def listBlocks(self,datasetPath="*",app="*",events="yes"):
       """
@@ -388,11 +447,12 @@ class DBSHelper(DBSLogger):
              family = item.get('family')
              ver    = item.get('version')
              exe    = item.get('executable')
+             path=formDatasetPath(ver,family,exe)
           else:
-             family = item.get('ApplicationFamily')
-             ver    = item.get('ApplicationVersion')
-             exe    = item.get('ExecutableName')
-          path=formDatasetPath(ver,family,exe)
+#             family = item.get('ApplicationFamily')
+#             ver    = item.get('ApplicationVersion')
+#             exe    = item.get('ExecutableName')
+             path=item
           pList = self.listDatasetsFromApp(path)
 #          print "\n\n#### getDatasetsFromApplications",item,pList
           for p in pList:
@@ -417,11 +477,12 @@ class DBSHelper(DBSLogger):
              family = item.get('family')
              ver    = item.get('version')
              exe    = item.get('executable')
+             path=formDatasetPath(ver,family,exe)
           else:
-             family = item.get('ApplicationFamily')
-             ver    = item.get('ApplicationVersion')
-             exe    = item.get('ExecutableName')
-          path=formDatasetPath(ver,family,exe)
+#             family = item.get('ApplicationFamily')
+#             ver    = item.get('ApplicationVersion')
+#             exe    = item.get('ExecutableName')
+             path=item
           if self.html:
              navBar   ="MakeNavBarApp('%s','%s')"%(self.dbsInstance,path)
              dataInfo ="ajaxGetData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
