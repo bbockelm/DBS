@@ -403,8 +403,13 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetRuns','getRuns');
     getRunsUpdater = new GetDataUpdater('runs','update');
     ajaxEngine.registerAjaxObject('runs',getRunsUpdater);
-}
 
+    ajaxEngine.registerRequest('ajaxGetRss','getRss');
+    ajaxEngine.registerAjaxElement('rss_list');
+}
+function ajaxGetRss() {
+  ajaxEngine.sendRequest('ajaxGetRss');
+}
 function registerAjaxGetBlocksFromSiteCalls() {
   ajaxEngine.registerRequest('ajaxGetBlocksFromSite','getBlocksFromSiteHelper');
   ajaxEngine.registerAjaxElement('siteBlocksHandler');
