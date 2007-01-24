@@ -67,6 +67,26 @@ ValidationTable = {
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
           },
+"DbsAnalysisDatasetDefinition" : {
+         "Name" : { "Comment" : "A required variable, UNIQUE", "Validator" : isStringType },
+         #"PhysicsGroup" : { "Comment" : "A required variable", "Validator" : isStringType },
+         #"Status" : { "Comment" : "A required variable", "Validator" : isStringType },
+         "ProcessedDatasetPath" : { "Comment" : "Not a required var, user can provide if desired", "Validator" : isStringType },
+         "FileList" : { "Comment" : "List of LFNs, User may need to provide PATH list of parents", "Validator" : isListType },
+         "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "LumiList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         "RunList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
+         "AnalysisDSList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
+         "LumiRangeList" : { "Comment" : "Tuples if (Start, End) ranges User may need to provide run list", "Validator" : isListType },
+         "RunRangeList" : { "Comment" : "User may need to provide run list", "Validator" : isListType },
+         "UserCut" : { "Comment" : "The selection criteria in user's format, Not a required var, user can provide if desired", "Validator" : isStringType },
+         "Description" : { "Comment" : "User may not need to set this variable always", "Validator" : isStringType },
+         "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         },
 "DbsFileBlock" : {
          "Name" : { "Comment" : "Required and UNIQUE", "Validator" : isStringType },
          "StorageElementList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
@@ -146,10 +166,12 @@ ValidationTable = {
 }
 
 # To generate the doc uncomment these lines
-#for aTable in ValidationTable:
-#    print "\n      ", aTable, ":"
-#    for aKey in ValidationTable[aTable].keys():
-#        print "           ", aKey, ":" #, ValidationTable[aTable][aKey]["Comment"]
-#        print "                      ", ValidationTable[aTable][aKey]["Comment"]
-       
+"""
+for aTable in ValidationTable:
+    print "\n      ", aTable, ":"
+    for aKey in ValidationTable[aTable].keys():
+        print "           ", aKey, ":" #, ValidationTable[aTable][aKey]["Comment"]
+        print "                      ", ValidationTable[aTable][aKey]["Comment"]
+ 
+"""      
 

@@ -213,7 +213,7 @@ class DbsApi(DbsConfig):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
 	def startElement(self, name, attrs):
-	  if name == 'primary-dataset':
+	  if name == 'primary_dataset':
 	    result.append(DbsPrimaryDataset (
                                              Name=str(attrs['primary_name']),
                                              CreationDate=str(attrs['creation_date']),
@@ -282,7 +282,7 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
         
 	def startElement(self, name, attrs):
-	  if name == 'processed-dataset':
+	  if name == 'processed_dataset':
 	    self.procName = str(attrs['processed_datatset_name'])	  
 	    self.primName = str(attrs['primary_datatset_name'])	  
             self.currDataset = DbsProcessedDataset ( 
@@ -304,7 +304,7 @@ class DbsApi(DbsConfig):
                                                          ApplicationFamily=str(attrs['app_family_name'])
                                                         ) )
         def endElement(self, name):
-          if name == 'processed-dataset':
+          if name == 'processed_dataset':
              result.append(self.currDataset)
 
       xml.sax.parseString (data, Handler ())
@@ -448,7 +448,7 @@ class DbsApi(DbsConfig):
                                    LastModificationDate=str(attrs['last_modification_date']),
                                    LastModifiedBy=str(attrs['last_modified_by']),
                                   )
-          if name =='processed-dataset':
+          if name =='processed_dataset':
                self.currRun['Dataset'].append(DbsProcessedDataset (
                                             Name=str(attrs['processed_datatset_name']),
                                             PrimaryDataset=DbsPrimaryDataset(Name=str(attrs['primary_datatset_name']))
@@ -684,13 +684,13 @@ class DbsApi(DbsConfig):
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        )
 
-          if name == 'file-data_tier':
+          if name == 'file_data_tier':
             self.currFile['TierList'].append(str(attrs['name']))
 
-          if name == 'file-branch':
+          if name == 'file_branch':
             self.currFile['BranchList'].append(str(attrs['name']))
 
-          if name == 'file-lumi_section':
+          if name == 'file_lumi_section':
              self.currFile['LumiList'].append(DbsLumiSection(
                                                    LumiSectionNumber=long(attrs['lumi_section_number']),
                                                    StartEventNumber=long(attrs['start_event_number']),
@@ -703,7 +703,7 @@ class DbsApi(DbsConfig):
                                                    LastModificationDate=str(attrs['last_modification_date']),
                                                    LastModifiedBy=str(attrs['last_modified_by']), 
                                               ))
-          if name == 'file-algorithm':
+          if name == 'file_algorithm':
             self.currFile['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name']),
@@ -712,7 +712,7 @@ class DbsApi(DbsConfig):
                                                          LastModificationDate=str(attrs['last_modification_date']),
                                                          LastModifiedBy=str(attrs['last_modified_by']),
                                               ) ) 
-          if name == 'file-parent':
+          if name == 'file_parent':
              self.currFile['ParentList'].append(DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=long(attrs['size']),
@@ -771,7 +771,7 @@ class DbsApi(DbsConfig):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
-          if name == 'file-parent':
+          if name == 'file_parent':
              result.append( DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=long(attrs['size']),
@@ -830,7 +830,7 @@ class DbsApi(DbsConfig):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
-	   if name == 'file-algorithm':
+	   if name == 'file_algorithm':
               result.append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
                                                          ApplicationFamily=str(attrs['app_family_name']),
@@ -886,7 +886,7 @@ class DbsApi(DbsConfig):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
-          if name == 'file-data_tier':
+          if name == 'file_data_tier':
              result.append(DbsDataTier (
                                        Name=str(attrs['name']),
                                        CreationDate=str(attrs['creation_date']),
@@ -936,7 +936,7 @@ class DbsApi(DbsConfig):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
-          if name == 'file-branch':
+          if name == 'file_branch':
 	      result.append(DbsFileBranch (
                                        Name=str(attrs['name']),
                                        CreationDate=str(attrs['creation_date']),
@@ -985,7 +985,7 @@ class DbsApi(DbsConfig):
       result = []
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
-          if name == 'file-lumi_section':
+          if name == 'file_lumi_section':
              result.append(DbsLumiSection (
                                                    LumiSectionNumber=long(attrs['lumi_section_number']),
                                                    StartEventNumber=long(attrs['start_event_number']),
@@ -1126,7 +1126,7 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<primary-dataset annotation='"+dataset.get('Annotation', '')+"' "
+    xmlinput += "<primary_dataset annotation='"+dataset.get('Annotation', '')+"' "
     xmlinput += " primary_name='"+dataset.get('Name', '')+"' "
     xmlinput += " start_date='"+dataset.get('StartDate', '')+"' end_date='"+dataset.get('EndDate', '')+"'"
     xmlinput += " description='"+dataset.get('Description', '')+"'"
@@ -1134,7 +1134,7 @@ class DbsApi(DbsConfig):
     #xmlinput += " mc_channel_description='"+dataset.get('McChannelDesc', '')+"' mc_production='"+dataset.get('McProdDesc', '')+"'"
     #xmlinput += " mc_decay_chain='"+dataset.get('McDecayChain', '')+"' other_description='"+dataset.get('OtherDesc', '')
     xmlinput += " type='"+dataset.get('Type', '')+"'>"
-    xmlinput += " </primary-dataset>"
+    xmlinput += " </primary_dataset>"
     xmlinput += "</dbs>"
 
     logging.info(xmlinput)
@@ -1265,7 +1265,7 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>" 
     xmlinput += "<dbs>" 
-    xmlinput += "<processed-dataset "
+    xmlinput += "<processed_dataset "
     primary = dataset.get('PrimaryDataset')
     if primary == None: 
        raise DbsApiException(ErrorMsg="Serious Error Primary Dataset not specified")
@@ -1301,7 +1301,7 @@ class DbsApi(DbsConfig):
     for run in dataset.get('RunList',[]):
         xmlinput += "<run run_number='"+run+"'/>"
 
-    xmlinput += "</processed-dataset>"
+    xmlinput += "</processed_dataset>"
     xmlinput += "</dbs>"
 
     logging.info(xmlinput)
@@ -1780,7 +1780,7 @@ class DbsApi(DbsConfig):
   
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<lumi "
+    xmlinput += "<lumi_section "
     xmlinput += " lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
     xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
     xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'"
@@ -1836,7 +1836,7 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>" 
-    xmlinput += "<analysis-dataset name='"+ analysisdataset.get('Name', '') +"'"
+    xmlinput += "<analysis_dataset name='"+ analysisdataset.get('Name', '') +"'"
     xmlinput += " annotation='"+ analysisdataset.get('Annotation', '') +"'"
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
     xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
@@ -1854,6 +1854,76 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
     logging.info(data)
 
+
+    #-----------------------------------------------------------------------------
+  def createAnalysisDatasetDefinition(self, analysisDatasetDefinition ):
+
+    """
+    Creates a new analysis dataset definition from a combinition of following parameters, 
+    Beside the Name, all other parameters are Optional.
+
+    """
+ 
+    if analysisDatasetDefinition.get('Name') in ("", None):
+       raise DbsApiException(args="You must provide a name for AnalysisDatasetDefinition")
+       return
+    
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.info("Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<analysis_dataset_definition analysisds_def_name='"+ analysisDatasetDefinition.get('Name') +"'"
+    #xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
+    #xmlinput += " physics_group_name='"+ analysisdataset.get('PhysicsGroup', '') +"'"
+    xmlinput += " path='"+analysisDatasetDefinition.get('ProcessedDatasetPath', '')+"'"
+    xmlinput += " created_by='"+analysisDatasetDefinition.get('CreationDate', '')+"'"
+    xmlinput += " creation_date='"+analysisDatasetDefinition.get('CreationDate', '')+"'"
+    xmlinput += " user_cut='"+analysisDatasetDefinition.get('UserCut', '')+"'"
+    xmlinput += " description='"+analysisDatasetDefinition.get('Description', '')+"'"
+    xmlinput += "/>"
+
+    for aLumi in analysisDatasetDefinition.get('LumiList', []):
+       xmlinput += " <lumi_section lumi_section_number='"+aLumi+"'/>"
+
+    for lfn in analysisDatasetDefinition.get('FilesList', []):
+       xmlinput += " <file lfn='"+lfn+"'/>"
+
+    for analysisds in  analysisDatasetDefinition.get('AnalysisDSList', []):
+        xmlinput += "<analysis_dataset analysis_dataset_name='"+analysisds+"'/>"
+
+    for algorithm in analysisDatasetDefinition.get('AlgoList',[]):
+        xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
+        xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
+        xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
+        pset = algorithm.get('ParameterSetID')
+        if pset != None:
+           xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
+        xmlinput += "/>"
+
+    for tier in analysisDatasetDefinition.get('TierList',[]):
+        xmlinput += "<data_tier tier_name='"+tier+"'/>"
+
+    for run in analysisDatasetDefinition.get('RunList',[]):
+        xmlinput += "<run run_number='"+run+"'/>"
+
+    for alumiRange in analysisDatasetDefinition.get('LumiRangeList', []):
+        xmlinput += "<run run_range='"+alumiRange[0]+','+alumiRange[1]+"'/>"
+
+    for arunRange in analysisDatasetDefinition.get('RunRangeList', []):
+        xmlinput += "<lumi_section lumi_section_range='"+arunRange[0]+','+arunRange[1]+"'/>"
+
+    xmlinput += "</dbs>"
+
+    logging.info(xmlinput)
+    #print xmlinput
+
+    if self.verbose():
+       print "createAnalysisDatasetDefinition, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'createAnalysisDatasetDefination',
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.info(data)
 
 
   # ------------------------------------------------------------
