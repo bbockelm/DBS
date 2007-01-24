@@ -1030,7 +1030,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 
 #        page+=jsPage+"\n-->\n"
         # generate URL link
-        page+=self.getURL(dbsInst,site,app,primD,tier)
+        page+=self.getURL(dbsInst,site,app,primD,tier,proc)
         # end of response tag
         page+="</div>"
 
