@@ -2236,12 +2236,18 @@ class DBSDataDiscoveryServer(DBSLogger):
     getFloatBox.exposed=True
 
     def getRss(self):
+        dbsList=[]
+        if self.userMode:
+           dbsList.append(DBSGLOBAL)
+        else:
+           dbsList=self.dbsList
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="rss_list">"""
-        for dbs in self.dbsList:
+        for dbs in dbsList:
             rssList=findRssFiles('rss/%s'%dbs)
             nameSpace={
+                       'userMode'    : self.userMode,
                        'host'        : self.dbsdd,
                        'dbs'         : dbs,
                        'rssList'     : rssList
