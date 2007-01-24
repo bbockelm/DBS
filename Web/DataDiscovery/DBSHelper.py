@@ -26,9 +26,10 @@ try:
 except:
    pass
 import DBSOptions
-from   dbsApi  import DbsApi, DbsApiException, InvalidDataTier
-from   DBSInst import * # defines DBS instances and schema
-from   DBSUtil import * # general utils
+from   DDConfig   import *
+from   dbsApi     import DbsApi, DbsApiException, InvalidDataTier
+from   DBSInst    import * # defines DBS instances and schema
+from   DBSUtil    import * # general utils
 
 # import DLS modules
 import dlsClient
@@ -85,10 +86,12 @@ class DBSHelper(DBSLogger):
       self.quiet=1
 
   def rssMaker(self,dbsInst):
+      ddConfig  = DBSDDConfig()
+      url = ddConfig.url()
       self.setDBSDLS(dbsInst)
       aList = self.listApplications()
       for app in aList:
-          app_link="http://localhost"
+          app_link="""%s/getData?dbsInst=%s&site=All&app=%s&primD=*&tier=All&proc=*&ajax=0"""%(url,dbsInst,app)
           appPath=string.replace(app,"/","___")
           gmt=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime())
           page="""<?xml version="1.0" ?>
@@ -116,7 +119,7 @@ class DBSHelper(DBSLogger):
               evt=0
               for item in fList:
                   evt+=item['NumberOfEvents']
-              link="http://localhost%s"%datasetName
+              link="""%s/getData?dbsInst=%s&site=All&app=*&primD=*&tier=All&proc=%s&ajax=0"""%(url,dbsInst,datasetName)
               page+="""
 <title>%s</title>
 <description>Number of events: %s</description>
