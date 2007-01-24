@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.51 $"
- $Id: DBSSql.java,v 1.51 2007/01/23 22:24:24 sekhri Exp $"
+ $Revision: 1.53 $"
+ $Id: DBSSql.java,v 1.53 2007/01/23 22:55:17 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -997,7 +997,25 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
+	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String proc) throws SQLException {
+		String sql = "SELECT DISTINCT procds.ID as ID \n" +
+				"FROM ProcessedDataset procds \n" +
+				"JOIN PrimaryDataset primds \n" +
+					"ON primds.id = procds.PrimaryDataset \n" ;
+		if(DBSUtil.isNull(prim) || DBSUtil.isNull(proc)) {
+			return DBManagement.getStatement(conn, sql);
+		}
+		sql += "WHERE primds.Name = ? \n" +
+			"and procds.Name = ? \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1; 
+		ps.setString(columnIndx++, prim);
+		ps.setString(columnIndx++, proc);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	/*public static PreparedStatement getProcessedDSID(Connection conn, String prim, String dt ,String proc) throws SQLException {
 		String sql = "SELECT DISTINCT procds.ID as ID \n" +
 				"FROM ProcessedDataset procds \n" +
 				"JOIN PrimaryDataset primds \n" +
@@ -1019,7 +1037,7 @@ public class DBSSql {
 		ps.setString(columnIndx++, proc);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
-	}
+	}*/
 
 
 	//public static PreparedStatement getAlgorithmID(Connection conn, String ver, String fam, String exe, String psName) throws SQLException {

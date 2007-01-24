@@ -32,6 +32,9 @@ primary = 'TestPrimary' + mytime
 pri1 = DbsPrimaryDataset (Name = primary, Type="TEST")
 apiObj.run(pri1, excep = False)
 
+pri2 = DbsPrimaryDataset (Name = primary+"0002", Type="TEST")
+apiObj.run(pri2, excep = False)
+
 pri = DbsPrimaryDataset ()
 apiObj.run(pri, excep = True)
 
@@ -319,6 +322,26 @@ proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
                 RunList=[str(runNumber1)],
                 )
 apiObj.run(proc1, excep = False)
+
+proc3 = DbsProcessedDataset(PrimaryDataset=pri2,
+		Name="TestProcessed" + mytime,
+		PhysicsGroup="BPositive",
+		Status="VALID",
+		TierList=tierList,
+		AlgoList=[algo1, algo2],
+                RunList=[str(runNumber1)],
+                )
+apiObj.run(proc3, excep = False)
+
+proc3 = DbsProcessedDataset(PrimaryDataset=pri2,
+		Name="TestProcessed" + mytime,
+		PhysicsGroup="BPositive",
+		Status="VALID",
+		TierList=tierList,
+		AlgoList=[algo1, algo2],
+                RunList=[str(runNumber1)],
+                )
+apiObj.run(proc3, excep = False)
 
 
 proc2 = DbsProcessedDataset(PrimaryDataset=pri1,

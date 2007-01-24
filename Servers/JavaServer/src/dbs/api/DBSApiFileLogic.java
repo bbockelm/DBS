@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiFileLogic.java,v 1.13 2007/01/23 22:24:24 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiFileLogic.java,v 1.14 2007/01/24 15:43:49 afaq Exp $"
  *
  */
 
@@ -54,7 +54,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                 String tierID = null;
 		if(!isNull(path)) {
-			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);
+			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
                         tierID = getID(conn, "DataTier", "Name",  parseDSPath(path)[2], true);  
 		}
 		if(!isNull(blockName)) {
@@ -313,7 +313,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			
 			}
 		}*/
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
                 String blockID = null;
 
                 //If user INSIST to provide a BlockName

@@ -332,10 +332,10 @@ createAnalysisDatasetFromPD () {
         display "$out"
 }
 
-insertAnalysisDatasetDefination () {
+createAnalysisDatasetDefination () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset_defination analysisds_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
+                                <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
 				<run run_number='$run_number1, $run_number2' run_range='1,10'/>
 				<run run_number='$run_number2' run_range='12,18'/>
 				<lumi_section lumi_section_number='9997' lumi_section_range='1,10'/>
@@ -349,9 +349,9 @@ insertAnalysisDatasetDefination () {
 				<analysis_dataset analysis_dataset_name='AnalysisDS_$rand'/>
                         </dbs>"
 	echo "$xmlString"
-        message="Executing  insertAnalysisDatasetDefination API..."
+        message="Executing  createAnalysisDatasetDefination API..."
         echo $message >> $outFile ; echo $message
-        out=`$CMD api=insertAnalysisDatasetDefination "xmlinput=$xmlString"`
+        out=`$CMD api=createAnalysisDatasetDefination "xmlinput=$xmlString"`
         display "$out"
 }
 
@@ -364,24 +364,24 @@ insertTier
 insertRun
 insertLumiSection
 insertProcessedDataset
-#insertBlock
-#insertFiles
-#createAnalysisDatasetFromPD
-#insertAnalysisDatasetDefination
+insertBlock
+insertFiles
+createAnalysisDatasetFromPD
+createAnalysisDatasetDefination
 
-#listPrimaryDatasets
+listPrimaryDatasets
 listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
-##listDatasetContents
-#listDatasetParents
-#listFileParents
-#listFileAlgorithms
-#listFileTiers
-#listFileLumis
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
+#listDatasetContents
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 #													
 echo 
 echo "*************************************************************"

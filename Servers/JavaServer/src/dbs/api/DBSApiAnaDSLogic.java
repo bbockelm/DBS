@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiAnaDSLogic.java,v 1.8 2007/01/23 21:20:48 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.9 2007/01/24 15:43:49 afaq Exp $"
  *
  */
 
@@ -56,7 +56,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
 		String creationDate = getTime(dataset, "creation_date", false);
 
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(dataset, "path"));
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(dataset, "path"), true);
 
 		//FIXME Parentage of Analysis Datasets (not well understood yet)
 		//Vector parentVector = DBSUtil.getVector(dataset,"parent");

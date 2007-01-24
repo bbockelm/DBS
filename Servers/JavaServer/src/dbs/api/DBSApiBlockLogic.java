@@ -1,6 +1,6 @@
 /**
- $Revision: 1.11 $"
- $Id: DBSApiBlockLogic.java,v 1.11 2007/01/17 23:06:56 sekhri Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApiBlockLogic.java,v 1.12 2007/01/18 16:57:46 afaq Exp $"
  *
  */
 
@@ -51,7 +51,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps =  DBSSql.listBlocks(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path), getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
+			ps =  DBSSql.listBlocks(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true), getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String blockID = get(rs, "ID");
@@ -107,7 +107,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
 		String creationDate = getTime(block, "creation_date", false);
 
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path);//Getting ID before spliting the path will type chech the path also.
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);//Getting ID before spliting the path will type chech the path also.
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 		String[] data = path.split("/");
