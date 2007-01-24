@@ -24,6 +24,7 @@ ValidationTable = {
          "Type" : { "Comment" : "A required variable", "Validator" : isStringType },
          "Status" : { "Comment" : "A required variable", "Validator" : isStringType },
          "PhysicsGroup" : { "Comment" : "A required variable", "Validator" : isStringType },
+         "Definition" : { "Comment" : "Only used when a value is returned by listAnalysisDataset, details of AnalysisDS Definition", "Validator" : isDictType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

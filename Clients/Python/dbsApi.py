@@ -1800,40 +1800,41 @@ class DbsApi(DbsConfig):
 
 
   # ------------------------------------------------------------
-
-  def createAnalysisDatasetFromPD(self, dataset, analysisdataset ):
-
+  def createAnalysisDataset(self, analysisdataset, def_name):
     """
-    Creates a new analysis dataset dataset from a given processed dataset. This analysis dataset will have 
-    the same contents as that of the processed dataset. 
-    
-    param: 
-    	dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
-	          path in the format of /prim/dt/proc
-	analysisdataset : The analysis dataset object passed as an DbsAnalysisDataset obejct. The following 
-	                  fields are mandatory and should be present in the analysis dataset object : 
-			  name, type, status, path, physics_group_name and annotation
-			  
-    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
-           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
-	   
+    Creates analysis dataset based on the definition provided
+
+    params:
+
+       analysisdataset: Dict object of type DbsAnalysisDataset, describes this analysis dataset.
+                        Following fields are mandatory and should be present in the analysis dataset object : 
+                                    name, type, status, path, physics_group_name and annotation
+                                          
+       def_name:  string: name of Analysis Dataset Definition that define this AnalysisDataset
+                                Required and must already exists 
+                                (should have been created using createAnalysisDatasetDefinition)  
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError,
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException
+
     examples:
-	analysis = DbsAnalysisDataset(
-		Name='TestAnalysisDataset001',
-		Annotation='This is a test analysis dataset',
-		Type='KnowTheType',
-		Status='VALID',
-		PhysicsGroup='BPositive'
-	)
-	api.createAnalysisDatasetFromPD ("/test_primary_anzar_001/SIM/TestProcessedDS002/", analysis)
+        analysis = DbsAnalysisDataset(
+                Name='TestAnalysisDataset001',
+                Annotation='This is a test analysis dataset',
+                Type='KnowTheType',
+                Status='VALID',
+                PhysicsGroup='BPositive'
+        )
+        api.createAnalysisDatasetFromPD (analysis, "IcreatedThisDefEarlier")
 
-    """
+    """  
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.info("Api call invoked %s" % str(funcInfo[2]))
     
-    path = self._path(dataset)
-
+    if def_name in ("", None):
+       raise DbsApiException(args="You must provide AnalysisDatasetDefinition (second parameter of this API call)")
+       return
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>" 
     xmlinput += "<analysis_dataset name='"+ analysisdataset.get('Name', '') +"'"
@@ -1841,30 +1842,37 @@ class DbsApi(DbsConfig):
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
     xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
     xmlinput += " physics_group_name='"+ analysisdataset.get('PhysicsGroup', '') +"'" 
-    xmlinput += " path='"+path+"'/>"
+    # Path is taken from the definition 
+    #xmlinput += " path='"+path+"'/>"
     xmlinput += "</dbs>"
 
     logging.info(xmlinput)
     #print xmlinput
 
     if self.verbose(): 
-       print "createAnalysisDatasetFromPD, xmlinput",xmlinput
+       print "createAnalysisDataset, xmlinput",xmlinput
 
-    data = self._server._call ({ 'api' : 'createAnalysisDatasetFromPD',
+    data = self._server._call ({ 'api' : 'createAnalysisDataset',
                          'xmlinput' : xmlinput }, 'POST')
     logging.info(data)
-
 
     #-----------------------------------------------------------------------------
   def createAnalysisDatasetDefinition(self, analysisDatasetDefinition ):
 
     """
-    Creates a new analysis dataset definition from a combinition of following parameters, 
+    Creates a new analysis dataset definition from a combinition of following parameters:
+          Name, List-of-lumis, list-of-runs, processed-dataset, tier, run, run-range, 
+          lumi-range
     Beside the Name, all other parameters are Optional.
 
+    params: 
+         analysisDatasetDefinition: DbsAnalysisDatasetDefinition object
+    
     """
+
+    defName = analysisDatasetDefinition.get('Name')
  
-    if analysisDatasetDefinition.get('Name') in ("", None):
+    if defName in ("", None):
        raise DbsApiException(args="You must provide a name for AnalysisDatasetDefinition")
        return
     
@@ -1873,7 +1881,7 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<analysis_dataset_definition analysisds_def_name='"+ analysisDatasetDefinition.get('Name') +"'"
+    xmlinput += "<analysis_dataset_definition analysisds_def_name='"+ defName +"'"
     #xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
     #xmlinput += " physics_group_name='"+ analysisdataset.get('PhysicsGroup', '') +"'"
     xmlinput += " path='"+analysisDatasetDefinition.get('ProcessedDatasetPath', '')+"'"
@@ -1923,6 +1931,19 @@ class DbsApi(DbsConfig):
 
     data = self._server._call ({ 'api' : 'createAnalysisDatasetDefination',
                          'xmlinput' : xmlinput }, 'POST')
+
+
+    """ 
+    In case the definition already exists an EXCEPTION will be raiused by the Server
+    This is to avoid the case that User might use an already existing Definition silently 
+    as happens for other tables. By raising exception we are telling user that definition 
+    was already created by him/someone with blah blah criteria, so he/she can compare what 
+    alraedy defined.
+    """   
+
+    #Just return the name of definition if everything went fine.  
+    return defName
+
     logging.info(data)
 
 
