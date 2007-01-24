@@ -48,7 +48,7 @@ if __name__ == "__main__":
     for dbsInst in DBSInst.DBS_DLS_INST.keys():
         iface=""
         try:
-            dlsType,endpoint = DBSInst.DBS_DLS_INST[dbsInst]
+            url,dlsType,endpoint = DBSInst.DBS_DLS_INST[dbsInst]
             if dlsType=='DLS_TYPE_DLI':
                dlsType='DLS_TYPE_LFC'
             iface = dlsClient.getDlsApi(dlsType,endpoint)
