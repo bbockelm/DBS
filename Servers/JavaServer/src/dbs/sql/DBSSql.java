@@ -269,12 +269,14 @@ public class DBSSql {
 		return getInsertSQL(conn, "AnalysisDataset", table);
 	}
 
-	public static PreparedStatement insertAnalysisDSFileLumi(Connection conn, String adsID, String procDSID, 
+	//public static PreparedStatement listAnalysisDSFileLumi(Connection conn, String adsID, String procDSID, 
+	public static PreparedStatement listAnalysisDSFileLumi(Connection conn,  String procDSID, 
 			String tierIDList, String algoIDList, String fileList, 
 			Vector lumiRangeList, Vector runRangeList, 
 			String adsList, String userCut,	String op,
 			String cbUserID, String lmbUserID, String cDate) throws SQLException {
-		String sql = "SELECT DISTINCT " + adsID + " as ADSID, \n " +
+		//String sql = "SELECT DISTINCT " + adsID + " as ADSID, \n " +
+		String sql = "SELECT DISTINCT \n" + 
 			"f.ID as FILEID, \n" +
 			"ls.ID as LUMIID \n" +
 			"FROM LumiSection ls \n" +
@@ -297,7 +299,7 @@ public class DBSSql {
 			String tmpSql = "";
 			for(int i = 0 ; i != lumiRangeList.size(); ++i) {
 				if(!DBSUtil.isNull(tmpSql)) tmpSql += " OR ";
-				tmpSql += "ls.LumiSectionNumber BETWEEN ?\n\t";
+				tmpSql += "(ls.LumiSectionNumber BETWEEN ? AND ?)\n\t";
 			}
 			sql += op + "( " + tmpSql + " )\n\t";
 		}
@@ -305,19 +307,20 @@ public class DBSSql {
 			String tmpSql = "";
 			for(int i = 0 ; i != runRangeList.size(); ++i) {
 				if(!DBSUtil.isNull(tmpSql)) tmpSql += " OR ";
-				tmpSql += "r.RunNumber BETWEEN ?\n\t";
+				tmpSql += "(r.RunNumber BETWEEN ?)\n\t";
 			}
-			sql += op + "( " + tmpSql + " )\n\t";
+			//sql += op + "( " + tmpSql + " )\n\t";
 		}
 		
 		if(!DBSUtil.isNull(adsList)) {
-			sql += op + " ls.LumiSectionNumber IN ( \n" +
-					"SELECT adsfl.Lumi FROM AnalysisDatasetFileLumi adsfl \n" +
-					"JOIN AnalysisDataset ad \n\t" +
-						"ON ad.ID = adsfl.AnalysisDataset \n" +
+			sql += op + " ls.LumiSectionNumber IN ( \n\t" +
+					"SELECT adsfl.Lumi FROM AnalysisDSFileLumi adsfl \n\t" +
+					"JOIN AnalysisDataset ad \n\t\t" +
+						"ON ad.ID = adsfl.AnalysisDataset \n\t" +
 					"WHERE ad.Name IN (?) \n" +
 				")\n";
 		}
+		sql += "ORDER BY FILEID,LUMIID";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -326,10 +329,16 @@ public class DBSSql {
 		if(!DBSUtil.isNull(algoIDList)) ps.setString(columnIndx++, algoIDList);
 		if(!DBSUtil.isNull(fileList)) ps.setString(columnIndx++, fileList);
 		for(int i = 0 ; i != lumiRangeList.size(); ++i) {
-			ps.setString(columnIndx++, (String)lumiRangeList.get(i));
+			String tmp[] = (String[])lumiRangeList.get(i);
+			//ps.setString(columnIndx++, (String)lumiRangeList.get(i));
+			ps.setString(columnIndx++, tmp[0]);
+			ps.setString(columnIndx++, tmp[1]);
 		}
 		for(int i = 0 ; i != runRangeList.size(); ++i) {
-			ps.setString(columnIndx++, (String)runRangeList.get(i));
+			String tmp[] = (String[])runRangeList.get(i);
+			ps.setString(columnIndx++, tmp[0]);
+			ps.setString(columnIndx++, tmp[1]);
+			//ps.setString(columnIndx++, (String)runRangeList.get(i));
 		}
 		if(!DBSUtil.isNull(adsList)) ps.setString(columnIndx++, adsList);
 		System.out.println("The SQL query is " + ps);

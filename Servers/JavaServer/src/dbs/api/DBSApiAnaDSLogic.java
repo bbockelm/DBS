@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiAnaDSLogic.java,v 1.10 2007/01/24 17:08:57 sekhri Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.12 2007/01/25 21:55:18 sekhri Exp $"
  *
  */
 
@@ -181,8 +181,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				lumiNumberList += lumiNumber;
 			}
 			if(!isNull(lumiRange)) {
-				if(!isNull(lumiRangeList)) lumiRangeList += ",";
-			       	lumiRangeList += pasreRange(lumiRange);
+				if(!isNull(lumiRangeList)) lumiRangeList += ";";
+			       	//lumiRangeList += parseRange(lumiRange);
+			       	lumiRangeList += lumiRange;
 			}
 	 	}
 		for (int j = 0; j < runVector.size(); ++j) {
@@ -194,8 +195,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			       	runNumberList += runNumber;
 			}
 			if(!isNull(runRange)) {
-				if(!isNull(runRangeList)) runRangeList += ",";
-				runRangeList += pasreRange(runRange);
+				if(!isNull(runRangeList)) runRangeList += ";";
+				//runRangeList += parseRange(runRange);
+				runRangeList += runRange;
 			}
 	 	}
 		for (int j = 0; j < tierVector.size(); ++j) {
@@ -300,9 +302,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				anaDSDefID = get(rs, "ID");
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(rs, "PATH"), true);
 				lumiNumberList = get(rs, "LUMI_SECTIONS");
-				lumiRangeList = pasreRangeList(get(rs, "LUMI_SECTION_RANGES"));
+				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
 				runNumberList = get(rs, "RUNS");
-				runRangeList = pasreRangeList(get(rs, "RUNS_RANGES"));
+				runRangeList = parseRangeList(get(rs, "RUNS_RANGES"));
 				tierList = get(rs, "TIERS");
 				fileList = get(rs, "LFNS");
 				adsList = get(rs, "ANALYSIS_DATASET_NAMES");
@@ -380,9 +382,10 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		//Insert the contents of the analysis dataset in the AnalysisDSFileLumi map table
 		ps = null;
+		rs = null;
 		try {
-			ps = DBSSql.insertAnalysisDSFileLumi(conn, 
-					adsID,
+			ps = DBSSql.listAnalysisDSFileLumi(conn, 
+					//adsID,
 					procDSID,
 					tierIDList,
 					algoIDList,
@@ -391,10 +394,16 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					runRangeList,
 					adsList,
 					userCut,
-					"AND",
+					"OR",
 					cbUserID, lmbUserID, creationDate);
-			//ps.execute();
+			rs =  ps.executeQuery();
+			
+			while(rs.next()) {
+				System.out.println("ADSID, Lumi ID , File ID = " + adsID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+			} 
+
 		} finally { 
+			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
 
@@ -402,7 +411,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	
 	 }
  
-	 private String pasreRange(String range) throws Exception {
+	 private String parseRange(String range) throws Exception {
 		String[] data = range.split(",");
 		if(data.length != 2) {
 			throw new DBSException("Invalid format", "1037", " Expected a range in format number,number given " + range);
@@ -410,14 +419,18 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		return data[0] + " AND " + data[1];
 	}
 
-	private Vector pasreRangeList(String range) throws Exception {
+	private Vector parseRangeList(String range) throws Exception {
 		Vector v = new Vector();
 		if(isNull(range)) return v;
-		String[] data = range.split(",");
+		String[] data = range.split(";");
 		if(data.length == 0) {
 			return v;
 		}
-		for (int i = 0; i != data.length ; ++i) v.add(data[i]);
+		for (int i = 0; i != data.length ; ++i) {
+			String[] finalData = data[i].split(",");
+			if(finalData.length != 2) throw new DBSException("Invalid format", "1037", " Expected a range in format number,number given " + data[i]);
+			v.add(finalData);
+		}
 		return v;
 	}
 

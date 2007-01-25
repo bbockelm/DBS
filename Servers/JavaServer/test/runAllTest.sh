@@ -336,16 +336,17 @@ createAnalysisDatasetDefination () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
                                 <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
-				<run run_number='$run_number1, $run_number2' run_range='1,10'/>
-				<run run_number='$run_number2' run_range='12,18'/>
-				<lumi_section lumi_section_number='9997' lumi_section_range='1,10'/>
-				<lumi_section lumi_section_number='9996' lumi_section_range='9995,9997'/>
+				<run run_number='$run_number1, $run_number2' run_range='1,10000'/>
+				<run run_number='$run_number2' run_range='20000,25000'/>
+				<lumi_section lumi_section_number='9997' lumi_section_range='1,5000'/>
+				<lumi_section lumi_section_number='9996' lumi_section_range='9000,10000'/>
 				<file lfn='$lfn1'/>
 				<file lfn='$lfn2'/>
 				<data_tier tier_name='$tier_name1'/>
 				<data_tier tier_name='$tier_name2'/>
 				$algo1
-				$algo2
+				$algo3
+				$algo4
 				<analysis_dataset analysis_dataset_name='AnalysisDS_$rand'/>
                         </dbs>"
 	echo "$xmlString"
@@ -358,7 +359,7 @@ createAnalysisDatasetDefination () {
 createAnalysisDataset () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' analysisds_def_name='AnalysisDS_Defination_$rand' type='VALID' status='TEST' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' analysisds_def_name='AnalysisDS_Defination_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDataset API..."
         echo $message >> $outFile ; echo $message
