@@ -128,22 +128,12 @@ class DBSHelper(DBSLogger):
 <guid>%s</guid>
 </item>
 """%(datasetName,evt,link,gmt,link)
-          page+="</channel></rss>"
-          fName=os.path.join(os.getcwd(),'rss/%s/%s/%s/rss.xml'%(dbsInst,appPath,prim))
-          f=open(fName,'w')
-          f.write(page)
-          f.close()
-#      appDict = self.getDatasetsFromApplications()
-#      for app in appDict.keys():
-#          pList=appDict[app]
-#          nameSpace = {
-#                       'title':app,
-#                       'title_description': "app description",
-#                       'title_link' : 'http://localhost',
-#                       'pList':oList
-#                      }
-#          t = Template(CheetahDBSTemplate.templateRSS, searchList=[nameSpace])
-#          print str(t)
+          if  len(pList):
+              page+="</channel></rss>"
+              fName=os.path.join(os.getcwd(),'rss/%s/%s/%s/rss.xml'%(dbsInst,appPath,prim))
+              f=open(fName,'w')
+              f.write(page)
+              f.close()
 
   def initJSDict(self,dbsInst="all"):
       """
