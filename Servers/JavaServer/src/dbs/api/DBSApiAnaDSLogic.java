@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiAnaDSLogic.java,v 1.9 2007/01/24 15:43:49 afaq Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.10 2007/01/24 17:08:57 sekhri Exp $"
  *
  */
 
@@ -32,6 +32,45 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		this.data = data;
 		personApi = new DBSApiPersonLogic(data);
 	}
+
+	/**
+	 * Lists all the definitions .  
+	 * <code> <""/></code>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param patternName a parameter passed in from the client that can contain wild card characters for analysis dataset defination name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
+	 */
+	 public void listAnalysisDatasetDefinition(Connection conn, Writer out, String patternName) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listAnalysisDatasetDefinition(conn, getPattern(patternName, "pattern_analysis_dataset_definition_name"));
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
+					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEFINITION_NAME") +
+					"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
+					"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
+					"' runs='" + get(rs, "RUNS") +
+					"' runs_ranges='" + get(rs, "RUNS_RANGES") +
+					"' algorithms='" + get(rs, "ALGORITHMS") +
+					"' lfns='" + get(rs, "LFNS") +
+					"' path='" + get(rs, "PATH") +
+					"' tiers='" + get(rs, "TIERS") +
+					"' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
+					"' user_cut='" + get(rs, "USER_CUT") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'/>\n"));
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	 }
 
 
 
@@ -109,8 +148,10 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                           if (rsLumi != null) rsLumi.close();
 		}
          }
-	
-         public void createAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
+	 
+
+		
+        public void createAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_def_name", true);
 		String path = get(table, "path", false);
 		String userCut = get(table, "user_cut");
@@ -141,7 +182,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			}
 			if(!isNull(lumiRange)) {
 				if(!isNull(lumiRangeList)) lumiRangeList += ",";
-			       	lumiRangeList += "(" + lumiRange + ")";
+			       	lumiRangeList += pasreRange(lumiRange);
 			}
 	 	}
 		for (int j = 0; j < runVector.size(); ++j) {
@@ -154,7 +195,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			}
 			if(!isNull(runRange)) {
 				if(!isNull(runRangeList)) runRangeList += ",";
-				runRangeList += "(" + runRange + ")";
+				runRangeList += pasreRange(runRange);
 			}
 	 	}
 		for (int j = 0; j < tierVector.size(); ++j) {
@@ -172,11 +213,10 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		for (int j = 0; j < algoVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
 			if(!isNull(algoList)) algoList += ",";
-			algoList += "(" + get(hashTable, "app_version", true) + 
-				"," + get(hashTable, "app_family_name", true) + 
-				"," + get(hashTable, "app_executable_name", true) + 
-				"," + get(hashTable, "ps_hash", true) + 
-				")";
+			algoList +=  get(hashTable, "app_version", true) + 
+				";" + get(hashTable, "app_family_name", true) + 
+				";" + get(hashTable, "app_executable_name", true) + 
+				";" + get(hashTable, "ps_hash", true);
 	 	}
 		createAnalysisDatasetDefination(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
 				runNumberList, runRangeList, tierList, fileList, adsList, algoList, userCut, desc,
@@ -220,8 +260,160 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			}
 
 		} else {
-			writeWarning(out, "Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
+			//Instead of warnning it is throwing an exception because the clients will know that there already exists 
+			//a definition and he/she needs to create a new one. Warnning can be ignored but exception cannot.
+			//writeWarning(out, "Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
+			throw new DBSException("Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
 		}
 
 	 }
+	 
+         //public void createAnalysisDataset(Connection conn, Writer out, String analysisDatasetDefinitionName, Hashtable dbsUser) throws Exception {
+         public void createAnalysisDataset(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+
+		//Get the Definition of the analysis dataset first and get the path and its id to be used for inserting analysis dataset
+		String anaDSDefID = ""; 
+		String procDSID = ""; 
+		String lumiNumberList = ""; 
+		String runNumberList = ""; 
+		String tierList = ""; 
+		String tierIDList = ""; 
+		String fileList = ""; 
+		String adsList = ""; 
+		String algoList = ""; 
+		String algoIDList = ""; 
+		String userCut = "";
+		Vector lumiRangeList = new Vector(); 
+		Vector runRangeList = new Vector(); 
+
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listAnalysisDatasetDefinition(conn, get(table, "analysisds_def_name", true));
+			rs =  ps.executeQuery();
+			if(rs.next()) {
+				anaDSDefID = get(rs, "ID");
+				procDSID = getProcessedDSID(conn, get(rs, "PATH"), true);
+				lumiNumberList = get(rs, "LUMI_SECTIONS");
+				lumiRangeList = pasreRangeList(get(rs, "LUMI_SECTION_RANGES"));
+				runNumberList = get(rs, "RUNS");
+				runRangeList = pasreRangeList(get(rs, "RUNS_RANGES"));
+				tierList = get(rs, "TIERS");
+				fileList = get(rs, "LFNS");
+				adsList = get(rs, "ANALYSIS_DATASET_NAMES");
+				algoList = get(rs, "ALGORITHMS");
+				userCut = get(rs, "USER_CUT");
+			
+			} else {
+				throw new DBSException("Unavailable data", "1008", "No such analysis dataset definition " + analysisDatasetDefinitionName );
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+
+
+		//Get all the tier IDs
+		if(!isNull(tierList)) {
+			String[] data = tierList.split(",");
+			for (int i = 0; i != data.length ; ++i) {
+				if(!isNull(tierIDList)) tierIDList += ",";
+				tierIDList += getID(conn, "DataTier", "Name", data[i], true);
+			}
+		}
+
+		//Get all the algo IDs
+		if(!isNull(algoList)) {
+			String[] algo = algoList.split(",");
+			for (int i = 0; i != algo.length ; ++i) {
+				String data[] = algo[i].split(";");
+				if (data.length != 4) throw new DBSException("Invalid format", "1066", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
+				if(!isNull(algoIDList)) algoIDList += ",";
+				algoIDList += getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
+			}
+		}
+
+		
+
+		//Insert a row in AnalysisDataset Table
+		String analysisDatasetName = get(table, "name", true); 
+		String status = get(file, "status", false);
+		String type = get(file, "type", false);
+
+		//FIXME Dafults should no be set by the server
+		if (isNull(status)) status = "VALID";
+		if (isNull(type)) type = "TEST";
+
+		String adsID = "";
+		if( isNull((adsID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false)))) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.insertAnalysisDataset(conn, 
+						analysisDatasetName,
+						get(table, "annotation", false),
+						procDSID,
+						anaDSDefID,
+						getID(conn, "AnalysisDSType", "Type", type, true);
+						getID(conn, "AnalysisDSStatus", "Status", status, true);
+						"",//FIXME Parent is debatable
+						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
+							 get(table, "physics_group_name", true),
+ 							 true),
+						cbUserID, lmbUserID, creationDate);
+				ps.execute();
+			} finally { 
+				if (ps != null) ps.close();
+			}
+		} else {
+			//Write waring message that analysis dataset exists already
+			writeWarning(out, "Already Exists", "1020", "AnalysisDataset " + analysisDatasetName + " Already Exists");
+		}
+		
+		//Fetch the analysis dataset id if not null, that just got inserted
+		if(isNull(adsID)) adsID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false);
+		
+
+		//Insert the contents of the analysis dataset in the AnalysisDSFileLumi map table
+		ps = null;
+		try {
+			ps = DBSSql.insertAnalysisDSFileLumi(conn, 
+					analysisDatasetName,
+					get(table, "annotation", false),
+					procDSID,
+					anaDSDefID,
+					getID(conn, "AnalysisDSType", "Type", type, true);
+					getID(conn, "AnalysisDSStatus", "Status", status, true);
+					"",//FIXME Parent is debatable
+					getID(conn, "PhysicsGroup", "PhysicsGroupName", 
+						 get(table, "physics_group_name", true),
+ 						 true),
+					cbUserID, lmbUserID, creationDate);
+			ps.execute();
+		} finally { 
+			if (ps != null) ps.close();
+		}
+
+		
+	
+	 }
+ 
+	 private String pasreRange(String range) throws Exception {
+		String[] data = range.split(",");
+		if(data.length != 2) {
+			throw new DBSException("Invalid format", "1037", " Expected a range in format number,number given " + range);
+		}
+		return data[0] + " AND " + data[1];
+	}
+
+	private Vector pasreRangeList(String range) throws Exception {
+		Vector v = new Vector();
+		if(isNull(range)) return v;
+		String[] data = range.split(",");
+		if(data.length == 0) {
+			return v
+		}
+		for (int i = 0; i != data.length ; ++i) v.add(data[i]);
+		return v;
+	}
+
 }

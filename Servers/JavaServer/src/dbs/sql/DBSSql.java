@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.53 $"
- $Id: DBSSql.java,v 1.53 2007/01/23 22:55:17 sekhri Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSSql.java,v 1.54 2007/01/24 17:08:58 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -247,6 +247,78 @@ public class DBSSql {
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "AnalysisDSDef", table);
+	}
+
+	public static PreparedStatement insertAnalysisDataset(Connection conn, String analysisDatasetName, 
+			String annotation, String procDSID, String anaDSDefID,
+			String type, String status, String parentID, String phyGroupID,
+			String cbUserID, String lmbUserID, String cDate) throws SQLException {
+		Hashtable table = new Hashtable();
+		table.put("Name", analysisDatasetName);
+		table.put("Annotation", annotation);
+		table.put("ProcessedDS", procDSID);
+		table.put("Definition", anaDSDefID);
+		table.put("Type", type);
+		table.put("Status", status);
+		table.put("Parent", parentID);
+		table.put("PhysicsGroup", phyGroupID);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
+		return getInsertSQL(conn, "AnalysisDataset", table);
+	}
+
+	public static PreparedStatement insertAnalysisDSFileLumi(Connection conn, String adsID, String adsDefName, 
+			String path, String lumiNumberList, String lumiRangeList, String runNumberList, String runRangeList, 
+			String tierList, String fileList, String adsList, String algoList, String userCut, String desc,
+			String cbUserID, String lmbUserID, String cDate) throws SQLException {
+		String sql = "SELECT DISTINCT " + adsID + " as ADSID, \n " +
+			"f.ID as FILEID, \n" +
+			"ls.ID as LUMIID \n" +
+			"FROM LumiSection ls \n" +
+			"JOIN FileLumi fl \n" +
+				"ON fl.Lumi = ls.ID \n" +
+			"JOIN Files f \n" +
+				"ON f.ID = fl.Fileid \n" +
+			"LEFT OUTER JOIN FileTier fdt \n" +
+				"ON fdt.Fileid = f.ID \n" +
+			"LEFT OUTER JOIN FileAlgo fa \n" +
+				"on fa.Fileid = f.ID \n" +
+			"LEFT OUTER JOIN Runs r \n" +
+				"ON r.ID = ls.RunNumber \n" +
+			"WHERE \n" +
+			" \n" +
+			" \n" +
+			" \n" +
+			" \n" +
+			" \n" +
+			" \n" +
+			" \n" +
+			"b.BlockSize as BLOCKSIZE, \n" +
+			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+			"b.OpenForWriting as OPEN_FOR_WRITING \n" +
+			"FROM Block b \n";
+		if(procDSID != null && blockName != null) {
+			sql += "WHERE b.Dataset = ? AND  b.Name = ? \n";
+		} else if(procDSID != null) {
+			sql += "WHERE b.Dataset = ? \n";
+		} else if(blockName != null) {
+			sql += "WHERE b.Name = ? \n";
+		}
+
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		if(procDSID != null && blockName != null) {
+                	ps.setString(columnIndx++, procDSID);
+                	ps.setString(columnIndx++, blockName);
+		} else if(procDSID != null) {
+                	ps.setString(columnIndx++, procDSID);
+		} else if(blockName != null) {
+                	ps.setString(columnIndx++, blockName);
+		}
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
 	public static PreparedStatement updateBlock(Connection conn, String blockID) throws SQLException {
@@ -970,6 +1042,38 @@ public class DBSSql {
 		if(fileID != null) {
 			ps.setString(1, fileID);
 		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
+		String sql = "SELECT DISTINCT add.ID as ID, \n " +
+			"add.Name as ANALYSIS_DATASET_DEFINITION_NAME, \n" +
+			"add.LumiSections as LUMI_SECTIONS, \n" +
+			"add.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
+			"add.Runs as RUNS, \n" +
+			"add.RunsRanges as RUNS_RANGES, \n" +
+			"add.Algorithms as ALGORITHMS, \n" +
+			"add.LFNs as LFNS, \n" +
+			"add.Path as PATH, \n" +
+			"add.Tiers as TIERS, \n" +
+			"add.AnalysisDatasets as ANALYSIS_DATASET_NAMES, \n" +
+			"add.UserCut as USER_CUT, \n" +
+			"add.Description as DESCRIPTION, \n" +
+			"add.CreationDate as CREATION_DATE, \n" +
+			"add.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM AnalysisDSDef add \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = add.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = add.LastModifiedBy \n" +
+			"WHERE add.Name like  = ? \n" +
+				"ORDER BY NAME DESC";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, patternName);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
