@@ -19,7 +19,8 @@ from dbsUnitTestApi import DbsUnitTestApi
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
-mytime = str(time.time())
+#mytime = str(time.time())
+mytime = time.strftime("_%Y%m%d_%Hh%Mm%Ss",time.localtime())
 
 f = open("result.txt", "a+")
 
@@ -27,12 +28,13 @@ apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertPrimaryDataset API tests***************************")
 
-primary = 'TestPrimary' + mytime
+primary = 'TestPrimary_001' + mytime
 
 pri1 = DbsPrimaryDataset (Name = primary, Type="TEST")
 apiObj.run(pri1, excep = False)
 
-pri2 = DbsPrimaryDataset (Name = primary+"0002", Type="TEST")
+primary = 'TestPrimary_002' + mytime
+pri2 = DbsPrimaryDataset (Name = primary, Type="TEST")
 apiObj.run(pri2, excep = False)
 
 pri = DbsPrimaryDataset ()
