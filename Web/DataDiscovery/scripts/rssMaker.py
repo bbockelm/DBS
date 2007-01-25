@@ -40,8 +40,8 @@ if __name__ == "__main__":
            if dbsInst!=opts.dbsInst:
               continue
         try:
-            if not os.path.isdir('rss/%s'%dbsInst):
-                   os.removedirs(os.path.join(os.getcwd(),'rss/%s'%dbsInst))
+            if os.path.isdir('rss/%s'%dbsInst):
+               os.removedirs(os.path.join(os.getcwd(),'rss/%s'%dbsInst))
             helper.rssMaker(dbsInst)
         except:
             DBSUtil.printExcept()
