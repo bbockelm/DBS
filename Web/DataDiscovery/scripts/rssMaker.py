@@ -40,13 +40,9 @@ if __name__ == "__main__":
            if dbsInst!=opts.dbsInst:
               continue
         try:
-            fileName = helper.rssMaker(dbsInst)
-#            fileName = helper.rssMaker(dbsInst)
-#            if os.path.isfile(fileName) and os.stat(fileName)[stat.ST_SIZE]>0:
-#               os.rename(fileName,string.replace(fileName,".tmp",""))
-#            else:
-#               DBSUtil.printExcept()
-#               raise "File %s is corrupted"%fileName
+            if not os.path.isdir('rss/%s'%dbsInst):
+                   os.removedirs(os.path.join(os.getcwd(),'rss/%s'%dbsInst))
+            helper.rssMaker(dbsInst)
         except:
             DBSUtil.printExcept()
             raise "Fail to generate rss for dbs instance",dbsInst
