@@ -1825,19 +1825,20 @@ class DbsApi(DbsConfig):
                 Status='VALID',
                 PhysicsGroup='BPositive'
         )
-        api.createAnalysisDatasetFromPD (analysis, "IcreatedThisDefEarlier")
+        api.createAnalysisDataset (analysis, "IcreatedThisDefEarlier")
 
     """  
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.info("Api call invoked %s" % str(funcInfo[2]))
     
-    if def_name in ("", None):
+    if defName in ("", None):
        raise DbsApiException(args="You must provide AnalysisDatasetDefinition (second parameter of this API call)")
        return
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>" 
     xmlinput += "<analysis_dataset name='"+ analysisdataset.get('Name', '') +"'"
+    xmlinput += " analysisds_def_name='"+ defName +"'"
     xmlinput += " annotation='"+ analysisdataset.get('Annotation', '') +"'"
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
     xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
