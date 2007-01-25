@@ -320,7 +320,7 @@ insertFiles () {
 
 }
 
-#insert primary dataset
+#insert analysis dataset
 createAnalysisDatasetFromPD () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
@@ -355,6 +355,16 @@ createAnalysisDatasetDefination () {
         display "$out"
 }
 
+createAnalysisDataset () {
+        xmlString="<?xml version='1.0' standalone='yes'?>
+                        <dbs>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' analysisds_def_name='AnalysisDS_Defination_$rand' type='VALID' status='TEST' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                        </dbs>"
+        message="Executing  createAnalysisDataset API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=createAnalysisDataset "xmlinput=$xmlString"`
+        display "$out"
+}
 
 
 
@@ -366,22 +376,23 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-createAnalysisDatasetFromPD
+#createAnalysisDatasetFromPD
 createAnalysisDatasetDefination
+createAnalysisDataset
 
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
+#listPrimaryDatasets
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
 #listDatasetContents
-listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
+#listDatasetParents
+#listFileParents
+#listFileAlgorithms
+#listFileTiers
+#listFileLumis
 #													
 echo 
 echo "*************************************************************"

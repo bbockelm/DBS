@@ -1,6 +1,6 @@
 /**
- $Revision: 1.61 $"
- $Id: DBSApi.java,v 1.61 2007/01/23 21:20:48 sekhri Exp $"
+ $Revision: 1.62 $"
+ $Id: DBSApi.java,v 1.62 2007/01/24 15:43:49 afaq Exp $"
  *
 */
 
@@ -358,6 +358,11 @@ public class DBSApi {
 			} else if (apiStr.equals("createAnalysisDatasetDefination")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefination(conn, out,  DBSApiParser.parseADD(getXml(table)), dbsUser);
 
+			} else if (apiStr.equals("createAnalysisDataset")) {
+				(new DBSApiAnaDSLogic(this.data)).createAnalysisDataset(conn, out,
+					DBSApiParser.parse(getXml(table), "analysis_dataset"),
+					dbsUser);
+	
                         } else if (apiStr.equals("insertBlock")) {
 				(new DBSApiBlockLogic(this.data)).insertBlock(conn, out,
 						DBSApiParser.parseBlock(getXml(table)) , 

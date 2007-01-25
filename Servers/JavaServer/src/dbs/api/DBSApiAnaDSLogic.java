@@ -272,6 +272,11 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
          public void createAnalysisDataset(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 
 		//Get the Definition of the analysis dataset first and get the path and its id to be used for inserting analysis dataset
+		String analysisDatasetDefinitionName = get(table, "analysisds_def_name", true);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = personApi.getUserID(conn, get(table, "created_by", false), dbsUser );
+		String creationDate = getTime(table, "creation_date", false);
+
 		String anaDSDefID = ""; 
 		String procDSID = ""; 
 		String lumiNumberList = ""; 
@@ -289,11 +294,11 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listAnalysisDatasetDefinition(conn, get(table, "analysisds_def_name", true));
+			ps = DBSSql.listAnalysisDatasetDefinition(conn, analysisDatasetDefinitionName);
 			rs =  ps.executeQuery();
 			if(rs.next()) {
 				anaDSDefID = get(rs, "ID");
-				procDSID = getProcessedDSID(conn, get(rs, "PATH"), true);
+				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(rs, "PATH"), true);
 				lumiNumberList = get(rs, "LUMI_SECTIONS");
 				lumiRangeList = pasreRangeList(get(rs, "LUMI_SECTION_RANGES"));
 				runNumberList = get(rs, "RUNS");
@@ -329,7 +334,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				String data[] = algo[i].split(";");
 				if (data.length != 4) throw new DBSException("Invalid format", "1066", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
 				if(!isNull(algoIDList)) algoIDList += ",";
-				algoIDList += getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
+				algoIDList += (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
 			}
 		}
 
@@ -337,8 +342,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		//Insert a row in AnalysisDataset Table
 		String analysisDatasetName = get(table, "name", true); 
-		String status = get(file, "status", false);
-		String type = get(file, "type", false);
+		String status = get(table, "status", false);
+		String type = get(table, "type", false);
 
 		//FIXME Dafults should no be set by the server
 		if (isNull(status)) status = "VALID";
@@ -346,15 +351,15 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		String adsID = "";
 		if( isNull((adsID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false)))) {
-			PreparedStatement ps = null;
+			ps = null;
 			try {
 				ps = DBSSql.insertAnalysisDataset(conn, 
 						analysisDatasetName,
 						get(table, "annotation", false),
 						procDSID,
 						anaDSDefID,
-						getID(conn, "AnalysisDSType", "Type", type, true);
-						getID(conn, "AnalysisDSStatus", "Status", status, true);
+						getID(conn, "AnalysisDSType", "Type", type, true),
+						getID(conn, "AnalysisDSStatus", "Status", status, true),
 						"",//FIXME Parent is debatable
 						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
 							 get(table, "physics_group_name", true),
@@ -377,18 +382,18 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		ps = null;
 		try {
 			ps = DBSSql.insertAnalysisDSFileLumi(conn, 
-					analysisDatasetName,
-					get(table, "annotation", false),
+					adsID,
 					procDSID,
-					anaDSDefID,
-					getID(conn, "AnalysisDSType", "Type", type, true);
-					getID(conn, "AnalysisDSStatus", "Status", status, true);
-					"",//FIXME Parent is debatable
-					getID(conn, "PhysicsGroup", "PhysicsGroupName", 
-						 get(table, "physics_group_name", true),
- 						 true),
+					tierIDList,
+					algoIDList,
+					fileList,
+					lumiRangeList,
+					runRangeList,
+					adsList,
+					userCut,
+					"AND",
 					cbUserID, lmbUserID, creationDate);
-			ps.execute();
+			//ps.execute();
 		} finally { 
 			if (ps != null) ps.close();
 		}
@@ -410,7 +415,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		if(isNull(range)) return v;
 		String[] data = range.split(",");
 		if(data.length == 0) {
-			return v
+			return v;
 		}
 		for (int i = 0; i != data.length ; ++i) v.add(data[i]);
 		return v;
