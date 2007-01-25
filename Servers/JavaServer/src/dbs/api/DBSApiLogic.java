@@ -1,6 +1,6 @@
 /**
- $Revision: 1.63 $"
- $Id: DBSApiLogic.java,v 1.63 2007/01/11 21:16:43 sekhri Exp $"
+ $Revision: 1.64 $"
+ $Id: DBSApiLogic.java,v 1.64 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -144,16 +144,22 @@ public class DBSApiLogic {
 				);
 	}
 	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+
 		String lsNumber = get(lumi, "lumi_section_number", true);
+                String runNumber = get(lumi, "run_number", true);
+                //FIXME:Actually the runID will go in the database, the runNumber 
+                //field in LumiSection is confusing we must rename it.
+                String runID = getID(conn, "Runs", "RunNumber", runNumber, true);
+
+                //LumiSectionNumber in UQ within this Run only
+                if( getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false) == null ) { 
+		//if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 		//Insert a new Lumi Section by feting the run ID 
-		if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertLumiSection(conn,
 						lsNumber,
-						getID(conn, "Runs", "RunNumber",
-							get(lumi, "run_number", true),
-							true),
+                                                runID,
 						get(lumi, "start_event_number", true),
 						get(lumi, "end_event_number", true),
 						get(lumi, "lumi_start_time", false),
