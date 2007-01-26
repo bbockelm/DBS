@@ -488,6 +488,24 @@ class DBSHelper(DBSLogger):
       aList.reverse()
       return aList
 
+  def getSoftwareReleases(self):
+      """
+         DBS data discovery wrapper around listApplications
+         @type  datasetPath: string 
+         @param datasetPath: dataset path 
+         @rtype : list 
+         @return: a list of application in the following form, [(family,version,exe)]
+      """
+      aList = []
+      dList = self.listApplications()
+      for item in dList:
+          path=item
+          empty,soft,fam,exe=string.split(path,'/')
+          aList.append(soft)
+      aList.sort()
+      aList.reverse()
+      return aList
+
   def getDatasetsFromApp(self,appPath="*",_prim="*",_tier="*"):
       """
          DBS data discovery wrapper around dbsCgiApi.listDatasetsFromApp
@@ -510,7 +528,7 @@ class DBSHelper(DBSLogger):
       oList.reverse()
       return oList
       
-  def getPrimaryDatasets(self,datasetPath="*"):
+  def getPrimaryDatasets(self,datasetPath="*",html=0):
       """
          DBS data discovery wrapper around dbsCgiApi.listPrimaryDatasets
          @type  datasetPath: string 
@@ -530,7 +548,8 @@ class DBSHelper(DBSLogger):
              name = entry.get('datasetName')
           else:
              name = entry.get('Name')
-          if self.html:
+          if html:
+#          if self.html:
              navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
              blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
