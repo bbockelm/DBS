@@ -1019,6 +1019,51 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
+  def listAnalysisDatasetDefinition(self, pattern_analysis_dataset_definition_name):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listAnalysisDatasetDefinition',
+				 'pattern_analysis_dataset_definition_name' : pattern_analysis_dataset_definition_name 
+				}, 'GET')
+
+    logging.debug(data)
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'analysis_dataset_definition':
+                curr_def = DbsAnalysisDatasetDefinition (
+                        Name=str(attrs['analysis_dataset_definition_name']),
+                        RunList=str(attrs['runs']).split(','),
+                        TierList=str(attrs['tiers']).split(','),
+                        FileList=str(attrs['lfns']).split(','),
+                        LumiList=str(attrs['lumi_sections']).split(','),
+                        AlgoList=str(attrs['algorithms']).split(','),
+                        ProcessedDatasetPath=str(attrs['path']),
+                        RunRangeList=str(attrs['runs_ranges']).split(','),
+                        AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
+                        LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
+                        UserCut=str(attrs['user_cut']),
+                        #Description=str(attrs['name']),
+                        CreationDate=str(attrs['creation_date']),
+                        CreatedBy=str(attrs['created_by']),
+                        LastModificationDate=str(attrs['last_modification_date']),
+                        LastModifiedBy=str(attrs['last_modified_by']),
+                        )
+                result.append(curr_def)
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+  #-------------------------------------------------------------------
+
   def listAnalysisDataset(self, analysis_dataset_name_pattern, path):
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
