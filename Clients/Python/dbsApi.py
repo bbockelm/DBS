@@ -30,6 +30,8 @@ from dbsFileBlock import DbsFileBlock
 from dbsDataTier import DbsDataTier 
 from dbsFileBranch import DbsFileBranch 
 from dbsAlgorithm import DbsAlgorithm
+from dbsAnalysisDataset import DbsAnalysisDataset
+from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 
 from dbsParent import DbsParent
 from dbsConfig import DbsConfig
@@ -99,7 +101,7 @@ class DbsApi(DbsConfig):
 
     # Default LOG Level is DEBUG
     if not self.configDict.has_key('level'):
-      self.configDict['level'] = "INFO" 
+      self.configDict['level'] = "DEBUG" 
     if self.loglevel() in ("", None, "DEBUG"):
        loglevel=logging.INFO
     elif self.loglevel() == 'INFO':
@@ -1015,7 +1017,67 @@ class DbsApi(DbsConfig):
       raise DbsBadResponse(exception=ex)
 
 
+  #-------------------------------------------------------------------
 
+  def listAnalysisDataset(self, analysis_dataset_name_pattern, path):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    path = self._path(path)
+
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listAnalysisDataset', 
+                                 'analysis_dataset_name_pattern' : analysis_dataset_name_pattern,
+                                 'path' : path  
+				}, 'GET')
+
+    logging.debug(data)
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'analysis_dataset':
+		self.curr_analysis = DbsAnalysisDataset (
+         		Annotation=str(attrs['annotation']),
+         		Name=str(attrs['analysis_dataset_name']),
+         		Type=str(attrs['type']),
+         		Status=str(attrs['status']),
+         		#PhysicsGroup=str(attrs['physics_group']),
+         		#Definition=
+                        CreationDate=str(attrs['creation_date']),
+                        CreatedBy=str(attrs['created_by']),
+                        LastModificationDate=str(attrs['last_modification_date']),
+                        LastModifiedBy=str(attrs['last_modified_by']),
+			)
+	  if name == 'analysis_dataset_definition':
+                self.curr_def = DbsAnalysisDatasetDefinition (
+            		Name=str(attrs['analysis_dataset_definition_name']),
+            		RunList=str(attrs['runs']).split(','),
+            		TierList=str(attrs['tiers']).split(','),
+            		FileList=str(attrs['lfns']).split(','),
+            		LumiList=str(attrs['lumi_sections']).split(','),
+            		AlgoList=str(attrs['algorithms']).split(','),
+            		ProcessedDatasetPath=str(attrs['path']),
+            		RunRangeList=str(attrs['runs_ranges']).split(','),
+            		AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
+            		LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
+            		UserCut=str(attrs['user_cut']),
+            		#Description=str(attrs['name']),
+                        CreationDate=str(attrs['creation_date']),
+                        CreatedBy=str(attrs['created_by']),
+                        LastModificationDate=str(attrs['last_modification_date']),
+                        LastModifiedBy=str(attrs['last_modified_by']),
+			)
+                self.curr_analysis['Definition'] = self.curr_def	
+                result.append(self.curr_analysis)
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
 
   #-------------------------------------------------------------------
 

@@ -92,7 +92,8 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       #loggin.info(data)
+       print data
+       logging.debug(data)
 
     except Exception, ex:
       msg = "HTTP ERROR, Unable to make API call: %s" % conto
