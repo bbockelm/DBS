@@ -1947,23 +1947,24 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
     
-    if defName in ("", None):
+    if def_name in ("", None):
        raise DbsApiException(args="You must provide AnalysisDatasetDefinition (second parameter of this API call)")
        return
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>" 
     xmlinput += "<analysis_dataset name='"+ analysisdataset.get('Name', '') +"'"
-    xmlinput += " analysisds_def_name='"+ defName +"'"
+    xmlinput += " analysisds_def_name='"+ def_name +"'"
     xmlinput += " annotation='"+ analysisdataset.get('Annotation', '') +"'"
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
     xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
     xmlinput += " physics_group_name='"+ analysisdataset.get('PhysicsGroup', '') +"'" 
     # Path is taken from the definition 
     #xmlinput += " path='"+path+"'/>"
+    xmlinput += " />"
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)
-    #print xmlinput
+    print xmlinput
 
     if self.verbose(): 
        print "createAnalysisDataset, xmlinput",xmlinput
