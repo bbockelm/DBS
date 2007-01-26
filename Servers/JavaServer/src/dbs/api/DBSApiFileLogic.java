@@ -457,8 +457,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
 				insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
- 
-                                System.out.println("BACK..........");
 				insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 

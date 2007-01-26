@@ -57,6 +57,17 @@ public class DBSSql {
 		return getInsertSQL(conn, tableName, table);
 	}
 	
+	public static PreparedStatement insertMap(Connection conn, String tableName, String key1, String key2, String key3, String value1, String value2, String value3, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+		Hashtable table = new Hashtable();
+		table.put(key1, value1);
+		table.put(key2, value2);
+		table.put(key3, value3);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
+		return getInsertSQL(conn, tableName, table);
+	}
+
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
@@ -271,9 +282,9 @@ public class DBSSql {
 
 	//public static PreparedStatement listAnalysisDSFileLumi(Connection conn, String adsID, String procDSID, 
 	public static PreparedStatement listAnalysisDSFileLumi(Connection conn,  String procDSID, 
-			String tierIDList, String algoIDList, String fileList, 
+			Vector tierIDList, Vector algoIDList, Vector fileList, 
 			Vector lumiRangeList, Vector runRangeList, 
-			String adsList, String userCut,	String op,
+			Vector adsList, String userCut,	String op,
 			String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		//String sql = "SELECT DISTINCT " + adsID + " as ADSID, \n " +
 		String sql = "SELECT DISTINCT \n" + 
@@ -292,9 +303,36 @@ public class DBSSql {
 				"ON r.ID = ls.RunNumber \n" +
 			"WHERE f.Dataset = ? \n\t" ;
 
-		if(!DBSUtil.isNull(tierIDList)) sql += op + " fdt.DataTier IN (?) \n\t";
-		if(!DBSUtil.isNull(algoIDList)) sql += op + " fa.Algorithm IN (?) \n\t";
-		if(!DBSUtil.isNull(fileList)) sql += op + " f.LogicalFileName IN (?) \n\t";
+		//if(!DBSUtil.isNull(tierIDList)) sql += op + " fdt.DataTier IN (?) \n\t";
+		if(tierIDList.size() > 0) {
+			String tmpSql = "";
+			for(int i = 0 ; i != tierIDList.size(); ++i) {
+				if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+				tmpSql += "?";
+			}
+			sql += op + " fdt.DataTier IN (" + tmpSql + ") \n\t";
+		}
+		
+		if(algoIDList.size() > 0) {
+			String tmpSql = "";
+			for(int i = 0 ; i != algoIDList.size(); ++i) {
+				if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+				tmpSql += "?";
+			}
+			sql += op + " fa.Algorithm IN (" + tmpSql + ") \n\t";
+		}
+		
+		if(fileList.size() > 0) {
+			String tmpSql = "";
+			for(int i = 0 ; i != fileList.size(); ++i) {
+				if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+				tmpSql += "?";
+			}
+			sql += op + " f.LogicalFileName IN (" + tmpSql + ") \n\t";
+		}
+
+		//if(!DBSUtil.isNull(algoIDList)) sql += op + " fa.Algorithm IN (?) \n\t";
+		//if(!DBSUtil.isNull(fileList)) sql += op + " f.LogicalFileName IN (?) \n\t";
 		if(lumiRangeList.size() > 0) { 
 			String tmpSql = "";
 			for(int i = 0 ; i != lumiRangeList.size(); ++i) {
@@ -307,27 +345,47 @@ public class DBSSql {
 			String tmpSql = "";
 			for(int i = 0 ; i != runRangeList.size(); ++i) {
 				if(!DBSUtil.isNull(tmpSql)) tmpSql += " OR ";
-				tmpSql += "(r.RunNumber BETWEEN ?)\n\t";
+				tmpSql += "(r.RunNumber BETWEEN ? AND ?)\n\t";
 			}
-			//sql += op + "( " + tmpSql + " )\n\t";
+			sql += op + "( " + tmpSql + " )\n\t";
 		}
 		
-		if(!DBSUtil.isNull(adsList)) {
+		if(adsList.size() > 0) {
+			String tmpSql = "";
+			for(int i = 0 ; i != adsList.size(); ++i) {
+				if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+				tmpSql += "?";
+			}	
+			sql += op + " ls.LumiSectionNumber IN ( \n\t" +
+					"SELECT adsfl.Lumi FROM AnalysisDSFileLumi adsfl \n\t" +
+					"JOIN AnalysisDataset ad \n\t\t" +
+						"ON ad.ID = adsfl.AnalysisDataset \n\t" +
+					"WHERE ad.Name IN (" + tmpSql + ") \n" +
+				")\n";
+
+		}
+
+		/*if(!DBSUtil.isNull(adsList)) {
 			sql += op + " ls.LumiSectionNumber IN ( \n\t" +
 					"SELECT adsfl.Lumi FROM AnalysisDSFileLumi adsfl \n\t" +
 					"JOIN AnalysisDataset ad \n\t\t" +
 						"ON ad.ID = adsfl.AnalysisDataset \n\t" +
 					"WHERE ad.Name IN (?) \n" +
 				")\n";
-		}
+		}*/
 		sql += "ORDER BY FILEID,LUMIID";
-		
+		//System.out.println("The SQL query is " + sql);
+
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
-		if(!DBSUtil.isNull(tierIDList)) ps.setString(columnIndx++, tierIDList);
-		if(!DBSUtil.isNull(algoIDList)) ps.setString(columnIndx++, algoIDList);
-		if(!DBSUtil.isNull(fileList)) ps.setString(columnIndx++, fileList);
+		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
+		for(int i = 0 ; i != algoIDList.size(); ++i) ps.setString(columnIndx++, (String)algoIDList.get(i));
+		for(int i = 0 ; i != fileList.size(); ++i) ps.setString(columnIndx++, (String)fileList.get(i));
+		
+		//if(!DBSUtil.isNull(tierIDList)) ps.setString(columnIndx++, tierIDList);
+		//if(!DBSUtil.isNull(algoIDList)) ps.setString(columnIndx++, algoIDList);
+		//if(!DBSUtil.isNull(fileList)) ps.setString(columnIndx++, fileList);
 		for(int i = 0 ; i != lumiRangeList.size(); ++i) {
 			String tmp[] = (String[])lumiRangeList.get(i);
 			//ps.setString(columnIndx++, (String)lumiRangeList.get(i));
@@ -340,7 +398,8 @@ public class DBSSql {
 			ps.setString(columnIndx++, tmp[1]);
 			//ps.setString(columnIndx++, (String)runRangeList.get(i));
 		}
-		if(!DBSUtil.isNull(adsList)) ps.setString(columnIndx++, adsList);
+		//if(!DBSUtil.isNull(adsList)) ps.setString(columnIndx++, adsList);
+		for(int i = 0 ; i != adsList.size(); ++i) ps.setString(columnIndx++, (String)adsList.get(i));
 		System.out.println("The SQL query is " + ps);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -1071,6 +1130,39 @@ public class DBSSql {
 		return ps;
 	}
 
+	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
+		String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
+			"adsdef.Name as ANALYSIS_DATASET_DEFINITION_NAME, \n" +
+			"adsdef.LumiSections as LUMI_SECTIONS, \n" +
+			"adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
+			"adsdef.Runs as RUNS, \n" +
+			"adsdef.RunsRanges as RUNS_RANGES, \n" +
+			"adsdef.Algorithms as ALGORITHMS, \n" +
+			"adsdef.LFNs as LFNS, \n" +
+			"adsdef.Path as PATH, \n" +
+			"adsdef.Tiers as TIERS, \n" +
+			"adsdef.AnalysisDatasets as ANALYSIS_DATASET_NAMES, \n" +
+			"adsdef.UserCut as USER_CUT, \n" +
+			"adsdef.Description as DESCRIPTION, \n" +
+			"adsdef.CreationDate as CREATION_DATE, \n" +
+			"adsdef.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM AnalysisDSDef adsdef \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = adsdef.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = adsdef.LastModifiedBy \n" +
+			"WHERE adsdef.Name like  ? \n" +
+				"ORDER BY ANALYSIS_DATASET_DEFINITION_NAME DESC";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, patternName);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
 
       public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String procDSID) throws SQLException {
                 String sql = "SELECT DISTINCT ads.ID as ID, \n " +
@@ -1134,39 +1226,7 @@ public class DBSSql {
 	}
 
 
-
-	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
-		String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
-			"adsdef.Name as ANALYSIS_DATASET_DEFINITION_NAME, \n" +
-			"adsdef.LumiSections as LUMI_SECTIONS, \n" +
-			"adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
-			"adsdef.Runs as RUNS, \n" +
-			"adsdef.RunsRanges as RUNS_RANGES, \n" +
-			"adsdef.Algorithms as ALGORITHMS, \n" +
-			"adsdef.LFNs as LFNS, \n" +
-			"adsdef.Path as PATH, \n" +
-			"adsdef.Tiers as TIERS, \n" +
-			"adsdef.AnalysisDatasets as ANALYSIS_DATASET_NAMES, \n" +
-			"adsdef.UserCut as USER_CUT, \n" +
-			"adsdef.Description as DESCRIPTION, \n" +
-			"adsdef.CreationDate as CREATION_DATE, \n" +
-			"adsdef.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
-			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-			"FROM AnalysisDSDef adsdef \n" +
-			"LEFT OUTER JOIN Person percb \n" +
-				"ON percb.id = adsdef.CreatedBy \n" +
-			"LEFT OUTER JOIN Person perlm \n" +
-				"ON perlm.id = adsdef.LastModifiedBy \n" +
-			"WHERE adsdef.Name like  ? \n" +
-				"ORDER BY ANALYSIS_DATASET_DEFINITION_NAME DESC";
-		
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(1, patternName);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
+	
 	public static PreparedStatement getID(Connection conn, String table, String key, String value) throws SQLException {
 		String sql = "SELECT DISTINCT ID \n " +
 			"FROM " + table + "\n " +
@@ -1190,6 +1250,22 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+	
+	public static PreparedStatement getMapID(Connection conn, String table, String key1, String key2, String key3, String value1, String value2, String value3) throws SQLException {
+		String sql = "SELECT DISTINCT ID \n " +
+			"FROM " + table + "\n " +
+			"WHERE " + key1 + " = ? \n" +
+			"AND " + key2 + " = ? \n" +
+			"AND " + key3 + " = ? \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, value1);
+		ps.setString(columnIndx++, value2);
+		ps.setString(columnIndx++, value3);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 	public static PreparedStatement getProcessedDSID(Connection conn, String prim, String proc) throws SQLException {
 		String sql = "SELECT DISTINCT procds.ID as ID \n" +
 				"FROM ProcessedDataset procds \n" +

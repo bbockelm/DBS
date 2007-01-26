@@ -33,9 +33,46 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		personApi = new DBSApiPersonLogic(data);
 	}
 
+	/**
+	 * Lists all the definitions .  
+	 * <code> <""/></code>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param patternName a parameter passed in from the client that can contain wild card characters for analysis dataset defination name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
+	 */
+	 public void listAnalysisDatasetDefinition(Connection conn, Writer out, String patternName) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listAnalysisDatasetDefinition(conn, getPattern(patternName, "pattern_analysis_dataset_definition_name"));
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
+					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEFINITION_NAME") +
+					"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
+					"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
+					"' runs='" + get(rs, "RUNS") +
+					"' runs_ranges='" + get(rs, "RUNS_RANGES") +
+					"' algorithms='" + get(rs, "ALGORITHMS") +
+					"' lfns='" + get(rs, "LFNS") +
+					"' path='" + get(rs, "PATH") +
+					"' tiers='" + get(rs, "TIERS") +
+					"' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
+					"' user_cut='" + get(rs, "USER_CUT") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'/>\n"));
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	 }
 
-
-       /**
+	 /**
          * Lists analysis dataset along with its definition, ALL, or for a particular PATH  
          * <code> <""/></code>
          * @param conn a database connection <code>java.sql.Connection</code> object created externally.
@@ -307,17 +344,17 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		String anaDSDefID = ""; 
 		String procDSID = ""; 
-		String lumiNumberList = ""; 
-		String runNumberList = ""; 
+		//String lumiNumberList = ""; 
+		//String runNumberList = ""; 
 		String tierList = ""; 
-		String tierIDList = ""; 
-		String fileList = ""; 
-		String adsList = ""; 
+		Vector tierIDList = null; 
+		Vector fileList = null; 
+		Vector adsList = null; 
 		String algoList = ""; 
-		String algoIDList = ""; 
+		Vector algoIDList = null; 
 		String userCut = "";
-		Vector lumiRangeList = new Vector(); 
-		Vector runRangeList = new Vector(); 
+		Vector lumiRangeList = null; 
+		Vector runRangeList = null; 
 
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
@@ -327,15 +364,15 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			if(rs.next()) {
 				anaDSDefID = get(rs, "ID");
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(rs, "PATH"), true);
-				lumiNumberList = get(rs, "LUMI_SECTIONS");
+				//lumiNumberList = get(rs, "LUMI_SECTIONS");
 				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
-				runNumberList = get(rs, "RUNS");
+				//runNumberList = get(rs, "RUNS");
 				runRangeList = parseRangeList(get(rs, "RUNS_RANGES"));
 				tierList = get(rs, "TIERS");
-				fileList = get(rs, "LFNS");
-				adsList = get(rs, "ANALYSIS_DATASET_NAMES");
 				algoList = get(rs, "ALGORITHMS");
 				userCut = get(rs, "USER_CUT");
+				fileList = listToVector(get(rs, "LFNS"));
+				adsList = listToVector(get(rs, "ANALYSIS_DATASET_NAMES"));
 			
 			} else {
 				throw new DBSException("Unavailable data", "1008", "No such analysis dataset definition " + analysisDatasetDefinitionName );
@@ -349,21 +386,25 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		//Get all the tier IDs
 		if(!isNull(tierList)) {
 			String[] data = tierList.split(",");
+			String tmpList = "";
 			for (int i = 0; i != data.length ; ++i) {
-				if(!isNull(tierIDList)) tierIDList += ",";
-				tierIDList += getID(conn, "DataTier", "Name", data[i], true);
+				if(!isNull(tmpList)) tmpList += ",";
+				tmpList += getID(conn, "DataTier", "Name", data[i], true);
 			}
+			tierIDList = listToVector(tmpList);
 		}
 
 		//Get all the algo IDs
 		if(!isNull(algoList)) {
 			String[] algo = algoList.split(",");
+			String tmpList = "";
 			for (int i = 0; i != algo.length ; ++i) {
 				String data[] = algo[i].split(";");
 				if (data.length != 4) throw new DBSException("Invalid format", "1066", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
-				if(!isNull(algoIDList)) algoIDList += ",";
-				algoIDList += (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
+				if(!isNull(tmpList)) tmpList += ",";
+				tmpList += (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
 			}
+			algoIDList = listToVector(tmpList);
 		}
 
 		
@@ -404,7 +445,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
 		//Fetch the analysis dataset id if not null, that just got inserted
 		if(isNull(adsID)) adsID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false);
-		
 
 		//Insert the contents of the analysis dataset in the AnalysisDSFileLumi map table
 		ps = null;
@@ -424,8 +464,15 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					cbUserID, lmbUserID, creationDate);
 			rs =  ps.executeQuery();
 			
+			//For every lumiid,fileid pair insert a row in AnalysisDSFuleLumi table 
 			while(rs.next()) {
 				System.out.println("ADSID, Lumi ID , File ID = " + adsID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+				insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
+						adsID,
+						get(rs, "LUMIID"),
+						get(rs, "FILEID"),
+						cbUserID, lmbUserID, creationDate);
+
 			} 
 
 		} finally { 
@@ -437,6 +484,19 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	
 	 }
  
+ 	private Vector listToVector(String list) throws Exception {
+		Vector v = new Vector();
+		if(isNull(list)) return v;
+		String[] data = list.split(",");
+		if(data.length == 0) {
+			return v;
+		}
+		for (int i = 0; i != data.length ; ++i) {
+			v.add(data[i]);
+		}
+		return v;
+	}
+
 	 private String parseRange(String range) throws Exception {
 		String[] data = range.split(",");
 		if(data.length != 2) {
