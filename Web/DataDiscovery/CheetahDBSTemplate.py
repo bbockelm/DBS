@@ -823,6 +823,7 @@ $msg
 <tr valign="top">
 <td align="right">&nbsp;<b>DBS instances</b>
 </td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('dbsDesc_tag','$dbsDesc')" onMouseOut="ClearTag('dbsDesc_tag')">?</div><span id="dbsDesc_tag"></span></td>
 <td>
 ####<select name="dbsInst" onchange="updateLayer0(this)" id="dbsSelector">
 <select name="dbsInst" onchange="ajaxGenNavigatorMenuDict()" id="dbsSelector">
@@ -834,12 +835,15 @@ $msg
 #end if
 #end for
 </select>
-</td></tr>
+</td>
+</tr>
+
 #end if
 
 <tr valign="top">
 <td align="right"><b>Tier sites</b>
 </td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('siteDesc_tag','$siteDesc')" onMouseOut="ClearTag('siteDesc_tag')">?</div><span id="siteDesc_tag"></span></td>
 <td>
 <select name="site" id="siteSelector">
 <option value="All" selected="selected">All</option>
@@ -847,33 +851,44 @@ $msg
 <option value="$site">$site</option>
 #end for
 </select>
-</td></tr>
+</td>
+</tr>
 
 <tr valign="top">
 <td align="right"><b>Application</b>
 </td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('appDesc_tag','$appDesc')" onMouseOut="ClearTag('appDesc_tag')">?</div><span id="appDesc_tag"></span></td>
 <td>
 <div id="appHolder"></div>
-</td></tr>
+</td>
+</tr>
 
 <tr valign="top">
 <td align="right"><b>Primary dataset</b>
 </td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('primDesc_tag','$primDesc')" onMouseOut="ClearTag('primDesc_tag')">?</div><span id="primDesc_tag"></span></td>
 <td>
 <div id="primHolder"></div>
-</td></tr>
+</td>
+</tr>
 
 <tr valign="top">
 <td align="right"><b>Data tier</b>
 </td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('tierDesc_tag','$tierDesc')" onMouseOut="ClearTag('tierDesc_tag')">?</div><span id="tierDesc_tag"></span></td>
 <td>
 <div id="tierHolder"></div>
-</td></tr>
+</td>
+</tr>
+
 <tr>
+<td></td>
 <td></td>
 <td></td>
 </tr>
+
 <tr>
+<td></td>
 <td></td>
 <td>
 #*
@@ -887,7 +902,8 @@ $msg
 </script>
 *#
 <input type="submit" value="Find" onclick="javascript:showResMenu('results');showWaitingMessage();" />
-</td></tr>
+</td>
+</tr>
 </table>
 <!-- end of menu table -->
 
@@ -1368,12 +1384,20 @@ templateBottom="""
 <span id="floatDataDescription"></span>
 <table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="100%">
 ###<table id="results_menu" cellspacing="0" cellpadding="0" width="100%">
+
 <tr>
+
+<td style="width:1%;background-color:#E0E0E0;" align="center">
+<span class="yellow_box" onMouseOver="KeywordHelp('ResultsViewDesc_tag','Found data groupped into several tabs. Summary view collects information from DBS and DLS system. Block and run info are DBS only information. Parents tab shows data relationship and appConfigs retrieves information about configuration files associated with found data.')" onMouseOut="ClearTag('ResultsViewDesc_tag')">?</span><span id="ResultsViewDesc_tag"></span>
+</td>
+
 <td class="td_menu_gray_box" id="_results">
 <table width="100%"><tr><td>
 <div id="__results"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
-<a href="javascript:showResMenu('results')">Summary</a>
+<a href="javascript:showResMenu('results')">
+Summary
+</a>
 </td><td><table class="image"><tr><td></td></tr></table>
 </td></tr></table>
 </td>
@@ -1382,7 +1406,9 @@ templateBottom="""
 <table width="100%"><tr><td>
 <div id="__results_dbs"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
-<a href="javascript:showResMenu('results_dbs')">Block info</a>
+<a href="javascript:showResMenu('results_dbs')">
+Block info
+</a>
 </td><td><table class="image"><tr><td></td></tr></table>
 </td></tr></table>
 </td>
@@ -1391,7 +1417,9 @@ templateBottom="""
 <table width="100%"><tr><td>
 <div id="__runs"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
-<a href="javascript:showResMenu('runs')">Run info</a>
+<a href="javascript:showResMenu('runs')">
+Run info
+</a>
 </td><td><table class="image"><tr><td></td></tr></table>
 </td></tr></table>
 </td>
@@ -1400,7 +1428,9 @@ templateBottom="""
 <table width="100%"><tr><td>
 <div id="__parents"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
-<a href="javascript:showResMenu('parents')">Parents</a>
+<a href="javascript:showResMenu('parents')">
+Parents
+</a>
 </td><td><table class="image"><tr><td></td></tr></table>
 </td></tr></table>
 </td>
@@ -1409,7 +1439,9 @@ templateBottom="""
 <table width="100%"><tr><td>
 <div id="__appConfigs"><table class="image"><tr><td></td></tr></table></div>
 </td><td align="center">
-<a href="javascript:showResMenu('appConfigs')">App configs</a>
+<a href="javascript:showResMenu('appConfigs')">
+App configs
+</a>
 </td><td><table class="image"><tr><td></td></tr></table>
 </td></tr></table>
 </td>
@@ -1508,20 +1540,49 @@ var GLOBAL_STEP=$step
 <!-- menu -->
 <td id="menu_td_fixed" class="menu_td_gray_fixed" valign="top">
 
-<table width="100%">
+<table class="menu" width="100%">
 <tr>
-<td class="td_gray_box" id="Navigator_Menu"><a href="javascript:showMenu('Navigator')">Navigator</a></td>
+<td>
+<span class="yellow_box" 
+onMouseOver="KeywordHelp('NavDesc_tag','Discovery page provides a three ways to find your data.\
+<p>Navigator menu based search is designed to guide you through available data in CMS.</p>\
+<p>Selection search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
+<p>Site search is used to find out data which are located at specified site. Data search does not based on any data classification and it is plain lookup of what is available on a site through DLS service.</p>\
+')" onMouseOut="ClearTag('NavDesc_tag')">?</span><span id="NavDesc_tag"></span>
+<b>Find data:</b>
+</td>
 </tr>
 <tr>
-<td class="td_gray_box" id="Search_Menu"><a href="javascript:showMenu('Search')">Keyword search</a></td>
+<td class="td_gray_box" id="Navigator_Menu">
+<a href="javascript:showMenu('Navigator')">
+<table><tr><td><b>Navigator</b></td></tr></table>
+</a></td>
+</tr>
+<tr>
+<td class="td_gray_box" id="Search_Menu">
+<a href="javascript:showMenu('Search');ajaxGetKWFields()">
+<table><tr><td><b>Selections</b></td></tr></table>
+</a>
+</td>
 </tr>
 #if not $userMode
 <tr>
-<td class="td_gray_box" id="Site_Menu"><a href="javascript:showMenu('Site')">Site</a></td>
+<td class="td_gray_box" id="Site_Menu">
+<a href="javascript:showMenu('Site')">
+<table><tr><td><b>Site</b></td></tr></table>
+</a>
+</td>
 </tr>
-<tr><td><br /></td></tr>
+###<tr><td><br /></td></tr>
+<tr><td>
+<span class="yellow_box" onMouseOver="KeywordHelp('DBSInfoDesc_tag','Here you will find a full list of available applications, primary and processed datasets from DBS.')" onMouseOut="ClearTag('DBSInfoDesc_tag')">?</span><span id="DBSInfoDesc_tag"></span>
+<b>List data:</b>
+</td></tr>
 <tr>
-<td class="td_gray_box" id="DBSinfo_Menu"><a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsNames);">DBS info</a>
+<td class="td_gray_box" id="DBSinfo_Menu">
+<a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsNames);">
+<table><tr><td><b>DBS info</b></td></tr></table>
+</a>
   <table id="dbsInst_table" class="hide">
 #for iName in $dbsNames
 #set name=iName.replace("/","___")
@@ -1531,17 +1592,38 @@ var GLOBAL_STEP=$step
 </td>
 </tr>
 #end if
-<tr><td><br /></td></tr>
+###<tr><td><br /></td></tr>
+<tr><td>
+<span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
+<b>Subscribe to:</b>
+</td></tr>
 <tr>
-<td class="td_gray_box" id="SessionHistory_Menu">
-<a href="javascript:GetSessionHistory();">Session History</a>
+<td class="td_gray_box" id="Rss_Menu">
+<a href="javascript:showMenu('Rss');ajaxGetRss();">
+<table><tr><td><b>RSS list</b></td></tr></table>
+</a>
 </td>
 </tr>
+<tr><td><br /></td></tr>
+#*
+<tr>
+<td class="td_gray_box" id="SessionHistory_Menu">
+<a href="javascript:GetSessionHistory();">
+<table><tr><td><b>Session History</b></td></tr></table>
+</a>
+###<span class="yellow_box" onMouseOver="KeywordHelp('SessDesc_tag','Session history is a quick way to find out your previous actions on a web page')" onMouseOut="ClearTag('SessDesc_tag')">?</span><span id="SessDesc_tag"></span>
+</td>
+</tr>
+*#
 <tr>
 #set hList=['user','auth','search']
 #set hDict={'user':'Session','auth':'Authentication','search':'Search'}
 ########<td class="td_gray_box" id="History_Menu"><a href="javascript:GetSessionHistory();">History</a>
-<td class="td_gray_box" id="History_Menu"><a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
+<td class="td_gray_box" id="History_Menu">
+###<span class="yellow_box" onMouseOver="KeywordHelp('HistDesc_tag','History menu keep track of what you have done on discovery page. The <em>Back</em> button does not work due to used technology and instead all of your history are collected here.')" onMouseOut="ClearTag('HistDesc_tag')">?</span><span id="HistDesc_tag"></span>
+<a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">
+<table><tr><td><b>History</b></td></tr></table>
+</a>
   <table id="history_table" class="hide">
 #for name in $hList
       <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);AdjustToDate()">$hDict[$name]</a></td></tr>
@@ -1550,15 +1632,19 @@ var GLOBAL_STEP=$step
 </td>
 </tr>
 <tr>
-<td class="td_gray_box" id="Help_Menu"><a href="javascript:showMenu('Help');showHelpContent();">Help</a></td>
+<td class="td_gray_box" id="Help_Menu">
+<a href="javascript:showMenu('Help');showHelpContent();">
+<table><tr><td><b>Help</b></td></tr></table>
+</a>
+</td>
 </tr>
 <tr><td><br /></td></tr>
 <tr>
-<td class="td_gray_box" id="Rss_Menu"><a href="javascript:showMenu('Rss');ajaxGetRss();">RSS list</a></td>
-</tr>
-<tr><td><br /></td></tr>
-<tr>
-<td class="td_gray_box" id="Hide_Menu"><a href="javascript:HidePanel('$host')">Hide panel</a></td>
+<td class="td_gray_box" id="Hide_Menu">
+<a href="javascript:HidePanel('$host')">
+<table><tr><td><b>Hide panel</b></td></tr></table>
+</a>
+</td>
 </tr>
 <tr><td><br /><em class="tiny_purple_on_gray">Tip: $tip</em></td></tr>
 </table>
@@ -1584,6 +1670,7 @@ $navigatorForm
 </div>
 <!-- END NavigatorDiv -->
 
+#*
 <!-- SearchDiv -->
 <div id="SearchDiv" class="hide">
 <table class="table_box_white" border="0" width="100%">
@@ -1598,6 +1685,63 @@ $searchForm
 </td>
 </tr>
 </table>
+</div>
+<!-- END SearchDiv -->
+*#
+
+<!-- SearchDiv -->
+#set menuArr=['kw_mc','kw_data']
+<div id="SearchDiv" class="hide"> 
+<!-- outermost table in searchdiv -->
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+Selection search menu
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+<form action="" method="get">
+
+<table width="100%">
+<tr>
+<td align="left">
+DBS instance: <select name="keywordsSearch_dbsInst" id="kw_dbsSelector">
+###<option value="All">All</option>
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+<td align="right">
+<input type="submit" name="Submit" id="kw-submit-button" />
+</td>
+</tr>
+</table>
+
+<div id="kw_mc" class="show_inline">
+<table class="kw" width="100%" cellspacing="0" cellpadding="0">
+<tr>
+<th class="gray">Releases</th>
+<th class="gray">Generators/<br />Trigger Lines</th>
+<th class="gray">Data types</th>
+<th class="gray">ROOT branches</th>
+</tr>
+<tr>
+<td class="border"><div id="kw_release"></div></td>
+<td class="border"><div id="kw_prim"></div></td>
+<td class="border"><div id="kw_tier"></div></td>
+<td class="normal"><div id="kw_branch"></div></td>
+</tr>
+</table>
+</div>
+
+</form>
+
+</td>
+</tr>
+</table> <!-- end of outermost table -->
 </div>
 <!-- END SearchDiv -->
 
@@ -2385,6 +2529,84 @@ templateRSS="""
 </channel>
 </rss>
 """
+
+templateSelectList="""
+<div class="div_scroll">
+<table class="plain">
+<tr>
+<td>All</td><td><input type="checkbox" name="$name" value="All" /></td>
+</tr>
+#for item in $iList
+<tr>
+<td>$item</td><td><input type="checkbox" name="$name" value="$item" /></td>
+</tr>
+#end for
+</table>
+</div>
+"""
+
+DBSInstanceDesc="""\
+<p><b>DBS instance</b></p>\
+<p>\
+A unique self-consistent instance of DBS (Data Bookkeeping System) which used for particular task.\
+For instance, data can be produce on site on regular basis, for that purpose site keeps\
+its own DBS (instance). Once data are ready for users they published to Global DBS instance\
+which is CMS default.\
+</p>\
+<p><b>Examples:</b> MCGlobal/Writer</p>\
+"""
+TierSiteDesc="""<p><b>Tier site</b></p>\
+<p>A fully domain qualified name for a site (cern.ch) which produce data.</p>\
+<p><b>Examples:</b> castorgrid.cern.ch</p>\
+"""
+ApplicationDesc="""<p><b>Application</b></p>\
+<p>\
+An application consists of three parts: version, family and executable. For simplicity\
+we follow path convension, e.g.\
+/version/family/executable. The version is a software release name, e.g. CMSSW_1_1_1\
+family is data types which produced by software release, e.g. SIM-DIG-RECO,\
+please note here that notation describe that software release used to produce\
+three types of data. And finally, executable is a name of executable used to produce\
+this data.\
+</p>\
+<p><b>Examples:</b> /CMSSW_1_2_0/DIGI-RECO/cmsRun</p>\
+"""
+PrimaryDatasetDesc="""<p><b>Primary dataset</b></p>\
+<p>\
+Data at all levels of processing pertaining to a given trigger or common MC \
+production criteria. For data from the experiment, the primary dataset is \
+determined by the HLT event classification (trigger line). \
+For Monte Carlo data, primary \
+datasets comprise data generated with the same parameters (MC generator).\
+</p>\
+<p><b>Examples:</b> mc-onsel-120_PU_Zee</p>\
+"""
+DataTierDesc="""<p><b>Data tier</b></p>\
+<p>\
+Data tier or data type \
+A set of ob jects to be grouped togethered in the output files of the processing step \
+producing the objects. The list of objects comprising a Data Tier is determined \
+by the release configuration files. Additional objects not part of the Data Tier \
+may be included in the same output file.\
+</p>\
+<p><b>Examples:</b> DSIM, DIGI, RECO</p>\
+"""
+ProcessedDatasetDesc="""<p><b>Processed dataset</b></p>\
+<p>\
+A slice of data from a Primary Dataset defined by the processing history applied to it.\ 
+A processed dataset will correspond to a large production of data with a single major \
+software release version, but may include multiple minor versions for small bug fixes \
+and also may contain the output of multiple processings of some given input data.\
+</p>\
+<p><b>Examples:</b> /mc-onsel-120_PU_Zee/DIGI/CMSSW_1_2_0-NoPU-DIGI-1169220692</p>\
+"""
+AnalysisDatasetDesc="""<p><b>Analysis dataset</b></p>\
+<p>\
+A subset of a Processed Dataset representing a coherent sample for physics analysis, specified (conceptually) by running an analysis query on a Processed Dataset at a particular instant of time. An Analysis Dataset must not contain the output of multiple processings of any given input data.\
+</p>\
+<p><b>Examples:</b> to be defined</p>\
+"""
+
 
 templateDummy="""
 <table><tr valign="bottom"><td>
