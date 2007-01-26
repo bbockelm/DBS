@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.59 $"
- $Id: DBSSql.java,v 1.59 2007/01/26 18:10:59 sekhri Exp $"
+ $Revision: 1.60 $"
+ $Id: DBSSql.java,v 1.60 2007/01/26 20:40:26 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -238,7 +238,7 @@ public class DBSSql {
 		return getInsertSQL(conn, "AnalysisDataset", table);
         }
 
-	public static PreparedStatement insertAnalysisDatasetDefination(Connection conn, String adsDefName, 
+	public static PreparedStatement insertAnalysisDatasetDefinition(Connection conn, String adsDefName, 
 			String path, String lumiNumberList, String lumiRangeList, String runNumberList, String runRangeList, 
 			String tierList, String fileList, String adsList, String algoList, String userCut, String desc,
 			String cbUserID, String lmbUserID, String cDate) throws SQLException {

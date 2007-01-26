@@ -1,6 +1,6 @@
 /**
- $Revision: 1.15 $"
- $Id: DBSApiAnaDSLogic.java,v 1.15 2007/01/26 18:10:59 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.16 2007/01/26 20:40:26 sekhri Exp $"
  *
  */
 
@@ -214,7 +214,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	 
 
 		
-        public void createAnalysisDatasetDefination(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
+        public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_def_name", true);
 		String path = get(table, "path", false);
 		String userCut = get(table, "user_cut");
@@ -283,7 +283,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				";" + get(hashTable, "app_executable_name", true) + 
 				";" + get(hashTable, "ps_hash", true);
 	 	}
-		createAnalysisDatasetDefination(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
+		createAnalysisDatasetDefinition(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
 				runNumberList, runRangeList, tierList, fileList, adsList, algoList, userCut, desc,
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -291,7 +291,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 	 }
 	 
-         private void createAnalysisDatasetDefination(Connection conn, Writer out, 
+         private void createAnalysisDatasetDefinition(Connection conn, Writer out, 
 			 String adsDefName, String path,
 			 String lumiNumberList, String lumiRangeList, 
 			 String runNumberList, String runRangeList, 
@@ -303,7 +303,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		 if( getID(conn, "AnalysisDSDef", "Name", adsDefName, false) == null ) {
 			PreparedStatement ps = null;
 			try {
-				ps = DBSSql.insertAnalysisDatasetDefination(conn, 
+				ps = DBSSql.insertAnalysisDatasetDefinition(conn, 
 						adsDefName, 
 						path, 
 						lumiNumberList, 

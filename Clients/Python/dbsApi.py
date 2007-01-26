@@ -1124,6 +1124,45 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+
+  #-------------------------------------------------------------------
+
+  def listDatasetParents(self, dataset):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    path = self._path(dataset)
+
+    # Invoke Server.    
+    data = self._server._call ({ 'api' : 'listDatasetParents', 
+                                 'path' : path  
+				}, 'GET')
+
+    logging.debug(data)
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'processed_dataset_parent':
+		  result.append(DbsProcessedDataset ( 
+                                                PathList=[str(attrs['path'])],     
+                                                PhysicsGroup=str(attrs['physics_group_name']),
+                                                PhysicsGroupConverner=str(attrs['physics_group_convener']),
+                                                CreationDate=str(attrs['creation_date']),
+                                                CreatedBy=str(attrs['created_by']),
+                                                LastModificationDate=str(attrs['last_modification_date']),
+                                                LastModifiedBy=str(attrs['last_modified_by']),
+                                                ))
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
   #-------------------------------------------------------------------
 
   def listDatasetContents(self, path, block_name):
@@ -1862,6 +1901,165 @@ class DbsApi(DbsConfig):
     logging.debug(data)
 
 
+
+  # ------------------------------------------------------------
+
+  def insertTierInPD(self, dataset, tier_name):
+    """
+    Inserts a new tier in the DBS databse. 
+    
+    param: 
+	tier_name : The data tier name passed in as string 
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         tier_name = "GEN-SIM-TEST"
+         api.insertTierInPD ("/prim/dt/proc", tier_name)
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    path = self._path(dataset)
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<processed_dataset path='" + path + "'/>"
+    xmlinput += "</dbs>"
+
+    logging.debug(xmlinput)
+    if self.verbose():
+       print "insertTier, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'insertTierInPD', 
+		         'tier_name' : tier_name,
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.debug(data)
+
+
+  # ------------------------------------------------------------
+
+  def insertParentInPD(self, dataset, parentDS):
+    """
+    Inserts a new parent in the DBS databse. 
+    
+    param: 
+	parentDS : The dataset oath of the parent passed in as string 
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         tier_name = "GEN-SIM-TEST"
+         api.insertParentInPD ("/prim/dt/proc", "/adc/def/rfg")
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    path = self._path(dataset)
+    parentPath = self._path(parentDS)
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<processed_dataset path='" + path + "'/>"
+    xmlinput += "</dbs>"
+
+    logging.debug(xmlinput)
+    if self.verbose():
+       print "insertParent, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'insertParentInPD', 
+		         'parent_path' : parentPath,
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.debug(data)
+
+
+  # ------------------------------------------------------------
+
+  def insertAlgoInPD(self, dataset, algorithm):
+    """
+    Inserts a new algorithm in the DBS databse. 
+    
+    param: 
+	aqlgo : The algorithm 
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         tier_name = "GEN-SIM-TEST"
+         api.insertParentInPD ("/prim/dt/proc", "/adc/def/rfg")
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    path = self._path(dataset)
+    parentPath = self._path(parentDS)
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<processed_dataset path='" + path + "'/>"
+
+    xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
+    xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
+    xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
+    pset = algorithm.get('ParameterSetID')
+    if pset != None: 
+       xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
+    xmlinput += "/>"
+    xmlinput += "</dbs>"
+
+    logging.debug(xmlinput)
+    if self.verbose():
+       print "insertParent, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'insertAlgoInPD', 
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.debug(data)
+
+
+
+  # ------------------------------------------------------------
+
+  def insertRunInPD(self, dataset, run):
+    """
+    Inserts a new Run in the DBS databse. 
+    
+    param: 
+	aqlgo : The algorithm 
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         tier_name = "GEN-SIM-TEST"
+         api.insertParentInPD ("/prim/dt/proc", "/adc/def/rfg")
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    path = self._path(dataset)
+    parentPath = self._path(parentDS)
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<processed_dataset path='" + path + "'/>"
+    xmlinput += "</dbs>"
+
+
+    logging.debug(xmlinput)
+    if self.verbose():
+       print "insertParent, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'insertAlgoInPD', 
+		         'run_number' : run,
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.debug(data)
+
+
+
+
   # ------------------------------------------------------------
 
   def insertLumiSection(self, lumi):
@@ -1915,7 +2113,7 @@ class DbsApi(DbsConfig):
 
 
   # ------------------------------------------------------------
-  def createAnalysisDataset(self, analysisdataset, def_name):
+  def createAnalysisDataset(self, analysisdataset, defName):
     """
     Creates analysis dataset based on the definition provided
 
@@ -1947,13 +2145,13 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
     
-    if def_name in ("", None):
+    if defName in ("", None):
        raise DbsApiException(args="You must provide AnalysisDatasetDefinition (second parameter of this API call)")
        return
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>" 
     xmlinput += "<analysis_dataset name='"+ analysisdataset.get('Name', '') +"'"
-    xmlinput += " analysisds_def_name='"+ def_name +"'"
+    xmlinput += " analysisds_def_name='"+ defName +"'"
     xmlinput += " annotation='"+ analysisdataset.get('Annotation', '') +"'"
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
     xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
@@ -1964,7 +2162,7 @@ class DbsApi(DbsConfig):
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)
-    print xmlinput
+    #print xmlinput
 
     if self.verbose(): 
        print "createAnalysisDataset, xmlinput",xmlinput

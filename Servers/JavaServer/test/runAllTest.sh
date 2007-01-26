@@ -347,15 +347,15 @@ createAnalysisDatasetFromPD () {
         display "$out"
 }
 
-createAnalysisDatasetDefination () {
+createAnalysisDatasetDefinition () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
                                 <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination1_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
                         </dbs>"
 	echo "$xmlString"
-        message="Executing  createAnalysisDatasetDefination API..."
+        message="Executing  createAnalysisDatasetDefinition API..."
         echo $message >> $outFile ; echo $message
-        out=`$CMD api=createAnalysisDatasetDefination "xmlinput=$xmlString"`
+        out=`$CMD api=createAnalysisDatasetDefinition "xmlinput=$xmlString"`
         display "$out"
 
         xmlString="<?xml version='1.0' standalone='yes'?>
@@ -375,9 +375,9 @@ createAnalysisDatasetDefination () {
 				<analysis_dataset analysis_dataset_name='AnalysisDS1_$rand'/>
                         </dbs>"
 	echo "$xmlString"
-        message="Executing  createAnalysisDatasetDefination API..."
+        message="Executing  createAnalysisDatasetDefinition API..."
         echo $message >> $outFile ; echo $message
-        out=`$CMD api=createAnalysisDatasetDefination "xmlinput=$xmlString"`
+        out=`$CMD api=createAnalysisDatasetDefinition "xmlinput=$xmlString"`
         display "$out"
 
 
@@ -416,7 +416,7 @@ insertProcessedDataset
 insertBlock
 insertFiles
 #createAnalysisDatasetFromPD
-createAnalysisDatasetDefination
+createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition
 listAnalysisDataset
