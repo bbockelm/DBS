@@ -39,20 +39,11 @@ body  {
 }
 
 hr.dbs {
-/*  border: 0;*/
   width: 100%;
-/*  color: #CCCCCC;*/
-/*  background-color: #CCCCCC;*/
-/*  height: 1px;*/
   border: none;
   border-top: 1px dotted #CCCCCC;
 }
 hr.hr_end {
-/*  border: 0;*/
-/*  width: 100%;*/
-/*  color: #CCCCCC;*/
-/*  background-color: #CCCCCC;*/
-/*  height: 1px;*/
   border: none;
   border-top: 1px solid gray;
 }
@@ -124,6 +115,7 @@ b { font-weight: bold; text-decoration : none; }
 
 a:link  {
   color: #005599;
+/*  color: #606060;*/
   font-weight: bold;
   text-decoration: none;
 }
@@ -234,6 +226,35 @@ table.intro td {
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
   background-color: rgb(255, 250, 250);
+}
+table.plain {
+  padding: 0px 0px 0px 0px;
+  border-width: 0px 0px 0px 0px;
+  border-style: hidden hidden hidden hidden;
+}
+table.kw {
+  padding: 0px 0px 0px 0px;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  border-collapse: separate;
+}
+table.kw th.gray {
+  background-color: #F0F0F0;
+}
+table.kw td.border {
+  padding: 0px 2px 0px 2px;
+  border-width: 1px 1px 1px 1px;
+  border-style: hidden solid hidden hidden;
+  border-color: gray gray gray gray;
+}
+table.kw td.normal {
+  font-size: 12px;
+  font-weight: normal;
+  font-family: verdana, sans-serif;
+  text-decoration: none;
+  border-style: hidden hidden hidden hidden;
+/*  background-color: rgb(255, 250, 250);*/
 }
 table.cell {
   border-width: 1px 1px 1px 1px;
@@ -347,7 +368,8 @@ table.table_box_white td.box_darkblue {
   font-style: normal;
 /* dbs masthead */
 /*  background:rgb(229, 236, 249);*/
-  color:rgb(129, 136, 149);
+/*  color:rgb(129, 136, 149);*/
+  color:black;
 
 /*  color: #000000;*/
   background-color: #F0F0F0;
@@ -537,24 +559,35 @@ table.image td.size {
   cursor: pointer;
 }
 .td_gray_box {
-  width: 8%;
+  width: 10%;
   color: #000000;
   background-color: #E0E0E0;
+/*  border-style: solid;*/
+/*  border-width: 1px 1px 1px 1px;*/
+  padding: 1px 1px 1px 15px;
+/*  border-style: solid solid solid solid;*/
+/*  border-color: gray gray gray gray; */
+}
+.td_select_box {
+  width: 10%;
+  color: #000000;
+  background-color: #FFFFFF;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+/*  padding: 1px 1px 1px 1px;*/
+  padding: 1px 1px 1px 15px;
+  border-style: solid solid solid solid;
+}
+.yellow_box {
+  color: #000000;
+  background-color: #FFFFCC;
+/*  background-color: #FFCC99;*/
   border-style: solid;
   border-width: 1px 1px 1px 1px;
   padding: 1px 1px 1px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
-}
-.td_blue_box {
-  width: 8%;
-  color: #000000;
-  background-color: #FFFFFF;
-  border-style: solid;
-  border-width: 1px 1px 1px 1px;
-  padding: 1px 1px 1px 1px;
-  border-style: solid solid solid solid;
-/*  border-color: gray gray gray gray; */
+  cursor: pointer;
 }
 .td_plain {
 /*  padding: 1px 5px 1px 5px;*/
@@ -863,27 +896,24 @@ table.sortable span.sortarrow {
   -moz-opacity:0.8;           /* Mozilla 1.6 and below   */
   opacity: 0.8;               /* newer Mozilla and CSS-3 */
 }
-.float_gray_box {
+.float_yellow_box {
   position: absolute; 
-  left: 70%;
-  top: 140px; 
-  height: 200px; 
-/*  width: 400pt; |+ on Safari better use pt, then px which doesn't work +|*/
-  width: 25%;
-  padding: 1em;
+  padding: 5px 5px 5px 5px;
+  margin-top: 20px;
+  width: 50%;
   overflow:auto;
 
   color: #000000;
-  background-color: #E0E0E0;
+  background-color: #FFFFCC;
+/*  background-color: #FFCC99;*/
   border-style: solid;
   border-width: 1px 1px 1px 1px;
-  padding: 1px 1px 1px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
 
-  filter:alpha(opacity=40);   /* Internet Explorer       */
-  -moz-opacity:0.4;           /* Mozilla 1.6 and below   */
-  opacity: 0.4;               /* newer Mozilla and CSS-3 */
+  filter:alpha(opacity=90);   /* Internet Explorer       */
+  -moz-opacity:0.9;           /* Mozilla 1.6 and below   */
+  opacity: 0.9;               /* newer Mozilla and CSS-3 */
 }
 
 .float_help_box {
@@ -909,3 +939,24 @@ table.sortable span.sortarrow {
   opacity: 0.8;               /* newer Mozilla and CSS-3 */
 }
 
+table.menu {
+    font-weight: bold;
+}
+table.menu a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #005599;
+/*    color: #606060;*/
+}
+table.menu td.td_gray_box:hover {
+    text-decoration: none;
+    font-weight: bold;
+/*    background-color:#8c8ad0;*/
+    background-color: white;
+}
+table.menu td.td_select_box:hover {
+    text-decoration: none;
+    font-weight: bold;
+/*    background-color:#8c8ad0;*/
+    background-color: white;
+}
