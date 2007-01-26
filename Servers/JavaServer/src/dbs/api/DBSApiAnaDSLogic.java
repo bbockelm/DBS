@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiAnaDSLogic.java,v 1.12 2007/01/25 21:55:18 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.13 2007/01/25 22:59:15 sekhri Exp $"
  *
  */
 
@@ -33,44 +33,70 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		personApi = new DBSApiPersonLogic(data);
 	}
 
-	/**
-	 * Lists all the definitions .  
-	 * <code> <""/></code>
-	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
-	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param patternName a parameter passed in from the client that can contain wild card characters for analysis dataset defination name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
-	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
-	 */
-	 public void listAnalysisDatasetDefinition(Connection conn, Writer out, String patternName) throws Exception {
-		PreparedStatement ps = null;
-		ResultSet rs =  null;
-		try {
-			ps = DBSSql.listAnalysisDatasetDefinition(conn, getPattern(patternName, "pattern_analysis_dataset_definition_name"));
-			rs =  ps.executeQuery();
-			while(rs.next()) {
-				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
-					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEFINITION_NAME") +
-					"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
-					"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
-					"' runs='" + get(rs, "RUNS") +
-					"' runs_ranges='" + get(rs, "RUNS_RANGES") +
-					"' algorithms='" + get(rs, "ALGORITHMS") +
-					"' lfns='" + get(rs, "LFNS") +
-					"' path='" + get(rs, "PATH") +
-					"' tiers='" + get(rs, "TIERS") +
-					"' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
-					"' user_cut='" + get(rs, "USER_CUT") +
-					"' creation_date='" + getTime(rs, "CREATION_DATE") +
-					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-					"' created_by='" + get(rs, "CREATED_BY") +
-					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-					"'/>\n"));
-			}
-		} finally { 
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		}
-	 }
+
+
+       /**
+         * Lists analysis dataset along with its definition, ALL, or for a particular PATH  
+         * <code> <""/></code>
+         * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+         * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+         * @param patternName a parameter passed in from the client that can contain wild card characters for analysis dataset name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
+         * @param path a parameter passed in from the client that contains Path of a Processed Dataset name. It is used to restrict the SQL query results by sustitution it in the WHERE clause.
+         * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
+         */
+         public void listAnalysisDataset(Connection conn, Writer out, String patternName, String path) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+
+                String procDSID = null;
+                if(!isNull(path)) {
+                        procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+                }
+
+                try {
+                        ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "pattern_analysis_dataset"), procDSID);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+
+                                out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
+                                        "' analysis_dataset_name='" + get(rs, "ANALYSIS_DATASET_NAME") +
+                                        "' annotation='" + get(rs, "ANNOTATION") +
+                                        //"' processed_dataset='" + get(rs, "PROCDSID") +
+                                        //"' Definition='" + get(rs, "DEFID") +
+                                        "' type='" + get(rs, "TYPE") +
+                                        "' status='" + get(rs, "STATUS") +
+                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                        "'>\n"));
+				//Add the details of definition also for this dataset
+                                out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
+                                        "' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEFINITION_NAME") +
+                                        "' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
+                                        "' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
+                                        "' runs='" + get(rs, "RUNS") +
+                                        "' runs_ranges='" + get(rs, "RUNS_RANGES") +
+                                        "' algorithms='" + get(rs, "ALGORITHMS") +
+                                        "' lfns='" + get(rs, "LFNS") +
+                                        "' path='" + get(rs, "PATH") +
+                                        "' tiers='" + get(rs, "TIERS") +
+                                        "' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
+                                        "' user_cut='" + get(rs, "USER_CUT") +
+                                        "' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "ADD_CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "ADD_LAST_MODIFIED_BY") +
+                                        "'/>\n"));
+                                 out.write("<analysis_dataset/>\n");
+
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+         }
+
 
 
 

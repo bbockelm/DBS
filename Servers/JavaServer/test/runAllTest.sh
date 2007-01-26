@@ -367,6 +367,15 @@ createAnalysisDataset () {
         display "$out"
 }
 
+listAnalysisDataset() {
+        message="Executing listAnalysisDataset API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=listAnalysisDataset analysis_datatset_name_pattern='AnalysisDS_b97b1762-a97f-4348-be9b-d10a9445e7ae' path='/This_is_a_test_primary_b97b1762-a97f-4348-be9b-d10a9445e7ae/This_is_a_test_tier_SIM_b97b1762-a97f-4348-be9b-d10a9445e7ae/CHILD_This_is_a_test_processed_b97b1762-a97f-4348-be9b-d10a9445e7ae'`
+        #out=`$CMD api=listAnalysisDataset analysis_datatset_name_pattern='AnalysisDS_$rand' path='$path_child'`
+        display "$out"
+        #echo "$out"
+}
+
 
 
 insertPrimaryDataset
@@ -394,6 +403,7 @@ createAnalysisDataset
 #listFileAlgorithms
 #listFileTiers
 #listFileLumis
+listAnalysisDataset
 #													
 echo 
 echo "*************************************************************"

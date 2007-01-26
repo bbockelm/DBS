@@ -1,6 +1,6 @@
 /**
- $Revision: 1.62 $"
- $Id: DBSApi.java,v 1.62 2007/01/24 15:43:49 afaq Exp $"
+ $Revision: 1.63 $"
+ $Id: DBSApi.java,v 1.63 2007/01/25 21:55:18 sekhri Exp $"
  *
 */
 
@@ -320,8 +320,12 @@ public class DBSApi {
 				(new DBSApiFileLogic(this.data)).listFileBranches(conn, out, 
 						get(table, "lfn", true)
 						);
-
-			} else if (apiStr.equals("insertPrimaryDataset")) {
+			} else if (apiStr.equals("listAnalysisDataset")) {
+                                (new DBSApiAnaDSLogic(this.data)).listAnalysisDataset(conn, out, 
+									get(table, "analysis_datatset_name_pattern", false), 
+									get(table, "path", false)
+						);
+                        }else if (apiStr.equals("insertPrimaryDataset")) {
 				(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out,
 						DBSApiParser.parse( getXml(table), "primary_dataset") , 
 						dbsUser);

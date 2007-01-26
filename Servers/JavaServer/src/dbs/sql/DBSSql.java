@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.55 $"
- $Id: DBSSql.java,v 1.55 2007/01/25 19:49:18 sekhri Exp $"
+ $Revision: 1.57 $"
+ $Id: DBSSql.java,v 1.57 2007/01/25 22:59:16 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1070,6 +1070,70 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+
+      public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String procDSID) throws SQLException {
+                String sql = "SELECT DISTINCT ads.ID as ID, \n " +
+			"ads.Name as ANALYSIS_DATASET_NAME, \n " +
+			"ads.Annotation as ANNOTATION, \n" +    
+			"ads.ProcessedDS as PROCDSID, \n" +  
+			"ads.Definition as DEFID, \n" +  
+			"ads.Type as TYPE, \n" +  
+			"ads.Status as STATUS, \n" +  
+			//"Parent as PARENT, \n" +  
+                        "ads.CreationDate as CREATION_DATE, \n" +
+                        "ads.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+
+			"adsdef.ID as ADDID, \n" +
+                        "adsdef.Name as ANALYSIS_DATASET_DEFINITION_NAME, \n" +
+                        "adsdef.LumiSections as LUMI_SECTIONS, \n" +
+                        "adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
+                        "adsdef.Runs as RUNS, \n" +
+                        "adsdef.RunsRanges as RUNS_RANGES, \n" +
+                        "adsdef.Algorithms as ALGORITHMS, \n" +
+                        "adsdef.LFNs as LFNS, \n" +
+                        "adsdef.Path as PATH, \n" +
+                        "adsdef.Tiers as TIERS, \n" +
+                        "adsdef.AnalysisDatasets as ANALYSIS_DATASET_NAMES, \n" +
+                        "adsdef.UserCut as USER_CUT, \n" +
+                        "adsdef.Description as ADD_DESCRIPTION, \n" +
+
+                        "adsdef.CreationDate as ADD_CREATION_DATE, \n" +
+                        "adsdef.LastModificationDate as ADD_LAST_MODIFICATION_DATE, \n" +
+                        "adsdefpercb.DistinguishedName as ADD_CREATED_BY, \n" +
+                        "adsdefperlm.DistinguishedName as ADD_LAST_MODIFIED_BY \n" +
+
+                        "FROM AnalysisDataset ads \n" +
+
+                        "JOIN AnalysisDSDef adsdef \n"+
+                                "ON adsdef.ID = ads.Definition \n"+
+
+                        "LEFT OUTER JOIN Person adsdefpercb \n" +
+                                "ON adsdefpercb.id = adsdef.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person adsdefperlm \n" +
+                                "ON adsdefperlm.id = adsdef.LastModifiedBy \n" +
+
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = ads.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = ads.LastModifiedBy \n" +
+                        "WHERE ads.Name like ? \n";
+			if (! DBSUtil.isNull(procDSID)) {
+				sql += "AND ProcessedDS = ? \n";
+			}
+                                sql += "ORDER BY ads.NAME DESC";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, patternName);
+                if (! DBSUtil.isNull(procDSID)) {
+			ps.setString(2, procDSID);
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
+
+
 
 	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
 		String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
