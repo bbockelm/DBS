@@ -340,6 +340,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'glossary'     : self.glossary(),
                      'frontPage'    : 0,
                      'dbsGlobal'    : DBSGLOBAL,
+                     'dbsList'      : self.dbsList,
                      'DBSDD'        : self.dbsdd,
                      'step'         : GLOBAL_STEP,
                      'iface'        : self.ddConfig.iface(),
@@ -690,7 +691,12 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'firstSite': firstSite,
                      'firstApp' : firstApp,
                      'firstPrim': firstPrim,
-                     'firstTier': firstTier
+                     'firstTier': firstTier,
+                     'dbsDesc'  : CheetahDBSTemplate.DBSInstanceDesc,
+                     'siteDesc' : CheetahDBSTemplate.TierSiteDesc,
+                     'primDesc' : CheetahDBSTemplate.ApplicationDesc,
+                     'appDesc'  : CheetahDBSTemplate.PrimaryDatasetDesc,
+                     'tierDesc' : CheetahDBSTemplate.DataTierDesc,
                     }
         t = Template(CheetahDBSTemplate.templateJSForm, searchList=[nameSpace])
         page+= str(t)
@@ -1561,7 +1567,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML code
         """
         self.helperInit(dbsInst)
-        dList = self.helper.getPrimaryDatasets()
+        dList = self.helper.getPrimaryDatasets(datasetPath="*",html=1)
         nameSpace = {
                      'msg'     : "%s: primary datasets"%dbsInst,
                      'dbsInst' : dbsInst,
@@ -1655,6 +1661,82 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getApplications.exposed=True
+
+    def getBranches(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get ROOT branches for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_branch">"""
+        self.helperInit(dbsInst)
+        dList=['ROOT1','ROOT2','FIXME']
+        nameSpace = {'name':'release','iList': dList}
+        t = Template(CheetahDBSTemplate.templateSelectList, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getBranches.exposed=True
+
+    def getTiers(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get tiers for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_tier">"""
+        self.helperInit(dbsInst)
+        dList=['SIM','DIGI','RECO','FIXME']
+        nameSpace = {'name':'release','iList': dList}
+        t = Template(CheetahDBSTemplate.templateSelectList, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getTiers.exposed=True
+
+    def getTriggerLines(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get trigger lines for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_prim">"""
+        self.helperInit(dbsInst)
+        dList = self.helper.getPrimaryDatasets(datasetPath="*",html=0)
+        nameSpace = {'name':'release','iList': dList}
+        t = Template(CheetahDBSTemplate.templateSelectList, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getTriggerLines.exposed=True
+
+    def getSoftwareReleases(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get releases for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_release">"""
+        self.helperInit(dbsInst)
+        dList = self.helper.getSoftwareReleases()
+        nameSpace = {'name':'release','iList': dList}
+        t = Template(CheetahDBSTemplate.templateSelectList, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getSoftwareReleases.exposed=True
 
     def getDatasets(self):
         """
