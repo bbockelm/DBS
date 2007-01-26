@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiAnaDSLogic.java,v 1.13 2007/01/25 22:59:15 sekhri Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.15 2007/01/26 18:10:59 sekhri Exp $"
  *
  */
 
@@ -341,20 +341,21 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(table, "created_by", false), dbsUser );
 		String creationDate = getTime(table, "creation_date", false);
+		String logicalOp = "AND";
 
 		String anaDSDefID = ""; 
 		String procDSID = ""; 
 		//String lumiNumberList = ""; 
 		//String runNumberList = ""; 
 		String tierList = ""; 
-		Vector tierIDList = null; 
-		Vector fileList = null; 
-		Vector adsList = null; 
+		Vector tierIDList = new Vector(); 
+		Vector fileList = new Vector(); 
+		Vector adsList = new Vector(); 
 		String algoList = ""; 
-		Vector algoIDList = null; 
+		Vector algoIDList = new Vector(); 
 		String userCut = "";
-		Vector lumiRangeList = null; 
-		Vector runRangeList = null; 
+		Vector lumiRangeList = new Vector(); 
+		Vector runRangeList = new Vector(); 
 
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
@@ -371,6 +372,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				tierList = get(rs, "TIERS");
 				algoList = get(rs, "ALGORITHMS");
 				userCut = get(rs, "USER_CUT");
+				//FIXME insert it in definition first and change the query to fetch it
+				//logicalOp = get(rs, "LOGICAL_OP");
 				fileList = listToVector(get(rs, "LFNS"));
 				adsList = listToVector(get(rs, "ANALYSIS_DATASET_NAMES"));
 			
@@ -449,6 +452,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		//Insert the contents of the analysis dataset in the AnalysisDSFileLumi map table
 		ps = null;
 		rs = null;
+		//Defualt value for logical op
+		if(isNull(logicalOp)) logicalOp = "OR";
 		try {
 			ps = DBSSql.listAnalysisDSFileLumi(conn, 
 					//adsID,
@@ -460,7 +465,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					runRangeList,
 					adsList,
 					userCut,
-					"OR",
+					logicalOp,
 					cbUserID, lmbUserID, creationDate);
 			rs =  ps.executeQuery();
 			

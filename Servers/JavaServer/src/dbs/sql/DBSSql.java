@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.57 $"
- $Id: DBSSql.java,v 1.57 2007/01/25 22:59:16 sekhri Exp $"
+ $Revision: 1.59 $"
+ $Id: DBSSql.java,v 1.59 2007/01/26 18:10:59 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -356,7 +356,7 @@ public class DBSSql {
 				if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
 				tmpSql += "?";
 			}	
-			sql += op + " ls.LumiSectionNumber IN ( \n\t" +
+			sql += op + " ls.ID IN ( \n\t" +
 					"SELECT adsfl.Lumi FROM AnalysisDSFileLumi adsfl \n\t" +
 					"JOIN AnalysisDataset ad \n\t\t" +
 						"ON ad.ID = adsfl.AnalysisDataset \n\t" +

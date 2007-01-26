@@ -142,6 +142,21 @@ listDatasetParents () {
 	display "$out"
 }
 
+listAnalysisDatasetDefinition () {
+	message="Executing listAnalysisDatasetDefinition API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listAnalysisDatasetDefinition`
+	display "$out"
+}
+
+listAnalysisDataset () {
+	message="Executing listAnalysisDataset API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listAnalysisDataset`
+	display "$out"
+}
+
+
 #insert primary dataset
 insertPrimaryDataset () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
@@ -335,7 +350,17 @@ createAnalysisDatasetFromPD () {
 createAnalysisDatasetDefination () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
+                                <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination1_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
+                        </dbs>"
+	echo "$xmlString"
+        message="Executing  createAnalysisDatasetDefination API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=createAnalysisDatasetDefination "xmlinput=$xmlString"`
+        display "$out"
+
+        xmlString="<?xml version='1.0' standalone='yes'?>
+                        <dbs>
+                                <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination2_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
 				<run run_number='$run_number1, $run_number2' run_range='1,10000'/>
 				<run run_number='$run_number2' run_range='20000,25000'/>
 				<lumi_section lumi_section_number='9997' lumi_section_range='1,5000'/>
@@ -347,33 +372,37 @@ createAnalysisDatasetDefination () {
 				$algo1
 				$algo3
 				$algo4
-				<analysis_dataset analysis_dataset_name='AnalysisDS_$rand'/>
+				<analysis_dataset analysis_dataset_name='AnalysisDS1_$rand'/>
                         </dbs>"
 	echo "$xmlString"
         message="Executing  createAnalysisDatasetDefination API..."
         echo $message >> $outFile ; echo $message
         out=`$CMD api=createAnalysisDatasetDefination "xmlinput=$xmlString"`
         display "$out"
+
+
+	
 }
 
 createAnalysisDataset () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' analysisds_def_name='AnalysisDS_Defination_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS1_$rand' analysisds_def_name='AnalysisDS_Defination1_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDataset API..."
         echo $message >> $outFile ; echo $message
         out=`$CMD api=createAnalysisDataset "xmlinput=$xmlString"`
         display "$out"
-}
 
-listAnalysisDataset() {
-        message="Executing listAnalysisDataset API..."
+	xmlString="<?xml version='1.0' standalone='yes'?>
+                        <dbs>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS2_$rand' analysisds_def_name='AnalysisDS_Defination2_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                        </dbs>"
+        message="Executing  createAnalysisDataset API..."
         echo $message >> $outFile ; echo $message
-        out=`$CMD api=listAnalysisDataset analysis_datatset_name_pattern='AnalysisDS_b97b1762-a97f-4348-be9b-d10a9445e7ae' path='/This_is_a_test_primary_b97b1762-a97f-4348-be9b-d10a9445e7ae/This_is_a_test_tier_SIM_b97b1762-a97f-4348-be9b-d10a9445e7ae/CHILD_This_is_a_test_processed_b97b1762-a97f-4348-be9b-d10a9445e7ae'`
-        #out=`$CMD api=listAnalysisDataset analysis_datatset_name_pattern='AnalysisDS_$rand' path='$path_child'`
+        out=`$CMD api=createAnalysisDataset "xmlinput=$xmlString"`
         display "$out"
-        #echo "$out"
+
 }
 
 
@@ -389,21 +418,21 @@ insertFiles
 #createAnalysisDatasetFromPD
 createAnalysisDatasetDefination
 createAnalysisDataset
-
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
-#listDatasetContents
-#listDatasetParents
-#listFileParents
-#listFileAlgorithms
-#listFileTiers
-#listFileLumis
+listAnalysisDatasetDefinition
 listAnalysisDataset
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
+#listDatasetContents
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 #													
 echo 
 echo "*************************************************************"
