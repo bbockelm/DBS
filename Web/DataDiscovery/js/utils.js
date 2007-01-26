@@ -63,7 +63,7 @@ function ResetAllResults() {
 }
 function showHistoryMenu(name,histArr) {
   var id=document.getElementById("history_table");
-  id.className="show_inline";
+  id.className="show_table";
   for(i=0;i<histArr.length;i++) {
       var _id=document.getElementById('_'+histArr[i]+'History'); // menu's
       var  id=document.getElementById(histArr[i]+'History');     // content's
@@ -341,7 +341,7 @@ function showMenu(menu) {
    }
    var t=document.getElementById(menu+"_Menu");
    if (t) {
-       t.className="td_blue_box"
+       t.className="td_select_box"
    }
 //   hideResMenu();
 }
@@ -889,10 +889,14 @@ function ClearKeywordsInputValue() {
      id.value="";
   }
 }
-function KeywordHelp(help) {
-  var id=document.getElementById('kw_help');
+function KeywordHelp(tag,help,_cName) {
+  var className='float_yellow_box';
+  if(_cName) {
+      className=_cName;
+  }
+  var id=document.getElementById(tag);
   if(id) {
-     id.innerHTML='<div class="float_gray_box">'+help+'</div>';
+     id.innerHTML='<div class="'+className+'">'+help+'</div>';
   }
 }
 function GetValue(tag) {
