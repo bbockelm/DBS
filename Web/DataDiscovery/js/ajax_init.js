@@ -406,10 +406,53 @@ function registerAjaxObjectCalls() {
 
     ajaxEngine.registerRequest('ajaxGetRss','getRss');
     ajaxEngine.registerAjaxElement('rss_list');
+
+    ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
+    ajaxEngine.registerAjaxElement('kw_release');
+    ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');
+    ajaxEngine.registerAjaxElement('kw_prim');
+    ajaxEngine.registerRequest('ajaxGetTiers','getTiers');
+    ajaxEngine.registerAjaxElement('kw_tier');
+    ajaxEngine.registerRequest('ajaxGetBranches','getBranches');
+    ajaxEngine.registerAjaxElement('kw_branch');
 }
 function ajaxGetRss() {
   ajaxEngine.sendRequest('ajaxGetRss');
 }
+function ajaxGetKWFields() {
+  ajaxGetReleases();
+  ajaxGetTriggerLines();
+  ajaxGetTiers();
+  ajaxGetBranches();
+}
+function getDBS_kw(_dbs) {
+  var dbs;
+  if(_dbs) {
+      dbs=_dbs;
+  } else {
+      dbs=document.getElementById('kw_dbsSelector').value;
+  }
+  return dbs;
+}
+function ajaxGetReleases(_dbs) {
+  dbs=getDBS_kw(_dbs);
+  ajaxEngine.sendRequest('ajaxGetReleases','dbsInst='+dbs);
+}
+function ajaxGetTriggerLines(_dbs) {
+  dbs=getDBS_kw(_dbs);
+  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
+}
+function ajaxGetTiers(_dbs) {
+  dbs=getDBS_kw(_dbs);
+  ajaxEngine.sendRequest('ajaxGetTiers','dbsInst='+dbs);
+}
+function ajaxGetBranches(_dbs) {
+  dbs=getDBS_kw(_dbs);
+  ajaxEngine.sendRequest('ajaxGetBranches','dbsInst='+dbs);
+}
+
+
+
 function registerAjaxGetBlocksFromSiteCalls() {
   ajaxEngine.registerRequest('ajaxGetBlocksFromSite','getBlocksFromSiteHelper');
   ajaxEngine.registerAjaxElement('siteBlocksHandler');
