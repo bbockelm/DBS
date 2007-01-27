@@ -10,7 +10,7 @@ CLI DBS Data discovery toolkit. JavaScript navigator menu dictionary generator.
 """
 
 # import system modules
-import string, os, sys, stat
+import string, os, sys, stat, shutil
 
 # DBS modules
 import DBSHelper, DBSInst, DBSUtil
@@ -41,7 +41,7 @@ if __name__ == "__main__":
               continue
         try:
             if os.path.isdir('rss/%s'%dbsInst):
-               os.removedirs(os.path.join(os.getcwd(),'rss/%s'%dbsInst))
+               shutil.rmtree(os.path.join(os.getcwd(),'rss/%s'%dbsInst))
             helper.rssMaker(dbsInst)
         except:
             DBSUtil.printExcept()
