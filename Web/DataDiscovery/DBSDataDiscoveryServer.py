@@ -89,7 +89,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.sumPage    = ""
         self.firstSearch=1
         self.quiet      = 0
-        self.siteDict   = {}
+#        self.siteDict   = {}
 #        self.host       = urlparse.urljoin(os.environ['DBSDD'],"discovery")
 #        self.host       = os.environ['DBSDD']
         try:
@@ -1322,11 +1322,11 @@ class DBSDataDiscoveryServer(DBSLogger):
            Generates a list of LFNs for given site
         """
         try:
-            print "getLFNsForSite",dbsInst,site
             self.htmlInit()
             page ="""<html><body><pre>\n"""
             try:
-                for blockName in self.siteDict[site]:
+#                for blockName in self.siteDict[site]:
+                for blockName in self.helper.getBlocksFromSite(site):
                     lfnList = self.helper.getLFNs(dbsInst,blockName,"")
                     for item in lfnList:
                         lfn=item[0]
@@ -1349,7 +1349,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
-            for blockName in self.siteDict[site]:
+#            for blockName in self.siteDict[site]:
+            for blockName in self.helper.getBlocksFromSite(site):
                 page+="%s\n"%blockName
             page+="\n</pre></body></html>"
             return page
@@ -1418,7 +1419,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
 
         # keep in cache siteList
-        self.siteDict=siteList
+#        self.siteDict=siteList
         page=""
         nameSpace = {
                      'host'       : self.dbsdd,
