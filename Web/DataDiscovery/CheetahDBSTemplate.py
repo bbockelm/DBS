@@ -508,7 +508,8 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 
 templateFileBlocksFromSite="""
 <p></p>
-<table id="siteBlocks" class="sortable">
+###<table id="siteBlocks" class="sortable">
+<table id="siteBlocks">
 <tr>
     <th>Block name</th>
     <th align="center">LFN list</th>
@@ -929,7 +930,8 @@ templateLFN = """
 #from DBSUtil import sizeFormat, colorSizeHTMLFormat
 Block name: <b>$blockName</b>
 <!-- Main table -->
-<table id="lfn_table" class="sortable" cellspacing="0" border="1">
+###<table id="lfn_table" class="sortable" cellspacing="0" border="1">
+<table id="lfn_table" cellspacing="0" border="1">
 <tr class="sortable_gray">
 
 <td>status</td>
@@ -971,7 +973,7 @@ $name<br />
 #end for
 </table>
 <!-- end of main table -->
-<script type="text/javascript">sortables_init();</script>
+###<script type="text/javascript">sortables_init();</script>
 """
 
 templateTable="""
@@ -1103,7 +1105,8 @@ Processed dataset:<br />
 <span class="offset_left">
 <b>$proc</b>
 </span>
-<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<table id="$tableId" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Run</td>
 <td>Events</td>
@@ -1141,7 +1144,8 @@ Processed dataset:<br />
 <span class="offset_left">
 <b>$proc</b>
 </span>
-<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<table id="$tableId" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Block name</td>
 <td>Events</td>
