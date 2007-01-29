@@ -952,11 +952,11 @@ $name<br />
 <tr>
 <td><a href="$host/getLFN_Branches?dbsInst=$dbsInst&lfn=$name">ROOT branches</a></td>
 <td>|</td>
-###<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
-<td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis</a></td>
+<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
+###<td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis</a></td>
 <td>|</td>
-###<td><a href="$host/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
-<td><a href="javascript:ajaxGetAlgos('$dbsInst','$name')">Algorithms</a></td>
+<td><a href="$host/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
+###<td><a href="javascript:ajaxGetAlgos('$dbsInst','$name')">Algorithms</a></td>
 <td>|</td>
 <td><a href="$host/getLFN_Tiers?dbsInst=$dbsInst&lfn=$name">Tiers</a></td>
 <td>|</td>
@@ -972,18 +972,18 @@ $name<br />
 """
 
 templateTable="""
-<table>
-<tr>
+<table cellspacing="0" border="1">
+<tr class="sortable_gray">
 #for item in $header
 <td>$item</td>
 #end for
 </tr>
-#content
+$content
 </table>
 """
 
 templateTableBody="""
-<tr>
+<tr class="sortable_yellow">
 #for item in $branch
 <td>$item</td>
 #end for
