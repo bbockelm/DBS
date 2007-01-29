@@ -460,7 +460,7 @@ function popUp(URL,WIDTH,HEIGHT) {
   var url=URL.replace('#','%23');
 //  eval("page" + id + " = window.open(url, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');");
   var winName='page'+id;
-  var page = window.open(url,winName, 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');
+  var page = window.open(url,winName, 'toolbar=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width='+w+',height='+h+',left = 190,top = 220');
   var j = page.document.getElementById('_snapshot');
   if (j) {
       j.innerHTML='test';
