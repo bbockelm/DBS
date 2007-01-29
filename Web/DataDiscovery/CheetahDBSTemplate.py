@@ -142,9 +142,8 @@ templateTop = """
 <link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css" />
 
 </head>
-####<body onload="setGreeting();ajaxInit();insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
+###<body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
 <body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs')" id="content">
-###<body onload="setGreeting();ajaxInit('$dbsGlobal');" id="content">
 
 <noscript>
 <h1 class="box_red">Warning:</h1>
@@ -214,7 +213,12 @@ Home page: <a href="$host/">users</a>
 
 <div id="main" class="hide">
 <script type="text/javascript">SetMain()</script>
-
+<div align="right">
+Home page: 
+<a href="$host/">users</a>
+|
+<a href="$host/expert">experts</a>
+</div>
 """
 
 templateHistory="""
