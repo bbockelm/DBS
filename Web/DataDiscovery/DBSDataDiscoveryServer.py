@@ -2273,17 +2273,20 @@ class DBSDataDiscoveryServer(DBSLogger):
            page="""<ajax-response><response type="element" id="floatDataDescription">"""
         else:
            page=self.genTopHTML()
-        try:
-            for dict in iList:
-                nameSpace={'branch':dict.values()}
-                t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
-                content+=str(t)
-                idx+=1
-            nameSpace={'header':iList[0].keys(),'content':content}
-            t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
-            p=str(t)
-        except:
-            p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
+        if  len(iList):
+            try:
+                for dict in iList:
+                    nameSpace={'branch':dict.values()}
+                    t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
+                    content+=str(t)
+                nameSpace={'header':iList[0].keys(),'content':content}
+                t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
+                p=str(t)
+            except:
+                printExcept()
+                p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
+        else:
+           p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
         if int(ajax):
            nameSpace={'title':msg,'description':p,'className':'float_help_box'}
            t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
