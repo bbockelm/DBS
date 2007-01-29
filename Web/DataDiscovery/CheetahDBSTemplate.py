@@ -774,16 +774,11 @@ templateLeftBar="""
 
 templateNextBar="""
 #if $tot>1
-#### Please note, here I use GLOBAL_STEP as a global step, it's defined in js/utils.js
 <script type="text/javascript">
-//var GLOBAL_STEP=$step;
-//var GLOBAL_CELL='cell_1';
 BuildBar(1,$step,$tot,$step,'$dbsInst','$site','$app','$prim','$tier','$proc');
 UpdateResultIndex(1,$tot);
 Choose('cell_1');
 </script>
-####if $tot>$res_page
-###<script type="text/javascript">BuildBar(1,GLOBAL_STEP,$tot,'$dbsInst','$site','$app','$prim','$tier','$proc');UpdateResultIndex(1,$tot);Choose('cell_1');</script>
 #end if
 """
 
@@ -1384,7 +1379,7 @@ Details
 ##
 """
 
-templateBottom="""
+templateResults="""
 <span id="floatDataDescription"></span>
 <table id="results_menu" class="hide" cellspacing="0" cellpadding="0" width="100%">
 ###<table id="results_menu" cellspacing="0" cellpadding="0" width="100%">
@@ -1456,7 +1451,6 @@ App configs
 <br />
 <div id="navBar" class="hide"></div>
 <div id="results_index"></div>
-<div id="results"></div>
 <div id="results_waiting"></div>
 <div id="results_kw"></div>
 <div id="results_dbs"></div>
@@ -1464,23 +1458,13 @@ App configs
 <div id="runs"></div>
 <div id="parents"><br /></div>
 <div id="appConfigs"><br /></div>
-
-#*
-<div id="results_index"></div>
-<div id="results" class="show_inline"></div>
-<div id="results_waiting" class="show_inline"></div>
-<div id="results_kw" class="hide"></div>
-<div id="results_dbs" class="hide"></div>
-<div id="results_site" class="hide"></div>
-<div id="runs" class="hide"></div>
-<div id="parents" class="hide"><br /></div>
-<div id="appConfigs" class="hide"><br /></div>
-*#
-
-<div class="align_center">
+<div id="results"></div>
+<p>
 <div id="progressBar"></div>
-</div>
+</p>
+"""
 
+templateBottom="""
 </div> <!-- end of div with class="main" -->
 </body>
 </html>
@@ -2611,6 +2595,16 @@ A subset of a Processed Dataset representing a coherent sample for physics analy
 <p><b>Examples:</b> to be defined</p>\
 """
 
+templateBarNavigator="""
+<span class="td_underline" style="padding: 3px 3px 3px 3px;">
+<b>Menu:Navigator</b></span> &#187; 
+<b>DBS instance:</b>$dbsInst &#187; 
+<b>Site:</b>$site &#187; 
+<b>Application:</b>$app &#187; 
+<b>Primary Dataset:</b>$prim &#187; 
+<b>Data tier:</b>$tier
+<hr class="dbs" />
+"""
 
 templateDummy="""
 <table><tr valign="bottom"><td>
