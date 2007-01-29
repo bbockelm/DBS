@@ -995,3 +995,10 @@ function GetParentNavBar() {
       }
   }
 }
+function GetTagContent(tag) {
+  var j=document.getElementById(tag);
+  if (j) {
+      return j.innerHTML;
+  }
+  return '';
+}
