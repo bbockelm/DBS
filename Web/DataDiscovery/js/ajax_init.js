@@ -266,7 +266,7 @@ function ajaxGetData(_dbs,_site,_app,_primD,_tier,proc) {
   SetCookie('tier',tier);
   SetCookie('proc',proc);
 
-  ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc);
+  ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'hist='+GetTagContent('navBar'));
   var action='<a href="javascript:ResetAllResults();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
   ajaxHistory(action);
   // invoke next chunk of data
@@ -672,55 +672,22 @@ function ajaxGenParentsGraphFromSelection() {
       }
   }
 }
-function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier) {
+function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier,proc) {
   ShowWheel("__parents");
-  var sel;
-  var dbs;
-  if(_dbs) {
-      dbs=_dbs;
-  } else {
-      sel=document.getElementById('dbsSelector');
-      if(!sel) return;
-      dbs=sel.value;
-  }
-  var site;
-  if(_site) {
-      site=_site;
-  } else {
-      sel=document.getElementById('siteSelector');
-      if(!sel) return;
-      site=sel.value;
-  }
-  var app;
-  if(_app) {
-      app=_app;
-  } else {
-      sel=document.getElementById('appSelector');
-      if(!sel) return;
-      app=sel.value;
-  }
-  var primD;
-  if(_primD) {
-      primD=_primD;
-  } else {
-      sel=document.getElementById('primSelector');
-      if(!sel) return;
-      primD=sel.value;
-  }
-  var tier;
-  if(_tier) {
-      tier=_tier;
-  } else {
-      sel=document.getElementById('tierSelector');
-      if(!sel) return;
-      tier=sel.value;
-  }
-  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier);
-  var action='<a href="javascript:ResetAllResults();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+')</a>';
+  var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
+  if(!arr) return;
+  var dbs  = arr[0];
+  var site = arr[1];
+  var app  = arr[2];
+  var primD= arr[3];
+  var tier = arr[4];
+  if(!proc) {proc="*";}
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,'proc='+proc);
+  var action='<a href="javascript:ResetAllResults();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
   ajaxHistory(action);
 }
 function ajaxNextGenParentsGraph(dbs,site,app,primD,tier,proc,idx) {
-  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"_idx="+idx);
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,"_idx="+idx);
 }
 // keep this for first implementation of provenance calls
 function registerAjaxProvenanceCalls() {
