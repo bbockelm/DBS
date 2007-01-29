@@ -1348,15 +1348,21 @@ class DBSDataDiscoveryServer(DBSLogger):
             self.htmlInit()
             page ="""<html><body><pre>\n"""
             try:
-#                for blockName in self.siteDict[site]:
-                for blockName in self.helper.getBlocksFromSite(site):
+                bList=self.helper.getBlocksFromSite(site)
+            except:
+                printExcept()
+                page+="No LFNs found for site '%s'\n"%site
+                pass
+            for blockName in bList:
+                try:
                     lfnList = self.helper.getLFNs(dbsInst,blockName,"")
                     for item in lfnList:
                         lfn=item[0]
                         page+="%s\n"%lfn
-            except:
-                page+="No LFNs found for site '%s'"%site
-                pass
+                except:
+                    printExcept()
+                    page+="No LFNs found int DBS for block='%s'\n"%blockName
+                    pass
             page+="\n</pre></body></html>"
             return page
         except:
