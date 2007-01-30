@@ -375,6 +375,24 @@ function switchLink(tag,tableId) {
       id.className="td_plain";
   }
 }
+function whereUsers() {
+  var tagArr = new Array('homeUser','homeExpert');
+  href=window.location.href;
+  var tag='homeUser';
+  if (href.indexOf('expert')>0) {
+      tag='homeExpert';
+  }
+  for(i=0;i<tagArr.length;i++) {
+      var id=document.getElementById(tagArr[i]);
+      if (id) {
+          if (tag==tagArr[i]) {
+              id.className="td_underline_pad";
+          } else {
+              id.className="td_plain";
+          }
+      }
+  }
+}
 function ShowBlockInfo(tableId){
   underlineLink("Both");
   var elem=document.getElementsByName("blockInfo");

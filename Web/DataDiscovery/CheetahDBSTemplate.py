@@ -215,10 +215,11 @@ Home page: <a href="$host/">users</a>
 <script type="text/javascript">SetMain()</script>
 <div align="right">
 Home page: 
-<a href="$host/">users</a>
+<a href="$host/" id="homeUser">users</a>
 |
-<a href="$host/expert">experts</a>
+<a href="$host/expert" id="homeExpert">experts</a>
 </div>
+<script type="text/javascript">whereUsers()</script>
 """
 
 templateHistory="""

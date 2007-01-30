@@ -599,6 +599,17 @@ table.image td.size {
   color: #000000;
   background-color: #E0E0E0;
 }
+.td_underline_pad {
+  padding: 1px 5px 1px 5px;
+  color: #000000;
+  background-color: #E0E0E0;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  padding: 1px 1px 1px 1px;
+  border-style: solid solid hidden solid;
+  border-color: gray gray gray gray; 
+  cursor: pointer;
+}
 .td1 {
   width: 1%;
 }
@@ -841,6 +852,10 @@ table.sortable span.sortarrow {
   margin-left: 50px;
 }
 .align_center {
+/*  position: absolute;*/
+/*  left: 50%;*/
+/*  width: 700px;*/
+/*  margin-left: -350px;*/
 /*  align: center;*/
 }
 
@@ -959,4 +974,8 @@ table.menu td.td_select_box:hover {
     font-weight: bold;
 /*    background-color:#8c8ad0;*/
     background-color: white;
+}
+.home_bar {
+    left: 80%;
+    margin-top: -10px;
 }
