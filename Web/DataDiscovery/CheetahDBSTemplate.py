@@ -1169,8 +1169,8 @@ Processed dataset:<br />
 <td align="right">$dbsDict['NumberOfFiles']</td>
 <td align="right">$colorSizeHTMLFormat($dbsDict['BlockSize'])</td>
 <td align="center">
-<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)" alt="cff format">cff</a>, 
-<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',900)" alt="file list format">txt</a>,
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',900)">txt</a>,
 <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc',1000)">details</a>
 </td>
 #if int($dbsDict['OpenForWriting'])==1
@@ -1201,8 +1201,8 @@ templateDbsInfoTableEntry="""
 <td align="right">$dbsDict['NumberOfFiles']</td>
 <td align="right">$colorSizeHTMLFormat($dbsDict['BlockSize'])</td>
 <td align="center">
-<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)" alt="cff format">cff</a>, 
-<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)" alt="file list format">txt</a>,
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)">txt</a>,
 <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">details</a>
 </td>
 #if int($dbsDict['OpenForWriting'])==1
@@ -1302,7 +1302,7 @@ Details
 #set siteTotSize+=$blockDict[$bName][3]
 #end if
 #end for
-  <tr valign="top" bgcolor="#FFFADC" name="row_sumInfo" id="row_sumInfo">
+  <tr valign="top" class="sortable_yellow">
      <td><div class="dbs_cell">$site</div></td>
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
@@ -1310,9 +1310,9 @@ Details
      <td align="center">
      <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site',1000)">All</a>
      </td>
-     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <td align="center" class="hide">
      </td>
-     <td align="center" name="blockInfo" id="blockInfo" class="hide">
+     <td align="center" class="hide">
      <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">all blocks</a>
      </td>
   </tr>
@@ -1357,8 +1357,8 @@ Details
      <td align="right"><div class="dbs_cell">$nFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($size)</div></td>
      <td align="center"><div class="dbs_cell">
-     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)" alt="cff format">cff</a>, 
-     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)" alt="file list format">txt</a>,
+     <a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">cff</a>, 
+     <a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',900)">txt</a>,
      <a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$path',1000)">details</a>
      </div>
      </td>
@@ -1700,12 +1700,16 @@ Selection search menu
 <table width="100%">
 <tr>
 <td align="left">
+#if $userMode
+<input type="hidden" name="dbsInst" value="$dbsList[0]" id="kw_dbsSelector" />
+#else
 DBS instance: <select name="keywordsSearch_dbsInst" id="kw_dbsSelector">
 ###<option value="All">All</option>
 #for dbs in $dbsList
 <option value="$dbs">$dbs</option>
 #end for
 </select>
+#end if
 </td>
 <td align="right">
 <input type="submit" name="Submit" id="kw-submit-button" />
@@ -2476,7 +2480,7 @@ templateRssList="""
 #set l=$item.split("/")
 #set app=$l[2].replace("___","/")
 #set prim=$l[3]
-<td><a href="$host/$item"><img src="images/rss_blue.gif" alt="RSS" /></a> <b>Application:</b>$app, <b>Primary dataset:</b>$prim</td>
+<td><a href="$host/$item"><img src="images/rss_blue.gif" /></a> <b>Application:</b>$app, <b>Primary dataset:</b>$prim</td>
 </tr>
 #end for
 </table>
@@ -2541,10 +2545,10 @@ templateSelectList="""
 DBSInstanceDesc="""\
 <p><b>DBS instance</b></p>\
 <p>\
-A unique self-consistent instance of DBS (Data Bookkeeping System) which used for particular task.\
-For instance, data can be produce on site on regular basis, for that purpose site keeps\
-its own DBS (instance). Once data are ready for users they published to Global DBS instance\
-which is CMS default.\
+A unique self-consistent instance of DBS (Data Bookkeeping System) which used for particular task. \
+For instance, data can be produce on site on regular basis, for that purpose site keeps \
+its own DBS (instance). Once data are ready for users they published to Global DBS instance \
+which is CMS default. Currently, various DBS instances used by different production teams. \
 </p>\
 <p><b>Examples:</b> MCGlobal/Writer</p>\
 """
@@ -2554,12 +2558,12 @@ TierSiteDesc="""<p><b>Tier site</b></p>\
 """
 ApplicationDesc="""<p><b>Application</b></p>\
 <p>\
-An application consists of three parts: version, family and executable. For simplicity\
-we follow path convension, e.g.\
-/version/family/executable. The version is a software release name, e.g. CMSSW_1_1_1\
-family is data types which produced by software release, e.g. SIM-DIG-RECO,\
-please note here that notation describe that software release used to produce\
-three types of data. And finally, executable is a name of executable used to produce\
+An application consists of three parts: version, family and executable. For simplicity \
+we follow path convension, e.g. \
+/version/family/executable. The version is a software release name, e.g. CMSSW_1_1_1 \
+family is data types which produced by software release, e.g. SIM-DIG-RECO, \
+please note here that notation describe that software release used to produce \
+three types of data. And finally, executable is a name of executable used to produce \
 this data.\
 </p>\
 <p><b>Examples:</b> /CMSSW_1_2_0/DIGI-RECO/cmsRun</p>\
@@ -2586,10 +2590,10 @@ may be included in the same output file.\
 """
 ProcessedDatasetDesc="""<p><b>Processed dataset</b></p>\
 <p>\
-A slice of data from a Primary Dataset defined by the processing history applied to it.\ 
+A slice of data from a Primary Dataset defined by the processing history applied to it. \ 
 A processed dataset will correspond to a large production of data with a single major \
 software release version, but may include multiple minor versions for small bug fixes \
-and also may contain the output of multiple processings of some given input data.\
+and also may contain the output of multiple processings of some given input data. \
 </p>\
 <p><b>Examples:</b> /mc-onsel-120_PU_Zee/DIGI/CMSSW_1_2_0-NoPU-DIGI-1169220692</p>\
 """
