@@ -41,11 +41,12 @@ if __name__ == "__main__":
               continue
         try:
             fileName = helper.initJSDict(dbsInst)
-            if os.path.isfile(fileName) and os.stat(fileName)[stat.ST_SIZE]>0:
-               os.rename(fileName,string.replace(fileName,".tmp",""))
-            else:
-               DBSUtil.printExcept()
-               raise "File %s is corrupted"%fileName
         except:
             DBSUtil.printExcept()
             raise "Fail to generate JS dictionary for dbs instance",dbsInst
+        try:
+            if os.path.isfile(fileName) and os.stat(fileName)[stat.ST_SIZE]>0:
+               os.rename(fileName,string.replace(fileName,".tmp",""))
+        except:
+            DBSUtil.printExcept()
+            raise "Fail to move '%s'.tmp to '%s'"%(fileName,fileName)
