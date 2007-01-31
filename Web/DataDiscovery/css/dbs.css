@@ -984,6 +984,7 @@ table.menu a {
     list-style: none;
     margin-left:15px;
     text-align: left;
+    border-bottom: 1px dotted #F0F0F0; /* use the same color as in menu_td_gray_fixed, for IE*/
 }
 #navlist li a
 {
@@ -995,10 +996,8 @@ table.menu a {
 #navlist li a:visited { color: #005599; }
 #navlist li a:hover
 {
-/*    font-weight:bold;*/
     color: #996699;
     background: #b1d5ed;
-/*    border-left: 3px #004080 solid;*/
 }
 #navlist li.plain0
 {
@@ -1007,6 +1006,8 @@ table.menu a {
     font-weight: bold;
     list-style: none;
     text-align: left;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 #navlist li.plain
 {
@@ -1016,6 +1017,8 @@ table.menu a {
     font-weight: bold;
     list-style: none;
     text-align: left;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 #navlist li.selected
 {
