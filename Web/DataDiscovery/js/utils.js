@@ -5,12 +5,12 @@ var GLOBAL_CELL='cell_1';
 //var DBSDD_EXPERT=DBSDD+'expert';
 
 // Override masthead
-YAHOO.namespace("cms.dmwt");
-function insertSiteMasthead(){
-        YAHOO.cms.dmwt.masthead.setFooter('<ul><li><a href="'+DBSDD+'">DBS/DLS::User Mode</a></li><li>|</li><li><a href="'+DBSDD_EXPERT+'">DBS/DLS::Expert Mode</a></li></ul>');
-        YAHOO.cms.dmwt.masthead.render(document.body);
-        YAHOO.cms.dmwt.masthead.show();
-}
+//YAHOO.namespace("cms.dmwt");
+//function insertSiteMasthead(){
+//        YAHOO.cms.dmwt.masthead.setFooter('<ul><li><a href="'+DBSDD+'">DBS/DLS::User Mode</a></li><li>|</li><li><a href="'+DBSDD_EXPERT+'">DBS/DLS::Expert Mode</a></li></ul>');
+//        YAHOO.cms.dmwt.masthead.render(document.body);
+//        YAHOO.cms.dmwt.masthead.show();
+//}
 
 function SetMain() {
   var id=document.getElementById("main");
