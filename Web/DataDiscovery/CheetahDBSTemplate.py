@@ -1248,10 +1248,10 @@ contains $nEvents events, $totFiles files, $totSize.
 <td>Show:</td>
 <td>
 
-<table id="Sum_$tableId" class="td_underline">
+<table id="_sum_$tableId" class="td_underline">
 <tr>
 <td>
-<a href="javascript:HideTag('det_$tableId');ShowTag('sum_$tableId');switchLink('Sum','$tableId')">
+<a href="javascript:HideTag('det_$tableId');ShowTag('sum_$tableId');switchLink('_sum','$tableId')">
 Summary
 </a>
 </td>
@@ -1261,10 +1261,10 @@ Summary
 </td>
 <td>
 
-<table id="Det_$tableId" class="td_plain">
+<table id="_det_$tableId" class="td_plain">
 <tr>
 <td>
-<a href="javascript:ShowTag('det_$tableId');HideTag('sum_$tableId');switchLink('Det','$tableId')">
+<a href="javascript:ShowTag('det_$tableId');HideTag('sum_$tableId');switchLink('_det','$tableId')">
 Details
 </a>
 </td>
@@ -1274,7 +1274,7 @@ Details
 </td>
 </tr>
 </table>
-<script type="text/javascript">switchLink('Sum','$tableId')</script>
+<script type="text/javascript">switchLink('_sum','$tableId')</script>
 
 <!-- Summary -->
 <div id="sum_$tableId">

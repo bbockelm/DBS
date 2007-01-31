@@ -365,8 +365,8 @@ function underlineLink(tag) {
 }
 function switchLink(tag,tableId) {
   var _tag;
-  if(tag=='Det') {_tag='Sum'}
-  if(tag=='Sum') {_tag='Det'}
+  if(tag=='_det') {_tag='_sum'}
+  if(tag=='_sum') {_tag='_det'}
 
   var id=document.getElementById(tag+'_'+tableId);
   if (id) {
