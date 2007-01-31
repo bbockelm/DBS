@@ -130,15 +130,14 @@ templateTop = """
 <script type="text/javascript" src="js/rico.js"></script>
 <script type="text/javascript" src="js/ajax_init.js"></script>
 
+#*
 <!-- TreeView from YUI -->
 <script type="text/javascript" src="yui/build/yahoo/yahoo.js" ></script>
 <script type="text/javascript" src="yui/build/event/event.js" ></script>
 <script type="text/javascript" src="yui/build/treeview/treeview.js" ></script>
 <link rel="stylesheet" type="text/css" href="yui/examples/treeview/css/local/tree.css" />
+*#
 
-<!--
-<link rel="stylesheet" type="text/css" href="css/masthead_add.css" />
--->
 <link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css" />
 
 </head>
@@ -1310,11 +1309,6 @@ Details
      <td align="center">
      <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site',1000)">All</a>
      </td>
-     <td align="center" class="hide">
-     </td>
-     <td align="center" class="hide">
-     <a href="javascript:popUp('$host/getBlocksForSite?site=$site',1000)">all blocks</a>
-     </td>
   </tr>
 #end for
 </table>
@@ -1532,115 +1526,91 @@ var GLOBAL_STEP=$step
 <tr>
 <!-- menu -->
 <td id="menu_td_fixed" class="menu_td_gray_fixed" valign="top">
+<div id="navcontainer">
+<ul id="navlist">
+  <li class="plain">
+    <span class="yellow_box"
+    onMouseOver="KeywordHelp('NavDesc_tag','Discovery page provides a three ways to find your data.\
+    <p>Navigator menu based search is designed to guide you through available data in CMS.</p>\
+    <p>Selection search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
+    <p>Site search is used to find out data which are located at specified site. Data search does not based on any data classification and it is plain lookup of what is available on a site through DLS service.</p>\
+    ')" onMouseOut="ClearTag('NavDesc_tag')">?</span><span id="NavDesc_tag"></span>
+    <b>Find data:</b>
+  </li>
 
-<table class="menu" width="100%">
-<tr>
-<td>
-<span class="yellow_box" 
-onMouseOver="KeywordHelp('NavDesc_tag','Discovery page provides a three ways to find your data.\
-<p>Navigator menu based search is designed to guide you through available data in CMS.</p>\
-<p>Selection search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
-<p>Site search is used to find out data which are located at specified site. Data search does not based on any data classification and it is plain lookup of what is available on a site through DLS service.</p>\
-')" onMouseOut="ClearTag('NavDesc_tag')">?</span><span id="NavDesc_tag"></span>
-<b>Find data:</b>
-</td>
-</tr>
-<tr>
-<td class="td_gray_box" id="Navigator_Menu">
-<a href="javascript:showMenu('Navigator')">
-<table><tr><td><b>Navigator</b></td></tr></table>
-</a></td>
-</tr>
-<tr>
-<td class="td_gray_box" id="Search_Menu">
-<a href="javascript:showMenu('Search');ajaxGetKWFields()">
-<table><tr><td><b>Selections</b></td></tr></table>
-</a>
-</td>
-</tr>
-#if not $userMode
-<tr>
-<td class="td_gray_box" id="Site_Menu">
-<a href="javascript:showMenu('Site')">
-<table><tr><td><b>Site</b></td></tr></table>
-</a>
-</td>
-</tr>
-###<tr><td><br /></td></tr>
-<tr><td>
-<span class="yellow_box" onMouseOver="KeywordHelp('DBSInfoDesc_tag','Here you will find a full list of available applications, primary and processed datasets from DBS.')" onMouseOut="ClearTag('DBSInfoDesc_tag')">?</span><span id="DBSInfoDesc_tag"></span>
-<b>List data:</b>
-</td></tr>
-<tr>
-<td class="td_gray_box" id="DBSinfo_Menu">
-<a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsNames);">
-<table><tr><td><b>DBS info</b></td></tr></table>
-</a>
-  <table id="dbsInst_table" class="hide">
-#for iName in $dbsNames
-#set name=iName.replace("/","___")
-      <tr><td>&\#187;</td><td id="dbsInst_$name"><a href="javascript:getDbsInfo('$iName',$dbsNames);">$iName</a></td></tr>
-#end for
-  </table>       
-</td>
-</tr>
-#end if
-###<tr><td><br /></td></tr>
-<tr><td>
-<span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
-<b>Subscribe to:</b>
-</td></tr>
-<tr>
-<td class="td_gray_box" id="Rss_Menu">
-<a href="javascript:showMenu('Rss');ajaxGetRss();">
-<table><tr><td><b>RSS list</b></td></tr></table>
-</a>
-</td>
-</tr>
-<tr><td><br /></td></tr>
+  <li id="Navigator_Menu">
+    <a href="javascript:showMenu('Navigator')">Navigator</a>
+  </li>
+
+  <li id="Search_Menu">
+    <a href="javascript:showMenu('Search');ajaxGetKWFields()">Selections</a>
+  </li>
+
+  <li id="Site_Menu">
+    <a href="javascript:showMenu('Site')">Site</a>
+  </li>
+
+  <li class="plain">
+    <span class="yellow_box" onMouseOver="KeywordHelp('DBSInfoDesc_tag','Here you will find a full list of available applications, primary and processed datasets from DBS.')" onMouseOut="ClearTag('DBSInfoDesc_tag')">?</span><span id="DBSInfoDesc_tag"></span>
+    <b>List data:</b>
+  </li>
+
+  <li id="DBSinfo_Menu">
+    <a href="javascript:showMenu('DBSinfo');getDbsInfo('$dbsGlobal',$dbsNames);">DBS info</a>
+      <table id="dbsInst_table" class="hide">
+    #for iName in $dbsNames
+    #set name=iName.replace("/","___")
+          <tr><td>&\#187;</td><td id="dbsInst_$name"><a href="javascript:getDbsInfo('$iName',$dbsNames);">$iName</a></td></tr>
+    #end for
+      </table>       
+  </li>
+
+  <li class="plain">
+    <span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
+    <b>Subscribe to:</b>
+  </li>
+
+  <li id="Rss_Menu">
+    <a href="javascript:showMenu('Rss');ajaxGetRss();">RSS list</a>
+  </li>
+
+  <li class="plain"><br /></li>
+
 #*
-<tr>
-<td class="td_gray_box" id="SessionHistory_Menu">
-<a href="javascript:GetSessionHistory();">
-<table><tr><td><b>Session History</b></td></tr></table>
+<a href="javascript:GetSessionHistory();" class="td_gray_box" id="SessionHistory_Menu">
+Session History
 </a>
 ###<span class="yellow_box" onMouseOver="KeywordHelp('SessDesc_tag','Session history is a quick way to find out your previous actions on a web page')" onMouseOut="ClearTag('SessDesc_tag')">?</span><span id="SessDesc_tag"></span>
-</td>
-</tr>
 *#
-<tr>
-#set hList=['user','auth','search']
-#set hDict={'user':'Session','auth':'Authentication','search':'Search'}
-########<td class="td_gray_box" id="History_Menu"><a href="javascript:GetSessionHistory();">History</a>
-<td class="td_gray_box" id="History_Menu">
-###<span class="yellow_box" onMouseOver="KeywordHelp('HistDesc_tag','History menu keep track of what you have done on discovery page. The <em>Back</em> button does not work due to used technology and instead all of your history are collected here.')" onMouseOut="ClearTag('HistDesc_tag')">?</span><span id="HistDesc_tag"></span>
-<a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">
-<table><tr><td><b>History</b></td></tr></table>
-</a>
-  <table id="history_table" class="hide">
-#for name in $hList
-      <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);AdjustToDate()">$hDict[$name]</a></td></tr>
-#end for
-  </table>       
-</td>
-</tr>
-<tr>
-<td class="td_gray_box" id="Help_Menu">
-<a href="javascript:showMenu('Help');showHelpContent();">
-<table><tr><td><b>Help</b></td></tr></table>
-</a>
-</td>
-</tr>
-<tr><td><br /></td></tr>
-<tr>
-<td class="td_gray_box" id="Hide_Menu">
-<a href="javascript:HidePanel('$host')">
-<table><tr><td><b>Hide panel</b></td></tr></table>
-</a>
-</td>
-</tr>
-<tr><td><br /><em class="tiny_purple_on_gray">Tip: $tip</em></td></tr>
-</table>
+  <li id="History_Menu">
+    #set hList=['user','auth','search']
+    #set hDict={'user':'Session','auth':'Authentication','search':'Search'}
+    <a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
+      <table id="history_table" class="hide">
+    #for name in $hList
+          <tr><td>&\#187;</td><td id="_${name}History"><a href="javascript:showHistoryMenu('$name',$hList);AdjustToDate()">$hDict[$name]</a></td></tr>
+    #end for
+      </table>       
+  </li>
+
+  <li id="Help_Menu">
+    <a href="javascript:showMenu('Help');showHelpContent();">Help</a>
+  </li>
+
+  <li class="plain"><br /></li>
+
+  <li id="Hide_Menu">
+    <a href="javascript:HidePanel('$host')">Hide panel</a>
+  </li>
+
+  <li class="plain"><br /></li>
+
+  <li class="plain0">
+    <em class="tiny_purple_on_gray">Tip: $tip</em>
+  </li>
+</ul>
+</div>
+
 
 </td>
 <!-- menu content, accordion -->

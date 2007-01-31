@@ -320,7 +320,8 @@ function showMenu(menu) {
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
-           c.className="td_gray_box";
+//           c.className="td_gray_box";
+           c.className="";
            if(menuArr[i]=='DBSinfo') {
               var id=document.getElementById("dbsInst_table");
               id.className="hide";
@@ -341,7 +342,8 @@ function showMenu(menu) {
    }
    var t=document.getElementById(menu+"_Menu");
    if (t) {
-       t.className="td_select_box"
+//       t.className="td_select_box"
+       t.className="selected";
    }
 //   hideResMenu();
 }
@@ -393,6 +395,7 @@ function whereUsers() {
       }
   }
 }
+/*
 function ShowBlockInfo(tableId){
   underlineLink("Both");
   var elem=document.getElementsByName("blockInfo");
@@ -427,6 +430,7 @@ function HideSumInfo(tableId) {
       elem[i].className="hide";
   }
 }
+*/
 function MakeUnSortable(tableId) {
   var t=document.getElementsByName("MakeSortableText");
   for(var i=0;i<t.length;i++) {
