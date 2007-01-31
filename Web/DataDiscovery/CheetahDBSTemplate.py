@@ -108,7 +108,6 @@ templateTop = """
 <head>
 <title>DBS data discovery page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-####<link rel="alternate" type="application/rss+xml" title="Data discovery RSS" href="rss" />
 <link rel="stylesheet" type="text/css" href="css/dbs.css" />
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
