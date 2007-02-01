@@ -1709,6 +1709,54 @@ class DbsApi(DbsConfig):
     logging.debug(data)
 
   # ------------------------------------------------------------
+  def remapFiles(self, inFiles, outFile):
+    """ 
+    Remaps the file parentage . This api is called after a merge job is completed.
+    A list of input file lfns and one output file is given to this api. The parents of all the input files
+    becomes the parent of the output file. The childern of all the input files becomes the children of the 
+    output file.
+    
+    param: 
+        inFiles : A list of LFNs that are to be remapped. 
+	
+        outFiles : The LFN of the final output merged file
+	
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+    
+         fileList = ['aaa1122-0909-9767-8764aaa', 'aaa1122-0909-9767-8764bb']
+         api.remapFiles (fileList, 'MyoutFile')
+    """
+    # Prepare XML description of the input
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    
+    for afile in inFiles:
+       xmlinput += " <in_file lfn='" + afile +"'/>"
+       
+    xmlinput += " <out_file lfn='" + outFile +"'/>"
+    xmlinput += "</dbs>"
+
+    logging.debug(xmlinput)
+    if self.verbose():
+       print "remapFiles, xmlinput",xmlinput
+
+    # Call the method
+    data = self._server._call ({ 'api' : 'remapFiles',
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.debug(data)
+
+
+
+
+
+  # ------------------------------------------------------------
 
   def insertBlock(self, dataset, block=None, storage_element=None, open_for_writing='y'):
     """

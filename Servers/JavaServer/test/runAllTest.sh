@@ -445,9 +445,9 @@ remapFiles () {
 
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<in_file lfn='${lfn1}_input_1'></in_file>
-			<in_file lfn='${lfn1}_input_2'></in_file>
-			<out_file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></out_file>
+			<in_file lfn='${lfn1}_input_1'/>
+			<in_file lfn='${lfn1}_input_2'/>
+			<out_file lfn='${lfn1}_OUTPUT_MERGED'/>
 		</dbs>"
 	message="Executing remapFiles API ..."	
 	echo $message >> $outFile ; echo $message
