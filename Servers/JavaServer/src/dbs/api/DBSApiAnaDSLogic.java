@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApiAnaDSLogic.java,v 1.17 2007/01/26 22:35:19 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.18 2007/02/01 19:19:36 sekhri Exp $"
  *
  */
 
@@ -89,9 +89,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                 if(!isNull(path)) {
                         procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
                 }
-
+		//System.out.println("Pattern ---------> " + patternName);
                 try {
-                        ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "pattern_analysis_dataset"), procDSID);
+                        ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "analysis_dataset_name_pattern"), procDSID);
                         rs =  ps.executeQuery();
                         while(rs.next()) {
 
@@ -125,7 +125,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                                         "' created_by='" + get(rs, "ADD_CREATED_BY") +
                                         "' last_modified_by='" + get(rs, "ADD_LAST_MODIFIED_BY") +
                                         "'/>\n"));
-                                 out.write("<analysis_dataset/>\n");
+                                 out.write("</analysis_dataset>\n");
 
                         }
                 } finally {

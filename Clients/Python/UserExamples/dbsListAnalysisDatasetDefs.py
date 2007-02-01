@@ -18,7 +18,8 @@ try:
   api = DbsApi(opts.__dict__)
   
   print "Analysis Daatset Defs...."
-  for analysisdef in api.listAnalysisDatasetDefinition("*"):
+  #for analysisdef in api.listAnalysisDatasetDefinition("*"):
+  for analysisdef in api.listAnalysisDatasetDefinition():
      print "  %s" % analysisdef
   
 except DbsApiException, ex:

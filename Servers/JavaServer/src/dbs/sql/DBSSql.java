@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.60 $"
- $Id: DBSSql.java,v 1.60 2007/01/26 20:40:26 sekhri Exp $"
+ $Revision: 1.61 $"
+ $Id: DBSSql.java,v 1.61 2007/01/26 22:35:19 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1215,11 +1215,12 @@ public class DBSSql {
 			if (! DBSUtil.isNull(procDSID)) {
 				sql += "AND ProcessedDS = ? \n";
 			}
-                                sql += "ORDER BY ads.NAME DESC";
+                sql += "ORDER BY ads.NAME DESC";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                ps.setString(1, patternName);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, patternName);
                 if (! DBSUtil.isNull(procDSID)) {
-			ps.setString(2, procDSID);
+			ps.setString(columnIndx++, procDSID);
 		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;

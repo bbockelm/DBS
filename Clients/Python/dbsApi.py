@@ -1019,7 +1019,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listAnalysisDatasetDefinition(self, pattern_analysis_dataset_definition_name):
+  def listAnalysisDatasetDefinition(self, pattern_analysis_dataset_definition_name="*"):
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
@@ -1064,7 +1064,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listAnalysisDataset(self, analysis_dataset_name_pattern, path):
+  def listAnalysisDataset(self, analysis_dataset_name_pattern="*", path=""):
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))

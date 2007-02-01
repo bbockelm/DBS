@@ -230,4 +230,26 @@ apiObj.run(lfn + "noway;thiswillexist",excep = True)
 apiObj.run(lfn ,"", excep = True)
 f.write("\n\n***********************listFileLumis API tests***************************")
 
+
+apiObj = DbsUnitTestApi(api.listAnalysisDatasetDefinition,f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************listAnalysisDatasetDefinition API tests***************************")
+apiObj.run(excep = False)
+apiObj.run("*",excep = False)
+apiObj.run("this;xist",excep = True)
+apiObj.run("ahsdef", "",excep = True)
+f.write("\n\n***********************listAnalysisDatasetDefinition API tests***************************")
+
+
+apiObj = DbsUnitTestApi(api.listAnalysisDataset,f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************listAnalysisDataset API tests***************************")
+apiObj.run(excep = False)
+apiObj.run("*",excep = False)
+apiObj.run("*",path,excep = False)
+apiObj.run("*","/this/will/notexist",excep = True)
+apiObj.run("ahs def", path,excep = True)
+apiObj.run("ahs*", path,"", excep = True)
+f.write("\n\n***********************listAnalysisDataset API tests***************************")
+
 f.close()

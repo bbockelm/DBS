@@ -1,6 +1,6 @@
 /**
- $Revision: 1.65 $"
- $Id: DBSApi.java,v 1.65 2007/01/26 20:20:54 afaq Exp $"
+ $Revision: 1.66 $"
+ $Id: DBSApi.java,v 1.66 2007/01/26 22:35:19 sekhri Exp $"
  *
 */
 
@@ -322,7 +322,7 @@ public class DBSApi {
 						);
 			} else if (apiStr.equals("listAnalysisDataset")) {
                                 (new DBSApiAnaDSLogic(this.data)).listAnalysisDataset(conn, out, 
-									get(table, "analysis_datatset_name_pattern", false), 
+									get(table, "analysis_dataset_name_pattern", false), 
 									get(table, "path", false)
 						);
                         } else if (apiStr.equals("listAnalysisDatasetDefinition")) {

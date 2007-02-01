@@ -18,7 +18,9 @@ try:
   api = DbsApi(opts.__dict__)
   
   print "Analysis Daatset...."
-  for analysis in api.listAnalysisDataset("*", "/This_is_a_test_primary_b97b1762-a97f-4348-be9b-d10a9445e7ae/This_is_a_test_tier_SIM_b97b1762-a97f-4348-be9b-d10a9445e7ae/CHILD_This_is_a_test_processed_b97b1762-a97f-4348-be9b-d10a9445e7ae"):
+  #for analysis in api.listAnalysisDataset("*", "/This_is_a_test_primary_b97b1762-a97f-4348-be9b-d10a9445e7ae/This_is_a_test_tier_SIM_b97b1762-a97f-4348-be9b-d10a9445e7ae/CHILD_This_is_a_test_processed_b97b1762-a97f-4348-be9b-d10a9445e7ae"):
+  #for analysis in api.listAnalysisDataset("*t005", "/test_primary_anzar_001/SIM/TestProcessedDS002"):
+  for analysis in api.listAnalysisDataset():
      print "  %s" % analysis
   
 except DbsApiException, ex:
