@@ -12,6 +12,8 @@ from dbsQueryableParameterSet import DbsQueryableParameterSet
 from dbsFileBlock import DbsFileBlock
 from dbsRun import DbsRun
 from dbsFile import DbsFile
+from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
+from dbsAnalysisDataset import DbsAnalysisDataset
 from dbsLumiSection import DbsLumiSection
 from dbsOptions import DbsOptionParser
 from dbsUnitTestApi import DbsUnitTestApi
@@ -543,6 +545,7 @@ file1= DbsFile (
 		FileType= 'EVD',
 		LumiList= [lumi1, lumi2],
 		TierList= tierList,
+		AlgoList = [algo1, algo2],
 		)
 
 file2= DbsFile (
@@ -556,6 +559,7 @@ file2= DbsFile (
 		FileType= 'EVD',
 		LumiList= [lumi1, lumi2],
 		TierList= tierList,
+		AlgoList = [algo1, algo2],
 		)
 
 apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
@@ -613,6 +617,85 @@ file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
 apiObj.run(proc1 ,[file], block1,  excep = True)
 
 f.write("\n***********************insertFiles API tests***************************")
+
+
+
+
+adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
+		ProcessedDatasetPath=path,
+		FileList=[file1['LogicalFileName'], file2['LogicalFileName']],
+		AlgoList = [algo1, algo2],
+		TierList= tierList,
+		AnalysisDSList=[],
+		LumiRangeList=[('1', '4444'), ('5000', '90000')],
+		RunRangeList=[('0', '5000'), ('6000', '99999')],
+		UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
+		Description="This is a test Analysis Dataset" + mytime,
+		)
+		    
+apiObj = DbsUnitTestApi(api.createAnalysisDatasetDefinition, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************createAnalysisDatasetDefinition API tests***************************")
+
+apiObj.run(adef, excep = False)
+apiObj.run(adef, excep = True)
+
+adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_006" + mytime,
+		ProcessedDatasetPath=path,
+		Description="This is a test Analysis Dataset" + mytime,
+		)
+
+apiObj.run(adef1, excep = False)
+
+adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_007" + mytime)
+apiObj.run(adef1, excep = True)
+
+adef1 = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDe  f_006" + mytime)
+apiObj.run(adef1, excep = True)
+
+
+f.write("\n***********************createAnalysisDatasetDefinition API tests***************************")
+
+
+apiObj = DbsUnitTestApi(api.createAnalysisDataset, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************createAnalysisDataset API tests***************************")
+
+
+ads = DbsAnalysisDataset(
+                            Name='TestAnalysisDataset005' + mytime,
+                            Annotation='testdataset' +mytime,
+                            Type='TEST',
+                            Status='NEW',
+                            PhysicsGroup='BPositive'
+                           )
+
+apiObj.run(ads, adef['Name'] , excep = False)
+apiObj.run(ads, adef['Name'] , excep = False)
+
+ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0056' + mytime,
+                            Annotation='testdataset' +mytime,
+                            PhysicsGroup='BPositive')
+apiObj.run(ads1, adef['Name'] , excep = False)
+
+ads1 = DbsAnalysisDataset(Name='TestAnalysisDaaaataset0056' + mytime,
+                            PhysicsGroup='BPositive')
+apiObj.run(ads1, adef['Name'] , excep = True)
+
+ads1 = DbsAnalysisDataset(Name='TestAnalysiqqqqsDataset0056' + mytime,
+                            Annotation='testdataset' +mytime,)
+apiObj.run(ads1, adef['Name'] , excep = True)
+
+ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0  056' + mytime,
+                            Annotation='testdataset' +mytime,
+                            PhysicsGroup='BPositive' )
+apiObj.run(ads1, adef['Name'] , excep = True)
+
+apiObj.run(adef['Name'] , excep = True)
+apiObj.run(ads1, 'Should_not_exists' , excep = True)
+
+f.write("\n***********************createAnalysisDataset API tests***************************")
+
 
 
 # Store ONE path that could be used by next LIST test cases
