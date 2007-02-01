@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiAnaDSLogic.java,v 1.16 2007/01/26 20:40:26 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.17 2007/01/26 22:35:19 sekhri Exp $"
  *
  */
 
@@ -418,7 +418,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String type = get(table, "type", false);
 
 		//FIXME Dafults should no be set by the server
-		if (isNull(status)) status = "VALID";
+		if (isNull(status)) status = "NEW";
 		if (isNull(type)) type = "TEST";
 
 		String adsID = "";
