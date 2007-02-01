@@ -29,7 +29,7 @@ api = DbsApi(opts.__dict__)
 
 
 analysis=DbsAnalysisDataset(
-                            Name='TestAnalysisDataset001',
+                            Name='TestAnalysisDataset005',
                             Annotation='testdataset',
                             Type='TEST',
                             Status='NEW',
@@ -38,7 +38,7 @@ analysis=DbsAnalysisDataset(
 
 try:
     #api.insertFiles (proc, [myfile1], block)
-    api.createAnalysisDataset(analysis, "TestAnalysisDSDef_002")
+    api.createAnalysisDataset(analysis, "TestAnalysisDSDef_005")
     print "DONE", analysis
 
 except DbsApiException, ex:

@@ -29,11 +29,6 @@ algo = DbsAlgorithm (
          ApplicationFamily="AppFamily01",
          ParameterSetID=DbsQueryableParameterSet(
            Hash="001234565798685",
-           Name="MyFirstParam01",
-           Version="V001",
-           Type="test",
-           Annotation="This is test",
-           Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
            )
          )
 
@@ -75,6 +70,7 @@ myfile1= DbsFile (
         FileType= 'EVD',
         Dataset= proc,
         #Block= isDictType,
+        AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'RECO'],
          )
@@ -102,10 +98,10 @@ myfile2= DbsFile (
 # Make a choice
                    
 block = DbsFileBlock (
-         Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db",
+         #Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db",
          #Name="/test_primary_anzar_001/TestProcessedDS002#337da02b-8dc9-4437-8490-bca5c670ea40",
-         StorageElement=['test1', 'test3']
-         #Name="/this/hahah#12345"
+         StorageElement=['test1', 'test3'],
+         Name="/this/hahah#12345"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"

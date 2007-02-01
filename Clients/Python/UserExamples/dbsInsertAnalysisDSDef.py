@@ -29,26 +29,21 @@ algo = DbsAlgorithm (
          ApplicationFamily="AppFamily01",
          ParameterSetID=DbsQueryableParameterSet(
            Hash="001234565798685",
-           Name="MyFirstParam01",
-           Version="V001",
-           Type="test",
-           Annotation="This is test",
-           Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
            )
          )
 
-analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_001",
+analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005",
                                          ProcessedDatasetPath="/test_primary_anzar_001/SIM/TestProcessedDS002",
                                          FileList=['NEW-AUTO-BLOCK-001', 'NEW-AUTO-BLOCK-002'],
                                          AlgoList=[algo],
                                          TierList=['SIM', 'RECO'],
-                                         LumiList=['1234', '1222'],
-                                         RunList=['1', '2'],
+                                         #LumiList=['1234', '1222'],
+                                         #RunList=['1', '2'],
                                          AnalysisDSList=[],
-                                         LumiRangeList=[('3333', '4444'), ('5555', '6666')],
-                                         RunRangeList=[('5', '9'), ('11', '21')],
-                                         UserCut="get all crap from x=1, y=6, z=j, lumi=all",
-                                         Description="This is a ridiculous Analysis Dataset",
+                                         LumiRangeList=[('3333', '4444'), ('1', '2000')],
+                                         RunRangeList=[('0', '9'), ('11', '21')],
+                                         UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
+                                         Description="This is a test Analysis Dataset",
                                          )
 try:
     #api.insertFiles (proc, [myfile1], block)

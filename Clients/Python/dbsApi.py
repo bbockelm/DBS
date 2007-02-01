@@ -2231,10 +2231,10 @@ class DbsApi(DbsConfig):
         xmlinput += "<run run_number='"+run+"'/>"
 
     for alumiRange in analysisDatasetDefinition.get('LumiRangeList', []):
-        xmlinput += "<run run_range='"+alumiRange[0]+','+alumiRange[1]+"'/>"
+        xmlinput += "<lumi_section lumi_section_range='"+ alumiRange[0] +','+alumiRange[1]+"'/>"
 
     for arunRange in analysisDatasetDefinition.get('RunRangeList', []):
-        xmlinput += "<lumi_section lumi_section_range='"+arunRange[0]+','+arunRange[1]+"'/>"
+        xmlinput += "<run run_range='"+ arunRange[0]+','+arunRange[1]+"'/>"
 
     xmlinput += "</dbs>"
 
@@ -2244,7 +2244,7 @@ class DbsApi(DbsConfig):
     if self.verbose():
        print "createAnalysisDatasetDefinition, xmlinput",xmlinput
 
-    data = self._server._call ({ 'api' : 'createAnalysisDatasetDefination',
+    data = self._server._call ({ 'api' : 'createAnalysisDatasetDefinition',
                          'xmlinput' : xmlinput }, 'POST')
 
 
