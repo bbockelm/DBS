@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiParser.java,v 1.3 2007/01/23 21:20:50 sekhri Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiParser.java,v 1.4 2007/01/24 15:43:49 afaq Exp $"
  *
 */
 
@@ -243,6 +243,25 @@ public class DBSApiParser {
 
 		}
 		return table;
+	}
+
+	public static void remapFiles(Connection conn, Writer out, String inputXml, Hashtable dbsUser) throws Exception {
+		Vector topLevel = new Vector();
+		DBSXMLParser dbsParser = new DBSXMLParser();
+		dbsParser.parseString(inputXml); 
+		Vector allElement = dbsParser.getElements();
+		Hashtable table = null;
+		for (int i=0; i<allElement.size(); ++i) {
+			Element e = (Element)allElement.elementAt(i);
+			String name = e.name;
+			if (name.equals("in_file") ) {
+				topLevel.add(DBSUtil.get(e.attributes, "lfn"));
+			} 
+			if (name.equals("out_file") ) {
+				table = e.attributes;
+			}
+		}
+                (new DBSApiFileLogic(new DBSApiData())).remapFiles(conn, out, topLevel, table,  dbsUser);
 	}
 
 	

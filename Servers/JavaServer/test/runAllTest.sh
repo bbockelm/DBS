@@ -405,6 +405,57 @@ createAnalysisDataset () {
 
 }
 
+remapFiles () {
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+		<processed_datatset path='$path_child' block_name='$block_name'>
+			<file lfn='${lfn1}_parent_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+			
+			<file lfn='${lfn1}_parent_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+			
+			<file lfn='${lfn1}_parent_3' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+
+			
+			<file lfn='${lfn1}_input_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<parent lfn='${lfn1}_parent_1'/>
+				<parent lfn='${lfn1}_parent_2'/>
+			</file>
+	
+			<file lfn='${lfn1}_input_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<parent lfn='${lfn1}_parent_2'/>
+				<parent lfn='${lfn1}_parent_3'/>
+			</file>
+
+			<file lfn='${lfn1}_child_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<parent lfn='${lfn1}_input_1'/>
+			</file>
+
+			<file lfn='${lfn1}_child_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<parent lfn='${lfn1}_input_2'/>
+			</file>
+
+			<file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+
+		</processed_datatset>
+		</dbs>"
+	message="Executing insertFiles API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=insertFiles "xmlinput=$xmlString"`
+	display "$out"
+
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<in_file lfn='${lfn1}_input_1'></in_file>
+			<in_file lfn='${lfn1}_input_2'></in_file>
+			<out_file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></out_file>
+		</dbs>"
+	message="Executing remapFiles API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=remapFiles "xmlinput=$xmlString"`
+	display "$out"
+
+}
+
 
 
 insertPrimaryDataset
@@ -414,25 +465,26 @@ insertRun
 insertLumiSection
 insertProcessedDataset
 insertBlock
-insertFiles
+#insertFiles
+remapFiles
 #createAnalysisDatasetFromPD
-createAnalysisDatasetDefinition
-createAnalysisDataset
-listAnalysisDatasetDefinition
-listAnalysisDataset
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
+#createAnalysisDatasetDefinition
+#createAnalysisDataset
+#listAnalysisDatasetDefinition
+#listAnalysisDataset
+#listPrimaryDatasets
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
 #listDatasetContents
-listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
+#listDatasetParents
+#listFileParents
+#listFileAlgorithms
+#listFileTiers
+#listFileLumis
 #													
 echo 
 echo "*************************************************************"

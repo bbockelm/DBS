@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.61 $"
- $Id: DBSSql.java,v 1.61 2007/01/26 22:35:19 sekhri Exp $"
+ $Revision: 1.62 $"
+ $Id: DBSSql.java,v 1.62 2007/02/01 19:56:50 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -969,7 +969,20 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listFileParents(Connection conn, String fileID) throws SQLException {
+	//public static PreparedStatement listFileParents(Connection conn, String fileID) throws SQLException {
+	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
+		//parentOrChild if true means we need to get the parents of the file 
+		//parentOrChild if false means we need to get the childern of the file
+		String joinStr = "";
+		String whereStr = "";
+		if (parentOrChild) {
+			joinStr = "ON fp.ItsParent = f.ID \n";
+			whereStr = "WHERE fp.ThisFile = ? \n";
+		} else {
+			joinStr = "ON fp.ThisFile = f.ID \n";
+			whereStr = "WHERE fp.ItsParent = ? \n";
+		}
+			
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
@@ -986,7 +999,7 @@ public class DBSSql {
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM Files f \n" +
 			"JOIN FileParentage fp \n" +
-				"ON fp.ItsParent = f.ID \n" +
+				joinStr +
 			"LEFT OUTER JOIN Block b \n" +
 				"ON b.id = f.Block \n "+  
 			"LEFT OUTER JOIN FileType ty \n" +
@@ -998,13 +1011,13 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = f.LastModifiedBy \n";
 	
-		if(fileID != null) {
-			sql += "WHERE fp.ThisFile = ? \n";
+		if(!DBSUtil.isNull(fileID)) {
+			sql += whereStr;
 		}
 		sql +=	"ORDER BY LFN DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		if(fileID != null) {
+		if(!DBSUtil.isNull(fileID)) {
 			ps.setString(1, fileID);
 		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");

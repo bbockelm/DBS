@@ -1,6 +1,6 @@
 /**
- $Revision: 1.15 $"
- $Id: DBSApiFileLogic.java,v 1.15 2007/01/24 17:08:57 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiFileLogic.java,v 1.17 2007/01/26 18:10:59 sekhri Exp $"
  *
  */
 
@@ -120,7 +120,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileParents(conn, getFileID(conn, lfn, true));
+			//ps = DBSSql.listFileParents(conn, getFileID(conn, lfn, true));
+			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), true);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<file_parent id='" +  get(rs, "ID") +
@@ -583,6 +584,64 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
+	}
+
+ 	/**
+	 * Remaps a list parents and childern of input Files to one single output File. The list of input file is provided as  <code>java.util.Vector</code> that contains the list of LFN. The output file is provided by just one LFN passed in as a String
+	 * Finally it updates the block information with correct number of files and size in bytes by calling the updateBlock method.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param inFiles a <code>java.util.Vector</code> that contains a list of <code>java.lang.String</code> that represents the logical name of the files.  
+	 * @param outFileTable a <code>java.util.Hashtable</code> that contains a the logical name of the the output file and/or created by , creation date.  
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
+	 */
+        public void remapFiles(Connection conn, Writer out, Vector inFiles, Hashtable outFileTable, Hashtable dbsUser) throws Exception { 
+		String outFileID = getFileID(conn, get(outFileTable, "lfn", true), true);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = personApi.getUserID(conn, get(outFileTable, "created_by", false), dbsUser );
+		String creationDate = getTime(outFileTable, "creation_date", false);
+
+		for (int j = 0; j < inFiles.size(); ++j) {
+			String inFileID = getFileID(conn, (String)inFiles.get(j), true);
+			PreparedStatement ps = null;
+			ResultSet rs =  null;
+			try {
+				//Get all the parents
+				ps = DBSSql.listFileProvenence(conn, inFileID, true);
+				rs =  ps.executeQuery();
+				while(rs.next()) {
+					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+						outFileID, 
+						get(rs, "ID"),
+						cbUserID, lmbUserID, creationDate);
+				}
+			} finally { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			}
+			
+			ps = null;
+			rs = null;
+			try {
+				//Get all the childern
+				ps = DBSSql.listFileProvenence(conn, inFileID, false);
+				rs =  ps.executeQuery();
+				while(rs.next()) {
+					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+						get(rs, "ID"),
+						outFileID, 
+						cbUserID, lmbUserID, creationDate);
+				}
+			} finally { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			}
+
+			//Set the status of the inFile to merged
+		
+		}
+		
 	}
 
 

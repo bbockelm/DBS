@@ -1,6 +1,6 @@
 /**
- $Revision: 1.66 $"
- $Id: DBSApi.java,v 1.66 2007/01/26 22:35:19 sekhri Exp $"
+ $Revision: 1.67 $"
+ $Id: DBSApi.java,v 1.67 2007/02/01 19:56:49 sekhri Exp $"
  *
 */
 
@@ -379,7 +379,10 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("insertFiles")) {
 				DBSApiParser.insertFiles(conn, out, getXml(table), dbsUser);
-				
+	
+			} else if (apiStr.equals("remapFiles")) {
+				DBSApiParser.remapFiles(conn, out, getXml(table), dbsUser);
+			
 			} else if (apiStr.equals("insertTierInPD")) {
 				(new DBSApiProcDSLogic(this.data)).insertTierInPD(conn, out,
 						DBSApiParser.parse(getXml(table), "processed_dataset"),
