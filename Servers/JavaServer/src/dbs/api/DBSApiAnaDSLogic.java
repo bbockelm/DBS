@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiAnaDSLogic.java,v 1.18 2007/02/01 19:19:36 sekhri Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.19 2007/02/01 19:56:50 sekhri Exp $"
  *
  */
 
@@ -421,8 +421,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		if (isNull(status)) status = "NEW";
 		if (isNull(type)) type = "TEST";
 
-		String adsID = "";
-		if( isNull((adsID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false)))) {
+		String aDSID = "";
+		if( isNull((aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false)))) {
 			ps = null;
 			try {
 				ps = DBSSql.insertAnalysisDataset(conn, 
@@ -447,7 +447,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		}
 		
 		//Fetch the analysis dataset id if not null, that just got inserted
-		if(isNull(adsID)) adsID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false);
+		if(isNull(aDSID)) aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false);
 
 		//Insert the contents of the analysis dataset in the AnalysisDSFileLumi map table
 		ps = null;
@@ -456,7 +456,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		if(isNull(logicalOp)) logicalOp = "OR";
 		try {
 			ps = DBSSql.listAnalysisDSFileLumi(conn, 
-					//adsID,
+					//aDSID,
 					procDSID,
 					tierIDList,
 					algoIDList,
@@ -471,9 +471,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			
 			//For every lumiid,fileid pair insert a row in AnalysisDSFuleLumi table 
 			while(rs.next()) {
-				System.out.println("ADSID, Lumi ID , File ID = " + adsID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+				System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
 				insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
-						adsID,
+						aDSID,
 						get(rs, "LUMIID"),
 						get(rs, "FILEID"),
 						cbUserID, lmbUserID, creationDate);

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.62 $"
- $Id: DBSSql.java,v 1.62 2007/02/01 19:56:50 sekhri Exp $"
+ $Revision: 1.63 $"
+ $Id: DBSSql.java,v 1.63 2007/02/01 22:11:52 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -291,7 +291,7 @@ public class DBSSql {
 			"f.ID as FILEID, \n" +
 			"ls.ID as LUMIID \n" +
 			"FROM LumiSection ls \n" +
-			"JOIN FileLumi fl \n\t" +
+			"JOIN FileRunLumi fl \n\t" +
 				"ON fl.Lumi = ls.ID \n" +
 			"JOIN Files f \n\t" +
 				"ON f.ID = fl.Fileid \n" +
@@ -901,7 +901,15 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String tierID, String patternLFN) throws SQLException {
+	//public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String tierID, String patternLFN) throws SQLException {
+	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, String tierID, String patternLFN) throws SQLException {
+		String joinStr = "";
+		if(!DBSUtil.isNull(aDSID)) {
+			joinStr = "JOIN AnalysisDSFileLumi adfl \n" +
+				"ON adfl.fileid = f.ID \n";
+		}
+			
+		
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
@@ -922,6 +930,7 @@ public class DBSSql {
 				"ON b.id = f.Block \n "+  
 			"LEFT OUTER JOIN FileTier fdt \n" +
 				"ON fdt.Fileid = f.id \n" +
+			joinStr +
 			//"LEFT OUTER JOIN DataTier dt \n" +
 			//	"ON dt.id = fdt.DataTier " +
 			"LEFT OUTER JOIN FileType ty \n" +
@@ -946,6 +955,9 @@ public class DBSSql {
 		if(!DBSUtil.isNull(tierID)){
 			sql += "and fdt.DataTier = ? \n";
 		}
+		if(!DBSUtil.isNull(aDSID)) {
+			sql += "and adfl.AnalysisDataset = ? \n";
+		}
 
 		sql +=	"and st.Status <> 'INVALID' \n" +
 			"ORDER BY LFN DESC";
@@ -962,9 +974,11 @@ public class DBSSql {
 		}
 		if(!DBSUtil.isNull(tierID)){
 			ps.setString(columnIndx++, tierID);
-
 		}
-
+		if(!DBSUtil.isNull(aDSID)) {
+			ps.setString(columnIndx++, aDSID);
+		}
+		
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -1126,7 +1140,7 @@ public class DBSSql {
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
 			"FROM LumiSection lumi \n" +
-			"JOIN FileLumi fl \n" +
+			"JOIN FileRunLumi fl \n" +
 				"ON fl.Lumi = lumi.id \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = lumi.CreatedBy \n" +

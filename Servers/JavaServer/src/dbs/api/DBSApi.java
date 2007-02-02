@@ -1,6 +1,6 @@
 /**
- $Revision: 1.67 $"
- $Id: DBSApi.java,v 1.67 2007/02/01 19:56:49 sekhri Exp $"
+ $Revision: 1.68 $"
+ $Id: DBSApi.java,v 1.68 2007/02/01 22:11:50 sekhri Exp $"
  *
 */
 
@@ -296,6 +296,7 @@ public class DBSApi {
 			} else if (apiStr.equals("listFiles")) {
 				(new DBSApiFileLogic(this.data)).listFiles(conn, out, 
 						get(table, "path", false),
+						get(table, "analysis_dataset_name", false),
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
 						get(table, "detail", false)

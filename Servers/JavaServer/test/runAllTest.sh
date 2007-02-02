@@ -97,7 +97,7 @@ listBlocks() {
 listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFiles path=$path_child`
+	out=`$CMD api=listFiles path=$path_child analysis_dataset_name=AnalysisDS2_$rand`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
@@ -467,7 +467,7 @@ insertProcessedDataset
 insertBlock
 insertFiles
 remapFiles
-createAnalysisDatasetFromPD
+#createAnalysisDatasetFromPD
 createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition

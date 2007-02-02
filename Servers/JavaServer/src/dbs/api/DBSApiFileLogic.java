@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApiFileLogic.java,v 1.17 2007/01/26 18:10:59 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApiFileLogic.java,v 1.18 2007/02/01 22:11:50 sekhri Exp $"
  *
  */
 
@@ -45,11 +45,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param detail a parameter to determine whether the details of the files needs to be listed or not.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patternLFN is invalid, the database connection is unavailable or processed dataset or block is not found.
 	 */
-	public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN, String detail) throws Exception {
+	//public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN, String detail) throws Exception {
+	public void listFiles(Connection conn, Writer out, String path, String aDSName, String blockName, String patternLFN, String detail) throws Exception {
 
 		//By default a file detail is not needed
 
 		String procDSID = null;
+		String aDSID = null;
 		String blockID = null;
 
                 String tierID = null;
@@ -57,19 +59,28 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
                         tierID = getID(conn, "DataTier", "Name",  parseDSPath(path)[2], true);  
 		}
+		if (!isNull(aDSName)) {
+			aDSID = getID(conn, "AnalysisDataset", "Name", aDSName, true);
+		}
 		if(!isNull(blockName)) {
 			blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
                         //FIXME: We need to make sure that we MUST have ONLY an OPEN Block for adding a file to !
                        
 		}
-		if(blockID == null && procDSID == null) {
-			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset or a Block");
+		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) ) {
+			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset or a Analysis Dataset or a Block");
+		}
+
+		if(!isNull(path) && !isNull(aDSName)) {
+			writeWarning(out, "Both Processed dataset and Analysis dataset given", "1090", "If Analysis dataset is given then there is no need for a processed dataset. While fetcing the files processed dataset will be ignored. Given Processed Dataset is  " + path + " and given analysis dataset is " + aDSName);
+			procDSID = "";
 		}
 
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
+			//ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, aDSID, tierID, getPattern(patternLFN, "pattern_lfn"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
@@ -458,10 +469,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
 				insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-				insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
+				insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
+						getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true),
 						cbUserID, lmbUserID, creationDate);
+
+				/*insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
+						fileID, 
+						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
+						cbUserID, lmbUserID, creationDate);*/
 			}
 			//Insert Branch and then FileBranch (Map)
 			for (int j = 0; j < branchVector.size(); ++j) {
