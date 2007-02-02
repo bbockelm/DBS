@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 555
+-- === Build : 591
 -- ======================================================================
 
-drop database dbs_new_era_v11;
-create database dbs_new_era_v11;
-use dbs_new_era_v11;
+drop database if exists dbs_new_era_v14;
+create database dbs_new_era_v14;
+use dbs_new_era_v14;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -404,8 +404,8 @@ CREATE TABLE AppExecutable
 CREATE TABLE QueryableParameterSet
   (
     ID                    BIGINT UNSIGNED,
-    Hash                  varchar(500)                                                      unique not null,
-    Name                  varchar(100),
+    Hash                  varchar(700)                                                      unique not null,
+    Name                  varchar(1000),
     Version               varchar(100),
     Type                  varchar(100),
     Annotation            varchar(1000),
@@ -529,18 +529,19 @@ CREATE TABLE FileParentage
 
 -- ======================================================================
 
-CREATE TABLE FileLumi
+CREATE TABLE FileRunLumi
   (
     ID                    BIGINT UNSIGNED,
     Fileid                BIGINT UNSIGNED                                                   not null,
-    Lumi                  BIGINT UNSIGNED                                                   not null,
+    Lumi                  BIGINT UNSIGNED,
+    Run                   BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
-    unique(Fileid,Lumi)
+    unique(Fileid,Lumi,Run)
   );
 
 -- ======================================================================
@@ -717,9 +718,18 @@ CREATE TABLE AnalysisDSFileLumi
 CREATE TABLE AnalysisDSDef
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)                                                      unique not null,
-    Query                 TEXT                                                              not null,
-    Description           varchar(1000)                                                     not null,
+    Name                  varchar(700)                                                      unique not null,
+    LumiSections          TEXT,
+    LumiSectionRanges     TEXT,
+    Runs                  TEXT,
+    RunsRanges            TEXT,
+    Algorithms            varchar(1000),
+    LFNs                  TEXT,
+    Path                  varchar(1000),
+    Tiers                 varchar(250),
+    AnalysisDatasets      TEXT,
+    UserCut               TEXT,
+    Description           TEXT,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -1062,17 +1072,20 @@ ALTER TABLE FileParentage ADD CONSTRAINT
     FileParentageLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_Fileid_FK foreign key(Fileid) references Files(ID)
+ALTER TABLE FileRunLumi ADD CONSTRAINT 
+    FileRunLumi_Fileid_FK foreign key(Fileid) references Files(ID)
 /
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+ALTER TABLE FileRunLumi ADD CONSTRAINT 
+    FileRunLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
 /
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+ALTER TABLE FileRunLumi ADD CONSTRAINT 
+    FileRunLumi_Run_FK foreign key(Run) references Runs(ID)
 /
-ALTER TABLE FileLumi ADD CONSTRAINT 
-    FileLumi_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+ALTER TABLE FileRunLumi ADD CONSTRAINT 
+    FileRunLumi_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileRunLumi ADD CONSTRAINT 
+    FileRunLumi_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE FileAlgo ADD CONSTRAINT 
