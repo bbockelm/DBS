@@ -1,6 +1,6 @@
 /**
- $Revision: 1.67 $"
- $Id: DBSApiLogic.java,v 1.67 2007/02/02 17:40:05 sekhri Exp $"
+ $Revision: 1.68 $"
+ $Id: DBSApiLogic.java,v 1.68 2007/02/02 22:04:19 afaq Exp $"
  *
  */
 
@@ -81,7 +81,7 @@ public class DBSApiLogic {
                                 out.write( "<" + tableName +" " );
                                 for (int i=1; i <= numberOfColumns; ++i) {
 					String colName = rsmd.getColumnName(i);	
-                                        out.write( colName+"'="+get(rs, colName)+"' ");
+                                        out.write( colName+"='"+get(rs, colName)+"' ");
                                 }
                                 out.write( "/>" );
                         }
