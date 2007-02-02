@@ -909,7 +909,7 @@ public class DBSSql {
 				"ON adfl.fileid = f.ID \n";
 		}
 			
-		
+		//System.out.println("Block ID is "+blockID);
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +

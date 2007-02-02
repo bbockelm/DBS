@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiFileLogic.java,v 1.18 2007/02/01 22:11:50 sekhri Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApiFileLogic.java,v 1.19 2007/02/02 17:40:05 sekhri Exp $"
  *
  */
 
@@ -80,7 +80,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
-			ps = DBSSql.listFiles(conn, procDSID, aDSID, aDSID, tierID, getPattern(patternLFN, "pattern_lfn"));
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
