@@ -20,9 +20,9 @@
 		maxIdle="1" 
 		maxWait="-1"
 		username="anzar" 
-		password="" 
+		password="prodagentpass" 
 		driverClassName="org.gjt.mm.mysql.Driver"
-		url="jdbc:mysql://localhost:3306/dbs_new_era_v10?autoReconnect=true"/>
+		url="jdbc:mysql://localhost:3306/dbs_new_era_v13?autoReconnect=true"/>
 
         <!--Resource name="jdbc/dbs" 
                 auth="Container" 

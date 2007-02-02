@@ -97,11 +97,20 @@ listBlocks() {
 listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFiles path=$path_child analysis_dataset_name=AnalysisDS2_$rand`
+	out=`$CMD api=listFiles path=$path_child`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
 }
+
+
+listRowsInTable () {
+	message="Executing listRowsInTable API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=listRowsInTable table_name=PrimaryDataset from=10 rows=10`
+        display "$out"
+}
+
 
 listFileParents () {
 	message="Executing listFileParents API..."
@@ -458,33 +467,34 @@ remapFiles () {
 
 
 
-insertPrimaryDataset
-insertAlgorithm
-insertTier
-insertRun
-insertLumiSection
-insertProcessedDataset
-insertBlock
-insertFiles
-remapFiles
+#insertPrimaryDataset
+#insertAlgorithm
+#insertTier
+#insertRun
+#insertLumiSection
+#insertProcessedDataset
+#insertBlock
+#insertFiles
+#remapFiles
 #createAnalysisDatasetFromPD
-createAnalysisDatasetDefinition
-createAnalysisDataset
-listAnalysisDatasetDefinition
-listAnalysisDataset
-listPrimaryDatasets
-listProcessedDatasets
-listAlgorithms
-listRuns
-listTiers
-listBlocks
-listFiles
-#listDatasetContents
-listDatasetParents
-listFileParents
-listFileAlgorithms
-listFileTiers
-listFileLumis
+#createAnalysisDatasetDefinition
+#createAnalysisDataset
+#listAnalysisDatasetDefinition
+#listAnalysisDataset
+#listPrimaryDatasets
+#listProcessedDatasets
+#listAlgorithms
+#listRuns
+#listTiers
+#listBlocks
+#listFiles
+##listDatasetContents
+#listDatasetParents
+#listFileParents
+#listFileAlgorithms
+#listFileTiers
+#listFileLumis
+listRowsInTable
 #													
 echo 
 echo "*************************************************************"

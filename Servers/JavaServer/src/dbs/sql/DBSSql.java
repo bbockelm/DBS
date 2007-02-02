@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.63 $"
- $Id: DBSSql.java,v 1.63 2007/02/01 22:11:52 sekhri Exp $"
+ $Revision: 1.65 $"
+ $Id: DBSSql.java,v 1.65 2007/02/02 19:19:55 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -498,6 +498,31 @@ public class DBSSql {
 	// ____________________________________________________
 	
 	
+        public static PreparedStatement listRowsInTable(Connection conn, String tableName, String from, String rows) 
+        throws SQLException
+        {
+                String sql = "SELECT * \n"+
+                                "FROM "+tableName ;
+                if (!DBSUtil.isNull(from) || !rows.equals("*") ) {
+                        sql +=  " WHERE\n" ;
+                        sql +=  " ID between ? and ? \n";
+                }
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if (!DBSUtil.isNull(from) || !rows.equals("*") ) {
+
+                        Integer iFrom = Integer.parseInt(from);
+                        Integer iRows = Integer.parseInt(rows);
+
+                        String to = String.valueOf(iFrom.intValue() + iRows.intValue() - 1);
+
+                        ps.setString(1, from);
+                        ps.setString(2, to);
+
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+              return ps;
+        }
+
 	
         public static PreparedStatement listLumiIDsForRun(Connection conn, String runNumber)
         throws SQLException
