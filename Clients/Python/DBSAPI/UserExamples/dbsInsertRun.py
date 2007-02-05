@@ -7,11 +7,11 @@
 # Unit tests for the DBS CGI implementation.
 
 import sys
-from dbsApi import DbsApi
-from dbsException import *
-from dbsApiException import *
-from dbsRun import DbsRun
-from dbsOptions import DbsOptionParser
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsException import *
+from DBSAPI.dbsApiException import *
+from DBSAPI.dbsRun import DbsRun
+from DBSAPI.dbsOptions import DbsOptionParser
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()

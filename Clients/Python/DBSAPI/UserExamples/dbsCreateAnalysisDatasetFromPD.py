@@ -11,12 +11,12 @@
 
 import sys
 import random
-from dbsApi import DbsApi
-from dbsException import *
-from dbsApiException import *
-from dbsAnalysisDataset import DbsAnalysisDataset
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsException import *
+from DBSAPI.dbsApiException import *
+from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
 #from dbsProcessedDataset import DbsProcessedDataset
-from dbsOptions import DbsOptionParser
+from DBSAPI.dbsOptions import DbsOptionParser
 
 
 optManager  = DbsOptionParser()

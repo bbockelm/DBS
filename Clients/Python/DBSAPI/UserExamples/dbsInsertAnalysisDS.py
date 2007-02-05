@@ -7,19 +7,19 @@
 # Unit tests for the DBS CGI implementation.
 
 import sys
-from dbsApi import DbsApi
-from dbsException import *
-from dbsApiException import *
-from dbsAlgorithm import DbsAlgorithm
-from dbsFileBlock import DbsFileBlock
-from dbsFile import DbsFile
-from dbsLumiSection import DbsLumiSection
-from dbsQueryableParameterSet import DbsQueryableParameterSet
-from dbsPrimaryDataset import DbsPrimaryDataset
-from dbsProcessedDataset import DbsProcessedDataset
-from dbsOptions import DbsOptionParser
-from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
-from dbsAnalysisDataset import DbsAnalysisDataset
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsException import *
+from DBSAPI.dbsApiException import *
+from DBSAPI.dbsAlgorithm import DbsAlgorithm
+from DBSAPI.dbsFileBlock import DbsFileBlock
+from DBSAPI.dbsFile import DbsFile
+from DBSAPI.dbsLumiSection import DbsLumiSection
+from DBSAPI.dbsQueryableParameterSet import DbsQueryableParameterSet
+from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
+from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
+from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
+from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
 
 
 optManager  = DbsOptionParser()

@@ -4,19 +4,19 @@
 
 import sys
 import time
-from dbsApi import DbsApi
-from dbsPrimaryDataset import DbsPrimaryDataset
-from dbsAlgorithm import DbsAlgorithm
-from dbsProcessedDataset import DbsProcessedDataset
-from dbsQueryableParameterSet import DbsQueryableParameterSet
-from dbsFileBlock import DbsFileBlock
-from dbsRun import DbsRun
-from dbsFile import DbsFile
-from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
-from dbsAnalysisDataset import DbsAnalysisDataset
-from dbsLumiSection import DbsLumiSection
-from dbsOptions import DbsOptionParser
-from dbsUnitTestApi import DbsUnitTestApi
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
+from DBSAPI.dbsAlgorithm import DbsAlgorithm
+from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
+from DBSAPI.dbsQueryableParameterSet import DbsQueryableParameterSet
+from DBSAPI.dbsFileBlock import DbsFileBlock
+from DBSAPI.dbsRun import DbsRun
+from DBSAPI.dbsFile import DbsFile
+from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
+from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
+from DBSAPI.dbsLumiSection import DbsLumiSection
+from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsUnitTestApi import DbsUnitTestApi
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()

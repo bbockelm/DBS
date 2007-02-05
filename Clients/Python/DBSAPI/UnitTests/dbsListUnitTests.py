@@ -3,9 +3,9 @@
 # API Unit tests for the DBS JavaServer.
 
 import sys
-from dbsApi import DbsApi
-from dbsOptions import DbsOptionParser
-from dbsUnitTestApi import DbsUnitTestApi
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsUnitTestApi import DbsUnitTestApi
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
