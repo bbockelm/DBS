@@ -1027,7 +1027,8 @@ table.menu a {
     text-align: left;
     color: #000000;
     background-color: #FFFFFF;
-    border-style: solid;
-    border-width: 1px 1px 1px 1px;
-    border-style: solid solid solid solid;
+    border-width: 2px 2px 2px 2px;
+    border-style: inset inset inset inset;
+    border-color: #F0F0F0 #F0F0F0 #F0F0F0 #F0F0F0;
+   -moz-border-radius: 6px 6px 6px 6px;
 }
