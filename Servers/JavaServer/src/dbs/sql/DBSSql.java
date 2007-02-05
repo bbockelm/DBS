@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.66 $"
- $Id: DBSSql.java,v 1.66 2007/02/02 22:04:19 afaq Exp $"
+ $Revision: 1.67 $"
+ $Id: DBSSql.java,v 1.67 2007/02/05 17:53:10 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -97,6 +97,45 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Runs", table);
 	}
+        public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String endOfRun, String lmbUserID) throws SQLException {
+
+               String sql = "UPDATE Runs SET \n";
+                        if ( !DBSUtil.isNull(nOfEvents) ) {
+                            sql += "NumberOfEvents = ? ,";
+                        }
+                        if ( !DBSUtil.isNull(nOfLumiSections) ) {
+                             sql += "NumberOfLumiSections = ? ,";
+                        }
+                        if ( !DBSUtil.isNull(totalLumi) ) {
+                             sql += "TotalLuminosity = ? ,";
+                        }
+                        if ( !DBSUtil.isNull(endOfRun) ) {
+                             sql += "EndOfRun = ? ,";
+                        }
+                        sql += "LastModifiedBy = ? \n";
+                        sql += "WHERE RunNumber = ?";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                if ( !DBSUtil.isNull(nOfEvents) ) {
+                        ps.setString(columnIndx++, nOfEvents);
+                }
+                if ( !DBSUtil.isNull(nOfLumiSections) ) {
+                        ps.setString(columnIndx++, nOfLumiSections);
+                }
+                if ( !DBSUtil.isNull(totalLumi) ) {
+                        ps.setString(columnIndx++, totalLumi);
+                }
+                if ( !DBSUtil.isNull(endOfRun) ) {
+                        ps.setString(columnIndx++, endOfRun);
+                }
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, runNumber);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
+
 
 	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String nOfEvts, String openForWriting, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();

@@ -251,6 +251,18 @@ insertRun () {
 	display "$out"
 }
 
+# update run
+updateRun () {
+        xmlString1="<?xml version='1.0' standalone='yes'?>
+                <dbs>
+                        <run run_number='$run_number1' number_of_events='3000' end_of_run='FEB' />
+                </dbs>"
+
+        message="Executing update Run API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=updateRun "xmlinput=$xmlString1"`
+        display "$out"
+}
 
 
 # insert lumi section
@@ -495,7 +507,10 @@ listFileAlgorithms
 listFileTiers
 listFileLumis
 listRowsInTable
-#													
+#
+updateRun
+##	
+#												
 echo 
 echo "*************************************************************"
 echo "For more detail and the output of the APIs look in $outFile"

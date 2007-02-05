@@ -1,6 +1,6 @@
 /**
- $Revision: 1.70 $"
- $Id: DBSApi.java,v 1.70 2007/02/02 22:04:18 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSApi.java,v 1.71 2007/02/05 16:16:45 sekhri Exp $"
  *
 */
 
@@ -347,18 +347,24 @@ public class DBSApi {
 				(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out,
 						DBSApiParser.parse(getXml(table), "algorithm") , 
 						dbsUser);
-				
 			} else if (apiStr.equals("insertRun")) {
 				api.insertRun(conn, out,
 						DBSApiParser.parse(getXml(table), "run") , 
 						dbsUser);
-				
+
+                        } else if (apiStr.equals("updateRun")) {
+                                api.updateRun(conn, out,
+                                                DBSApiParser.parse(getXml(table), "run") ,
+                                                dbsUser);
+
 			} else if (apiStr.equals("insertTier")) {
 				api.insertTier(conn, out, DBSApiParser.parse(getXml(table), "tier"), dbsUser);
 				
+
 			} else if (apiStr.equals("insertStorageElement")) {
 				(new DBSApiBlockLogic(this.data)).insertStorageElement(conn, out, DBSApiParser.parse(getXml(table), "storage_element"), dbsUser);
 			
+
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,
 						DBSApiParser.parse(getXml(table), "lumi_section") , 
