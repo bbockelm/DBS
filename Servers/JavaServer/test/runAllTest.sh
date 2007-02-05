@@ -208,7 +208,7 @@ insertAlgorithm () {
 
 	out=`$CMD api=insertAlgorithm "xmlinput=$xmlString1"`
 	display "$out"
-	echo "$out"
+	#echo "$out"
 	out=`$CMD api=insertAlgorithm "xmlinput=$xmlString2"`
 	display "$out"
 	out=`$CMD api=insertAlgorithm "xmlinput=$xmlString3"`
@@ -361,7 +361,7 @@ createAnalysisDatasetDefinition () {
                         <dbs>
                                 <analysis_dataset_definition analysisds_def_name='AnalysisDS_Defination1_$rand' path='$path_child' created_by='Let_me_try_this' creation_date='1066729598999' user_cut='RunNumber = 2' description='This is a test defination'/>
                         </dbs>"
-	echo "$xmlString"
+	#echo "$xmlString"
         message="Executing  createAnalysisDatasetDefinition API..."
         echo $message >> $outFile ; echo $message
         out=`$CMD api=createAnalysisDatasetDefinition "xmlinput=$xmlString"`
@@ -383,7 +383,7 @@ createAnalysisDatasetDefinition () {
 				$algo4
 				<analysis_dataset analysis_dataset_name='AnalysisDS1_$rand'/>
                         </dbs>"
-	echo "$xmlString"
+	#echo "$xmlString"
         message="Executing  createAnalysisDatasetDefinition API..."
         echo $message >> $outFile ; echo $message
         out=`$CMD api=createAnalysisDatasetDefinition "xmlinput=$xmlString"`
@@ -467,33 +467,33 @@ remapFiles () {
 
 
 
-#insertPrimaryDataset
-#insertAlgorithm
-#insertTier
-#insertRun
-#insertLumiSection
-#insertProcessedDataset
-#insertBlock
-#insertFiles
-#remapFiles
-#createAnalysisDatasetFromPD
-#createAnalysisDatasetDefinition
-#createAnalysisDataset
-#listAnalysisDatasetDefinition
-#listAnalysisDataset
-#listPrimaryDatasets
-#listProcessedDatasets
-#listAlgorithms
-#listRuns
-#listTiers
-#listBlocks
-#listFiles
+insertPrimaryDataset
+insertAlgorithm
+insertTier
+insertRun
+insertLumiSection
+insertProcessedDataset
+insertBlock
+insertFiles
+remapFiles
+##createAnalysisDatasetFromPD
+createAnalysisDatasetDefinition
+createAnalysisDataset
+listAnalysisDatasetDefinition
+listAnalysisDataset
+listPrimaryDatasets
+listProcessedDatasets
+listAlgorithms
+listRuns
+listTiers
+listBlocks
+listFiles
 ##listDatasetContents
-#listDatasetParents
-#listFileParents
-#listFileAlgorithms
-#listFileTiers
-#listFileLumis
+listDatasetParents
+listFileParents
+listFileAlgorithms
+listFileTiers
+listFileLumis
 listRowsInTable
 #													
 echo 
