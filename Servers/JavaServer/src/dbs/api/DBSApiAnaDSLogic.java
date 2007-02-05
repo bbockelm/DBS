@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiAnaDSLogic.java,v 1.20 2007/02/02 17:40:05 sekhri Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.21 2007/02/05 17:53:10 sekhri Exp $"
  *
  */
 
@@ -216,7 +216,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
         public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_def_name", true);
-		String path = get(table, "path", false);
+		String path = get(table, "path", true);
 		String userCut = get(table, "user_cut");
 		String desc = getStr(table, "description", true);
 		Vector lumiVector = DBSUtil.getVector(table, "lumi_section");
