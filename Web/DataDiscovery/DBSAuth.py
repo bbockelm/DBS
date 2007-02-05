@@ -31,6 +31,7 @@ class DBSAuthentication:
       self.db    = ""
       self.user  = ""
       self.passwd= ""
+      self.host  = ""
       self.verbose = verbose
       self.dbparam = ""
       try:
