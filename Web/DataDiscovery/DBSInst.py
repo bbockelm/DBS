@@ -11,7 +11,7 @@ SQLAlchemy module.
 """
 
 # system modules
-import sys, string
+import sys, string, types
 
 #import sqlalchemy.mods.threadlocal
 try:
@@ -21,7 +21,6 @@ except:
    pass
 
 # DBS modules
-import dbsException
 from   DBSUtil import *
 from   DBSAuth import *
 
@@ -56,18 +55,19 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 # 4)
 # DBS: MCLocal_4/Writer
 # DLS: prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_4 type: DLS_TYPE_DLI or DLS_TYPE_LFC
-DBSGLOBAL="localhost"
+DBSGLOBAL="cmslcgco01"
 DBS_DLS_INST= {
-   DBSGLOBAL :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+   "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
    "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-   "FNAL8989":("http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-   "MCLocal_1/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-   "MCLocal_2/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_2"), 
-   "MCLocal_3/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_3"),
-   "MCLocal_4/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_4"),
-   "Dev/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-   "DevMC/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
-   "RelVal/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
+   "cmslcgco01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+   "FNAL8989":("http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+#   "MCLocal_1/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+#   "MCLocal_2/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_2"), 
+#   "MCLocal_3/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_3"),
+#   "MCLocal_4/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_4"),
+#   "Dev/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+#   "DevMC/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
+#   "RelVal/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
 #   "Dev/fanfani":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
 #   "MCLocal_5/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_5"),
 #   "MCLocal_6/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_6"),
@@ -131,6 +131,7 @@ class DBSDB(DBSLogger):
       """
       DBSLogger.__init__(self,"DBSDD",verbose)
       self.engine = {}
+      self.tQuery = {}
       self.iface=iface
       if verbose:
          self.verbose=True
@@ -145,17 +146,22 @@ class DBSDB(DBSLogger):
           dbAuth = DBSAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass, host = dbAuth.dbInfo()
           eType  = string.lower(dbType)
+          if self.verbose:
+             print "DBSDB:conntect",dbType,dbName,host
 
           # Initialize SQLAlchemy engines
           if eType=='sqlite':
              self.writeLog("Use SQLite instance '%s'"%dbsInst)
              eName = "%s:///%s"%(eType,dbName)
+             tQuery= "SELECT name FROM SQLITE_MASTER WHERE type='table';"
           elif eType=='oracle':
              self.writeLog("Use ORACLE instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
+             tQuery= "select table_name from user_tables"
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s/%s"%(eType,dbUser,dbPass,host,dbName)
+             tQuery= "show tables"
           else:
              printExcept("Unsupported DB engine backend")
 
@@ -163,40 +169,61 @@ class DBSDB(DBSLogger):
                                                           strategy='threadlocal',
                                                           threaded=True,
                                                           echo=self.verbose)
+          self.tQuery[dbsInst] = tQuery
+
       dbsMeta = sqlalchemy.DynamicMetaData()
       dbsMeta.connect(self.engine[dbsInst])
 
-      if self.iface=='cgi':
-         tList = [
-               't_processing','t_processing_name','t_app_config','t_app_family','t_application',
-               't_parameter_set','t_primary_dataset','t_block','t_block_status',
-               't_evcoll_file','t_evcoll_parentage',
-               't_file','t_file_status','t_file_type','t_event_collection',
-               't_evcoll_status','t_parentage_type','t_processed_dataset','t_data_tier'
-                 ]
-      else:
-         tList = [
-               'AlgorithmConfig','AnalysisDSStatus','AnalysisDSType','AnalysisDataset',
-               'AnalysisDatasetLumi','AppExecutable','AppFamily','AppVersion',
-               'AssignedRole','Block','DataTier','DatasetParentage','Description',
-               'FileAlgo','FileLumi','FileParentage','FileStatus','FileTier','FileType',
-               'Files','LumiSection','MCDescription','OtherDescription','ParameterBinding',
-               'Person','PhysicsGroup','PrimaryDSType','PrimaryDataset','PrimaryDatasetDescription',
-               'ProcAlgo','ProcDSRuns','ProcDSStatus','ProcDSTier','ProcessedDataset',
-               'QueryableParameterSet','Role','Runs','SEBlock','SchemaVersion',
-               'StorageElement','TimeLog','TriggerPathDescription'
-                 ]
+#      if self.iface=='cgi':
+#         tList = [
+#               't_processing','t_processing_name','t_app_config','t_app_family','t_application',
+#               't_parameter_set','t_primary_dataset','t_block','t_block_status',
+#               't_evcoll_file','t_evcoll_parentage',
+#               't_file','t_file_status','t_file_type','t_event_collection',
+#               't_evcoll_status','t_parentage_type','t_processed_dataset','t_data_tier'
+#                 ]
+#      else:
+#         tList = [
+#               'AlgorithmConfig','AnalysisDSStatus','AnalysisDSType','AnalysisDataset',
+#               'AppExecutable','AppFamily','AppVersion',
+#               'AssignedRole','Block','DataTier','Description',
+#               'FileAlgo','FileLumi','FileParentage','FileStatus','FileTier','FileType',
+#               'Files','LumiSection','MCDescription','OtherDescription','ParameterBinding',
+#               'Person','PhysicsGroup','PrimaryDSType','PrimaryDataset','PrimaryDatasetDescription',
+#               'ProcAlgo','ProcDSRuns','ProcDSStatus','ProcDSTier','ProcessedDataset',
+#               'QueryableParameterSet','Role','Runs','SEBlock','SchemaVersion',
+#               'StorageElement','TimeLog','TriggerPathDescription'
+#                 ]
+#         print self.tQuery[dbsInst]
+#         con = self.engine[dbsInst].connect()
+#         res = con.execute(self.tQuery[dbsInst])
+#         tList = []
+#         for t in res:
+#             tList.append(t[0])
+#         print tList
 
+      con = self.engine[dbsInst].connect()
       if  not self.dbTables.has_key(dbsInst):
-          # auto load all tables from DB
-          tables = {}
-          for t in tList:
-              # autoload tables from DB, may be slow over network link
-              tables[t]=sqlalchemy.Table(t, dbsMeta, autoload=True)
+          tables={}
+          tList = con.execute(self.tQuery[dbsInst])
+          for t in tList: 
+              tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True)
           self.dbTables[dbsInst]=tables
+#      for t in tList: 
+#          continue
+      # autoload tables from DB, may be slow over network link
+#      if  not self.dbTables.has_key(dbsInst):
+#          tables = {}
+#          print tList
+#          for t in tList:
+#              print "test",t
+#              _table = t[0]
+#              tables[t]=sqlalchemy.Table(_table, dbsMeta, autoload=True)
+#          self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
-      return self.engine[dbsInst].connect()
+#      return self.engine[dbsInst].connect()
+      return con
 
   def getTable(self,dbsInst,tableName,tableAlias=""):
       """
@@ -236,6 +263,13 @@ class DBSDB(DBSLogger):
       #    for row in result:
       #        dbsTables.append(row[0])
       return
+  def getColumns(self,dbsInst,table):
+      tDict = self.dbTables[dbsInst]
+      if tDict.has_key(table):
+         return tDict[table]._columns.keys()
+      return []
+  def getTableObject(self,dbsInst,table):
+      return self.dbTables[dbsInst][table]
 
 # Table classes
 class T_PROCESSED_DATASET(object):
