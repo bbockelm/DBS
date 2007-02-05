@@ -17,12 +17,14 @@ else
 		echo "****************************** WARNNING ***************************************"
 	else
 		#echo $fileName
-		cd ../../PythonAPI/
+		#cd ../../PythonAPI/
+		cd ../../DBSAPIOLD/
 		echo ""
 		echo "Fetching dataset conetents from DBS-1"
 		echo ""
 		python dbsCgiMigrate.py $instanceFrom $instanceTo $dataset get
-		mv $fileName ../Python/UserExamples/
+		#mv $fileName ../Python/UserExamples/
+		mv $fileName ../DBSAPI/UserExamples/
 		cd -
 	fi	
 	echo ""
