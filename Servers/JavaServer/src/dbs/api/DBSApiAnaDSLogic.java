@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiAnaDSLogic.java,v 1.19 2007/02/01 19:56:50 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.20 2007/02/02 17:40:05 sekhri Exp $"
  *
  */
 
@@ -49,7 +49,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ID") +
-					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEFINITION_NAME") +
+					"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
 					"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
 					"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
 					"' runs='" + get(rs, "RUNS") +
@@ -109,7 +109,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                                         "'>\n"));
 				//Add the details of definition also for this dataset
                                 out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
-                                        "' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEFINITION_NAME") +
+                                        "' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
                                         "' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
                                         "' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
                                         "' runs='" + get(rs, "RUNS") +

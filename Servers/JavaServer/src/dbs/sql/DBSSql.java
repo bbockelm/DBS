@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.65 $"
- $Id: DBSSql.java,v 1.65 2007/02/02 19:19:55 sekhri Exp $"
+ $Revision: 1.66 $"
+ $Id: DBSSql.java,v 1.66 2007/02/02 22:04:19 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1183,8 +1183,9 @@ public class DBSSql {
 	}
 
 	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
-		String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
-			"adsdef.Name as ANALYSIS_DATASET_DEFINITION_NAME, \n" +
+		//String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
+		String sql = "SELECT adsdef.ID as ID, \n " +
+			"adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
 			"adsdef.LumiSections as LUMI_SECTIONS, \n" +
 			"adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
 			"adsdef.Runs as RUNS, \n" +
@@ -1206,7 +1207,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = adsdef.LastModifiedBy \n" +
 			"WHERE adsdef.Name like  ? \n" +
-				"ORDER BY ANALYSIS_DATASET_DEFINITION_NAME DESC";
+				"ORDER BY ANALYSIS_DATASET_DEF_NAME DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, patternName);
@@ -1217,7 +1218,8 @@ public class DBSSql {
 
 
       public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String procDSID) throws SQLException {
-                String sql = "SELECT DISTINCT ads.ID as ID, \n " +
+                //String sql = "SELECT DISTINCT ads.ID as ID, \n " +
+                String sql = "SELECT ads.ID as ID, \n " +
 			"ads.Name as ANALYSIS_DATASET_NAME, \n " +
 			"ads.Annotation as ANNOTATION, \n" +    
 			"ads.ProcessedDS as PROCDSID, \n" +  
@@ -1231,7 +1233,7 @@ public class DBSSql {
                         "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
 
 			"adsdef.ID as ADDID, \n" +
-                        "adsdef.Name as ANALYSIS_DATASET_DEFINITION_NAME, \n" +
+                        "adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
                         "adsdef.LumiSections as LUMI_SECTIONS, \n" +
                         "adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
                         "adsdef.Runs as RUNS, \n" +
