@@ -23,6 +23,7 @@ import CheetahDBSTemplate
 from   DBSHelper import *
 from   DBSUtil   import *
 from   DDConfig  import *
+from   DDLucene  import *
  
 class DBSDataDiscoveryServer(DBSLogger): 
     """
@@ -62,6 +63,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         DBSLogger.__init__(self,"DBSDataDiscoveryServer",verbose)
         self.ddConfig  = DBSDDConfig()
+        self.lucene = DDLucene()
         self.dbs  = DBSGLOBAL
         self.site = ""
         self.app  = ""
@@ -347,7 +349,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'host'         : self.dbsdd,
                      'userMode'     : self.userMode,
                      'navigatorForm': menuForm,
-                     'searchForm'   : searchForm,
+#                     'searchForm'   : searchForm,
                      'siteForm'     : siteForm,
                      'dbsNames'     : self.dbsList,
                      'glossary'     : self.glossary(),
@@ -357,7 +359,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'DBSDD'        : self.dbsdd,
                      'step'         : GLOBAL_STEP,
                      'iface'        : self.ddConfig.iface(),
-                     'tip'          : tip()
+                     'tip'          : tip(),
+                     'luceneForm'   : CheetahDBSTemplate.templateSearchEngine,
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
         return str(t)
@@ -1048,7 +1051,6 @@ class DBSDataDiscoveryServer(DBSLogger):
                         }
             t = Template(CheetahDBSTemplate.templateNextBar, searchList=[nameSpace])
             page+=str(t)
-
         return page
     getDataHelper.exposed=True
 
@@ -2376,6 +2378,21 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getRss.exposed=True
+
+    def getLucene(self,**kwargs):
+        print "\n\ngetLucene",kwargs
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+#        param = {'method':'lookup','term':'block.subsys.NumberParameter129=111'}
+#        data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",param,debug=1)
+        data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",kwargs,debug=1)
+        print data
+        if string.find(data,"""<?xml version="1.0" encoding="ISO-8859-1"?>""")!=-1:
+           res=string.split(data,"""<?xml version="1.0" encoding="ISO-8859-1"?>""")
+           return res[1]
+        else:
+           return data
+    getLucene.exposed=True
 
     def genTreeElement(self,iParent,dataset):
         # pass here node,parent pair, as an example we pass 'newNode',node
