@@ -316,7 +316,8 @@ function showMenu(menu) {
    menuArr[5]='History';
    menuArr[6]='Help';
    menuArr[7]='Rss';
-   menuArr[8]='Hide';
+   menuArr[8]='Lucene';
+   menuArr[9]='Hide';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
