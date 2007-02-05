@@ -16,7 +16,7 @@ from DBSAPI.dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 from DBSAPI.dbsAnalysisDataset import DbsAnalysisDataset
 from DBSAPI.dbsLumiSection import DbsLumiSection
 from DBSAPI.dbsOptions import DbsOptionParser
-from DBSAPI.dbsUnitTestApi import DbsUnitTestApi
+from dbsUnitTestApi import DbsUnitTestApi
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()

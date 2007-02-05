@@ -5,7 +5,7 @@
 import sys
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsOptions import DbsOptionParser
-from DBSAPI.dbsUnitTestApi import DbsUnitTestApi
+from dbsUnitTestApi import DbsUnitTestApi
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()

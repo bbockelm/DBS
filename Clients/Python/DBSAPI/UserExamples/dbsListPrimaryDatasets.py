@@ -20,6 +20,10 @@ try:
   #args['url']='http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet' 
   #args['version']='v00_00_05'
   #api = DbsApi(args)
+
+  import pdb
+  pdb.set_trace()
+
   api = DbsApi(opts.__dict__)
   #import pdb
   #pdb.set_trace()
