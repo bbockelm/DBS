@@ -21,9 +21,6 @@ try:
   #args['version']='v00_00_05'
   #api = DbsApi(args)
 
-  import pdb
-  pdb.set_trace()
-
   api = DbsApi(opts.__dict__)
   #import pdb
   #pdb.set_trace()
