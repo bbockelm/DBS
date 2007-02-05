@@ -13,23 +13,20 @@ CLI DBS Data discovery toolkit.
 import string, sys, time, types, popen2
 
 # import DBS modules
-import dbsException
-
-# we try to load dbsCgiApi, since it exists only for JavaServer server
-try:
-   import dbsWebApi
-except:
-   pass
-# we try to load dbsCgiApi, since it exists only for CGI server
-try:
-   import dbsCgiApi
-except:
-   pass
 import DBSOptions
 from   DDConfig   import *
-from   dbsApi     import DbsApi, DbsApiException, InvalidDataTier
 from   DBSInst    import * # defines DBS instances and schema
 from   DBSUtil    import * # general utils
+
+_ddConfig = DBSDDConfig()
+if _ddConfig.iface()=='cgi':
+   import DBSAPIOLD.dbsCgiApi as dbsCgiApi
+   import DBSAPIOLD.dbsException as dbsException
+   from   DBSAPIOLD.dbsApi import DbsApi, DbsApiException, InvalidDataTier
+else:
+   import DBSAPI.dbsWebApi as dbsWebApi
+   import DBSAPI.dbsException as dbsException
+   from   DBSAPI.dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
 # import DLS modules
 import dlsClient
@@ -642,7 +639,7 @@ class DBSHelper(DBSLogger):
          pass
       return con
 
-  def getSQLAlchemyResult(self,sel):
+  def getSQLAlchemyResult(self,sel,con=""):
       """
          Set DBS instance and
          execute given query, if fails throws exception, including query
@@ -653,7 +650,8 @@ class DBSHelper(DBSLogger):
       """
       res = []
       try:
-          con = self.connectToDB()
+          if not con:
+             con = self.connectToDB()
           res = con.execute(sel)
           con.close()
       except:
@@ -692,6 +690,47 @@ class DBSHelper(DBSLogger):
              raise DbsDatabaseError(args=ex)
          pass
       return res
+
+  def getTableContent(self,tableName,iList=['*'],fromRow=1,limit=0):
+      try:
+          con = self.connectToDB()
+          if limit:
+             sel = sqlalchemy.select(iList, from_obj=[tableName], limit=limit, offset=fromRow)
+          else:
+             sel = sqlalchemy.select(iList, from_obj=[tableName])
+          result = self.getSQLAlchemyResult(sel,con)
+          if  self.verbose:
+              print "getTableContent",tableName,iList
+              for item in result:
+                  print item
+          con.close()
+      except:
+          printExcept()
+          raise "Fail to get table='%s' content"%tableName
+      return result
+
+  def formSQLTableList(self,tableName,iList=[]):
+      con = self.connectToDB()
+      print "formSQL"
+      # first get table content
+      cList=self.dbsDBs.getColumns(self.dbsInstance,tableName)
+      tObj = self.dbsDBs.getTableObject(self.dbsInstance,tableName)
+      tObj2 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')
+#      print cList, tObj.__dict__
+#      sel = sqlalchemy.join(tObj,self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')).select(limit=10)
+#      _join = sqlalchemy.join(tObj,tObj2)
+#      print _join
+      sel = sqlalchemy.select(tObj.c.Name,from_obj=[tObj.outerjoin(tObj2)] )
+      res = self.getSQLAlchemyResult(sel,con)
+      for item in res: print item
+      con.close() 
+#      nList=[]
+#      for x in cList:
+#          nList.append(getattr(tObj.c,x))
+#      return map(cList,lambda x: getattr(table,x))
+
+  def formQuery(self):
+      return
 
   def getLFNs(self,dbsInst,blockName,dataset):
       self.setDBSDLS(dbsInst)
@@ -775,7 +814,7 @@ class DBSHelper(DBSLogger):
           tapc = self.alias('t_app_config','tapc')
           tapf = self.alias('t_app_family','tapf')
           tpset= self.alias('t_parameter_set','tpset')
-          sel = sqlalchemy.select([tpm.c.name,tdt.c.name,tapp.c.app_version,
+          sel  = sqlalchemy.select([tpm.c.name,tdt.c.name,tapp.c.app_version,
                                    tapf.c.name,tapp.c.executable],
                        from_obj=[
                                   tprd.outerjoin(tdt,onclause=tdt.c.id==tprd.c.data_tier)
@@ -1059,9 +1098,17 @@ if __name__ == "__main__":
        verbose=1
 
     iface="cgi"
-    if opts.server!="cgi":
+    if opts.iface!="cgi":
        iface = "JavaServer"
     helper = DBSHelper(dbsInst,iface,verbose)
+
+
+    #TMP
+#    res = helper.getTableContent('PrimaryDataset')
+#    print res
+#    l = helper.formSQLTableList('PrimaryDataset',[])
+#    print l,type(l)
+#    sys.exit(0)
     
     if opts.dict:
        helper.initJSDict(opts.dict)
