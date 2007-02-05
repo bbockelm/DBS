@@ -12,9 +12,7 @@ Common utilities module used by DBS data discovery.
 import os, string, sys, time, types, logging, traceback, random
 
 # import DBS modules
-import dbsException
 import DBSOptions
-from   dbsApi import DbsApi, DbsApiException, InvalidDataTier
 
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
 RES_PER_PAGE=5 # number of results per page shown
@@ -309,32 +307,32 @@ def validator(s):
            if char==")": open-=1
     return (not open)
 
-class DbsPatternError(DbsApiException):
-  """
-     DBS pattern error handler class
-  """
-  def __init__ (self, **kwargs):
-      """
-         @type  kwargs: dict
-         @param kwargs: input dict 
-         @rtype : 
-         @return: 
-      """
-      DbsApiException.__init__(self, **kwargs)
+#class DbsPatternError(DDException):
+#  """
+#     DBS pattern error handler class
+#  """
+#  def __init__ (self, **kwargs):
+#      """
+#         @type  kwargs: dict
+#         @param kwargs: input dict 
+#         @rtype : 
+#         @return: 
+#      """
+#      DDException.__init__(self, **kwargs)
 
-class DbsDatabaseError(DbsApiException):
-  """
-      DBS error handler class
-  """
-  def __init__ (self, **kwargs):
-      """
-         @type  kwargs: dict
-         @param kwargs: input dict
-         @rtype : none
-         @return: none
-      """
-      printExcept()
-      DbsApiException.__init__(self, **kwargs)
+#class DbsDatabaseError(DDException):
+#  """
+#      DBS error handler class
+#  """
+#  def __init__ (self, **kwargs):
+#      """
+#         @type  kwargs: dict
+#         @param kwargs: input dict
+#         @rtype : none
+#         @return: none
+#      """
+#      printExcept()
+#      DDException.__init__(self, **kwargs)
 
 def demanglePattern(pattern):
     """

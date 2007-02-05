@@ -8,11 +8,38 @@
 
 # system modules
 import os, sys, string, stat, re, types
+from exceptions import Exception
 
-# DBS specific modules
-from dbsException    import DbsException
-from dbsApi import DbsApiException
-#from dbsApiException import *
+class DDException(Exception):
+
+  def __init__(self, **kwargs):
+    """
+    Data Discovery exception can be initialized in following ways:
+      DDException(args=exceptionString)
+      DDException(exception=exceptionObject)      
+    """ 
+    args = kwargs.get("args", "")
+    ex = kwargs.get("exception", None)
+    if ex != None:
+      if isinstance(ex, Exception):
+         exArgs = "%s" % (ex)
+         if args == "":
+           args = exArgs
+         else:
+           args = "%s (%s)" % (args, exArgs)
+    Exception.__init__(self, args)
+
+  def getArgs(self):
+    """ Return exception arguments. """
+    return self.args
+
+  def getErrorMessage(self):
+    """ Return exception error. """
+    return "%s" % (self.args)
+
+  def getClassName(self):
+    """ Return class name. """
+    return "%s" % (self.__class__.__name__)
 
 class DBSDDConfig:
   def __init__(self,iConfig={}):
@@ -24,13 +51,13 @@ class DBSDDConfig:
     uFileName=""
     if os.environ.has_key('DDHOME'):
        if not os.path.isfile(os.path.join(os.environ['DDHOME'],'DBSDD.conf')):
-          raise DbsException(args="The '%s' config file does not exists"%os.path.join(os.environ['DDHOME'],'DBSDD.conf'))
+          raise DDException(args="The '%s' config file does not exists"%os.path.join(os.environ['DDHOME'],'DBSDD.conf'))
        uFileName=os.path.join(os.environ['DDHOME'],'DBSDD.conf')
     else:
-       raise DbsException(args="No DBSDD environment found")
+       raise DDException(args="No DBSDD environment found")
     self.configFile=uFileName
     if not os.path.isfile(uFileName):
-       raise DbsException(args="The '%s' config file does not exists"%uFileName)
+       raise DDException(args="The '%s' config file does not exists"%uFileName)
     mode = os.stat(uFileName)[stat.ST_MODE]
     if mode!=33152:
        # mode is not -rw-------
@@ -50,27 +77,27 @@ class DBSDDConfig:
                self.configDict[item] = iConfig[item]
   def iface(self):
     if not self.configDict.has_key('iface'):
-       raise DbsException(args="DBS configuration missing iface parameter")
+       raise DDException(args="DBS configuration missing iface parameter")
     return self.configDict['iface']
   def url(self):
     if not self.configDict.has_key('url'):
-       raise DbsException(args="DBS configuration missing url parameter")
+       raise DDException(args="DBS configuration missing url parameter")
     return self.configDict['url']
   def user(self):
     if not self.configDict.has_key('user'):
-       raise DbsException(args="DBS configuration missing user parameter")
+       raise DDException(args="DBS configuration missing user parameter")
     return self.configDict['user']
   def password(self):
     if not self.configDict.has_key('password'):
-       raise DbsException(args="DBS configuration missing password parameter")
+       raise DDException(args="DBS configuration missing password parameter")
     return self.configDict['password']
   def dbname(self):
     if not self.configDict.has_key('dbname'):
-       raise DbsException(args="DBS configuration missing dbname parameter")
+       raise DDException(args="DBS configuration missing dbname parameter")
     return self.configDict['dbname']
   def engine(self):
     if not self.configDict.has_key('engine'):
-       raise DbsException(args="DBS configuration missing engine parameter")
+       raise DDException(args="DBS configuration missing engine parameter")
     return self.configDict['engine']
   def verbose(self):
     if not self.configDict.has_key('verbose'):
