@@ -416,6 +416,24 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetBranches','getBranches');
     ajaxEngine.registerAjaxElement('kw_branch');
 }
+function registerAjaxLucene() {
+    ajaxEngine.registerRequest('ajaxGetLucene','getLucene');
+    ajaxEngine.registerAjaxElement('webSearchStats');
+    ajaxEngine.registerRequest('ajaxGetLuceneParams','getLucene');
+    ajaxEngine.registerAjaxElement('parameterNameList');
+    updater_grid = new GetDataUpdater('webSearchResultsGrid_updater','replace');
+    ajaxEngine.registerAjaxObject('webSearchResultsGrid_updater',updater_grid);
+    updater = new GetDataUpdater('configureWebSearchRows','replace');
+    ajaxEngine.registerAjaxObject('configureWebSearchRows',updater);
+    errUpdater = new GetDataUpdater('errorResponse','replace');
+    ajaxEngine.registerAjaxObject('errorResponse',errUpdater);
+}
+function ajaxGetLucene() {
+  ajaxEngine.sendRequest('ajaxGetLucene','term=block.subsys.NumberParameter129='+$('searchInput').value,'method=lookup');
+}
+function ajaxGetLuceneParams() {
+  ajaxEngine.sendRequest('ajaxGetLucene','method=parameters');
+}
 function ajaxGetRss() {
   ajaxEngine.sendRequest('ajaxGetRss');
 }
@@ -631,6 +649,7 @@ function ajaxInit(_dbs) {
   registerAjaxGetAlgosCalls();
 
   ajaxGenNavigatorMenuDict(_dbs);
+  registerAjaxLucene();
 }
 
 // Class which capture ajax response and handle it. 
