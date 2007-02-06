@@ -20,7 +20,7 @@ try:
 		"\n\tboth: This will fetch the contents of the dataset and save it in a xml file and then write the contents of that xml to another DBS instance " + \
 		"\n\tget: This will just fetch the contents of the dataset and save it in a xml file. It will not write the contents to any other DBS instance." + \
 		"\n\tset: This will just write the contents of xml file to another DBS instance. It will not fetch the dataset contents first." + \
-		"\nIf you do not supply this op parameter then the dafault is assumed which is both." + \
+		"\nIf you do not supply this op parameter then the default is assumed which is both." + \
 		"\nExample :" + \
 		"\npython dbsMigrateBlocks.py SOURCE_DBS_URL TARGET_DBS_URL  /CSA06-081-os-minbias/DIGI/CMSSW_0_8_1-GEN-SIM-DIGI-1154005302-merged" + \
 		"\nYou can give the keywrod LOCALDBS which will read the configuration file dbs.config to get the DBS URL" + \

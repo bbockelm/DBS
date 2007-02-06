@@ -311,8 +311,10 @@ class DbsApi(DbsConfig):
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
                                                          ApplicationVersion=str(attrs['app_version']),
-                                                         ApplicationFamily=str(attrs['app_family_name'])
-                                                        ) )
+                                                         ApplicationFamily=str(attrs['app_family_name']),
+							 ParameterSetID=DbsQueryableParameterSet(
+								 Hash=str(attrs['ps_hash']))
+							 ) )
         def endElement(self, name):
           if name == 'processed_dataset':
              result.append(self.currDataset)
