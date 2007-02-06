@@ -2226,24 +2226,27 @@ class DbsApi(DbsConfig):
     logging.debug(data)
 
   # ------------------------------------------------------------
-  def insertMergedDataset(self, dataset, merge_algo):
+  def insertMergedDataset(self, dataset, merege_ds_name, merge_algo):
     """
     Clones a dataset and add another Algo to it.
     This is done for merged datasets.
     params:
          dataset: the dataset needs to be cloned 
          merge_algo:  merge application that needs to added to cloned dataset.
+                      Assuming for now that merge_algo is just ONE Algo object
     """
 
     path = self._path(dataset) 
     token = path.split("/")
     proc = self.listProcessedDatasets(token[1], token[2], token[3])[0]
     logging.debug("proc fetched from DBS %s" %proc)
-    proc['Name'] = proc['Name']+"_MERGED"
+    proc['Name'] = merege_ds_name
     if merge_algo not in (None, '', NULL, []):
 	#raise DbsApiException(args="You must provide an Algorithm object for the merged dataset")
 	#return
         #logging.debug("Algorithm object for the merged dataset is not provided")
+        self.insertAlgorithm(merge_algo)  
+
         proc['AlgoList'].append(merge_algo) 
 
     self.insertProcessedDataset (proc)
@@ -2278,6 +2281,11 @@ class DbsApi(DbsConfig):
         for achild in fileDetail['ChildList']:
                 if achild not in outputFile['ChildList']:
                         outputFile['ChildList'].append(achild)
+
+        fileDetail['ParentList'] = []
+        for aparent in fileDetail['ParentList']:
+                if aparent not in outputFile['ParentList']:
+                        outputFile['ParentList'].append(aparent)
 
         # Branches must be same, I hope !!!!!!!!!!
         for abranch in fileDetail['BranchList']:
