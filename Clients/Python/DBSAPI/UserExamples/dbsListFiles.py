@@ -22,9 +22,9 @@ try:
    print ""
    #for file in api.listFiles("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
    #for file in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS002", "", "", True):
-   #for file in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS002", "", "", False):
+   for file in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS002", "", "", False):
    #for file in api.listFiles("/TestPrimary_001_20070206_12h14m59s/HIT_20070206_12h14m59s/TestProcessed_20070206_12h14m59s", "", "'1111-0909-9767-8764_20070206_12h14m59s'", False):
-   for file in api.listFiles("", "", "1111-0909-9767-8764_20070206_12h14m59s", False):
+   #for file in api.listFiles("", "", "1111-0909-9767-8764_20070206_12h14m59s", False):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e
