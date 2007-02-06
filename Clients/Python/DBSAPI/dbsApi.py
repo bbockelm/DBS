@@ -617,7 +617,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, dataset, blockName="", patternLFN="*", details=None):
+  def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -625,7 +625,7 @@ class DbsApi(DbsConfig):
     returns: list of DbsFile objects
 
     params: 
-        dataset: Not Defaulted User must provide a value
+        dataset: want to list files of THIS dataset, USER MUST Provide this argument (can be an Analysis dataset)
          
         blockName: Defaulted to "" means files (That match dataset and/or LFN pattern criteria). 
         If the blockName is given, it will be matched against the block name.
@@ -739,6 +739,23 @@ class DbsApi(DbsConfig):
                                        LastModificationDate=str(attrs['last_modification_date']),
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        ))
+
+          if name == 'file_child':
+             self.currFile['ChildList'].append(DbsFile (
+                                       LogicalFileName=str(attrs['lfn']),
+                                       FileSize=long(attrs['size']),
+                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       Status=str(attrs['status']),
+                                       Block=DbsFileBlock(Name=str(attrs['block_name'])),
+                                       FileType=str(attrs['type']),
+                                       Checksum=str(attrs['checksum']),
+                                       QueryableMetadata=str(attrs['queryable_meta_data']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       ))
+
 
         def endElement(self, name):
           if name == 'file':
@@ -1437,7 +1454,7 @@ class DbsApi(DbsConfig):
  
     # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
     for parentPath in dataset.get('ParentList',[]):
-        xmlinput += "<parent path='"+parentPath+"'/>"
+        xmlinput += "<file_parent path='"+parentPath+"'/>"
 
     for algorithm in dataset.get('AlgoList',[]):
         xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
@@ -1682,7 +1699,6 @@ class DbsApi(DbsConfig):
    
          api.insertFiles ("/test_primary_anzar_001/SIM/TestProcessedDS002", [myfile1, myfile2],  block)
 
-
     """
     # Prepare XML description of the input
 
@@ -1714,7 +1730,7 @@ class DbsApi(DbsConfig):
        xmlinput += " >" 
        
        for lumi in file.get('LumiList', []):
-            xmlinput += "<lumi_section lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
+            xmlinput += "<file_lumi_section lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
             xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
             xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'" 
             xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
@@ -1723,17 +1739,21 @@ class DbsApi(DbsConfig):
             xmlinput += " />"
 
        for tier in file.get('TierList',[]):
-            xmlinput += "<data_tier name='"+tier+"'/>"
+            xmlinput += "<file_data_tier name='"+self._name(tier)+"'/>"
 
        for branch in file.get('BranchList',[]):
-            xmlinput += "<branch name='"+branch+"'/>"
+            xmlinput += "<file_branch name='"+branch+"'/>"
     
-       # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
+       # LFNs of the Parent Files(s) may be specified, sever expects LFNs
        for parent in file.get('ParentList',[]):
-            xmlinput += "<parent lfn='"+parent+"'/>"
+            xmlinput += "<file_parent lfn='"+self._name(parent)+"'/>"
+
+       # LFNs of the Children Files(s) may be specified, sever expects LFNs
+       for child in file.get('ChildList',[]):
+            xmlinput += "<file_child lfn='"+self._name(child)+"'/>"
 
        for algorithm in file.get('AlgoList',[]):
-           xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
+           xmlinput += "<file_algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
            xmlinput += " app_family_name='"+algorithm.get('ApplicationFamily', "")+"'"
            xmlinput += " app_executable_name='"+algorithm.get('ExecutableName', "")+"'"
            pset = algorithm.get('ParameterSetID')
@@ -1804,10 +1824,6 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'remapFiles',
                          'xmlinput' : xmlinput }, 'POST')
     logging.debug(data)
-
-
-
-
 
   # ------------------------------------------------------------
 
@@ -2158,9 +2174,6 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
     logging.debug(data)
 
-
-
-
   # ------------------------------------------------------------
 
   def insertLumiSection(self, lumi):
@@ -2212,6 +2225,66 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
     logging.debug(data)
 
+  # ------------------------------------------------------------
+  def insertMergedDataset(self, dataset, merge_algo):
+    """
+    Clones a dataset and add another Algo to it.
+    This is done for merged datasets.
+    params:
+         dataset: the dataset needs to be cloned 
+         merge_algo:  merge application that needs to added to cloned dataset.
+    """
+
+    path = self._path(dataset) 
+    token = path.split("/")
+    proc = self.listProcessedDatasets(token[1], token[2], token[3])[0]
+    logging.debug("proc fetched from DBS %s" %proc)
+    proc['Name'] = proc['Name']+"_MERGED"
+    if merge_algo not in (None, '', NULL, []):
+	#raise DbsApiException(args="You must provide an Algorithm object for the merged dataset")
+	#return
+        #logging.debug("Algorithm object for the merged dataset is not provided")
+        proc['AlgoList'].append(merge_algo) 
+
+    self.insertProcessedDataset (proc)
+    return proc
+
+  # ------------------------------------------------------------
+  def insertMergedFile(self, outputFile):
+    """
+    Inserts a LFN into DBS, while getting all details of input LFNs 
+    as PHYSICS and merge "parents" of THIS outputLFN.
+
+    params:
+        outputFile is the output file object with all detals, such a Check sum, Number of events etc.
+        Also specifying ParentFiles (The files that were merged into THIS file)
+    """
+
+    for anInputLFN in outputFile['ParentList']:
+	fileDetail = self.listFiles(dataset, "", self._name(anInputLFN), True)
+        
+        for atier in fileDetail['TierList']:
+		if atier not in outputFile['TierList']:
+			outputFile['TierList'].append(atier)
+
+        for alumi in fileDetail['LumiList']:
+                if alumi not in outputFile['LumiList']:
+                        outputFile['LumiList'].append(alumi)
+
+        for algo in fileDetail['AlgoList']:
+                if algo not in outputFile['AlgoList']:
+                        outputFile['AlgoList'].append(algo)
+
+        for achild in fileDetail['ChildList']:
+                if achild not in outputFile['ChildList']:
+                        outputFile['ChildList'].append(achild)
+
+        # Branches must be same, I hope !!!!!!!!!!
+        for abranch in fileDetail['BranchList']:
+                if abranch not in outputFile['BranchList']:
+                        outputFile['BranchList'].append(abranch)
+ 
+    self.insertFiles(outputFile['Dataset'], [outputFile], outputFile['Block'])
 
   # ------------------------------------------------------------
   def createAnalysisDataset(self, analysisdataset, defName):
