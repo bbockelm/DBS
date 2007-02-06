@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 591
+REM === Build : 601
 REM ======================================================================
 
 CREATE TABLE Person
@@ -946,7 +946,7 @@ ALTER TABLE PrimaryDataset ADD CONSTRAINT
 /
 
 ALTER TABLE ProcessedDataset ADD CONSTRAINT 
-    ProcessedDatasetPrimaryData_FK foreign key(PrimaryDataset) references PrimaryDataset(ID)
+    ProcessedDatasetPrimaryData_FK foreign key(PrimaryDataset) references PrimaryDataset(ID) on delete CASCADE
 /
 ALTER TABLE ProcessedDataset ADD CONSTRAINT 
     ProcessedDatasetPhysicsGrou_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
@@ -962,7 +962,7 @@ ALTER TABLE ProcessedDataset ADD CONSTRAINT
 /
 
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID)
+    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE AnalysisDataset ADD CONSTRAINT 
     AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
@@ -987,7 +987,7 @@ ALTER TABLE AnalysisDataset ADD CONSTRAINT
 /
 
 ALTER TABLE Block ADD CONSTRAINT 
-    Block_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+    Block_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE Block ADD CONSTRAINT 
     Block_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -997,7 +997,7 @@ ALTER TABLE Block ADD CONSTRAINT
 /
 
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+    Files_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_Block_FK foreign key(Block) references Block(ID)
@@ -1032,7 +1032,7 @@ ALTER TABLE SEBlock ADD CONSTRAINT
 /
 
 ALTER TABLE FileTier ADD CONSTRAINT 
-    FileTier_Fileid_FK foreign key(Fileid) references Files(ID)
+    FileTier_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
 /
 ALTER TABLE FileTier ADD CONSTRAINT 
     FileTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
@@ -1045,10 +1045,10 @@ ALTER TABLE FileTier ADD CONSTRAINT
 /
 
 ALTER TABLE FileParentage ADD CONSTRAINT 
-    FileParentage_ThisFile_FK foreign key(ThisFile) references Files(ID)
+    FileParentage_ThisFile_FK foreign key(ThisFile) references Files(ID) on delete CASCADE
 /
 ALTER TABLE FileParentage ADD CONSTRAINT 
-    FileParentage_ItsParent_FK foreign key(ItsParent) references Files(ID)
+    FileParentage_ItsParent_FK foreign key(ItsParent) references Files(ID) on delete CASCADE
 /
 ALTER TABLE FileParentage ADD CONSTRAINT 
     FileParentage_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1058,7 +1058,7 @@ ALTER TABLE FileParentage ADD CONSTRAINT
 /
 
 ALTER TABLE FileRunLumi ADD CONSTRAINT 
-    FileRunLumi_Fileid_FK foreign key(Fileid) references Files(ID)
+    FileRunLumi_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
 /
 ALTER TABLE FileRunLumi ADD CONSTRAINT 
     FileRunLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
@@ -1074,7 +1074,7 @@ ALTER TABLE FileRunLumi ADD CONSTRAINT
 /
 
 ALTER TABLE FileAlgo ADD CONSTRAINT 
-    FileAlgo_Fileid_FK foreign key(Fileid) references Files(ID)
+    FileAlgo_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
 /
 ALTER TABLE FileAlgo ADD CONSTRAINT 
     FileAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
@@ -1087,7 +1087,7 @@ ALTER TABLE FileAlgo ADD CONSTRAINT
 /
 
 ALTER TABLE FileBranch ADD CONSTRAINT 
-    FileBranch_Fileid_FK foreign key(Fileid) references Files(ID)
+    FileBranch_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
 /
 ALTER TABLE FileBranch ADD CONSTRAINT 
     FileBranch_Branch_FK foreign key(Branch) references Branch(ID)
@@ -1100,7 +1100,7 @@ ALTER TABLE FileBranch ADD CONSTRAINT
 /
 
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+    ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_Run_FK foreign key(Run) references Runs(ID)
@@ -1113,7 +1113,7 @@ ALTER TABLE ProcDSRuns ADD CONSTRAINT
 /
 
 ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE ProcDSTier ADD CONSTRAINT 
     ProcDSTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
@@ -1126,10 +1126,10 @@ ALTER TABLE ProcDSTier ADD CONSTRAINT
 /
 
 ALTER TABLE ProcDSParent ADD CONSTRAINT 
-    ProcDSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID)
+    ProcDSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE ProcDSParent ADD CONSTRAINT 
-    ProcDSParent_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID)
+    ProcDSParent_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE ProcDSParent ADD CONSTRAINT 
     ProcDSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1142,7 +1142,7 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
     ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID)
+    ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID) on delete CASCADE
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1152,7 +1152,7 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 /
 
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
-    AnalysisDSFileLumiAnalysisD_FK foreign key(AnalysisDataset) references AnalysisDataset(ID)
+    AnalysisDSFileLumiAnalysisD_FK foreign key(AnalysisDataset) references AnalysisDataset(ID) on delete CASCADE
 /
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
     AnalysisDSFileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)

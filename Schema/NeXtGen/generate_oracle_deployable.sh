@@ -9,7 +9,7 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=v00_00_04
+SchemaVersion=v00_00_05
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
