@@ -1,7 +1,7 @@
 #!/bin/sh
 rm -f $PWD/result.txt
 touch $PWD/result.txt
-cd ..
+cd ../..
 source setup.sh
 cd -
 counter=`date +%m%h%s`
