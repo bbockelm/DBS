@@ -2,15 +2,15 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">592</attrib>
-		<attrib name="serial">346116</attrib>
+		<attrib name="build">605</attrib>
+		<attrib name="serial">346117</attrib>
 	</attribs>
 	<database>
 		<attribs>
 			<attrib name="name">DBS_NEW_ERA</attrib>
-			<attrib name="preSql">drop database if exists dbs_new_era_v14;
-create database dbs_new_era_v14;
-use dbs_new_era_v14;
+			<attrib name="preSql">drop database if exists dbs_new_era_v15;
+create database dbs_new_era_v15;
+use dbs_new_era_v15;
 
 </attrib>
 			<attrib name="postSql"/>
@@ -58,7 +58,12 @@ use dbs_new_era_v14;
 				<row>
 					<elem>0.8</elem>
 					<elem>2007-01-31 10:58:35</elem>
-					<elem>...</elem>
+					<elem>lost what was changed here</elem>
+				</row>
+				<row>
+					<elem>0.9</elem>
+					<elem>2007-02-06 10:54:30</elem>
+					<elem>Adding cascade deletes</elem>
 				</row>
 			</list>
 		</revisions>
@@ -165,6 +170,11 @@ use dbs_new_era_v14;
 					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\DocXML</output>
 				</Docbook>
 			</DocsGenModule>
+			<SummaryGenModule>
+				<ascii>
+					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
+				</ascii>
+			</SummaryGenModule>
 			<SqlGenModule>
 				<stdSql>
 					<genPostSQL>Y</genPostSQL>
@@ -174,9 +184,9 @@ use dbs_new_era_v14;
 					<genIndexes>N</genIndexes>
 					<genTriggers>N</genTriggers>
 					<genDropStmt>N</genDropStmt>
-					<genFunctions>N</genFunctions>
-					<genRules>N</genRules>
 					<genViews>N</genViews>
+					<genRules>N</genRules>
+					<genFunctions>N</genFunctions>
 					<genProcedures>N</genProcedures>
 					<genInlineFKs>N</genInlineFKs>
 					<genPreSQL>Y</genPreSQL>
@@ -193,17 +203,12 @@ use dbs_new_era_v14;
 					<genSequences>N</genSequences>
 				</oraSql>
 			</SqlGenModule>
-			<SummaryGenModule>
-				<ascii>
-					<output>/Users/anzar/DBSSchema10032006/Summary.txt</output>
-				</ascii>
-			</SummaryGenModule>
 		</modsConfig>
 		<modsUsage>
 			<module name="SummaryGenModule.ascii"/>
 			<module name="DocsGenModule.html"/>
-			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.stdSql"/>
+			<module name="DocsGenModule.pdf"/>
 			<module name="SqlGenModule.oraSql"/>
 			<module name="DocsGenModule.Docbook"/>
 		</modsUsage>
@@ -4586,7 +4591,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">135015</attrib>
 							<attrib name="name">PrimaryDataset</attrib>
 							<attrib name="id">140694</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">135014</attrib>
 							<attrib name="type">0</attrib>
@@ -5286,7 +5291,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">ProcessedDS</attrib>
 							<attrib name="id">187691</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -5683,7 +5688,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">Dataset</attrib>
 							<attrib name="id">218374</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -6053,7 +6058,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">Dataset</attrib>
 							<attrib name="id">235108</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -6082,7 +6087,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">135504</attrib>
 							<attrib name="name">Block</attrib>
 							<attrib name="id">179299</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">135503</attrib>
 							<attrib name="type">0</attrib>
@@ -11288,7 +11293,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">Fileid</attrib>
 							<attrib name="id">143272</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
@@ -11534,7 +11539,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">ThisFile</attrib>
 							<attrib name="id">135484</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
@@ -11563,7 +11568,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">ItsParent</attrib>
 							<attrib name="id">135483</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
@@ -11780,7 +11785,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">Fileid</attrib>
 							<attrib name="id">272992</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
@@ -12045,7 +12050,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">Fileid</attrib>
 							<attrib name="id">279870</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
@@ -12710,7 +12715,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134965</attrib>
 							<attrib name="name">Fileid</attrib>
 							<attrib name="id">319453</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134964</attrib>
 							<attrib name="type">0</attrib>
@@ -12957,7 +12962,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">Dataset</attrib>
 							<attrib name="id">275518</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -13198,7 +13203,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">Dataset</attrib>
 							<attrib name="id">189891</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -13444,7 +13449,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">ThisDataset</attrib>
 							<attrib name="id">190552</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -13473,7 +13478,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">ItsParent</attrib>
 							<attrib name="id">190551</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -13695,7 +13700,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134985</attrib>
 							<attrib name="name">Dataset</attrib>
 							<attrib name="id">280271</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134984</attrib>
 							<attrib name="type">0</attrib>
@@ -13719,7 +13724,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">135419</attrib>
 							<attrib name="name">Algorithm</attrib>
 							<attrib name="id">280272</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">135418</attrib>
 							<attrib name="type">0</attrib>
@@ -14361,7 +14366,7 @@ use dbs_new_era_v14;
 							<attrib name="refField">134947</attrib>
 							<attrib name="name">AnalysisDataset</attrib>
 							<attrib name="id">233536</attrib>
-							<attrib name="onDelete">n</attrib>
+							<attrib name="onDelete">c</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">134946</attrib>
 							<attrib name="type">0</attrib>
