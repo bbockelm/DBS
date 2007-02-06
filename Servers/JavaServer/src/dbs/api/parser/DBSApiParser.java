@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiParser.java,v 1.4 2007/01/24 15:43:49 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiParser.java,v 1.5 2007/02/01 22:11:51 sekhri Exp $"
  *
 */
 
@@ -138,24 +138,24 @@ public class DBSApiParser {
 
 			if (name.equals("file") ) {
 				Hashtable file = e.attributes;
-				file.put("lumi_section", new Vector());
-				file.put("data_tier", new Vector());
-				file.put("parent", new Vector());
-				file.put("algorithm", new Vector());
-				file.put("branch", new Vector());
+				file.put("file_lumi_section", new Vector());
+				file.put("file_data_tier", new Vector());
+				file.put("file_parent", new Vector());
+				file.put("file_algorithm", new Vector());
+				file.put("file_branch", new Vector());
 				topLevel.add(file);
 				++index;
 			} 
 			if (name.equals("file_lumi_section") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_lumi_section"))).add(e.attributes);
 			if (name.equals("file_data_tier") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("data_tier"))).add(e.attributes);
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_data_tier"))).add(e.attributes);
 			if (name.equals("file_parent") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_parent"))).add(e.attributes);
 			if (name.equals("file_algorithm") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_algorithm"))).add(e.attributes);
 			if (name.equals("file_branch") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("branch"))).add(e.attributes);
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_branch"))).add(e.attributes);
 
 		}
 		table.put("processed_dataset", psDS);
@@ -177,11 +177,12 @@ public class DBSApiParser {
 			String name = e.name;
 			if (name.equals("file") ) {
 				Hashtable file = e.attributes;
-				file.put("lumi_section", new Vector());
-				file.put("data_tier", new Vector());
-				file.put("parent", new Vector());
-				file.put("algorithm", new Vector());
-				file.put("branch", new Vector());
+				file.put("file_lumi_section", new Vector());
+				file.put("file_data_tier", new Vector());
+				file.put("file_parent", new Vector());
+				file.put("file_child", new Vector());
+				file.put("file_algorithm", new Vector());
+				file.put("file_branch", new Vector());
 				topLevel.add(file);
 				++index;
 			} 
@@ -194,16 +195,18 @@ public class DBSApiParser {
                         if (name.equals("storage_element") )
                                 ((Vector)block.get("storage_element")).add(e.attributes);
 
-			if (name.equals("lumi_section") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("lumi_section"))).add(e.attributes);
-			if (name.equals("data_tier") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("data_tier"))).add(e.attributes);
-			if (name.equals("parent") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("parent"))).add(e.attributes);
-			if (name.equals("algorithm") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("algorithm"))).add(e.attributes);
-                        if (name.equals("branch") ) 
-                                ((Vector)(((Hashtable)topLevel.get(index)).get("branch"))).add(e.attributes);
+			if (name.equals("file_lumi_section") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_lumi_section"))).add(e.attributes);
+			if (name.equals("file_data_tier") )
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_data_tier"))).add(e.attributes);
+			if (name.equals("file_parent") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_parent"))).add(e.attributes);
+			if (name.equals("file_child") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_child"))).add(e.attributes);
+			if (name.equals("file_algorithm") ) 
+				((Vector)(((Hashtable)topLevel.get(index)).get("file_algorithm"))).add(e.attributes);
+                        if (name.equals("file_branch") ) 
+                                ((Vector)(((Hashtable)topLevel.get(index)).get("file_branch"))).add(e.attributes);
 			if (name.equals("processed_datatset") ) {
 				psDS = e.attributes;
 			}

@@ -32,6 +32,10 @@ algo2="<algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$ran
 algo3="<algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMYc_ps_name2_$rand' ps_hash='DbUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
 algo4="<algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMYd_ps_name2_$rand' ps_hash='DUMcMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
 
+falgo1="<file_algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMYa_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+falgo2="<file_algorithm app_version='MyVersion2_$rand' app_family_name='MyFamily2_$rand' app_executable_name='MyExe2_$rand' ps_name='DUMMYb_ps_name2_$rand' ps_hash='DUaMMY_HASH_$rand' ps_version='DUMMY2_$rand' ps_type='DUMMYTYPE2_$rand' ps_annotation='ANN2_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+falgo3="<file_algorithm app_version='MyVersion12_$rand' app_family_name='MyFamily12_$rand' app_executable_name='MyExe12_$rand' ps_name='DUMMYc_ps_name2_$rand' ps_hash='DbUMMY_HASH_$rand' ps_version='DUMMY3_$rand' ps_type='DUMMYTYPE3_$rand' ps_annotation='ANN3_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
+falgo4="<file_algorithm app_version='MyVersion22_$rand' app_family_name='MyFamily22_$rand' app_executable_name='MyExe22_$rand' ps_name='DUMMYd_ps_name2_$rand' ps_hash='DUMcMY_HASH_$rand' ps_version='DUMMY4_$rand' ps_type='DUMMYTYPE4_$rand' ps_annotation='ANN4_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
 
 display () {
 	echo "$1" >> $outFile
@@ -97,7 +101,7 @@ listBlocks() {
 listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=listFiles path=$path_child`
+	out=`$CMD api=listFiles path=$path_child detail="true"`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
@@ -329,23 +333,23 @@ insertFiles () {
 		<dbs>
 		<processed_datatset path='$path_child' block_name='$block_name'>
 			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
-				<lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<data_tier name='$tier_name1'/>
-				<data_tier name='$tier_name2'/>
-				$algo1
-				$algo1
+				<file_lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_data_tier name='$tier_name1'/>
+				<file_data_tier name='$tier_name2'/>
+				$falgo1
+				$falgo1
 			</file>
 			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
-				<lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<data_tier name='$tier_name1'/>
-				<data_tier name='$tier_name2'/>
-				<parent lfn='TEST_LFN_1_$rand'/>
-				$algo3
-				$algo4
+				<file_lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_data_tier name='$tier_name1'/>
+				<file_data_tier name='$tier_name2'/>
+				<file_parent lfn='TEST_LFN_1_$rand'/>
+				$falgo3
+				$falgo4
 			</file>
 		</processed_datatset>
 		</dbs>"
@@ -430,32 +434,44 @@ remapFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
 		<processed_datatset path='$path_child' block_name='$block_name'>
-			<file lfn='${lfn1}_parent_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+			<file lfn='${lfn1}_parent_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<file_data_tier name='$tier_name2'/>
+			</file>
 			
-			<file lfn='${lfn1}_parent_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+			<file lfn='${lfn1}_parent_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<file_data_tier name='$tier_name2'/>
+			</file>
 			
-			<file lfn='${lfn1}_parent_3' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+			<file lfn='${lfn1}_parent_3' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<file_data_tier name='$tier_name2'/>
+			</file>
 
 			
 			<file lfn='${lfn1}_input_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
-				<parent lfn='${lfn1}_parent_1'/>
-				<parent lfn='${lfn1}_parent_2'/>
+				<file_parent lfn='${lfn1}_parent_1'/>
+				<file_parent lfn='${lfn1}_parent_2'/>
+				<file_data_tier name='$tier_name2'/>
 			</file>
 	
 			<file lfn='${lfn1}_input_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
-				<parent lfn='${lfn1}_parent_2'/>
-				<parent lfn='${lfn1}_parent_3'/>
+				<file_parent lfn='${lfn1}_parent_2'/>
+				<file_parent lfn='${lfn1}_parent_3'/>
+				<file_data_tier name='$tier_name2'/>
 			</file>
 
 			<file lfn='${lfn1}_child_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
-				<parent lfn='${lfn1}_input_1'/>
+				<file_parent lfn='${lfn1}_input_1'/>
+				<file_data_tier name='$tier_name2'/>
 			</file>
 
 			<file lfn='${lfn1}_child_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
-				<parent lfn='${lfn1}_input_2'/>
+				<file_parent lfn='${lfn1}_input_2'/>
+				<file_data_tier name='$tier_name2'/>
 			</file>
 
-			<file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'></file>
+			<file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+				<file_data_tier name='$tier_name2'/>
+			</file>
 
 		</processed_datatset>
 		</dbs>"

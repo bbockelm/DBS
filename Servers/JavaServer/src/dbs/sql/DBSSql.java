@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.67 $"
- $Id: DBSSql.java,v 1.67 2007/02/05 17:53:10 sekhri Exp $"
+ $Revision: 1.68 $"
+ $Id: DBSSql.java,v 1.68 2007/02/05 19:28:33 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -97,6 +97,7 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Runs", table);
 	}
+
         public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String endOfRun, String lmbUserID) throws SQLException {
 
                String sql = "UPDATE Runs SET \n";

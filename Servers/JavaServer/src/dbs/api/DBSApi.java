@@ -1,6 +1,6 @@
 /**
- $Revision: 1.71 $"
- $Id: DBSApi.java,v 1.71 2007/02/05 16:16:45 sekhri Exp $"
+ $Revision: 1.72 $"
+ $Id: DBSApi.java,v 1.72 2007/02/05 19:28:32 afaq Exp $"
  *
 */
 
@@ -302,9 +302,17 @@ public class DBSApi {
 						get(table, "detail", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {
-				(new DBSApiFileLogic(this.data)).listFileParents(conn, out, 
-						get(table, "lfn", true)
+				(new DBSApiFileLogic(this.data)).listFileProvenence(conn, out, 
+						get(table, "lfn", true),
+						true
 						);
+
+			} else if (apiStr.equals("listFileChilds")) {
+				(new DBSApiFileLogic(this.data)).listFileProvenence(conn, out, 
+						get(table, "lfn", true),
+						false
+						);
+
 			} else if (apiStr.equals("listFileAlgorithms")) {
 				(new DBSApiFileLogic(this.data)).listFileAlgorithms(conn, out, 
 						get(table, "lfn", true)

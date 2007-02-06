@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiFileLogic.java,v 1.19 2007/02/02 17:40:05 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiFileLogic.java,v 1.20 2007/02/02 19:19:55 sekhri Exp $"
  *
  */
 
@@ -103,7 +103,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				if (!isNull(detail)) {
 					this.data.globalFile = new Hashtable();
 					this.data.globalFile.put(lfn, fileID);
-					listFileParents(conn, out, lfn);
+					//listFileParents(conn, out, lfn);
+					listFileProvenence(conn, out, lfn, true);//Parents
+					listFileProvenence(conn, out, lfn, false);//Children
 					listFileAlgorithms(conn, out, lfn);
 					listFileTiers(conn, out, lfn);
 					listFileBranches(conn, out, lfn);
@@ -125,17 +127,22 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param lfn the logical file name of the file whose parents needs to be listed.
+	 * @param parentOrChild a logical flag to determine weather parent or child is asked for. True - is for parent and False is for child
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
 	 */
-	 public void listFileParents(Connection conn, Writer out, String lfn) throws Exception {
+	 //public void listFileParents(Connection conn, Writer out, String lfn) throws Exception {
+	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
 			//ps = DBSSql.listFileParents(conn, getFileID(conn, lfn, true));
-			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), true);
+			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
 			rs =  ps.executeQuery();
+			String tag = "";
+			if(parentOrChild) tag = "file_parent";
+			else tag = "file_child";
 			while(rs.next()) {
-				out.write(((String) "<file_parent id='" +  get(rs, "ID") +
+				out.write(((String) "<" + tag + " id='" +  get(rs, "ID") +
 					"' lfn='" + get(rs, "LFN") +
 					"' checksum='" + get(rs, "CHECKSUM") +
 					"' size='" + get(rs, "FILESIZE") +
@@ -356,11 +363,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String cbUserID = personApi.getUserID(conn, get(file, "created_by", false), dbsUser );
 			String creationDate = getTime(file, "creation_date", false);
 
-			Vector lumiVector = DBSUtil.getVector(file,"lumi_section");
-			Vector tierVector = DBSUtil.getVector(file,"data_tier");
-			Vector parentVector = DBSUtil.getVector(file,"parent");
-			Vector algoVector = DBSUtil.getVector(file,"algorithm");
-			Vector branchVector = DBSUtil.getVector(file,"branch");
+			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
+			Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
+			Vector parentVector = DBSUtil.getVector(file,"file_parent");
+			Vector childVector = DBSUtil.getVector(file,"file_child");
+			Vector algoVector = DBSUtil.getVector(file,"file_algorithm");
+			Vector branchVector = DBSUtil.getVector(file,"file_branch");
 		
 			//Set defaults Values
 			if (isNull(fileStatus)) fileStatus = "VALID";
@@ -463,6 +471,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
 						cbUserID, lmbUserID, creationDate);
 			}
+
+			//Insert FileParentage for all the child of give by the client. Used during Merge operation
+			for (int j = 0; j < childVector.size(); ++j) {
+				insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+						getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true),
+						fileID, 
+						cbUserID, lmbUserID, creationDate);
+			}
+
 			//TODO Discussion about Lumi section is needed
 			//Insert FileLumi table by first inserting and then fetching Lumi Section ID
 			for (int j = 0; j < lumiVector.size(); ++j) {
