@@ -101,7 +101,8 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
                                                         Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
-apiObj.run(algo, excep = True)
+#No PSet_Hash, must give default PSet Hash
+apiObj.run(algo, excep = False)
 
 
 algo = DbsAlgorithm (ExecutableName="TestExe01", 
@@ -148,7 +149,9 @@ algo = DbsAlgorithm (ExecutableName="TestExe01",
 		ApplicationVersion= "TestVersion01" + mytime, 
 		ApplicationFamily="AppFamily01" 
 	)
-apiObj.run(algo, excep = True)
+
+# No PsetHash is OK 
+apiObj.run(algo, excep = False)
 
 
 algo = DbsAlgorithm (ExecutableName="TestE xe01", 

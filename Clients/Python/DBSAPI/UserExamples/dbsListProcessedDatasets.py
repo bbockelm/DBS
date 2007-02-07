@@ -20,9 +20,7 @@ try:
   try:
    # List all parameter sets
    print ""
-   print "Processed Datasets"
-   print "This API's parameters MUST Change"
-   print "**********\n\n\n"
+   print "Processed Datasets:"
    #NEGATIVE TEST for proc in api.listProcessedDatasets("/DBS2-TEST-QCD_pt_0_15/*/*"):
    #for proc in api.listProcessedDatasets("DBS2-TEST-QCD_pt_0_15", "*", "*"):
 

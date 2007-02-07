@@ -183,6 +183,25 @@ class DbsApi(DbsConfig):
 	    return ""
     return name
 
+
+  def _file_name (self, obj):
+    """
+    A utility function, that gets "Name" from an Object.
+    Not a very cool function !
+    """
+
+    if obj == None:
+            return "";
+    if type(obj) == type(''):
+       return obj
+    name = obj.get('LogicalFileName')
+    if name ==  None:
+            return ""
+    return name
+
+  
+
+
   # ------------------------------------------------------------
   #  dbsApi API Implementation follows
   # ------------------------------------------------------------
@@ -625,13 +644,17 @@ class DbsApi(DbsConfig):
     returns: list of DbsFile objects
 
     params: 
-        dataset: want to list files of THIS dataset, USER MUST Provide this argument (can be an Analysis dataset)
+        dataset: want to list files of THIS dataset, 
+	(can be an Analysis dataset)
+	This is again an optional parameter.
          
         blockName: Defaulted to "" means files (That match dataset and/or LFN pattern criteria). 
         If the blockName is given, it will be matched against the block name.
          
         patternLFN: Defaulted to "*" means files (That match dataset and/or LFN pattern criteria). 
         If the patternLFN patterm is given, it will be matched against the content as a shell glob pattern.
+
+	User MUST provide one of (dataset, blockName, patternLFN)
 
         details: if not None, then server will return details like list of Tier, Parents, etc etc.
          
@@ -642,6 +665,8 @@ class DbsApi(DbsConfig):
              api.listFiles("/PrimaryDS_01/SIM/procds-01")
           List all files in path /PrimaryDS_01/SIM/procds-01, with LFNs that start with 'GoodFile'
              api.listFiles("/PrimaryDS_01/SIM/procds-01", "", "GoodFile*")
+	  List all files with pattern "GoodFile*"
+             api.listFiles("", "", "GoodFile*")
           List all files in block /this/block#1230-87698
              api.listFiles("", "/this/block#1230-87698")
 
@@ -723,6 +748,10 @@ class DbsApi(DbsConfig):
                                                          CreatedBy=str(attrs['created_by']),
                                                          LastModificationDate=str(attrs['last_modification_date']),
                                                          LastModifiedBy=str(attrs['last_modified_by']),
+							 ParameterSetID=DbsQueryableParameterSet(
+								         Hash=str(attrs['ps_hash']),
+         								 Name=str(attrs['ps_name']),
+							 		)
                                               ) ) 
           if name == 'file_parent':
              self.currFile['ParentList'].append(DbsFile (
@@ -775,7 +804,6 @@ class DbsApi(DbsConfig):
     Returns a list of DbsFile objects.  If the lfn is not
     given, then it will raise an exception.
 
-    
     params:
           lfn:  the logical file name of the file whose parents needs to be listed. There is no default value for lfn.
     returns: 
@@ -823,9 +851,6 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
-
-
-
   #-------------------------------------------------------------------
 
   def listFileAlgorithms(self, lfn):
@@ -834,7 +859,6 @@ class DbsApi(DbsConfig):
     Returns a list of DbsAlgorithmFile objects.  If the lfn is not
     given, then it will raise an exception.
 
-    
     params:
           lfn:  the logical file name of the file whose algorithms needs to be listed. There is no default value for lfn.
     returns: 
@@ -879,9 +903,6 @@ class DbsApi(DbsConfig):
 
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
-
-
-      
 
   #-------------------------------------------------------------------
   def listFileTiers(self, lfn):
@@ -931,8 +952,6 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
-
-
   #-------------------------------------------------------------------
   def listFileBranches(self, lfn):
     """
@@ -940,7 +959,6 @@ class DbsApi(DbsConfig):
     Returns a list of DbsFile objects.  If the lfn is not
     given, then it will raise an exception.
 
-    
     params:
           lfn:  the logical file name of the file whose branches needs to be listed. There is no default value for lfn.
     returns: 
@@ -1311,8 +1329,6 @@ class DbsApi(DbsConfig):
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)
-
-    print xmlinput
 
     if self.verbose():
        print "insertPrimaryDataset, xmlinput",xmlinput
@@ -1743,14 +1759,14 @@ class DbsApi(DbsConfig):
 
        for branch in file.get('BranchList',[]):
             xmlinput += "<file_branch name='"+branch+"'/>"
-    
+   
        # LFNs of the Parent Files(s) may be specified, sever expects LFNs
        for parent in file.get('ParentList',[]):
-            xmlinput += "<file_parent lfn='"+self._name(parent)+"'/>"
+            xmlinput += "<file_parent lfn='"+self._file_name(parent)+"' />"
 
        # LFNs of the Children Files(s) may be specified, sever expects LFNs
        for child in file.get('ChildList',[]):
-            xmlinput += "<file_child lfn='"+self._name(child)+"'/>"
+            xmlinput += "<file_child lfn='"+self._file_name(child)+"' />"
 
        for algorithm in file.get('AlgoList',[]):
            xmlinput += "<file_algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
@@ -1765,14 +1781,15 @@ class DbsApi(DbsConfig):
               #xmlinput += " ps_type='"+pset.get('Type', "")+"'"
               #xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
               #xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
-              xmlinput += "/>"
+           xmlinput += "/>"
        xmlinput += "</file>"
        xmlinput += "\n"
-
+      
     xmlinput += "</processed_datatset>"
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)
+
     if self.verbose():
        print "insertFiles, xmlinput",xmlinput
 
@@ -2240,8 +2257,9 @@ class DbsApi(DbsConfig):
     token = path.split("/")
     proc = self.listProcessedDatasets(token[1], token[2], token[3])[0]
     logging.debug("proc fetched from DBS %s" %proc)
+
     proc['Name'] = merege_ds_name
-    if merge_algo not in (None, '', NULL, []):
+    if merge_algo not in (None, ''):
 	#raise DbsApiException(args="You must provide an Algorithm object for the merged dataset")
 	#return
         #logging.debug("Algorithm object for the merged dataset is not provided")
@@ -2253,19 +2271,27 @@ class DbsApi(DbsConfig):
     return proc
 
   # ------------------------------------------------------------
-  def insertMergedFile(self, outputFile):
+  def insertMergedFile(self, parents, outputFile):
     """
     Inserts a LFN into DBS, while getting all details of input LFNs 
     as PHYSICS and merge "parents" of THIS outputLFN.
 
     params:
-        outputFile is the output file object with all detals, such a Check sum, Number of events etc.
+        outputFile: is the output file object with all detals, such a Check sum, Number of events etc.
         Also specifying ParentFiles (The files that were merged into THIS file)
+   
     """
 
-    for anInputLFN in outputFile['ParentList']:
-	fileDetail = self.listFiles(dataset, "", self._name(anInputLFN), True)
+    #parents = outputFile['ParentList']
+    #Reset parents as REAL parents will be those that are 
+    #from the Parent of Unmerged files
+    outputFile['ParentList'] = []
+    for anInputLFN in parents:
         
+	fileDetails = self.listFiles("", "", self._name(anInputLFN), True)
+        if len(fileDetails) < 1:
+		raise DbsApiException(args="Unmerged file %s not found in DBS" %self._name(anInputLFN), code="1999")
+        fileDetail = fileDetails[0] 
         for atier in fileDetail['TierList']:
 		if atier not in outputFile['TierList']:
 			outputFile['TierList'].append(atier)
@@ -2277,12 +2303,12 @@ class DbsApi(DbsConfig):
         for algo in fileDetail['AlgoList']:
                 if algo not in outputFile['AlgoList']:
                         outputFile['AlgoList'].append(algo)
-
+   
+ 
         for achild in fileDetail['ChildList']:
                 if achild not in outputFile['ChildList']:
                         outputFile['ChildList'].append(achild)
 
-        fileDetail['ParentList'] = []
         for aparent in fileDetail['ParentList']:
                 if aparent not in outputFile['ParentList']:
                         outputFile['ParentList'].append(aparent)

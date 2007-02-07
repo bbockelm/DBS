@@ -30,7 +30,7 @@ primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 
 proc = DbsProcessedDataset (
          PrimaryDataset=primary,
-         Name="TestProcessedDS002",
+         Name="TestProcessedDS001",
          TierList=['SIM', 'RECO'],
          )
 #ran = str(int(random.random()*10000000))
@@ -50,7 +50,7 @@ try:
     #api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
     #api.insertBlock (proc)
     #print api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002", block=None, storage_element=["thisIsMyOnlySE"])
-    print api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002", "/this/hahah#12345", storage_element=["thisIsMyOnlySE"])
+    print api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS001", "/this/hahah#12345", storage_element=["thisIsMyOnlySE"])
     #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345" , ['se1', 'se2', 'se3'])
     #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahaah#12345" , ['sea1', 'sea2', 'sea3'])
     #api.insertBlock ("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah#12345", ['se1', 'se2', 'se3'])

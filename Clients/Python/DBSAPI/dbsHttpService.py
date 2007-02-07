@@ -74,6 +74,8 @@ class DbsHttpService:
        else:
           result = conn.request(type, request_string)
 
+       logging.debug(request_string)
+
        response = conn.getresponse() 
 
        # See if HTTP call succeeded 
@@ -92,7 +94,6 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       print data
        logging.debug(data)
 
     except Exception, ex:

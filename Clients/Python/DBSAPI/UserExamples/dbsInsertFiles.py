@@ -23,6 +23,13 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
+#args={}
+#args['url']='http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet' 
+#args['version']='v00_00_05'
+#args['level']='CRITICAL'
+#args['level']='ERROR'
+#api = DbsApi(args)
+
 algo = DbsAlgorithm (
          ExecutableName="TestExe01",
          ApplicationVersion= "TestVersion01",
@@ -31,11 +38,10 @@ algo = DbsAlgorithm (
            Hash="001234565798685",
            )
          )
-
 primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
-        Name="TestProcessedDS002", 
+        Name="TestProcessedDS001", 
         PhysicsGroup="BPositive",
         Status="Valid",
         TierList=['SIM', 'RECO'],
@@ -61,7 +67,7 @@ lumi2 = DbsLumiSection (
 
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW-AUTO-BLOCk-011',
+        LogicalFileName= 'NEW_TEST0005',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -73,11 +79,12 @@ myfile1= DbsFile (
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'RECO'],
+        #ParentList = ['NEW_TEST0003']  
          )
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW-AUTO-BLOCK-002',
+        LogicalFileName= 'NEW_TEST0006',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -89,8 +96,8 @@ myfile2= DbsFile (
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'RECO'],
         AlgoList = [algo],
-        #ParentList = ['lfn01', 'lfn02']  
-        BranchList=['testbranch01', 'testbranch02']
+        BranchList=['testbranch01', 'testbranch02'],
+        #ParentList = ['NEW_TEST0004']  
          )
          
 # Need to provide Block name if YOU want to control Block management (The block named must pre-exist), if NOT then DBS will throw this file in
@@ -111,7 +118,6 @@ print "In future it will be an optional parameter"
 print "Inserting files in processDS %s" % proc
 
 try:
-    #api.insertFiles (proc, [myfile1], block)
     api.insertFiles (proc, [myfile1, myfile2], block)
     print "Result: %s" % proc
 

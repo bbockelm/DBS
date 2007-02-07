@@ -16,14 +16,14 @@ from DBSAPI.dbsApi import DbsApi
 try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
+
   #args={}
   #args['url']='http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet' 
   #args['version']='v00_00_05'
   #api = DbsApi(args)
 
   api = DbsApi(opts.__dict__)
-  #import pdb
-  #pdb.set_trace()
+
   try:
    # List all parameter sets
    print ""
