@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiFileLogic.java,v 1.21 2007/02/06 20:54:53 sekhri Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiFileLogic.java,v 1.22 2007/02/07 20:54:21 afaq Exp $"
  *
  */
 
@@ -67,8 +67,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         //FIXME: We need to make sure that we MUST have ONLY an OPEN Block for adding a file to !
                        
 		}
-		//String patternLFN = getPattern(patternLFN, "pattern_lfn");
-                //We should be able to serach files based on pattern_lfn only
 		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternLFN)  ) {
 			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset, Analysis Dataset, Block or LFN pattern");
 		}
