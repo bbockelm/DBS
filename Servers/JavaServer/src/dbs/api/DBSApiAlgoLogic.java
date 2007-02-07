@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiAlgoLogic.java,v 1.8 2007/01/09 21:26:45 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiAlgoLogic.java,v 1.9 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -101,7 +101,10 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		String family = get(algo, "app_family_name", true);
 		String exe = get(algo, "app_executable_name", true);
 		//String psName = get(algo, "ps_name", true);
-		String psHash = get(algo, "ps_hash", true);
+		String psHash = get(algo, "ps_hash", false);
+		if ( isNull(psHash) ) {
+			psHash = "NO_PSET_HASH";
+		}
 		
 		//Get the User ID from USERDN
 		String userID = personApi.getUserID(conn, dbsUser);
@@ -160,7 +163,11 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 */
 	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String cbUserID, String userID, String creationDate) throws Exception {
 		//String psName = get(algo, "ps_name", true);
-		String psHash = get(algo, "ps_hash", true);
+		String psHash = get(algo, "ps_hash", false);
+
+                if ( isNull(psHash) ) {
+                        psHash = "NO_PSET_HASH";
+                }
 
 		//if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
 		if( getID(conn, "QueryableParameterSet", "Hash", psHash, false) == null ) {

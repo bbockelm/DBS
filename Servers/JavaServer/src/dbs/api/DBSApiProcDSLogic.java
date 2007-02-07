@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiProcDSLogic.java,v 1.16 2007/01/23 21:20:49 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiProcDSLogic.java,v 1.17 2007/01/24 17:08:57 sekhri Exp $"
  *
  */
 
@@ -320,13 +320,20 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		
 		//Insert ProcAlgoMap table by fetching application ID. 
 		for (int j = 0; j < algoVector.size(); ++j) {
+			
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
+			String psHash = get(hashTable, "ps_hash");
+			
+		        if ( isNull(psHash) ) {
+                	        psHash = "NO_PSET_HASH";
+                	}
+
 			insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
 					procDSID, 
 					(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"), 
 							get(hashTable, "app_family_name"), 
 							get(hashTable, "app_executable_name"),
-							get(hashTable, "ps_hash"), 
+							psHash, 
 							true), 
 					cbUserID, lmbUserID, creationDate);
 		}
