@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.68 $"
- $Id: DBSSql.java,v 1.68 2007/02/05 19:28:33 afaq Exp $"
+ $Revision: 1.69 $"
+ $Id: DBSSql.java,v 1.69 2007/02/06 20:54:54 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1195,7 +1195,7 @@ public class DBSSql {
 	public static PreparedStatement listFileLumis(Connection conn, String fileID) throws SQLException {
 		String sql = "SELECT DISTINCT lumi.id as ID, \n" +
 			"lumi.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
-			"lumi.RunNumber as RUN_NUMBER, \n" +
+			"r.RunNumber as RUN_NUMBER, \n" +
 			"lumi.StartEventNumber as START_EVENT_NUMBER, \n" +
 			"lumi.EndEventNumber as END_EVENT_NUMBER, \n" +
 			"lumi.LumiStartTime as LUMI_START_TIME, \n" +
@@ -1207,6 +1207,8 @@ public class DBSSql {
 			"FROM LumiSection lumi \n" +
 			"JOIN FileRunLumi fl \n" +
 				"ON fl.Lumi = lumi.id \n" +
+			"JOIN Runs r \n" +
+				"ON r.ID = fl.Run \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = lumi.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +

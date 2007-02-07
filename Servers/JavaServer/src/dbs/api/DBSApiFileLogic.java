@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiFileLogic.java,v 1.20 2007/02/02 19:19:55 sekhri Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiFileLogic.java,v 1.21 2007/02/06 20:54:53 sekhri Exp $"
  *
  */
 
@@ -67,8 +67,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         //FIXME: We need to make sure that we MUST have ONLY an OPEN Block for adding a file to !
                        
 		}
-		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) ) {
-			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset or a Analysis Dataset or a Block");
+		//String patternLFN = getPattern(patternLFN, "pattern_lfn");
+                //We should be able to serach files based on pattern_lfn only
+		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternLFN)  ) {
+			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset, Analysis Dataset, Block or LFN pattern");
 		}
 
 		if(!isNull(path) && !isNull(aDSName)) {
@@ -80,7 +82,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
-			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, patternLFN);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
@@ -444,12 +446,18 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
 			for (int j = 0; j < algoVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)algoVector.get(j);
+		                String psHash = get(hashTable, "ps_hash", false);
+		
+                		if (isNull (psHash) ) {
+              		          psHash =  "NO_PSET_HASH";
+                		}
+
 				insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 						fileID, 
 						(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"), 
 								get(hashTable, "app_family_name"), 
 								get(hashTable, "app_executable_name"),
-								get(hashTable, "ps_hash"),
+								psHash,
 							       	true), 
 						cbUserID, lmbUserID, creationDate);
 			}
@@ -585,13 +593,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or the file is not found.
 	 */
 	public void insertAlgoInFile(Connection conn, Writer out, Hashtable table, Hashtable algo, Hashtable dbsUser) throws Exception {
+		//String psHash = get(algo, "ps_hash");
+		//if (isNull (psHash) ) {
+		//	psHash =  "NO_PSET_HASH";
+		//}
 		insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 				getFileID(conn, get(table, "lfn", true), true), 
 				(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(algo, "app_version"), 
 						get(algo, "app_family_name"), 
 						get(algo, "app_executable_name"),
-						//get(algo, "ps_name"), 
 						get(algo, "ps_hash"), 
+						//psHash,
 						true), 
 				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
