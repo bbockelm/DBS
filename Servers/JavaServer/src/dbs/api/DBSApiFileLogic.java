@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiFileLogic.java,v 1.22 2007/02/07 20:54:21 afaq Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiFileLogic.java,v 1.23 2007/02/07 21:03:02 afaq Exp $"
  *
  */
 
@@ -110,6 +110,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listFileTiers(conn, out, lfn);
 					listFileBranches(conn, out, lfn);
 					listFileLumis(conn, out, lfn);
+					listFileRuns(conn, out, lfn);
+
 				}
                 		out.write(((String) "</file>\n"));
       
@@ -285,6 +287,36 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	 }
+
+         public void listFileRuns(Connection conn, Writer out, String lfn) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listFileRuns(conn, getFileID(conn, lfn, true));
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                out.write(((String) "<file_run id='" +  get(rs, "ID") +
+                                        "' run_number='" + get(rs, "RUN_NUMBER") +
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+                                        "' number_of_lumi_sections='" + get(rs, "NUMBER_OF_LUMI_SECTIONS") +
+                                        "' total_luminosity='" + get(rs, "TOTAL_LUMINOSITY") +
+                                        "' store_number='" + get(rs, "STRORE_NUMBER") +
+                                        "' start_of_run='" + get(rs, "START_OF_RUN") +
+                                        "' end_of_run='" + get(rs, "END_OF_RUN") +
+                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                        "'/>\n"));
+
+                                }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+         }
+
+
 
 
        /**
@@ -491,17 +523,28 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			for (int j = 0; j < lumiVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
 				//Insert A lumi Section if it does not exists
-				insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-				insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
+				//Only when User provides a lumi section
+				//There can be cases when NO lumi Section number is give (Run only)
+				String lsNumber = get(hashTable, "lumi_section_number", false);
+				if (!isNull(lsNumber)) {
+					insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+				}
+				if (!isNull(lsNumber)) {
+
+					insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
 						fileID, 
-						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
+						getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true), 
 						getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true),
 						cbUserID, lmbUserID, creationDate);
-
-				/*insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
+				}
+				//Just add Run-Fileid map
+				else {
+					insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
 						fileID, 
-						getID(conn, "LumiSection", "LumiSectionNumber", get(hashTable, "lumi_section_number") , true), 
-						cbUserID, lmbUserID, creationDate);*/
+                                                getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true),
+						cbUserID, lmbUserID, creationDate);
+				}
+
 			}
 			//Insert Branch and then FileBranch (Map)
 			for (int j = 0; j < branchVector.size(); ++j) {
