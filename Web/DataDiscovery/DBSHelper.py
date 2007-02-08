@@ -22,11 +22,11 @@ _ddConfig = DBSDDConfig()
 if _ddConfig.iface()=='cgi':
    import DBSAPIOLD.dbsCgiApi as dbsCgiApi
    import DBSAPIOLD.dbsException as dbsException
-   from   DBSAPIOLD.dbsApi import DbsApi, DbsApiException, InvalidDataTier
+   from   DBSAPIOLD.dbsApi import DbsApi, DbsApiException, InvalidDataTier, DbsDatabaseError
 else:
    import DBSAPI.dbsWebApi as dbsWebApi
    import DBSAPI.dbsException as dbsException
-   from   DBSAPI.dbsApi import DbsApi, DbsApiException, InvalidDataTier
+   from   DBSAPI.dbsApi import DbsApi, DbsApiException, InvalidDataTier, DbsDatabaseError
 
 # import DLS modules
 import dlsClient
@@ -78,6 +78,7 @@ class DBSHelper(DBSLogger):
       # set DBS/DLS 
       self.setDBSDLS(dbsInst)
       self.quiet       = 0
+
 
   def setQuiet(self):
       self.quiet=1
@@ -290,6 +291,8 @@ class DBSHelper(DBSLogger):
             # new api can be initialized with DbsConfig, but we will use default one
             url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
             self.api = dbsWebApi.DbsWebApi({'url':url})
+            con = self.connectToDB()
+            con.close()
          self.dbsApi[dbsInst]=self.api
       else:
          self.api = self.dbsApi[dbsInst]
@@ -624,7 +627,7 @@ class DBSHelper(DBSLogger):
       return result
 
   def connectToDB(self):
-      self.setDBSDLS(self.dbsInstance)
+#      self.setDBSDLS(self.dbsInstance)
       con=""
       try:
           con = self.dbsDBs.connect(self.dbsInstance)
@@ -639,7 +642,7 @@ class DBSHelper(DBSLogger):
          pass
       return con
 
-  def getSQLAlchemyResult(self,sel,con=""):
+  def getSQLAlchemyResult(self,con,sel):
       """
          Set DBS instance and
          execute given query, if fails throws exception, including query
@@ -650,10 +653,10 @@ class DBSHelper(DBSLogger):
       """
       res = []
       try:
-          if not con:
-             con = self.connectToDB()
+#          if not con:
+#             con = self.connectToDB()
           res = con.execute(sel)
-          con.close()
+#          con.close()
       except:
           msg="While connecting to %s exception was thrown:\n"%self.dbsInstance
           msg+=getExcept()
@@ -698,7 +701,7 @@ class DBSHelper(DBSLogger):
              sel = sqlalchemy.select(iList, from_obj=[tableName], limit=limit, offset=fromRow)
           else:
              sel = sqlalchemy.select(iList, from_obj=[tableName])
-          result = self.getSQLAlchemyResult(sel,con)
+          result = self.getSQLAlchemyResult(con,sel)
           if  self.verbose:
               print "getTableContent",tableName,iList
               for item in result:
@@ -709,25 +712,110 @@ class DBSHelper(DBSLogger):
           raise "Fail to get table='%s' content"%tableName
       return result
 
-  def formSQLTableList(self,tableName,iList=[]):
+  def getTableColumns(self,tableName):
+      res=[]
+      try:
+#          con = self.connectToDB()
+          res = self.dbsDBs.getColumns(self.dbsInstance,tableName)
+#          con.close()
+      except:
+          printExcept()
+          raise "Fail to get table='%s' columns"%tableName
+      return res
+
+  def formSQLQuery(self,tDict):
       con = self.connectToDB()
-      print "formSQL"
-      # first get table content
-      cList=self.dbsDBs.getColumns(self.dbsInstance,tableName)
-      tObj = self.dbsDBs.getTableObject(self.dbsInstance,tableName)
-      tObj2 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')
-#      print cList, tObj.__dict__
-#      sel = sqlalchemy.join(tObj,self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')).select(limit=10)
-#      _join = sqlalchemy.join(tObj,tObj2)
-#      print _join
-      sel = sqlalchemy.select(tObj.c.Name,from_obj=[tObj.outerjoin(tObj2)] )
-      res = self.getSQLAlchemyResult(sel,con)
-      for item in res: print item
-      con.close() 
+      print "###formSQLQuery",tDict.keys()
+#      tableName=tList[0]
+
+      cols = []
+      for tableName in tDict.keys():
+          iList = tDict[tableName]
+          # first get table content and check if input list of columns names match
+          cList=self.dbsDBs.getColumns(self.dbsInstance,tableName)
+          if len(iList):
+             for c in cList:
+                 if iList.count(c):
+                    cols.append('%s.%s'%(tableName,c))
+          else:
+             cols+=map(lambda x: '%s.%s'%(tableName,x), cList)
+
+
+      # form query
+#      tObj = self.dbsDBs.getTableObject(self.dbsInstance,'PrimaryDataset')
+#      tObj2 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')
+#      tObj3 = self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig')
+#      tObj4 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo')
+#      print tObj4.foreign_keys
+#      joinObject = tObj.join(tObj2)
+#          sel = sqlalchemy.select([tObj.c.Name,tObj2.c.Name,tObj3.c.ApplicationVersion],from_obj=[tObj3.join(tObj2).join(tObj)])
+      try:
+          # get table objects
+          tObjs=map(lambda x: self.dbsDBs.getTableObject(self.dbsInstance,x),tDict.keys())
+          joinObject = tObjs[0]
+          for _tObj in tObjs[1:]:
+              joinObject=joinObject.join(_tObj)
+#          joinObject = tObjs[0]
+#          tObjs.remove(tObjs[0])
+#          try:
+#              for _tObj in tObjs:
+#                  joinObject=joinObject.join(_tObj)
+#                  joinObject.remove(_tObj)
+#          except:
+#             raise "Fail" 
+              
+
+          # form query
+          sel = sqlalchemy.select(cols,from_obj=[joinObject])
+          res = self.getSQLAlchemyResult(con,sel)
+          for item in res: print item
+      except sqlalchemy.exceptions.ArgumentError, ex:
+          print ex
+          _cant,_table1,_and,_table2,_empty = string.split(ex.args[0],"\'")
+          refList= [_table1.split()[-1],_table2.split()[-1]]
+          print "refList",refList
+          for tName in self.dbsDBs.getTableNames(self.dbsInstance):
+#          for tName in ['ProcAlgo']:
+#              print "tableName=",tName
+              fKeys=self.dbsDBs.getTableObject(self.dbsInstance,tName).foreign_keys
+              fKeysName=[]
+              for fk in fKeys: 
+                  fkName = string.split(fk._colspec,".")[0]
+                  if refList.count(fkName) and not fKeysName.count(fkName):
+                     fKeysName.append(fkName)
+                  if len(refList)==len(fKeysName):
+                     print "Found",fk,refList,tName
+                     tDict[tName]=[]
+                     print tDict
+                     return self.formSQLQuery(tDict)
+                     con.close()
+                     return
+                      
+#                  print fk,refList,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[0])),fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[1]))
+#                  if fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[0])):
+#                     counter+=1
+#                  if fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[1])):
+#                     counter+=1
+#                  if counter==2:
+#                     print "Found",fk,refList,tName
+#                     tDict[tName]=[]
+#                     print tDict
+#                     con.close()
+#                     return
+#          print "#### ac,procAlgo"
+#          fKeys=self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig').foreign_keys
+#          for fk in fKeys: print fk,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo'))
+#          print "#### procAlgo,ac"
+#          fKeys=self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo').foreign_keys
+#          for fk in fKeys: print fk,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig'))
+          
+#          [c.key for c in s.columns]
 #      nList=[]
 #      for x in cList:
 #          nList.append(getattr(tObj.c,x))
 #      return map(cList,lambda x: getattr(table,x))
+          
+      con.close() 
 
   def formQuery(self):
       return
@@ -801,7 +889,7 @@ class DBSHelper(DBSLogger):
           msg = "Wrong expression '%s'"%searchString
           raise msg
 
-      self.connectToDB()
+      con = self.connectToDB()
 
       oList  = []
       if  self.iface=='cgi':
@@ -829,7 +917,7 @@ class DBSHelper(DBSLogger):
                        order_by=[tpm.c.name,tdt.c.name,
                                  tapp.c.app_version,tapf.c.name,tapp.c.executable],distinct=True
                                  )
-          result = self.getSQLAlchemyResult(sel)
+          result = self.getSQLAlchemyResult(con,sel)
           # loop over results and find a match to list of keywords from pList.
           for iTup in result:
               tup = iTup.__dict__['_RowProxy__row']# tuple, rather then instance from SQL object
@@ -871,7 +959,7 @@ class DBSHelper(DBSLogger):
               if res:
                  self.append_whereclause(res)
         
-          result = self.getSQLAlchemyResult(sel)
+          result = self.getSQLAlchemyResult(con,sel)
           d="" # we will return "v1,v2,v3" string instead of list for easy access in JS
           for item in result:
               print "\n\n####",item
@@ -881,6 +969,7 @@ class DBSHelper(DBSLogger):
               if not proc or not tier or not proc: continue
               d+="/%s/%s/%s,"%(prim,tier,proc)
           oList=d[:-1] # remove last ","
+      con.close()
       return oList
 
   def searchTier(self,input):
@@ -910,12 +999,14 @@ class DBSHelper(DBSLogger):
          @return: {'Number of files':N, 'Total file size':M}
       """
       self.setDBSDLS(dbsInst)
+      con = self.connectToDB()
       sumDict = {}
       tf  = self.alias('t_file','tf')
       sel = sqlalchemy.select([sqlalchemy.func.count(tf.c.logical_name)])
-      sumDict['Number of files'] = self.getSQLAlchemyResult(sel).fetchone()[0]
+      sumDict['Number of files'] = self.getSQLAlchemyResult(con,sel).fetchone()[0]
       sel = sqlalchemy.select([sqlalchemy.func.sum(tf.c.filesize)])
-      sumDict['Total file size'] = sizeFormat(self.getSQLAlchemyResult(sel).fetchone()[0])
+      sumDict['Total file size'] = sizeFormat(self.getSQLAlchemyResult(con,sel).fetchone()[0])
+      con.close()
       return sumDict
 
   def WhatExists(self,datasetPath):
@@ -1106,9 +1197,10 @@ if __name__ == "__main__":
     #TMP
 #    res = helper.getTableContent('PrimaryDataset')
 #    print res
-#    l = helper.formSQLTableList('PrimaryDataset',[])
+    tDict={'PrimaryDataset':['Name'],'ProcessedDataset':['Name'],'AlgorithmConfig':['ApplicationVersion','ApplicationFamily','ApplicationExecutable']}
+    l = helper.formSQLQuery(tDict)
 #    print l,type(l)
-#    sys.exit(0)
+    sys.exit(0)
     
     if opts.dict:
        helper.initJSDict(opts.dict)
