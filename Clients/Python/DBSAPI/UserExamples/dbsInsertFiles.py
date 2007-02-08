@@ -65,6 +65,15 @@ lumi2 = DbsLumiSection (
          RunNumber=1,
          )
 
+lumi3 = DbsLumiSection (
+         #LumiSectionNumber=1333,
+         #StartEventNumber=100,
+         #EndEventNumber=200,
+         #LumiStartTime='notime',
+         #LumiEndTime='neverending',
+         RunNumber=1,
+         )
+
 myfile1= DbsFile (
         Checksum= '999',
         LogicalFileName= 'NEW_TEST0005',
@@ -99,7 +108,24 @@ myfile2= DbsFile (
         BranchList=['testbranch01', 'testbranch02'],
         #ParentList = ['NEW_TEST0004']  
          )
-         
+        
+
+# A file with RunsList and NOT lumi list
+myfile3= DbsFile (
+        Checksum= '000',
+        LogicalFileName= 'NEW_TEST0070',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EVD',
+        Dataset= proc,
+        #LumiList= [lumi3],
+        TierList= ['SIM', 'RECO'],
+        AlgoList = [algo],
+	RunsList = ['1'],
+         )
+ 
 # Need to provide Block name if YOU want to control Block management (The block named must pre-exist), if NOT then DBS will throw this file in
 # Open Block for this Dataset, and will do the Block management too.
 # Make a choice
@@ -118,6 +144,8 @@ print "In future it will be an optional parameter"
 print "Inserting files in processDS %s" % proc
 
 try:
+    # A file with RunsList and NOT lumi list
+    ## api.insertFiles (proc, [myfile3], block)
     api.insertFiles (proc, [myfile1, myfile2], block)
     print "Result: %s" % proc
 
