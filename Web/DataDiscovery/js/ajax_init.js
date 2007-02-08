@@ -407,42 +407,126 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetRss','getRss');
     ajaxEngine.registerAjaxElement('rss_list');
 
-    ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
-    ajaxEngine.registerAjaxElement('kw_release');
-    ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');
-    ajaxEngine.registerAjaxElement('kw_prim');
-    ajaxEngine.registerRequest('ajaxGetTiers','getTiers');
-    ajaxEngine.registerAjaxElement('kw_tier');
-    ajaxEngine.registerRequest('ajaxGetBranches','getBranches');
-    ajaxEngine.registerAjaxElement('kw_branch');
+    ajaxEngine.registerRequest('ajaxMakeLine','makeLine');
+    lineUpdater = new GetDataUpdater('makeMenu_1','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('makeMenu_1',lineUpdater);
+
+//    ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
+//    ajaxEngine.registerAjaxElement('kw_release');
+//    ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');
+//    ajaxEngine.registerAjaxElement('kw_prim');
+//    ajaxEngine.registerRequest('ajaxGetTiers','getTiers');
+//    ajaxEngine.registerAjaxElement('kw_tier');
+//    ajaxEngine.registerRequest('ajaxGetBranches','getBranches');
+//    ajaxEngine.registerAjaxElement('kw_branch');
+
+    ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');
+    ajaxEngine.registerRequest('ajaxGetSectionTables','getSectionTables');
+    ajaxEngine.registerRequest('ajaxGetTableColumnsFromSection','getTableColumnsFromSection');
+
+    ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
+    finderUpdater = new GetDataUpdater('results_finder','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('results_finder',finderUpdater);
+}
+function ajaxMakeLine(id) {
+  ajaxEngine.sendRequest('ajaxMakeLine','id='+id);
+}
+function ajaxGetTableColumns(dbs,tableName,id) {
+  ajaxEngine.sendRequest('ajaxGetTableColumns','dbsInst='+dbs,'tableName='+tableName,'id='+id);
+}
+function ajaxGetTableColumnsFromSection(dbs,section,id) {
+  ajaxEngine.sendRequest('ajaxGetTableColumnsFromSection','dbsInst='+dbs,'section='+section,'id='+id);
+}
+function ajaxGetSectionTables(dbsInst,section,id) {
+    ajaxEngine.sendRequest('ajaxGetSectionTables','dbsInst='+dbsInst,'section='+section,'id='+id);
+}
+function ajaxFillLine(lineId) {
+    dbsInst='localhost';
+    var id=document.getElementById("kw_dbsSelector");
+    if (id) {
+        dbsInst=id.value;
+    }
+    var table=document.getElementById('sectionTables_'+lineId);
+    ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');
+    ajaxGetTableColumns(dbsInst,table.value,lineId);
+}
+function ChangeTables(lineId) {
+    dbsInst='localhost';
+    var id=document.getElementById("kw_dbsSelector");
+    if (id) {
+        dbsInst=id.value;
+    }
+    var id=document.getElementById("selSection_"+lineId);
+    if (id) {
+        var section = id.value;
+        ajaxGetSectionTables(dbsInst,section,lineId);
+        ajaxGetTableColumnsFromSection(dbsInst,section,lineId);
+    }
+}
+function ChangeCols(lineId) {
+    dbsInst='localhost';
+    var id=document.getElementById("kw_dbsSelector");
+    if (id) {
+        dbsInst=id.value;
+    }
+    var id=document.getElementById("sectionTables_"+lineId);
+    if (id) {
+        var tableName = id.value;
+        ajaxGetTableColumns(dbsInst,tableName,lineId);
+    }
 }
 function registerAjaxLucene() {
     ajaxEngine.registerRequest('ajaxGetLucene','getLucene');
-    ajaxEngine.registerAjaxElement('webSearchStats');
+    updater_stats = new GetDataUpdater('webSearchStats','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('webSearchStats',updater_stats);
+
     ajaxEngine.registerRequest('ajaxGetLuceneParams','getLucene');
-    ajaxEngine.registerAjaxElement('parameterNameList');
-    updater_grid = new GetDataUpdater('webSearchResultsGrid_updater','replace');
+    updater_param = new GetDataUpdater('parameterNameList','replace','noResultsMenu');
+    ajaxEngine.registerAjaxObject('parameterNameList',updater_param);
+
+    updater_grid = new GetDataUpdater('webSearchResultsGrid_updater','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('webSearchResultsGrid_updater',updater_grid);
-    updater = new GetDataUpdater('configureWebSearchRows','replace');
+
+    updater = new GetDataUpdater('configureWebSearchRows','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('configureWebSearchRows',updater);
-    errUpdater = new GetDataUpdater('errorResponse','replace');
+
+    errUpdater = new GetDataUpdater('errorResponse','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('errorResponse',errUpdater);
 }
 function ajaxGetLucene() {
-  ajaxEngine.sendRequest('ajaxGetLucene','term=block.subsys.NumberParameter129='+$('searchInput').value,'method=lookup');
+    // here we use prototype syntax $('param') means document.getElementById('param')
+    ajaxEngine.sendRequest('ajaxGetLucene','term='+$('parameterList').value+$('parameterListOperators').value+$('searchInput').value,'method=lookup','outputs=both');
 }
 function ajaxGetLuceneParams() {
-  ajaxEngine.sendRequest('ajaxGetLucene','method=parameters');
+    ajaxEngine.sendRequest('ajaxGetLucene','method=parameters');
 }
 function ajaxGetRss() {
-  ajaxEngine.sendRequest('ajaxGetRss');
+    ajaxEngine.sendRequest('ajaxGetRss');
 }
-function ajaxGetKWFields() {
-  ajaxGetReleases();
-  ajaxGetTriggerLines();
-  ajaxGetTiers();
-  ajaxGetBranches();
+function ajaxFinderSearch() {
+    var sel=document.getElementsByName("sectionTables");
+    var maxId=1;
+    for(var i=0;i<sel.length;i++) {
+        var sel_id = sel[i].id;
+        var id=sel_id.split('_')[1];
+        if(id>maxId) { maxId=id; }
+    }
+    var parameters='';
+    for(var i=1;i<=maxId;i++) {
+        table=$('sectionTables_'+i).value;
+        column=$('tableColumns_'+i).value;
+        operator=$('colSel_'+i).value;
+        where=$('where_'+i).value;
+        parameters=parameters+'param'+i+'='+table+'__'+column+'__'+operator+'__'+where;
+    }
+    ajaxEngine.sendRequest('ajaxFinderSearch',parameters);
 }
+//function ajaxGetKWFields() {
+//  ajaxGetReleases();
+//  ajaxGetTriggerLines();
+//  ajaxGetTiers();
+//  ajaxGetBranches();
+//}
 function getDBS_kw(_dbs) {
   var dbs;
   if(_dbs) {
@@ -452,22 +536,22 @@ function getDBS_kw(_dbs) {
   }
   return dbs;
 }
-function ajaxGetReleases(_dbs) {
-  dbs=getDBS_kw(_dbs);
-  ajaxEngine.sendRequest('ajaxGetReleases','dbsInst='+dbs);
-}
-function ajaxGetTriggerLines(_dbs) {
-  dbs=getDBS_kw(_dbs);
-  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
-}
-function ajaxGetTiers(_dbs) {
-  dbs=getDBS_kw(_dbs);
-  ajaxEngine.sendRequest('ajaxGetTiers','dbsInst='+dbs);
-}
-function ajaxGetBranches(_dbs) {
-  dbs=getDBS_kw(_dbs);
-  ajaxEngine.sendRequest('ajaxGetBranches','dbsInst='+dbs);
-}
+//function ajaxGetReleases(_dbs) {
+//  dbs=getDBS_kw(_dbs);
+//  ajaxEngine.sendRequest('ajaxGetReleases','dbsInst='+dbs);
+//}
+//function ajaxGetTriggerLines(_dbs) {
+//  dbs=getDBS_kw(_dbs);
+//  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
+//}
+//function ajaxGetTiers(_dbs) {
+//  dbs=getDBS_kw(_dbs);
+//  ajaxEngine.sendRequest('ajaxGetTiers','dbsInst='+dbs);
+//}
+//function ajaxGetBranches(_dbs) {
+//  dbs=getDBS_kw(_dbs);
+//  ajaxEngine.sendRequest('ajaxGetBranches','dbsInst='+dbs);
+//}
 
 
 
@@ -645,8 +729,8 @@ function ajaxInit(_dbs) {
   registerAjaxGenNavigatorMenuDictCalls();
 //  registerAjaxGetDataDescriptionCalls();
   registerAjaxGetFloatBoxCalls();
-  registerAjaxGetLumisCalls();
-  registerAjaxGetAlgosCalls();
+//  registerAjaxGetLumisCalls();
+//  registerAjaxGetAlgosCalls();
 
   ajaxGenNavigatorMenuDict(_dbs);
   registerAjaxLucene();
