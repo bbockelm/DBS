@@ -118,8 +118,14 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("",""), # (dbsInst,site)
-                           'searchForm': ("",) # (dbsInst,)
+                           'searchForm': DBSGLOBAL # (dbsInst,)
                           }
+        self.sectionDict={ 
+               'Algorithm': ['AppExecutable','AppVersion','AppFamily'],
+               'Run/Lumi' : ['Runs','LumiSection'],
+               'Files'    : ['Files','Branch'],
+               'Datasets' : ['PrimaryDataset','ProcessedDataset','AnalysisDataset'],
+              }
 
     def setQuiet(self):
         self.helper.setQuiet()
@@ -344,12 +350,17 @@ class DBSDataDiscoveryServer(DBSLogger):
         siteForm=self.siteForm(dbsInst,site)
         dbsInst=self.formDict['searchForm']
         searchForm=self.searchForm(dbsInst)
+
+        t = Template(CheetahDBSTemplate.templateOperators, searchList=[{'tag':'parameterListOperators'}])
+        nameSpace={'operators':str(t)}
+        t = Template(CheetahDBSTemplate.templateSearchEngine, searchList=[nameSpace])
+        luceneForm=str(t)
            
         nameSpace = {
                      'host'         : self.dbsdd,
                      'userMode'     : self.userMode,
                      'navigatorForm': menuForm,
-#                     'searchForm'   : searchForm,
+                     'searchForm'   : searchForm,
                      'siteForm'     : siteForm,
                      'dbsNames'     : self.dbsList,
                      'glossary'     : self.glossary(),
@@ -360,7 +371,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'step'         : GLOBAL_STEP,
                      'iface'        : self.ddConfig.iface(),
                      'tip'          : tip(),
-                     'luceneForm'   : CheetahDBSTemplate.templateSearchEngine,
+                     'luceneForm'   : luceneForm
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
         return str(t)
@@ -467,7 +478,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         oList = self.helper.search(keywords)
         return oList
         
-    def searchForm(self,firstDBS=""):
+    def searchForm(self,firstDBS=DBSGLOBAL):
         """
            Search any match in DB for given keywords. The search done over
            meta-data tables.
@@ -476,17 +487,36 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        help=str(t)
 
         if self.ddConfig.iface()=='cgi': searchFunc="javascript:ajaxSearch()"
-        else: searchFunc="javascript:ResetAllResults();ajaxKeywordSearch()"
+        else: searchFunc="javascript:ResetAllResults();ajaxFinderSearch()"
+#        else: searchFunc="javascript:ResetAllResults();ajaxKeywordSearch()"
 
         # FIXME, TODO: firstDBS should be passed here
         if not firstDBS: firstDBS=DBSGLOBAL
-        keyList=['run','block','lfn','tier','release','primDS','procDS','lumiSection']
-        keyList.sort()
+#        keyList=['run','block','lfn','tier','release','primDS','procDS','lumiSection']
+#        keyList.sort()
+#        algoTables = self.getTables(firstDBS,['AppExecutable','AppVersion'])
+#        runsTables = self.getTables(firstDBS,['Runs','LumiSection'])
+#        filesTables = self.getTables(firstDBS,['Files','Branch'])
+#        datasetsTables = self.getTables(firstDBS,['PrimaryDataset','ProcessedDataset','AnalysisDataset'])
+        sectionList=self.sectionDict.keys()
+        sectionList.sort()
+        tableList = self.sectionDict['Algorithm']
+        tableList.sort()
+        nameSpace={'id':1,'sectionList':sectionList,'tableList':tableList}
+        t = Template(CheetahDBSTemplate.templateSelectLine, searchList=[nameSpace])
+        selectLine = str(t)
         nameSpace = {
-                     'firstDBS' : firstDBS,
-                     'dbsList'  : self.dbsList,
-                     'keyList'  : keyList,
-                     'searchFunction': searchFunc
+                     'firstDBS'       : firstDBS,
+                     'userMode'       : self.userMode,
+                     'dbsList'        : self.dbsList,
+                     'searchFunction' : searchFunc,
+                     'selectLine'     : selectLine,
+#                     'sectionList'    : sectionList,
+#                     'algoTables'     : algoTables,
+#                     'runsTables'     : runsTables,
+#                     'filesTables'    : filesTables,
+#                     'datasetsTables' : datasetsTables,
+#                     'keyList'  : keyList,
                     }
         t = Template(CheetahDBSTemplate.templateSearchTable, searchList=[nameSpace])
         page = str(t)
@@ -2393,6 +2423,87 @@ class DBSDataDiscoveryServer(DBSLogger):
         else:
            return data
     getLucene.exposed=True
+
+    def makeLine(self,id,**kwargs):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="makeMenu_%s">"""%id
+        sectionList=self.sectionDict.keys()
+        sectionList.sort()
+        tableList = self.sectionDict['Algorithm']
+        tableList.sort()
+        nameSpace={'id':int(id),'sectionList':sectionList,'tableList':tableList}
+        t = Template(CheetahDBSTemplate.templateSelectLine, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    makeLine.exposed=True
+
+    def makeSelect(self,iList,tag,name="",changeFunction="",selTag="",**kwargs):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="%s">"""%tag
+        nameSpace={'iList':iList,'changeFunction':changeFunction,'selTag':selTag,'name':name}
+        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    makeSelect.exposed=True
+
+    def getSectionTables(self,dbsInst,section,id,**kwargs):
+        tList = self.sectionDict[section]
+        changeFunction="ChangeCols(%s)"%id
+        return self.makeSelect(tList,"divSectionTables_%s"%id,"sectionTables",changeFunction,"sectionTables_%s"%id)
+    getSectionTables.exposed=True
+
+    def getTableColumns(self,dbsInst,tableName,id,**kwargs):
+        self.helperInit(dbsInst)
+        tList = self.helper.getTableColumns(tableName)
+        changeFunction=""
+        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id)
+    getTableColumns.exposed=True
+
+    def getTableColumnsFromSection(self,dbsInst,section,id,**kwargs):
+        """
+           This is a fake, since AJAX calls are async, and I need to get
+           columns for the first table in a section, I made explicit call.
+        """
+        self.helperInit(dbsInst)
+        tList = self.sectionDict[section]
+        tableName = tList[0]
+        tList = self.helper.getTableColumns(tableName)
+        changeFunction=""
+        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id)
+    getTableColumnsFromSection.exposed=True
+
+    def finderExample(self):
+        page = self.genTopHTML(intro=False)
+        page+= """This is an example how to select run=111222.
+        <img src="images/SelectRun.jpg" alt="selectRun" />
+        """
+        page+= self.genBottomHTML()
+        return page
+    finderExample.exposed=True
+
+    def finderSearch(self,**kwargs):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results_finder">"""
+        for key in kwargs.keys():
+            if key=="_": continue
+            page+="Key='%s' parameters='%s'"%(key,kwargs[key])
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    finderSearch.exposed=True
 
     def genTreeElement(self,iParent,dataset):
         # pass here node,parent pair, as an example we pass 'newNode',node
