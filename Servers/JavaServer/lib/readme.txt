@@ -14,7 +14,7 @@ cryptix-asn1.jar
 cog-tomcat.jar
 cog-gridmap.jar
 
-3) Insert the following tag in the $TOMCAT_HOME/conf/server.xml file near the connector tag for port 8080. Comment out the whole tag for port 8080 and insert these lines instead. 
+3) Insert the following tag in the $TOMCAT_HOME/conf/server.xml file near the connector tag for port 8080. Comment out the whole tag for port 8080 and insert these lines instead. Change the attributes  values for cert and key accordingly. These should reflect the hostcert and hostkey of your host.
 
    <Connector
             className="org.globus.tomcat.coyote.net.HTTPSConnector"
@@ -55,3 +55,22 @@ To get the user DN information in the servlet code use the following code
 	where request is javax.servlet.http.HttpServletRequest
 
 
+To generate the role based gridmap file periodically
+
+1) Checkout the GridmapAuthorization utility from CVS
+cvs co DBS/Utils/GridmapAuthorization
+2) Change into the directory
+cd DBS/Utils/GridmapAuthorization
+3) Edit setup.sh 
+ change JAVA_HOME accordingly
+4) Setup the environment
+source setup.sh
+5) Compile the code
+javac VO2GridMap.java
+6) Edit vo2gridmap to change the location where you want to generate the gridmap file. This location will be same as the one specified in tomcat. You can also edit the URL of the VOMS server and the group and role from where you want to generate the gridmap file server.xml file <br>
+7) Execute the script 
+./vo2gridmap<br>
+Check if you gridmap file is generated
+8) Put this script (./vo2gridmap) in the crontab to be updated every 30 minutes
+crontab -e
+30     *     *     *     *    /Location_of_this_script/vo2gridmap
