@@ -49,6 +49,7 @@ class  DbsFile(DbsBase):
       self.setdefault('ParentList', [])
       self.setdefault('BranchList', [])
       self.setdefault('ChildList', [])
+      self.setdefault('RunsList', [])
       # Read in all User provided values
       self.update(args)
       # Verifying that data types of user provide parameters is correct

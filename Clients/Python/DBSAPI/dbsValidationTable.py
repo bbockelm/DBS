@@ -117,6 +117,7 @@ ValidationTable = {
          "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "ChildList" : { "Comment" : "List of THIS file's children files", "Validator" : isListType },
+         "RunsList" : { "Comment" : "List of THIS file's Runs", "Validator" : isListType },
          "ParentList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "BranchList" : { "Comment" : "List of ROOT Branch names", "Validator" : isListType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

@@ -199,7 +199,20 @@ class DbsApi(DbsConfig):
             return ""
     return name
 
-  
+  def _get_run (self, obj):
+    """
+    A utility function, that gets "Name" from an Object.
+    Not a very cool function !
+    """
+
+    if obj == None:
+            return ""; 
+    if type(obj) == type(''):
+       return obj
+    name = obj.get('RunNumber')
+    if name ==  None:
+            return ""
+    return name
 
 
   # ------------------------------------------------------------
@@ -699,6 +712,7 @@ class DbsApi(DbsConfig):
                                     'pattern_lfn' : patternLFN}, 'GET')
     logging.debug(data)
 
+    print data
 
     # Parse the resulting xml output.
     try:
@@ -784,6 +798,20 @@ class DbsApi(DbsConfig):
                                        LastModificationDate=str(attrs['last_modification_date']),
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        ))
+          if name == 'file_run':
+		self.currFile['RunsList'].append(DbsRun (
+                                   RunNumber=getLong(attrs['run_number']),
+                                   NumberOfEvents=getLong(attrs['number_of_events']),
+                                   NumberOfLumiSections=getLong(attrs['number_of_lumi_sections']),
+                                   TotalLuminosity=getLong(attrs['total_luminosity']),
+                                   StoreNumber=getLong(attrs['store_number']),
+                                   StartOfRun=str(attrs['start_of_run']),
+                                   EndOfRun=str(attrs['end_of_run']),
+                                   CreationDate=str(attrs['creation_date']),
+                                   CreatedBy=str(attrs['created_by']),
+                                   LastModificationDate=str(attrs['last_modification_date']),
+                                   LastModifiedBy=str(attrs['last_modified_by']),
+                                  ))
 
 
         def endElement(self, name):
@@ -1744,7 +1772,7 @@ class DbsApi(DbsConfig):
        xmlinput += " validation_status='"+file.get('ValidationStatus', '')+"'"
        xmlinput += " queryable_meta_data='"+file.get('QueryableMetadata', '')+"'"
        xmlinput += " >" 
-       
+
        for lumi in file.get('LumiList', []):
             xmlinput += "<file_lumi_section lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
             xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
@@ -1752,6 +1780,11 @@ class DbsApi(DbsConfig):
             xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
             xmlinput += " lumi_start_time='"+lumi.get('LumiStartTime', '')+"'" 
             xmlinput += " lumi_end_time='"+lumi.get('LumiEndTime', '')+"'"
+            xmlinput += " />"
+
+       for run in file.get('RunsList', []):
+            xmlinput += "<file_lumi_section "
+            xmlinput += " run_number='"+self._get_run(run)+"'"
             xmlinput += " />"
 
        for tier in file.get('TierList',[]):
