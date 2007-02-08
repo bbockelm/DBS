@@ -55,7 +55,7 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 # 4)
 # DBS: MCLocal_4/Writer
 # DLS: prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_4 type: DLS_TYPE_DLI or DLS_TYPE_LFC
-DBSGLOBAL="cmslcgco01"
+DBSGLOBAL="localhost"
 DBS_DLS_INST= {
    "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
    "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
@@ -243,7 +243,7 @@ class DBSDB(DBSLogger):
          # return table itself
          return tables[tableName]
 
-  def getTableNames(self):
+  def getTableNames(self,dbsInst):
       """
          Should retrieve list of existing table names from underlying DB.
          @type  self: class object
@@ -251,25 +251,25 @@ class DBSDB(DBSLogger):
          @rtype : string
          @return: not implemented yet, should return list
       """
-      if eType=='sqlite':
-         query="SELECT name FROM sqlite_master WHERE type='table'" # SQLite way to show tables
-      elif eType=='oracle':
-         #query="SELECT * FROM DBA_TABLES WHERE OWNER = '%s'"%"leppcms"
-         query="select TABLE_NAME from USER_TABLES" # ORACLE way to show tables
-      elif eType=='mysql':
-         query="show tables" # MySQL way to show tables
-      #    result = engine.execute(query)
-      #    dbsTables = []
-      #    for row in result:
-      #        dbsTables.append(row[0])
-      return
+      return self.dbTables[dbsInst].keys()
+
+  def getForeignKeys(self,dbsInst,table):
+      tDict = self.dbTables[dbsInst]
+      if tDict.has_key(table):
+         return tDict[table].foreign_keys
+      raise "No table '%s' found",table
+
   def getColumns(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
       if tDict.has_key(table):
          return tDict[table]._columns.keys()
-      return []
+      raise "No table '%s' found",table
+
   def getTableObject(self,dbsInst,table):
-      return self.dbTables[dbsInst][table]
+      for t in self.dbTables[dbsInst].keys():
+          if string.lower(table)==string.lower(t):
+             return self.dbTables[dbsInst][t] # all table names stored as lower case
+      raise "No table '%s' found",table
 
 # Table classes
 class T_PROCESSED_DATASET(object):
