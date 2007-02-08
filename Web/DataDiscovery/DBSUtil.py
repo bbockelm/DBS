@@ -58,6 +58,11 @@ def findRssFiles(dir):
            oList.append('%s/%s'%(item[0],item[2][0]))
     return oList
 
+def uniqueList(alist):
+    set = {}
+    map(set.__setitem__, alist, [])
+    return set.keys()
+
 def convertListToString(iList):
     s="["
     for item in iList:
