@@ -128,6 +128,9 @@ templateTop = """
 <script type="text/javascript" src="js/prototype.js"></script>
 <script type="text/javascript" src="js/rico.js"></script>
 <script type="text/javascript" src="js/ajax_init.js"></script>
+###<script type="text/javascript" src="js/ricoLiveGrid.js"></script>
+###<link rel="stylesheet" type="text/css" href="css/searchEngine.css" />
+
 
 #*
 <!-- TreeView from YUI -->
@@ -311,8 +314,11 @@ Software release, e.g. CMSSW_1_2_0
 """
 
 templateSearchTable="""
+<div class="div_scroll">
 ###<form action="javascript:ajaxSearch();" method="get">
 <form action="$searchFunction" method="get">
+
+#*
 <p>
 Use this form to search in particular DBS instance by keywords.
 <br />
@@ -322,8 +328,152 @@ The search is case insensitive and the following special symbols are supported:
 You may use boolean expressions, e.g.,
 <span class="box">( word1 or (word3 and word4) and not word2 )</span>
 </p>
+*#
 
-<hr class="dbs" />
+<table width="100%">
+<tr>
+<td align="left">
+#if $userMode
+<input type="hidden" name="dbsInst" value="$dbsList[0]" id="kw_dbsSelector" />
+#else
+DBS instance:
+<select name="keywordsSearch_dbsInst" id="kw_dbsSelector">
+###<option value="All">All</option>
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+#end if
+</tr>
+</table>
+
+$selectLine
+<p />
+<div align="right">
+<input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
+</div>
+
+#*
+<div id="selMenu1">
+<table class="selMenu">
+<tr>
+<td align="left">
+<select onchange="javascript:ajaxGetSectionTables()" id="selSection">
+#for section in $sectionList
+<option>$section</option>
+#end for
+</select>
+</td>
+<td>
+<div id="sectionTables"></div>
+</td>
+<td>
+<div id="tableCols"></div>
+</td>
+</tr>
+</table>
+<script type="text/javascript">ajaxGetSectionTables('$sectionList[0]')</script>
+</div>
+*#
+
+#*
+<table class="selMenu">
+<tr>
+<td align="left">
+Algorithm menu
+</td>
+<td align="right">
+<a href="javascript:ShowTag('algo_sel')">show</a>
+&nbsp;
+<a href="javascript:HideTag('algo_sel')">hide</a>
+</td>
+</tr>
+</table>
+<div id="algo_sel" class="hide">
+$algoTables
+</div>
+
+<p />
+<p />
+
+<table class="selMenu">
+<tr>
+<td align="left">
+Run/Limu menu
+</td>
+<td align="right">
+<a href="javascript:ShowTag('runLumi_sel')">show</a>
+&nbsp;
+<a href="javascript:HideTag('runLumi_sel')">hide</a>
+</td>
+</tr>
+</table>
+<div id="runLumi_sel" class="hide">
+$runsTables
+</div>
+
+<p />
+<p />
+
+<table class="selMenu">
+<tr>
+<td align="left">
+File menu
+</td>
+<td align="right">
+<a href="javascript:ShowTag('file_sel')">show</a>
+&nbsp;
+<a href="javascript:HideTag('file_sel')">hide</a>
+</td>
+</tr>
+</table>
+<div id="file_sel" class="hide">
+$filesTables
+</div>
+
+<p />
+<p />
+
+<table class="selMenu">
+<tr>
+<td align="left">
+Dataset menu
+</td>
+<td align="right">
+<a href="javascript:ShowTag('dataset_sel')">show</a>
+&nbsp;
+<a href="javascript:HideTag('dataset_sel')">hide</a>
+</td>
+</tr>
+</table>
+<div id="dataset_sel" class="hide">
+$datasetsTables
+</div>
+
+<p />
+<p />
+
+<table class="selMenu">
+<tr>
+<td align="left">
+Your selections:
+</td>
+</tr>
+<tr>
+<td>
+<div id="userSelections"></div>
+</td>
+</tr>
+<tr>
+<td align="right">
+<input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
+&nbsp;
+<input type="reset" value="Clear form" id="kw_clear_button"  />
+</td>
+</tr>
+</table>
+*#
+
 #*
 <p>
 Choose DBS instance:
@@ -354,6 +504,7 @@ Keywords:
 <hr class="dbs" />
 *#
 
+#*
 <table>
 <tr>
 <td align="right">DBS instance:</td>
@@ -428,8 +579,10 @@ Keywords:
 </td>
 </tr>
 </table>
+*#
 
 </form>
+</div>
 """
 
 templateLine_OR="""
@@ -1456,6 +1609,7 @@ App configs
 <div id="runs"></div>
 <div id="parents"><br /></div>
 <div id="appConfigs"><br /></div>
+<div id="results_finder"></div>
 <div id="results"></div>
 <p>
 <div id="progressBar"></div>
@@ -1531,7 +1685,7 @@ var GLOBAL_STEP=$step
     <span class="yellow_box"
     onMouseOver="KeywordHelp('NavDesc_tag','Discovery page provides a three ways to find your data.\
     <p>Navigator menu based search is designed to guide you through available data in CMS.</p>\
-    <p>Selection search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
+    <p>Finder search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
     <p>Site search is used to find out data which are located at specified site. Data search does not based on any data classification and it is plain lookup of what is available on a site through DLS service.</p>\
     ')" onMouseOut="ClearTag('NavDesc_tag')">?</span><span id="NavDesc_tag"></span>
     <b>Find data:</b>
@@ -1542,15 +1696,20 @@ var GLOBAL_STEP=$step
   </li>
 
   <li id="Search_Menu">
-    <a href="javascript:showMenu('Search');ajaxGetKWFields()">Selections</a>
+    <a href="javascript:showMenu('Search')">Finder</a>
+    ###<a href="javascript:showMenu('Search');ajaxGetKWFields()">Selections</a>
+  </li>
+
+  <li id="Lucene_Menu">
+    <a href="javascript:showMenu('Lucene');ajaxGetLuceneParams()">Lucene</a>
   </li>
 
   <li id="Site_Menu">
-    <a href="javascript:showMenu('Site')">Site</a>
+    <a href="javascript:showMenu('Site')">Site search</a>
   </li>
 
   <li class="plain">
-    <span class="yellow_box" onMouseOver="KeywordHelp('DBSInfoDesc_tag','Here you will find a full list of available applications, primary and processed datasets from DBS.')" onMouseOut="ClearTag('DBSInfoDesc_tag')">?</span><span id="DBSInfoDesc_tag"></span>
+    <span class="yellow_box" onMouseOver="KeywordHelp('DBSInfoDesc_tag','<p>Here you will find a full list of available applications, primary and processed datasets from DBS.</p>')" onMouseOut="ClearTag('DBSInfoDesc_tag')">?</span><span id="DBSInfoDesc_tag"></span>
     <b>List data:</b>
   </li>
 
@@ -1565,12 +1724,21 @@ var GLOBAL_STEP=$step
   </li>
 
   <li class="plain">
-    <span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
+    <span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','<p>You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.</p>')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
     <b>Subscribe to:</b>
   </li>
 
   <li id="Rss_Menu">
     <a href="javascript:showMenu('Rss');ajaxGetRss();">RSS list</a>
+  </li>
+
+  <li class="plain">
+    <span class="yellow_box" onMouseOver="KeywordHelp('DBSTablesDesc_tag','<p>Here you can explore DBS tables and perform pure SQL operations over the table. Only for experts.</p>')" onMouseOut="ClearTag('DBSTablesDesc_tag')">?</span><span id="DBSTablesDesc_tag"></span>
+    <b>Examine DBS:</b>
+  </li>
+
+  <li id="DBSTables_Menu">
+    <a href="javascript:showMenu('Rss');ajaxGetRss();">DBS tables</a>
   </li>
 
   <li class="plain"><br /></li>
@@ -1632,13 +1800,18 @@ $navigatorForm
 </div>
 <!-- END NavigatorDiv -->
 
-#*
 <!-- SearchDiv -->
 <div id="SearchDiv" class="hide">
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
-Keyword search menu
+    <span class="yellow_box"
+    onMouseOver="KeywordHelp('FinderDesc_tag','\
+    <p>Finder search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
+    <p>Finder provides the following table:<table><tr><th>Tasks</th><th>DBS tables</th><th>Columns</th><th>Operators</th><th>expression</th></tr></table></p>\
+    <p>You may add/remove additional selection criteria by pressing plus/minus signs on your right.</p>\
+    ')" onMouseOut="ClearTag('FinderDesc_tag')">?</span><span id="FinderDesc_tag"></span>
+Finder (<a href="javascript:popUp('$host/finderExample')">Examples</a>)
 </td>
 </tr>
 <tr valign="top">
@@ -1649,8 +1822,8 @@ $searchForm
 </table>
 </div>
 <!-- END SearchDiv -->
-*#
 
+#*
 <!-- SearchDiv -->
 #set menuArr=['kw_mc','kw_data']
 <div id="SearchDiv" class="hide"> 
@@ -1710,6 +1883,24 @@ DBS instance: <select name="keywordsSearch_dbsInst" id="kw_dbsSelector">
 </table> <!-- end of outermost table -->
 </div>
 <!-- END SearchDiv -->
+*#
+
+<!-- LuceneDiv -->
+<div id="LuceneDiv" class="hide">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+Lucene search
+</td>
+</tr>
+<tr valign="top">
+<td>
+$luceneForm
+</td>
+</tr>
+</table>
+</div>
+<!-- END LuceneDiv -->
 
 <!-- SiteDiv -->
 <div id="SiteDiv" class="hide">
@@ -2582,6 +2773,208 @@ templateBarNavigator="""
 <b>Primary Dataset:</b>$prim &#187; 
 <b>Data tier:</b>$tier
 <hr class="dbs" />
+"""
+
+templateSearchEngine="""
+<table>
+<tr><td>
+<div id="parameterNameList"></div>
+</td>
+<td>
+<div id="parameterNameListOperators">$operators</div>
+</td>
+<td><input size="20" type="text" id="searchInput" ></input></td>
+<td>
+<input type="button" value="Search" onclick="ajaxGetLucene()" />
+</td></tr>
+</table>
+Results: 
+<table id="webSearchResultsGrid_updater" class="intro">
+</table>
+Statistics: 
+<div id="webSearchStats">webSearchStats</div>
+Number of results: 
+<div id="configureWebSearchRows">configureWebSearchRows</div>
+<div id="errorResponse"></div>
+
+"""
+
+templateSearchEngine_old="""
+<div id="yahooSearchArea" style="position:relative;margin-bottom:6px;">
+    <table class="searchArea" style="border-top: 1px solid #ababab;" border="0" cellpadding="6">
+        <tr>
+           <td><span id="searchPrompt">Search the DBS:</span></td>
+           <td><input size="50" type="text" id="searchInput" ></input></td>
+           <td><input style="margin-left:8px;" type="button" value="Search" onclick="javascript:doYahooWebSearch()"></input></td>
+        </tr>
+    </table>
+</div>
+
+<div style="height:440px;position:relative">
+   <div id="scrollerTip" style="visibility:hidden;position:absolute;"></div>
+
+   <div id="webSearch" style="clear:both;position:absolute;visibility:visible">
+
+      <div id="webSearchStatsArea" style="width:680px;">
+      <div style="margin-bottom:2px;float:left">Search Results</div>
+      <div id="webSearchStats" style="margin-bottom:2px;float:right;">
+           <span id="webResultRange"></span><span id="webResultStats"></span></div>
+      </div>
+
+       <div id="webSearchResultsContainer" style="clear:both;width:800px">
+	       <div id="viewPort_web" style="float:left">
+           <table id="webSearchResultsGrid" class="searchTable" cellspacing="0" cellpadding="0">
+           <tr>
+             <td valign="top" class="webSearchIndex">&nbsp;</td>
+             <td class="webSearchCellContent">&nbsp;</td>
+           </tr>
+           <tr>
+             <td valign="top" class="webSearchIndex">&nbsp;</td>
+             <td class="webSearchCellContent">&nbsp;</td>
+           </tr>
+           <tr>
+             <td valign="top" class="webSearchIndex">&nbsp;</td>
+             <td class="webSearchCellContent">&nbsp;</td>
+           </tr>
+           <tr>
+             <td valign="top" class="webSearchIndex">&nbsp;</td>
+             <td class="webSearchCellContent">&nbsp;</td>
+           </tr>
+           <tr>
+             <td valign="top" class="webSearchIndex" >&nbsp;</td>
+             <td class="webSearchCellContent">&nbsp;</td>
+           </tr>
+           <tr>
+             <td valign="top" class="webSearchIndex" >&nbsp;</td>
+             <td class="webSearchCellContent">&nbsp;</td>
+           </tr>
+           </table>
+           </div>
+       </div>
+   </div> <!-- End WEB -->
+
+</div>
+<script type="text/javascript">registerAjaxLucene()</script>
+"""
+
+templateTableColumns="""
+<select>
+<option>All columns</option>
+#for col in $tableCols
+<option>$col</option>
+#end for
+</select>
+"""
+
+templateOperators="""
+<select id="$tag">
+<option>=</option>
+<option>&lt;</option>
+<option>&gt;</option>
+<option>&lt;=</option>
+<option>&gt;=</option>
+<option>:=</option>
+<option>=~</option>
+</select>
+"""
+
+templateSelect="""
+<select id="$selTag" onchange="$changeFunction" name="$name">
+<option value="$iList[0]" selected="selected">$iList[0]</option>
+#for item in $iList[1:]
+<option value="$item">$item</option>
+#end for
+</select>
+"""
+
+templateSelectLine="""
+#set nextId=$id+1
+<div id="selMenu_$id">
+<table class="selMenu">
+<tr>
+<td align="left">
+<select id="selSection_$id" onchange="ChangeTables($id)" name="selSection">
+<option value="$sectionList[0]" selected="selected">$sectionList[0]</option>
+#for section in $sectionList[1:]
+<option>$section</option>
+#end for
+</select>
+</td>
+
+<td style="width:160px">
+<div id="divSectionTables_$id">
+<select id="sectionTables_$id" onchange="ChangeCols($id)" name="sectionTables">
+#for section in $tableList
+<option>$section</option>
+#end for
+</select>
+</div>
+</td>
+
+<td style="width:200px">
+<div id="tableCols_$id"></div>
+</td>
+
+<td>
+<select id="colSel_$id" name="colOperators">
+<option>like</option>
+<option>=</option>
+<option>&lt;</option>
+<option>&gt;</option>
+</select>
+</td>
+<td>
+<input type="text" size="30" id="where_$id" name="whereClause" />
+</td>
+<td>
+<a href="javascript:ajaxMakeLine($nextId)"><img src="images/plus2.gif" alt="add" style="border:none" /></a>
+</td>
+<td>
+<a href="javascript:ClearTag('makeMenu_$id')"><img src="images/minus2.gif" alt="remove" style="border:none" /></a>
+</td>
+</tr>
+</table>
+</div>
+<div id="makeMenu_$nextId"></div>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('divSectionTables_$id', new GetDataUpdater('divSectionTables_$id','replace','noResultsMenu'))</script>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('tableCols_$id', new GetDataUpdater('tableCols_$id','replace','noResultsMenu'));ajaxFillLine($id)</script>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('makeMenu_$nextId',new GetDataUpdater('makeMenu_$nextId','replace','noResultsMenu'))</script>
+"""
+
+templateTables="""
+<script type="text/javascript">ajaxEngine.registerRequest('ajaxGetTableColumns','getTableColumns');</script>
+<table>
+#for table in $tableList
+<tr>
+<td>
+<input type="checkbox" />
+</td>
+<td style="width:150px">
+$table
+</td>
+<td style="width:150px">
+<div id="cols_$table">Parameters</div>
+</td>
+<td>
+<select onchange="javascript:ChangeField('field_$table');" id="sel_field_$table">
+<option>Select</option>
+<option>=</option>
+<option>&lt;</option>
+<option>&gt;</option>
+</select>
+</td>
+<td>
+<div id="field_$table" class="hide">
+<input type="text" size="40" id="kw_field_$table" />
+</div>
+</td>
+</tr>
+#end for
+</table>
+
+#for table in $tableList
+<script type="text/javascript">ajaxEngine.registerAjaxElement('cols_$table');ajaxGetTableColumns('$dbsInst','$table')</script>
+#end for
 """
 
 templateDummy="""
