@@ -1025,3 +1025,16 @@ function GetTagContent(tag) {
   }
   return '';
 }
+function ChangeField(tag) {
+  var id=document.getElementById(tag);
+  if (id) {
+      var sel=document.getElementById('sel_'+tag);
+      if(sel.value=='Select') {
+         id.className="hide";
+         return;
+      } else {
+         id.className="show_inline";
+         return;
+      }
+  }
+}
