@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.69 $"
- $Id: DBSSql.java,v 1.69 2007/02/06 20:54:54 sekhri Exp $"
+ $Revision: 1.70 $"
+ $Id: DBSSql.java,v 1.70 2007/02/07 20:54:21 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1223,6 +1223,37 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+        public static PreparedStatement listFileRuns(Connection conn, String fileID) throws SQLException {
+                String sql = "SELECT DISTINCT run.id as ID, \n" +
+                        "run.RunNumber as RUN_NUMBER, \n" +
+                        "run.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "run.NumberOfLumiSections as NUMBER_OF_LUMI_SECTIONS, \n" +
+                        "run.TotalLuminosity as TOTAL_LUMINOSITY, \n" +
+                        "run.StoreNumber as STRORE_NUMBER, \n" +
+                        "run.StartOfRun as START_OF_RUN, \n" +
+                        "run.EndOfRun as END_OF_RUN, \n" +
+                        "run.CreationDate as CREATION_DATE, \n" +
+                        "run.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM Runs run \n" +
+                        "JOIN FileRunLumi fl \n" +
+                                "ON run.ID = fl.Run \n" +
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = run.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = run.LastModifiedBy \n";
+                if(fileID != null) {
+                        sql += "WHERE fl.Fileid = ? \n";
+                }
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if(fileID != null) {
+                        ps.setString(1, fileID);
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 	public static PreparedStatement listAnalysisDatasetDefinition(Connection conn, String patternName) throws SQLException {
 		//String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
