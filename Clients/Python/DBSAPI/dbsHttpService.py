@@ -34,8 +34,15 @@ class DbsHttpService:
 
   def getKeyCert(self):
    """
+   Gets the User Proxy if it exists otherwise THROWs an exception
    """
-
+   
+   uid = os.getuid()
+   proxy = '/tmp/x509up_u'+str(uid)
+   if not os.path.exists(proxy):
+	raise DbsProxyNotFound(args="Proxy not found for user %s" %os.getlogin(), code="9999")
+   return proxy, proxy
+   
   def _call (self, args, type):
     """
     Make a call to the server, either a remote HTTP request (the
@@ -64,12 +71,11 @@ class DbsHttpService:
              if type != 'POST':
                request_string += '&'+key+'='+urllib.quote(value) 
              continue 
-           
-       if self.Secure == True:
-		conto = "\n\nhttps://" + self.Host + ":" + self.Port  + request_string + "\n\n" 	
+       if self.Secure != True :
+		conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n" 	
        		conn = httplib.HTTPConnection(self.Host, self.Port)
        else:
-       		conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n"
+       		conto = "\n\nhttps://" + self.Host + ":" + self.Port  + request_string + "\n\n"
 		key, cert = self.getKeyCert()
 		conn = httplib.HTTPSConnection(self.Host, self.Port, key, cert)
 
@@ -78,6 +84,7 @@ class DbsHttpService:
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
+       logging.info(request_string)
 
        if type == 'POST':
           result = conn.request(type, request_string, params, headers)  
