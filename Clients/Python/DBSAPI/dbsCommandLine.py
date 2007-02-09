@@ -1,13 +1,12 @@
 #!/usr/bin/env python
-#-*- coding: ISO-8859-1 -*-
 #
-# Copyright 2006 Cornell University, Ithaca, NY 14853.
+# Revision: 1.3 $"
+# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
-# Author:  Valentin Kuznetsov, 2006
 #
 
 # system modules
-import os, sys, string, stat, re
+import os, sys, string, stat, re, time
 #from optparse import OptionParser
 import optparse
 #from optparse import Option
@@ -17,6 +16,11 @@ from dbsApi import DbsApi
 # DBS specific modules
 from dbsException    import DbsException
 from dbsApiException import *
+
+##Default URL for the Service
+URL="http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet"
+##Version of the Cleint API
+VERSION="v00_00_06"
 
 class DbsOptionParser(optparse.OptionParser):
   """
@@ -29,13 +33,13 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("-q", "--quiet",action="store_true", default=False, dest="quiet",
            help="be quiet during deployment procedure")
 
-      self.add_option("--url",action="store", type="string", dest="url",
+      self.add_option("--url",action="store", type="string", dest="url", default=URL,
            help="specify URL, e.g. http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet")
 
       self.add_option("-v","--verbose", action="store", type="string", default="WARNING", dest="level",
            help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
 
-      self.add_option("--apiver","--apiversion", action="store", type="string", default="v00_00_05", dest="version",
+      self.add_option("--apiver","--apiversion", action="store", type="string", default=VERSION, dest="version",
            help="specify dbs client api version, e.g. --ver=v00_00_05, or --version=v00_00_05")
 
       self.add_option("--p","--path", action="store", type="string", default="/*/*/*", dest="path",
@@ -43,6 +47,10 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--pattern", action="store", type="string", default="*", dest="pattern",
            help="some command scope could be restricted with pattern, e.g. listPrimaryDataset")
+
+      self.add_option("--report", action="store_true", default="False", dest="report",
+           help="If you add this option with some listCommands the output is generated in a detailed report format")
+
 
       #self.add_option("--apppattern", action="store", type="string", default="*", dest="apppattern",
       #     help="Pattern of Application in /appname/family/version format")
@@ -104,69 +112,120 @@ def breakPath(inpath):
    else:
       return pathl  
 
+class printReport:
+
+  def __init__(self, report):
+	"""
+    	report: is a Python data structure of this format
+    	report = {
+        	'summary': object (dict type), all key/vals will be printed as HEADER
+        	'Comments': TEXT, any text appearing here will be printed after HEADER
+        	'lines' : [lineObjs], each line Object's key/value pair will be printed in each line
+        	}
+    	"""
+	print report['summary']
+	for aline in report['lines']:
+		print aline
+	
+class Report(dict):
+        def __init__(self):
+                dict.__init__(self)
+                self['summary']=""
+                self['lines']=[]
+        def addSummary(self, summary):
+                self['summary'] += summary
+        def addLine(self, line):
+                self['lines'].append(line)
+
 # API Call Wrapper
-def callApi(args):
+class ApiDispatcher:
+
+  def __init__(self, args):
     #print args
-    optdict=args.__dict__
-    apiCall = optdict.get('command', '')
+    self.optdict=args.__dict__
+    apiCall = self.optdict.get('command', '')
     if apiCall in ("", None):
        print "No command specified, use --help for details" 
-    if optdict.has_key('help'):
+    if self.optdict.has_key('help'):
        print "NEED Help!!"
 
-    api = DbsApi(opts.__dict__)
+    self.api = DbsApi(opts.__dict__)
 
     #Execute the proper API call
     ##listPrimaryDatasets 
     if apiCall in ('listPrimaryDatasets', 'lsp'):
-       #if optdict.has_key('pattern'):
-       apiret = api.listPrimaryDatasets(optdict.get('pattern'))
-       for anObj in apiret:
-        print anObj['Name']
+	self.handleListPrimaryDatasets()
 
     ##listProcessedDatasets
     elif apiCall in ('listProcessedDatasets', 'lsd'):
-       pathl = breakPath(optdict.get('path'))   
-       #pathl[] is always empty !
-
-       datasetPaths = [] 
-       apiret = api.listProcessedDatasets(pathl[1], pathl[2], pathl[3]) 
-       for anObj in apiret:
-          for aPath in anObj['PathList']:
-              if aPath not in datasetPaths:
-                 datasetPaths.append(aPath)
-                 #Print on screen as well
-                 print aPath
-
-       #Print all paths
-       #for aPath in datasetPaths:
-          #print aPath
+	self.handleListProcessedDatasets()
 
     ##listFiles
     elif apiCall in ('listFiles', 'lsf'):
-       path=optdict.get('path')
-       print "Path: ", path
-       if path == '/*/*/*':
-         print "Can not list ALL files of ALL datasets, please specify a dataset path"
-       else:  
-         apiret = api.listFiles(path)  
-         for anObj in apiret:
-           print anObj['LogicalFileName']
-       
+	self.handleListFiles() 
 
     ##listBlocks
     elif apiCall in ('listBlocks', 'lsb'):
-       path=optdict.get('path')
+	self.handleBlockCall()
+    else:
+       print "API Call: %s not implemented" %apiCall
+
+  def handleListPrimaryDatasets(self):
+       #if self.optdict.has_key('pattern'):
+       apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+       for anObj in apiret:
+        print anObj['Name']
+
+  def handleListProcessedDatasets(self):
+	pathl = breakPath(self.optdict.get('path'))
+	#pathl[] is always empty !
+
+	datasetPaths = []
+	apiret = self.api.listProcessedDatasets(pathl[1], pathl[2], pathl[3])
+
+	for anObj in apiret:
+	    #import pdb
+            #pdb.set_trace()
+
+	    if self.optdict.get('report') != 'False' :	
+		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
+		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
+		
+        	report = Report()
+		report.addSummary(sumry)
+
+		report.addLine("Paths in this Processed Dataset:")
+		for aPath in anObj['PathList']:
+			report['lines'].append("        "+aPath)
+		#Print it
+        	printReport(report)
+	    else:
+	          for aPath in anObj['PathList']:
+        	      if aPath not in datasetPaths:
+                	 #datasetPaths.append(aPath)
+	                 #Print on screen as well
+        	         print aPath
+
+
+  def handleListFiles(self):
+       path=self.optdict.get('path')
+       print "Path: ", path
+       if path == '/*/*/*':
+         print "Can not list ALL files of ALL datasets, please specify a dataset path"
+       else:
+         apiret = self.api.listFiles(path)
+         for anObj in apiret:
+           print anObj['LogicalFileName']
+
+  def handleBlockCall(self):
+       path=self.optdict.get('path')
        print "Path: ", path
        if path == '/*/*/*':
          print "Can not list ALL Blocks of ALL datasets, please specify a dataset path"
        else:
-         apiret = api.listBlocks(path)
+         apiret = self.api.listBlocks(path)
          for anObj in apiret:
              print anObj['Name']
-
-    else:
-       print "API Call: %s not implemented" %apiCall
 
 #
 # main
@@ -183,7 +242,7 @@ if __name__ == "__main__":
     # Help on individual commands
     # 
     if opts.__dict__.get('command') != 'notspecified' : 
-       callApi(opts)
+       ApiDispatcher(opts)
     else:
        optManager.print_help() 
 
