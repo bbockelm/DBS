@@ -15,7 +15,7 @@ import logging
 class DbsHttpService:
 
   """Provides Server connectivity through HTTP"""
-  def __init__(self, Host, Port, Applet, ApiVersion, Args={}):
+  def __init__(self, Host, Port, Applet, ApiVersion, Args={}, Secure=False):
     """ Constructor. """
     
     self.Host = Host
@@ -26,11 +26,15 @@ class DbsHttpService:
     #                        %type(Port) )
     self.Applet = Applet
     self.ApiVersion = ApiVersion
+    self.Secure = Secure
     
   def setDebug(self, on=1):
     """ Set low-level debugging. """
     httplib.HTTPConnection.debuglevel = on
 
+  def getKeyCert(self):
+   """
+   """
 
   def _call (self, args, type):
     """
@@ -61,13 +65,19 @@ class DbsHttpService:
                request_string += '&'+key+'='+urllib.quote(value) 
              continue 
            
-       conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n"
+       if self.Secure == True:
+		conto = "\n\nhttps://" + self.Host + ":" + self.Port  + request_string + "\n\n" 	
+       		conn = httplib.HTTPConnection(self.Host, self.Port)
+       else:
+       		conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n"
+		key, cert = self.getKeyCert()
+		conn = httplib.HTTPSConnection(self.Host, self.Port, key, cert)
+
        logging.info(conto); 
         
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
-       conn = httplib.HTTPConnection(self.Host, self.Port)
 
        if type == 'POST':
           result = conn.request(type, request_string, params, headers)  
