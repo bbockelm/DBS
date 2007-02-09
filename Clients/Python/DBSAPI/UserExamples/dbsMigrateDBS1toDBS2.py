@@ -8,27 +8,27 @@ from xml.sax.saxutils import escape
 from cStringIO import StringIO
 
 # DBS specific modules
-from dbsApi import DbsApi
-from dbsHttpService import DbsHttpService
-from dbsExecService import DbsExecService
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsHttpService import DbsHttpService
+from DBSAPI.dbsExecService import DbsExecService
 
-from dbsException import DbsException
-from dbsApiException import *
+from DBSAPI.dbsException import DbsException
+from DBSAPI.dbsApiException import *
 
-from dbsBaseObject import *
-from dbsRun import DbsRun
-from dbsQueryableParameterSet import DbsQueryableParameterSet
-from dbsProcessedDataset import DbsProcessedDataset
-from dbsPrimaryDataset import DbsPrimaryDataset
-from dbsLumiSection import DbsLumiSection
-from dbsFile import DbsFile
-from dbsFileBlock import DbsFileBlock
-from dbsDataTier import DbsDataTier
-from dbsAlgorithm import DbsAlgorithm
+from DBSAPI.dbsBaseObject import *
+from DBSAPI.dbsRun import DbsRun
+from DBSAPI.dbsQueryableParameterSet import DbsQueryableParameterSet
+from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
+from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
+from DBSAPI.dbsLumiSection import DbsLumiSection
+from DBSAPI.dbsFile import DbsFile
+from DBSAPI.dbsFileBlock import DbsFileBlock
+from DBSAPI.dbsDataTier import DbsDataTier
+from DBSAPI.dbsAlgorithm import DbsAlgorithm
 
-from dbsParent import DbsParent
-from dbsConfig import DbsConfig
-from dbsOptions import DbsOptionParser
+from DBSAPI.dbsParent import DbsParent
+from DBSAPI.dbsConfig import DbsConfig
+from DBSAPI.dbsOptions import DbsOptionParser
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
