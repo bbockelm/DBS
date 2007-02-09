@@ -43,7 +43,7 @@ class DbsHttpService:
 	raise DbsProxyNotFound(args="Proxy not found for user %s" %os.getlogin(), code="9999")
    return proxy, proxy
    
-  def _call (self, args, type):
+  def _call (self, args, typ):
     """
     Make a call to the server, either a remote HTTP request (the
     URL is of the form http:*), or invoke as a local executable
@@ -68,32 +68,32 @@ class DbsHttpService:
           if key == 'api':
              request_string += '&'+key+'='+value
           else: 
-             if type != 'POST':
+             if typ != 'POST':
                request_string += '&'+key+'='+urllib.quote(value) 
              continue 
        if self.Secure != True :
 		conto = "\n\nhttp://" + self.Host + ":" + self.Port  + request_string + "\n\n" 	
-       		conn = httplib.HTTPConnection(self.Host, self.Port)
+       		self.conn = httplib.HTTPConnection(self.Host, int(self.Port))
        else:
        		conto = "\n\nhttps://" + self.Host + ":" + self.Port  + request_string + "\n\n"
 		key, cert = self.getKeyCert()
-		conn = httplib.HTTPSConnection(self.Host, self.Port, key, cert)
+		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
 
-       logging.info(conto); 
+       logging.info(conto)
         
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
        logging.info(request_string)
 
-       if type == 'POST':
-          result = conn.request(type, request_string, params, headers)  
+       if typ == 'POST':
+          result = self.conn.request(typ, request_string, params, headers)  
        else:
-          result = conn.request(type, request_string)
+          result = self.conn.request(typ, request_string )
 
        logging.debug(request_string)
 
-       response = conn.getresponse() 
+       response = self.conn.getresponse() 
 
        # See if HTTP call succeeded 
        responseCode = int(response.status)
