@@ -73,5 +73,8 @@ class DbsBadResponse(DbsApiException):
   def __init__ (self, **kwargs):
     DbsApiException.__init__(self, **kwargs)
 
+class DbsProxyNotFound(DbsApiException):
+  def __init__ (self, **kwargs):
+    DbsApiException.__init__(self, **kwargs)
 
 
