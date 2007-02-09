@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiPersonLogic.java,v 1.5 2007/01/08 17:48:22 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiPersonLogic.java,v 1.6 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
@@ -55,7 +55,8 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	
 	protected void insertPerson(Connection conn, Writer out, String userName, String userDN, String contactInfo, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		//if (isNull(lmbUserID)) lmbUserID = "0";//0 is user not created by anyone
-		if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
+		//if( getID(conn, "Person", "DistinguishedName", userDN , false) == null ) {
+		if( getIDNoCheck(conn, "Person", "DistinguishedName", userDN , false) == null ) {
 			PreparedStatement ps = null;
 			try {
 				//FIXME it is not important to store whoi created this person 
@@ -79,12 +80,13 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	 */
 	public String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
 		String id = "";
-		String userDN = get(dbsUser, "user_dn", true);
+		String userDN = get(dbsUser, "user_dn");
 		if(!isNull( id = get(this.data.globalUser, userDN) )) {
 			return id;
 		}
-		checkWord(userDN, "user_dn");
-		if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
+		//checkWord(userDN, "user_dn");
+		//if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
+		if ( (id = getIDNoCheck(conn, "Person", "DistinguishedName", userDN , false)) == null) {
 			//FIXME instead of passing null for out stream writer , pass the actual stream
 			insertPerson(conn, null,  
 					get(dbsUser, "user_name", false), 
@@ -93,7 +95,8 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 					"",
 					"",
 					""); //FIXME Get userName and contactInfo also and the lmbUserID shoudl be decicde?
-			id = getID(conn, "Person", "DistinguishedName", userDN , true);
+			id = getIDNoCheck(conn, "Person", "DistinguishedName", userDN , true);
+			//id = getID(conn, "Person", "DistinguishedName", userDN , true);
 		}
 		this.data.globalUser.put(userDN, id);
 		return id;
@@ -101,7 +104,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 
 
 	public String getUserID(Connection conn, String userDN, Hashtable dbsUser) throws Exception {
-		if(isNull(userDN)) userDN = get(dbsUser, "user_dn", true);
+		if(isNull(userDN)) userDN = get(dbsUser, "user_dn");
 		Hashtable tmpDBSUser = new Hashtable();
 		tmpDBSUser.put("user_dn", userDN);//FIXME conatct infor and other things needs to go in this table too
 		return getUserID(conn, tmpDBSUser);
