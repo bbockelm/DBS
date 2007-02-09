@@ -88,13 +88,18 @@ class DbsApi(DbsConfig):
 	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
 	    spliturl = urlparse.urlparse(self.url())
+            callType = spliturl[0]
 	    hostport=urllib2.splitport(spliturl[1])  
 	    host=hostport[0]
 	    port=hostport[1]
 	    servlet=spliturl[2] 
             if self.verbose():
                print "using url   ", self.url()
-            self._server = DbsHttpService(host, port, servlet, self.version(), Args)
+            if callType == 'https':
+	       ##Make a secure connection	
+               self._server = DbsHttpService(host, port, servlet, self.version(), Args, True)
+            else: 
+               self._server = DbsHttpService(host, port, servlet, self.version(), Args)
     #
     # Setup Proper logging
     #
