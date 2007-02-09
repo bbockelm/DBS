@@ -1,6 +1,6 @@
 /**
- $Revision: 1.11 $"
- $Id: DBSApiPrimDSLogic.java,v 1.11 2007/01/18 18:07:10 afaq Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.12 2007/01/23 21:20:49 sekhri Exp $"
  *
  */
 
@@ -88,7 +88,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		//Get the User ID from USERDN
 		
 		String lmbUserID = personApi.getUserID(conn, dbsUser); 
-		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
+		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by"), dbsUser );
 		String creationDate = getTime(dataset, "creation_date", false);
 		String name = get(dataset, "primary_name", true);
 		String type = get(dataset, "type", false);

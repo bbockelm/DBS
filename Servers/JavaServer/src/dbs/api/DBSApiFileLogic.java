@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiFileLogic.java,v 1.23 2007/02/07 21:03:02 afaq Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApiFileLogic.java,v 1.24 2007/02/08 22:23:30 afaq Exp $"
  *
  */
 
@@ -392,7 +392,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String fileStatus = get(file, "file_status", false);
 			String type = get(file, "type", false);
 			String valStatus = get(file, "validation_status", false);
-			String cbUserID = personApi.getUserID(conn, get(file, "created_by", false), dbsUser );
+			String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 			String creationDate = getTime(file, "creation_date", false);
 
 			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
@@ -590,7 +590,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		insertMap(conn, out, "FileTier", "Fileid", "DataTier", 
 				getFileID(conn, get(table, "lfn", true), true), 
 				getID(conn, "DataTier", "Name", tierName , true), 
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 
@@ -613,7 +613,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
 				getFileID(conn, get(table, "lfn", true), true),
 				getFileID(conn, parentLFN, true),
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}
@@ -646,7 +646,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						get(algo, "ps_hash"), 
 						//psHash,
 						true), 
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}
@@ -668,7 +668,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		insertMap(conn, out, "FileLumi", "Fileid", "Lumi", 
 				getFileID(conn, get(table, "lfn", true), true), 
 				getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, true), 
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}
@@ -686,7 +686,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
         public void remapFiles(Connection conn, Writer out, Vector inFiles, Hashtable outFileTable, Hashtable dbsUser) throws Exception { 
 		String outFileID = getFileID(conn, get(outFileTable, "lfn", true), true);
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(outFileTable, "created_by", false), dbsUser );
+		String cbUserID = personApi.getUserID(conn, get(outFileTable, "created_by"), dbsUser );
 		String creationDate = getTime(outFileTable, "creation_date", false);
 
 		for (int j = 0; j < inFiles.size(); ++j) {

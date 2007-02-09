@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiBlockLogic.java,v 1.12 2007/01/18 16:57:46 afaq Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiBlockLogic.java,v 1.13 2007/01/24 17:08:57 sekhri Exp $"
  *
  */
 
@@ -104,7 +104,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String openForWriting = get(block, "open_for_writing", false);
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
                 String userID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
+		String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
 		String creationDate = getTime(block, "creation_date", false);
 
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);//Getting ID before spliting the path will type chech the path also.
@@ -168,7 +168,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		insertStorageElement(conn, out, 
 				blockID,
 				get(table, "storage_element_name", true),
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false)
 				);
@@ -192,7 +192,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 String openForWriting = "1";
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
                 String userID = personApi.getUserID(conn, dbsUser);
-                String cbUserID = personApi.getUserID(conn, get(block, "created_by", false), dbsUser );
+                String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
                 String creationDate = getTime(block, "creation_date", false);
 
                 //checkBlock(name);

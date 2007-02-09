@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiTransferLogic.java,v 1.8 2007/01/23 21:20:49 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiTransferLogic.java,v 1.9 2007/02/02 17:40:05 sekhri Exp $"
  *
  */
 
@@ -78,7 +78,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		//FIXME dont pass dbsUser instaed get it from the table
 		String path = getPath(table, "path", true);
-
+		System.out.println("line 1");
                 //FIXME: Confirm with Vijay -- Change made by AA 01/18/2007, Block is passed as a separate object now.
 		String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
                 Hashtable fileblock = new Hashtable();

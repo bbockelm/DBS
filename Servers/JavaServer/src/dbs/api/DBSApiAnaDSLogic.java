@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiAnaDSLogic.java,v 1.21 2007/02/05 17:53:10 sekhri Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.22 2007/02/05 20:22:45 sekhri Exp $"
  *
  */
 
@@ -155,7 +155,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String type = get(dataset, "type", true);
 		String status = get(dataset, "status", true);
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
+		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by"), dbsUser );
 		String creationDate = getTime(dataset, "creation_date", false);
 
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(dataset, "path"), true);
@@ -285,7 +285,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	 	}
 		createAnalysisDatasetDefinition(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
 				runNumberList, runRangeList, tierList, fileList, adsList, algoList, userCut, desc,
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false) );
 
@@ -339,7 +339,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		//Get the Definition of the analysis dataset first and get the path and its id to be used for inserting analysis dataset
 		String analysisDatasetDefinitionName = get(table, "analysisds_def_name", true);
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(table, "created_by", false), dbsUser );
+		String cbUserID = personApi.getUserID(conn, get(table, "created_by"), dbsUser );
 		String creationDate = getTime(table, "creation_date", false);
 		String logicalOp = "AND";
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApiProcDSLogic.java,v 1.17 2007/01/24 17:08:57 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApiProcDSLogic.java,v 1.18 2007/02/07 16:45:16 afaq Exp $"
  *
  */
 
@@ -260,7 +260,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by", false), dbsUser );
+		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by"), dbsUser );
 		String creationDate = getTime(dataset, "creation_date", false);
 
 		String procDSName = get(dataset, "processed_datatset_name", true);
@@ -387,7 +387,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 				getProcessedDSID(conn, get(table, "path"), true), 
 				getID(conn, "DataTier", "Name", tierName , true), 
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}
@@ -411,7 +411,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
 					getProcessedDSID(conn, get(table, "path"), true), 
 					getProcessedDSID(conn, parentPath, true), 
-					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+					personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
 					getTime(table, "creation_date", false));
 	}
@@ -438,7 +438,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							get(algo, "app_executable_name"),
 							get(algo, "ps_hash"), 
 							true), 
-					personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+					personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
 					getTime(table, "creation_date", false));
 	}
@@ -461,7 +461,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
 				getProcessedDSID(conn, get(table, "path"), true), 
 				getID(conn, "Runs", "RunNumber", runNumber , true), 	
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
 	}

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.70 $"
- $Id: DBSApiLogic.java,v 1.70 2007/02/05 19:28:32 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSApiLogic.java,v 1.71 2007/02/09 19:29:39 sekhri Exp $"
  *
  */
 
@@ -116,7 +116,7 @@ public class DBSApiLogic {
 					get(run, "store_number", true),
 					get(run, "start_of_run", false),
 					get(run, "end_of_run", false),
-					personApi.getUserID(conn, get(run, "created_by", false), dbsUser ),
+					personApi.getUserID(conn, get(run, "created_by"), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
 					getTime(run, "creation_date", false));
 
@@ -171,7 +171,7 @@ public class DBSApiLogic {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertTier(conn, out, 
 				get(table, "tier_name", true),
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false)
 				);
@@ -196,7 +196,7 @@ public class DBSApiLogic {
 	public void insertLumiSection(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertLumiSection(conn, out, table, 
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false)
 				);
@@ -377,7 +377,7 @@ public class DBSApiLogic {
 		insertPhysicsGroup(conn, out, 
 				get(table, "physics_group_name", true),
 				get(table, "physics_group_convener", true),
-				personApi.getUserID(conn, get(table, "created_by", false), dbsUser ),
+				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false)
 				);

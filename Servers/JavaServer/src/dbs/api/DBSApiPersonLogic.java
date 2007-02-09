@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiPersonLogic.java,v 1.6 2007/01/17 23:06:56 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiPersonLogic.java,v 1.7 2007/02/09 19:29:39 sekhri Exp $"
  *
  */
 
@@ -47,7 +47,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 				get(table, "user_name", false),
 				get(table, "user_dn", true),
 				get(table, "contact_info", false),
-				getUserID(conn, get(table, "created_by", false), dbsUser ),
+				getUserID(conn, get(table, "created_by"), dbsUser ),
 				getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false)
 				);
