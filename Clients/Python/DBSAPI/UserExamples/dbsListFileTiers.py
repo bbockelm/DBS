@@ -20,7 +20,7 @@ try:
   try:
    # List all tiers  of the file
    print ""
-   for file in api.listFileTiers("aaaa2233-uuuuu-9767-8764aaaa"):
+   for file in api.listFileTiers("NEW_TEST0006"):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e

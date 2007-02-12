@@ -20,12 +20,7 @@ try:
   try:
    # List all parents of the file
    print ""
-   for file in api.listFileParents("aaaa2233-uuuuu-9767-8764aaaa"):
-   #for file in api.listFileParents("TEST_LFN_1_20544a80-6eba-41db-98a5-07948a060c72_input_2"):
-   #for file in api.listFileParents("TEST_LFN_1_20544a80-6eba-41db-98a5-07948a060c72_input_1"):
-   #for file in api.listFileParents("TEST_LFN_1_20544a80-6eba-41db-98a5-07948a060c72_child_1"):
-   #for file in api.listFileParents("TEST_LFN_1_20544a80-6eba-41db-98a5-07948a060c72_child_2"):
-   #for file in api.listFileParents("TEST_LFN_1_20544a80-6eba-41db-98a5-07948a060c72_OUTPUT_MERGED"):
+   for file in api.listFileParents("NEW_TEST0070"):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e

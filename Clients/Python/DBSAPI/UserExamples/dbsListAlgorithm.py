@@ -17,15 +17,12 @@ try:
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
   
-  try:
-   # List all parameter sets
-   print ""
-   print "Algorithms...."
-   for app in api.listAlgorithms('ab', 's;'):
-   #for app in api.listAlgorithms("*"):
+  # List all parameter sets
+  print ""
+  print "Algorithms...."
+  #for app in api.listAlgorithms('ab', 's;'):
+  for app in api.listAlgorithms("*"):
      print " %s" % app
-  except DbsDatabaseError,e:
-   print e
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

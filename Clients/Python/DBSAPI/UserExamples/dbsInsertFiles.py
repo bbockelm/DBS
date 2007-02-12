@@ -145,7 +145,8 @@ print "Inserting files in processDS %s" % proc
 
 try:
     # A file with RunsList and NOT lumi list
-    ## api.insertFiles (proc, [myfile3], block)
+    api.insertFiles (proc, [myfile3], block)
+
     api.insertFiles (proc, [myfile1, myfile2], block)
     print "Result: %s" % proc
 

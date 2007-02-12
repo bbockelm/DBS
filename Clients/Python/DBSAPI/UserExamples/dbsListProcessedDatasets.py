@@ -17,18 +17,14 @@ try:
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
   
-  try:
-   # List all parameter sets
-   print ""
-   print "Processed Datasets:"
-   #NEGATIVE TEST for proc in api.listProcessedDatasets("/DBS2-TEST-QCD_pt_0_15/*/*"):
-   #for proc in api.listProcessedDatasets("DBS2-TEST-QCD_pt_0_15", "*", "*"):
+  # List all parameter sets
+  print "Processed Datasets:"
+  #NEGATIVE TEST for proc in api.listProcessedDatasets("/DBS2-TEST-QCD_pt_0_15/*/*"):
+  #for proc in api.listProcessedDatasets("DBS2-TEST-QCD_pt_0_15", "*", "*"):
 
-   #for proc in api.listProcessedDatasets("*","*","CMSSW_0_9_0-RAW-Run-000033*"):
-   for proc in api.listProcessedDatasets("*"):
+  #for proc in api.listProcessedDatasets("*","*","CMSSW_0_9_0-RAW-Run-000033*"):
+  for proc in api.listProcessedDatasets("*"):
      print "  %s" % proc
-  except DbsDatabaseError,e:
-   print e
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

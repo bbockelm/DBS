@@ -12,7 +12,7 @@ try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
-  for block in api.listBlocks("/test_primary_anzar_001/SIM/TestProcessedDS002"):
+  for block in api.listBlocks("/test_primary_anzar_001/SIM/TestProcessedDS001"):
   #for block in api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/*hahah#12345"):
   #for block in api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/*"):
   #for block in api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/ff*"):
