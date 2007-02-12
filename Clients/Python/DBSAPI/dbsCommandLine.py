@@ -78,14 +78,15 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n           listAnalysisDataset or lsa,"
       command_help += "\n           listDatasetContents or lsdc,"
       command_help += "\n\nSome examples:\n"
-      #command_help += "\npython dbsCommandLine.py --help"
-      command_help += "\npython dbsCommandLine.py -c lsp --pattern TestPrimary*"
-      command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets --pattern TestPrimary*"
+      command_help += "\npython dbsCommandLine.py --help"
+      command_help += "\npython dbsCommandLine.py -c lsp --pattern=TestPrimary*"
+      command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets --pattern=TestPrimary*"
+      command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets --pattern=*"
       command_help += "\npython dbsCommandLine.py -c listPrimaryDatasets"
-      #command_help += "\npython dbsCommandLine.py -c listProcessedDatasets"
-      #command_help += "\npython dbsCommandLine.py -c lsd --p /QCD_pt_0_15_PU_OnSel/SIM/CMSSW_1_2_0-FEVT-1168294751-unmerged"
-      #command_help += "\npython dbsCommandLine.py -c listFiles --path /PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
-      command_help += "\npython dbsCommandLine.py -c lsf --path /PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
+      command_help += "\npython dbsCommandLine.py -c listProcessedDatasets"
+      command_help += "\npython dbsCommandLine.py -c lsd --p=/QCD_pt_0_15_PU_OnSel/SIM/CMSSW_1_2_0-FEVT-1168294751-unmerged"
+      command_help += "\npython dbsCommandLine.py -c listFiles --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
+      command_help += "\npython dbsCommandLine.py -c lsf --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
       command_help += "\n"
       return command_help
 
@@ -106,6 +107,7 @@ class DbsOptionParser(optparse.OptionParser):
   
 
 def breakPath(inpath):
+   
    pathl = inpath.split('/')
    if len(pathl) < 3:
       print "Error must provide a full qualifying path"
@@ -171,17 +173,20 @@ class ApiDispatcher:
        print "API Call: %s not implemented" %apiCall
 
   def handleListPrimaryDatasets(self):
-       #if self.optdict.has_key('pattern'):
-       apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
-       for anObj in apiret:
-        print anObj['Name']
+       	#if self.optdict.has_key('pattern'):
+       	apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+       	for anObj in apiret:
+        	print anObj['Name']
 
   def handleListProcessedDatasets(self):
-	pathl = breakPath(self.optdict.get('path'))
-	#pathl[] is always empty !
-
 	datasetPaths = []
-	apiret = self.api.listProcessedDatasets(pathl[1], pathl[2], pathl[3])
+        wholepath= self.optdict.get('path')
+	if wholepath == "*":
+		apiret = self.api.listProcessedDatasets("*")
+	else:
+		pathl = breakPath(self.optdict.get('path'))
+		#pathl[] is always empty !
+		apiret = self.api.listProcessedDatasets(pathl[1], pathl[2], pathl[3])
 
 	for anObj in apiret:
 	    #import pdb
