@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiFileLogic.java,v 1.24 2007/02/08 22:23:30 afaq Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiFileLogic.java,v 1.25 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -67,7 +67,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         //FIXME: We need to make sure that we MUST have ONLY an OPEN Block for adding a file to !
                        
 		}
-		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternLFN)  ) {
+
+                String patternlfn= getPattern(patternLFN, "pattern_lfn");
+
+		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternlfn)  ) {
 			throw new DBSException("Missing data", "1005", "Null Fields. Expected either a Processed Dataset, Analysis Dataset, Block or LFN pattern");
 		}
 
@@ -80,7 +83,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
-			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, patternLFN);
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, patternlfn);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
