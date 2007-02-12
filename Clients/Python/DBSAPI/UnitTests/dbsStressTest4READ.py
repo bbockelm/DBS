@@ -15,7 +15,7 @@ from DBSAPI.dbsRun import DbsRun
 from DBSAPI.dbsFile import DbsFile
 from DBSAPI.dbsLumiSection import DbsLumiSection
 from DBSAPI.dbsOptions import DbsOptionParser
-from DBSAPI.dbsUnitTestApi import DbsUnitTestApi
+from dbsUnitTestApi import DbsUnitTestApi
 import random
 #import pdb
 

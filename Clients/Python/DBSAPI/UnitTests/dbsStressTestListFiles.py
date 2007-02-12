@@ -22,13 +22,8 @@ try:
   api = DbsApi(opts.__dict__)
   
   try:
-   print len(api.listFiles("/DBSStressTestPrimaryDataset/DBSStressTestSIM/DBSStressTestProcessedDS", "", "")) 
-   #f = open(logfile, "w")
-   #print ""
-   #for file in api.listFiles("/DBSStressTestPrimaryDataset/DBSStressTestSIM/DBSStressTestProcessedDS/", "", ""):
-   #  print "\n  %s" % file["LogicalFileName"]
-     #f.write(file["LogicalFileName"])
-   #f.close()
+   #Must run dbsInsertFiles from UserExamples first !!!!!!!!!
+   print len(api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS001", "", "")) 
 
   except DbsDatabaseError,e:
    print e
