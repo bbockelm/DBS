@@ -25,11 +25,11 @@ calculateAverage()
 
      echo "Time for $1 parallel clients running $2" >> $timeLog
      for i in `seq 1 $1` ; do
-       { time python $2  > readLog.$i.$cycle 2>&1 ; } 2>> $timeLog  &
+       { time python $2  > $1.readLog.$i.$cycle 2>&1 ; } 2>> $timeLog  &
      done
      # Give enough time to finish (100 sec ?)
-     #sleep 1000
-     wait
+     sleep 30
+     #wait
    done
    maverage=`cat $timeLog |grep real| awk '{print $2}'|awk -Fm '{sum = sum + $1} END {print sum}'| awk '{avg = $1/30} END {print avg }'`
    saverage=`cat $timeLog |grep real| awk '{print $2}'|awk -Fm '{print $2}'|awk -Fs '{sum = sum + $1} END {print sum}'| awk '{avg = $1/30} END {print avg}'`
@@ -45,16 +45,16 @@ echo "Test Starting at $date" >> $result_file
 
 echo "10 parallel clients: each reading 1000 files from the database in one go" >> $result_file
 calculateAverage 10 dbsStressTestListFiles.py
-echo "15 parallel clients: each reading 1000 files from the database in one go" >> $result_file
-calculateAverage 15 dbsStressTestListFiles.py
-echo "20 parallel clients: each reading 1000 files from the database in one go" >> $result_file
-calculateAverage 20 dbsStressTestListFiles.py
-echo "30 parallel clients: each reading 1000 files from the database in one go" >> $result_file
-calculateAverage 30 dbsStressTestListFiles.py
-echo "40 parallel clients: each reading 1000 files from the database in one go" >> $result_file
-calculateAverage 40 dbsStressTestListFiles.py
-echo "50 parallel clients: each reading 1000 files from the database in one go" >> $result_file
-calculateAverage 50 dbsStressTestListFiles.py
+#echo "15 parallel clients: each reading 1000 files from the database in one go" >> $result_file
+#calculateAverage 15 dbsStressTestListFiles.py
+#echo "20 parallel clients: each reading 1000 files from the database in one go" >> $result_file
+#calculateAverage 20 dbsStressTestListFiles.py
+#echo "30 parallel clients: each reading 1000 files from the database in one go" >> $result_file
+#calculateAverage 30 dbsStressTestListFiles.py
+#echo "40 parallel clients: each reading 1000 files from the database in one go" >> $result_file
+#calculateAverage 40 dbsStressTestListFiles.py
+#echo "50 parallel clients: each reading 1000 files from the database in one go" >> $result_file
+#calculateAverage 50 dbsStressTestListFiles.py
 
 date=`date`
 echo "Test Finishing at $date" >> $result_file
