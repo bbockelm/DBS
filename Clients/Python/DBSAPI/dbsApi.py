@@ -717,8 +717,6 @@ class DbsApi(DbsConfig):
                                     'pattern_lfn' : patternLFN}, 'GET')
     logging.debug(data)
 
-    print data
-
     # Parse the resulting xml output.
     try:
       result = []

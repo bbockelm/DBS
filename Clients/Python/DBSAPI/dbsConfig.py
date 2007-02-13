@@ -49,8 +49,9 @@ class DbsConfig(object):
        mode = os.stat(uFileName)[stat.ST_MODE]
        if mode!=33152:
           # mode is not -rw-------
-          print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
+          #print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
           #os.chmod(uFileName,0600)
+          print ""
        login = masterHost =  masterName = masterPort = masterSocket = admin = ""
        for read in open(uFileName).readlines():
            line = string.split(read,"\n")[0]
