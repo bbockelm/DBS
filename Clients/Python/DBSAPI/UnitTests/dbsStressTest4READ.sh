@@ -1,8 +1,13 @@
 #!/bin/sh
 
+tmpdir=`date +%m%h%s`
+mkdir -p $tmpdir
+cp dbsStressTest4READ.py dbsStressTestListFiles.py $tmpdir
+cd $tmpdir
+
 tstamp=`date +%m%y%d%M%S`
 result_file=$tstamp.TEST_AVERAGE.txt
-SERVER_DESC="Server:cmssrv17,DB:MySQL-CMSSRV17,Client:http-cmssrv17"
+SERVER_DESC="Server:cmslcgco01,DB:ORACLE-MCLOCAL_7,Client:http-cmssrv17"
 
 calculateAverage()
 {
@@ -36,7 +41,7 @@ calculateAverage()
 date=`date`
 echo "Test Starting at $date" >> $result_file 
 # In one Client inserting the data that will be used for testing the read operations
-python dbsStressTest4READ.py 1000 1 dbsStressTest4Read  > dbsStressTest4Read_Insert.log 2>&1
+#python dbsStressTest4READ.py 1000 1 dbsStressTest4Read  > dbsStressTest4Read_Insert.log 2>&1
 
 echo "10 parallel clients: each reading 1000 files from the database in one go" >> $result_file
 calculateAverage 10 dbsStressTestListFiles.py
@@ -51,10 +56,10 @@ calculateAverage 40 dbsStressTestListFiles.py
 echo "50 parallel clients: each reading 1000 files from the database in one go" >> $result_file
 calculateAverage 50 dbsStressTestListFiles.py
 
-
 date=`date`
 echo "Test Finishing at $date" >> $result_file
 
 cat $result_file | mail -s "Time Profile Test Done" anzar@fnal.gov
 echo "DONE"
+cd -
 
