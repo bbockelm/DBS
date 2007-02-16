@@ -7,6 +7,7 @@
 
 # system modules
 import os, sys, string, stat, re, time
+import traceback
 #from optparse import OptionParser
 import optparse
 #from optparse import Option
@@ -17,10 +18,16 @@ from dbsApi import DbsApi
 from dbsException    import DbsException
 from dbsApiException import *
 
+
+
+#############################################################################
 ##Default URL for the Service
-URL="http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet"
+#URL="http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet"
+
+URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
+#############################################################################
 
 class DbsOptionParser(optparse.OptionParser):
   """
@@ -143,6 +150,7 @@ class Report(dict):
 class ApiDispatcher:
 
   def __init__(self, args):
+   try:
     #print args
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
@@ -172,6 +180,20 @@ class ApiDispatcher:
     else:
        print "API Call: %s not implemented" %apiCall
 
+   except DbsApiException, ex:
+      print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+      if ex.getErrorCode() not in (None, ""):
+          print "DBS Exception Error Code: ", ex.getErrorCode()
+
+   except DbsException, ex:
+      print "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+      if ex.getErrorCode() not in (None, ""):
+          print "DBS Exception Error Code: ", ex.getErrorCode()
+
+   except Exception, ex:
+        print "Unknow Exception in user code:"
+        traceback.print_exc(file=sys.stdout)
+
   def handleListPrimaryDatasets(self):
        	#if self.optdict.has_key('pattern'):
        	apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
@@ -187,7 +209,8 @@ class ApiDispatcher:
 		pathl = breakPath(self.optdict.get('path'))
 		#pathl[] is always empty !
 		apiret = self.api.listProcessedDatasets(pathl[1], pathl[2], pathl[3])
-
+        if len(apiret) < 1 :
+		print "No Datasets found"
 	for anObj in apiret:
 	    #import pdb
             #pdb.set_trace()
@@ -222,6 +245,8 @@ class ApiDispatcher:
          for anObj in apiret:
            print anObj['LogicalFileName']
 
+
+       print "Total files listed: %s" %len(apiret) 
   def handleBlockCall(self):
        path=self.optdict.get('path')
        print "Path: ", path
