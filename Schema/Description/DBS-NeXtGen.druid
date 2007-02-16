@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">605</attrib>
-		<attrib name="serial">346117</attrib>
+		<attrib name="build">616</attrib>
+		<attrib name="serial">349974</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -654,9 +654,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcessedDataset</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">616</attrib>
+						<attrib name="locY">613</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">672</attrib>
+						<attrib name="locX">671</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -680,9 +680,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">DataTier</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">754</attrib>
+						<attrib name="locY">759</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1152</attrib>
+						<attrib name="locX">1186</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -706,9 +706,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileTier</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">758</attrib>
+						<attrib name="locY">750</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1498</attrib>
+						<attrib name="locX">1456</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -719,9 +719,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileParentage</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">220</attrib>
+						<attrib name="locY">293</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1718</attrib>
+						<attrib name="locX">1754</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -784,7 +784,7 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">TriggerPathDescription</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1486</attrib>
+						<attrib name="locY">1479</attrib>
 						<attrib name="details">-</attrib>
 						<attrib name="locX">316</attrib>
 					</attribs>
@@ -797,9 +797,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">MCDescription</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1216</attrib>
+						<attrib name="locY">1215</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">48</attrib>
+						<attrib name="locX">57</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -810,9 +810,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AppExecutable</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">445</attrib>
+						<attrib name="locY">405</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">436</attrib>
+						<attrib name="locX">458</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -849,9 +849,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">OtherDescription</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1477</attrib>
+						<attrib name="locY">1463</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">61</attrib>
+						<attrib name="locX">65</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -862,9 +862,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">LumiSection</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1286</attrib>
+						<attrib name="locY">1320</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1405</attrib>
+						<attrib name="locX">1197</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -875,9 +875,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">SchemaVersion</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1521</attrib>
+						<attrib name="locY">1467</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1661</attrib>
+						<attrib name="locX">1621</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -901,9 +901,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">Runs</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">978</attrib>
+						<attrib name="locY">976</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1127</attrib>
+						<attrib name="locX">1192</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -914,9 +914,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcDSRuns</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">975</attrib>
+						<attrib name="locY">1022</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">894</attrib>
+						<attrib name="locX">934</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -927,9 +927,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcAlgo</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">318</attrib>
+						<attrib name="locY">330</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">672</attrib>
+						<attrib name="locX">670</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -940,9 +940,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileAlgo</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">39</attrib>
+						<attrib name="locY">43</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">921</attrib>
+						<attrib name="locX">925</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -953,9 +953,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AnalysisDataset</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">900</attrib>
+						<attrib name="locY">901</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">668</attrib>
+						<attrib name="locX">672</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -966,9 +966,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileBranch</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">210</attrib>
+						<attrib name="locY">294</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">2010</attrib>
+						<attrib name="locX">2009</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -979,9 +979,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">Branch</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">220</attrib>
+						<attrib name="locY">68</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">2253</attrib>
+						<attrib name="locX">2009</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -992,9 +992,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AnalysisDSDef</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1388</attrib>
+						<attrib name="locY">1277</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">667</attrib>
+						<attrib name="locX">673</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1005,9 +1005,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcDSParent</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">641</attrib>
+						<attrib name="locY">631</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">362</attrib>
+						<attrib name="locX">402</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1018,9 +1018,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AnalysisDSFileLumi</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1654</attrib>
+						<attrib name="locY">1655</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1405</attrib>
+						<attrib name="locX">1196</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1031,9 +1031,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileRunLumi</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">1012</attrib>
+						<attrib name="locY">1094</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1402</attrib>
+						<attrib name="locX">1447</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1465,9 +1465,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcDSRuns</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">480</attrib>
+						<attrib name="locY">481</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">782</attrib>
+						<attrib name="locX">786</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1491,9 +1491,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileLumi</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">1070</attrib>
+						<attrib name="locY">1075</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">788</attrib>
+						<attrib name="locX">790</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1504,9 +1504,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AnalysisDSDef</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">1185</attrib>
+						<attrib name="locY">1192</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">30</attrib>
+						<attrib name="locX">230</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1672,9 +1672,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">DataTier</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">17</attrib>
+						<attrib name="locY">18</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">70</attrib>
+						<attrib name="locX">44</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -1748,19 +1748,6 @@ use dbs_new_era_v15;
 				</erEntity>
 				<erEntity>
 					<attribs>
-						<attrib name="name">FileLumi</attrib>
-						<attrib name="colorId">220779</attrib>
-						<attrib name="locY">685</attrib>
-						<attrib name="details">-</attrib>
-						<attrib name="locX">723</attrib>
-					</attribs>
-					<modsConfig/>
-					<tables>
-						<table id="272990"/>
-					</tables>
-				</erEntity>
-				<erEntity>
-					<attribs>
 						<attrib name="name">ProcDSRuns</attrib>
 						<attrib name="colorId">220779</attrib>
 						<attrib name="locY">807</attrib>
@@ -1809,6 +1796,19 @@ use dbs_new_era_v15;
 					<modsConfig/>
 					<tables>
 						<table id="190550"/>
+					</tables>
+				</erEntity>
+				<erEntity>
+					<attribs>
+						<attrib name="name">FileRunLumi</attrib>
+						<attrib name="colorId">220779</attrib>
+						<attrib name="locY">667</attrib>
+						<attrib name="details">-</attrib>
+						<attrib name="locX">727</attrib>
+					</attribs>
+					<modsConfig/>
+					<tables>
+						<table id="272990"/>
 					</tables>
 				</erEntity>
 			</erView>
@@ -2126,9 +2126,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">LumiSection</attrib>
 						<attrib name="colorId">222529</attrib>
-						<attrib name="locY">1083</attrib>
+						<attrib name="locY">1252</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">560</attrib>
+						<attrib name="locX">326</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2217,9 +2217,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileRunLumi</attrib>
 						<attrib name="colorId">222529</attrib>
-						<attrib name="locY">882</attrib>
+						<attrib name="locY">890</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">768</attrib>
+						<attrib name="locX">760</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2266,9 +2266,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">PrimaryDataset</attrib>
 						<attrib name="colorId">225031</attrib>
-						<attrib name="locY">226</attrib>
+						<attrib name="locY">164</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">103</attrib>
+						<attrib name="locX">161</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2279,9 +2279,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcessedDataset</attrib>
 						<attrib name="colorId">225031</attrib>
-						<attrib name="locY">241</attrib>
+						<attrib name="locY">181</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">353</attrib>
+						<attrib name="locX">427</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2292,9 +2292,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">PrimaryDatasetDescription</attrib>
 						<attrib name="colorId">225031</attrib>
-						<attrib name="locY">535</attrib>
+						<attrib name="locY">526</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">70</attrib>
+						<attrib name="locX">131</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2305,9 +2305,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">TriggerPathDescription</attrib>
 						<attrib name="colorId">225031</attrib>
-						<attrib name="locY">821</attrib>
+						<attrib name="locY">824</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">255</attrib>
+						<attrib name="locX">322</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2318,9 +2318,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">MCDescription</attrib>
 						<attrib name="colorId">225031</attrib>
-						<attrib name="locY">532</attrib>
+						<attrib name="locY">526</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">364</attrib>
+						<attrib name="locX">499</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2331,9 +2331,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">OtherDescription</attrib>
 						<attrib name="colorId">225031</attrib>
-						<attrib name="locY">820</attrib>
+						<attrib name="locY">825</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">51</attrib>
+						<attrib name="locX">0</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2424,7 +2424,7 @@ use dbs_new_era_v15;
 						<attrib name="colorId">175671</attrib>
 						<attrib name="locY">0</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1226</attrib>
+						<attrib name="locX">1181</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2448,9 +2448,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">Block</attrib>
 						<attrib name="colorId">175671</attrib>
-						<attrib name="locY">31</attrib>
+						<attrib name="locY">38</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">803</attrib>
+						<attrib name="locX">806</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2461,9 +2461,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcDSTier</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">344</attrib>
+						<attrib name="locY">441</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">136</attrib>
+						<attrib name="locX">161</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2474,9 +2474,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">DataTier</attrib>
 						<attrib name="colorId">219752</attrib>
-						<attrib name="locY">38</attrib>
+						<attrib name="locY">150</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">135</attrib>
+						<attrib name="locX">160</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2487,9 +2487,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">PrimaryDataset</attrib>
 						<attrib name="colorId">220779</attrib>
-						<attrib name="locY">696</attrib>
+						<attrib name="locY">916</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">490</attrib>
+						<attrib name="locX">390</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2500,9 +2500,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AlgoritmConfig</attrib>
 						<attrib name="colorId">220779</attrib>
-						<attrib name="locY">24</attrib>
+						<attrib name="locY">11</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">378</attrib>
+						<attrib name="locX">543</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2513,9 +2513,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">Runs</attrib>
 						<attrib name="colorId">227546</attrib>
-						<attrib name="locY">680</attrib>
+						<attrib name="locY">681</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">1125</attrib>
+						<attrib name="locX">1081</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2539,9 +2539,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcAlgo</attrib>
 						<attrib name="colorId">227546</attrib>
-						<attrib name="locY">280</attrib>
+						<attrib name="locY">311</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">591</attrib>
+						<attrib name="locX">543</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2552,9 +2552,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcDSParent</attrib>
 						<attrib name="colorId">227546</attrib>
-						<attrib name="locY">566</attrib>
+						<attrib name="locY">662</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">262</attrib>
+						<attrib name="locX">359</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2676,9 +2676,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">LumiSection</attrib>
 						<attrib name="colorId">213282</attrib>
-						<attrib name="locY">733</attrib>
+						<attrib name="locY">732</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">32</attrib>
+						<attrib name="locX">36</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2689,9 +2689,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">ProcessedDataset</attrib>
 						<attrib name="colorId">213282</attrib>
-						<attrib name="locY">65</attrib>
+						<attrib name="locY">69</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">298</attrib>
+						<attrib name="locX">296</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2702,9 +2702,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">AnalysisDataset</attrib>
 						<attrib name="colorId">213282</attrib>
-						<attrib name="locY">31</attrib>
+						<attrib name="locY">35</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">543</attrib>
+						<attrib name="locX">540</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2741,9 +2741,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">Runs</attrib>
 						<attrib name="colorId">213282</attrib>
-						<attrib name="locY">365</attrib>
+						<attrib name="locY">332</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">26</attrib>
+						<attrib name="locX">30</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -2754,9 +2754,9 @@ use dbs_new_era_v15;
 					<attribs>
 						<attrib name="name">FileRunLumi</attrib>
 						<attrib name="colorId">213282</attrib>
-						<attrib name="locY">759</attrib>
+						<attrib name="locY">756</attrib>
 						<attrib name="details">-</attrib>
-						<attrib name="locX">301</attrib>
+						<attrib name="locX">299</attrib>
 					</attribs>
 					<modsConfig/>
 					<tables>
@@ -4874,7 +4874,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -4922,7 +4922,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -4970,7 +4970,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6143,7 +6143,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6167,7 +6167,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">5</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 						<docs>
@@ -6767,7 +6767,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -6791,7 +6791,7 @@ use dbs_new_era_v15;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">6</attrib>
+							<attrib name="type">285090</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
