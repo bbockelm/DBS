@@ -1,19 +1,19 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 601
+REM === Build : 614
 REM ======================================================================
 
 CREATE TABLE Person
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(100),
     DistinguishedName     varchar(500)                                                      unique not null,
     ContactInfo           varchar(250),
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -21,13 +21,13 @@ REM ======================================================================
 
 CREATE TABLE Role
   (
-    ID                    int,
+    ID                    integer,
     RoleName              varchar(100)                                                      unique not null,
     RoleDescription       varchar(500)                                                      not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -35,13 +35,13 @@ REM ======================================================================
 
 CREATE TABLE AssignedRole
   (
-    ID                    int,
-    PersonID              int                                                   not null,
-    RoleID                int                                                   not null,
+    ID                    integer,
+    PersonID              integer                                                   not null,
+    RoleID                integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -49,13 +49,13 @@ REM ======================================================================
 
 CREATE TABLE PhysicsGroup
   (
-    ID                    int,
+    ID                    integer,
     PhysicsGroupName      varchar(500)                                                      unique not null,
-    PhysicsGroupConvener  int,
+    PhysicsGroupConvener  integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -63,12 +63,12 @@ REM ======================================================================
 
 CREATE TABLE SchemaVersion
   (
-    ID                    int,
+    ID                    integer,
     SchemaVersion         varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -76,17 +76,17 @@ REM ======================================================================
 
 CREATE TABLE Runs
   (
-    ID                    int,
-    RunNumber             int                                                               unique not null,
-    NumberOfEvents        int                                                   not null,
-    NumberOfLumiSections  int                                                               not null,
-    TotalLuminosity       int                                                   not null,
-    StoreNumber           int                                                               not null,
+    ID                    integer,
+    RunNumber             integer                                                   unique not null,
+    NumberOfEvents        integer                                                   not null,
+    NumberOfLumiSections  integer                                                   not null,
+    TotalLuminosity       integer                                                   not null,
+    StoreNumber           integer                                                   not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -95,12 +95,12 @@ REM ======================================================================
 
 CREATE TABLE DataTier
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(100)                                                      unique not null,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     primary key(ID)
   );
 
@@ -108,16 +108,16 @@ REM ======================================================================
 
 CREATE TABLE LumiSection
   (
-    ID                    int,
-    LumiSectionNumber     int                                                   not null,
-    RunNumber             int                                                   not null,
-    StartEventNumber      int                                                               not null,
-    EndEventNumber        int                                                               not null,
+    ID                    integer,
+    LumiSectionNumber     integer                                                   not null,
+    RunNumber             integer                                                   not null,
+    StartEventNumber      integer                                                   not null,
+    EndEventNumber        integer                                                   not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
@@ -127,11 +127,11 @@ REM ======================================================================
 
 CREATE TABLE StorageElement
   (
-    ID                    int,
+    ID                    integer,
     SEName                varchar(500)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -140,12 +140,12 @@ REM ======================================================================
 
 CREATE TABLE Branch
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(500)                                                      unique not null,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     primary key(ID)
   );
 
@@ -153,12 +153,12 @@ REM ======================================================================
 
 CREATE TABLE Description
   (
-    ID                    int,
+    ID                    integer,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -166,15 +166,15 @@ REM ======================================================================
 
 CREATE TABLE TimeLog
   (
-    ID                    int,
+    ID                    integer,
     Action                varchar(100)                                                      not null,
     Cause                 varchar(100)                                                      not null,
     Effect                varchar(100)                                                      not null,
     Description           varchar(500)                                                      not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -182,12 +182,12 @@ REM ======================================================================
 
 CREATE TABLE PrimaryDSType
   (
-    ID                    int,
+    ID                    integer,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -195,12 +195,12 @@ REM ======================================================================
 
 CREATE TABLE ProcDSStatus
   (
-    ID                    int,
+    ID                    integer,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -208,11 +208,11 @@ REM ======================================================================
 
 CREATE TABLE AppFamily
   (
-    ID                    int,
+    ID                    integer,
     FamilyName            varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -221,11 +221,11 @@ REM ======================================================================
 
 CREATE TABLE AppVersion
   (
-    ID                    int,
+    ID                    integer,
     Version               varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -234,11 +234,11 @@ REM ======================================================================
 
 CREATE TABLE AppExecutable
   (
-    ID                    int,
+    ID                    integer,
     ExecutableName        varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -247,7 +247,7 @@ REM ======================================================================
 
 CREATE TABLE QueryableParameterSet
   (
-    ID                    int,
+    ID                    integer,
     Hash                  varchar(700)                                                      unique not null,
     Name                  varchar(1000),
     Version               varchar(100),
@@ -255,9 +255,9 @@ CREATE TABLE QueryableParameterSet
     Annotation            varchar(1000),
     Content               CLOB,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -265,12 +265,12 @@ REM ======================================================================
 
 CREATE TABLE ParameterBinding
   (
-    ID                    int,
-    Self                  int                                                   not null,
-    Contains              int                                                   not null,
-    CreatedBy             int,
+    ID                    integer,
+    Self                  integer                                                   not null,
+    Contains              integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -279,11 +279,11 @@ REM ======================================================================
 
 CREATE TABLE TriggerPathDescription
   (
-    ID                      int,
+    ID                      integer,
     TriggerPathDescription  varchar(100)                                                      unique not null,
-    CreatedBy               int,
+    CreatedBy               integer,
     CreationDate            TIMESTAMP DEFAULT 0,
-    LastModifiedBy          int,
+    LastModifiedBy          integer,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -292,13 +292,13 @@ REM ======================================================================
 
 CREATE TABLE MCDescription
   (
-    ID                    int,
+    ID                    integer,
     MCChannelDescription  varchar(100)                                                      not null,
     MCProduction          varchar(100),
     MCDecayChain          varchar(100),
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(MCChannelDescription,MCProduction,MCDecayChain)
@@ -308,11 +308,11 @@ REM ======================================================================
 
 CREATE TABLE OtherDescription
   (
-    ID                    int,
+    ID                    integer,
     Description           varchar(100)                                                      unique not null,
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -321,12 +321,12 @@ REM ======================================================================
 
 CREATE TABLE FileStatus
   (
-    ID                    int,
+    ID                    integer,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -334,12 +334,12 @@ REM ======================================================================
 
 CREATE TABLE FileType
   (
-    ID                    int,
+    ID                    integer,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -347,12 +347,12 @@ REM ======================================================================
 
 CREATE TABLE AnalysisDSType
   (
-    ID                    int,
+    ID                    integer,
     Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -360,12 +360,12 @@ REM ======================================================================
 
 CREATE TABLE AnalysisDSStatus
   (
-    ID                    int,
+    ID                    integer,
     Status                varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -373,7 +373,7 @@ REM ======================================================================
 
 CREATE TABLE AnalysisDSDef
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(700)                                                      unique not null,
     LumiSections          CLOB,
     LumiSectionRanges     CLOB,
@@ -387,9 +387,9 @@ CREATE TABLE AnalysisDSDef
     UserCut               CLOB,
     Description           CLOB,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -397,15 +397,15 @@ REM ======================================================================
 
 CREATE TABLE AlgorithmConfig
   (
-    ID                    int,
-    ExecutableName        int                                                   not null,
-    ApplicationVersion    int                                                   not null,
-    ApplicationFamily     int                                                   not null,
-    ParameterSetID        int                                                   not null,
-    CreatedBy             int,
+    ID                    integer,
+    ExecutableName        integer                                                   not null,
+    ApplicationVersion    integer                                                   not null,
+    ApplicationFamily     integer                                                   not null,
+    ParameterSetID        integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID)
   );
@@ -414,13 +414,13 @@ REM ======================================================================
 
 CREATE TABLE PrimaryDatasetDescription
   (
-    ID                      int,
-    TriggerDescriptionID    int,
-    MCChannelDescriptionID  int,
-    OtherDescriptionID      int,
-    CreatedBy               int,
+    ID                      integer,
+    TriggerDescriptionID    integer,
+    MCChannelDescriptionID  integer,
+    OtherDescriptionID      integer,
+    CreatedBy               integer,
     CreationDate            TIMESTAMP DEFAULT 0,
-    LastModifiedBy          int,
+    LastModifiedBy          integer,
     LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(TriggerDescriptionID,MCChannelDescriptionID,OtherDescriptionID)
@@ -430,17 +430,17 @@ REM ======================================================================
 
 CREATE TABLE PrimaryDataset
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(100)                                                      unique not null,
     Annotation            varchar(1000)                                                     not null,
-    Description           int,
+    Description           integer,
     StartDate             varchar(100),
     EndDate               varchar(100),
-    Type                  int                                                   not null,
-    CreatedBy             int,
+    Type                  integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID)
   );
 
@@ -448,14 +448,14 @@ REM ======================================================================
 
 CREATE TABLE ProcessedDataset
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(500)                                                      not null,
-    PrimaryDataset        int                                                   not null,
-    PhysicsGroup          int                                                   not null,
-    Status                int                                                   not null,
-    CreatedBy             int,
+    PrimaryDataset        integer                                                   not null,
+    PhysicsGroup          integer                                                   not null,
+    Status                integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(Name,PrimaryDataset)
@@ -465,18 +465,18 @@ REM ======================================================================
 
 CREATE TABLE AnalysisDataset
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(500)                                                      unique not null,
     Annotation            varchar(1000)                                                     not null,
-    ProcessedDS           int                                                   not null,
-    Definition            int                                                   not null,
-    Type                  int                                                   not null,
-    Status                int                                                   not null,
-    Parent                int,
-    PhysicsGroup          int                                                   not null,
-    CreatedBy             int,
+    ProcessedDS           integer                                                   not null,
+    Definition            integer                                                   not null,
+    Type                  integer                                                   not null,
+    Status                integer                                                   not null,
+    Parent                integer,
+    PhysicsGroup          integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -485,16 +485,16 @@ REM ======================================================================
 
 CREATE TABLE Block
   (
-    ID                    int,
+    ID                    integer,
     Name                  varchar(500)                                                      unique not null,
-    Dataset               int                                                   not null,
-    BlockSize             int                                                   not null,
-    NumberOfFiles         int                                                   not null,
-    NumberOfEvents        int                                                   not null,
-    OpenForWriting        int                                                               not null,
-    CreatedBy             int,
+    Dataset               integer                                                   not null,
+    BlockSize             integer                                                   not null,
+    NumberOfFiles         integer                                                   not null,
+    NumberOfEvents        integer                                                   not null,
+    OpenForWriting        integer                                                               not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -503,20 +503,20 @@ REM ======================================================================
 
 CREATE TABLE Files
   (
-    ID                    int,
+    ID                    integer,
     LogicalFileName       varchar(500)                                                      unique not null,
-    Dataset               int                                                   not null,
-    Block                 int                                                   not null,
+    Dataset               integer                                                   not null,
+    Block                 integer                                                   not null,
     Checksum              varchar(100)                                                      not null,
-    NumberOfEvents        int                                                               not null,
-    FileSize              int                                                               not null,
-    FileStatus            int                                                   not null,
-    FileType              int                                                   not null,
-    ValidationStatus      int,
+    NumberOfEvents        integer                                                   not null,
+    FileSize              integer                                                   not null,
+    FileStatus            integer                                                   not null,
+    FileType              integer                                                   not null,
+    ValidationStatus      integer,
     QueryableMetadata     varchar(1000),
-    CreatedBy             int,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
   );
@@ -525,13 +525,13 @@ REM ======================================================================
 
 CREATE TABLE SEBlock
   (
-    ID                    int,
-    SEID                  int                                                   not null,
-    BlockID               int                                                   not null,
+    ID                    integer,
+    SEID                  integer                                                   not null,
+    BlockID               integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(SEID,BlockID)
   );
@@ -540,13 +540,13 @@ REM ======================================================================
 
 CREATE TABLE FileTier
   (
-    ID                    int,
-    Fileid                int                                                   not null,
-    DataTier              int                                                   not null,
+    ID                    integer,
+    Fileid                integer                                                   not null,
+    DataTier              integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Fileid,DataTier)
   );
@@ -555,12 +555,12 @@ REM ======================================================================
 
 CREATE TABLE FileParentage
   (
-    ID                    int,
-    ThisFile              int                                                   not null,
-    ItsParent             int                                                   not null,
-    CreatedBy             int,
+    ID                    integer,
+    ThisFile              integer                                                   not null,
+    ItsParent             integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(ThisFile,ItsParent)
@@ -570,14 +570,14 @@ REM ======================================================================
 
 CREATE TABLE FileRunLumi
   (
-    ID                    int,
-    Fileid                int                                                   not null,
-    Lumi                  int,
-    Run                   int                                                   not null,
+    ID                    integer,
+    Fileid                integer                                                   not null,
+    Lumi                  integer,
+    Run                   integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Fileid,Lumi,Run)
   );
@@ -586,13 +586,13 @@ REM ======================================================================
 
 CREATE TABLE FileAlgo
   (
-    ID                    int,
-    Fileid                int                                                   not null,
-    Algorithm             int                                                   not null,
+    ID                    integer,
+    Fileid                integer                                                   not null,
+    Algorithm             integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Fileid,Algorithm)
   );
@@ -601,13 +601,13 @@ REM ======================================================================
 
 CREATE TABLE FileBranch
   (
-    ID                    int,
-    Fileid                int                                                   not null,
-    Branch                int                                                   not null,
+    ID                    integer,
+    Fileid                integer                                                   not null,
+    Branch                integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Fileid,Branch)
   );
@@ -616,13 +616,13 @@ REM ======================================================================
 
 CREATE TABLE ProcDSRuns
   (
-    ID                    int,
-    Dataset               int                                                   not null,
-    Run                   int                                                   not null,
+    ID                    integer,
+    Dataset               integer                                                   not null,
+    Run                   integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Dataset,Run)
   );
@@ -631,13 +631,13 @@ REM ======================================================================
 
 CREATE TABLE ProcDSTier
   (
-    ID                    int,
-    Dataset               int                                                   not null,
-    DataTier              int                                                   not null,
+    ID                    integer,
+    Dataset               integer                                                   not null,
+    DataTier              integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Dataset,DataTier)
   );
@@ -646,12 +646,12 @@ REM ======================================================================
 
 CREATE TABLE ProcDSParent
   (
-    ID                    int,
-    ThisDataset           int                                                   not null,
-    ItsParent             int                                                   not null,
-    CreatedBy             int,
+    ID                    integer,
+    ThisDataset           integer                                                   not null,
+    ItsParent             integer                                                   not null,
+    CreatedBy             integer,
     CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID),
     unique(ThisDataset,ItsParent)
@@ -661,13 +661,13 @@ REM ======================================================================
 
 CREATE TABLE ProcAlgo
   (
-    ID                    int,
-    Dataset               int                                                   not null,
-    Algorithm             int                                                   not null,
+    ID                    integer,
+    Dataset               integer                                                   not null,
+    Algorithm             integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(Dataset,Algorithm)
   );
@@ -676,14 +676,14 @@ REM ======================================================================
 
 CREATE TABLE AnalysisDSFileLumi
   (
-    ID                    int,
-    AnalysisDataset       int                                                   not null,
-    Lumi                  int                                                   not null,
-    Fileid                int                                                   not null,
+    ID                    integer,
+    AnalysisDataset       integer                                                   not null,
+    Lumi                  integer                                                   not null,
+    Fileid                integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             int,
+    CreatedBy             integer,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        int,
+    LastModifiedBy        integer,
     primary key(ID),
     unique(AnalysisDataset,Lumi,Fileid)
   );
@@ -1000,7 +1000,7 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_Block_FK foreign key(Block) references Block(ID)
+    Files_Block_FK foreign key(Block) references Block(ID) on delete CASCADE
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_FileStatus_FK foreign key(FileStatus) references FileStatus(ID)
@@ -1139,7 +1139,7 @@ ALTER TABLE ProcDSParent ADD CONSTRAINT
 /
 
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID) on delete CASCADE

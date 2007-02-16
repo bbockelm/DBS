@@ -38,12 +38,17 @@ if [ -f $ddl_file ]; then
    mv ${ddl_file}  ${ddl_file}.SAVED.${date}
    echo "Saved current schema file to ${ddl_file}.SAVED.${date}"
 fi
+
+#int to integer
+cat DBS-NeXtGen-Oracle.sql| sed -e "s%int%integer%g" > DBS-NeXtGen-Oracle.sql.integer
+mv DBS-NeXtGen-Oracle.sql.integer DBS-NeXtGen-Oracle.sql
 #
 # TEXT to CLOB
 cat DBS-NeXtGen-Oracle.sql|sed -e "s%TEXT%CLOB%g" > DBS-NeXtGen-Oracle.sql.clob
 mv DBS-NeXtGen-Oracle.sql.clob DBS-NeXtGen-Oracle.sql
+#
 # BIGINT to int
-cat DBS-NeXtGen-Oracle.sql | sed -e "s%BIGINT UNSIGNED%int%g" > DBS-NeXtGen-Oracle.sql.nobig
+cat DBS-NeXtGen-Oracle.sql | sed -e "s%BIGINT UNSIGNED%integer%g" > DBS-NeXtGen-Oracle.sql.nobig
 mv DBS-NeXtGen-Oracle.sql.nobig DBS-NeXtGen-Oracle.sql
 #
 #

@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 601
+-- === Build : 614
 -- ======================================================================
 
-drop database if exists dbs_new_era_v15;
-create database dbs_new_era_v15;
-use dbs_new_era_v15;
+drop database if exists dbs_new_era_v16;
+create database dbs_new_era_v16;
+use dbs_new_era_v16;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -124,11 +124,11 @@ CREATE TABLE ProcessedDataset
 CREATE TABLE Runs
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    RunNumber             int                                                               unique not null,
+    RunNumber             BIGINT UNSIGNED                                                   unique not null,
     NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    NumberOfLumiSections  int                                                               not null,
+    NumberOfLumiSections  BIGINT UNSIGNED                                                   not null,
     TotalLuminosity       BIGINT UNSIGNED                                                   not null,
-    StoreNumber           int                                                               not null,
+    StoreNumber           BIGINT UNSIGNED                                                   not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             BIGINT UNSIGNED,
@@ -188,8 +188,8 @@ CREATE TABLE Files
     Dataset               BIGINT UNSIGNED                                                   not null,
     Block                 BIGINT UNSIGNED                                                   not null,
     Checksum              varchar(100)                                                      not null,
-    NumberOfEvents        int                                                               not null,
-    FileSize              int                                                               not null,
+    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
+    FileSize              BIGINT UNSIGNED                                                   not null,
     FileStatus            BIGINT UNSIGNED                                                   not null,
     FileType              BIGINT UNSIGNED                                                   not null,
     ValidationStatus      BIGINT UNSIGNED,
@@ -223,8 +223,8 @@ CREATE TABLE LumiSection
     ID                    BIGINT UNSIGNED not null auto_increment,
     LumiSectionNumber     BIGINT UNSIGNED                                                   not null,
     RunNumber             BIGINT UNSIGNED                                                   not null,
-    StartEventNumber      int                                                               not null,
-    EndEventNumber        int                                                               not null,
+    StartEventNumber      BIGINT UNSIGNED                                                   not null,
+    EndEventNumber        BIGINT UNSIGNED                                                   not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
     CreatedBy             BIGINT UNSIGNED,
@@ -859,7 +859,7 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 ;
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_Block_FK foreign key(Block) references Block(ID)
+    Files_Block_FK foreign key(Block) references Block(ID) on delete CASCADE
 ;
 ALTER TABLE Files ADD CONSTRAINT 
     Files_FileStatus_FK foreign key(FileStatus) references FileStatus(ID)
@@ -1168,7 +1168,7 @@ ALTER TABLE ProcDSParent ADD CONSTRAINT
 ;
 
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID)
+    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 ;
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID) on delete CASCADE
