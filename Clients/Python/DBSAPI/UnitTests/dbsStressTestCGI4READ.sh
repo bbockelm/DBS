@@ -59,7 +59,7 @@ calculateAverage 50 dbsCgiRead.py
 date=`date`
 echo "Test Finishing at $date" >> $result_file
 
-cat $result_file | mail -s "Time Profile Test Done" anzar@fnal.gov
+cat $result_file | mail -s "Time Profile Test Done" anzar@fnal.gov 
 echo "DONE"
 cd -
 

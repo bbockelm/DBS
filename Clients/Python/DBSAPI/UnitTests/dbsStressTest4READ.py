@@ -133,7 +133,8 @@ for i in range(maxDS):
 	apiObj.run(lumi2, excep = False)
 
 	#Insert File
-	for j in range(maxFiles):
+        for i in range(3):
+	  for j in range(maxFiles):
 		apiObj = DbsUnitTestApi(api.insertFiles, f)
                 lfn1 = mytime+str(j)
 		file1= DbsFile (
@@ -149,8 +150,8 @@ for i in range(maxDS):
 			)
 	
 		fileList.append(file1)
-        print "\n\n\nNUMBER of FILES with which insertFile API is called: %s" %str(len(fileList))               
-	apiObj.run(proc1 ,fileList, block1,  excep = False)
+          print "\n\n\nNUMBER of FILES with which insertFile API is called: %s" %str(len(fileList))               
+	  apiObj.run(proc1 ,fileList, block1,  excep = False)
 
 f.close()
 
