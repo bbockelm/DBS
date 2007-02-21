@@ -2693,7 +2693,8 @@ lfc_home                = /grid/cms
 """
 
 templateAppConfigs="""
-For given application <b>$appPath</b> we found the following application configs:
+#set rel=$appPath.split("/")[1]
+Release: <b>$rel</b>
 <p />
 
 <table class="dbs_table">
@@ -2706,6 +2707,8 @@ For given application <b>$appPath</b> we found the following application configs
 <th>Created By</th>
 <th>Modifictaion Date</th>
 <th>Modified By</th>
+<th>Releases</th>
+<th></th>
 </tr>
 #for config in $configList
 #set id=$config[0]
@@ -2726,6 +2729,14 @@ For given application <b>$appPath</b> we found the following application configs
 <td>$cBy</td>
 <td>$mDate</td>
 <td>$mBy</td>
+<td>
+<select id="config_$name">
+#for r in $releases
+<option>$r</option>
+#end for
+</select>
+</td>
+<td><input type="button" value="Compare" id="button_$name" onclick="javascript:CompareAppConfigs('$host','$dbsInst','$rel','$name')" /></td>
 </tr>
 #end for
 </table>
