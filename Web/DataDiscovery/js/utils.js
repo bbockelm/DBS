@@ -1062,3 +1062,12 @@ function SelectAll(tag) {
        sel[i].checked="checked";
    }
 }
+function CompareAppConfigs(host,dbsInst,rel,fName) {
+   // get file name
+   var sel=document.getElementById("config_"+fName);
+   for(i=0;i<sel.length;i++) {
+       if(sel[i].selected) {    
+          return popUp(host+'/compareAppConfigs?dbsInst='+dbsInst+'&appConfig='+fName+'&iRel='+rel+'&oRel='+sel[i].value,1000);
+       }
+   }
+}
