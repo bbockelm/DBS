@@ -548,7 +548,7 @@ class DDHelper(DBSLogger):
 
   ### END OF WRAPPER ###
 
-  def getDataDescription(self,primaryDataset="",processedDataset=""):
+  def getDataDescription(self,processedDataset=""):
       if self.iface=="cgi":
          return {}
       else:
@@ -1037,6 +1037,33 @@ class DDHelper(DBSLogger):
       content=""
       for item in res:
           content=item[0]
+      con.close()
+      return content
+
+  def getConfigContentByName(self,dbsInst,name,rel=""):
+      self.setDBSDLS(dbsInst)
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tapv = self.alias('AppVersion','tapv')
+          talc = self.alias('AlgorithmConfig','talc')
+          tqps = self.alias('QueryableParameterSet','tqps')
+          sel  = sqlalchemy.select([self.col(tqps,'Content')],
+                   from_obj=[
+                     tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                            ],distinct=True
+                                 )
+          if rel and rel!="*":
+             sel.append_whereclause(self.col(tapv,'Version')==rel)
+          result = self.getSQLAlchemyResult(con,sel)
+          for item in result:
+              content=item[0]
+      except:
+          printExcept()
+          raise "Fail in getConfigContentByName"
+      print "time getConfigContentByName:",(time.time()-t1)
       con.close()
       return content
 
