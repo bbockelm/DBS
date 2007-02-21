@@ -8,38 +8,7 @@
 
 # system modules
 import os, sys, string, stat, re, types
-from exceptions import Exception
-
-class DDException(Exception):
-
-  def __init__(self, **kwargs):
-    """
-    Data Discovery exception can be initialized in following ways:
-      DDException(args=exceptionString)
-      DDException(exception=exceptionObject)      
-    """ 
-    args = kwargs.get("args", "")
-    ex = kwargs.get("exception", None)
-    if ex != None:
-      if isinstance(ex, Exception):
-         exArgs = "%s" % (ex)
-         if args == "":
-           args = exArgs
-         else:
-           args = "%s (%s)" % (args, exArgs)
-    Exception.__init__(self, args)
-
-  def getArgs(self):
-    """ Return exception arguments. """
-    return self.args
-
-  def getErrorMessage(self):
-    """ Return exception error. """
-    return "%s" % (self.args)
-
-  def getClassName(self):
-    """ Return class name. """
-    return "%s" % (self.__class__.__name__)
+from DDExceptions import *
 
 class DBSDDConfig:
   def __init__(self,iConfig={}):

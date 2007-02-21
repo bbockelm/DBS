@@ -49,6 +49,7 @@ function ResetAllResults() {
   ClearTag('results_kw');
   ClearTag('results_dbs');
   ClearTag('results_site');
+  ClearTag('results_finder');
   ClearTag('runs');
   ClearTag('parents');
   ClearTag('appConfigs');
@@ -165,7 +166,7 @@ function showLoadingMessage(idTag,iMsg) {
   }
   var res=document.getElementById(tag);
   if(res) {
-     res.className="show_table";
+//     res.className="show_table";
      res.innerHTML='<table><tr><td><img src="images/loading.gif" /></td><td>'+msg+'</td></tr></table>';
   }
 }
@@ -304,6 +305,7 @@ function showResultsMenu() {
 function showMenu(menu) {
    ClearTag('progressBar');
    ClearTag('navBar');
+   HideTag('results_finder');
    hideWaitingMessage();
    hideResultsMenu();
 
@@ -317,7 +319,8 @@ function showMenu(menu) {
    menuArr[6]='Help';
    menuArr[7]='Rss';
    menuArr[8]='Lucene';
-   menuArr[9]='Hide';
+   menuArr[9]='DBSTables';
+   menuArr[10]='Hide';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
        if (c) {
@@ -512,6 +515,14 @@ function resetNavSelection() {
       }
   }
 }
+function resetPhysGroups() {
+  var id=document.getElementById('kw_group');
+  for(i=0;i<id.length;i++) {
+     if(id[i].value=='Select') {
+        id[i].selected="selected";
+     }
+  }
+}
 function CheckSel(sel) {
   var opt=null;
   if(!sel) {return opt;}
@@ -687,10 +698,10 @@ function ClearCells(idx,total) {
  * JumpToResult accept idx which runs from 1-max on a web page
  * but it should send idx-1 to getData since all response are from 0-max-1
  */
-function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
+function JumpToResult(idx,total,dbs,site,group,app,prim,tier,proc) {
    UpdateResultIndex(idx,total);
    // invoke next chunk of data
-   advanceResults((idx-1),total,dbs,site,app,prim,tier,proc);
+   advanceResults((idx-1),total,dbs,site,group,app,prim,tier,proc);
    var found=0;
    for(i=0;i<total;i++) {
       var id=document.getElementById('cell_'+i);
@@ -718,17 +729,17 @@ function JumpToResult(idx,total,dbs,site,app,prim,tier,proc) {
       ShowWheel("__results");
       ShowWheel("__results_dbs");
       ShowWheel("__runs");
-      ajaxNextGetData(dbs,site,app,prim,tier,proc,idx-1);
+      ajaxNextGetData(dbs,site,group,app,prim,tier,proc,idx-1);
    }
 }
-function advanceResults(idx,total,dbs,site,app,prim,tier,proc) {
+function advanceResults(idx,total,dbs,site,group,app,prim,tier,proc) {
    if (idx+1!=total) {
        var id=document.getElementById('results_response_'+(idx+1));
        if (!id) {
            ShowWheel("__results");
            ShowWheel("__results_dbs");
            ShowWheel("__runs");
-           ajaxNextGetData(dbs,site,app,prim,tier,proc,idx+1);;
+           ajaxNextGetData(dbs,site,group,app,prim,tier,proc,idx+1);;
        }
    }
 }
@@ -741,8 +752,8 @@ function nPages(tot,max) {
 function GetCurrentIndexPosition(total) {
    return GLOBAL_CELL.split('cell_')[1];
 }
-function BuildBar(from,to,total,GLOBAL_STEP,dbs,site,app,prim,tier,proc) {
-   args=',\''+dbs+'\',\''+site+'\',\''+app+'\',\''+prim+'\',\''+tier+'\',\''+proc+'\'';
+function BuildBar(from,to,total,GLOBAL_STEP,dbs,site,group,app,prim,tier,proc) {
+   args=',\''+dbs+'\',\''+site+'\',\''+group+'\',\''+app+'\',\''+prim+'\',\''+tier+'\',\''+proc+'\'';
    var t='<table class="cell"><tr><td>Result pages:</td>';
    var td='<td class="fixed" id="cell_start" onMouseOver="CoverOver(\'cell_start\')" onMouseOut="CoverOut(\'cell_start\')"><a href="javascript:JumpToResult('+1+','+total+args+');BuildBar(1,'+GLOBAL_STEP+','+total+','+GLOBAL_STEP+args+')">start</a></td>';
    t=t+td;
@@ -1037,4 +1048,17 @@ function ChangeField(tag) {
          return;
       }
   }
+}
+function ChangeWhere(selTag,tag) {
+   if($(selTag).value=='None') {
+        $(tag).className='hide';
+   } else {
+        $(tag).className='show_inline';
+   }
+}
+function SelectAll(tag) {
+   var sel=document.getElementsByName(tag);
+   for(i=0;i<sel.length;i++) {
+       sel[i].checked="checked";
+   }
 }

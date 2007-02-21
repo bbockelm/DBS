@@ -258,18 +258,6 @@ def getExcept():
     msg+="\n\n"
     return msg
 
-def printExcept(msg=""):
-    """
-       print exception type, value and traceback on stderr
-       @type  msg: string
-       @param msg: message
-       @rtype : none
-       @return: none
-    """
-    if msg:
-       print msg
-    sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
-
 def constructExpression(s,listName):
     """
        For given string 's' and list name construct the expression statement.
@@ -312,32 +300,6 @@ def validator(s):
            if char==")": open-=1
     return (not open)
 
-#class DbsPatternError(DDException):
-#  """
-#     DBS pattern error handler class
-#  """
-#  def __init__ (self, **kwargs):
-#      """
-#         @type  kwargs: dict
-#         @param kwargs: input dict 
-#         @rtype : 
-#         @return: 
-#      """
-#      DDException.__init__(self, **kwargs)
-
-#class DbsDatabaseError(DDException):
-#  """
-#      DBS error handler class
-#  """
-#  def __init__ (self, **kwargs):
-#      """
-#         @type  kwargs: dict
-#         @param kwargs: input dict
-#         @rtype : none
-#         @return: none
-#      """
-#      printExcept()
-#      DDException.__init__(self, **kwargs)
 
 def demanglePattern(pattern):
     """

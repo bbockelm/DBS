@@ -18,26 +18,16 @@ from   DDConfig   import *
 from   DBSInst    import * # defines DBS instances and schema
 from   DBSUtil    import * # general utils
 
-_ddConfig = DBSDDConfig()
-if _ddConfig.iface()=='cgi':
-   import DBSAPIOLD.dbsCgiApi as dbsCgiApi
-   import DBSAPIOLD.dbsException as dbsException
-   from   DBSAPIOLD.dbsApi import DbsApi, DbsApiException, InvalidDataTier, DbsDatabaseError
-else:
-   import DBSAPI.dbsWebApi as dbsWebApi
-   import DBSAPI.dbsException as dbsException
-   from   DBSAPI.dbsApi import DbsApi, DbsApiException, InvalidDataTier, DbsDatabaseError
-
 # import DLS modules
 import dlsClient
 import dlsApi
 
 
-class DBSHelper(DBSLogger): 
+class DDHelper(DBSLogger): 
   """
-      DBSHelper class
+      DDHelper class
   """
-  def __init__(self,dbsInst=DBSGLOBAL,iface="cgi",verbose=0,html=0):
+  def __init__(self,dbsInst=DBSGLOBAL,iface="sqlalchemy",verbose=0,html=0):
       """
          Constructor which takes two arguments DBS instance and verbosity level.
          It initialize internal logger with own name and pass verbosity level to it.
@@ -48,7 +38,7 @@ class DBSHelper(DBSLogger):
          @rtype : none
          @return: none
       """
-      DBSLogger.__init__(self,"DBSHelper",verbose)
+      DBSLogger.__init__(self,"DDHelper",verbose)
       self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
@@ -80,6 +70,8 @@ class DBSHelper(DBSLogger):
       self.quiet       = 0
 
 
+  def col(self,table,col):
+      return self.dbsDBs.col(self.dbsInstance,table,col)
   def setQuiet(self):
       self.quiet=1
 
@@ -87,7 +79,8 @@ class DBSHelper(DBSLogger):
       ddConfig  = DBSDDConfig()
       url = ddConfig.url()
       self.setDBSDLS(dbsInst)
-      aList = self.listApplications()
+      #aList = self.listApplications()
+      aList = self.getApplications()
       for app in aList:
           app_link="""%s/getData?dbsInst=%s&amp;site=All&amp;app=%s&amp;primD=*&amp;tier=All&amp;proc=*&amp;ajax=0"""%(url,dbsInst,app)
           appPath=string.replace(app,"/","___")
@@ -107,16 +100,12 @@ class DBSHelper(DBSLogger):
 <webMaster>vk@mail.lns.cornell.edu</webMaster>
 """%(app,'app description',app_link,gmt,gmt)
           pList = self.listDatasetsFromApp(app)
-          for p in pList:
+          for datasetName in pList:
               page+="<item>"
-              datasetName = p['datasetPathName']
               empty,prim,tier,proc = string.split(datasetName,"/")
               if not os.path.isdir('rss/%s/%s/%s'%(dbsInst,appPath,prim)):
                  os.makedirs(os.path.join(os.getcwd(),'rss/%s/%s/%s'%(dbsInst,appPath,prim)))
-              fList = self.api.listFiles(datasetName)
-              evt=0
-              for item in fList:
-                  evt+=item['NumberOfEvents']
+              evt=self.numberOfEvents(datasetName)
               link="""%s/getData?dbsInst=%s&amp;site=All&amp;app=*&amp;primD=*&amp;tier=All&amp;proc=%s&amp;ajax=0"""%(url,dbsInst,datasetName)
               page+="""
 <title>%s</title>
@@ -147,7 +136,6 @@ class DBSHelper(DBSLogger):
             print "List of available dbs instances:\n"
             printListElements(self.dbsdls.keys())
             msg="No dbs instance '%s' found"%dbsInst
-            raise msg
             raise msg
          else:
             name=string.split(dbsInst,"/")[0]
@@ -290,7 +278,8 @@ class DBSHelper(DBSLogger):
          else: 
             # new api can be initialized with DbsConfig, but we will use default one
             url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
-            self.api = dbsWebApi.DbsWebApi({'url':url})
+#            self.api = dbsWebApi.DbsWebApi({'url':url})
+            self.api=""
             con = self.connectToDB()
             con.close()
          self.dbsApi[dbsInst]=self.api
@@ -337,64 +326,105 @@ class DBSHelper(DBSLogger):
 
   ### WRAPPER ###
   def listApplicationConfigs(self,appPath):
-      """
-         Wrapper around dbsApi
-      """
-      res = []
-      if self.iface=="cgi":
-         for item in self.api.listApplicationConfigs(appPath):
-             content = item['parameterSet']['content']
-             res.append(('content',content))
-             hash    = item['parameterSet']['hash']
-             res.append(('hash',hash))
-         return res
-      else:
-         empty,ver,family,exe=string.split(appPath,"/")
-         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
-#         res = self.api.listAlgorithms(patternVer='TestVersion01_20070210_12h28m18s',patternFam='AppFamily01',patternExe='TestExe01')
-         cList=[]
-         for item in res:
-             content = item['ParameterSetID']['Content']
-             cList.append(content)
-#         print "\n\n### listApplicationConfigs",res,"\n\n",cList,ver,family,exe
-         return cList 
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tape = self.alias('AppExecutable','tape')
+          tapv = self.alias('AppVersion','tapv')
+          tapf = self.alias('AppFamily','tapf')
+          talc = self.alias('AlgorithmConfig','talc')
+          tqps = self.alias('QueryableParameterSet','tqps')
+          sel  = sqlalchemy.select([self.col(tqps,'ID'),self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tqps,'CreatedBy'),self.col(tqps,'LastModificationDate'),self.col(tqps,'LastModifiedBy')],
+                   from_obj=[
+                     tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
+                     .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                            ],distinct=True,
+                   order_by=[self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tqps,'CreatedBy'),self.col(tqps,'LastModificationDate'),self.col(tqps,'LastModifiedBy')]
+                                 )
+          if appPath and appPath!="*":
+             empty,ver,fam,exe=string.split(appPath,"/")
+             if ver and ver!="*":
+                sel.append_whereclause(self.col(tapv,'Version')==ver)
+             if fam and fam!="*":
+                sel.append_whereclause(self.col(tapf,'FamilyName')==fam)
+             if exe and exe!="*":
+                sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
+          result = self.getSQLAlchemyResult(con,sel)
+          for item in result:
+              id,name,ver,type,ann,cDate,cBy,mDate,mBy=item
+              if id and name:
+                  oList.append((id,name,ver,type,ann,cDate,cBy,mDate,mBy))
+      except:
+          printExcept()
+          raise "Fail in listApplicationsConfigs"
+      print "time listApplicationsConfigs:",(time.time()-t1)
+      con.close()
+      return oList
 
-  def listProcessedDatasets(self,datasetPath="*"):
-      """
-         Wrapper around dbsApi
-      """
-      res = ""
-      if self.iface=="cgi":
-         res = self.api.listProcessedDatasets(datasetPath)
-      else:
-         if datasetPath=="*":
-            prim=tier=proc="*"
-         else:
-            empty,prim,tier,proc=string.split(datasetPath,"/")
-         res = self.api.listProcessedDatasets(patternPrim=prim,patternDT=tier,patternProc=proc)
-#         oList = []
-#         for item in res:
-#             proc = item['Name']
-#             prim = item['PrimaryDataset']['Name']
-#             tiers= item['TierList']
-#             for tier in tiers:
-#                 oList.append("/%s/%s/%s"%(prim,tier,proc))
-#         res = oList
-      return res
+  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*"):
+      if group=='Any': group="*"
+      if app  =='Any': app  ="*"
+      if prim =='Any': prim ="*"
+      if tier =='Any': tier ="*"
+      if proc =='Any': proc ="*"
+      # TODO: add group to join when table is available
+      if proc and proc!="*":
+         if type(proc) is types.ListType:
+            return proc
+         return [proc]
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tape = self.alias('AppExecutable','tape')
+          tapv = self.alias('AppVersion','tapv')
+          tapf = self.alias('AppFamily','tapf')
+          talc = self.alias('AlgorithmConfig','talc')
+          tpal = self.alias('ProcAlgo','tpal')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
+                 from_obj=[
+                     tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     ],distinct=True,
+                 order_by=[self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')] )
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if tier and tier!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
+          if app and app!="*":
+             empty,ver,fam,exe=string.split(app,"/")
+             if ver and ver!="*":
+                sel.append_whereclause(self.col(tapv,'Version')==ver)
+             if fam and fam!="*":
+                sel.append_whereclause(self.col(tapf,'FamilyName')==fam)
+             if exe and exe!="*":
+                sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listProcessedDataset_al"
+      for item in result:
+          prim = item[0]
+          tier = item[1]
+          proc = item[2]
+          oList.append("/%s/%s/%s"%(prim,tier,proc))
+      con.close()
+      return oList
 
   def listDatasetsFromApp(self,appPath="*"):
-      """
-         Wrapper around dbsApi
-      """
-      if self.iface=="cgi":
-         return self.api.listDatasetsFromApp(appPath)
-      else:
-         if appPath=="*":
-            ver=family=exe="*"
-         else:
-            empty,ver,family,exe=string.split(appPath,"/")
-#            print "\n\n#####listDatasetsFromApp",appPath,ver,family,exe,self.dbsInstance
-         return self.api.listProcessedDatasets(patternVer=ver,patternFam=family,patternExe=exe)
+      return self.listProcessedDatasets(app=appPath)
 
   def listApplications(self,appPath="*"):
       """
@@ -416,6 +446,59 @@ class DBSHelper(DBSLogger):
 #         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
          return res
 
+  def listBlocks_al(self,kwargs):
+      # {'blockName': (nEvt,blockStatus,nFiles,blockSize)}
+      # second output:
+      # [{'Name':,'BlockSize':,'NumberOfFiles':,'NumberOfEvents':,'OpenForWriting':,'CreationDate','CreationDate':,'LastModificationDate':,'LastModifiedBy'}]
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tblk = self.alias('Block','tblk')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          sel  = sqlalchemy.select([self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tblk,'CreatedBy'),self.col(tblk,'CreationDate'),self.col(tblk,'LastModifiedBy'),self.col(tblk,'LastModificationDate')],
+                   from_obj=[
+                          tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                          .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                            ],distinct=True,
+                   order_by=[self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tblk,'CreatedBy'),self.col(tblk,'CreationDate'),self.col(tblk,'LastModifiedBy'),self.col(tblk,'LastModificationDate')]
+                                 )
+          if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
+             empty,prim,tier,proc=string.split(kwargs['datasetPath'],"/")
+             if proc and proc!="*":
+                sel.append_whereclause(self.col(tprd,'Name')==proc)
+             if prim and prim!="*":
+                sel.append_whereclause(self.col(tpm,'Name')==prim)
+             if prim and prim!="*":
+                sel.append_whereclause(self.col(tdt,'Name')==tier)
+          if kwargs.has_key('blockName') and kwargs['blockName']:
+             sel.append_whereclause(tblk.c.Name==kwargs['blockName'])
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listBlocks_al"
+      aDict={}
+      aList=[]
+      for item in result:
+          blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate=item
+          if not blockName: continue
+          if kwargs.has_key('fullOutput'):
+             aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate}
+             aList.append(aDict)
+          else:
+             aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize]
+      print "time listBlocks_al:",(time.time()-t1)
+      con.close()
+      if kwargs.has_key('fullOutput'):
+         return aList
+      return aDict
+
   def listBlocks(self,datasetPath="*",app="*",events="yes"):
       """
          Wrapper around dbsApi
@@ -423,7 +506,46 @@ class DBSHelper(DBSLogger):
       if self.iface=="cgi":
          return self.api.listBlocks(datasetPath,app,events)
       else:
-         return self.api.listBlocks(datasetPath)
+         kwargs={'datasetPath':datasetPath}
+         res = self.listBlocks_al(kwargs)
+         return res
+
+  def numberOfEvents(self,datasetPath):
+      prim=tier=proc=""
+      if datasetPath and datasetPath!="*":
+         empty,prim,tier,proc=string.split(datasetPath,"/")
+      con = self.connectToDB()
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          tf   = self.alias('Files','tf')
+#          sel  = sqlalchemy.select([sqlalchemy.func.count(self.col(tf,'NumberOfEvents'))],
+          sel  = sqlalchemy.select([self.col(tf,'NumberOfEvents')],
+                 from_obj=[
+                     tprd.outerjoin(tf,onclause=self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                         .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                         .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     ] )
+          if proc and proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in numberOfEvents"
+      evts=0
+      for item in result:
+          if not item[0]: continue
+          evts+= item[0]
+      con.close()
+      return evts
+
   ### END OF WRAPPER ###
 
   def getDataDescription(self,primaryDataset="",processedDataset=""):
@@ -434,72 +556,135 @@ class DBSHelper(DBSLogger):
             empty,prim,tier,proc=string.split(processedDataset,"/")
             return self.api.getDatasetDetails(patternPrim=prim,patternDT=tier,patternProc=proc)
 
-  def getDatasetsFromApplications(self,datasetPath="*"):
-      """
-         DBS data discovery wrapper around dbsCgiApi.getDatasetsFromApp.
-         It makes a dictionary of all applications.
-         @type  datasetPath: string 
-         @param datasetPath: dataset path 
-         @rtype : dictionary
-         @return: dict[appPath]=[/primD/tier/proc,]
-      """
+  def getDatasetsFromApplications(self):
       t1=time.time()
       aDict = {}
-      iList = self.listApplications(datasetPath)
-      for item in iList:
-          if self.iface=="cgi":
-             family = item.get('family')
-             ver    = item.get('version')
-             exe    = item.get('executable')
-             path=formDatasetPath(ver,family,exe)
-          else:
-#             family = item.get('ApplicationFamily')
-#             ver    = item.get('ApplicationVersion')
-#             exe    = item.get('ExecutableName')
-             path=item
-          pList = self.listDatasetsFromApp(path)
-#          print "\n\n#### getDatasetsFromApplications",item,pList
-          for p in pList:
-#              empty,primD,tier,proc = string.split( p['datasetPathName'], "/" )
-#              addToDict(aDict,path,(primD,tier,proc))
-              procDatasetName = p['datasetPathName']
-              addToDict(aDict,path,procDatasetName)
-      print "time:",(time.time()-t1)
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tape = self.alias('AppExecutable','tape')
+          tapv = self.alias('AppVersion','tapv')
+          tapf = self.alias('AppFamily','tapf')
+          talc = self.alias('AlgorithmConfig','talc')
+          tpal = self.alias('ProcAlgo','tpal')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          sel  = sqlalchemy.select([self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
+                   from_obj=[
+                      tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                      .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                            ],distinct=True,
+                   order_by=[self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')]
+                                 )
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listProcessedDataset_al"
+      for item in result:
+          ver  = item[0]
+          fam  = item[1]
+          exe  = item[2]
+          prim = item[3]
+          tier = item[4]
+          proc = item[5]
+          if ver and fam and exe and prim and tier and proc:
+             addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,tier,proc))
+      print "time getDatasetsFromApplications:",(time.time()-t1)
+      con.close()
       return aDict
 
-  def getApplications(self,datasetPath="*"):
-      """
-         DBS data discovery wrapper around dbsCgiApi.listApplications
-         @type  datasetPath: string 
-         @param datasetPath: dataset path 
-         @rtype : list 
-         @return: a list of application in the following form, [(family,version,exe)]
-      """
-      aList = []
-      dList = self.listApplications(datasetPath)
-      for item in dList:
-          if self.iface=="cgi":
-             family = item.get('family')
-             ver    = item.get('version')
-             exe    = item.get('executable')
-             path=formDatasetPath(ver,family,exe)
-          else:
-#             family = item.get('ApplicationFamily')
-#             ver    = item.get('ApplicationVersion')
-#             exe    = item.get('ExecutableName')
-             path=item
+  def getApplications(self):
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tape = self.alias('AppExecutable','tape')
+          tapv = self.alias('AppVersion','tapv')
+          tapf = self.alias('AppFamily','tapf')
+          talc = self.alias('AlgorithmConfig','talc')
+          sel  = sqlalchemy.select([self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName')],
+                   from_obj=[
+                     talc.outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                            ],distinct=True,
+                       order_by=[self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName')]
+                                 )
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getApplications"
+      oList   = []
+      for entry in result:
+          path="/%s/%s/%s"%(entry[0],entry[1],entry[2])
           if self.html:
              navBar   ="MakeNavBarApp('%s','%s')"%(self.dbsInstance,path)
-             dataInfo ="ajaxGetData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
-             blockInfo="ajaxGetDbsData('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
-             runInfo  ="ajaxGetRuns('%s','all','%s','*','*','*')"%(self.dbsInstance,path)
+             dataInfo ="ajaxGetData('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
+             blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
+             runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
              path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,path)
-          aList.append(path)
-      aList.sort()
-      aList.reverse()
-      return aList
+          oList.append(path)
+      print "time getApplications",(time.time()-t1)
+      con.close()
+      return oList
+
+  def getPhysicsGroups(self):
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          content = self.getTableContent(con,'PhysicsGroup',iList=['PhysicsGroupName'],fromRow=1,limit=0)
+      except:
+          printExcept()
+          raise "Fail in getPhysicsGroups"
+      oList   = []
+      for item in content:
+          oList.append(item[0])
+      print "time getPhysicsGroups",(time.time()-t1)
+      con.close()
+      return oList
+
+  def getDataTypes(self):
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          content = self.getTableContent(con,'DataTier',iList=['Name'],fromRow=1,limit=0)
+      except:
+          printExcept()
+          raise "Fail in getDataTypes"
+      oList   = []
+      for item in content:
+          oList.append(item[0])
+      print "time getDataTypes",(time.time()-t1)
+      con.close()
+      return oList
 
   def getSoftwareReleases(self):
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          content = self.getTableContent(con,'AppVersion',iList=['Version'],fromRow=1,limit=0)
+      except:
+          printExcept()
+          raise "Fail in getSoftwareReleases"
+      oList   = []
+      for item in content:
+          oList.append(item[0])
+      print "time getSoftwareReleases",(time.time()-t1)
+      con.close()
+      return oList
+
+  def getSoftwareReleases_old(self):
       """
          DBS data discovery wrapper around listApplications
          @type  datasetPath: string 
@@ -527,8 +712,7 @@ class DBSHelper(DBSLogger):
       """
       oList = []
       dList = self.listDatasetsFromApp(appPath)
-      for entry in dList:
-          dataset = entry.get('datasetPathName')
+      for dataset in dList:
           empty,prim,tier,app = string.split(dataset,"/")
           if _prim!="*" and prim!=_prim: continue
           if _tier!="*" and tier!=_tier: continue
@@ -538,63 +722,64 @@ class DBSHelper(DBSLogger):
       return oList
       
   def getPrimaryDatasets(self,datasetPath="*",html=0):
-      """
-         DBS data discovery wrapper around dbsCgiApi.listPrimaryDatasets
-         @type  datasetPath: string 
-         @param datasetPath: dataset path 
-         @rtype : list 
-         @return: a list of primary datasets in the following form, [datasetName]
-      """
-      oList = []
-      dList = self.api.listPrimaryDatasets(datasetPath)
-      dList.sort()
-      dList.reverse()
-      if self.verbose:
-         print "For given",datasetPath
-         print printListElements(dList,"Found a list of primary datasets")
-      for entry in dList:
-          if self.iface=="cgi":
-             name = entry.get('datasetName')
-          else:
-             name = entry.get('Name')
+      t1=time.time()
+      con = self.connectToDB()
+      content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=1,limit=0)
+      oList   = []
+      for entry in content:
+          name=entry[0]
           if html:
-#          if self.html:
              navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
-             dataInfo ="ajaxGetData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
-             blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
-             runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*')"%(self.dbsInstance,name)
+             dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+             blockInfo="ajaxGetDbsData('%s','all','*,'*','%s','*','*')"%(self.dbsInstance,name)
+             runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
+      print "time getPrimaryDatasets",(time.time()-t1)
+      con.close()
       return oList
       
   def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
-      """
-         DBS data discovery wrapper around dbsCgiApi.listDatasetFromApp/listProcessedDatsets
-         First try listDatasetsFromApp, if fail try listProcessedDatasets
-         @type  datasetPath: string 
-         @param datasetPath: dataset path 
-         @rtype : list 
-         @return: a list of processed datasets in the following form, [datasetName]
-      """
-      oList = []
-      if app:
-         dList = self.listDatasetsFromApp(datasetPath)
-      else:
-         dList = self.listProcessedDatasets(datasetPath)
-      dList.sort()
-      dList.reverse()
-      for entry in dList:
-          if self.iface=="cgi":
-             name = entry.get('datasetPathName') # name=/prim/tier/proc
-          else:
-             name = entry.get('datasetPathName') # name=/prim/tier/proc
+      t1=time.time()
+      prim=tier=proc=""
+      if datasetPath and datasetPath!="*":
+         empty,prim,tier,proc=string.split(datasetPath,"/")
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
+                 from_obj=[
+                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     ],distinct=True,
+                 order_by=[self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')] )
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if tier and tier!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
+          if proc and proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listProcessedDataset_al"
+      for item in result:
+          if not item[0] or not item[1] or not item[2]: continue
+          name="/%s/%s/%s"%(item[0],item[1],item[2])
           if html:
              navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
-             dataInfo ="ajaxGetData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
-             blockInfo="ajaxGetDbsData('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
-             runInfo  ="ajaxGetRuns('%s','all','*','*','*','%s')"%(self.dbsInstance,name)
+             dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
+      print "time getProcessedDatasets",(time.time()-t1)
+      con.close()
       return oList
   
   def getDatasetContent(self,dataset):
@@ -703,19 +888,17 @@ class DBSHelper(DBSLogger):
          pass
       return res
 
-  def getTableContent(self,tableName,iList=['*'],fromRow=1,limit=0):
+  def getTableContent(self,con,tableName,iList=['*'],fromRow=1,limit=0):
       try:
-          con = self.connectToDB()
           if limit:
              sel = sqlalchemy.select(iList, from_obj=[tableName], limit=limit, offset=fromRow)
           else:
              sel = sqlalchemy.select(iList, from_obj=[tableName])
           result = self.getSQLAlchemyResult(con,sel)
           if  self.verbose:
-              print "getTableContent",tableName,iList
+              print "\n\n#### getTableContent",tableName,iList
               for item in result:
                   print item
-          con.close()
       except:
           printExcept()
           raise "Fail to get table='%s' content"%tableName
@@ -841,7 +1024,65 @@ class DBSHelper(DBSLogger):
   def formQuery(self):
       return
 
+  def getConfigContent(self,dbsInst,id):
+      self.setDBSDLS(dbsInst)
+      con = self.connectToDB()
+      try:
+          tqps = self.alias('QueryableParameterSet','tqps')
+          sel  = sqlalchemy.select([self.col(tqps,'Content')],self.col(tqps,'ID')==id)
+          res  = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getConfigContent"
+      content=""
+      for item in res:
+          content=item[0]
+      con.close()
+      return content
+
   def getLFNs(self,dbsInst,blockName,dataset):
+      prim=tier=proc=""
+      if dataset and dataset!="*":
+         empty,prim,tier,proc=string.split(dataset,"/")
+      con = self.connectToDB()
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          tb   = self.alias('Block','tb')
+          tf   = self.alias('Files','tf')
+          sel  = sqlalchemy.select([self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tf,'FileStatus'),self.col(tf,'FileType'),self.col(tf,'NumberOfEvents')],
+                 from_obj=[
+                     tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                         .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                         .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                         .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                     ],distinct=True,
+                 order_by=[self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tf,'FileStatus'),self.col(tf,'FileType'),self.col(tf,'NumberOfEvents')]
+                                  )
+          sel.append_whereclause(self.col(tf,'Block')==self.col(tb,'ID'))
+          if proc and proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
+          if blockName and blockName!="*":
+             sel.append_whereclause(self.col(tb,'Name')==blockName)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getLFNs"
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      con.close()
+      return oList
+
+  def getLFNs_old(self,dbsInst,blockName,dataset):
       self.setDBSDLS(dbsInst)
       res = self.api.getLFNs(blockName,dataset)
       return res
@@ -1052,24 +1293,109 @@ class DBSHelper(DBSLogger):
 #          print app.get('executable'),app.get('version'),app.get('family')
 
   def getRuns(self,dataset):
-      if self.iface=='cgi':
-         return []
-      else:
-         return self.api.listRuns(dataset)
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          tpdr = self.alias('ProcDSRuns','tpdr')
+          trun = self.alias('Runs','trun')
+
+          sel  = sqlalchemy.select([self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(trun,'CreatedBy'),self.col(trun,'CreationDate'),self.col(trun,'LastModifiedBy'),self.col(trun,'LastModificationDate')],
+                       from_obj=[
+                          tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+                          .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
+                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                          .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                                ],distinct=True,
+                       order_by=[self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(trun,'CreatedBy'),self.col(trun,'CreationDate'),self.col(trun,'LastModifiedBy'),self.col(trun,'LastModificationDate')]
+                                 )
+          if dataset:
+             empty,prim,tier,proc=string.split(dataset,"/")
+             print prim,tier,proc
+             if proc and proc!="*":
+                sel.append_whereclause(self.col(tprd,'Name')==proc)
+             if prim and prim!="*":
+                sel.append_whereclause(self.col(tpm,'Name')==prim)
+             if tier and tier!="*":
+                sel.append_whereclause(self.col(tdt,'Name')==tier)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getRuns"
+      oList=[]
+      for item in result:
+          run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate=item
+          if not run: continue
+          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate}
+          oList.append(aDict)
+      print "time in getRuns:",(time.time()-t1)
+      con.close()
+      return oList
 
   def getDbsData(self,dataset):
-      if self.iface=='cgi':
-         return []
-      else:
-         return self.api.listBlocksFull(dataset=dataset)
+      kwargs={'datasetPath':dataset,'fullOutput':1}
+      return self.listBlocks_al(kwargs)
 
   def getDbsBlockData(self,blockName):
-      if self.iface=='cgi':
-         return []
-#         d=[{'OpenForWriting': '1', 'CreationDate': '1167939056000', 'Name': blockName, 'NumberOfEvents': 0, 'BlockSize': 0, 'NumberOfFiles': 0, 'FileList': [], 'LastModifiedBy': 'ANZARDN', 'CreatedBy': 'ANZARDN', 'StorageElementList': [], 'LastModificationDate': '2007-01-04 14:30:56.0'}]
-#         return [d]
-      else:
-         return self.api.listBlocksFull(block_name=blockName)
+      kwargs={'blockName':blockName,'fullOutput':1}
+      return self.listBlocks_al(kwargs)
+
+  def getUserData(self,group,tier,rel,prim,site):
+      # TODO: I need to add physics group table when it's available
+      # if site is provided add DLS calls to filter results based on site search.
+
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+#          tphg = self.alias('PhysicsGroup','tphg')
+          talc = self.alias('AlgorithmConfig','talc') 
+          tpal = self.alias('ProcAlgo','tpal')
+          tver = self.alias('AppVersion','tver')
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+
+          sel  = sqlalchemy.select([self.col(tprd,'Name')],
+                   from_obj=[
+                      tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                      .outerjoin(tver,onclause=self.col(talc,'ApplicationVersion')==self.col(tver,'ID'))
+                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                      .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                            ],distinct=True,
+                   order_by=[self.col(tprd,'Name')]
+                             )
+#          if group and group!="*":
+#             sel.append_whereclause(self.col(tphg,'Name')==rel)
+          if rel and rel!="*":
+             sel.append_whereclause(self.col(tver,'Version')==rel)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
+          print str(sel)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getUserData"
+      oList=[]
+      for item in result:
+          pset = item[0]
+          if not pset: continue
+          oList.append("/%s/%s/%s"%(prim,tier,pset))
+      print "time in getUserData:",(time.time()-t1)
+      con.close()
+      return oList
 
   def getData(self,dataset,app,site="All"):
       """
@@ -1211,8 +1537,8 @@ if __name__ == "__main__":
 
     iface="cgi"
     if opts.iface!="cgi":
-       iface = "JavaServer"
-    helper = DBSHelper(dbsInst,iface,verbose)
+       iface = "sqlalchemy"
+    helper = DDHelper(dbsInst,iface,verbose)
 
 
     #TMP
@@ -1220,8 +1546,7 @@ if __name__ == "__main__":
 
 
 #    res = helper.api.listProcessedDatasets(patternVer='TestVersion01_20070210_12h28m18s',patternFam='AppFamily01',patternExe='TestExe01')
-    print "TEST"
-    res = helper.getDatasetsFromApp("/TestVersion01_20070210_12h28m18s/AppFamily01/TestExe01","TestPrimary_001_20070210_12h28m18s","*")
+#    res = helper.getDatasetsFromApp("/TestVersion01_20070210_12h28m18s/AppFamily01/TestExe01","TestPrimary_001_20070210_12h28m18s","*")
 #    res = helper.listApplicationConfigs('/AppFamily01/TestExe01/TestVersion01_20070210_12h28m18s')
 #    tDict={'PrimaryDataset':['Name'],'ProcessedDataset':['Name'],'AlgorithmConfig':['ApplicationVersion','ApplicationFamily','ApplicationExecutable']}
 #    l = helper.formSQLQuery(tDict)

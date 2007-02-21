@@ -8,7 +8,8 @@ body  {
   margin-bottom: 1.2em;
   font-size: 13px;
   font-weight: normal;
-  font-family: helvetica, arial, verdana, sans-serif;
+/*  font-family: helvetica, arial, verdana, sans-serif;*/
+  font-family: "Trebuchet MS", verdana, helvetica, arial, sans-serif;
   background: #ffffff;
   color: #000000;
   text-decoration: none;
@@ -200,6 +201,33 @@ em.smallbold  {
 /*
  * Table settings
  */
+table.dbs_table {
+  font-size: 12px;
+  font-weight: normal;
+  font-family: verdana, sans-serif;
+  text-decoration: none;
+  border-width: 1px 1px 1px 1px;
+  border-spacing: 3px;
+  /* border-style: top right bottom left */
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  border-collapse: collapse;
+  background-color: rgb(255, 250, 250);
+}
+table.dbs_table th {
+  border-width: 1px 1px 1px 1px;
+  padding: 2px 2px 2px 2px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  background-color: #F0F0F0;
+}
+table.dbs_table td {
+  border-width: 1px 1px 1px 1px;
+  padding: 2px 2px 2px 2px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  background-color: #FFFADC;
+}
 table.intro {
   border-width: 1px 1px 1px 1px;
   border-spacing: 4px;
@@ -329,25 +357,20 @@ table.table_box td {
 }
 table.table_box_white {
   height: 330px;
-/*  border-width: 1px 1px 1px 1px;*/
-/*  border-width: 1px 0px 1px 0px;*/
   border-width: 0px 0px 0px 0px;
   border-spacing: 1px;
   /* border-style: top right bottom left */
-/*  border-style: solid solid solid solid;*/
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
   border-collapse: separate;
-  background-color: rgb(255, 255, 255);
-/*  font-size: 12px;*/
-/*  font-family: verdana, sans-serif;*/
+/*  background-color: rgb(255, 255, 255);*/
 }
 table.table_box_white th {
   border-width: 1px 1px 1px 1px;
   padding: 1px 1px 1px 1px;
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
-  background-color: rgb(255, 255, 255);
+/*  background-color: rgb(255, 255, 255);*/
 }
 table.table_box_white td {
 /*  font-size: 12px;*/
@@ -357,7 +380,7 @@ table.table_box_white td {
   padding: 1px 1px 1px 1px;
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
-  background-color: rgb(255, 255, 255);
+/*  background-color: rgb(255, 255, 255);*/
 }
 table.table_box_white td.box_darkblue {
 /*  height: 5%;*/
@@ -900,11 +923,12 @@ table.sortable span.sortarrow {
 
   color: #000000;
   background-color: #FFFFCC;
-/*  background-color: #FFCC99;*/
   border-style: solid;
   border-width: 1px 1px 1px 1px;
   border-style: solid solid solid solid;
   border-color: gray gray gray gray; 
+
+  z-index: 3; /* to make visible a new window above all others CSS, for more details see http://www.devx.com/projectcool/Article/19918/1954?pf=true */
 
   filter:alpha(opacity=90);   /* Internet Explorer       */
   -moz-opacity:0.9;           /* Mozilla 1.6 and below   */
@@ -928,6 +952,8 @@ table.sortable span.sortarrow {
   border-collapse: separate;
   background-color: rgb(248, 248, 248);
   color: #000000;
+
+  z-index: 3;
 
   filter:alpha(opacity=80);   /* Internet Explorer       */
   -moz-opacity:0.8;           /* Mozilla 1.6 and below   */
@@ -1031,4 +1057,21 @@ table.menu a {
     border-style: inset inset inset inset;
     border-color: #F0F0F0 #F0F0F0 #F0F0F0 #F0F0F0;
    -moz-border-radius: 6px 6px 6px 6px;
+}
+table.selMenu  {
+    font-size: 13px;
+    font-family: helvetica, arial, verdana, sans-serif;
+    text-decoration: none;
+/*    color: #000000;*/
+/*    background-color: #E0E0E0;*/
+/*    padding: 1px 1px 1px 1px;*/
+    width: 100%;
+    background-color: #FFFFFF;
+    border-width: 2px 2px 2px 2px;
+    border-style: solid solid solid solid;
+    border-color: #F0F0F0 #F0F0F0 #F0F0F0 #F0F0F0;
+   -moz-border-radius: 6px 6px 6px 6px;
+}
+table.selMenu th {
+    font-weight: bold;
 }

@@ -16,6 +16,8 @@ import string, os, sys, stat, shutil
 import DBSHelper, DBSInst, DBSUtil
 from   DBSOptions import *
 from   DDConfig   import *
+from   DDExceptions import *
+import DDHelper
 
 #
 # main
@@ -27,7 +29,10 @@ if __name__ == "__main__":
     iface       = ddConfig.iface()
     if opts.iface:
        iface=opts.iface
-    helper      = DBSHelper.DBSHelper(iface=iface)
+    if iface=='sqlalchemy':
+       helper   = DDHelper.DDHelper(iface=iface)
+    else:
+       helper   = DBSHelper.DBSHelper(iface=iface)
     if opts.quiet:
        helper.setQuiet()
     if opts.dbsInst:
@@ -44,5 +49,5 @@ if __name__ == "__main__":
                shutil.rmtree(os.path.join(os.getcwd(),'rss/%s'%dbsInst))
             helper.rssMaker(dbsInst)
         except:
-            DBSUtil.printExcept()
+            printExcept()
             raise "Fail to generate rss for dbs instance",dbsInst

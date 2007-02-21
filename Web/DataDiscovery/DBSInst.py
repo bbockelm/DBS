@@ -23,6 +23,7 @@ except:
 # DBS modules
 from   DBSUtil import *
 from   DBSAuth import *
+from   DDExceptions import *
 
 ################################################################################################
 DEFAULT_URL = "http://cmsdoc.cern.ch/cms/test/aprom/DBS/CGIServer/prodquery"
@@ -138,6 +139,7 @@ class DBSDB(DBSLogger):
       else:
          self.verbose=False
       self.dbTables = {}
+      self.dbType = {}
 #      self.connect()
       
   def connect(self,dbsInst):
@@ -150,6 +152,7 @@ class DBSDB(DBSLogger):
              print "DBSDB:conntect",dbType,dbName,host
 
           # Initialize SQLAlchemy engines
+          eName=""
           if eType=='sqlite':
              self.writeLog("Use SQLite instance '%s'"%dbsInst)
              eName = "%s:///%s"%(eType,dbName)
@@ -163,66 +166,28 @@ class DBSDB(DBSLogger):
              eName = "%s://%s:%s@%s/%s"%(eType,dbUser,dbPass,host,dbName)
              tQuery= "show tables"
           else:
-             printExcept("Unsupported DB engine backend")
+             printExcept("Unsupported DB engine backend for '%s'"%dbsInst)
+          self.dbType[dbsInst]=eType
 
+#          print "eName,dbsInst",eName,dbsInst
           self.engine[dbsInst] = sqlalchemy.create_engine(eName, 
                                                           strategy='threadlocal',
                                                           threaded=True,
                                                           echo=self.verbose)
           self.tQuery[dbsInst] = tQuery
 
-      dbsMeta = sqlalchemy.DynamicMetaData()
+      dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=False)
       dbsMeta.connect(self.engine[dbsInst])
-
-#      if self.iface=='cgi':
-#         tList = [
-#               't_processing','t_processing_name','t_app_config','t_app_family','t_application',
-#               't_parameter_set','t_primary_dataset','t_block','t_block_status',
-#               't_evcoll_file','t_evcoll_parentage',
-#               't_file','t_file_status','t_file_type','t_event_collection',
-#               't_evcoll_status','t_parentage_type','t_processed_dataset','t_data_tier'
-#                 ]
-#      else:
-#         tList = [
-#               'AlgorithmConfig','AnalysisDSStatus','AnalysisDSType','AnalysisDataset',
-#               'AppExecutable','AppFamily','AppVersion',
-#               'AssignedRole','Block','DataTier','Description',
-#               'FileAlgo','FileLumi','FileParentage','FileStatus','FileTier','FileType',
-#               'Files','LumiSection','MCDescription','OtherDescription','ParameterBinding',
-#               'Person','PhysicsGroup','PrimaryDSType','PrimaryDataset','PrimaryDatasetDescription',
-#               'ProcAlgo','ProcDSRuns','ProcDSStatus','ProcDSTier','ProcessedDataset',
-#               'QueryableParameterSet','Role','Runs','SEBlock','SchemaVersion',
-#               'StorageElement','TimeLog','TriggerPathDescription'
-#                 ]
-#         print self.tQuery[dbsInst]
-#         con = self.engine[dbsInst].connect()
-#         res = con.execute(self.tQuery[dbsInst])
-#         tList = []
-#         for t in res:
-#             tList.append(t[0])
-#         print tList
 
       con = self.engine[dbsInst].connect()
       if  not self.dbTables.has_key(dbsInst):
           tables={}
           tList = con.execute(self.tQuery[dbsInst])
           for t in tList: 
-              tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True)
+              tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True, case_sensitive=False)
           self.dbTables[dbsInst]=tables
-#      for t in tList: 
-#          continue
-      # autoload tables from DB, may be slow over network link
-#      if  not self.dbTables.has_key(dbsInst):
-#          tables = {}
-#          print tList
-#          for t in tList:
-#              print "test",t
-#              _table = t[0]
-#              tables[t]=sqlalchemy.Table(_table, dbsMeta, autoload=True)
-#          self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
-#      return self.engine[dbsInst].connect()
       return con
 
   def getTable(self,dbsInst,tableName,tableAlias=""):
@@ -236,6 +201,8 @@ class DBSDB(DBSLogger):
          @return: SQLAlchemy table object
       """
       tables = self.dbTables[dbsInst]
+      if self.dbType[dbsInst]=='oracle':
+         tableName=string.upper(tableName)
       if tableAlias:
          # return alias to the table
          return tables[tableName].alias(tableAlias)
@@ -255,15 +222,24 @@ class DBSDB(DBSLogger):
 
   def getForeignKeys(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
+      if self.dbType[dbsInst]=='oracle':
+         table=string.upper(table)
       if tDict.has_key(table):
          return tDict[table].foreign_keys
       raise "No table '%s' found",table
 
   def getColumns(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
+      if self.dbType[dbsInst]=='oracle':
+         table=string.upper(table)
       if tDict.has_key(table):
          return tDict[table]._columns.keys()
       raise "No table '%s' found",table
+
+  def col(self,dbsInst,tableAlias,colName):
+      if self.dbType[dbsInst]=='oracle':
+         return getattr(tableAlias.c,string.lower(colName))
+      return getattr(tableAlias.c,colName)
 
   def getTableObject(self,dbsInst,table):
       for t in self.dbTables[dbsInst].keys():

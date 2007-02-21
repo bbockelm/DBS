@@ -108,6 +108,13 @@ templateTop = """
 <head>
 <title>DBS data discovery page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en-us" />
+<meta name="author" content="Valentin Kuznetsov (vkuznet at gmail dot com)" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="ROBOTS" content="ALL" />
+<meta name="Copyright" content="(CC) 2007, CMS collaboration." />
+<meta http-equiv="imagetoolbar" content="no" />
+<meta name="Rating" content="General" />
 <link rel="stylesheet" type="text/css" href="css/dbs.css" />
 <!-- set non-visible display content by default -->
 <style type="text/css">div.normalcontent { display:none }</style>
@@ -128,6 +135,8 @@ templateTop = """
 <script type="text/javascript" src="js/prototype.js"></script>
 <script type="text/javascript" src="js/rico.js"></script>
 <script type="text/javascript" src="js/ajax_init.js"></script>
+<script type="text/javascript" src="js/dhtml_history/dhtmlHistory.js"></script>
+
 ###<script type="text/javascript" src="js/ricoLiveGrid.js"></script>
 ###<link rel="stylesheet" type="text/css" href="css/searchEngine.css" />
 
@@ -215,10 +224,11 @@ Home page: <a href="$host/">users</a>
 <div id="main" class="hide">
 <script type="text/javascript">SetMain()</script>
 <div align="right">
-Home page: 
-<a href="$host/" id="homeUser">users</a>
+<span class="yellow_box" onMouseOver="KeywordHelp('view_tag','<p>There are different view for data discovery, which we classified as <em>Physicists</em>, <em>Production</em>.</p> <p><b>Physicists view:</b> View led by physics interest. Information about file names or SE 3 clicks away. Information required for running a CRAB job within one click. Use data only published in official global DBS. Emphasis on  physics metadata.</p> <p><b>Production view:</b>View led by production managers. It specify in greater details and provide more options to look at DBS data.</p>')" onMouseOut="ClearTag('view_tag')">?</span><span id="view_tag"></span>
+Views: 
+<a href="$host/" id="homeUser">Physicists</a>
 |
-<a href="$host/expert" id="homeExpert">experts</a>
+<a href="$host/expert" id="homeExpert">Production</a>
 </div>
 <script type="text/javascript">whereUsers()</script>
 """
@@ -347,9 +357,20 @@ DBS instance:
 </tr>
 </table>
 
+#*
+<p>
+$outputLine
+</p>
+<hr class="dbs" />
+<h3>Where the following selection applied:</h3>
+*#
+<p>
 $selectLine
+</p>
 <p />
 <div align="right">
+<input type="button" value="Show all" id="showAll-button" onclick="javascript:SelectAll('selectDBS')" />
+<input type="reset"  value="Reset" id="reset-button"  />
 <input type="submit" value="Search" id="submit-button" onclick="javascript:showWaitingMessage();" />
 </div>
 
@@ -835,6 +856,104 @@ var first   = null;
 <script type="text/javascript" src="js/updates.js"></script>
 """
 
+templateUserNav="""
+<!-- begin outer most table -->
+<table class="lfn">
+<tr valign="top">
+<td valign="top">
+
+<form action="javascript:ResetAllResults();MakeNavBar();showResMenu('results');ajaxGetUserData()" method="get">
+<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsSelector" />
+<!-- begin menu table -->
+<table class="small" cellspacing="5">
+<tr>
+<td align="right">
+<b>Physics groups</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_groups_tag','<p>Here you select the physics group.</p> <p><b>Example:</b> Higgs, top group.</p>')" onMouseOut="ClearTag('kw_groups_tag')">?</div><span id="kw_groups_tag"></span></td>
+<td>
+##<select id="groupSelector" onchange="javascript:replace('navSelector');showLoadingMessage('selectApps');replace('selectPrim','to be defined');replace('selectTier','to be defined');ajaxSelectApps()">
+<select id="kw_group" onchange="ajaxGetKWFields()">
+<option selected="selected">Select</option>
+#for group in $groupList
+<option value="$group">$group</option>
+#end for
+</select>
+</td>
+</tr>
+
+
+<tr>
+<td valign="top" align="right">
+<b>Data types</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_tier_tag','<p>This menu shows all known in DBS data types.</p> <p><b>Example:</b> DIGI, RECO.</p>')" onMouseOut="ClearTag('kw_tier_tag')">?</div><span id="kw_tier_tag"></span></td>
+<td>
+<div id="kw_tier">
+<select><option>Any</option></select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
+<b>Software releases</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_rel_tag','<p>All known software releases.</p> <p><b>Example:</b> CMSSW_1_1_1</p>')" onMouseOut="ClearTag('kw_rel_tag')">?</div><span id="kw_rel_tag"></span></td>
+<td>
+<div id="kw_release">
+<select><option>Any</option></select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
+<b>Trigger Line/<br />MC generators</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_prim_tag','<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>')" onMouseOut="ClearTag('kw_prim_tag')">?</div><span id="kw_prim_tag"></span></td>
+<td>
+<div id="kw_prim">
+<select><option>Any</option></select>
+</select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
+<b>Sites</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_site_tag','<p>List of know CMS sites</p> <p><b>Example: cmssrm.fnal.gov</b></p>')" onMouseOut="ClearTag('kw_site_tag')">?</div><span id="kw_site_tag"></span></td>
+<td>
+<select id="kw_site">
+<option selected="selected" value="All">Any</option>
+#for site in $siteList
+<option>$site</option>
+#end for
+</select>
+</td>
+</tr>
+
+<tr>
+<td>
+</td>
+<td></td>
+<td>
+###<input type="submit" value="Find" onclick="javascript:checkNavSelection()" />
+<input type="submit" value="Find" />
+</td>
+</tr>
+</table>
+
+<!-- end of menu table -->
+</form>
+</td>
+</tr>
+</table>
+<!-- end of outer most table -->
+"""
+
 templateJSForm_new_allmenus_ajax="""
 <!-- begin outer most table -->
 <table class="lfn">
@@ -931,7 +1050,7 @@ templateLeftBar="""
 templateNextBar="""
 #if $tot>1
 <script type="text/javascript">
-BuildBar(1,$step,$tot,$step,'$dbsInst','$site','$app','$prim','$tier','$proc');
+BuildBar(1,$step,$tot,$step,'$dbsInst','$site','$group','$app','$prim','$tier','$proc');
 UpdateResultIndex(1,$tot);
 Choose('cell_1');
 </script>
@@ -1219,7 +1338,15 @@ Processed datasets:
 <b>$path</b>
 </td>
 <td align="center">
-(<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Description,</a>
+(<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Description</a>,
+</td>
+#* PHEDEX
+<td>
+<a href="javascript:popUp('https://cmsdoc.cern.ch:8443/cms/aprom/phedex/tbedi/Request::Create?dbschoice=known&dbs=http%3A//cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery%3Finstance%3D$dbsInst&data=$path&priority=0',1000)">Phedex subscription</a>
+</td>
+*#
+<td>
+<a href="javascript:popUp('https://cmsdoc.cern.ch:8443/cms/aprom/phedex/tbedi/Request::Create?dbschoice=known&amp;dbs=http%3A//cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery%3Finstance%3D$dbsInst&amp;data=$path&amp;priority=0',1000)">PhEDEx subscription</a>,
 </td>
 <td align="center">
 <a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$evts',1000)">crab.cfg</a>)
@@ -1273,17 +1400,22 @@ Processed dataset:<br />
 </tr>
 #for dbsDict in $runList
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
-<td align="right">$dbsDict['RunNumber']</td>
+### I need to get run type and decide do I need or not provide a link to run quality DB.
+<td align="center">
+<a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$dbsDict['RunNumber']">
+$dbsDict['RunNumber']
+</a>
+</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
-<td align="center">$dbsDict['NumberOfLumiSections']</td>
+<td align="right">$dbsDict['NumberOfLumiSections']</td>
 <td align="right">$dbsDict['TotalLuminosity']</td>
-<td align="left">$dbsDict['StoreNumber']</td>
+<td align="right">$dbsDict['StoreNumber']</td>
 <td align="right">$dbsDict['StartOfRun']</td>
-<td align="center">$dbsDict['EndOfRun']</td>
+<td align="right">$dbsDict['EndOfRun']</td>
 <td align="right">$dbsDict['CreatedBy']</td>
-<td align="center">$dbsDict['CreationDate']</td>
+<td align="right">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
-<td align="center">$dbsDict['LastModificationDate']</td>
+<td align="right">$dbsDict['LastModificationDate']</td>
 </tr>
 #end for
 </table>
@@ -1526,6 +1658,8 @@ Details
 
 <br />
 ##
+#else
+<span class="box_red">No data found</span>
 #end if
 ##
 """
@@ -1685,7 +1819,7 @@ var GLOBAL_STEP=$step
     <span class="yellow_box"
     onMouseOver="KeywordHelp('NavDesc_tag','Discovery page provides a three ways to find your data.\
     <p>Navigator menu based search is designed to guide you through available data in CMS.</p>\
-    <p>Finder search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
+    <p>Finder search is arbitrary search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
     <p>Site search is used to find out data which are located at specified site. Data search does not based on any data classification and it is plain lookup of what is available on a site through DLS service.</p>\
     ')" onMouseOut="ClearTag('NavDesc_tag')">?</span><span id="NavDesc_tag"></span>
     <b>Find data:</b>
@@ -1700,6 +1834,7 @@ var GLOBAL_STEP=$step
     ###<a href="javascript:showMenu('Search');ajaxGetKWFields()">Selections</a>
   </li>
 
+#if not $userMode
   <li id="Lucene_Menu">
     <a href="javascript:showMenu('Lucene');ajaxGetLuceneParams()">Lucene</a>
   </li>
@@ -1722,6 +1857,7 @@ var GLOBAL_STEP=$step
     #end for
       </table>       
   </li>
+#end if 
 
   <li class="plain">
     <span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','<p>You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.</p>')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
@@ -1732,14 +1868,16 @@ var GLOBAL_STEP=$step
     <a href="javascript:showMenu('Rss');ajaxGetRss();">RSS list</a>
   </li>
 
+#if not $userMode
   <li class="plain">
     <span class="yellow_box" onMouseOver="KeywordHelp('DBSTablesDesc_tag','<p>Here you can explore DBS tables and perform pure SQL operations over the table. Only for experts.</p>')" onMouseOut="ClearTag('DBSTablesDesc_tag')">?</span><span id="DBSTablesDesc_tag"></span>
     <b>Examine DBS:</b>
   </li>
 
   <li id="DBSTables_Menu">
-    <a href="javascript:showMenu('Rss');ajaxGetRss();">DBS tables</a>
+    <a href="javascript:showMenu('DBSTables')">DBS tables</a>
   </li>
+#end if
 
   <li class="plain"><br /></li>
 
@@ -1793,7 +1931,11 @@ Navigator menu
 </tr>
 <tr valign="top">
 <td>
+#if $userMode
+$userNavigator
+#else
 $navigatorForm
+#end if
 </td>
 </tr>
 </table>
@@ -1807,8 +1949,13 @@ $navigatorForm
 <td class="box_darkblue">
     <span class="yellow_box"
     onMouseOver="KeywordHelp('FinderDesc_tag','\
-    <p>Finder search is arbitrary based search of data based on given data tag selection, e.g. Software release, data types, etc.</p>\
-    <p>Finder provides the following table:<table><tr><th>Tasks</th><th>DBS tables</th><th>Columns</th><th>Operators</th><th>expression</th></tr></table></p>\
+    <p>Finder is arbitrary search of data based on user selection of data objects.\
+    <ul><li>Group task: a list of common search tasks\
+        <li>DBS tables: a list of availabel DBS tables to look at\
+        <li>Show: indicate that this Table.Column will be shown in output\
+        <li>Column: select table column you want to see or apply some condition\
+        <li>Operator: boolean condition operator\
+    </ul></p>\
     <p>You may add/remove additional selection criteria by pressing plus/minus signs on your right.</p>\
     ')" onMouseOut="ClearTag('FinderDesc_tag')">?</span><span id="FinderDesc_tag"></span>
 Finder (<a href="javascript:popUp('$host/finderExample')">Examples</a>)
@@ -2272,6 +2419,28 @@ RSS feeds
 </table>
 <!--END RssDiv -->
 
+<!-- DBSTablesDiv -->
+<div id="DBSTablesDiv" class="hide">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+DBS tables
+</td>
+</tr>
+
+<tr>
+<td>
+
+<div class="div_scroll">
+<div id="dbsTables_list"></div>
+</div>
+</div>
+
+</td>
+</tr>
+</table>
+<!--END DBSTablesDiv -->
+
 </td>
 </tr>
 </table>
@@ -2279,6 +2448,11 @@ RSS feeds
 <script type="text/javascript">
 #if $frontPage
 showMenu('Navigator');
+#end if
+#if $userMode
+registerAjaxUserMenuCalls();
+resetPhysGroups();
+ajaxGetKWFields();
 #end if
 </script>
 """
@@ -2520,18 +2694,48 @@ lfc_home                = /grid/cms
 
 templateAppConfigs="""
 For given application <b>$appPath</b> we found the following application configs:
+<p />
 
-<table class="intro">
+<table class="dbs_table">
+<tr>
+<th>File name</th>
+<th>Version</th>
+<th>Type</th>
+<th>Annotation</th>
+<th>Creation Date</th>
+<th>Created By</th>
+<th>Modifictaion Date</th>
+<th>Modified By</th>
+</tr>
 #for config in $configList
-#set name=$config[0]
-#set value=$config[1]
-<tr><td>$name</td><td>$value</td></tr>
+#set id=$config[0]
+#set name=$config[1]
+#set ver=$config[2]
+#set type=$config[3]
+#set ann=$config[4]
+#set cDate=$config[5]
+#set cBy=$config[6]
+#set mDate=$config[7]
+#set mBy=$config[8]
+<tr>
+<td><a href="javascript:popUp('$host/getConfigContent?dbsInst=$dbsInst&amp;id=$id&amp;name=$name',1000)">$name</a></td>
+<td>$ver</td>
+<td>$type</td>
+<td>$ann</td>
+<td>$cDate</td>
+<td>$cBy</td>
+<td>$mDate</td>
+<td>$mBy</td>
+</tr>
 #end for
 </table>
 
-<div class="box_red">
-In a future those values will be resolved into real files.
-</div>
+"""
+templateAppConfigContent="""
+The following content found for <b>$name</b>:
+<pre>
+$content
+</pre>
 """
 
 templateDatasetDetails="""
@@ -2778,7 +2982,7 @@ templateBarNavigator="""
 templateSearchEngine="""
 <table>
 <tr><td>
-<div id="parameterNameList"></div>
+<div id="parameterNameList"><img src="images/loading.gif" alt="loading" /> Loading parameters</div>
 </td>
 <td>
 <div id="parameterNameListOperators">$operators</div>
@@ -2887,12 +3091,68 @@ templateSelect="""
 </select>
 """
 
+templateOutputLine="""
+#set nextId=$id+1
+<div id="outMenu_$id">
+<table class="selMenu">
+<tr>
+<td><h3>Looking for</ht></td>
+<td>
+$commonOutput
+</td>
+
+<td>
+<b>OR from table</b>
+</td>
+
+<td style="width:160px">
+<div id="divOutputTables_$id">
+<select id="outputTables_$id" onchange="ChangeCols($id,'outputTables')" name="outputTables">
+#for section in $tableList
+<option>$section</option>
+#end for
+</select>
+</div>
+</td>
+
+<td><b>column</b></td>
+
+<td style="width:200px">
+<div id="outTableCols_$id"></div>
+</td>
+
+<td>
+<a href="javascript:ajaxMakeLine($nextId)"><img src="images/plus2.gif" alt="add" style="border:none" /></a>
+</td>
+<td>
+<a href="javascript:ClearTag('makeOutMenu_$id')"><img src="images/minus2.gif" alt="remove" style="border:none" /></a>
+</td>
+</tr>
+</table>
+</div>
+<div id="makeOutMenu_$nextId"></div>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('divOutputTables_$id', new GetDataUpdater('divOutputTables_$id','replace','noResultsMenu'))</script>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('outTableCols_$id', new GetDataUpdater('outTableCols_$id','replace','noResultsMenu'))</script>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('makeOutMenu_$nextId',new GetDataUpdater('makeOutMenu_$nextId','replace','noResultsMenu'))</script>
+"""
+
 templateSelectLine="""
 #set nextId=$id+1
 <div id="selMenu_$id">
 <table class="selMenu">
+#if $id==1
 <tr>
-<td align="left">
+<th align="left">Group task</th>
+<th align="left">DBS table</th>
+<th align="left">Show</th>
+<th align="left">Column</th>
+<th align="left">Operator</th>
+<th></th>
+<th></th>
+</tr>
+#end if
+<tr>
+<td align="left" style="width:100px">
 <select id="selSection_$id" onchange="ChangeTables($id)" name="selSection">
 <option value="$sectionList[0]" selected="selected">$sectionList[0]</option>
 #for section in $sectionList[1:]
@@ -2911,12 +3171,17 @@ templateSelectLine="""
 </div>
 </td>
 
+<td style="width:50px">
+<input type="checkbox" id="outCol_$id" name="selectDBS" />
+</td>
+
 <td style="width:200px">
 <div id="tableCols_$id"></div>
 </td>
 
-<td>
-<select id="colSel_$id" name="colOperators">
+<td style="width:100px">
+<select id="colSel_$id" name="colOperators" onchange="ChangeWhere('colSel_$id','where_$id')">
+<option>None</option>
 <option>like</option>
 <option>=</option>
 <option>&lt;</option>
@@ -2924,12 +3189,10 @@ templateSelectLine="""
 </select>
 </td>
 <td>
-<input type="text" size="30" id="where_$id" name="whereClause" />
+<input type="text" size="30" id="where_$id" name="whereClause" class="hide" />
 </td>
-<td>
+<td align="right">
 <a href="javascript:ajaxMakeLine($nextId)"><img src="images/plus2.gif" alt="add" style="border:none" /></a>
-</td>
-<td>
 <a href="javascript:ClearTag('makeMenu_$id')"><img src="images/minus2.gif" alt="remove" style="border:none" /></a>
 </td>
 </tr>
@@ -2937,8 +3200,9 @@ templateSelectLine="""
 </div>
 <div id="makeMenu_$nextId"></div>
 <script type="text/javascript">ajaxEngine.registerAjaxObject('divSectionTables_$id', new GetDataUpdater('divSectionTables_$id','replace','noResultsMenu'))</script>
-<script type="text/javascript">ajaxEngine.registerAjaxObject('tableCols_$id', new GetDataUpdater('tableCols_$id','replace','noResultsMenu'));ajaxFillLine($id)</script>
+<script type="text/javascript">ajaxEngine.registerAjaxObject('tableCols_$id', new GetDataUpdater('tableCols_$id','replace','noResultsMenu'))</script>
 <script type="text/javascript">ajaxEngine.registerAjaxObject('makeMenu_$nextId',new GetDataUpdater('makeMenu_$nextId','replace','noResultsMenu'))</script>
+<script type="text/javascript">ajaxFillLine($id)</script>
 """
 
 templateTables="""

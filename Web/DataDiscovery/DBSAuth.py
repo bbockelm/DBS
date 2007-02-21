@@ -13,7 +13,8 @@ DBS data discovery authentication module.
 import os, string, sys
 
 # import DBS modules
-from   DBSUtil import *
+from DBSUtil import *
+from DDExceptions import *
 
 class DBSAuthentication:
   """

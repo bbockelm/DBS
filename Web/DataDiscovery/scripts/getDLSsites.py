@@ -19,6 +19,7 @@ import dlsClient
 # DBS modules
 import DBSInst, DBSUtil
 from   DDConfig import *
+from   DDExceptions import *
 
 #
 # main
@@ -58,7 +59,7 @@ if __name__ == "__main__":
                 file.write('%s %s\n'%(dbsInst,loc.host)) 
             #DBSUtil.printListElements(lList,dbsInst)
         except:
-            DBSUtil.printExcept()
+            printExcept()
             raise "Fail to generate location list for dbs instance",dbsInst
     file.close()
     os.rename('dls.all.tmp','dls.all')
