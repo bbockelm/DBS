@@ -2201,13 +2201,25 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
             Application configs retriever
         """
+        self.helperInit(dbsInst)
+        rList=self.helper.getSoftwareReleases()
+        try:
+            givenRelease=appPath.split("/")[1]
+            rList.remove(givenRelease)
+        except:
+            pass
+        nameSpace={'selTag':"",'changeFunction':"",'name':"selRels",'iList':rList}
+        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        rels=str(t)
+        print "\n\n",rels
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         nameSpace={
                    'appPath'   : appPath,
                    'dbsInst'   : dbsInst,
                    'host'      : self.dbsdd,
-                   'configList': self.helper.listApplicationConfigs(appPath)
+                   'configList': self.helper.listApplicationConfigs(appPath),
+                   'releases'  : rList
                   }
         t = Template(CheetahDBSTemplate.templateAppConfigs, searchList=[nameSpace])
         page="""<ajax-response><response type="object" id="appConfigs">"""
@@ -2218,6 +2230,15 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getAppConfigs.exposed=True
+
+    def compareAppConfigs(self,dbsInst,appConfig,iRel,oRel):
+        page = "diff %s between %s %s"%(appConfig,iRel,oRel) 
+        c1 = self.helper.getConfigContentByName(dbsInst,appConfig,iRel)
+        c2 = self.helper.getConfigContentByName(dbsInst,appConfig,oRel)
+        page+= "%s %s\n%s"%(appConfig,iRel,c1)
+        page+= "%s %s\n%s"%(appConfig,oRel,c2)
+        return page
+    compareAppConfigs.exposed=True
 
     def showMessage(self,msg):
         page=self.genTopHTML()
@@ -2335,7 +2356,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     selectDataTiers.exposed=True
 
-    def getDataDescription(self,dbsInst,primaryDataset="",processedDataset="",**kwargs):
+    def getDataDescription(self,dbsInst,processedDataset="",**kwargs):
         """ 
             Get data description.
         """
@@ -2345,13 +2366,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        page="""<ajax-response><response type="element" id="floatDataDescription">"""
         page=self.genTopHTML()
         description=""
-        dList=""
-        if processedDataset:
-           description=processedDataset
-           dList=self.helper.getDataDescription(processedDataset=processedDataset)
-        if primaryDataset:
-           description=primaryDataset
-           dList=self.helper.getDataDescription(primaryDataset=primaryDataset)
+        dList=self.helper.getDataDescription(processedDataset)
         # get formatted output of dataset details
         nameSpace={'dList' : dList }
         t = Template(CheetahDBSTemplate.templateDatasetDetails, searchList=[nameSpace])
