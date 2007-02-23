@@ -962,10 +962,10 @@ class DDHelper(DBSLogger):
          res = getExceptionInHTML()
          con.close()
          return res
-      con.close()
       oList = []
       for item in res:
           oList.append(item)
+      con.close()
       return oList
 
   def formSQLQuery(self,tDict):
