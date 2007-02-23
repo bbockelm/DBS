@@ -187,8 +187,11 @@ function getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier) {
       group=_group;
   } else {
       sel=document.getElementById('groupSelector');
-      if(!sel) return;
-      group=sel.value;
+      if(!sel) {
+          group='';
+      } else {
+          group=sel.value;
+      }
   }
   var app;
   if(_app) {
@@ -442,9 +445,12 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetSectionTables','getSectionTables');
     ajaxEngine.registerRequest('ajaxGetTableColumnsFromSection','getTableColumnsFromSection');
 
+    ajaxEngine.registerRequest('ajaxGetDbsSchema','getDbsSchema');
+    ajaxEngine.registerRequest('ajaxExecuteQuery','executeQuery');
     ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
     finderUpdater = new GetDataUpdater('results_finder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('results_finder',finderUpdater);
+
 }
 function registerAjaxUserMenuCalls() {
     ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
@@ -508,6 +514,13 @@ function ChangeCols(lineId,tag) {
         ajaxGetTableColumns(dbsInst,tableName,lineId);
     }
 }
+function ajaxGetDbsSchema(dbsInst) {
+    ShowTag('results_finder');
+    if(!dbsInst) {
+        dbsInst=$("kw_dbsSelector").value
+    }
+    ajaxEngine.sendRequest('ajaxGetDbsSchema','dbsInst='+dbsInst);
+}
 function registerAjaxLucene() {
     ajaxEngine.registerRequest('ajaxGetLucene','getLucene');
     updater_stats = new GetDataUpdater('webSearchStats','replace','noResultsMenu');
@@ -535,6 +548,11 @@ function ajaxGetLuceneParams() {
 }
 function ajaxGetRss() {
     ajaxEngine.sendRequest('ajaxGetRss');
+}
+function ajaxExecuteQuery() {
+    ShowTag('results_finder');
+    var query=$('queryText').value
+    ajaxEngine.sendRequest('ajaxExecuteQuery',"query="+query);
 }
 function ajaxFinderSearch() {
     ShowTag('results_finder');
@@ -769,7 +787,7 @@ function ajaxInit(_dbs) {
   registerAjaxGenNavigatorMenuDictCalls();
 //  registerAjaxGetDataDescriptionCalls();
   registerAjaxGetFloatBoxCalls();
-//  registerAjaxGetLumisCalls();
+  registerAjaxGetLumisCalls();
 //  registerAjaxGetAlgosCalls();
 
   ajaxGenNavigatorMenuDict(_dbs);
