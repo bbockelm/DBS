@@ -925,7 +925,9 @@ class DDHelper(DBSLogger):
 
   def getDbsSchema(self,html=1):
       res = ""
-      for table in self.dbsDBs.dbTables[self.dbsInstance].keys():
+      tList = self.dbsDBs.dbTables[self.dbsInstance].keys()
+      tList.sort()
+      for table in tList:
           tObj= self.dbsDBs.dbTables[self.dbsInstance][table]
 #          if string.lower(table)=="runs":
 #              print tObj.__dict__,repr(tObj)
