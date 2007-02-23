@@ -319,7 +319,7 @@ function showMenu(menu) {
    menuArr[6]='Help';
    menuArr[7]='Rss';
    menuArr[8]='Lucene';
-   menuArr[9]='DBSTables';
+   menuArr[9]='SQL';
    menuArr[10]='Hide';
    for(var i=0;i<menuArr.length;i++) {
        var c=document.getElementById(menuArr[i]+'_Menu');
@@ -382,11 +382,14 @@ function switchLink(tag,tableId) {
   }
 }
 function whereUsers() {
-  var tagArr = new Array('homeUser','homeExpert');
+  var tagArr = new Array('homeUser','homeExpert','homeDBS');
   href=window.location.href;
   var tag='homeUser';
   if (href.indexOf('expert')>0) {
       tag='homeExpert';
+  }
+  if (href.indexOf('dbsExpert')>0) {
+      tag='homeDBS';
   }
   for(i=0;i<tagArr.length;i++) {
       var id=document.getElementById(tagArr[i]);
@@ -997,9 +1000,22 @@ function MakeNavBar() {
   var app  = arr[2];
   var prim = arr[3];
   var tier = arr[4];
+  var group= arr[5];
   var id=document.getElementById('navBar');
   if (id) {
       id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:Navigator</b></span> &#187; <b>DBS instance:</b>'+dbs+' &#187; <b>Site:</b>'+site+' &#187; <b>Application:</b>'+app+' &#187; <b>Primary Dataset:</b>'+prim+' &#187; <b>Data tier:</b>'+tier;
+  }
+}
+function MakeUserNavBar() {
+  var dbs=$('kw_dbsSelector').value
+  var group=$('kw_group').value;
+  var type=$('dataTypes').value;
+  var prim=$('trigLines').value;
+  var rels=$('softReleases').value;
+  var site=$('kw_site').value;
+  var id=document.getElementById('navBar');
+  if (id) {
+      id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:Navigator</b></span> &#187; <b>Physics group:</b>'+group+' &#187; <b>Data types:</b>'+type+' &#187; <b>Software releases:</b>'+rels+' &#187; <b>Trigger Line/MC gens:</b>'+prim+' &#187; <b>Sites:</b>'+site;
   }
 }
 function MakeNavBarPrimDS(dbs,prim) {
