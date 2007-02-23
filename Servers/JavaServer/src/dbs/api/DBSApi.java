@@ -1,6 +1,6 @@
 /**
- $Revision: 1.72 $"
- $Id: DBSApi.java,v 1.72 2007/02/05 19:28:32 afaq Exp $"
+ $Revision: 1.73 $"
+ $Id: DBSApi.java,v 1.73 2007/02/06 20:54:53 sekhri Exp $"
  *
 */
 
@@ -289,7 +289,7 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("listBlocks")) {
 				(new DBSApiBlockLogic(this.data)).listBlocks(conn, out, 
-						get(table, "path", true),
+						get(table, "path", false),
 						get(table, "block_name", false),
 						get(table, "storage_element_name", false)
 						);

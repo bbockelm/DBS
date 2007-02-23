@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.70 $"
- $Id: DBSSql.java,v 1.70 2007/02/07 20:54:21 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSSql.java,v 1.71 2007/02/08 22:23:53 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -936,12 +936,12 @@ public class DBSSql {
 				"ON perlm.id = b.LastModifiedBy \n";
 
 		boolean useAnd = false;
-		if(procDSID != null) {
+		if(!DBSUtil.isNull(procDSID)) {
 			sql += "WHERE \n";
 		} else if(!seName.equals("%") || !blockName.equals("%") ){//Assumming seName will never be null
 			 sql += "WHERE \n";
 		}
-		if(procDSID != null) {
+		if(!DBSUtil.isNull(procDSID)) {
 			sql += "b.Dataset = ? \n";
 			useAnd = true;
 		}
@@ -958,7 +958,7 @@ public class DBSSql {
 		sql +=	"ORDER BY NAME DESC";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		if(procDSID != null) ps.setString(columnIndx++, procDSID);
+		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
