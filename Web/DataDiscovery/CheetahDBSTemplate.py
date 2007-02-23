@@ -229,6 +229,8 @@ Views:
 <a href="$host/" id="homeUser">Physicists</a>
 |
 <a href="$host/expert" id="homeExpert">Production</a>
+|
+<a href="$host/dbsExpert" id="homeDBS">DBS experts</a>
 </div>
 <script type="text/javascript">whereUsers()</script>
 """
@@ -862,7 +864,7 @@ templateUserNav="""
 <tr valign="top">
 <td valign="top">
 
-<form action="javascript:ResetAllResults();MakeNavBar();showResMenu('results');ajaxGetUserData()" method="get">
+<form action="javascript:ResetAllResults();MakeUserNavBar();showResMenu('results');ajaxGetUserData()" method="get">
 <input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsSelector" />
 <!-- begin menu table -->
 <table class="small" cellspacing="5">
@@ -1082,7 +1084,8 @@ $msg
 
 <td valign="top">
 
-<form action="javascript:ResetAllResults();MakeNavBar();ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+<form action="javascript:showResMenu('results');ResetAllResults();MakeNavBar();ajaxGetData();ajaxGetDbsData();ajaxGetRuns();ajaxGenParentsGraph();ajaxGenAppConfigs();" method="get">
+###<form action="javascript:showResMenu('results');ResetAllResults();MakeNavBar();" method="get">
 <!-- menu table -->
 #if $userMode
 <div>
@@ -1228,7 +1231,9 @@ $name<br />
 <td><a href="$host/getLFN_Branches?dbsInst=$dbsInst&lfn=$name">ROOT branches</a></td>
 <td>|</td>
 <td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
-###<td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis</a></td>
+<td>|</td>
+<td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis2</a></td>
+#*
 <td>|</td>
 <td><a href="$host/getLFN_Algos?dbsInst=$dbsInst&lfn=$name">Algorithms</a></td>
 ###<td><a href="javascript:ajaxGetAlgos('$dbsInst','$name')">Algorithms</a></td>
@@ -1236,6 +1241,7 @@ $name<br />
 <td><a href="$host/getLFN_Tiers?dbsInst=$dbsInst&lfn=$name">Tiers</a></td>
 <td>|</td>
 <td><a href="$host/getLFN_Parents?dbsInst=$dbsInst&lfn=$name">Parents</a></td>
+*#
 </tr>
 </table>
 </td>
@@ -1258,11 +1264,13 @@ $content
 """
 
 templateTableBody="""
+#for items in $branch
 <tr class="sortable_yellow">
-#for item in $branch
-<td>$item</td>
+#for elem in $items
+<td align="right">$elem</td>
 #end for
 </tr>
+#end for
 """
 
 templateSnapshot="""
@@ -1578,11 +1586,17 @@ Details
 ##
 ## Sum total events,files,size for given site
 ##
+#set blockList=""
 #for bName in $blockDict.keys()
 #if $blockDict[$bName][4:].count($site)
 #set siteTotEvt+=$blockDict[$bName][0]
 #set siteTotFiles+=$blockDict[$bName][2]
 #set siteTotSize+=$blockDict[$bName][3]
+#end if
+#if blockList
+#set blockList=blockList+","+$bName
+#else
+#set blockList=$bName
 #end if
 #end for
   <tr valign="top" class="sortable_yellow">
@@ -1591,7 +1605,8 @@ Details
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center">
-     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site',1000)">All</a>
+     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=cff',1000)">cff</a>
+     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList',1000)">plain</a>
      </td>
   </tr>
 #end for
@@ -1734,6 +1749,7 @@ App configs
 </table>
 
 <br />
+###<div id="navBar">Nav Bar</div>
 <div id="navBar" class="hide"></div>
 <div id="results_index"></div>
 <div id="results_waiting"></div>
@@ -1825,6 +1841,7 @@ var GLOBAL_STEP=$step
     <b>Find data:</b>
   </li>
 
+#if $userMode!="dbsExpert"
   <li id="Navigator_Menu">
     <a href="javascript:showMenu('Navigator')">Navigator</a>
   </li>
@@ -1833,12 +1850,15 @@ var GLOBAL_STEP=$step
     <a href="javascript:showMenu('Search')">Finder</a>
     ###<a href="javascript:showMenu('Search');ajaxGetKWFields()">Selections</a>
   </li>
+#end if
 
-#if not $userMode
+#if $userMode=="dbsExpert"
   <li id="Lucene_Menu">
     <a href="javascript:showMenu('Lucene');ajaxGetLuceneParams()">Lucene</a>
   </li>
+#end if
 
+#if not $userMode
   <li id="Site_Menu">
     <a href="javascript:showMenu('Site')">Site search</a>
   </li>
@@ -1859,6 +1879,7 @@ var GLOBAL_STEP=$step
   </li>
 #end if 
 
+#if $userMode!="dbsExpert"
   <li class="plain">
     <span class="yellow_box" onMouseOver="KeywordHelp('RssDesc_tag','<p>You may subscribe to specific chunk of data and being notified every time when your data is updated. RSS is a family of web feed formats used to publish frequently updated digital content. In case of discovery data it has collection of links which you can subscribe to and monitor Live of your data appearence.</p>')" onMouseOut="ClearTag('RssDesc_tag')">?</span><span id="RssDesc_tag"></span>
     <b>Subscribe to:</b>
@@ -1867,15 +1888,16 @@ var GLOBAL_STEP=$step
   <li id="Rss_Menu">
     <a href="javascript:showMenu('Rss');ajaxGetRss();">RSS list</a>
   </li>
+#end if
 
-#if not $userMode
+#if $userMode=="dbsExpert"
   <li class="plain">
     <span class="yellow_box" onMouseOver="KeywordHelp('DBSTablesDesc_tag','<p>Here you can explore DBS tables and perform pure SQL operations over the table. Only for experts.</p>')" onMouseOut="ClearTag('DBSTablesDesc_tag')">?</span><span id="DBSTablesDesc_tag"></span>
     <b>Examine DBS:</b>
   </li>
 
-  <li id="DBSTables_Menu">
-    <a href="javascript:showMenu('DBSTables')">DBS tables</a>
+  <li id="SQL_Menu">
+    <a href="javascript:showMenu('SQL')">SQL</a>
   </li>
 #end if
 
@@ -2412,48 +2434,88 @@ RSS feeds
 <div class="div_scroll">
 <div id="rss_list"></div>
 </div>
-</div>
 
 </td>
 </tr>
 </table>
+</div>
 <!--END RssDiv -->
 
-<!-- DBSTablesDiv -->
-<div id="DBSTablesDiv" class="hide">
+<!-- SQLDiv -->
+<div id="SQLDiv" class="hide">
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
-DBS tables
+SQL query
 </td>
 </tr>
-
-<tr>
+<tr valign="top">
 <td>
-
-<div class="div_scroll">
-<div id="dbsTables_list"></div>
-</div>
-</div>
-
+         <p></p>
+         ###<input type="hidden" value="$dbsInst" id="kw_dbsSelector" />
+         <form action="javascript:ResetAllResults();ajaxExecuteQuery()" method="get">
+         <table>
+         <tr>
+         <td align="right">
+         DBS instance:
+         </td>
+         <td>
+         <select id="kw_dbsSelector">
+         #for dbs in $dbsList
+         <option>$dbs</option>
+         #end for
+         </select>,
+         retrieve <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
+         </td>
+         </tr>
+         
+         <tr>
+         <td align="right">
+         Known tables:
+         </td>
+         <td>
+         <select id="dbsTables_999999" onchange="ChangeCols(999999,'dbsTables')" name="dbsTables">
+         #for table in $dbsTables
+         <option>$table</option>
+         #end for
+         </select>
+         </td>
+         <td>
+         <div id="tableCols_999999"></div>
+         </td>
+         </table>
+         <br />
+         Place your SQL query below in a text area. 
+         <textarea rows="5" cols="100" id="queryText"></textarea>
+         <br />
+         <input type="reset"  value="Reset" id="reset-query-button"  />
+         <input type="submit" value="Submit" id="submit-query-form"/>
+         </form>
+        
 </td>
 </tr>
 </table>
-<!--END DBSTablesDiv -->
+</div>
+<!--END SQLDiv -->
 
 </td>
 </tr>
 </table>
 
 <script type="text/javascript">
+ajaxEngine.registerAjaxObject('tableCols_999999', new GetDataUpdater('tableCols_999999','replace','noResultsMenu'));
+ChangeCols(999999,'dbsTables');
+#*
 #if $frontPage
 showMenu('Navigator');
 #end if
+*#
 #if $userMode
 registerAjaxUserMenuCalls();
 resetPhysGroups();
 ajaxGetKWFields();
 #end if
+
 </script>
 """
 
