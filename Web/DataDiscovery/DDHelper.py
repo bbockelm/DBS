@@ -1089,7 +1089,7 @@ class DDHelper(DBSLogger):
           raise "Fail in getConfigContent"
       content=""
       for item in res:
-          content=item[0]
+          content=str(item[0]) # need to use str to make ORACLE happy
       con.close()
       return content
 
