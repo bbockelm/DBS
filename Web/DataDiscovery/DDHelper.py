@@ -360,7 +360,8 @@ class DDHelper(DBSLogger):
       except:
           printExcept()
           raise "Fail in listApplicationsConfigs"
-      print "time listApplicationsConfigs:",(time.time()-t1)
+      if self.verbose:
+          print "time listApplicationsConfigs:",(time.time()-t1)
       con.close()
       return oList
 
@@ -486,6 +487,7 @@ class DDHelper(DBSLogger):
       aDict={}
       aList=[]
       for item in result:
+#          print "\n\nlistBlock_al",item
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate=item
           if not blockName: continue
           if kwargs.has_key('fullOutput'):
@@ -493,7 +495,8 @@ class DDHelper(DBSLogger):
              aList.append(aDict)
           else:
              aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize]
-      print "time listBlocks_al:",(time.time()-t1)
+      if self.verbose:
+         print "time listBlocks_al:",(time.time()-t1)
       con.close()
       if kwargs.has_key('fullOutput'):
          return aList
@@ -597,7 +600,8 @@ class DDHelper(DBSLogger):
           proc = item[5]
           if ver and fam and exe and prim and tier and proc:
              addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,tier,proc))
-      print "time getDatasetsFromApplications:",(time.time()-t1)
+      if self.verbose:
+         print "time getDatasetsFromApplications:",(time.time()-t1)
       con.close()
       return aDict
 
@@ -632,7 +636,8 @@ class DDHelper(DBSLogger):
              runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
              path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,path)
           oList.append(path)
-      print "time getApplications",(time.time()-t1)
+      if self.verbose:
+         print "time getApplications",(time.time()-t1)
       con.close()
       return oList
 
@@ -648,7 +653,8 @@ class DDHelper(DBSLogger):
       oList   = []
       for item in content:
           oList.append(item[0])
-      print "time getPhysicsGroups",(time.time()-t1)
+      if self.verbose:
+         print "time getPhysicsGroups",(time.time()-t1)
       con.close()
       return oList
 
@@ -664,7 +670,8 @@ class DDHelper(DBSLogger):
       oList   = []
       for item in content:
           oList.append(item[0])
-      print "time getDataTypes",(time.time()-t1)
+      if self.verbose:
+         print "time getDataTypes",(time.time()-t1)
       con.close()
       return oList
 
@@ -680,7 +687,8 @@ class DDHelper(DBSLogger):
       oList   = []
       for item in content:
           oList.append(item[0])
-      print "time getSoftwareReleases",(time.time()-t1)
+      if self.verbose:
+         print "time getSoftwareReleases",(time.time()-t1)
       con.close()
       return oList
 
@@ -735,7 +743,8 @@ class DDHelper(DBSLogger):
              runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
-      print "time getPrimaryDatasets",(time.time()-t1)
+      if self.verbose:
+         print "time getPrimaryDatasets",(time.time()-t1)
       con.close()
       return oList
       
@@ -778,7 +787,8 @@ class DDHelper(DBSLogger):
              runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
-      print "time getProcessedDatasets",(time.time()-t1)
+      if self.verbose:
+         print "time getProcessedDatasets",(time.time()-t1)
       con.close()
       return oList
   
@@ -901,19 +911,60 @@ class DDHelper(DBSLogger):
                   print item
       except:
           printExcept()
-          raise "Fail to get table='%s' content"%tableName
+          raise "Fail to get content for table='%s'"%tableName
       return result
 
   def getTableColumns(self,tableName):
       res=[]
       try:
-#          con = self.connectToDB()
-          res = self.dbsDBs.getColumns(self.dbsInstance,tableName)
-#          con.close()
+          res = ['All']+self.dbsDBs.getColumns(self.dbsInstance,tableName)
       except:
           printExcept()
-          raise "Fail to get table='%s' columns"%tableName
+          raise "Fail to get columns for table='%s'"%tableName
       return res
+
+  def getDbsSchema(self,html=1):
+      res = ""
+      for table in self.dbsDBs.dbTables[self.dbsInstance].keys():
+          tObj= self.dbsDBs.dbTables[self.dbsInstance][table]
+#          if string.lower(table)=="runs":
+#              print tObj.__dict__,repr(tObj)
+          if html:
+             res+="<p><b>%s</b></p>"%tObj.fullname
+             res+="""<table class="dbs_table">"""
+#             res+="<tr><th>Column</th><th></tr>"
+          else:
+             res+= "%s\n"%tObj.fullname
+          for col  in tObj.columns:
+              pk=""
+              if col.primary_key: pk="PK"
+              fk=""
+              if col.foreign_key: fk=repr(col.foreign_key)
+              if html:
+                 res+="<tr><td>%s</td><td>%s</td><td>%s</td></tr>"%(col.name,pk,fk)
+              else:
+                 res+="  %s %s %s\n"%(col.name,pk,fk)
+#          res+=repr(tObj)
+          if html: res+="</table><p />"
+          res+="\n\n"
+          
+      return res
+          
+
+  def executeSQLQuery(self,query):
+      con = self.connectToDB()
+      res = ""
+      try:
+         res = con.execute(query)
+      except:
+         res = getExceptionInHTML()
+         con.close()
+         return res
+      con.close()
+      oList = []
+      for item in res:
+          oList.append(item)
+      return oList
 
   def formSQLQuery(self,tDict):
       con = self.connectToDB()
@@ -925,7 +976,7 @@ class DDHelper(DBSLogger):
           iList = tDict[tableName]
           # first get table content and check if input list of columns names match
           cList=self.dbsDBs.getColumns(self.dbsInstance,tableName)
-          if len(iList):
+          if len(iList) and not iList.count('All'):
              for c in cList:
                  if iList.count(c):
                     cols.append('%s.%s'%(tableName,c))
@@ -1063,7 +1114,8 @@ class DDHelper(DBSLogger):
       except:
           printExcept()
           raise "Fail in getConfigContentByName"
-      print "time getConfigContentByName:",(time.time()-t1)
+      if self.verbose:
+         print "time getConfigContentByName:",(time.time()-t1)
       con.close()
       return content
 
@@ -1114,30 +1166,108 @@ class DDHelper(DBSLogger):
       res = self.api.getLFNs(blockName,dataset)
       return res
 
+#  def getLFN_Branches(self,dbsInst,lfn):
+#      self.setDBSDLS(dbsInst)
+#      res = self.api.listFileBranches(lfn)
+#      return res
   def getLFN_Branches(self,dbsInst,lfn):
-      self.setDBSDLS(dbsInst)
-      res = self.api.listFileBranches(lfn)
-      return res
+      con = self.connectToDB()
+      try:
+          tb   = self.alias('Branch','tb')
+          tfb  = self.alias('FileBranch','tfb')
+          tf   = self.alias('Files','tf')
+          sel  = sqlalchemy.select([self.col(tb,'Name'),self.col(tb,'LastModifiedBy'),self.col(tb,'LastModificationDate'),self.col(tb,'CreatedBy'),self.col(tb,'CreationDate')],
+                 from_obj=[
+                     tf.outerjoin(tfb,self.col(tfb,'Fileid')==self.col(tf,'ID'))
+                       .outerjoin(tb,onclause=self.col(tfb,'Branch')==self.col(tb,'ID'))
+                     ],distinct=True,
+                 order_by=[self.col(tb,'Name'),self.col(tb,'LastModifiedBy'),self.col(tb,'LastModificationDate'),self.col(tb,'CreatedBy'),self.col(tb,'CreationDate')]
+                                  )
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getLFN_Branches"
+      tList=['Name','LastModifiedBy','LastModificationDate','CreatedBy','CreationDate']
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      con.close()
+      return tList,oList
 
+#  def getLFN_Lumis(self,dbsInst,lfn):
+#      self.setDBSDLS(dbsInst)
+#      res = self.api.listFileLumis(lfn)
+#      return res
   def getLFN_Lumis(self,dbsInst,lfn):
-      self.setDBSDLS(dbsInst)
-      res = self.api.listFileLumis(lfn)
-      return res
+      con = self.connectToDB()
+      try:
+          tls   = self.alias('LumiSection','tls')
+          tfr  = self.alias('FileRunLumi','tfr')
+          tf   = self.alias('Files','tf')
+          sel  = sqlalchemy.select([self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tls,'LastModifiedBy'),self.col(tls,'LastModificationDate'),self.col(tls,'CreatedBy'),self.col(tls,'CreationDate')],
+                 from_obj=[
+                     tf.outerjoin(tfr,self.col(tfr,'Fileid')==self.col(tf,'ID'))
+                       .outerjoin(tls,onclause=self.col(tfr,'Lumi')==self.col(tls,'ID'))
+                     ],distinct=True,
+                 order_by=[self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tls,'LastModifiedBy'),self.col(tls,'LastModificationDate'),self.col(tls,'CreatedBy'),self.col(tls,'CreationDate')]
+                                  )
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getLFN_Lumis"
+      tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime','LastModifiedBy','LastModificationDate','CreatedBy','CreationDate']
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      con.close()
+      return tList,oList
 
-  def getLFN_Algos(self,dbsInst,lfn):
-      self.setDBSDLS(dbsInst)
-      res = self.api.listFileAlgorithms(lfn)
-      return res
+#  def getLFN_Algos(self,dbsInst,lfn):
+#      self.setDBSDLS(dbsInst)
+#      res = self.api.listFileAlgorithms(lfn)
+#      return res
 
+#  def getLFN_Tiers(self,dbsInst,lfn):
+#      self.setDBSDLS(dbsInst)
+#      res = self.api.listFileTiers(lfn)
+#      return res
   def getLFN_Tiers(self,dbsInst,lfn):
-      self.setDBSDLS(dbsInst)
-      res = self.api.listFileTiers(lfn)
-      return res
+      con = self.connectToDB()
+      try:
+          tdt  = self.alias('DataTier','tdt')
+          tft  = self.alias('FileTier','tft')
+          tf   = self.alias('Files','tf')
+          sel  = sqlalchemy.select([self.col(tdt,'Name'),self.col(tdt,'LastModifiedBy'),self.col(tdt,'LastModificationDate'),self.col(tdt,'CreatedBy'),self.col(tdt,'CreationDate')],
+                 from_obj=[
+                     tf.outerjoin(tft,self.col(tft,'Fileid')==self.col(tf,'ID'))
+                       .outerjoin(tdt,onclause=self.col(tft,'DataTier')==self.col(tdt,'ID'))
+                     ],distinct=True,
+                 order_by=[self.col(tdt,'Name'),self.col(tdt,'LastModifiedBy'),self.col(tdt,'LastModificationDate'),self.col(tdt,'CreatedBy'),self.col(tdt,'CreationDate')]
+                                  )
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getLFN_Tiers"
+      tList=['Name','LastModifiedBy','LastModificationDate','CreatedBy','CreationDate']
+      oList=[]
+      for item in result:
+          if not item[0]: continue
+          oList.append(item)
+      con.close()
+      return tList,oList
 
-  def getLFN_Parents(self,dbsInst,lfn):
-      self.setDBSDLS(dbsInst)
-      res = self.api.listFileParents(lfn)
-      return res
+#  def getLFN_Parents(self,dbsInst,lfn):
+#      self.setDBSDLS(dbsInst)
+#      res = self.api.listFileParents(lfn)
+#      return res
 
   def alias(self,tableName,aliasName):
       """
@@ -1344,7 +1474,6 @@ class DDHelper(DBSLogger):
                                  )
           if dataset:
              empty,prim,tier,proc=string.split(dataset,"/")
-             print prim,tier,proc
              if proc and proc!="*":
                 sel.append_whereclause(self.col(tprd,'Name')==proc)
              if prim and prim!="*":
@@ -1361,7 +1490,8 @@ class DDHelper(DBSLogger):
           if not run: continue
           aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate}
           oList.append(aDict)
-      print "time in getRuns:",(time.time()-t1)
+      if self.verbose:
+         print "time in getRuns:",(time.time()-t1)
       con.close()
       return oList
 
@@ -1420,7 +1550,8 @@ class DDHelper(DBSLogger):
           pset = item[0]
           if not pset: continue
           oList.append("/%s/%s/%s"%(prim,tier,pset))
-      print "time in getUserData:",(time.time()-t1)
+      if self.verbose:
+         print "time in getUserData:",(time.time()-t1)
       con.close()
       return oList
 
@@ -1577,6 +1708,22 @@ if __name__ == "__main__":
 #    res = helper.listApplicationConfigs('/AppFamily01/TestExe01/TestVersion01_20070210_12h28m18s')
 #    tDict={'PrimaryDataset':['Name'],'ProcessedDataset':['Name'],'AlgorithmConfig':['ApplicationVersion','ApplicationFamily','ApplicationExecutable']}
 #    l = helper.formSQLQuery(tDict)
+    
+    t1=time.time()
+    res = helper.listProcessedDatasets()
+    print "time DDHelper.listProcessedDatasets:",(time.time()-t1)
+    t1=time.time()
+    res = helper.listApplicationConfigs("*")
+    print "time DDHelper.listApplicationConfigs:",(time.time()-t1)
+
+    dataset="/TestPrimary_001_20070210_12h28m18s/SIM_20070210_12h28m18s/TestProcessed_20070210_12h28m18s"
+    t1=time.time()
+    res = helper.listBlocks(dataset)
+    print "time DDHelper.listBlocks:",(time.time()-t1)
+
+    t1=time.time()
+    res = helper.getRuns(dataset)
+    print "time DDHelper.getRuns:",(time.time()-t1)
     sys.exit(0)
     
     if opts.dict:
