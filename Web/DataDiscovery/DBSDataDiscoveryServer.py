@@ -361,7 +361,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace={'operators':str(t)}
         t = Template(CheetahDBSTemplate.templateSearchEngine, searchList=[nameSpace])
         luceneForm=str(t)
-           
+        dbsTables = self.helper.dbsDBs.getTableNames(dbsInst)
+        dbsTables.sort()
+
         nameSpace = {
                      'host'         : self.dbsdd,
                      'userMode'     : self.userMode,
@@ -378,7 +380,9 @@ class DBSDataDiscoveryServer(DBSLogger):
                      'step'         : GLOBAL_STEP,
                      'iface'        : self.ddConfig.iface(),
                      'tip'          : tip(),
-                     'luceneForm'   : luceneForm
+                     'luceneForm'   : luceneForm,
+                     'dbsInst'      : dbsInst,
+                     'dbsTables'    : dbsTables
                     }
         t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
         return str(t)
@@ -411,7 +415,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             pass
             return str(t)
 
-    def init(self):
+    def init(self,view='Navigator'):
         """
            Construct Init service page, which includes L{genMenuForm}.
            @type  self: class object
@@ -421,7 +425,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         """
         try:
             page = self.genTopHTML(intro=False)
-            page+= self.genVisiblePanel('Navigator')
+            page+= self.genVisiblePanel(view)
             page+= self.genResultsHTML()
             page+= self.genBottomHTML()
             return page
@@ -448,6 +452,24 @@ class DBSDataDiscoveryServer(DBSLogger):
             pass
             return str(t)
     expert.exposed = True
+
+    def dbsExpert(self):
+        """
+           Constructs 'dbsExpert' service page. The summary, L{getSummary}, has been updated
+           once a day by using internal timer.
+           @type  self: class object
+           @param self: none
+           @rtype : string
+           @return: returns HTML code
+        """
+        try:
+            self.userMode = "dbsExpert"
+            return self.init('SQL')
+        except:
+            t=self.errorReport("Fail in dbsExpert function")
+            pass
+            return str(t)
+    dbsExpert.exposed = True
 
     def summary(self,**kwargs):
         """
@@ -1419,29 +1441,44 @@ class DBSDataDiscoveryServer(DBSLogger):
             return str(t)
     getLFN_txt.exposed = True
     
-    def getLFNsForSite(self,dbsInst,site):
+    def getLFNsForSite(self,dbsInst,site,blockList="",what="cff"):
         """
            Generates a list of LFNs for given site
         """
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
-            try:
-                bList=self.helper.getBlocksFromSite(site)
-            except:
-                printExcept()
-                page+="No LFNs found for site '%s'\n"%site
-                pass
+            bList=[]
+            if  blockList:
+                bList=blockList.split(",")
+            else:
+                try:
+                    bList=self.helper.getBlocksFromSite(site)
+                except:
+                    printExcept()
+                    page+="No LFNs found for site '%s'\n"%site
+                    pass
+            if what=="cff":
+               page+="replace PoolSource.fileNames = {\n"
             for blockName in bList:
                 try:
                     lfnList = self.helper.getLFNs(dbsInst,blockName,"")
+                    if not lfnList: page+="No LFNs found in '%s' on site='%s' for blockName='%s'"%(dbsInst,site,blockName)
                     for item in lfnList:
-                        lfn=item[0]
-                        page+="%s\n"%lfn
+                        if  what=="cff":
+                            lfn=item[0]
+                            if lfn==lfnList[-1][0]:
+                               page+="'%s'\n"%lfn
+                            else:
+                               page+="'%s',\n"%lfn
+                        else:
+                            lfn=item[0]
+                            page+="%s\n"%lfn
                 except:
                     printExcept()
                     page+="No LFNs found int DBS for block='%s'\n"%blockName
                     pass
+            if what=="cff": page+="}"
             page+="\n</pre></body></html>"
             return page
         except:
@@ -2211,7 +2248,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace={'selTag':"",'changeFunction':"",'name':"selRels",'iList':rList}
         t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
         rels=str(t)
-        print "\n\n",rels
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         nameSpace={
@@ -2387,7 +2423,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDataDescription.exposed=True
 
-    def getTableTemplate(self,func,dbsInst,lfn,msg,ajax,**kwargs):
+    def getTableTemplate_v1(self,func,dbsInst,lfn,msg,ajax,**kwargs):
         self.htmlInit()
         iList=func(dbsInst,lfn)
         p=content=""
@@ -2423,6 +2459,40 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
 
+    def getTableTemplate(self,func,dbsInst,lfn,msg,ajax,**kwargs):
+        self.htmlInit()
+        tList,iList=func(dbsInst,lfn)
+        p=content=""
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="element" id="floatDataDescription">"""
+        else:
+           page=self.genTopHTML()
+        if  len(iList):
+            try:
+                nameSpace={'branch':iList}
+                t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
+                content+=str(t)
+                nameSpace={'header':tList,'content':content}
+                t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
+                p=str(t)
+            except:
+                printExcept()
+                p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
+        else:
+           p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
+        if int(ajax):
+           nameSpace={'title':msg,'description':p,'className':'float_help_box'}
+           t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+           page+=str(t)+"</response></ajax-response>"
+        else:
+           page+=p
+           page+=self.genBottomHTML()
+        if self.verbose:
+#        if 1:
+           print page
+        return page
     def getLFN_Branches(self,dbsInst,lfn,ajax=0,**kwargs):
         page=self.getTableTemplate(self.helper.getLFN_Branches,dbsInst,lfn,'ROOT branches',ajax)
         return page
@@ -2433,20 +2503,20 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getLFN_Lumis.exposed=True
 
-    def getLFN_Algos(self,dbsInst,lfn,ajax=0,**kwargs):
-        page=self.getTableTemplate(self.helper.getLFN_Algos,dbsInst,lfn,'LFN algorithms',ajax)
-        return page
-    getLFN_Algos.exposed=True
+#    def getLFN_Algos(self,dbsInst,lfn,ajax=0,**kwargs):
+#        page=self.getTableTemplate(self.helper.getLFN_Algos,dbsInst,lfn,'LFN algorithms',ajax)
+#        return page
+#    getLFN_Algos.exposed=True
 
-    def getLFN_Tiers(self,dbsInst,lfn,ajax=0,**kwargs):
-        page=self.getTableTemplate(self.helper.getLFN_Tiers,dbsInst,lfn,'LFN tiers',ajax)
-        return page
-    getLFN_Tiers.exposed=True
+#    def getLFN_Tiers(self,dbsInst,lfn,ajax=0,**kwargs):
+#        page=self.getTableTemplate(self.helper.getLFN_Tiers,dbsInst,lfn,'LFN tiers',ajax)
+#        return page
+#    getLFN_Tiers.exposed=True
 
-    def getLFN_Parents(self,dbsInst,lfn,ajax=0,**kwargs):
-        page=self.getTableTemplate(self.helper.getLFN_Parents,dbsInst,lfn,'LFN parents',ajax)
-        return page
-    getLFN_Parents.exposed=True
+#    def getLFN_Parents(self,dbsInst,lfn,ajax=0,**kwargs):
+#        page=self.getTableTemplate(self.helper.getLFN_Parents,dbsInst,lfn,'LFN parents',ajax)
+#        return page
+#    getLFN_Parents.exposed=True
 
     def getFloatBox(self,title="",description="",className="",**kwargs):
         """ 
@@ -2502,7 +2572,6 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        param = {'method':'lookup','term':'block.subsys.NumberParameter129=111'}
 #        data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",param,debug=1)
         data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",kwargs,debug=1)
-        print data
         if string.find(data,"""<?xml version="1.0" encoding="ISO-8859-1"?>""")!=-1:
            res=string.split(data,"""<?xml version="1.0" encoding="ISO-8859-1"?>""")
            return res[1]
@@ -2596,11 +2665,64 @@ class DBSDataDiscoveryServer(DBSLogger):
         res = self.helper.formSQLQuery(iDict)
         page+=res
         page+="</response></ajax-response>"
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     finderSearch.exposed=True
+
+    def executeQuery(self,query,**kwargs):
+        q = string.lower(query.strip())
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results_finder">"""
+        if q.find("select")==-1:
+           page+="You are attempt execute non select query, it's forbidden"
+        elif q[-1]!=";":
+           page+="Your query should ends with ;"
+        else:
+           tList = []
+           s=string.strip(q[q.index('select')+6:q.index('from')])
+           tList = string.split(s.replace('distinct',''),",")
+           if tList.count('*'):
+              if q.count('where'):
+                 symbol='where'
+              else:
+                 symbol=';'
+              tableList = string.split(query[q.index('from')+4:q.index(symbol)])
+              tList = []
+              for tableName in tableList:
+                  tList+= self.helper.getTableColumns(tableName.strip())
+              if tList.count('All'): tList.remove('All')
+           iList = self.helper.executeSQLQuery(query)
+           if  type(iList) is not types.ListType:
+               page+=iList
+           else:
+               nameSpace={'branch':iList}
+               t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
+               content=str(t)
+               nameSpace={'header':tList,'content':content}
+               t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
+               page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    executeQuery.exposed=True
+
+    def getDbsSchema(self,dbsInst,**kwargs):
+        self.helperInit(dbsInst)
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results_finder">"""
+        page+= self.helper.getDbsSchema()
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getDbsSchema.exposed=True
 
     def genTreeElement(self,iParent,dataset):
         # pass here node,parent pair, as an example we pass 'newNode',node
