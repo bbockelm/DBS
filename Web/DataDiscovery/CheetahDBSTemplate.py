@@ -2486,8 +2486,9 @@ SQL query
          </table>
          <br />
          Place your SQL query below in a text area. 
-         <textarea rows="5" cols="100" id="queryText"></textarea>
-         <br />
+         <p>
+         <textarea rows="5" cols="50" id="queryText"></textarea>
+         </p>
          <input type="reset"  value="Reset" id="reset-query-button"  />
          <input type="submit" value="Submit" id="submit-query-form"/>
          </form>
