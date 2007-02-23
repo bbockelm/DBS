@@ -575,7 +575,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listBlocks(self, dataset, block_name="*", storage_element_name="*"):
+  def listBlocks(self, dataset=None, block_name="*", storage_element_name="*"):
     """
     Retrieve list of Blocks matching shell glob pattern for Block Name and/or 
     Storage Element Name, for a dataset path (or glob pattern for dataset path).
@@ -583,7 +583,7 @@ class DbsApi(DbsConfig):
     returns: list of DbsFileBlock objects.
 
     params:
-        dataset: Not Defaulted user need to provide a dataset path 
+        dataset: Not a mandatory field. It represent the dataset path in the format /prim/dt/proc . The user can leave it empty
         block_name: pattern, if provided it will be matched against the content as a shell glob pattern
         storage_element_name: pattern, if provided it will be matched against the content as a shell glob pattern
          
