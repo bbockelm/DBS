@@ -2685,11 +2685,10 @@ class DBSDataDiscoveryServer(DBSLogger):
            s=string.strip(q[q.index('select')+6:q.index('from')])
            tList = string.split(s.replace('distinct',''),",")
            if tList.count('*'):
+              idx=len(q)
               if q.count('where'):
-                 symbol='where'
-              else:
-                 symbol=';'
-              tableList = string.split(query[q.index('from')+4:q.index(symbol)])
+                 idx=q.index('where')
+              tableList = string.split(query[q.index('from')+4:idx])
               tList = []
               for tableName in tableList:
                   tList+= self.helper.getTableColumns(tableName.strip())
