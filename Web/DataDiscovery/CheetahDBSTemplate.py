@@ -1410,9 +1410,13 @@ Processed dataset:<br />
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
 <td align="center">
+#if $dbsDict['Type'].lower()=='raw'
 <a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$dbsDict['RunNumber']">
 $dbsDict['RunNumber']
 </a>
+#else
+$dbsDict['RunNumber']
+#end if
 </td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfLumiSections']</td>
