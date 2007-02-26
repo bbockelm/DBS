@@ -2284,7 +2284,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         page+= diff.make_table(c1.splitlines(1),c2.splitlines(1),'','',True)
         t = Template(CheetahDBSTemplate.templateDiffLegend, searchList=[{}])
         page+=str(t)
-        print page
 
         page+=self.genBottomHTML()
         return page
