@@ -570,12 +570,26 @@ class DDHelper(DBSLogger):
           ttpd = self.alias('TriggerPathDescription','tttpd')
           mcDesc=[self.col(tmcd,'MCChannelDescription'),self.col(tmcd,'MCProduction'),self.col(tmcd,'MCDecayChain'),self.col(tmcd,'CreatedBy'),self.col(tmcd,'CreationDate'),self.col(tmcd,'LastModifiedBy'),self.col(tmcd,'LastModificationDate')]
           trDesc=[self.col(ttpd,'TriggerPathDescription'),self.col(ttpd,'CreationDate'),self.col(ttpd,'LastModifiedBy'),self.col(ttpd,'LastModificationDate')]
-          # TODO: I need to find out if it's MC or real data, depending on that information retrieve
+          # find out if it's MC or real data, depending on that information retrieve
           # appropriate description
-          dataType='mc'
+          tpt  = self.alias('PrimaryDSType','tpt')
+          sel  = sqlalchemy.select([self.col(tpt,'Type')],
+                 from_obj=[
+                 tpm.outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                     ],distinct=True,use_labels=True)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          result = self.getSQLAlchemyResult(con,sel)
+          row = result.fetchone()
+          dataType = row[0]
+          # TODO: fix dataType checking, I need to know what would be used, 'MC' or 'mc', 'raw' or 'real data' etc.
           desc=mcDesc
-          if dataType!='mc':
+          if string.lower(dataType)=='mc':
              desc = mcDesc
+          elif string.lower(dataType)=='raw':
+             desc = trDesc
+          else:
+             desc=mcDesc+trDesc
           sel  = sqlalchemy.select(desc,
                  from_obj=[
                  tprd.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
@@ -979,12 +993,13 @@ class DDHelper(DBSLogger):
           else:
              res+= "%s\n"%tObj.fullname
           for col  in tObj.columns:
-              pk=""
-              if col.primary_key: pk="PK"
               fk=""
               if col.foreign_key: fk=repr(col.foreign_key)
+              if col.primary_key:
+                 fk="PrimaryKey"
+                 if col.autoincrement: fk+=", Autoincrment"
               if html:
-                 res+="<tr><td>%s</td><td>%s</td><td>%s</td></tr>"%(col.name,pk,fk)
+                 res+="<tr><td>%s</td><td>%s</td><td>%s</td></tr>"%(col.name,col.type,fk)
               else:
                  res+="  %s %s %s\n"%(col.name,pk,fk)
 #          res+=repr(tObj)
@@ -1504,16 +1519,18 @@ class DDHelper(DBSLogger):
           tdt  = self.alias('DataTier','tdt')
           tpdr = self.alias('ProcDSRuns','tpdr')
           trun = self.alias('Runs','trun')
+          tpt  = self.alias('PrimaryDSType','tpt')
 
-          sel  = sqlalchemy.select([self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(trun,'CreatedBy'),self.col(trun,'CreationDate'),self.col(trun,'LastModifiedBy'),self.col(trun,'LastModificationDate')],
+          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(trun,'CreatedBy'),self.col(trun,'CreationDate'),self.col(trun,'LastModifiedBy'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type')]
+          sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                                ],distinct=True,
-                       order_by=[self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(trun,'CreatedBy'),self.col(trun,'CreationDate'),self.col(trun,'LastModifiedBy'),self.col(trun,'LastModificationDate')]
+                          .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                                ],distinct=True,order_by=oSel
                                  )
           if dataset:
              empty,prim,tier,proc=string.split(dataset,"/")
@@ -1529,9 +1546,9 @@ class DDHelper(DBSLogger):
           raise "Fail in getRuns"
       oList=[]
       for item in result:
-          run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate=item
+          run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,type=item
           if not run: continue
-          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate}
+          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate,'Type':type}
           oList.append(aDict)
       if self.verbose:
          print "time in getRuns:",(time.time()-t1)
