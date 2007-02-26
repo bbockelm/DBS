@@ -446,7 +446,7 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetTableColumnsFromSection','getTableColumnsFromSection');
 
     ajaxEngine.registerRequest('ajaxGetDbsSchema','getDbsSchema');
-    ajaxEngine.registerRequest('ajaxExecuteQuery','executeQuery');
+    ajaxEngine.registerRequest('ajaxExecuteQuery','executeSQLQuery');
     ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
     finderUpdater = new GetDataUpdater('results_finder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('results_finder',finderUpdater);

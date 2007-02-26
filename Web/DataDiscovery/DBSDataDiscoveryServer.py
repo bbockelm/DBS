@@ -2684,36 +2684,23 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     finderSearch.exposed=True
 
-    def executeQuery(self,query,**kwargs):
+    def executeSQLQuery(self,query,**kwargs):
         q = string.lower(query.strip())
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results_finder">"""
         if q.find("select")==-1:
            page+="You are attempt execute non select query, it's forbidden"
-        elif q[-1]!=";":
-           page+="Your query should ends with ;"
         else:
-           tList = []
-           s=string.strip(q[q.index('select')+6:q.index('from')])
-           tList = string.split(s.replace('distinct',''),",")
-           if tList.count('*'):
-              idx=len(q)
-              if q.count('where'):
-                 idx=q.index('where')
-              tableList = string.split(query[q.index('from')+4:idx])
-              tList = []
-              for tableName in tableList:
-                  tList+= self.helper.getTableColumns(tableName.strip())
-              if tList.count('All'): tList.remove('All')
+           # here we got back a list whose first entry is column names
            iList = self.helper.executeSQLQuery(query)
            if  type(iList) is not types.ListType:
                page+=iList
            else:
-               nameSpace={'branch':iList}
+               nameSpace={'branch':iList[1:]}
                t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
                content=str(t)
-               nameSpace={'header':tList,'content':content}
+               nameSpace={'header':iList[0],'content':content}
                t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
                page+=str(t)
         page+="</response></ajax-response>"
@@ -2721,7 +2708,7 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        if 1:
            print page
         return page
-    executeQuery.exposed=True
+    executeSQLQuery.exposed=True
 
     def getDbsSchema(self,dbsInst,**kwargs):
         self.helperInit(dbsInst)

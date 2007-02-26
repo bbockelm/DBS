@@ -974,8 +974,11 @@ class DDHelper(DBSLogger):
       try:
           res = ['All']+self.dbsDBs.getColumns(self.dbsInstance,tableName)
       except:
-          printExcept()
-          raise "Fail to get columns for table='%s'"%tableName
+#          printExcept()
+#          raise "Fail to get columns for table='%s'"%tableName
+          msg="Fail to get columns for table='%s'\n"%tableName
+          msg+=getExceptionInHTML()
+          res=msg
       return res
 
   def getDbsSchema(self,html=1):
@@ -1019,8 +1022,12 @@ class DDHelper(DBSLogger):
          con.close()
          return res
       oList = []
+      counter=0
       for item in res:
+          if not counter:
+             oList.append(item.keys())
           oList.append(item)
+          counter+=1
       con.close()
       return oList
 
