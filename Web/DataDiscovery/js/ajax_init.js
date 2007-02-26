@@ -277,7 +277,7 @@ function ajaxGetUserData() {
   SendAjaxCalls(dbs,site,group,app,prim,type,proc);
 }
 function ajaxGetData(_dbs,_site,_group,_app,_primD,_tier,proc) {
-  ShowWheel("__results");
+  ShowWheel('__results');
 //  showLoadingMessage('results','Wait');
   var arr  = getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier)
   if(!arr) return;
@@ -306,13 +306,13 @@ function ajaxNextGetData(dbs,site,group,app,primD,tier,proc,idx) {
   var id=document.getElementById('results_response'+idx);
   if(!id) {
 //  alert('ajaxGetData idx='+idx);
-  ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"group="+group,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'_idx='+idx);
+  ajaxEngine.sendRequest('ajaxGetData','dbsInst='+dbs,'site='+site,'group='+group,'app='+app,'primD='+primD,'tier='+tier,'proc='+proc,'_idx='+idx);
   }
 
   var id=document.getElementById('results_dbs_response'+idx);
   if(!id) {
 //  alert('ajaxGetiDbsData idx='+idx);
-  ajaxEngine.sendRequest('ajaxGetDbsData',"dbsInst="+dbs,"site="+site,"group="+group,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'_idx='+idx);
+  ajaxEngine.sendRequest('ajaxGetDbsData','dbsInst='+dbs,'site='+site,'group='+group,'app='+app,'primD='+primD,'tier='+tier,'proc='+proc,'_idx='+idx);
   }
 
   var id=document.getElementById('runs_response'+idx);
@@ -343,7 +343,7 @@ function ajaxGetDataFromSelection(iParamString) {
          } else {
             selList[i]=uSelection[i].value;
          }
-         ajaxEngine.sendRequest('ajaxGetDataFromSelection',"userSelection="+selList[i]);
+         ajaxEngine.sendRequest('ajaxGetDataFromSelection','userSelection='+selList[i]);
          var actionHistory='<a href="javascript:showWaitingMessage();ajaxGetDataFromSelection(\''+selList[i]+'\')">data selection ('+selList[i]+')</a>';
          ajaxHistory(actionHistory);
       }
@@ -553,6 +553,12 @@ function ajaxExecuteQuery() {
     ShowTag('results_finder');
     var query=$('queryText').value
     ajaxEngine.sendRequest('ajaxExecuteQuery',"query="+query);
+
+    var ajaxCall='ResetAllResults();ajaxExecuteQuery(\''+query+'\')';
+    var action='<a href="javascript:'+ajaxCall+'">ExecuteQuery ('+query+')</a>';
+    ajaxHistory(action);
+// This is how we add back button support.
+//  ajax_dhtmlHistory('ajaxGetDbsData',ajaxCall);
 }
 function ajaxFinderSearch() {
     ShowTag('results_finder');
