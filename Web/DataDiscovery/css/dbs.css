@@ -213,6 +213,7 @@ table.dbs_table {
   border-color: gray gray gray gray;
   border-collapse: collapse;
   background-color: rgb(255, 250, 250);
+  vertical-align: top;
 }
 table.dbs_table th {
   border-width: 1px 1px 1px 1px;
@@ -227,6 +228,8 @@ table.dbs_table td {
   border-style: solid solid solid solid;
   border-color: gray gray gray gray;
   background-color: #FFFADC;
+  vertical-align: top;
+  text-align: right;
 }
 table.intro {
   border-width: 1px 1px 1px 1px;
@@ -254,6 +257,8 @@ table.intro td {
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
   background-color: rgb(255, 250, 250);
+  vertical-align: top;
+  text-align: right;
 }
 table.plain {
   padding: 0px 0px 0px 0px;
@@ -283,6 +288,8 @@ table.kw td.normal {
   text-decoration: none;
   border-style: hidden hidden hidden hidden;
 /*  background-color: rgb(255, 250, 250);*/
+  vertical-align: top;
+  text-align: right;
 }
 table.cell {
   border-width: 1px 1px 1px 1px;
@@ -308,6 +315,8 @@ table.cell td {
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
   background-color: rgb(255, 250, 250);
+  vertical-align: top;
+  text-align: right;
 }
 table.cell td.fixed {
   text-align: center;
@@ -688,6 +697,8 @@ table.diff td {
   border-collapse: separate;
   background-color: rgb(255, 250, 250);
   padding: 2px 2px 2px 2px;
+  vertical-align: top;
+  text-align: right;
 }
 table.diff td.diff_header {
   text-align: right:
@@ -743,6 +754,8 @@ table.table_diff th {
 }
 table.table_diff td {
   background-color: rgb(255, 250, 250);
+  vertical-align: top;
+  text-align: right;
 }
 table.table_diff td.from {
   background-color: #F0F0F0;
