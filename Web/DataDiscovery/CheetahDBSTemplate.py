@@ -2813,6 +2813,20 @@ $content
 """
 
 templateDatasetDetails="""
+<div class="sectionhead">DESCRIPTION:</div>
+<b>$dataset</b>
+<table class="dbs_table">
+#for item in $dList
+<tr>
+#for elem in $item
+<td>$elem</td>
+#end for
+</tr>
+#end for
+</table>
+"""
+
+templateDatasetDetails_dbsApi="""
 <div class="myList">
 #for dataset in $dList:
 <ul>
@@ -3313,6 +3327,47 @@ $table
 #for table in $tableList
 <script type="text/javascript">ajaxEngine.registerAjaxElement('cols_$table');ajaxGetTableColumns('$dbsInst','$table')</script>
 #end for
+"""
+
+templateConfigDiff="""
+<p>Compare <b>$config</b></p>
+<ul>
+<li>Release on your left : <em>$iRel</em>
+<li>Release on your right: <em>$oRel</em>
+</ul>
+#*
+<table class="dbs_table">
+<tr>
+<th>$iRel</th>
+<th>$oRel</th>
+</tr>
+
+<tr>
+<td>$iConf</td>
+<td>$oConf</td>
+</tr>
+</table> 
+*#
+<p />
+"""
+
+templateDiffLegend="""
+<p />
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="0"> Legends </th> </tr>
+        <tr> <td> <table class="diff" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table class="diff" border="0" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
 """
 
 templateDummy="""
