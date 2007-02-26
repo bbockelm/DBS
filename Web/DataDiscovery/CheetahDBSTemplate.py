@@ -1253,10 +1253,10 @@ $name<br />
 """
 
 templateTable="""
-<table cellspacing="0" border="1">
-<tr class="sortable_gray">
+<table class="dbs_table">
+<tr>
 #for item in $header
-<td>$item</td>
+<th>$item</th>
 #end for
 </tr>
 $content
@@ -1265,9 +1265,9 @@ $content
 
 templateTableBody="""
 #for items in $branch
-<tr class="sortable_yellow">
+<tr>
 #for elem in $items
-<td align="right">$elem</td>
+<td>$elem</td>
 #end for
 </tr>
 #end for
