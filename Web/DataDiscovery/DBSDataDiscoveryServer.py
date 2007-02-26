@@ -10,7 +10,7 @@ DBS data discovery server module.
 """
 
 # system modules
-import os, string, logging, types, time, socket, socket, urlparse, random, urllib
+import os, string, logging, types, time, socket, socket, urlparse, random, urllib, difflib
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -2268,11 +2268,25 @@ class DBSDataDiscoveryServer(DBSLogger):
     getAppConfigs.exposed=True
 
     def compareAppConfigs(self,dbsInst,appConfig,iRel,oRel):
-        page = "diff %s between %s %s"%(appConfig,iRel,oRel) 
+#        page = "diff %s between %s %s"%(appConfig,iRel,oRel) 
         c1 = self.helper.getConfigContentByName(dbsInst,appConfig,iRel)
         c2 = self.helper.getConfigContentByName(dbsInst,appConfig,oRel)
-        page+= "%s %s\n%s"%(appConfig,iRel,c1)
-        page+= "%s %s\n%s"%(appConfig,oRel,c2)
+        page=self.genTopHTML()
+#        if c1==c2:
+#           page+="<p>The '%s' was identical in release '%s' and '%s'</p>"%(appConfig,iRel,oRel)
+#        else:
+#           page+=textDiff(c1,c2,iRel,oRel,appConfig)
+
+        diff = difflib.HtmlDiff()
+        nameSpace={'config':appConfig,'iRel':iRel,'oRel':oRel,'iConf':c1,'oConf':c2}
+        t = Template(CheetahDBSTemplate.templateConfigDiff, searchList=[nameSpace])
+        page+=str(t)
+        page+= diff.make_table(c1.splitlines(1),c2.splitlines(1),'','',True)
+        t = Template(CheetahDBSTemplate.templateDiffLegend, searchList=[{}])
+        page+=str(t)
+        print page
+
+        page+=self.genBottomHTML()
         return page
     compareAppConfigs.exposed=True
 
@@ -2404,17 +2418,17 @@ class DBSDataDiscoveryServer(DBSLogger):
         description=""
         dList=self.helper.getDataDescription(processedDataset)
         # get formatted output of dataset details
-        nameSpace={'dList' : dList }
+        nameSpace={'dList' : dList, 'dataset':processedDataset }
         t = Template(CheetahDBSTemplate.templateDatasetDetails, searchList=[nameSpace])
         description+=str(t)
+        page+=description
 
-        description+="<p>Once available data description will be placed here</p>"
-
-        nameSpace={
-                   'description' : description
-                  }
-        t = Template(CheetahDBSTemplate.templateDescription, searchList=[nameSpace])
-        page+=str(t)
+#        description+="<p>Once available data description will be placed here</p>"
+#        nameSpace={
+#                   'description' : description
+#                  }
+#        t = Template(CheetahDBSTemplate.templateDescription, searchList=[nameSpace])
+#        page+=str(t)
         page+=self.genBottomHTML()
 #        page+="</response></ajax-response>"
         if self.verbose:
