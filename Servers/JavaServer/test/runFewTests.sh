@@ -90,6 +90,14 @@ listBlocks() {
 	display "$out"
 }
 
+listStorageElements () {
+	message="Executing listStorageElements API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listStorageElements`
+	display "$out"
+}
+
+
 listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
@@ -282,15 +290,15 @@ createAnalysisDatasetFromPD () {
 
 
 
-insertPrimaryDataset
-insertAlgorithm
+#insertPrimaryDataset
+#insertAlgorithm
 #insertTier
 #insertRun
 #insertLumiSection
-insertProcessedDataset
-insertBlock
-insertFiles
-createAnalysisDatasetFromPD
+#insertProcessedDataset
+#insertBlock
+#insertFiles
+#createAnalysisDatasetFromPD
 #listPrimaryDatasets
 #listProcessedDatasets
 #listAlgorithms
@@ -298,6 +306,7 @@ createAnalysisDatasetFromPD
 #listTiers
 #listBlocks
 #listFiles
+listStorageElements
 
 echo 
 echo "*************************************************************"

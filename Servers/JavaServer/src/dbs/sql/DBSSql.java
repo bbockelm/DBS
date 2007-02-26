@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.71 $"
- $Id: DBSSql.java,v 1.71 2007/02/08 22:23:53 afaq Exp $"
+ $Revision: 1.72 $"
+ $Id: DBSSql.java,v 1.72 2007/02/23 17:02:05 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -473,6 +473,20 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
+
+	public static PreparedStatement deleteMap(Connection conn, String tableName, String key1, String key2, String value1, String value2) throws SQLException {	
+		String sql = "DELETE FROM \n" +
+			tableName + "\n" +
+			"WHERE \n" +
+			key1 + " = ?\n" +
+			"AND " + key2 + " = ?\n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, value1);
+		ps.setString(columnIndx++, value2);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
 	//FIXME Just use this and delete all other getBlockIds
 	public static PreparedStatement getBlock(Connection conn, String procDSID,  String blockName) throws SQLException {
@@ -960,6 +974,32 @@ public class DBSSql {
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
+		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
+		
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listStorageElements(Connection conn, String seName) throws SQLException {
+		String sql = "SELECT DISTINCT se.ID as ID, \n " +
+			"se.SEName as STORAGE_ELEMENT_NAME, \n" +
+			"se.CreationDate as CREATION_DATE, \n" +
+			"se.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM StorageElement se \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = se.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = se.LastModifiedBy \n";
+
+		if(!seName.equals("%")){
+			 sql += "WHERE \n" +
+			 	"se.SEName like ? \n";
+		}
+		sql +=	"ORDER BY STORAGE_ELEMENT_NAME DESC";
+                int columnIndx = 1;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");

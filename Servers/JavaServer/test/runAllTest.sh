@@ -90,10 +90,20 @@ listTiers () {
 	display "$out"
 }
 
+listStorageElements () {
+	message="Executing listStorageElements API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listStorageElements`
+	#out=`$CMD api=listStorageElements storage_element_name="SE2*"`
+	#echo $out
+	display "$out"
+}
+
 listBlocks() {
 	message="Executing listBlocks API..."
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=listBlocks path=$path_child`
+	#out=`$CMD api=listBlocks`
 	display "$out"
 	#echo "$out"
 }
@@ -168,6 +178,21 @@ listAnalysisDataset () {
 	out=`$CMD api=listAnalysisDataset`
 	display "$out"
 }
+
+deleteSEFromBlock () {
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<storage_element storage_element_name='SE1_$rand' block_name='$block_name'/>
+		</dbs>"
+
+	message="Executing deleteSEFromBlock API..."
+	echo $message >> $outFile ; echo $message
+	#out=`$CMD api=deleteSEFromBlock storage_element_name="SE2_c13b4c7f-80af-4b9c-8a83-dfe095a6d1d8"`
+	out=`$CMD api=deleteSEFromBlock "xmlinput=$xmlString"`
+	#echo $out
+	display "$out"
+}
+
 
 
 #insert primary dataset
@@ -516,13 +541,15 @@ listRuns
 listTiers
 listBlocks
 listFiles
-##listDatasetContents
+#listDatasetContents
 listDatasetParents
 listFileParents
 listFileAlgorithms
 listFileTiers
 listFileLumis
 listRowsInTable
+listStorageElements
+deleteSEFromBlock
 #
 updateRun
 ##	

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.71 $"
- $Id: DBSApiLogic.java,v 1.71 2007/02/09 19:29:39 sekhri Exp $"
+ $Revision: 1.72 $"
+ $Id: DBSApiLogic.java,v 1.72 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -308,7 +308,7 @@ public class DBSApiLogic {
 	}
 	
 	/**
-	 * This is a private generic method that can insert entry into any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks of the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.
+	 * This is a generic method that can insert entry into any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.
 	 * @param tableName the table name of the table in the database schema.
 	 * @param key1 the first coloumn name of the table in the database schema.
 	 * @param key2 the second coloumn name of the table in the database schema.
@@ -319,7 +319,7 @@ public class DBSApiLogic {
 	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 */
 	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		if( getMapID(conn, tableName, key1, key2, value1, value2, false) == null ) {
+		if( isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate);
@@ -329,6 +329,29 @@ public class DBSApiLogic {
 			}
 		} else {
 			writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " Already Exists");
+		}	
+
+	}
+
+	/**
+	 * This is a generic method that can delete entry from any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it exist, it goes ahead and performs the delete.
+	 * @param tableName the table name of the table in the database schema.
+	 * @param key1 the first coloumn name of the table in the database schema.
+	 * @param key2 the second coloumn name of the table in the database schema.
+	 * @param value1 the first value to be inserted in the first coloumn name of the table.
+	 * @param value2 the second value to be inserted in the second coloumn name of the table.
+	 */
+	protected void deleteMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2) throws Exception {
+		if( !isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.deleteMap(conn, tableName, key1, key2, value1, value2);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
+		} else {
+			writeWarning(out, "Does Not Exists", "1820", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " does not exists");
 		}	
 
 	}
@@ -348,7 +371,7 @@ public class DBSApiLogic {
 	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 */
 	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String key3, String value1, String value2, String value3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		if( getMapID(conn, tableName, key1, key2, key3, value1, value2, value3, false) == null ) {
+		if( isNull(getMapID(conn, tableName, key1, key2, key3, value1, value2, value3, false)) ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertMap(conn, tableName, key1, key2, key3, value1, value2, value3, cbUserID, lmbUserID, creationDate);

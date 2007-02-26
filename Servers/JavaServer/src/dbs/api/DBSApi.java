@@ -1,6 +1,6 @@
 /**
- $Revision: 1.73 $"
- $Id: DBSApi.java,v 1.73 2007/02/06 20:54:53 sekhri Exp $"
+ $Revision: 1.74 $"
+ $Id: DBSApi.java,v 1.74 2007/02/23 17:02:05 sekhri Exp $"
  *
 */
 
@@ -293,6 +293,12 @@ public class DBSApi {
 						get(table, "block_name", false),
 						get(table, "storage_element_name", false)
 						);
+
+			} else if (apiStr.equals("listStorageElements")) {
+				(new DBSApiBlockLogic(this.data)).listStorageElements(conn, out, 
+						get(table, "storage_element_name", false)
+						);
+
 			} else if (apiStr.equals("listFiles")) {
 				(new DBSApiFileLogic(this.data)).listFiles(conn, out, 
 						get(table, "path", false),
@@ -372,6 +378,10 @@ public class DBSApi {
 			} else if (apiStr.equals("insertStorageElement")) {
 				(new DBSApiBlockLogic(this.data)).insertStorageElement(conn, out, DBSApiParser.parse(getXml(table), "storage_element"), dbsUser);
 			
+			} else if (apiStr.equals("deleteSEFromBlock")) {
+				(new DBSApiBlockLogic(this.data)).deleteSEFromBlock(conn, out, DBSApiParser.parse(getXml(table), "storage_element"), dbsUser);
+			
+
 
 			} else if (apiStr.equals("insertLumiSection")) {
 				api.insertLumiSection(conn, out,
