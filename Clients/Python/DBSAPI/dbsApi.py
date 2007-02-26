@@ -28,6 +28,7 @@ from dbsLumiSection import DbsLumiSection
 from dbsFile import DbsFile
 from dbsFileBlock import DbsFileBlock
 from dbsDataTier import DbsDataTier 
+from dbsStorageElement import DbsStorageElement 
 from dbsFileBranch import DbsFileBranch 
 from dbsAlgorithm import DbsAlgorithm
 from dbsAnalysisDataset import DbsAnalysisDataset
@@ -644,6 +645,60 @@ class DbsApi(DbsConfig):
           if name == 'block':
              result.append(self.currBlock)
   
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+
+
+  #-------------------------------------------------------------------
+
+  def listStorageElements(self, storage_element_name="*"):
+    """
+    Retrieve list of all storage elements that matches a shell glob pattern for storage element name
+
+    returns: list of DbsStorageElement objects.
+
+    params:
+        storage_element_name: pattern, if provided it will be matched against the content as a shell glob pattern
+         
+    raise: DbsApiException.
+
+    examples:
+
+      All Storage elements matching *SE*
+           api.listStorageElements("*SE*")
+	   
+      All Storage elements
+           api.listStorageElements()
+      
+
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'listStorageElements', 'storage_element_name' : storage_element_name }, 'GET')
+    logging.debug(data)
+
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'storage_element':
+               result.append(DbsStorageElement(Name=str(attrs['storage_element_name']),
+		       CreationDate=str(attrs['creation_date']),
+		       CreatedBy=str(attrs['created_by']),
+		       LastModificationDate=str(attrs['last_modification_date']),
+		       LastModifiedBy=str(attrs['last_modified_by']),
+		       ))
+	       
 
       xml.sax.parseString (data, Handler ())
       return result
