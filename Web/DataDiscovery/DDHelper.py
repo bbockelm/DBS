@@ -399,7 +399,7 @@ class DDHelper(DBSLogger):
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
                      ],distinct=True,
-                 order_by=[self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')] )
+                 order_by=[sqlalchemy.desc(self.col(tpm,'Name')),sqlalchemy.desc(self.col(tdt,'Name')),sqlalchemy.desc(self.col(tprd,'Name'))] )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
@@ -468,7 +468,7 @@ class DDHelper(DBSLogger):
                           .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                             ],distinct=True,
-                   order_by=[self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tblk,'CreatedBy'),self.col(tblk,'CreationDate'),self.col(tblk,'LastModifiedBy'),self.col(tblk,'LastModificationDate')]
+                   order_by=[sqlalchemy.desc(self.col(tblk,'Name')),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tblk,'CreatedBy'),self.col(tblk,'CreationDate'),self.col(tblk,'LastModifiedBy'),self.col(tblk,'LastModificationDate')]
                                  )
           if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
              empty,prim,tier,proc=string.split(kwargs['datasetPath'],"/")
@@ -524,7 +524,6 @@ class DDHelper(DBSLogger):
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
           tf   = self.alias('Files','tf')
-#          sel  = sqlalchemy.select([sqlalchemy.func.count(self.col(tf,'NumberOfEvents'))],
           sel  = sqlalchemy.select([self.col(tf,'NumberOfEvents')],
                  from_obj=[
                      tprd.outerjoin(tf,onclause=self.col(tf,'Dataset')==self.col(tprd,'ID'))
@@ -536,7 +535,7 @@ class DDHelper(DBSLogger):
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if prim and prim!="*":
+          if tier and tier!="*":
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -551,13 +550,55 @@ class DDHelper(DBSLogger):
 
   ### END OF WRAPPER ###
 
-  def getDataDescription(self,processedDataset=""):
-      if self.iface=="cgi":
-         return {}
-      else:
-         if processedDataset:
-            empty,prim,tier,proc=string.split(processedDataset,"/")
-            return self.api.getDatasetDetails(patternPrim=prim,patternDT=tier,patternProc=proc)
+  def getDataDescription(self,processedDataset):
+#      if self.iface=="cgi":
+#         return {}
+#      else:
+#         if processedDataset:
+#            empty,prim,tier,proc=string.split(processedDataset,"/")
+#            return self.api.getDatasetDetails(patternPrim=prim,patternDT=tier,patternProc=proc)
+      prim=tier=proc=""
+      if processedDataset and processedDataset!="*":
+         empty,prim,tier,proc=string.split(processedDataset,"/")
+      con = self.connectToDB()
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpdd = self.alias('PrimaryDatasetDescription','tpdd')
+          tmcd = self.alias('MCDescription','tmcd')
+          tod  = self.alias('OtherDescription','tod')
+          ttpd = self.alias('TriggerPathDescription','tttpd')
+          mcDesc=[self.col(tmcd,'MCChannelDescription'),self.col(tmcd,'MCProduction'),self.col(tmcd,'MCDecayChain'),self.col(tmcd,'CreatedBy'),self.col(tmcd,'CreationDate'),self.col(tmcd,'LastModifiedBy'),self.col(tmcd,'LastModificationDate')]
+          trDesc=[self.col(ttpd,'TriggerPathDescription'),self.col(ttpd,'CreationDate'),self.col(ttpd,'LastModifiedBy'),self.col(ttpd,'LastModificationDate')]
+          # TODO: I need to find out if it's MC or real data, depending on that information retrieve
+          # appropriate description
+          dataType='mc'
+          desc=mcDesc
+          if dataType!='mc':
+             desc = mcDesc
+          sel  = sqlalchemy.select(desc,
+                 from_obj=[
+                 tprd.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tpdd,onclause=self.col(tpm,'Description')==self.col(tpdd,'ID'))
+                     .outerjoin(tmcd,onclause=self.col(tpdd,'MCChannelDescriptionID')==self.col(tmcd,'ID'))
+                     .outerjoin(tod,onclause=self.col(tpdd,'OtherDescriptionID')==self.col(tod,'ID'))
+                     .outerjoin(ttpd,onclause=self.col(tpdd,'TriggerDescriptionID')==self.col(ttpd,'ID'))
+                     ],distinct=True,use_labels=True,
+                  order_by=desc )
+          if proc and proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getDataDescription"
+      oList = result.fetchall()
+#      oList=[]
+#      for item in result:
+#          oList.append(item)
+      con.close()
+      return oList
 
   def getDatasetsFromApplications(self):
       t1=time.time()
