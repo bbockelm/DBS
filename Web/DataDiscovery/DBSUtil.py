@@ -9,7 +9,7 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import os, string, sys, time, types, logging, traceback, random
+import os, string, sys, time, types, logging, traceback, random, difflib
 
 # import DBS modules
 import DBSOptions
@@ -514,6 +514,50 @@ class DBSLogger:
       ch.setFormatter(formatter)
       self.logger.addHandler(ch)
 
+def removeEmptyLines(s):
+    return ''.join(line for line in s.splitlines(1) if not line.isspace())
+
+def textDiff(a, b, th_a="", th_b="", title=""):
+    """Takes in strings a and b and returns a human-readable HTML diff."""
+    out = []
+    a = removeEmptyLines(a).splitlines(1)
+    b = removeEmptyLines(b).splitlines(2)
+    s = difflib.SequenceMatcher(None, a, b)
+    out.append('<p><b>%s</b>\n'%title)
+    out.append('<table class="table_diff">\n')
+    if title:
+       out.append('<tr><th><b>%s</b></th><th></th><th><b>%s</b></th></tr>\n'%(th_a,th_b))
+    for e in s.get_opcodes():
+        if e[0] == "replace":
+           old=''.join(a[e[1]:e[2]])
+           new=''.join(b[e[3]:e[4]])
+           sep='&hArr;'
+           tdOld="from"
+           tdNew="to"
+        elif e[0] == "delete":
+           old=''.join(a[e[1]:e[2]])
+           new=''
+           sep='&8212;'
+           tdOld="delete"
+           tdNew=""
+        elif e[0] == "insert":
+           old=''
+           new=''.join(b[e[3]:e[4]])
+           sep='+'
+           tdOld=""
+           tdNew="insert"
+        elif e[0] == "equal":
+           old=new=''.join(b[e[3]:e[4]])
+           sep=tdOld=tdNew=''
+        else: 
+           out="""<div class="box_red">Unable to diff a file '%s' in '%s' '%s'"""%(title,th_a,th_b)
+           return out
+        old=string.replace(old,'\n','<br>')
+        new=string.replace(new,'\n','<br>')
+        s="""<tr><td class="%s">%s</td><td>%s</td><td class="%s">%s</td></tr>\n"""%(tdOld,old,sep,tdNew,new)
+        out.append(s)
+    out.append('</table></p>\n')
+    return ''.join(out)
 #
 # main
 #
