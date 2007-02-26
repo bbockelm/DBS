@@ -1080,6 +1080,12 @@ table.menu a {
     font-weight: bold;
     color: #005599;
 }
+.td_gray_box_100 {
+    width: 100px;
+    color: #000000;
+    background-color: #E0E0E0;
+    padding: 1px 1px 1px 1px;
+}
 .td_gray_box {
     width: 50px;
     color: #000000;

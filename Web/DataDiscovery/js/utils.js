@@ -226,7 +226,7 @@ function ShowPanel(link) {
    }
 }
 function HidePanel(link) {
-   msg='<table width="100%"><tr><td class="menu_td_gray"><table width="100%"><tr><td class="td_gray_box"><a href="javascript:ShowPanel(\''+link+'\')">show panel</a></td><td></td></tr></table> </td></tr></table>';
+   msg='<table width="100%"><tr><td class="menu_td_gray"><table width="100%"><tr><td class="td_gray_box_100"><a href="javascript:ShowPanel(\''+link+'\')">show panel</a></td><td></td></tr></table> </td></tr></table>';
    var t=document.getElementById("HiddenPanel");
    if(t) {
       t.className="show";
