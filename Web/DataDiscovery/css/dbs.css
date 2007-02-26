@@ -221,6 +221,8 @@ table.dbs_table th {
   border-style: solid solid solid solid;
   border-color: gray gray gray gray;
   background-color: #F0F0F0;
+  vertical-align: top;
+  text-align: right;
 }
 table.dbs_table td {
   border-width: 1px 1px 1px 1px;
