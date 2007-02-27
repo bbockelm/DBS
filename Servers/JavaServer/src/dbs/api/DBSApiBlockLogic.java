@@ -1,6 +1,6 @@
 /**
- $Revision: 1.15 $"
- $Id: DBSApiBlockLogic.java,v 1.15 2007/02/23 17:02:05 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiBlockLogic.java,v 1.16 2007/02/26 20:41:55 sekhri Exp $"
  *
  */
 
@@ -219,9 +219,13 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}
 
 	public void deleteSEFromBlock(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		deleteMap(conn, out, "SEBlock", "SEID", "BlockID", 
-				getID(conn, "StorageElement", "SEName", get(table, "storage_element_name", true) , true),
-				getBlockID(conn, getBlock(table, "block_name", true), false, true));
+		String seName = getPattern(get(table, "storage_element_name"), "storage_element_name");
+		String blockName = getBlockPattern(get(table, "block_name"));
+		String seID = "%";
+		String blockID = "%";
+		if (seName != "%") seID = getID(conn, "StorageElement", "SEName", seName , true);
+		if (blockName != "%") blockID = getBlockID(conn, blockName, false, true);
+		deleteMap(conn,	out, "SEBlock", "SEID", "BlockID", seID, blockID);
 
 	}
 

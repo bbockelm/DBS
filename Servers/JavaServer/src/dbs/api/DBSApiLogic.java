@@ -1,6 +1,6 @@
 /**
- $Revision: 1.72 $"
- $Id: DBSApiLogic.java,v 1.72 2007/02/09 20:09:47 sekhri Exp $"
+ $Revision: 1.73 $"
+ $Id: DBSApiLogic.java,v 1.73 2007/02/26 20:41:55 sekhri Exp $"
  *
  */
 
@@ -342,18 +342,19 @@ public class DBSApiLogic {
 	 * @param value2 the second value to be inserted in the second coloumn name of the table.
 	 */
 	protected void deleteMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2) throws Exception {
-		if( !isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.deleteMap(conn, tableName, key1, key2, value1, value2);
-				ps.execute();
-			} finally {
-				if (ps != null) ps.close();
+		if(value1 != "%" && value2 != "%") {
+			if( isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
+				writeWarning(out, "Does Not Exists", "1820", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " does not exists");
+				return;
 			}
-		} else {
-			writeWarning(out, "Does Not Exists", "1820", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " does not exists");
-		}	
-
+		}
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.deleteMap(conn, tableName, key1, key2, value1, value2);
+			ps.execute();
+		} finally {
+			if (ps != null) ps.close();
+		}
 	}
 
 	/**

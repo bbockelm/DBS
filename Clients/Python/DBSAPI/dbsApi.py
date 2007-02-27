@@ -2023,14 +2023,14 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def deleteSEFromBlock(self, block, storage_element):
+  def deleteSEFromBlock(self, block="", storage_element=""):
     """
     Deletes the Storage Element assocaition with the Block in the DBS.
     
     param: 
-	block : The dbs file block passed in as a string containing the block name or a dbsFileBlock object. This field is mandatory.
-			  
-	storage_element : The name of storage element in the string format. This field is mandatory. 
+	block : The dbs file block passed in as a string containing the block name or a dbsFileBlock object.
+	storage_element : The name of storage element in the string format. Please note that if the user does not provide any
+	of these two parameters then all the file blcoks with thier storage elements relationships will get deleted.
 			  
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
