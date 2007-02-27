@@ -1,6 +1,6 @@
 /**
- $Revision: 1.74 $"
- $Id: DBSApi.java,v 1.74 2007/02/23 17:02:05 sekhri Exp $"
+ $Revision: 1.75 $"
+ $Id: DBSApi.java,v 1.75 2007/02/26 20:41:55 sekhri Exp $"
  *
 */
 
@@ -481,7 +481,7 @@ public class DBSApi {
 		} catch (DBSException dbsEx) {
 			if(conn != null) conn.rollback();
 			if (dbsEx.getMessage() == null ) {
-				writeException(out, "Unexpected execution exception", "1031", "NULL POINTER DBSException");
+				writeException(out, "Unexpected execution exception", "1080", "NULL POINTER DBSException");
 				return;
 			}
 			//dbsEx.printStackTrace();
@@ -490,7 +490,7 @@ public class DBSApi {
 		} catch (XMLException xmlEx) {
 			if(conn != null) conn.rollback();
 			if (xmlEx.getMessage() == null ) {
-				writeException(out, "Unexpected execution exception", "3003", "NULL POINTER SQLException");
+				writeException(out, "Unexpected execution exception", "3003", "NULL POINTER XMLException");
 				return;
 			}
 			//xmlEx.printStackTrace();

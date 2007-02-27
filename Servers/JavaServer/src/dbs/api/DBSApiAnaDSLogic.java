@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiAnaDSLogic.java,v 1.22 2007/02/05 20:22:45 sekhri Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.23 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -378,7 +378,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				adsList = listToVector(get(rs, "ANALYSIS_DATASET_NAMES"));
 			
 			} else {
-				throw new DBSException("Unavailable data", "1008", "No such analysis dataset definition " + analysisDatasetDefinitionName );
+				throw new DBSException("Unavailable data", "1021", "No such analysis dataset definition " + analysisDatasetDefinitionName );
 			}
 		} finally { 
 			if (rs != null) rs.close();
@@ -403,7 +403,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			String tmpList = "";
 			for (int i = 0; i != algo.length ; ++i) {
 				String data[] = algo[i].split(";");
-				if (data.length != 4) throw new DBSException("Invalid format", "1066", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
+				if (data.length != 4) throw new DBSException("Invalid format", "1023", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
 				if(!isNull(tmpList)) tmpList += ",";
 				tmpList += (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
 			}
@@ -505,7 +505,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	 private String parseRange(String range) throws Exception {
 		String[] data = range.split(",");
 		if(data.length != 2) {
-			throw new DBSException("Invalid format", "1037", " Expected a range in format number,number given " + range);
+			throw new DBSException("Invalid format", "1037", " Expected a range in number format. The given number is " + range);
 		}
 		return data[0] + " AND " + data[1];
 	}
@@ -519,7 +519,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		}
 		for (int i = 0; i != data.length ; ++i) {
 			String[] finalData = data[i].split(",");
-			if(finalData.length != 2) throw new DBSException("Invalid format", "1037", " Expected a range in format number,number given " + data[i]);
+			if(finalData.length != 2) throw new DBSException("Invalid format", "1037", " Expected a range in number. The given number is " + data[i]);
 			v.add(finalData);
 		}
 		return v;

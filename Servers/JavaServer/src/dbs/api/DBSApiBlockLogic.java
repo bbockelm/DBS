@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiBlockLogic.java,v 1.16 2007/02/26 20:41:55 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiBlockLogic.java,v 1.17 2007/02/27 17:28:05 sekhri Exp $"
  *
  */
 
@@ -430,7 +430,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                         if (checkOpen) {
                            String openForWriting = get(rs, "OPEN_FOR_WRITING");
                            if ( ! openForWriting.equals("1") )
-                              throw new DBSException("Data insert error", "1066", "Block : " + name + " not open for further files");
+                              throw new DBSException("Block Closed", "1024", "Block : " + name + " not open for further files");
                         }
 		} finally {
 			if (rs != null) rs.close();

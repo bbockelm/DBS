@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.10 $"
- $Id: DBSConfig.java,v 1.10 2007/01/04 17:44:29 afaq Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSConfig.java,v 1.11 2007/01/18 16:57:46 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -108,7 +108,7 @@ public class DBSConfig {
                     Vector allElement = dbsParser.getElements();
                     //Atleaste Resource, SupportedSchemaVersion, SupportedClientVersions nneds to be in DBS_SERVER_CONFIG
                     if (allElement.size() < 3) {
-                       throw new DBSException("Configuration Error", "1050", "DBS_SERVER_CONFIG doesnot have all required parameters ?");  
+                       throw new DBSException("Configuration Error", "1060", "DBS_SERVER_CONFIG doesnot have all required parameters ?");  
                     }
                     
                     //Lets try to get all required parameters     
@@ -163,7 +163,7 @@ public class DBSConfig {
                       throw new DBSException("Configuration Error", "1055", "Database URL not found in Config File");
                     }                
                     if (supportedSchemaVersion == null ) {
-                      throw new DBSException("Configuration Error", "1056", "Database SChEMA_VERSION not found in Config File");
+                      throw new DBSException("Configuration Error", "1056", "Database SCHEMA_VERSION not found in Config File");
                     }
                     if (supportedClientVersions == null ) {
                       throw new DBSException("Configuration Error", "1057", "Supported CLIENT_VERSIONS not found in Config File");
@@ -185,7 +185,7 @@ public class DBSConfig {
                       try {
                         property_file.close();
                       } catch (IOException ex) {
-                        throw new DBSException("Serious Error", "1053","Unable to close configuration file dbs.config "+
+                        throw new DBSException("Serious Error", "1061","Unable to close configuration file dbs.config "+
                                                                                                               ex.getMessage());
                       }
                   }  

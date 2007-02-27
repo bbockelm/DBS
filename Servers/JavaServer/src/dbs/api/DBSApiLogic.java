@@ -1,6 +1,6 @@
 /**
- $Revision: 1.73 $"
- $Id: DBSApiLogic.java,v 1.73 2007/02/26 20:41:55 sekhri Exp $"
+ $Revision: 1.74 $"
+ $Id: DBSApiLogic.java,v 1.74 2007/02/27 17:28:05 sekhri Exp $"
  *
  */
 
@@ -630,7 +630,7 @@ public class DBSApiLogic {
                // if (! Pattern.matches(VALID_BLOCK_LIST, blockName) )
                //         throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK_LIST + " The given block_name is " + blockName);
                 if( ! Pattern.matches(SAFE_BLOCK_LIST, blockName) )
-                        throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK_LIST);
+                        throw new DBSException("Invalid format", "1022", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK_LIST);
         }
 
 
