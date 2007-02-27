@@ -31,6 +31,7 @@ class  DbsFileBlock(DbsBase):
               OpenForWriting, User may not need to set this variable always
               Dataset, User may not need to set this variable always
               fileList, User may not need to set this variable always
+              StorageElementList, User may not need to set this variable always
    """
    def __init__(self, **args):
       DbsBase.__init__(self)

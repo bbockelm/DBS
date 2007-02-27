@@ -447,11 +447,6 @@ class DbsApi(DbsConfig):
 
            api.listRuns("/test_primary_anzar_001/SIM/TestProcessedDS002")
         
-        List ALL Runs for ALL Datasets
-       
-           api.listRuns("*")
-                Or
-           api.listRuns() 
 
        Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -579,7 +574,8 @@ class DbsApi(DbsConfig):
   def listBlocks(self, dataset=None, block_name="*", storage_element_name="*"):
     """
     Retrieve list of Blocks matching shell glob pattern for Block Name and/or 
-    Storage Element Name, for a dataset path (or glob pattern for dataset path).
+    Storage Element Name, for a dataset path (or glob pattern for dataset path). All the three parameters are optional.
+    
 
     returns: list of DbsFileBlock objects.
 
@@ -598,6 +594,15 @@ class DbsApi(DbsConfig):
            api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah#12345"):
       All Blocks from path /test_primary_001/SIM/TestProcessedDS001 whoes name starts with /this/*
            api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/*"):
+      All Blocks with a storage element name starting with SE3
+           api.listBlocks("", "", "SE3*"):
+      All Storage elements within a block name starting with /this/haha
+           api.listBlocks("", "/this/haha*", ""):
+      All Blocks with all storage element with in any dataset
+           api.listBlocks():
+
+
+       
 
       Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -1143,6 +1148,24 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listAnalysisDatasetDefinition(self, pattern_analysis_dataset_definition_name="*"):
+  """
+    Retrieves the list of definitions of the analysis dataset by matching against the given shell pattern for analysis 
+    dataset definition name.
+    Returns a list of DbsAnalysisDatasetDefinition objects. 
+
+    
+    params:
+          pattern_analysis_dataset_definition_name:  the shell pattren for nanlysis dataset definition name. If not given then the default value of * is assigned to it and all the definations are listed
+    returns: 
+          list of DbsAnalysisDatasetDefinition objects  
+    examples: 
+          api.listAnalysisDatasetDefinition()
+	  api.listAnalysisDatasetDefinition("mydef*")
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
@@ -1188,6 +1211,25 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listAnalysisDataset(self, analysis_dataset_name_pattern="*", path=""):
+  """
+    Retrieves the list of analysis dataset by matching against the given shell pattern for analysis 
+    dataset name.
+    Returns a list of DbsAnalysisDataset objects. 
+
+    
+    params:
+          analysis_dataset_name_pattern:  the shell pattren for nanlysis dataset name. If not given then the default value of * is assigned to it and all the datasets are listed
+	  path: is the processed dataset path in the format /prim/datatier/proc which if given list all the analysis dataset within that processed dataset
+    returns: 
+          list of DbsAnalysisDataset objects  
+    examples: 
+          api.listAnalysisDataset("*t005", "/test_primary_anzar_001/SIM/TestProcessedDS001")
+          api.listAnalysisDataset()
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
@@ -1251,6 +1293,24 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listDatasetParents(self, dataset):
+  """
+    Retrieves the list of processed dataset which are parents iof the given dataset.
+    Returns a list of DbsAnalysisDataset objects. 
+
+    
+    params:
+	  dataset: is the processed dataset represented either in string format as path (/prim/datatier/proc) or in DbsProcessedDataset format.
+	  This is a mandatory field and is not defaulted
+	  
+    returns: 
+          list of DbsProcessedDataset objects  
+    examples: 
+          api.listDatasetParents("/test_primary_anzar_001/SIM/TestProcessedDS001")
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
