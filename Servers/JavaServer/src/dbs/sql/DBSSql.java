@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.73 $"
- $Id: DBSSql.java,v 1.73 2007/02/26 20:41:56 sekhri Exp $"
+ $Revision: 1.74 $"
+ $Id: DBSSql.java,v 1.74 2007/02/27 17:28:06 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -330,8 +330,11 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT \n" + 
 			"f.ID as FILEID, \n" +
 			"ls.ID as LUMIID \n" +
-			"FROM LumiSection ls \n" +
-			"JOIN FileRunLumi fl \n\t" +
+			//"FROM LumiSection ls \n" +
+			//"JOIN FileRunLumi fl \n\t" +
+                        "FROM FileRunLumi fl \n" +
+                        "LEFT OUTER JOIN LumiSection ls \n"+
+
 				"ON fl.Lumi = ls.ID \n" +
 			"JOIN Files f \n\t" +
 				"ON f.ID = fl.Fileid \n" +
