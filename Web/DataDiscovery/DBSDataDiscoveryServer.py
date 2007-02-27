@@ -2710,12 +2710,12 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     executeSQLQuery.exposed=True
 
-    def getDbsSchema(self,dbsInst,**kwargs):
+    def getDbsSchema(self,dbsInst,table="all",**kwargs):
         self.helperInit(dbsInst)
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results_finder">"""
-        page+= self.helper.getDbsSchema()
+        page+= self.helper.getDbsSchema(table)
         page+="</response></ajax-response>"
         if self.verbose:
 #        if 1:

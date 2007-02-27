@@ -981,18 +981,17 @@ class DDHelper(DBSLogger):
           res=msg
       return res
 
-  def getDbsSchema(self,html=1):
+  def getDbsSchema(self,iTable='all',html=1):
       res = ""
       tList = self.dbsDBs.dbTables[self.dbsInstance].keys()
       tList.sort()
       for table in tList:
           tObj= self.dbsDBs.dbTables[self.dbsInstance][table]
-#          if string.lower(table)=="runs":
-#              print tObj.__dict__,repr(tObj)
+          if string.lower(iTable)!="all" and string.lower(iTable)!=string.lower(tObj.fullname):
+             continue
           if html:
              res+="<p><b>%s</b></p>"%tObj.fullname
              res+="""<table class="dbs_table">"""
-#             res+="<tr><th>Column</th><th></tr>"
           else:
              res+= "%s\n"%tObj.fullname
           for col  in tObj.columns:
@@ -1005,10 +1004,8 @@ class DDHelper(DBSLogger):
                  res+="<tr><td>%s</td><td>%s</td><td>%s</td></tr>"%(col.name,col.type,fk)
               else:
                  res+="  %s %s %s\n"%(col.name,pk,fk)
-#          res+=repr(tObj)
           if html: res+="</table><p />"
           res+="\n\n"
-          
       return res
           
 

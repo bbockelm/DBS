@@ -2469,23 +2469,27 @@ SQL query
          <option>$dbs</option>
          #end for
          </select>,
-         retrieve <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
+         ###retrieve <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
          </td>
          </tr>
          
          <tr>
          <td align="right">
-         Known tables:
+         ##Known tables:
+         DBS table(s):
          </td>
          <td>
-         <select id="dbsTables_999999" onchange="ChangeCols(999999,'dbsTables')" name="dbsTables">
+         ###<select id="dbsTables_999999" onchange="ChangeCols(999999,'dbsTables')" name="dbsTables">
+         <select id="kw_dbsTables" name="dbsTables">
+         <option>All</option>
          #for table in $dbsTables
          <option>$table</option>
          #end for
          </select>
          </td>
          <td>
-         <div id="tableCols_999999"></div>
+         ###<div id="tableCols_999999"></div>
+         retrieve <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
          </td>
          </table>
          <br />

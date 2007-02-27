@@ -514,12 +514,15 @@ function ChangeCols(lineId,tag) {
         ajaxGetTableColumns(dbsInst,tableName,lineId);
     }
 }
-function ajaxGetDbsSchema(dbsInst) {
+function ajaxGetDbsSchema(dbsInst,table) {
     ShowTag('results_finder');
     if(!dbsInst) {
         dbsInst=$("kw_dbsSelector").value
     }
-    ajaxEngine.sendRequest('ajaxGetDbsSchema','dbsInst='+dbsInst);
+    if(!table) {
+        table=$("kw_dbsTables").value
+    }
+    ajaxEngine.sendRequest('ajaxGetDbsSchema','dbsInst='+dbsInst,'table='+table);
 }
 function registerAjaxLucene() {
     ajaxEngine.registerRequest('ajaxGetLucene','getLucene');
