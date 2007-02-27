@@ -683,7 +683,7 @@ CREATE TABLE AnalysisDSFileLumi
   (
     ID                    integer,
     AnalysisDataset       integer                                                   not null,
-    Lumi                  integer                                                   not null,
+    Lumi                  integer                                                   ,
     Fileid                integer                                                   not null,
     CreationDate          TIMESTAMP DEFAULT SYSTIMESTAMP,
     CreatedBy             integer,

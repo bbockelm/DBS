@@ -702,7 +702,7 @@ CREATE TABLE AnalysisDSFileLumi
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     AnalysisDataset       BIGINT UNSIGNED                                                   not null,
-    Lumi                  BIGINT UNSIGNED                                                   not null,
+    Lumi                  BIGINT UNSIGNED                                                           ,
     Fileid                BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
