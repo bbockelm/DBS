@@ -143,10 +143,16 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype: none
            @return: none
         """
-        if type=="xml":
-           cherrypy.response.headerMap['Content-Type'] = "text/xml"
-        else:
-           cherrypy.response.headerMap['Content-Type'] = "text/html"
+        if  int(string.split(cherrypy.__version__,".")[0])==3:
+            if type=="xml":
+               cherrypy.response.headers['Content-Type']='text/xml'
+            else:
+               cherrypy.response.headers['Content-Type']='text/html'
+        elif int(string.split(cherrypy.__version__,".")[0])==2:
+            if type=="xml":
+               cherrypy.response.headerMap['Content-Type'] = "text/xml"
+            else:
+               cherrypy.response.headerMap['Content-Type'] = "text/html"
 
     def sendErrorReport(self,iMsg=""):
         """
@@ -1643,7 +1649,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             t = Template(CheetahDBSTemplate.templateDbsInfoTableEntry, searchList=[nameSpace])
             # query DBS and get more info about blocks
             page+=str(t)
-        page+= str(t)
+#        page+= str(t)
         page+="</table>"
         page+="</response></ajax-response>"
         if self.verbose:
@@ -2799,9 +2805,38 @@ if __name__ == "__main__":
     dbsManager = DBSDataDiscoveryServer(opts.verbose,opts.profile)
     if opts.quiet:
        dbsManager.setQuiet()
-    cherrypy.root = dbsManager
-    cherrypy.config.update(file="CherryServer.conf")
-    cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
+    if  int(string.split(cherrypy.__version__,".")[0])==3:
+#        cherrypy.tree.mount(dbsManager)
+#        myConfig = os.path.join(os.getcwd(), 'CherryServer3.conf')
+        cherrypy.config.update("CherryServer3.conf")
+#        cherrypy.config.update({'/': {'tools.staticdir.root' : os.getcwd() }})
+
+#        cherrypy.config.update(
+#               {'environment': 'production', 
+#                'log.screen': True,
+#                'server.socket_port': 8001,
+#                'server.thread_pool': 20,
+#                'log.error_file': 'dbs.log'
+#               })
+        conf = {'/'         : {'tools.staticdir.root': os.getcwd()},
+                '/images'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'images'},
+                '/rss'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'rss'},
+                '/css'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'css'},
+                '/js'       : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'js'},
+                '/WEBTOOLS' : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS'},
+                '/yui'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'yui'},
+               }
+
+
+    else:
+        cherrypy.root = dbsManager
+        cherrypy.config.update(file="CherryServer.conf")
+        cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
+
+#    cherrypy.root = dbsManager
+#    cherrypy.config.update(file="CherryServer.conf")
+#    cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
+
     if opts.profile:
        import hotshot                   # Python profiler
        import hotshot.stats             # profiler statistics
@@ -2813,4 +2848,10 @@ if __name__ == "__main__":
        stats.sort_stats('time', 'calls')
        stats.print_stats()
     else:       
-       cherrypy.server.start()
+       if  cherrypy.__version__=='3.0.1':
+#           print "test start",cherrypy.config
+#           cherrypy.server.quickstart()
+#           cherrypy.engine.start()
+           cherrypy.quickstart(dbsManager, '/', config=conf)
+       else:
+           cherrypy.server.start()
