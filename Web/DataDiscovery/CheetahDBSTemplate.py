@@ -125,6 +125,7 @@ templateTop = """
 <script type="text/javascript" src="yui/build/dom/dom.js"></script>
 <script type="text/javascript" src="yui/build/event/event.js"></script> 
 <script type="text/javascript" src="yui/build/container/container_core.js"></script>
+<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
 <script type="text/javascript" src="WEBTOOLS/Common/js/masthead.js"></script>
 <script type="text/javascript" src="WEBTOOLS/Common/js/footer.js"></script>
 
@@ -140,7 +141,6 @@ templateTop = """
 ###<script type="text/javascript" src="js/ricoLiveGrid.js"></script>
 ###<link rel="stylesheet" type="text/css" href="css/searchEngine.css" />
 
-
 #*
 <!-- TreeView from YUI -->
 <script type="text/javascript" src="yui/build/yahoo/yahoo.js" ></script>
@@ -150,9 +150,9 @@ templateTop = """
 *#
 
 <link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css" />
+<link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_masthead.css" />
 
 </head>
-###<body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs');insertSiteMasthead()" id="content">
 <body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs')" id="content">
 
 <noscript>
@@ -192,34 +192,6 @@ Contact: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
 
 </div>
 </div>
-
-#*
-<hr class="dbs" />
-<table width="99%" align="center">
-<tr>
-<td align="left" class="td33">
-<table><tr>
-<td align="left">
-<img src="images/CMSLogo.jpg" alt="CMS logo" />
-</td>
-<td align="left" valign="center">
-<span class="sectionhead_tight">
-DBS/DLS DATA DISCOVERY PAGE
-</span>
-</td>
-</tr></table>
-</td>
-<td align="center" class="td33">
-<span id="Greeting" />
-</td>
-<td align="right" valign="center" class="td33">
-Home page: <a href="$host/">users</a>
-<a href="$host/expert">experts</a>
-</td>
-</tr>
-</table>
-<hr class="dbs" />
-*#
 
 <div id="main" class="hide">
 <script type="text/javascript">SetMain()</script>
@@ -647,7 +619,7 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <!--
 <form action="getBlocksFromSite" method="get">
 -->
-<form action="javascript:ResetAllResults();ajaxSiteSearch()" method="get">
+<form action="javascript:ResetAllResults();showWaitingMessage();ajaxSiteSearch()" method="get">
 <table>
 <tr>
 <td>Choose DBS instance</td>
@@ -2468,18 +2440,15 @@ SQL query
          #for dbs in $dbsList
          <option>$dbs</option>
          #end for
-         </select>,
-         ###retrieve <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
+         </select>
          </td>
          </tr>
          
          <tr>
          <td align="right">
-         ##Known tables:
          DBS table(s):
          </td>
          <td>
-         ###<select id="dbsTables_999999" onchange="ChangeCols(999999,'dbsTables')" name="dbsTables">
          <select id="kw_dbsTables" name="dbsTables">
          <option>All</option>
          #for table in $dbsTables
@@ -2488,8 +2457,7 @@ SQL query
          </select>
          </td>
          <td>
-         ###<div id="tableCols_999999"></div>
-         retrieve <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
+         retrieve a <a href="javascript:ResetAllResults();ajaxGetDbsSchema()">schema</a>
          </td>
          </table>
          <br />
