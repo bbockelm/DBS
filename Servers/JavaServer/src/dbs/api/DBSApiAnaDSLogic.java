@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiAnaDSLogic.java,v 1.23 2007/02/09 20:09:47 sekhri Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.24 2007/02/27 22:12:19 sekhri Exp $"
  *
  */
 
@@ -345,8 +345,10 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		String anaDSDefID = ""; 
 		String procDSID = ""; 
-		//String lumiNumberList = ""; 
-		//String runNumberList = ""; 
+		String lumiNumberList =  ""; 
+		String runNumberList = ""; 
+                Vector lumiIDList = new Vector();
+                Vector runIDList = new Vector();
 		String tierList = ""; 
 		Vector tierIDList = new Vector(); 
 		Vector fileList = new Vector(); 
@@ -365,9 +367,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			if(rs.next()) {
 				anaDSDefID = get(rs, "ID");
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(rs, "PATH"), true);
-				//lumiNumberList = get(rs, "LUMI_SECTIONS");
+				lumiNumberList = get(rs, "LUMI_SECTIONS");
 				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
-				//runNumberList = get(rs, "RUNS");
+				runNumberList = get(rs, "RUNS");
 				runRangeList = parseRangeList(get(rs, "RUNS_RANGES"));
 				tierList = get(rs, "TIERS");
 				algoList = get(rs, "ALGORITHMS");
@@ -385,6 +387,21 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 
+                //get all lumi from lumiList
+                if(!isNull(lumiNumberList)) {
+                        String[] data = lumiNumberList.split(",");
+                        for (int i = 0; i != data.length ; ++i) {
+                                lumiIDList.add(getID(conn, "LumiSection", "LumiSectionNumber", data[i], true));
+                        }
+                }
+
+                //get all runs from runList
+                if(!isNull(runNumberList)) {
+                        String[] data = runNumberList.split(",");
+                        for (int i = 0; i != data.length ; ++i) {
+                                runIDList.add(getID(conn, "Runs", "RunNumber", data[i], true));
+                        } 
+                }
 
 		//Get all the tier IDs
 		if(!isNull(tierList)) {
@@ -396,6 +413,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			}
 			tierIDList = listToVector(tmpList);
 		}
+
 
 		//Get all the algo IDs
 		if(!isNull(algoList)) {
@@ -461,6 +479,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					tierIDList,
 					algoIDList,
 					fileList,
+					lumiIDList,
+					runIDList,
 					lumiRangeList,
 					runRangeList,
 					adsList,

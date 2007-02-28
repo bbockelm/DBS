@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.74 $"
- $Id: DBSSql.java,v 1.74 2007/02/27 17:28:06 sekhri Exp $"
+ $Revision: 1.75 $"
+ $Id: DBSSql.java,v 1.75 2007/02/27 18:09:30 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -323,6 +323,7 @@ public class DBSSql {
 	//public static PreparedStatement listAnalysisDSFileLumi(Connection conn, String adsID, String procDSID, 
 	public static PreparedStatement listAnalysisDSFileLumi(Connection conn,  String procDSID, 
 			Vector tierIDList, Vector algoIDList, Vector fileList, 
+                        Vector lumiIDList,Vector runIDList, 
 			Vector lumiRangeList, Vector runRangeList, 
 			Vector adsList, String userCut,	String op,
 			String cbUserID, String lmbUserID, String cDate) throws SQLException {
@@ -343,8 +344,12 @@ public class DBSSql {
 			"LEFT OUTER JOIN FileAlgo fa \n\t" +
 				"ON fa.Fileid = f.ID \n" +
 			"LEFT OUTER JOIN Runs r \n\t" +
-				"ON r.ID = ls.RunNumber \n" +
+				"ON r.ID = fl.Run \n" +
+				//"ON r.ID = ls.RunNumber \n" +
 			"WHERE f.Dataset = ? \n\t" ;
+
+
+
 
 		//if(!DBSUtil.isNull(tierIDList)) sql += op + " fdt.DataTier IN (?) \n\t";
 		if(tierIDList.size() > 0) {
@@ -373,6 +378,25 @@ public class DBSSql {
 			}
 			sql += op + " f.LogicalFileName IN (" + tmpSql + ") \n\t";
 		}
+
+
+                if(lumiIDList.size() > 0) {
+                        String tmpSql = "";
+                        for(int i = 0 ; i != lumiIDList.size(); ++i) {
+                                if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+                                tmpSql += "?";
+                        }
+                        sql += op + " ls.ID IN (" + tmpSql + ") \n\t";
+                }
+
+                if(runIDList.size() > 0) {
+                        String tmpSql = "";
+                        for(int i = 0 ; i != runIDList.size(); ++i) {
+                                if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+                                tmpSql += "?";
+                        }
+                        sql += op + " r.ID IN (" + tmpSql + ") \n\t";
+                }
 
 		//if(!DBSUtil.isNull(algoIDList)) sql += op + " fa.Algorithm IN (?) \n\t";
 		//if(!DBSUtil.isNull(fileList)) sql += op + " f.LogicalFileName IN (?) \n\t";
@@ -425,7 +449,9 @@ public class DBSSql {
 		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
 		for(int i = 0 ; i != algoIDList.size(); ++i) ps.setString(columnIndx++, (String)algoIDList.get(i));
 		for(int i = 0 ; i != fileList.size(); ++i) ps.setString(columnIndx++, (String)fileList.get(i));
-		
+                for(int i = 0 ; i != lumiIDList.size(); ++i) ps.setString(columnIndx++, (String)lumiIDList.get(i));
+                for(int i = 0 ; i != runIDList.size(); ++i) ps.setString(columnIndx++, (String)runIDList.get(i));
+ 		
 		//if(!DBSUtil.isNull(tierIDList)) ps.setString(columnIndx++, tierIDList);
 		//if(!DBSUtil.isNull(algoIDList)) ps.setString(columnIndx++, algoIDList);
 		//if(!DBSUtil.isNull(fileList)) ps.setString(columnIndx++, fileList);
