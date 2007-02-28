@@ -479,7 +479,7 @@ class DDHelper(DBSLogger):
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tdt,'Name')==tier)
           if kwargs.has_key('blockName') and kwargs['blockName']:
-             sel.append_whereclause(tblk.c.Name==kwargs['blockName'])
+             sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -989,6 +989,7 @@ class DDHelper(DBSLogger):
           tObj= self.dbsDBs.dbTables[self.dbsInstance][table]
           if string.lower(iTable)!="all" and string.lower(iTable)!=string.lower(tObj.fullname):
              continue
+          print tObj.__dict__
           if html:
              res+="<p><b>%s</b></p>"%tObj.fullname
              res+="""<table class="dbs_table">"""
@@ -1009,7 +1010,25 @@ class DDHelper(DBSLogger):
       return res
           
 
+  def checkQuery(self,query):
+      if string.find(query.lower(),"insert")!=-1:
+         return False
+      if string.find(query.lower(),"update")!=-1:
+         return False
+        
+      known_tables = self.dbsDBs.getTableNames(self.dbsInstance)
+      found=0
+      for tName in known_tables:
+          if string.find(query,tName)!=-1:
+             found=1
+      if not found:
+         return False
+      return True
+
   def executeSQLQuery(self,query):
+      if not self.checkQuery(query):
+         return "Your qury is not valid, you either specified unkonwn table or tried to perform insert/update operation, which are forbidden."
+
       con = self.connectToDB()
       res = ""
       try:
