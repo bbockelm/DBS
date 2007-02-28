@@ -1148,7 +1148,7 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listAnalysisDatasetDefinition(self, pattern_analysis_dataset_definition_name="*"):
-  """
+    """
     Retrieves the list of definitions of the analysis dataset by matching against the given shell pattern for analysis 
     dataset definition name.
     Returns a list of DbsAnalysisDatasetDefinition objects. 
@@ -1211,7 +1211,7 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listAnalysisDataset(self, analysis_dataset_name_pattern="*", path=""):
-  """
+    """
     Retrieves the list of analysis dataset by matching against the given shell pattern for analysis 
     dataset name.
     Returns a list of DbsAnalysisDataset objects. 
@@ -1293,7 +1293,7 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def listDatasetParents(self, dataset):
-  """
+    """
     Retrieves the list of processed dataset which are parents iof the given dataset.
     Returns a list of DbsAnalysisDataset objects. 
 
