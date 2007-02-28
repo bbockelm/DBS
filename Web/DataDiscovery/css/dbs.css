@@ -6,9 +6,8 @@ body  {
   margin-right: 1.2em;
   margin-top: 1.2em;
   margin-bottom: 1.2em;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: normal;
-/*  font-family: helvetica, arial, verdana, sans-serif;*/
   font-family: "Trebuchet MS", verdana, helvetica, arial, sans-serif;
   background: #ffffff;
   color: #000000;
@@ -20,7 +19,7 @@ body  {
   margin-right: 1.2em;
   margin-top: 1.2em;
   margin-bottom: 1.2em;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: normal;
   font-family: helvetica, arial, verdana, sans-serif;
   background: #ffffff;
@@ -65,7 +64,7 @@ hr.dbs_red {
   letter-spacing: 3px
 }
 
-H1, H2, H3 { font: bold small helvetica }
+/*H1, H2, H3 { font: bold small helvetica }*/
 
 b { font-weight: bold; text-decoration : none; }
 
