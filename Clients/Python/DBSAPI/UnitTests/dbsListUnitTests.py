@@ -82,7 +82,7 @@ f.write("\n\n***********************listBlock API tests*************************
 apiObj.run(path,excep = False)
 #apiObj.run("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01",excep = False)
 #apiObj.run("/PrimaryDS_ANZAR_01/test-tier-01/anzar-procds-05", excep = False)
-apiObj.run(excep = True)
+#apiObj.run(excep = True)
 apiObj.run("", excep = True)
 apiObj.run("/*/*/anzar-procds-01", excep = True)
 apiObj.run("/Primaryaaaaa/sdldljd/slkdscds-05", excep = True)
