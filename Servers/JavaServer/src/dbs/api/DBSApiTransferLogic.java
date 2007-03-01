@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiTransferLogic.java,v 1.9 2007/02/02 17:40:05 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiTransferLogic.java,v 1.10 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -116,7 +116,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
  
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {
-			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j));
+			blockApi.closeBlock(conn, out, (String)closeBlockVector.get(j), dbsUser);
 		}
 
 		

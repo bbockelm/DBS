@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiBlockLogic.java,v 1.19 2007/03/01 15:46:51 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiBlockLogic.java,v 1.20 2007/03/01 16:21:51 sekhri Exp $"
  *
  */
 
@@ -310,6 +310,10 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                         if (blockSize > configuredBlkSize || numberOfFiles >= configuredNumFiles ) {
                            DBSUtil.writeLog("*********************CLOSING BLOCK****************");
                            closeBlock(conn, id);
+                           insertTimeLog(conn, "CloseBlock", "Close Block Condition Sensed",
+                                                   "Block Closed", "Auto Closing Block",
+                                                   dbsUser);
+
                            id = insertBlock(conn, out, procDSID, path, block, dbsUser);
                         }
                 } finally {
@@ -390,9 +394,12 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 */
 
-
-	public void closeBlock(Connection conn, Writer out, String name) throws Exception {
+	public void closeBlock(Connection conn, Writer out, String name, Hashtable dbsUser) throws Exception {
 		closeBlock(conn, getBlockID(conn, name, false, true));
+                insertTimeLog(conn, "CloseBlock", "Close Block Called By User",
+                                                  "Block Closed", "Block Name: "+name,
+                                                   dbsUser);
+
 	}
 
 	private void closeBlock(Connection conn, String blockID) throws Exception {

@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.11 $"
- $Id: DBSConfig.java,v 1.11 2007/01/18 16:57:46 afaq Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSConfig.java,v 1.12 2007/02/27 22:12:20 sekhri Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -170,7 +170,8 @@ public class DBSConfig {
                     }
 
                     DBSUtil.writeLog("dbUserName: "+dbUserName);
-                    DBSUtil.writeLog("dbUserPasswd: "+dbUserPasswd);
+                    //Lets NOT Print the Password even in the Log
+                    //DBSUtil.writeLog("dbUserPasswd: "+dbUserPasswd);
                     DBSUtil.writeLog("dbDriver: "+dbDriver);
                     DBSUtil.writeLog("dbURL: "+dbURL);
                     DBSUtil.writeLog("supportedSchemaVersion: "+supportedSchemaVersion);

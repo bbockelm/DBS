@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.76 $"
- $Id: DBSSql.java,v 1.76 2007/02/28 17:31:25 afaq Exp $"
+ $Revision: 1.77 $"
+ $Id: DBSSql.java,v 1.77 2007/03/01 15:46:52 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -37,6 +37,22 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
+
+
+        public static PreparedStatement insertTimeLog(Connection conn, String action, String cause, 
+									String effect, String description,
+									String cbUserID, String cDate) throws SQLException {
+		Hashtable table = new Hashtable();
+		table.put("Action", action);
+		table.put("Cause", cause);
+		table.put("Effect", effect);
+		table.put("Description", description);
+		table.put("CreatedBy", cbUserID);
+		table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "TimeLog", table);
+        }
+
+
 
        	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
 		Hashtable table = new Hashtable();
