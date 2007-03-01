@@ -113,7 +113,7 @@ myfile2= DbsFile (
 # A file with RunsList and NOT lumi list
 myfile3= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0070',
+        LogicalFileName= 'NEW_TEST007',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -123,7 +123,7 @@ myfile3= DbsFile (
         #LumiList= [lumi3],
         TierList= ['SIM', 'RECO'],
         AlgoList = [algo],
-	RunsList = ['1'],
+	RunsList = [1],
          )
  
 # Need to provide Block name if YOU want to control Block management (The block named must pre-exist), if NOT then DBS will throw this file in
@@ -148,7 +148,7 @@ try:
     api.insertFiles (proc, [myfile3], block)
 
     api.insertFiles (proc, [myfile1, myfile2], block)
-    print "Result: %s" % proc
+    print "Result: %s" % myfile3
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

@@ -25,7 +25,7 @@ class  DbsAnalysisDatasetDefinition(DbsBase):
       self.setdefault('AlgoList', [])
       self.setdefault('TierList', [])
       self.setdefault('LumiList', [])
-      self.setdefault('RunList', [])
+      self.setdefault('RunsList', [])
       self.setdefault('AnalysisDSList', [])
       self.setdefault('LumiRangeList', [])
       self.setdefault('RunRangeList', [])

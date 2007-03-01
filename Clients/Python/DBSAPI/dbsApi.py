@@ -213,12 +213,18 @@ class DbsApi(DbsConfig):
 
     if obj == None:
             return ""; 
-    if type(obj) == type(''):
+
+    if type(obj) == type(int(1)):
        return obj
-    name = obj.get('RunNumber')
-    if name ==  None:
+
+    if type(obj) == type(long(1)):
+       return obj
+
+    num = obj.get('RunNumber')
+    if num ==  None:
             return ""
-    return name
+
+    return num
 
 
   # ------------------------------------------------------------
@@ -643,14 +649,16 @@ class DbsApi(DbsConfig):
                                        LastModificationDate=str(attrs['last_modification_date']),
                                        LastModifiedBy=str(attrs['last_modified_by']),
                                        )
+
           if name == 'storage_element':
-               self.currBlock['StorageElementList'].append(str(attrs['storage_element_name']))
+               self.currBlock['StorageElementList'].append(DbsStorageElement(
+								Name=str(attrs['storage_element_name']))
+							  )		
 	       
         def endElement(self, name):
           if name == 'block':
              result.append(self.currBlock)
   
-
       xml.sax.parseString (data, Handler ())
       return result
 
@@ -1184,7 +1192,7 @@ class DbsApi(DbsConfig):
           if name == 'analysis_dataset_definition':
                 curr_def = DbsAnalysisDatasetDefinition (
                         Name=str(attrs['analysis_dataset_definition_name']),
-                        RunList=str(attrs['runs']).split(','),
+                        RunsList=str(attrs['runs']).split(','),
                         TierList=str(attrs['tiers']).split(','),
                         FileList=str(attrs['lfns']).split(','),
                         LumiList=str(attrs['lumi_sections']).split(','),
@@ -1264,7 +1272,7 @@ class DbsApi(DbsConfig):
 	  if name == 'analysis_dataset_definition':
                 self.curr_def = DbsAnalysisDatasetDefinition (
             		Name=str(attrs['analysis_dataset_definition_name']),
-            		RunList=str(attrs['runs']).split(','),
+            		RunsList=str(attrs['runs']).split(','),
             		TierList=str(attrs['tiers']).split(','),
             		FileList=str(attrs['lfns']).split(','),
             		LumiList=str(attrs['lumi_sections']).split(','),
@@ -1633,8 +1641,10 @@ class DbsApi(DbsConfig):
            #xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
         xmlinput += "/>"
 
-    for run in dataset.get('RunList',[]):
-        xmlinput += "<run run_number='"+run+"'/>"
+    for run in dataset.get('RunsList',[]):
+        runNum = str(self._get_run(run))
+        if runNum not in ("", None):
+           xmlinput += "<run run_number='"+runNum+"'/>"
 
     xmlinput += "</processed_dataset>"
     xmlinput += "</dbs>"
@@ -1901,9 +1911,11 @@ class DbsApi(DbsConfig):
             xmlinput += " />"
 
        for run in file.get('RunsList', []):
-            xmlinput += "<file_lumi_section "
-            xmlinput += " run_number='"+self._get_run(run)+"'"
-            xmlinput += " />"
+            runNum = str(self._get_run(run))
+            if runNum not in ("", None):
+               xmlinput += "<file_lumi_section "
+               xmlinput += " run_number='"+runNum+"'"
+               xmlinput += " />"
 
        for tier in file.get('TierList',[]):
             xmlinput += "<file_data_tier name='"+self._name(tier)+"'/>"
@@ -2630,7 +2642,7 @@ class DbsApi(DbsConfig):
     for tier in analysisDatasetDefinition.get('TierList',[]):
         xmlinput += "<data_tier tier_name='"+tier+"'/>"
 
-    for run in analysisDatasetDefinition.get('RunList',[]):
+    for run in analysisDatasetDefinition.get('RunsList',[]):
         xmlinput += "<run run_number='"+run+"'/>"
 
     for alumiRange in analysisDatasetDefinition.get('LumiRangeList', []):

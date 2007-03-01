@@ -41,7 +41,7 @@ class  DbsProcessedDataset(DbsBase):
       # to avoid return "None" instead of empty list []
       self.setdefault('TierList', [])
       self.setdefault('PathList', [])
-      self.setdefault('RunList', [])
+      self.setdefault('RunsList', [])
       self.setdefault('ParentList', [])
       # Read in all User provided values
       self.update(args)

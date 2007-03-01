@@ -326,7 +326,7 @@ proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
 		Status="VALID",
 		TierList=tierList,
 		AlgoList=[algo1, algo2],
-                RunList=[str(runNumber1)],
+                RunsList=[runNumber1],
                 )
 apiObj.run(proc1, excep = False)
 
@@ -336,7 +336,7 @@ proc3 = DbsProcessedDataset(PrimaryDataset=pri2,
 		Status="VALID",
 		TierList=tierList,
 		AlgoList=[algo1, algo2],
-                RunList=[str(runNumber1)],
+                RunsList=[runNumber1],
                 )
 apiObj.run(proc3, excep = False)
 
@@ -346,7 +346,7 @@ proc3 = DbsProcessedDataset(PrimaryDataset=pri2,
 		Status="VALID",
 		TierList=tierList,
 		AlgoList=[algo1, algo2],
-                RunList=[str(runNumber1)],
+                RunsList=[runNumber1],
                 )
 apiObj.run(proc3, excep = False)
 

@@ -40,12 +40,12 @@ algo = DbsAlgorithm (
 primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
 proc = DbsProcessedDataset (
                             PrimaryDataset=primary, 
-                            Name="TestProcessedDS001", 
+                            Name="TestProcessedDS0011", 
                             PhysicsGroup="BPositive",
                             Status="VALID",
                             TierList=['SIM', 'RECO'],
                             AlgoList=[algo],
-                            RunList=['1'],   # Provide a Run Number List that goes with this ProcDS                   
+                            RunsList=[1],   # Provide a Run Number List that goes with this ProcDS                   
                             )
                              
 print "Creating a processed dataset %s" % proc
