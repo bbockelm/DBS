@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.75 $"
- $Id: DBSSql.java,v 1.75 2007/02/27 18:09:30 afaq Exp $"
+ $Revision: 1.76 $"
+ $Id: DBSSql.java,v 1.76 2007/02/28 17:31:25 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -507,8 +507,8 @@ public class DBSSql {
 		String sql = "DELETE FROM \n" +
 			tableName + "\n" +
 			"WHERE \n" +
-			key1 + " like ?\n" +
-			"AND " + key2 + " like ?\n";
+			key1 + " = ?\n" +
+			"AND " + key2 + " = ?\n";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
 		ps.setString(columnIndx++, value1);

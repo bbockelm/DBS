@@ -1,6 +1,6 @@
 /**
- $Revision: 1.17 $"
- $Id: DBSApiBlockLogic.java,v 1.17 2007/02/27 17:28:05 sekhri Exp $"
+ $Revision: 1.18 $"
+ $Id: DBSApiBlockLogic.java,v 1.18 2007/02/27 22:12:19 sekhri Exp $"
  *
  */
 
@@ -195,13 +195,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertStorageElement(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-		String blockID = getBlockID(conn, 
-				getBlock(table, "block_name", true), 
-				false, 
-				true);
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertStorageElement(conn, out, 
-				blockID,
+				getBlockID(conn, getBlock(table, "block_name", true), false, true),
 				get(table, "storage_element_name", true),
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -218,7 +214,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 	}
 
-	public void deleteSEFromBlock(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+	/*public void deleteSEFromBlockPermissive(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		String seName = getPattern(get(table, "storage_element_name"), "storage_element_name");
 		String blockName = getBlockPattern(get(table, "block_name"));
 		String seID = "%";
@@ -226,6 +222,13 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		if (seName != "%") seID = getID(conn, "StorageElement", "SEName", seName , true);
 		if (blockName != "%") blockID = getBlockID(conn, blockName, false, true);
 		deleteMap(conn,	out, "SEBlock", "SEID", "BlockID", seID, blockID);
+
+	}*/
+	
+	public void deleteSEFromBlock(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		deleteMap(conn,	out, "SEBlock", "SEID", "BlockID", 
+				getID(conn, "StorageElement", "SEName", get(table, "storage_element_name", true) , true), 
+				getBlockID(conn, getBlock(table, "block_name", true), false, true));
 
 	}
 
