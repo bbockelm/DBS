@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiAnaDSLogic.java,v 1.24 2007/02/27 22:12:19 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.25 2007/02/28 17:32:25 afaq Exp $"
  *
  */
 
@@ -391,7 +391,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                 if(!isNull(lumiNumberList)) {
                         String[] data = lumiNumberList.split(",");
                         for (int i = 0; i != data.length ; ++i) {
-                                lumiIDList.add(getID(conn, "LumiSection", "LumiSectionNumber", data[i], true));
+                                lumiIDList.add(getID(conn, "LumiSection", "LumiSectionNumber", data[i].trim(), true));
                         }
                 }
 
@@ -399,33 +399,27 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                 if(!isNull(runNumberList)) {
                         String[] data = runNumberList.split(",");
                         for (int i = 0; i != data.length ; ++i) {
-                                runIDList.add(getID(conn, "Runs", "RunNumber", data[i], true));
+                                runIDList.add(getID(conn, "Runs", "RunNumber", data[i].trim(), true));
                         } 
                 }
 
 		//Get all the tier IDs
 		if(!isNull(tierList)) {
 			String[] data = tierList.split(",");
-			String tmpList = "";
 			for (int i = 0; i != data.length ; ++i) {
-				if(!isNull(tmpList)) tmpList += ",";
-				tmpList += getID(conn, "DataTier", "Name", data[i], true);
+				tierIDList.add(getID(conn, "DataTier", "Name", data[i].trim(), true));
 			}
-			tierIDList = listToVector(tmpList);
 		}
 
 
 		//Get all the algo IDs
 		if(!isNull(algoList)) {
 			String[] algo = algoList.split(",");
-			String tmpList = "";
 			for (int i = 0; i != algo.length ; ++i) {
 				String data[] = algo[i].split(";");
 				if (data.length != 4) throw new DBSException("Invalid format", "1023", "Algorithm not stored in proper format in AnalysisDSDef Table. Proper format is version1;family1;exe1;pshash1,vrsion2;family2;exe2;pshash Given " + algo[i]);
-				if(!isNull(tmpList)) tmpList += ",";
-				tmpList += (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0], data[1], data[2],data[3], true);
+				algoIDList.add((new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, data[0].trim(), data[1].trim(), data[2].trim(),data[3].trim(), true));
 			}
-			algoIDList = listToVector(tmpList);
 		}
 
 		
