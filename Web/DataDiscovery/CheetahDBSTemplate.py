@@ -859,7 +859,7 @@ templateUserNav="""
 
 <tr>
 <td valign="top" align="right">
-<b>Data types</b>
+<b>Data tier</b>
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_tier_tag','<p>This menu shows all known in DBS data types.</p> <p><b>Example:</b> DIGI, RECO.</p>')" onMouseOut="ClearTag('kw_tier_tag')">?</div><span id="kw_tier_tag"></span></td>
 <td>
@@ -883,7 +883,7 @@ templateUserNav="""
 
 <tr>
 <td valign="top" align="right">
-<b>Trigger Line/<br />MC generators</b>
+<b>primary dataset/<br />MC generators</b>
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_prim_tag','<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>')" onMouseOut="ClearTag('kw_prim_tag')">?</div><span id="kw_prim_tag"></span></td>
 <td>
@@ -1304,6 +1304,79 @@ here</a>
 ###</p>
 """
 
+templateMoreInfo="""
+<div class="float_moreInfo">
+
+<table width="100%">
+<tr>
+<td align="left">
+<span class="sectionhead_tight">
+More information
+</span>
+</td>
+<td align="right">
+<a href="javascript:HideTag('$id')">close &#8855;</a>
+</td>
+</tr>
+</table>
+<hr class="dbs" />
+
+<div id="navlist">
+<ul>
+#*
+<li>
+Data location
+</li>
+*#
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getDbsData?dbsInst=$dbsInst&amp;site=All&amp;primD=*&amp;tier=*&amp;proc=$path&amp;_idx=0&amp;ajax=0',1000)">
+Block information
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getRuns?dbsInst=$dbsInst&amp;site=All&amp;primD=*&amp;tier=*&amp;proc=$path&amp;_idx=0&amp;ajax=0',1000)">
+Run information
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;ajax=0',1000)">
+Configuration files
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getProvenanceForAllDatasets?dbsInst=$dbsInst&amp;site=All&amp;primD=*&amp;tier=*&amp;proc=$path&amp;_idx=0&amp;ajax=0',1000)">
+Provenance information
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Data description</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('https://cmsdoc.cern.ch:8443/cms/aprom/phedex/tbedi/Request::Create?dbschoice=known&amp;dbs=http%3A//cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery%3Finstance%3D$dbsInst&amp;data=$path&amp;priority=0',1000)">PhEDEx subscription</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getParameterSet?dbsInst=$dbsInst&amp;dataset=$path',1000)">
+Parameter set(s)
+</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path',1000)">
+Analysis dataset(s)
+</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=-1',1000)">crab.cfg</a>
+</li>
+</ul>
+</div>
+
+</div>
+"""
+
 templateBlockList = """
 <hr class="dbs" />
 #if len($blockList)
@@ -1317,19 +1390,21 @@ Processed datasets:
 <td align="left">
 <b>$path</b>
 </td>
+<td>
+<div id="$idPath"></div>
+</td>
 <td align="center">
+<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath')">&#171; more &#187;</a>
+###<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath')"><img src="images/mag_glass2_small.png" alt="more info" style="border:none" /></a>
+#*
 (<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Description</a>,
 </td>
-#* PHEDEX
-<td>
-<a href="javascript:popUp('https://cmsdoc.cern.ch:8443/cms/aprom/phedex/tbedi/Request::Create?dbschoice=known&dbs=http%3A//cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery%3Finstance%3D$dbsInst&data=$path&priority=0',1000)">Phedex subscription</a>
-</td>
-*#
 <td>
 <a href="javascript:popUp('https://cmsdoc.cern.ch:8443/cms/aprom/phedex/tbedi/Request::Create?dbschoice=known&amp;dbs=http%3A//cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery%3Finstance%3D$dbsInst&amp;data=$path&amp;priority=0',1000)">PhEDEx subscription</a>,
 </td>
 <td align="center">
 <a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=$evts',1000)">crab.cfg</a>)
+*#
 </td>
 </tr>
 #end for

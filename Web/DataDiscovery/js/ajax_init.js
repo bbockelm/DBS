@@ -223,7 +223,6 @@ function getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier) {
 // AJAX registration 
 function ajaxGetRuns(_dbs,_site,_group,_app,_primD,_tier,proc) {
   ShowWheel("__runs");
-//  showLoadingMessage('runs');
   var arr  = getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -240,7 +239,6 @@ function ajaxGetRuns(_dbs,_site,_group,_app,_primD,_tier,proc) {
 // AJAX registration 
 function ajaxGetDbsData(_dbs,_site,_group,_app,_primD,_tier,proc) {
   ShowWheel("__results_dbs");
-//  showLoadingMessage('results_dbs');
   var arr  = getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
@@ -278,8 +276,7 @@ function ajaxGetUserData() {
 }
 function ajaxGetData(_dbs,_site,_group,_app,_primD,_tier,proc) {
   ShowWheel('__results');
-//  showLoadingMessage('results','Wait');
-  var arr  = getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier)
+  var arr  = getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier);
   if(!arr) return;
   var dbs  = arr[0];
   var site = arr[1];
@@ -289,12 +286,12 @@ function ajaxGetData(_dbs,_site,_group,_app,_primD,_tier,proc) {
   var group= arr[5];
   if(!proc) {proc="*";}
   // Set Cookies about current snapshot of data
-  SetCookie('dbsInst',dbs);
-  SetCookie('site',site);
-  SetCookie('app',app);
-  SetCookie('primD',primD);
-  SetCookie('tier',tier);
-  SetCookie('proc',proc);
+//  SetCookie('dbsInst',dbs);
+//  SetCookie('site',site);
+//  SetCookie('app',app);
+//  SetCookie('primD',primD);
+//  SetCookie('tier',tier);
+//  SetCookie('proc',proc);
 
   ajaxEngine.sendRequest('ajaxGetData',"dbsInst="+dbs,"site="+site,"group="+group,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'hist='+GetTagContent('navBar'));
   var action='<a href="javascript:ResetAllResults();ajaxGetData(\''+dbs+'\',\''+site+'\',\''+group+'\',\''+app+'\',\''+primD+'\',\''+tier+'\',\''+proc+'\')">Navigator ('+dbs+','+site+','+group+','+app+','+primD+','+tier+')</a>';
@@ -803,6 +800,7 @@ function ajaxInit(_dbs) {
   registerAjaxLucene();
   registerAjaxUserMenuCalls();
   initialize_dhtmlHistory();
+  registerAjaxGetMoreInfoCalls();
 }
 
 // Class which capture ajax response and handle it. 
@@ -844,22 +842,24 @@ function ajaxGenParentsGraphFromSelection() {
       }
   }
 }
-function ajaxGenParentsGraph(_dbs,_site,_app,_primD,_tier,proc) {
+function ajaxGenParentsGraph(_dbs,_site,_group,_app,_primD,_tier,proc) {
   ShowWheel("__parents");
-  var arr  = getDataFromSelectors(_dbs,_site,_app,_primD,_tier)
+//  showLoadingMessage('results_dbs');
+  var arr  = getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier)
   if(!arr) return;
   var dbs  = arr[0];
   var site = arr[1];
   var app  = arr[2];
   var primD= arr[3];
   var tier = arr[4];
+  var group= arr[5];
   if(!proc) {proc="*";}
-  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,'proc='+proc);
-  var action='<a href="javascript:ResetAllResults();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"group="+group,"app="+app,"primD="+primD,"tier="+tier,'proc='+proc);
+  var action='<a href="javascript:ResetAllResults();ajaxGenParentsGraph(\''+dbs+'\',\''+site+'\',\''+group+'\',\''+app+'\',\''+primD+'\',\''+tier+'\')">ParentGraph ('+dbs+','+site+','+app+','+primD+','+tier+','+proc+')</a>';
   ajaxHistory(action);
 }
-function ajaxNextGenParentsGraph(dbs,site,app,primD,tier,proc,idx) {
-  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,"_idx="+idx);
+function ajaxNextGenParentsGraph(dbs,site,group,app,primD,tier,proc,idx) {
+  ajaxEngine.sendRequest('ajaxGenParentsGraph',"dbsInst="+dbs,"site="+site,"group="+group,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,"_idx="+idx);
 }
 // keep this for first implementation of provenance calls
 function registerAjaxProvenanceCalls() {
@@ -1052,4 +1052,12 @@ function historyChange(newLocation, historyData) {
 }
 function ajax_dhtmlHistory(id,action) {
   dhtmlHistory.add(id,action);
+}
+function registerAjaxGetMoreInfoCalls() {
+    ajaxEngine.registerRequest('ajaxMoreInfo','getMoreInfo');
+//    ajaxEngine.registerAjaxElement('floatDataDescription');
+}
+function ajaxMoreInfo(dbsInst,path,appPath,id) {
+    ajaxEngine.sendRequest('ajaxMoreInfo','dbsInst='+dbsInst,'path='+path,'appPath='+appPath,'id='+id);
+    ShowTag(id);
 }

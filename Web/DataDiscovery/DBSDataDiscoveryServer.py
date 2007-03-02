@@ -1099,7 +1099,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                bList.append((dataset,totEvt))
             else:
                if len(bList): 
-                  page+=self.blockListToHTML(dbsInst,bList)
+                  page+=self.blockListToHTML(dbsInst,bList,appPath)
                   bList=[]
                bList.append((dataset,totEvt))
                page+=prevPage
@@ -1110,7 +1110,7 @@ class DBSDataDiscoveryServer(DBSLogger):
             prevPage = p
 
 #            print "##### %s %s sec"%(dataset,(time.time()-ttt1))
-        page+=self.blockListToHTML(dbsInst,bList)
+        page+=self.blockListToHTML(dbsInst,bList,appPath)
         page+=prevPage # end of new stuff
 
 #        page+=jsPage+"\n-->\n"
@@ -1142,9 +1142,9 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDataHelper.exposed=True
 
-    def blockListToHTML(self,dbsInst,bList):
+    def blockListToHTML(self,dbsInst,bList,appPath="*"):
         if not len(bList): return ""
-        nameSpace = {'host': self.dbsdd, 'dbsInst': dbsInst, 'blockList' : bList}
+        nameSpace = {'host': self.dbsdd, 'dbsInst': dbsInst, 'blockList' : bList,'appPath':appPath}
         t = Template(CheetahDBSTemplate.templateBlockList, searchList=[nameSpace])
         page=str(t)
         return page
@@ -1394,6 +1394,16 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getRuns.exposed = True 
+
+    def getAnalysisDS(self,dbsInst,dataset=""):
+        page="Here information about analysis dataset information will appear"
+        return page
+    getAnalysisDS.exposed=True
+
+    def getParameterSet(self,dbsInst,dataset=""):
+        page="Here information about paramterSet information will appear"
+        return page
+    getParameterSet.exposed=True
 
     def getLFNlist(self,dbsInst,blockName,dataset=""):
         """
@@ -1992,7 +2002,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getDatasetProvenance.exposed=True
 
-    def getProvenanceForAllDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*",_idx=0,**kwargs): 
+    def getProvenanceForAllDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,**kwargs): 
         """
            AJAX method to retrieve/build provenance graph once user made a choice to lookup
            data for given input parameters.
@@ -2010,23 +2020,20 @@ class DBSDataDiscoveryServer(DBSLogger):
            @return: returns HTML snippet in AJAX wrapper
         """
         _idx=int(_idx)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="parents">"""
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="parents">"""
+        else:
+           page=self.genTopHTML()
+           page+= self.genResultsHTML()
+
         if string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all": site="*"
         self.helperInit(dbsInst)
-#        self.dbs  = dbsInst
-#        self.site = site
-#        self.app  = app
-#        self.primD= primD
-#        self.tier = tier
-#        primaryDataset=primD
-#        dataTier = tier
-        dList = self.helper.getDatasetsFromApp(app,primD,tier)
+        dList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc)
         nDatasets=len(dList)
         className="hide"
-#        if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
         if int(_idx)==0:
            className="show_inline"
         page+="""<div id="parents_response_%s" class="%s">"""%(_idx,className)
@@ -2038,7 +2045,10 @@ class DBSDataDiscoveryServer(DBSLogger):
 
             page+=self.getDatasetProvenanceHelper(dataset)
         page+="</div>"
-        page+="</response></ajax-response>"
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
         if self.verbose:
 #        if 1:
            print page
@@ -2240,7 +2250,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return self.index()
     register.exposed=True
 
-    def getAppConfigs(self,dbsInst,appPath,**kwargs):
+    def getAppConfigs(self,dbsInst,appPath,ajax=1,**kwargs):
         """
             Application configs retriever
         """
@@ -2254,8 +2264,6 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace={'selTag':"",'changeFunction':"",'name':"selRels",'iList':rList}
         t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
         rels=str(t)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
         nameSpace={
                    'appPath'   : appPath,
                    'dbsInst'   : dbsInst,
@@ -2264,9 +2272,18 @@ class DBSDataDiscoveryServer(DBSLogger):
                    'releases'  : rList
                   }
         t = Template(CheetahDBSTemplate.templateAppConfigs, searchList=[nameSpace])
-        page="""<ajax-response><response type="object" id="appConfigs">"""
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="appConfigs">"""
+        else:
+           page=self.genTopHTML()
+           page+= self.genResultsHTML()
         page+= str(t)
-        page+="</response></ajax-response>"
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
         if self.verbose:
 #        if 1:
            print page
@@ -2557,6 +2574,23 @@ class DBSDataDiscoveryServer(DBSLogger):
            print page
         return page
     getFloatBox.exposed=True
+
+    def getMoreInfo(self,dbsInst,path,appPath,id,**kwargs):
+        """ 
+            Get data description.
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="%s">"""%id
+        nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id}
+        t = Template(CheetahDBSTemplate.templateMoreInfo, searchList=[nameSpace])
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose:
+#        if 1:
+           print page
+        return page
+    getMoreInfo.exposed=True
 
     def getRss(self):
         dbsList=[]

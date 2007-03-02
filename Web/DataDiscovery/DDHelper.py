@@ -335,14 +335,19 @@ class DDHelper(DBSLogger):
           tapf = self.alias('AppFamily','tapf')
           talc = self.alias('AlgorithmConfig','talc')
           tqps = self.alias('QueryableParameterSet','tqps')
-          sel  = sqlalchemy.select([self.col(tqps,'ID'),self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tqps,'CreatedBy'),self.col(tqps,'LastModificationDate'),self.col(tqps,'LastModifiedBy')],
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
+
+          oSel = [self.col(tqps,'ID'),self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
+          sel  = sqlalchemy.select(oSel,
                    from_obj=[
                      tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
-                            ],distinct=True,
-                   order_by=[self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tqps,'CreatedBy'),self.col(tqps,'LastModificationDate'),self.col(tqps,'LastModifiedBy')]
+                     .outerjoin(tp1,onclause=self.col(tqps,'CreatedBy')==self.col(tp1,'ID'))
+                     .outerjoin(tp2,onclause=self.col(tqps,'LastModifiedBy')==self.col(tp2,'ID'))
+                            ],distinct=True,order_by=oSel
                                  )
           if appPath and appPath!="*":
              empty,ver,fam,exe=string.split(appPath,"/")
@@ -461,14 +466,19 @@ class DDHelper(DBSLogger):
           tpm  = self.alias('PrimaryDataset','tpm')
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
-          sel  = sqlalchemy.select([self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tblk,'CreatedBy'),self.col(tblk,'CreationDate'),self.col(tblk,'LastModifiedBy'),self.col(tblk,'LastModificationDate')],
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
+
+          oSel = [self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate')]
+          sel  = sqlalchemy.select(oSel,
                    from_obj=[
                           tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                            ],distinct=True,
-                   order_by=[sqlalchemy.desc(self.col(tblk,'Name')),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tblk,'CreatedBy'),self.col(tblk,'CreationDate'),self.col(tblk,'LastModifiedBy'),self.col(tblk,'LastModificationDate')]
+                          .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
+                          .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
+                            ],distinct=True,order_by=oSel
                                  )
           if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
              empty,prim,tier,proc=string.split(kwargs['datasetPath'],"/")
@@ -491,7 +501,7 @@ class DDHelper(DBSLogger):
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate=item
           if not blockName: continue
           if kwargs.has_key('fullOutput'):
-             aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate}
+             aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModifiedBy':mBy,'LastModificationDate':mDate}
              aList.append(aDict)
           else:
              aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize]
@@ -568,8 +578,11 @@ class DDHelper(DBSLogger):
           tmcd = self.alias('MCDescription','tmcd')
           tod  = self.alias('OtherDescription','tod')
           ttpd = self.alias('TriggerPathDescription','tttpd')
-          mcDesc=[self.col(tmcd,'MCChannelDescription'),self.col(tmcd,'MCProduction'),self.col(tmcd,'MCDecayChain'),self.col(tmcd,'CreatedBy'),self.col(tmcd,'CreationDate'),self.col(tmcd,'LastModifiedBy'),self.col(tmcd,'LastModificationDate')]
-          trDesc=[self.col(ttpd,'TriggerPathDescription'),self.col(ttpd,'CreationDate'),self.col(ttpd,'LastModifiedBy'),self.col(ttpd,'LastModificationDate')]
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
+
+          mcDesc=[self.col(tmcd,'MCChannelDescription'),self.col(tmcd,'MCProduction'),self.col(tmcd,'MCDecayChain'),self.col(tp1,'DistinguishedName'),self.col(tmcd,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tmcd,'LastModificationDate')]
+          trDesc=[self.col(ttpd,'TriggerPathDescription'),self.col(tp1,'DistinguishedName'),self.col(ttpd,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(ttpd,'LastModificationDate')]
           # find out if it's MC or real data, depending on that information retrieve
           # appropriate description
           tpt  = self.alias('PrimaryDSType','tpt')
@@ -597,6 +610,8 @@ class DDHelper(DBSLogger):
                      .outerjoin(tmcd,onclause=self.col(tpdd,'MCChannelDescriptionID')==self.col(tmcd,'ID'))
                      .outerjoin(tod,onclause=self.col(tpdd,'OtherDescriptionID')==self.col(tod,'ID'))
                      .outerjoin(ttpd,onclause=self.col(tpdd,'TriggerDescriptionID')==self.col(ttpd,'ID'))
+                     .outerjoin(tp1,onclause=self.col(tpdd,'CreatedBy')==self.col(tp1,'ID'))
+                     .outerjoin(tp2,onclause=self.col(tpdd,'LastModifiedBy')==self.col(tp2,'ID'))
                      ],distinct=True,use_labels=True,
                   order_by=desc )
           if proc and proc!="*":
@@ -794,7 +809,7 @@ class DDHelper(DBSLogger):
           if html:
              navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-             blockInfo="ajaxGetDbsData('%s','all','*,'*','%s','*','*')"%(self.dbsInstance,name)
+             blockInfo="ajaxGetDbsData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
              runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
@@ -852,15 +867,65 @@ class DDHelper(DBSLogger):
       return content
 
   def getDatasetProvenance(self,dataset):
-#      print "search",dataset
-      pList=[]
-      for parent in self.api.getDatasetProvenance(dataset):
-          p=parent['parent']['datasetPathName']
-#          print "child",p
-          if not p: break
-          pList.append(p)
-          pList+=self.getDatasetProvenance(p)
-      return pList
+#      pList=[]
+#      for parent in self.api.getDatasetProvenance(dataset):
+#          p=parent['parent']['datasetPathName']
+#          if not p: break
+#          pList.append(p)
+#          pList+=self.getDatasetProvenance(p)
+#      return pList
+
+
+      t1=time.time()
+      prim=tier=proc=""
+      if datasetPath and datasetPath!="*":
+         empty,prim,tier,proc=string.split(datasetPath,"/")
+      con = self.connectToDB()
+      oList  = []
+      try:
+
+          tprd = self.alias('ProcessedDataset','tprd')
+          tprd2= self.alias('ProcessedDataset','tprd2')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
+          tpdp = self.alias('ProcDSParent','tpdp')
+          tpdp2= self.alias('ProcDSParent','tpdp2')
+
+          oSel = [self,col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd2,'Name')]
+          sel  = sqlalchemy.select(oSel,
+                 from_obj=[
+                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
+                     .outerjoin(tpdp2,onclause=self.col(tpdp2,'ItsParent')==self.col(tprd2,'ID'))
+                     ],distinct=True,order_by=oSel )
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if tier and tier!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
+          if proc and proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listProcessedDataset_al"
+      for item in result:
+          if not item[0] or not item[1] or not item[2]: continue
+          name="/%s/%s/%s"%(item[0],item[1],item[2])
+#          if html:
+#             navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
+#             dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+#             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+#             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
+          oList.append(name)
+      if self.verbose:
+         print "time getProcessedDatasets",(time.time()-t1)
+      con.close()
+      return oList
+
 
   def exeQuery(self,q):
       """
@@ -961,7 +1026,7 @@ class DDHelper(DBSLogger):
              sel = sqlalchemy.select(iList, from_obj=[tableName])
           result = self.getSQLAlchemyResult(con,sel)
           if  self.verbose:
-              print "\n\n#### getTableContent",tableName,iList
+#              print "\n\n#### getTableContent",tableName,iList
               for item in result:
                   print item
       except:
@@ -989,20 +1054,21 @@ class DDHelper(DBSLogger):
           tObj= self.dbsDBs.dbTables[self.dbsInstance][table]
           if string.lower(iTable)!="all" and string.lower(iTable)!=string.lower(tObj.fullname):
              continue
-          print tObj.__dict__
+#          print tObj.__dict__
           if html:
              res+="<p><b>%s</b></p>"%tObj.fullname
              res+="""<table class="dbs_table">"""
           else:
              res+= "%s\n"%tObj.fullname
           for col  in tObj.columns:
+              colType=string.split(string.split(repr(col.type))[0],".")[-1]
               fk=""
               if col.foreign_key: fk=repr(col.foreign_key)
               if col.primary_key:
                  fk="PrimaryKey"
-                 if col.autoincrement: fk+=", Autoincrment"
+#                 if col.autoincrement: fk+=", Autoincrment"
               if html:
-                 res+="<tr><td>%s</td><td>%s</td><td>%s</td></tr>"%(col.name,col.type,fk)
+                 res+="<tr><td>%s</td><td>%s</td><td>%s</td></tr>"%(col.name,colType,fk)
               else:
                  res+="  %s %s %s\n"%(col.name,pk,fk)
           if html: res+="</table><p />"
@@ -1257,12 +1323,17 @@ class DDHelper(DBSLogger):
           tb   = self.alias('Branch','tb')
           tfb  = self.alias('FileBranch','tfb')
           tf   = self.alias('Files','tf')
-          sel  = sqlalchemy.select([self.col(tb,'Name'),self.col(tb,'LastModifiedBy'),self.col(tb,'LastModificationDate'),self.col(tb,'CreatedBy'),self.col(tb,'CreationDate')],
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
+
+          oSel = [self.col(tb,'Name'),self.col(tp1,'DistinguishedName'),self.col(tb,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tb,'LastModificationDate')]
+          sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tf.outerjoin(tfb,self.col(tfb,'Fileid')==self.col(tf,'ID'))
                        .outerjoin(tb,onclause=self.col(tfb,'Branch')==self.col(tb,'ID'))
-                     ],distinct=True,
-                 order_by=[self.col(tb,'Name'),self.col(tb,'LastModifiedBy'),self.col(tb,'LastModificationDate'),self.col(tb,'CreatedBy'),self.col(tb,'CreationDate')]
+                       .outerjoin(tp1,onclause=self.col(tb,'CreatedBy')==self.col(tp1,'ID'))
+                       .outerjoin(tp2,onclause=self.col(tb,'LastModifiedBy')==self.col(tp2,'ID'))
+                     ],distinct=True,order_by=oSel
                                   )
           if lfn and lfn!="*":
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
@@ -1270,7 +1341,7 @@ class DDHelper(DBSLogger):
       except:
           printExcept()
           raise "Fail in getLFN_Branches"
-      tList=['Name','LastModifiedBy','LastModificationDate','CreatedBy','CreationDate']
+      tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
       oList=[]
       for item in result:
           if not item[0]: continue
@@ -1288,12 +1359,17 @@ class DDHelper(DBSLogger):
           tls   = self.alias('LumiSection','tls')
           tfr  = self.alias('FileRunLumi','tfr')
           tf   = self.alias('Files','tf')
-          sel  = sqlalchemy.select([self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tls,'LastModifiedBy'),self.col(tls,'LastModificationDate'),self.col(tls,'CreatedBy'),self.col(tls,'CreationDate')],
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
+
+          oSel = [self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tp1,'DistinguishedName'),self.col(tls,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tls,'LastModificationDate')]
+          sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tf.outerjoin(tfr,self.col(tfr,'Fileid')==self.col(tf,'ID'))
                        .outerjoin(tls,onclause=self.col(tfr,'Lumi')==self.col(tls,'ID'))
-                     ],distinct=True,
-                 order_by=[self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tls,'LastModifiedBy'),self.col(tls,'LastModificationDate'),self.col(tls,'CreatedBy'),self.col(tls,'CreationDate')]
+                       .outerjoin(tp1,onclause=self.col(tls,'CreatedBy')==self.col(tp1,'ID'))
+                       .outerjoin(tp2,onclause=self.col(tls,'LastModifiedBy')==self.col(tp2,'ID'))
+                     ],distinct=True,order_by=oSel
                                   )
           if lfn and lfn!="*":
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
@@ -1301,7 +1377,7 @@ class DDHelper(DBSLogger):
       except:
           printExcept()
           raise "Fail in getLFN_Lumis"
-      tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime','LastModifiedBy','LastModificationDate','CreatedBy','CreationDate']
+      tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
       oList=[]
       for item in result:
           if not item[0]: continue
@@ -1324,12 +1400,17 @@ class DDHelper(DBSLogger):
           tdt  = self.alias('DataTier','tdt')
           tft  = self.alias('FileTier','tft')
           tf   = self.alias('Files','tf')
-          sel  = sqlalchemy.select([self.col(tdt,'Name'),self.col(tdt,'LastModifiedBy'),self.col(tdt,'LastModificationDate'),self.col(tdt,'CreatedBy'),self.col(tdt,'CreationDate')],
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
+
+          oSel = [self.col(tdt,'Name'),self.col(tp1,'DistinguishedName'),self.col(tdt,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tdt,'LastModificationDate')]
+          sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tf.outerjoin(tft,self.col(tft,'Fileid')==self.col(tf,'ID'))
                        .outerjoin(tdt,onclause=self.col(tft,'DataTier')==self.col(tdt,'ID'))
-                     ],distinct=True,
-                 order_by=[self.col(tdt,'Name'),self.col(tdt,'LastModifiedBy'),self.col(tdt,'LastModificationDate'),self.col(tdt,'CreatedBy'),self.col(tdt,'CreationDate')]
+                       .outerjoin(tp1,onclause=self.col(tdt,'CreatedBy')==self.col(tp1,'ID'))
+                       .outerjoin(tp2,onclause=self.col(tdt,'LastModifiedBy')==self.col(tp2,'ID'))
+                     ],distinct=True,order_by=oSel
                                   )
           if lfn and lfn!="*":
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
@@ -1337,7 +1418,7 @@ class DDHelper(DBSLogger):
       except:
           printExcept()
           raise "Fail in getLFN_Tiers"
-      tList=['Name','LastModifiedBy','LastModificationDate','CreatedBy','CreationDate']
+      tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
       oList=[]
       for item in result:
           if not item[0]: continue
@@ -1543,8 +1624,10 @@ class DDHelper(DBSLogger):
           tpdr = self.alias('ProcDSRuns','tpdr')
           trun = self.alias('Runs','trun')
           tpt  = self.alias('PrimaryDSType','tpt')
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
 
-          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(trun,'CreatedBy'),self.col(trun,'CreationDate'),self.col(trun,'LastModifiedBy'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type')]
+          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type')]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -1553,6 +1636,8 @@ class DDHelper(DBSLogger):
                           .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                          .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
+                          .outerjoin(tp2,onclause=self.col(trun,'LastModifiedBy')==self.col(tp2,'ID'))
                                 ],distinct=True,order_by=oSel
                                  )
           if dataset:
@@ -1571,7 +1656,7 @@ class DDHelper(DBSLogger):
       for item in result:
           run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,type=item
           if not run: continue
-          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mBy,'LastModifiedBy':mDate,'Type':type}
+          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':type}
           oList.append(aDict)
       if self.verbose:
          print "time in getRuns:",(time.time()-t1)
@@ -1603,6 +1688,8 @@ class DDHelper(DBSLogger):
           tpm  = self.alias('PrimaryDataset','tpm')
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
+          tp1   = self.alias('Person','tp1')
+          tp2   = self.alias('Person','tp2')
 
           sel  = sqlalchemy.select([self.col(tprd,'Name')],
                    from_obj=[
