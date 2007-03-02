@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 616
+REM === Build : 626
 REM ======================================================================
 
 CREATE TABLE Person
@@ -125,19 +125,6 @@ CREATE TABLE LumiSection
 
 REM ======================================================================
 
-CREATE TABLE StorageElement
-  (
-    ID                    BIGINT UNSIGNED,
-    SEName                varchar(500)                                                      unique not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
 CREATE TABLE Branch
   (
     ID                    BIGINT UNSIGNED,
@@ -151,56 +138,15 @@ CREATE TABLE Branch
 
 REM ======================================================================
 
-CREATE TABLE Description
-  (
-    ID                    BIGINT UNSIGNED,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
 CREATE TABLE TimeLog
   (
-    ID                    BIGINT UNSIGNED,
-    Action                varchar(100)                                                      not null,
-    Cause                 varchar(100)                                                      not null,
-    Effect                varchar(100)                                                      not null,
-    Description           varchar(500)                                                      not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE PrimaryDSType
-  (
-    ID                    BIGINT UNSIGNED,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE ProcDSStatus
-  (
-    ID                    BIGINT UNSIGNED,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
+    ID            BIGINT UNSIGNED,
+    Action        varchar(100)          not null,
+    Cause         varchar(100)          not null,
+    Effect        varchar(100)          not null,
+    Description   varchar(500)          not null,
+    CreationDate  TIMESTAMP DEFAULT 0,
+    CreatedBy     BIGINT UNSIGNED,
     primary key(ID)
   );
 
@@ -345,6 +291,19 @@ CREATE TABLE FileType
 
 REM ======================================================================
 
+CREATE TABLE FileValidStatus
+  (
+    ID                    BIGINT UNSIGNED,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
 CREATE TABLE AnalysisDSType
   (
     ID                    BIGINT UNSIGNED,
@@ -386,6 +345,45 @@ CREATE TABLE AnalysisDSDef
     AnalysisDatasets      TEXT,
     UserCut               TEXT,
     Description           TEXT,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE StorageElement
+  (
+    ID                    BIGINT UNSIGNED,
+    SEName                varchar(500)                                                      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ProcDSStatus
+  (
+    ID                    BIGINT UNSIGNED,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE PrimaryDSType
+  (
+    ID                    BIGINT UNSIGNED,
+    Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -483,6 +481,66 @@ CREATE TABLE AnalysisDataset
 
 REM ======================================================================
 
+CREATE TABLE ProcDSRuns
+  (
+    ID                    BIGINT UNSIGNED,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    Run                   BIGINT UNSIGNED                                                   not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(Dataset,Run)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ProcDSTier
+  (
+    ID                    BIGINT UNSIGNED,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    DataTier              BIGINT UNSIGNED                                                   not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(Dataset,DataTier)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ProcDSParent
+  (
+    ID                    BIGINT UNSIGNED,
+    ThisDataset           BIGINT UNSIGNED                                                   not null,
+    ItsParent             BIGINT UNSIGNED                                                   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    primary key(ID),
+    unique(ThisDataset,ItsParent)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ProcAlgo
+  (
+    ID                    BIGINT UNSIGNED,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    Algorithm             BIGINT UNSIGNED                                                   not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(Dataset,Algorithm)
+  );
+
+REM ======================================================================
+
 CREATE TABLE Block
   (
     ID                    BIGINT UNSIGNED,
@@ -519,21 +577,6 @@ CREATE TABLE Files
     LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE SEBlock
-  (
-    ID                    BIGINT UNSIGNED,
-    SEID                  BIGINT UNSIGNED                                                   not null,
-    BlockID               BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID),
-    unique(SEID,BlockID)
   );
 
 REM ======================================================================
@@ -614,71 +657,11 @@ CREATE TABLE FileBranch
 
 REM ======================================================================
 
-CREATE TABLE ProcDSRuns
-  (
-    ID                    BIGINT UNSIGNED,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Run                   BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID),
-    unique(Dataset,Run)
-  );
-
-REM ======================================================================
-
-CREATE TABLE ProcDSTier
-  (
-    ID                    BIGINT UNSIGNED,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    DataTier              BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID),
-    unique(Dataset,DataTier)
-  );
-
-REM ======================================================================
-
-CREATE TABLE ProcDSParent
-  (
-    ID                    BIGINT UNSIGNED,
-    ThisDataset           BIGINT UNSIGNED                                                   not null,
-    ItsParent             BIGINT UNSIGNED                                                   not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key(ID),
-    unique(ThisDataset,ItsParent)
-  );
-
-REM ======================================================================
-
-CREATE TABLE ProcAlgo
-  (
-    ID                    BIGINT UNSIGNED,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Algorithm             BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID),
-    unique(Dataset,Algorithm)
-  );
-
-REM ======================================================================
-
 CREATE TABLE AnalysisDSFileLumi
   (
     ID                    BIGINT UNSIGNED,
     AnalysisDataset       BIGINT UNSIGNED                                                   not null,
-    Lumi                  BIGINT UNSIGNED                                                           ,
+    Lumi                  BIGINT UNSIGNED,
     Fileid                BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
@@ -686,6 +669,21 @@ CREATE TABLE AnalysisDSFileLumi
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(AnalysisDataset,Lumi,Fileid)
+  );
+
+REM ======================================================================
+
+CREATE TABLE SEBlock
+  (
+    ID                    BIGINT UNSIGNED,
+    SEID                  BIGINT UNSIGNED                                                   not null,
+    BlockID               BIGINT UNSIGNED                                                   not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(SEID,BlockID)
   );
 
 REM ======================================================================
@@ -758,13 +756,6 @@ ALTER TABLE LumiSection ADD CONSTRAINT
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE StorageElement ADD CONSTRAINT 
-    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE StorageElement ADD CONSTRAINT 
-    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE Branch ADD CONSTRAINT 
     Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
@@ -772,32 +763,8 @@ ALTER TABLE Branch ADD CONSTRAINT
     Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 
-ALTER TABLE Description ADD CONSTRAINT 
-    Description_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Description ADD CONSTRAINT 
-    Description_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE TimeLog ADD CONSTRAINT 
-    TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE PrimaryDSType ADD CONSTRAINT 
-    PrimaryDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE PrimaryDSType ADD CONSTRAINT 
-    PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcDSStatus ADD CONSTRAINT 
-    ProcDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSStatus ADD CONSTRAINT 
-    ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AppFamily ADD CONSTRAINT 
@@ -876,6 +843,13 @@ ALTER TABLE FileType ADD CONSTRAINT
     FileType_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE FileValidStatus ADD CONSTRAINT 
+    FileValidStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileValidStatus ADD CONSTRAINT 
+    FileValidStatusLastModified_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE AnalysisDSType ADD CONSTRAINT 
     AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -895,6 +869,27 @@ ALTER TABLE AnalysisDSDef ADD CONSTRAINT
 /
 ALTER TABLE AnalysisDSDef ADD CONSTRAINT 
     AnalysisDSDefLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ProcDSStatus ADD CONSTRAINT 
+    ProcDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcDSStatus ADD CONSTRAINT 
+    ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE PrimaryDSType ADD CONSTRAINT 
+    PrimaryDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE PrimaryDSType ADD CONSTRAINT 
+    PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -986,6 +981,58 @@ ALTER TABLE AnalysisDataset ADD CONSTRAINT
     AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE ProcDSRuns ADD CONSTRAINT 
+    ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcDSRuns ADD CONSTRAINT 
+    ProcDSRuns_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE ProcDSRuns ADD CONSTRAINT 
+    ProcDSRuns_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcDSRuns ADD CONSTRAINT 
+    ProcDSRuns_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ProcDSTier ADD CONSTRAINT 
+    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcDSTier ADD CONSTRAINT 
+    ProcDSTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
+/
+ALTER TABLE ProcDSTier ADD CONSTRAINT 
+    ProcDSTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcDSTier ADD CONSTRAINT 
+    ProcDSTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcDSParent ADD CONSTRAINT 
+    ProcDSParent_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID) on delete CASCADE
+/
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ProcAlgo ADD CONSTRAINT 
+    ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE Block ADD CONSTRAINT 
     Block_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
@@ -1009,26 +1056,13 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_FileType_FK foreign key(FileType) references FileType(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_ValidationStatus_FK foreign key(ValidationStatus) references AnalysisDSStatus(ID)
+    Files_ValidationStatus_FK foreign key(ValidationStatus) references FileValidStatus(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
     Files_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
-/
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
-/
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE FileTier ADD CONSTRAINT 
@@ -1099,58 +1133,6 @@ ALTER TABLE FileBranch ADD CONSTRAINT
     FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_Run_FK foreign key(Run) references Runs(ID)
-/
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSRuns ADD CONSTRAINT 
-    ProcDSRuns_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_DataTier_FK foreign key(DataTier) references DataTier(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSTier ADD CONSTRAINT 
-    ProcDSTier_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcDSParent ADD CONSTRAINT 
-    ProcDSParent_ThisDataset_FK foreign key(ThisDataset) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcDSParent ADD CONSTRAINT 
-    ProcDSParent_ItsParent_FK foreign key(ItsParent) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcDSParent ADD CONSTRAINT 
-    ProcDSParent_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcDSParent ADD CONSTRAINT 
-    ProcDSParent_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_Algorithm_FK foreign key(Algorithm) references AlgorithmConfig(ID) on delete CASCADE
-/
-ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE ProcAlgo ADD CONSTRAINT 
-    ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
     AnalysisDSFileLumiAnalysisD_FK foreign key(AnalysisDataset) references AnalysisDataset(ID) on delete CASCADE
 /
@@ -1165,6 +1147,19 @@ ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT
 /
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
     AnalysisDSFileLumiLastModif_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 

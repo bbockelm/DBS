@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 614
+-- === Build : 626
 -- ======================================================================
 
-drop database if exists dbs_new_era_v16;
-create database dbs_new_era_v16;
-use dbs_new_era_v16;
+drop database if exists dbs_new_era_v17;
+create database dbs_new_era_v17;
+use dbs_new_era_v17;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -162,25 +162,6 @@ CREATE TABLE AnalysisDataset
 
 -- ======================================================================
 
-CREATE TABLE Block
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)                                                      unique not null,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    BlockSize             BIGINT UNSIGNED                                                   not null,
-    NumberOfFiles         BIGINT UNSIGNED                                                   not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    OpenForWriting        int                                                               not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE Files
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -238,20 +219,6 @@ CREATE TABLE LumiSection
 
 -- ======================================================================
 
-CREATE TABLE StorageElement
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    SEName                varchar(500)                                                      unique not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE Branch
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -266,77 +233,17 @@ CREATE TABLE Branch
 
 -- ======================================================================
 
-CREATE TABLE Description
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE TimeLog
   (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Action                varchar(100)                                                      not null,
-    Cause                 varchar(100)                                                      not null,
-    Effect                varchar(100)                                                      not null,
-    Description           varchar(500)                                                      not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
+    ID            BIGINT UNSIGNED,
+    Action        varchar(100)          not null,
+    Cause         varchar(100)          not null,
+    Effect        varchar(100)          not null,
+    Description   varchar(500)          not null,
+    CreationDate  TIMESTAMP DEFAULT 0,
+    CreatedBy     BIGINT UNSIGNED,
 
     primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE PrimaryDSType
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE ProcDSStatus
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE SEBlock
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    SEID                  BIGINT UNSIGNED                                                   not null,
-    BlockID               BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(SEID,BlockID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -606,6 +513,20 @@ CREATE TABLE FileBranch
 
 -- ======================================================================
 
+CREATE TABLE FileValidStatus
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE ProcDSRuns
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -702,7 +623,7 @@ CREATE TABLE AnalysisDSFileLumi
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     AnalysisDataset       BIGINT UNSIGNED                                                   not null,
-    Lumi                  BIGINT UNSIGNED                                                           ,
+    Lumi                  BIGINT UNSIGNED,
     Fileid                BIGINT UNSIGNED                                                   not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
@@ -730,6 +651,83 @@ CREATE TABLE AnalysisDSDef
     AnalysisDatasets      TEXT,
     UserCut               TEXT,
     Description           TEXT,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE SEBlock
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    SEID                  BIGINT UNSIGNED                                                   not null,
+    BlockID               BIGINT UNSIGNED                                                   not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(SEID,BlockID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE StorageElement
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    SEName                varchar(500)                                                      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE Block
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)                                                      unique not null,
+    Dataset               BIGINT UNSIGNED                                                   not null,
+    BlockSize             BIGINT UNSIGNED                                                   not null,
+    NumberOfFiles         BIGINT UNSIGNED                                                   not null,
+    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
+    OpenForWriting        int                                                               not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE ProcDSStatus
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Status                varchar(100)                                                      unique not null,
+    CreationDate          TIMESTAMP DEFAULT 0,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE PrimaryDSType
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Type                  varchar(100)                                                      unique not null,
     CreationDate          TIMESTAMP DEFAULT 0,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -845,16 +843,6 @@ ALTER TABLE AnalysisDataset ADD CONSTRAINT
     AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE Block ADD CONSTRAINT 
-    Block_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
-;
-ALTER TABLE Block ADD CONSTRAINT 
-    Block_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE Block ADD CONSTRAINT 
-    Block_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE Files ADD CONSTRAINT 
     Files_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 ;
@@ -868,7 +856,7 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_FileType_FK foreign key(FileType) references FileType(ID)
 ;
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_ValidationStatus_FK foreign key(ValidationStatus) references AnalysisDSStatus(ID)
+    Files_ValidationStatus_FK foreign key(ValidationStatus) references FileValidStatus(ID)
 ;
 ALTER TABLE Files ADD CONSTRAINT 
     Files_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -894,13 +882,6 @@ ALTER TABLE LumiSection ADD CONSTRAINT
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE StorageElement ADD CONSTRAINT 
-    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE StorageElement ADD CONSTRAINT 
-    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE Branch ADD CONSTRAINT 
     Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
@@ -908,45 +889,8 @@ ALTER TABLE Branch ADD CONSTRAINT
     Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
 
-ALTER TABLE Description ADD CONSTRAINT 
-    Description_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE Description ADD CONSTRAINT 
-    Description_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE TimeLog ADD CONSTRAINT 
-    TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE PrimaryDSType ADD CONSTRAINT 
-    PrimaryDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE PrimaryDSType ADD CONSTRAINT 
-    PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE ProcDSStatus ADD CONSTRAINT 
-    ProcDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE ProcDSStatus ADD CONSTRAINT 
-    ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
-;
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
-;
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1128,6 +1072,13 @@ ALTER TABLE FileBranch ADD CONSTRAINT
     FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE FileValidStatus ADD CONSTRAINT 
+    FileValidStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE FileValidStatus ADD CONSTRAINT 
+    FileValidStatusLastModified_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 ;
@@ -1215,6 +1166,50 @@ ALTER TABLE AnalysisDSDef ADD CONSTRAINT
 ;
 ALTER TABLE AnalysisDSDef ADD CONSTRAINT 
     AnalysisDSDefLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+;
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+;
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE SEBlock ADD CONSTRAINT 
+    SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE StorageElement ADD CONSTRAINT 
+    StorageElementLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE Block ADD CONSTRAINT 
+    Block_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
+;
+ALTER TABLE Block ADD CONSTRAINT 
+    Block_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE Block ADD CONSTRAINT 
+    Block_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE ProcDSStatus ADD CONSTRAINT 
+    ProcDSStatus_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE ProcDSStatus ADD CONSTRAINT 
+    ProcDSStatus_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE PrimaryDSType ADD CONSTRAINT 
+    PrimaryDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE PrimaryDSType ADD CONSTRAINT 
+    PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 
