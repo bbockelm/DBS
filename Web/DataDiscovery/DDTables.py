@@ -5,7 +5,7 @@
 #
 
 # system modules
-import sys, string, time
+import sys, string, time, types
 #import sqlalchemy.mods.threadlocal
 from   sqlalchemy import *
 
@@ -15,16 +15,30 @@ from   DDConfig import *
 ddConfig  = DBSDDConfig()
 useEngine = ddConfig.engine()
 verbose   = ddConfig.verbose()
+user      = ddConfig.user()
+password  = ddConfig.password()
+dbname    = ddConfig.dbname()
 
+#if useEngine=='sqlite':
+#   print "Use SQLite engine"
+#   engine = create_engine('sqlite:///sqlite.db', strategy='threadlocal', echo=verbose)
+#elif useEngine=='oracle':
+#   print "Use ORACLE engine"
+#   engine = create_engine('oracle://%s:%s@%s'%(ddConfig.user(),ddConfig.password(),ddConfig.dbname()),strategy='threadlocal', echo=verbose)
+#elif useEngine=='mysql':
+#   print "Use MySQL engine"
+#   engine = create_engine('mysql://%s:%s@localhost/%s'%(ddConfig.user(),ddConfig.password(),ddConfig.dbname()),echo=verbose)
+#else:
+#   raise "Unsupported DB engine backend"
 if useEngine=='sqlite':
    print "Use SQLite engine"
-   engine = create_engine('sqlite:///sqlite.db', strategy='threadlocal', echo=verbose)
+   engine = create_engine('sqlite:///sqlite.db', echo=verbose)
 elif useEngine=='oracle':
    print "Use ORACLE engine"
-   engine = create_engine('oracle://%s:%s@%s'%(ddConfig.user(),ddConfig.password(),ddConfig.dbname()),strategy='threadlocal', echo=verbose)
+   engine = create_engine('oracle://%s:%s@%s'%(user,password,dbname),echo=verbose)
 elif useEngine=='mysql':
    print "Use MySQL engine"
-   engine = create_engine('mysql://%s:%s@localhost/%s'%(ddConfig.user(),ddConfig.password(),ddConfig.dbname()),echo=verbose)
+   engine = create_engine('mysql://%s:%s@localhost/%s'%(user,password,dbname),echo=verbose)
 else:
    raise "Unsupported DB engine backend"
 
@@ -38,10 +52,14 @@ tableList = []
 #
 #
 seq_user = Sequence(name='seq_user',start=1,increment=True)
+#t_user = Table('t_user', DBS_DB,
+#  Column('id', Integer, Sequence('seq_user'), nullable = False, primary_key = True),
+#  Column('name', String(10), nullable = False, unique=True),
+#  Column('password', String(60), nullable = False)
+#)
 t_user = Table('t_user', DBS_DB,
   Column('id', Integer, Sequence('seq_user'), nullable = False, primary_key = True),
-  Column('name', String(10), nullable = False, unique=True),
-  Column('password', String(60), nullable = False)
+  Column('userid', String(60), nullable = False, unique=True)
 )
 tableList.append(t_user)
 #
@@ -96,6 +114,7 @@ if __name__ == "__main__":
            pass
     tableList.reverse()
     for table in tableList:
+        print table,type(table)
         try:
            table.create()
         except:
