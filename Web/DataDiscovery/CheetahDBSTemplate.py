@@ -47,6 +47,26 @@ templateSummary="""
 </tr>
 """
 
+templateQueryOutput="""
+###<pre>$query</pre>
+#set thRow=$iList[0]
+<table class="dbs_table">
+<tr>
+#for item in $thRow
+<th>$item</th>
+#end for
+</tr>
+#for itemList in $iList[1:]
+<tr>
+#for elem in $itemList
+<td>$elem</td>
+#end for
+</tr>
+#end for
+</table>
+
+"""
+
 templatePrintList="""
 <table class="small">
 <tr>
@@ -1959,10 +1979,12 @@ var GLOBAL_STEP=$step
 Session History
 </a>
 ###<span class="yellow_box" onMouseOver="KeywordHelp('SessDesc_tag','Session history is a quick way to find out your previous actions on a web page')" onMouseOut="ClearTag('SessDesc_tag')">?</span><span id="SessDesc_tag"></span>
-*#
-  <li id="History_Menu">
     #set hList=['user','auth','search']
     #set hDict={'user':'Session','auth':'Authentication','search':'Search'}
+*#
+  <li id="History_Menu">
+    #set hList=['user','search']
+    #set hDict={'user':'Session','search':'Search'}
     <a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
       <table id="history_table" class="hide">
     #for name in $hList
