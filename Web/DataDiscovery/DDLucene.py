@@ -18,9 +18,9 @@ import CheetahDBSTemplate
 from   DBSUtil   import *
 from   DDConfig  import *
 
-class DDLucene(DBSLogger): 
+class DDLucene(DDLogger): 
     def __init__(self,verbose=0,profile=0):
-        DBSLogger.__init__(self,"DDLucene",verbose)
+        DDLogger.__init__(self,"DDLucene",verbose)
 #        self.ddConfig   = DBSDDConfig()
 #        self.luceneHost = self.ddConfig.luceneHost()
 #        self.lucenePort = self.ddConfig.lucenePort()
