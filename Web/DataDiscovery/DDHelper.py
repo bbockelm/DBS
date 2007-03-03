@@ -22,8 +22,14 @@ from   DBSUtil    import * # general utils
 import dlsClient
 import dlsApi
 
+# DREW code, need to remove try block once it's ready
+try:
+    from Schema import Schema
+    from QueryWriter import SqlQueryWriter, OracleQueryWriter
+except:
+    pass
 
-class DDHelper(DBSLogger): 
+class DDHelper(DDLogger): 
   """
       DDHelper class
   """
@@ -38,7 +44,7 @@ class DDHelper(DBSLogger):
          @rtype : none
          @return: none
       """
-      DBSLogger.__init__(self,"DDHelper",verbose)
+      DDLogger.__init__(self,"DDHelper",verbose)
       self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
@@ -48,8 +54,8 @@ class DDHelper(DBSLogger):
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
       try:
-         self.dbsDBs      = DBSDB(self.iface,self.verbose)
-#         self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
+         self.dbManager      = DBSDB(self.iface,self.verbose)
+#         self.dbsDB       = self.dbManager.engine #  {'dbsInst': DBSDB }
       except:
          if self.verbose:
             print "WARNING! some of the functionality will be disable due to missing authentication"
@@ -71,7 +77,7 @@ class DDHelper(DBSLogger):
 
 
   def col(self,table,col):
-      return self.dbsDBs.col(self.dbsInstance,table,col)
+      return self.dbManager.col(self.dbsInstance,table,col)
   def setQuiet(self):
       self.quiet=1
 
@@ -938,12 +944,12 @@ class DDHelper(DBSLogger):
       """
       result=""
       try:
-         result= self.dbsDBs.engine[self.dbsInstance].execute(q)
+         result= self.dbManager.engine[self.dbsInstance].execute(q)
       except:
          # if we fail because of connection drop let's reconnect again
 	 try:
             self.setDBSDLS(self.dbsInstance)
-	    result= self.dbsDBs.engine[self.dbsInstance].execute(q)
+	    result= self.dbManager.engine[self.dbsInstance].execute(q)
 	 except:
             printExcept()
             raise "Fail to execute \n\n%s\n\n"%q
@@ -954,13 +960,13 @@ class DDHelper(DBSLogger):
 #      self.setDBSDLS(self.dbsInstance)
       con=""
       try:
-          con = self.dbsDBs.connect(self.dbsInstance)
+          con = self.dbManager.connect(self.dbsInstance)
       except Exception, ex:
          # if we fail because of connection drop let's reconnect again
 	 try:
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
-             con = self.dbsDBs.connect(self.dbsInstance)
+             con = self.dbManager.connect(self.dbsInstance)
          except Exception, ex:
              raise DbsDatabaseError(args=ex)
          pass
@@ -999,8 +1005,8 @@ class DDHelper(DBSLogger):
       """
       self.setDBSDLS(self.dbsInstance)
       try:
-#          con = self.dbsDBs.engine[self.dbsInstance].connect()
-          con = self.dbsDBs.connect(self.dbsInstance)
+#          con = self.dbManager.engine[self.dbsInstance].connect()
+          con = self.dbManager.connect(self.dbsInstance)
           res = con.execute(sel)
           con.close()
       except Exception, ex:
@@ -1008,9 +1014,9 @@ class DDHelper(DBSLogger):
 	 try:
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
-             self.dbsDBs.connect()
-#             con = self.dbsDBs.engine[self.dbsInstance].connect()
-             con = self.dbsDBs.connect(self.dbsInstance)
+             self.dbManager.connect()
+#             con = self.dbManager.engine[self.dbsInstance].connect()
+             con = self.dbManager.connect(self.dbsInstance)
              res = con.execute(sel)
              con.close()
          except Exception, ex:
@@ -1037,7 +1043,7 @@ class DDHelper(DBSLogger):
   def getTableColumns(self,tableName):
       res=[]
       try:
-          res = ['All']+self.dbsDBs.getColumns(self.dbsInstance,tableName)
+          res = ['All']+self.dbManager.getColumns(self.dbsInstance,tableName)
       except:
 #          printExcept()
 #          raise "Fail to get columns for table='%s'"%tableName
@@ -1046,12 +1052,28 @@ class DDHelper(DBSLogger):
           res=msg
       return res
 
+  def queryMaker(self,iList):
+      """ 
+         Build a query out of input iList=['TableName.ColumnName',]
+      """
+      qb = Schema(self.dbManager.constructSchema(self.dbsInstance))
+      query = qb.BuildQuery(iList)
+      writer = SqlQueryWriter()
+      query.Write(writer)
+      
+      if  self.verbose:
+#      if 1:
+          print qb
+          print "\n\niList=",iList
+          print query,type(query),query.__dict__,writer,writer.getvalue()
+      return writer.getvalue(),self.executeSQLQuery(writer.getvalue())
+
   def getDbsSchema(self,iTable='all',html=1):
       res = ""
-      tList = self.dbsDBs.dbTables[self.dbsInstance].keys()
+      tList = self.dbManager.dbTables[self.dbsInstance].keys()
       tList.sort()
       for table in tList:
-          tObj= self.dbsDBs.dbTables[self.dbsInstance][table]
+          tObj= self.dbManager.dbTables[self.dbsInstance][table]
           if string.lower(iTable)!="all" and string.lower(iTable)!=string.lower(tObj.fullname):
              continue
 #          print tObj.__dict__
@@ -1061,6 +1083,7 @@ class DDHelper(DBSLogger):
           else:
              res+= "%s\n"%tObj.fullname
           for col  in tObj.columns:
+#              print col.name,col.foreign_key
               colType=string.split(string.split(repr(col.type))[0],".")[-1]
               fk=""
               if col.foreign_key: fk=repr(col.foreign_key)
@@ -1082,7 +1105,7 @@ class DDHelper(DBSLogger):
       if string.find(query.lower(),"update")!=-1:
          return False
         
-      known_tables = self.dbsDBs.getTableNames(self.dbsInstance)
+      known_tables = self.dbManager.getTableNames(self.dbsInstance)
       found=0
       for tName in known_tables:
           if string.find(query,tName)!=-1:
@@ -1093,7 +1116,7 @@ class DDHelper(DBSLogger):
 
   def executeSQLQuery(self,query):
       if not self.checkQuery(query):
-         return "Your qury is not valid, you either specified unkonwn table or tried to perform insert/update operation, which are forbidden."
+         return "Your query is not valid, you either specified unkonwn table or tried to perform insert/update operation, which are forbidden."
 
       con = self.connectToDB()
       res = ""
@@ -1122,7 +1145,7 @@ class DDHelper(DBSLogger):
       for tableName in tDict.keys():
           iList = tDict[tableName]
           # first get table content and check if input list of columns names match
-          cList=self.dbsDBs.getColumns(self.dbsInstance,tableName)
+          cList=self.dbManager.getColumns(self.dbsInstance,tableName)
           if len(iList) and not iList.count('All'):
              for c in cList:
                  if iList.count(c):
@@ -1132,16 +1155,16 @@ class DDHelper(DBSLogger):
 
 
       # form query
-#      tObj = self.dbsDBs.getTableObject(self.dbsInstance,'PrimaryDataset')
-#      tObj2 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')
-#      tObj3 = self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig')
-#      tObj4 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo')
+#      tObj = self.dbManager.getTableObject(self.dbsInstance,'PrimaryDataset')
+#      tObj2 = self.dbManager.getTableObject(self.dbsInstance,'ProcessedDataset')
+#      tObj3 = self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig')
+#      tObj4 = self.dbManager.getTableObject(self.dbsInstance,'ProcAlgo')
 #      print tObj4.foreign_keys
 #      joinObject = tObj.join(tObj2)
 #          sel = sqlalchemy.select([tObj.c.Name,tObj2.c.Name,tObj3.c.ApplicationVersion],from_obj=[tObj3.join(tObj2).join(tObj)])
       try:
           # get table objects
-          tObjs=map(lambda x: self.dbsDBs.getTableObject(self.dbsInstance,x),tDict.keys())
+          tObjs=map(lambda x: self.dbManager.getTableObject(self.dbsInstance,x),tDict.keys())
           joinObject = tObjs[0]
           for _tObj in tObjs[1:]:
               joinObject=joinObject.join(_tObj)
@@ -1169,17 +1192,17 @@ class DDHelper(DBSLogger):
                   page+="<td>%s</td>"%elem
               page+="</tr>"
           page+="</table>"
-          print page
+#          print page
           return page
       except sqlalchemy.exceptions.ArgumentError, ex:
           print ex
           _cant,_table1,_and,_table2,_empty = string.split(ex.args[0],"\'")
           refList= [_table1.split()[-1],_table2.split()[-1]]
           print "refList",refList
-          for tName in self.dbsDBs.getTableNames(self.dbsInstance):
+          for tName in self.dbManager.getTableNames(self.dbsInstance):
 #          for tName in ['ProcAlgo']:
 #              print "tableName=",tName
-              fKeys=self.dbsDBs.getTableObject(self.dbsInstance,tName).foreign_keys
+              fKeys=self.dbManager.getTableObject(self.dbsInstance,tName).foreign_keys
               fKeysName=[]
               for fk in fKeys: 
                   fkName = string.split(fk._colspec,".")[0]
@@ -1193,10 +1216,10 @@ class DDHelper(DBSLogger):
                      con.close()
                      return
                       
-#                  print fk,refList,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[0])),fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[1]))
-#                  if fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[0])):
+#                  print fk,refList,fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[0])),fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[1]))
+#                  if fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[0])):
 #                     counter+=1
-#                  if fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[1])):
+#                  if fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[1])):
 #                     counter+=1
 #                  if counter==2:
 #                     print "Found",fk,refList,tName
@@ -1205,11 +1228,11 @@ class DDHelper(DBSLogger):
 #                     con.close()
 #                     return
 #          print "#### ac,procAlgo"
-#          fKeys=self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig').foreign_keys
-#          for fk in fKeys: print fk,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo'))
+#          fKeys=self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig').foreign_keys
+#          for fk in fKeys: print fk,fk.references(self.dbManager.getTableObject(self.dbsInstance,'ProcAlgo'))
 #          print "#### procAlgo,ac"
-#          fKeys=self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo').foreign_keys
-#          for fk in fKeys: print fk,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig'))
+#          fKeys=self.dbManager.getTableObject(self.dbsInstance,'ProcAlgo').foreign_keys
+#          for fk in fKeys: print fk,fk.references(self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig'))
           
 #          [c.key for c in s.columns]
 #      nList=[]
@@ -1441,7 +1464,7 @@ class DDHelper(DBSLogger):
          @rtype : SQLAlchemy table object
          @return: table alias
       """
-      return self.dbsDBs.getTable(self.dbsInstance,tableName,aliasName)
+      return self.dbManager.getTable(self.dbsInstance,tableName,aliasName)
       
   def search(self,searchString):
       """
