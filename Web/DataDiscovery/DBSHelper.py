@@ -33,7 +33,7 @@ import dlsClient
 import dlsApi
 
 
-class DBSHelper(DBSLogger): 
+class DBSHelper(DDLogger): 
   """
       DBSHelper class
   """
@@ -48,7 +48,7 @@ class DBSHelper(DBSLogger):
          @rtype : none
          @return: none
       """
-      DBSLogger.__init__(self,"DBSHelper",verbose)
+      DDLogger.__init__(self,"DBSHelper",verbose)
       self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
@@ -58,8 +58,8 @@ class DBSHelper(DBSLogger):
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
       try:
-         self.dbsDBs      = DBSDB(self.iface,self.verbose)
-#         self.dbsDB       = self.dbsDBs.engine #  {'dbsInst': DBSDB }
+         self.dbManager      = DBSDB(self.iface,self.verbose)
+#         self.dbsDB       = self.dbManager.engine #  {'dbsInst': DBSDB }
       except:
          if self.verbose:
             print "WARNING! some of the functionality will be disable due to missing authentication"
@@ -291,8 +291,8 @@ class DBSHelper(DBSLogger):
             # new api can be initialized with DbsConfig, but we will use default one
             url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
             self.api = dbsWebApi.DbsWebApi({'url':url})
-            con = self.connectToDB()
-            con.close()
+#            con = self.connectToDB()
+#            con.close()
          self.dbsApi[dbsInst]=self.api
       else:
          self.api = self.dbsApi[dbsInst]
@@ -349,14 +349,14 @@ class DBSHelper(DBSLogger):
              res.append(('hash',hash))
          return res
       else:
-         empty,ver,family,exe=string.split(appPath,"/")
+         ver=family=exe="*"
+         if appPath and appPath!="*":
+            empty,ver,family,exe=string.split(appPath,"/")
          res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
-#         res = self.api.listAlgorithms(patternVer='TestVersion01_20070210_12h28m18s',patternFam='AppFamily01',patternExe='TestExe01')
          cList=[]
          for item in res:
              content = item['ParameterSetID']['Content']
              cList.append(content)
-#         print "\n\n### listApplicationConfigs",res,"\n\n",cList,ver,family,exe
          return cList 
 
   def listProcessedDatasets(self,datasetPath="*"):
@@ -425,6 +425,10 @@ class DBSHelper(DBSLogger):
       else:
          return self.api.listBlocks(datasetPath)
   ### END OF WRAPPER ###
+  def getPhysicsGroups(self):
+      return ['Group1','Group2']
+  def getDataTypes(self):
+      return ['Type1','Type2']
 
   def getDataDescription(self,primaryDataset="",processedDataset=""):
       if self.iface=="cgi":
@@ -623,12 +627,12 @@ class DBSHelper(DBSLogger):
       """
       result=""
       try:
-         result= self.dbsDBs.engine[self.dbsInstance].execute(q)
+         result= self.dbManager.engine[self.dbsInstance].execute(q)
       except:
          # if we fail because of connection drop let's reconnect again
 	 try:
             self.setDBSDLS(self.dbsInstance)
-	    result= self.dbsDBs.engine[self.dbsInstance].execute(q)
+	    result= self.dbManager.engine[self.dbsInstance].execute(q)
 	 except:
             printExcept()
             raise "Fail to execute \n\n%s\n\n"%q
@@ -639,13 +643,13 @@ class DBSHelper(DBSLogger):
 #      self.setDBSDLS(self.dbsInstance)
       con=""
       try:
-          con = self.dbsDBs.connect(self.dbsInstance)
+          con = self.dbManager.connect(self.dbsInstance)
       except Exception, ex:
          # if we fail because of connection drop let's reconnect again
 	 try:
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
-             con = self.dbsDBs.connect(self.dbsInstance)
+             con = self.dbManager.connect(self.dbsInstance)
          except Exception, ex:
              raise DbsDatabaseError(args=ex)
          pass
@@ -684,8 +688,8 @@ class DBSHelper(DBSLogger):
       """
       self.setDBSDLS(self.dbsInstance)
       try:
-#          con = self.dbsDBs.engine[self.dbsInstance].connect()
-          con = self.dbsDBs.connect(self.dbsInstance)
+#          con = self.dbManager.engine[self.dbsInstance].connect()
+          con = self.dbManager.connect(self.dbsInstance)
           res = con.execute(sel)
           con.close()
       except Exception, ex:
@@ -693,9 +697,9 @@ class DBSHelper(DBSLogger):
 	 try:
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
-             self.dbsDBs.connect()
-#             con = self.dbsDBs.engine[self.dbsInstance].connect()
-             con = self.dbsDBs.connect(self.dbsInstance)
+             self.dbManager.connect()
+#             con = self.dbManager.engine[self.dbsInstance].connect()
+             con = self.dbManager.connect(self.dbsInstance)
              res = con.execute(sel)
              con.close()
          except Exception, ex:
@@ -725,7 +729,7 @@ class DBSHelper(DBSLogger):
       res=[]
       try:
 #          con = self.connectToDB()
-          res = self.dbsDBs.getColumns(self.dbsInstance,tableName)
+          res = self.dbManager.getColumns(self.dbsInstance,tableName)
 #          con.close()
       except:
           printExcept()
@@ -741,7 +745,7 @@ class DBSHelper(DBSLogger):
       for tableName in tDict.keys():
           iList = tDict[tableName]
           # first get table content and check if input list of columns names match
-          cList=self.dbsDBs.getColumns(self.dbsInstance,tableName)
+          cList=self.dbManager.getColumns(self.dbsInstance,tableName)
           if len(iList):
              for c in cList:
                  if iList.count(c):
@@ -751,16 +755,16 @@ class DBSHelper(DBSLogger):
 
 
       # form query
-#      tObj = self.dbsDBs.getTableObject(self.dbsInstance,'PrimaryDataset')
-#      tObj2 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcessedDataset')
-#      tObj3 = self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig')
-#      tObj4 = self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo')
+#      tObj = self.dbManager.getTableObject(self.dbsInstance,'PrimaryDataset')
+#      tObj2 = self.dbManager.getTableObject(self.dbsInstance,'ProcessedDataset')
+#      tObj3 = self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig')
+#      tObj4 = self.dbManager.getTableObject(self.dbsInstance,'ProcAlgo')
 #      print tObj4.foreign_keys
 #      joinObject = tObj.join(tObj2)
 #          sel = sqlalchemy.select([tObj.c.Name,tObj2.c.Name,tObj3.c.ApplicationVersion],from_obj=[tObj3.join(tObj2).join(tObj)])
       try:
           # get table objects
-          tObjs=map(lambda x: self.dbsDBs.getTableObject(self.dbsInstance,x),tDict.keys())
+          tObjs=map(lambda x: self.dbManager.getTableObject(self.dbsInstance,x),tDict.keys())
           joinObject = tObjs[0]
           for _tObj in tObjs[1:]:
               joinObject=joinObject.join(_tObj)
@@ -795,10 +799,10 @@ class DBSHelper(DBSLogger):
           _cant,_table1,_and,_table2,_empty = string.split(ex.args[0],"\'")
           refList= [_table1.split()[-1],_table2.split()[-1]]
           print "refList",refList
-          for tName in self.dbsDBs.getTableNames(self.dbsInstance):
+          for tName in self.dbManager.getTableNames(self.dbsInstance):
 #          for tName in ['ProcAlgo']:
 #              print "tableName=",tName
-              fKeys=self.dbsDBs.getTableObject(self.dbsInstance,tName).foreign_keys
+              fKeys=self.dbManager.getTableObject(self.dbsInstance,tName).foreign_keys
               fKeysName=[]
               for fk in fKeys: 
                   fkName = string.split(fk._colspec,".")[0]
@@ -812,10 +816,10 @@ class DBSHelper(DBSLogger):
                      con.close()
                      return
                       
-#                  print fk,refList,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[0])),fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[1]))
-#                  if fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[0])):
+#                  print fk,refList,fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[0])),fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[1]))
+#                  if fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[0])):
 #                     counter+=1
-#                  if fk.references(self.dbsDBs.getTableObject(self.dbsInstance,refList[1])):
+#                  if fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[1])):
 #                     counter+=1
 #                  if counter==2:
 #                     print "Found",fk,refList,tName
@@ -824,11 +828,11 @@ class DBSHelper(DBSLogger):
 #                     con.close()
 #                     return
 #          print "#### ac,procAlgo"
-#          fKeys=self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig').foreign_keys
-#          for fk in fKeys: print fk,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo'))
+#          fKeys=self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig').foreign_keys
+#          for fk in fKeys: print fk,fk.references(self.dbManager.getTableObject(self.dbsInstance,'ProcAlgo'))
 #          print "#### procAlgo,ac"
-#          fKeys=self.dbsDBs.getTableObject(self.dbsInstance,'ProcAlgo').foreign_keys
-#          for fk in fKeys: print fk,fk.references(self.dbsDBs.getTableObject(self.dbsInstance,'AlgorithmConfig'))
+#          fKeys=self.dbManager.getTableObject(self.dbsInstance,'ProcAlgo').foreign_keys
+#          for fk in fKeys: print fk,fk.references(self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig'))
           
 #          [c.key for c in s.columns]
 #      nList=[]
@@ -881,7 +885,7 @@ class DBSHelper(DBSLogger):
          @rtype : SQLAlchemy table object
          @return: table alias
       """
-      return self.dbsDBs.getTable(self.dbsInstance,tableName,aliasName)
+      return self.dbManager.getTable(self.dbsInstance,tableName,aliasName)
       
   def search(self,searchString):
       """
@@ -1220,11 +1224,17 @@ if __name__ == "__main__":
 
 
 #    res = helper.api.listProcessedDatasets(patternVer='TestVersion01_20070210_12h28m18s',patternFam='AppFamily01',patternExe='TestExe01')
-    print "TEST"
-    res = helper.getDatasetsFromApp("/TestVersion01_20070210_12h28m18s/AppFamily01/TestExe01","TestPrimary_001_20070210_12h28m18s","*")
+#    res = helper.getDatasetsFromApp("/TestVersion01_20070210_12h28m18s/AppFamily01/TestExe01","TestPrimary_001_20070210_12h28m18s","*")
 #    res = helper.listApplicationConfigs('/AppFamily01/TestExe01/TestVersion01_20070210_12h28m18s')
 #    tDict={'PrimaryDataset':['Name'],'ProcessedDataset':['Name'],'AlgorithmConfig':['ApplicationVersion','ApplicationFamily','ApplicationExecutable']}
 #    l = helper.formSQLQuery(tDict)
+    t1=time.time()
+    res = helper.listProcessedDatasets()
+    print "time DDHelper.listProcessedDatasets:",(time.time()-t1)
+#    print res
+    t1=time.time()
+    res = helper.listApplicationConfigs("*")
+    print "time DDHelper.listApplicationConfigs:",(time.time()-t1)
     sys.exit(0)
     
     if opts.dict:
