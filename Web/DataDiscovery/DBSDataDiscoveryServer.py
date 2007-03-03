@@ -26,7 +26,7 @@ from   DDConfig  import *
 from   DDLucene  import *
 from   DDHelper  import *
  
-class DBSDataDiscoveryServer(DBSLogger): 
+class DBSDataDiscoveryServer(DDLogger): 
     """
        DBS Data discovery server class.
        It uses CherryPy web application framework 
@@ -62,7 +62,7 @@ class DBSDataDiscoveryServer(DBSLogger):
            @rtype : none
            @return: none 
         """
-        DBSLogger.__init__(self,"DBSDataDiscoveryServer",verbose)
+        DDLogger.__init__(self,"DBSDataDiscoveryServer",verbose)
         self.ddConfig  = DBSDDConfig()
         self.lucene = DDLucene()
         self.dbs  = DBSGLOBAL
@@ -367,7 +367,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         nameSpace={'operators':str(t)}
         t = Template(CheetahDBSTemplate.templateSearchEngine, searchList=[nameSpace])
         luceneForm=str(t)
-        dbsTables = self.helper.dbsDBs.getTableNames(dbsInst)
+        dbsTables = self.helper.dbManager.getTableNames(dbsInst)
         dbsTables.sort()
 
         nameSpace = {
@@ -632,8 +632,8 @@ class DBSDataDiscoveryServer(DBSLogger):
                 t = Template(CheetahDBSTemplate.templateDataFromKeywordSelection, searchList=[nameSpace])
                 page+= str(t)
         page+=endAjaxMsg
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     search.exposed = True
@@ -1244,8 +1244,8 @@ class DBSDataDiscoveryServer(DBSLogger):
 #        pList = self.helper.getUserData(group,tier,rel,prim,site)
 #        page+= self.getDataHelper(dbsInst,site,"*","*","*",pList,"",_idx,ajax)
         page+="</response></ajax-response>"
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print page
         return page
     getUserData.exposed=True
@@ -2109,7 +2109,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     sendFeedback.exposed=True
 
-    def storeHistory(self,actionString,userName='guest',password=''):
+    def storeHistory(self,actionString,userId):
         # update DB history
         # select cmdid from given history string
         c = sqlalchemy.select([t_command.c.id],t_command.c.command==actionString).execute()
@@ -2122,21 +2122,21 @@ class DBSDataDiscoveryServer(DBSLogger):
         # try to insert name/password, if fail get them from DB
         uid=0
         try:
-           res=t_user.insert().execute(name=userName,password=password)
+           res=t_user.insert().execute(userid=userId)
            uid=res.last_inserted_ids()[0]
         except:
-           c = t_user.select(and_(t_user.c.name==userName,t_user.c.password==password)).execute()
+           c = t_user.select(and_(t_user.c.userid==userId)).execute()
            r = c.fetchone()
            if r and r[0]:
               uid = r[0]
         if not uid:
-           raise "Fail to find uid in DBS DD history for %s"%(userName,)
+           raise "Fail to find uid in DBS DD history for %s"%(userId,)
         # insert into t_history date/userid/cmdid
         iDate=time.strftime("%Y-%m-%d",time.localtime())
         iTime=time.strftime("%H:%M:%S",time.localtime())
         t_history.insert().execute(userid=uid,cmdid=cid,date=iDate,time=iTime)
 
-    def historySearch(self,iYear,iMonth,oYear,oMonth,userName='guest',password='',**kwargs):
+    def historySearch(self,iYear,iMonth,oYear,oMonth,userId,**kwargs):
         cList=[]
         try:
             iDate='%s-%s-%s'%(iYear,monthId(iMonth),'01')
@@ -2146,7 +2146,7 @@ class DBSDataDiscoveryServer(DBSLogger):
                              t_history.c.userid==t_user.c.id,
                              t_history.c.cmdid==t_command.c.id,
                              t_history.c.date>=iDate,t_history.c.date<=oDate,
-                             t_user.c.name==userName
+                             t_user.c.userid==userId
                             ),
                         use_labels=True,distinct=True,
                         order_by=[desc(t_history.c.date),desc(t_history.c.time)]).execute()
@@ -2177,14 +2177,14 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     historySearch.exposed=True
 
-    def getHistory(self,userName='guest',password='',iLimit=100,**kwargs):
+    def getHistory(self,userId,iLimit=100,**kwargs):
         cList=[]
         try:
             c = select([t_history.c.date,t_history.c.time,t_command.c.command],
                         and_(
                              t_history.c.userid==t_user.c.id,
                              t_history.c.cmdid==t_command.c.id,
-                             t_user.c.name==userName
+                             t_user.c.userid==userId
                             ),
                         use_labels=True,distinct=True,limit=iLimit,
                         order_by=[desc(t_history.c.date),desc(t_history.c.time)]).execute()
@@ -2214,12 +2214,12 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     getHistory.exposed=True
 
-    def history(self,actionString,userName='guest',password='',**kwargs):
+    def history(self,actionString,userId,**kwargs):
         """
             History updater
         """
         try:
-            self.storeHistory(actionString,userName,password)
+            self.storeHistory(actionString,userId)
         except:
 #            if not self.quiet:
 #               printExcept()
@@ -2319,24 +2319,24 @@ class DBSDataDiscoveryServer(DBSLogger):
         return page
     showMessage.exposed=True
 
-    def checkUser(self,userName,password,**kwargs):
+    def checkUser(self,userId,**kwargs):
         """
            Check existence of user name in history DB
         """
         msg=""
         # check user name
-        c = select([t_user.c.name],t_user.c.name==userName).execute()
+        c = select([t_user.c.name],t_user.c.userid==userId).execute()
         r = c.fetchone()
-        if r and r[0]==userName:
-           msg=userName
-           c = t_user.select(and_(t_user.c.name==userName,t_user.c.password==password)).execute()
+        if r and r[0]==userId:
+           msg=userId
+           c = t_user.select(and_(t_user.c.userid==userId)).execute()
            r = c.fetchone()
-           if (not r) or (r and r[2]!=password):
-              msg='wrong password'
+#           if (not r) or (r and r[2]!=password):
+#              msg='wrong password'
         else:
            try:
-               res=t_user.insert().execute(name=userName,password=password)
-               msg=userName
+               res=t_user.insert().execute(userid=userId)
+               msg=userId
            except:
                msg="fail";
         # AJAX wants response as "text/xml" type
@@ -2705,6 +2705,7 @@ class DBSDataDiscoveryServer(DBSLogger):
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results_finder">"""
         iDict={}
+        iList=[]
         for key in kwargs.keys():
             if key=="_": continue
 #            page+="Key='%s' parameters='%s'"%(key,kwargs[key])
@@ -2713,10 +2714,18 @@ class DBSDataDiscoveryServer(DBSLogger):
             for item in pList:
                 table,col,op,where=string.split(item,"__")
                 addToDict(iDict,table,col)
+                print "####",table,self.helper.dbManager.getDBTableName('localhost',table),col
+                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName('localhost',table),col))
         print "looking for",iDict
+        
         # TODO: for now I test how query will work
-        res = self.helper.formSQLQuery(iDict)
-        page+=res
+#        res = self.helper.formSQLQuery(iDict)
+#        page+=res
+        query,oList = self.helper.queryMaker(iList)
+        t = Template(CheetahDBSTemplate.templateQueryOutput, searchList=[{'query':query,'iList':oList}])
+        page+=str(t)
+#        page+="<pre>%s\n%s</pre>"%(writer.getvalue(),repr(oList))
+        
         page+="</response></ajax-response>"
         if self.verbose:
 #        if 1:
@@ -2795,8 +2804,8 @@ class DBSDataDiscoveryServer(DBSLogger):
         cherrypy.response.headerMap['Content-Type'] = "text/xml"
         p="""<ajax-response><response type="object" id="treeViewInfo">
 %s</response></ajax-response>"""%self.genTreeElement(parent,node)
-#        if self.verbose:
-        if 1:
+        if self.verbose:
+#        if 1:
            print p
         return p
     addTreeElement.exposed=True
