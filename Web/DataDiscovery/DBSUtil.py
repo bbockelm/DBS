@@ -466,9 +466,9 @@ def sendEmail(msg):
     if sts != 0:
         print "mail exit status", sts
 
-class DBSLogger:
+class DDLogger:
   """
-     DBSLogger class
+     DDLogger class
   """
   def __init__(self,name="Logger",verbose=0):
       """
@@ -486,6 +486,9 @@ class DBSLogger:
          self.logLevel = logging.CRITICAL
       self.name = name
       self.setLogger()
+
+  def setLevel(self,level):
+      self.logLevel=level
 
   def writeLog(self,msg):
       """
