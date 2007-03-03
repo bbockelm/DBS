@@ -107,9 +107,9 @@ function registerAjaxHistoryCalls() {
 }
 function ajaxCheckUser() {
   var user = GetCookie("DBSDD_username");
-  var pass = GetCookie("DBSDD_password");
+//  var pass = GetCookie("DBSDD_password");
   if(user!='guest') {
-     ajaxEngine.sendRequest('ajaxCheckUser','userName='+user,'password='+pass);
+     ajaxEngine.sendRequest('ajaxCheckUser','userId='+user);
   }
 }
 function getUserName(iUser) {
@@ -131,17 +131,17 @@ function getPassword(iPass) {
   }
   return password
 }
-function ajaxHistory(action,iUser,iPass) {
-  ajaxEngine.sendRequest('ajaxHistory','actionString='+action,'userName='+getUserName(iUser),'password='+getPassword(iPass));
+function ajaxHistory(action,iUser) {
+  ajaxEngine.sendRequest('ajaxHistory','actionString='+action,'userId='+getUserName(iUser));
 }
-function ajaxGetHistory(iUser,iPass,iLimit) {
+function ajaxGetHistory(iUser,iLimit) {
   var limit;
   if(iLimit) {
      limit=iLimit;
   } else {
      limit=100;
   }
-  ajaxEngine.sendRequest('ajaxGetHistory','userName='+getUserName(iUser),'password='+getPassword(iPass),'limit='+limit);
+  ajaxEngine.sendRequest('ajaxGetHistory','userId='+getUserName(iUser),'limit='+limit);
 }
 function GetSessionHistory() {
   var id=document.getElementById('sessionHistory');
@@ -157,12 +157,12 @@ function getSelectedOption(iArr) {
   }
   return null;
 }
-function ajaxHistorySearch(iUser,iPass) {
+function ajaxHistorySearch(iUser) {
   var iMonth = getSelectedOption(document.getElementById('in_hSearch_month'));
   var iYear  = getSelectedOption(document.getElementById('in_hSearch_year'));
   var oMonth = getSelectedOption(document.getElementById('out_hSearch_month'));
   var oYear  = getSelectedOption(document.getElementById('out_hSearch_year'));
-  ajaxEngine.sendRequest('ajaxHistorySearch','iYear='+iYear,'iMonth='+iMonth,'oYear='+oYear,'oMonth='+oMonth,'userName='+getUserName(iUser),'password='+getPassword(iPass));
+  ajaxEngine.sendRequest('ajaxHistorySearch','iYear='+iYear,'iMonth='+iMonth,'oYear='+oYear,'oMonth='+oMonth,'userId='+getUserName(iUser));
 }
 function getDataFromSelectors(_dbs,_site,_group,_app,_primD,_tier) {
   var sel;
