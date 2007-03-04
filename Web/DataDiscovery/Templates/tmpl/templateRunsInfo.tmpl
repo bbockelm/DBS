@@ -1,0 +1,45 @@
+Processed dataset:<br /> 
+<span class="offset_left">
+<b>$proc</b>
+</span>
+###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
+<table id="$tableId" cellspacing="0" cellpadding="0" border="1">
+<tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
+<td>Run</td>
+<td>Events</td>
+<td>Lumi sec.</td>
+<td>Total L</td>
+<td>Store</td>
+<td>StartOfRun</td>
+<td>EndOfRun</td>
+<td>Created by</td>
+<td>Creation time</td>
+<td>Modified by</td>
+<td>Modifiction time</td>
+</tr>
+#for dbsDict in $runList
+<tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
+### I need to get run type and decide do I need or not provide a link to run quality DB.
+<td align="center">
+#if $dbsDict['Type'].lower()=='raw'
+<a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$dbsDict['RunNumber']">
+$dbsDict['RunNumber']
+</a>
+#else
+$dbsDict['RunNumber']
+#end if
+</td>
+<td align="right">$dbsDict['NumberOfEvents']</td>
+<td align="right">$dbsDict['NumberOfLumiSections']</td>
+<td align="right">$dbsDict['TotalLuminosity']</td>
+<td align="right">$dbsDict['StoreNumber']</td>
+<td align="right">$dbsDict['StartOfRun']</td>
+<td align="right">$dbsDict['EndOfRun']</td>
+<td align="right">$dbsDict['CreatedBy']</td>
+<td align="right">$dbsDict['CreationDate']</td>
+<td align="right">$dbsDict['LastModifiedBy']</td>
+<td align="right">$dbsDict['LastModificationDate']</td>
+</tr>
+#end for
+</table>
+<hr class="dbs" />

@@ -1,0 +1,9 @@
+#if len($oList)
+<script type="text/javascript">
+ajaxGetData('$dbs','all','*','*','*','$oList');
+ajaxGetDbsData('$dbs','all','*','*','*','$oList');
+ajaxGetRuns('$dbs','all','*','*','*','$oList');
+</script>
+#else
+No match found for your request, please refine your search.
+#end if

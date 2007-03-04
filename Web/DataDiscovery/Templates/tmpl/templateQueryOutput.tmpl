@@ -1,0 +1,16 @@
+###<pre>$query</pre>
+#set thRow=$iList[0]
+<table class="dbs_table">
+<tr>
+#for item in $thRow
+<th>$item</th>
+#end for
+</tr>
+#for itemList in $iList[1:]
+<tr>
+#for elem in $itemList
+<td>$elem</td>
+#end for
+</tr>
+#end for
+</table>

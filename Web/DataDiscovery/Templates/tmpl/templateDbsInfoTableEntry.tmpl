@@ -1,0 +1,26 @@
+#from DDUtil import sizeFormat, colorSizeHTMLFormat
+#from DDUtil import splitString 
+#for dbsDict in $dbsList
+#set bName=$dbsDict['Name']
+#set sName=$splitString($dbsDict['Name'],30,"\\n")
+<tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
+<td align="left" class="td20">$sName</td>
+<td align="right">$dbsDict['NumberOfEvents']</td>
+<td align="right">$dbsDict['NumberOfFiles']</td>
+<td align="right">$colorSizeHTMLFormat($dbsDict['BlockSize'])</td>
+<td align="center">
+<a href="javascript:popUp('$host/getLFN_cfg?dbsInst=$dbsInst&amp;blockName=$bName',1000)">cff</a>, 
+<a href="javascript:popUp('$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName',900)">txt</a>,
+<a href="javascript:popUp('$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName',1000)">details</a>
+</td>
+#if int($dbsDict['OpenForWriting'])==1
+<td align="center" style="background-color:AliceBlue;">OPEN</td>
+#else
+<td align="center" style="background-color:AntiqueWhite;">CLOSED</td>
+#end if
+<td align="right">$dbsDict['CreatedBy']</td>
+<td align="center">$dbsDict['CreationDate']</td>
+<td align="right">$dbsDict['LastModifiedBy']</td>
+<td align="center">$dbsDict['LastModificationDate']</td>
+</tr>
+#end for

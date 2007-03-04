@@ -1,0 +1,95 @@
+<!-- begin outer most table -->
+<table class="lfn">
+<tr valign="top">
+<td valign="top">
+
+<form action="javascript:ResetAllResults();MakeUserNavBar();showResMenu('results');ajaxGetUserData()" method="get">
+<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsSelector" />
+<!-- begin menu table -->
+<table class="small" cellspacing="5">
+<tr>
+<td align="right">
+<b>Physics groups</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_groups_tag','<p>Here you select the physics group.</p> <p><b>Example:</b> Higgs, top group.</p>')" onMouseOut="ClearTag('kw_groups_tag')">?</div><span id="kw_groups_tag"></span></td>
+<td>
+##<select id="groupSelector" onchange="javascript:replace('navSelector');showLoadingMessage('selectApps');replace('selectPrim','to be defined');replace('selectTier','to be defined');ajaxSelectApps()">
+<select id="kw_group" onchange="ajaxGetKWFields()">
+<option selected="selected">Select</option>
+#for group in $groupList
+<option value="$group">$group</option>
+#end for
+</select>
+</td>
+</tr>
+
+
+<tr>
+<td valign="top" align="right">
+<b>Data tier</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_tier_tag','<p>This menu shows all known in DBS data types.</p> <p><b>Example:</b> DIGI, RECO.</p>')" onMouseOut="ClearTag('kw_tier_tag')">?</div><span id="kw_tier_tag"></span></td>
+<td>
+<div id="kw_tier">
+<select><option>Any</option></select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
+<b>Software releases</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_rel_tag','<p>All known software releases.</p> <p><b>Example:</b> CMSSW_1_1_1</p>')" onMouseOut="ClearTag('kw_rel_tag')">?</div><span id="kw_rel_tag"></span></td>
+<td>
+<div id="kw_release">
+<select><option>Any</option></select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
+<b>primary dataset/<br />MC generators</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_prim_tag','<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>')" onMouseOut="ClearTag('kw_prim_tag')">?</div><span id="kw_prim_tag"></span></td>
+<td>
+<div id="kw_prim">
+<select><option>Any</option></select>
+</select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
+<b>Sites</b>
+</td>
+<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_site_tag','<p>List of know CMS sites</p> <p><b>Example: cmssrm.fnal.gov</b></p>')" onMouseOut="ClearTag('kw_site_tag')">?</div><span id="kw_site_tag"></span></td>
+<td>
+<select id="kw_site">
+<option selected="selected" value="All">Any</option>
+#for site in $siteList
+<option>$site</option>
+#end for
+</select>
+</td>
+</tr>
+
+<tr>
+<td>
+</td>
+<td></td>
+<td>
+###<input type="submit" value="Find" onclick="javascript:checkNavSelection()" />
+<input type="submit" value="Find" />
+</td>
+</tr>
+</table>
+
+<!-- end of menu table -->
+</form>
+</td>
+</tr>
+</table>
+<!-- end of outer most table -->

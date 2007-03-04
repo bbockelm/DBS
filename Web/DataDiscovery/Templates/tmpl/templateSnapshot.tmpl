@@ -1,0 +1,36 @@
+#if $site=="*"
+#set site="All"
+#end if
+#if $tier=="*"
+#set tier="All"
+#end if
+<div class="sectionhead">RESULTS FOR:</div>
+<table class="small" bgcolor="#DDDDDD">
+#if not $userMode
+<tr>
+<td align="right">DBS instantse:</td>
+<td>$dbsInst</td>
+</tr>
+#end if
+<tr>
+<td align="right"><b>Tier site:</b>
+</td>
+<td>$site</td>
+</tr>
+<tr>
+<td align="right"><b>Application:</b>
+</td>
+<td>$app</td>
+</tr>
+<tr>
+<td align="right"><b>Primary dataset:</b>
+</td>
+<td>$primD</td>
+</tr>
+<tr>
+<td align="right"><b>Data tier:</b>
+</td>
+<td>$tier</td>
+</tr>
+</table>
+<br>

@@ -1,0 +1,70 @@
+<div class="float_moreInfo">
+
+<table width="100%">
+<tr>
+<td align="left">
+<span class="sectionhead_tight">
+More information
+</span>
+</td>
+<td align="right">
+<a href="javascript:HideTag('$id')">close &#8855;</a>
+</td>
+</tr>
+</table>
+<hr class="dbs" />
+
+<div id="navlist">
+<ul>
+#*
+<li>
+Data location
+</li>
+*#
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getDbsData?dbsInst=$dbsInst&amp;site=All&amp;primD=*&amp;tier=*&amp;proc=$path&amp;_idx=0&amp;ajax=0',1000)">
+Block information
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getRuns?dbsInst=$dbsInst&amp;site=All&amp;primD=*&amp;tier=*&amp;proc=$path&amp;_idx=0&amp;ajax=0',1000)">
+Run information
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getAppConfigs?dbsInst=$dbsInst&amp;appPath=$appPath&amp;ajax=0',1000)">
+Configuration files
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getProvenanceForAllDatasets?dbsInst=$dbsInst&amp;site=All&amp;primD=*&amp;tier=*&amp;proc=$path&amp;_idx=0&amp;ajax=0',1000)">
+Provenance information
+</a>
+</li>
+
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getDataDescription?dbsInst=$dbsInst&amp;processedDataset=$path',1000)">Data description</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('https://cmsdoc.cern.ch:8443/cms/aprom/phedex/tbedi/Request::Create?dbschoice=known&amp;dbs=http%3A//cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquery%3Finstance%3D$dbsInst&amp;data=$path&amp;priority=0',1000)">PhEDEx subscription</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getParameterSet?dbsInst=$dbsInst&amp;dataset=$path',1000)">
+Parameter set(s)
+</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('$host/getAnalysisDS?dbsInst=$dbsInst&amp;dataset=$path',1000)">
+Analysis dataset(s)
+</a>
+</li>
+<li class="moreInfo">
+<a href="javascript:popUp('$host/crabCfg?dataset=$path&amp;totEvt=-1',1000)">crab.cfg</a>
+</li>
+</ul>
+</div>
+
+</div>

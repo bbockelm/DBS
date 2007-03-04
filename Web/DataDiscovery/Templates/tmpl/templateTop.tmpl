@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>DBS data discovery page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en-us" />
+<meta name="author" content="Valentin Kuznetsov (vkuznet at gmail dot com)" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="ROBOTS" content="ALL" />
+<meta name="Copyright" content="(CC) 2007, CMS collaboration." />
+<meta http-equiv="imagetoolbar" content="no" />
+<meta name="Rating" content="General" />
+<link rel="stylesheet" type="text/css" href="css/dbs.css" />
+<!-- set non-visible display content by default -->
+<style type="text/css">div.normalcontent { display:none }</style>
+<!-- if JavaScripts enables, turn visiable content on -->
+
+<!-- YUI and WEBTOOLS -->
+<script type="text/javascript" src="yui/build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="yui/build/dom/dom.js"></script>
+<script type="text/javascript" src="yui/build/event/event.js"></script> 
+<script type="text/javascript" src="yui/build/container/container_core.js"></script>
+<script type="text/javascript" src="yui/build/connection/connection-min.js"></script>
+<script type="text/javascript" src="WEBTOOLS/Common/js/masthead.js"></script>
+<script type="text/javascript" src="WEBTOOLS/Common/js/footer.js"></script>
+
+<!-- DBS and RICO -->
+<script type="text/javascript" src="js/userName.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
+<script type="text/javascript" src="js/sorttable.js"></script>
+<script type="text/javascript" src="js/prototype.js"></script>
+<script type="text/javascript" src="js/rico.js"></script>
+<script type="text/javascript" src="js/ajax_init.js"></script>
+<script type="text/javascript" src="js/dhtml_history/dhtmlHistory.js"></script>
+
+###<script type="text/javascript" src="js/ricoLiveGrid.js"></script>
+###<link rel="stylesheet" type="text/css" href="css/searchEngine.css" />
+
+#*
+<!-- TreeView from YUI -->
+<script type="text/javascript" src="yui/build/yahoo/yahoo.js" ></script>
+<script type="text/javascript" src="yui/build/event/event.js" ></script>
+<script type="text/javascript" src="yui/build/treeview/treeview.js" ></script>
+<link rel="stylesheet" type="text/css" href="yui/examples/treeview/css/local/tree.css" />
+*#
+
+<link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_main.css" />
+<link rel="stylesheet" type="text/css" href="WEBTOOLS/Common/css/dmwt_masthead.css" />
+
+</head>
+<body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs');insertFooter('dbs')" id="content">
+
+<noscript>
+<h1 class="box_red">Warning:</h1>
+<table width="50%" class="main">
+<tr>
+<td>
+<div class="sectionhead_tight">DBS/DLS discovery page
+is AJAX enabled and require that your browser have scripting 
+enabled and JavaScript support. Your browser either does not support JavaScript, 
+or it has JavaScript support disabled. Please enable JavaScript support or 
+use a different browser with JavaScript support to use this page.
+</div>
+</td>
+</tr>
+</table>
+</noscript>
+
+#import time
+<div id="footer">
+<div class="bd">
+
+<table cellspacing="0" cellpadding="0" width="100%" id='end' style="margin-top:8px;">
+<tr>
+<td class="small"align="left">
+<em>
+CMS data discovery: $time.asctime() 
+</em>
+</td>
+<td class="small" align="right">
+<em>
+Contact: <a href="mailto:vk@mail.NOSPAM.lns.cornell.edu">Valentin Kuznetsov</a>.
+</em>
+</td>
+</tr>
+</table>
+
+</div>
+</div>
+
+<div id="main" class="hide">
+<script type="text/javascript">SetMain()</script>
+<div align="right">
+<span class="yellow_box" onMouseOver="KeywordHelp('view_tag','<p>There are different view for data discovery, which we classified as <em>Physicists</em>, <em>Production</em>.</p> <p><b>Physicists view:</b> View led by physics interest. Information about file names or SE 3 clicks away. Information required for running a CRAB job within one click. Use data only published in official global DBS. Emphasis on  physics metadata.</p> <p><b>Production view:</b>View led by production managers. It specify in greater details and provide more options to look at DBS data.</p>')" onMouseOut="ClearTag('view_tag')">?</span><span id="view_tag"></span>
+Views: 
+<a href="$host/" id="homeUser">Physicists</a>
+|
+<a href="$host/expert" id="homeExpert">Production</a>
+###|
+###<a href="$host/dbsExpert" id="homeDBS">DBS experts</a>
+</div>
+<script type="text/javascript">whereUsers()</script>
