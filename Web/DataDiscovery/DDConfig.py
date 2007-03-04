@@ -10,7 +10,7 @@
 import os, sys, string, stat, re, types
 from DDExceptions import *
 
-class DBSDDConfig:
+class DDConfig:
   def __init__(self,iConfig={}):
     """
        Read and parse content of DBSDD.conf configuration file
@@ -77,7 +77,7 @@ class DBSDDConfig:
 # main
 #
 if __name__ == "__main__":
-   dbsConfig = DBSDDConfig()
+   dbsConfig = DDConfig()
    print "Config file",dbsConfig.configFile
    print dbsConfig.configDict
 

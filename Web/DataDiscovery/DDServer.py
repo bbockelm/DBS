@@ -19,14 +19,13 @@ from   Cheetah.Template import Template
 import cherrypy 
 
 # DBS  modules
-import CheetahDBSTemplate
-from   DBSHelper import *
-from   DBSUtil   import *
+from   DDUtil    import *
 from   DDConfig  import *
 from   DDLucene  import *
 from   DDHelper  import *
+from   Templates import *
  
-class DBSDataDiscoveryServer(DDLogger): 
+class DDServer(DDLogger): 
     """
        DBS Data discovery server class.
        It uses CherryPy web application framework 
@@ -54,7 +53,7 @@ class DBSDataDiscoveryServer(DDLogger):
     """
     def __init__(self,verbose=0,profile=0):
         """
-           DBSDataDiscoveryServer constructor. It takes only one optional argument.
+           DDServer constructor. It takes only one optional argument.
            Initialize L{DBSHelper} with default DBS instance "MCGlobal/Writer".
            Keep cache of DBS instances and current selection of (dbs,site,app,primD,tier).
            @type  verbose: boolean or integer 
@@ -62,9 +61,9 @@ class DBSDataDiscoveryServer(DDLogger):
            @rtype : none
            @return: none 
         """
-        DDLogger.__init__(self,"DBSDataDiscoveryServer",verbose)
-        self.ddConfig  = DBSDDConfig()
-        self.lucene = DDLucene()
+        DDLogger.__init__(self,"DDServer",verbose)
+        self.ddConfig  = DDConfig()
+        self.lucene = DDLucene(verbose)
         self.dbs  = DBSGLOBAL
         self.site = ""
         self.app  = ""
@@ -118,7 +117,7 @@ class DBSDataDiscoveryServer(DDLogger):
             print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
-        print "DBSDataDiscoveryServer '%s'"%self.dbsdd
+        print "DDServer '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("",""), # (dbsInst,site)
@@ -130,6 +129,7 @@ class DBSDataDiscoveryServer(DDLogger):
                'Files'    : ['Files','Branch'],
                'Datasets' : ['PrimaryDataset','ProcessedDataset','AnalysisDataset'],
               }
+        self.writeLog("DDServer init")
 
     def setQuiet(self):
         self.helper.setQuiet()
@@ -157,7 +157,7 @@ class DBSDataDiscoveryServer(DDLogger):
     def sendErrorReport(self,iMsg=""):
         """
            Send a complete report with provided msg. Capture internals of
-           L{DBSDataDiscoveryServer} and L{DBSHelper}.
+           L{DDServer} and L{DBSHelper}.
            Use /usr/sbin/sendmail as mail agent.
            @type  msg: string 
            @param msg: message 
@@ -170,7 +170,7 @@ class DBSDataDiscoveryServer(DDLogger):
         msg+="Request from: %s:%s\n"%(cherrypy.request.remote_host,cherrypy.request.remote_port)
         msg+="Request url : %s\n"%cherrypy.request.browser_url
         msg+="\n\n"
-        msg+="DBSDataDiscoveryServer:\n"
+        msg+="DDServer:\n"
         msg+="=======================\n"
         msg+="%s: %s\n"%("DBS Instance   ",self.dbs)
         msg+="%s: %s\n"%("site           ",self.site)
@@ -229,10 +229,9 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dbsGlobal'   : DBSGLOBAL,
                      'userMode'    : self.userMode
                     }
-        t = Template(CheetahDBSTemplate.templateTop, searchList=[nameSpace])
-        page = str(t)
+        page = templateTop(searchList=[nameSpace]).respond()
         if intro:
-           page+=CheetahDBSTemplate.templateIntro
+           page+=templateIntro().reapond()
         return page
 
     def genResultsHTML(self):
@@ -245,7 +244,7 @@ class DBSDataDiscoveryServer(DDLogger):
         """
 
         nameSpace = { 'localtime':time.asctime() }
-        t = Template(CheetahDBSTemplate.templateResults, searchList=[nameSpace])
+        t = templateResults(searchList=[nameSpace]).respond()
         return str(t)
 
     def genBottomHTML(self):
@@ -258,7 +257,7 @@ class DBSDataDiscoveryServer(DDLogger):
         """
 
         nameSpace = { 'localtime':time.asctime() }
-        t = Template(CheetahDBSTemplate.templateBottom, searchList=[nameSpace])
+        t = templateBottom(searchList=[nameSpace]).respond()
         return str(t)
 
     def index(self): 
@@ -292,7 +291,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'host': cherrypy.request.remote_host,
                      'url' : cherrypy.request.browser_url
                     }
-        t = Template(CheetahDBSTemplate.templateERROR, searchList=[nameSpace])
+        t = templateERROR(searchList=[nameSpace]).respond()
         self.sendErrorReport(msg+"\n"+getExcept())
         return str(t)
 
@@ -310,7 +309,7 @@ class DBSDataDiscoveryServer(DDLogger):
                          'panel'   : self.genPanelHelper(), 
                          'view'    : view
                         }
-            t = Template(CheetahDBSTemplate.templateVisiblePanel, searchList=[nameSpace])
+            t = templateVisiblePanel(searchList=[nameSpace]).respond()
             page = str(t)
             return page
         except:
@@ -333,7 +332,7 @@ class DBSDataDiscoveryServer(DDLogger):
                          'panel'   : self.genPanelHelper(), 
                          'view'    : view
                         }
-            t = Template(CheetahDBSTemplate.templateHiddenPanel, searchList=[nameSpace])
+            t = templateHiddenPanel(searchList=[nameSpace]).respond()
             page = str(t)
             return page
         except:
@@ -347,7 +346,7 @@ class DBSDataDiscoveryServer(DDLogger):
            Generate DBS glossary page
         """
         nameSpace = {}
-        t = Template(CheetahDBSTemplate.templateGlossary, searchList=[nameSpace])
+        t = templateGlossary(searchList=[nameSpace]).respond()
         return str(t)
         
     def genPanelHelper(self):
@@ -363,9 +362,9 @@ class DBSDataDiscoveryServer(DDLogger):
 
         userNav = self.genUserNavigator()
 
-        t = Template(CheetahDBSTemplate.templateOperators, searchList=[{'tag':'parameterListOperators'}])
+        t = templateOperators(searchList=[{'tag':'parameterListOperators'}]).respond()
         nameSpace={'operators':str(t)}
-        t = Template(CheetahDBSTemplate.templateSearchEngine, searchList=[nameSpace])
+        t = templateSearchEngine(searchList=[nameSpace]).respond()
         luceneForm=str(t)
         dbsTables = self.helper.dbManager.getTableNames(dbsInst)
         dbsTables.sort()
@@ -390,7 +389,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dbsInst'      : dbsInst,
                      'dbsTables'    : dbsTables
                     }
-        t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
+        t = templateFrontPage(searchList=[nameSpace]).respond()
         return str(t)
         
     def genPanel(self):
@@ -414,7 +413,7 @@ class DBSDataDiscoveryServer(DDLogger):
                          'glossary'     : self.glossary(),
                          'tip'          : tip()
                         }
-            t = Template(CheetahDBSTemplate.templateFrontPage, searchList=[nameSpace])
+            t = templateFrontPage(searchList=[nameSpace]).respond()
             return str(t)
         except:
             t=self.errorReport("Fail in genPanel function")
@@ -477,31 +476,6 @@ class DBSDataDiscoveryServer(DDLogger):
             return str(t)
     dbsExpert.exposed = True
 
-    def summary(self,**kwargs):
-        """
-           Generates AJAX response to get summary information about DBS. It scans all DBS instances
-           and retrieve all information from there. The information has been cached for 1 day.
-           All the work is done in L{getSummary} method.
-        """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page=""
-        try:
-            page="""<ajax-response><response type="element" id="summary">"""
-            if not self.sumPage or (time.time()-self.timerForSummary)>(24*60*60):
-               self.sumPage=self.getSummary()
-               page+=self.sumPage
-               self.timerForSummary=time.time()
-            else:
-               page+=self.sumPage
-            page+="</response></ajax-response>"
-            return page
-        except:
-            t=self.errorReport("Fail in summary function")
-            pass
-            return str(t)
-    summary.exposed = True
-    
     def searchHelper(self,keywords=""):
         """
            Helper function which invoke L{DBSHelper.search} to find out data based on input keywords.
@@ -522,7 +496,7 @@ class DBSDataDiscoveryServer(DDLogger):
                     'primDatasets': self.helper.getPrimaryDatasets(),
                     'siteList'    : getListOfSites(), 
                    }
-        t = Template(CheetahDBSTemplate.templateUserNav, searchList=[nameSearch])
+        t = templateUserNav(searchList=[nameSearch]).respond()
         return str(t)
         
 
@@ -531,12 +505,9 @@ class DBSDataDiscoveryServer(DDLogger):
            Search any match in DB for given keywords. The search done over
            meta-data tables.
         """
-#        t = Template(CheetahDBSTemplate.templateKeywords, searchList=[])
-#        help=str(t)
 
         if self.ddConfig.iface()=='cgi': searchFunc="javascript:ajaxSearch()"
         else: searchFunc="javascript:ResetAllResults();ajaxFinderSearch()"
-#        else: searchFunc="javascript:ResetAllResults();ajaxKeywordSearch()"
 
         # FIXME, TODO: firstDBS should be passed here
         if not firstDBS: firstDBS=DBSGLOBAL
@@ -546,16 +517,8 @@ class DBSDataDiscoveryServer(DDLogger):
         tableList = self.sectionDict['Algorithm']
         tableList.sort()
         
-#        iList=["Run","ProcessedDataset","LFN"]
-#        nameSpace={'selTag':'common_1','name':'commonOutput','changeFunction':"",'iList':iList}
-#        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
-#        commonOut=str(t)
-#        nameSpace={'id':1,'sectionList':sectionList,'tableList':tableList,'commonOutput':commonOut}
-#        t = Template(CheetahDBSTemplate.templateOutputLine, searchList=[nameSpace])
-#        outputLine = str(t)
-
         nameSpace={'id':1,'sectionList':sectionList,'tableList':tableList}
-        t = Template(CheetahDBSTemplate.templateSelectLine, searchList=[nameSpace])
+        t = templateSelectLine(searchList=[nameSpace]).respond()
         selectLine = str(t)
 
         nameSpace = {
@@ -563,109 +526,13 @@ class DBSDataDiscoveryServer(DDLogger):
                      'userMode'       : self.userMode,
                      'dbsList'        : self.dbsList,
                      'searchFunction' : searchFunc,
-#                     'outputLine'     : outputLine,
                      'selectLine'     : selectLine,
                     }
-        t = Template(CheetahDBSTemplate.templateSearchTable, searchList=[nameSpace])
+        t = templateSearchTable(searchList=[nameSpace]).respond()
         page = str(t)
         self.firstSearch=0
         return page
         
-    def search(self,dbsInst,keywords="",**kwargs):
-        """
-           Search any match in DB for given keywords. The search done over
-           meta-data tables.
-        """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        if  self.helper.iface=='cgi':
-            page="""<ajax-response><response type="object" id="results">"""
-        else:
-            page="""<ajax-response><response type="object" id="results_kw">"""
-        endAjaxMsg="</response></ajax-response>"
-        self.firstSearch=0
-        if keywords and not validator(keywords):
-           page+="""
-<hr class="dbs" />
-<div class="show_red_bold">Your search expression <p><em>%s</em></p> is not valid</div>
-"""%keywords
-           page+=endAjaxMsg
-           return page
-        oList= []
-        # parse keywords and search for DBSINST
-        dbsList=appList=tierList=siteList=primList=[]
-        if  string.lower(dbsInst)=='all':
-            if self.userMode:
-               dbsList.append(DBSGLOBAL)
-            else:
-               dbsList=self.dbsList
-        else:
-            if not self.dbsList.count(dbsInst):
-               msg="Wrong DBS isntance, '%s'\nList of known DBS instances:\n"%dbsInst
-               msg+=formattingListPrint(self.dbsList)
-               page+=msg+endAjaxMsg
-               return page
-            dbsList=[dbsInst]
-        if  self.helper.iface=='cgi':
-            for dbsInst in dbsList:
-                self.helperInst(dbsInst)
-                oList+=self.searchHelper(keywords)
-            nameSpace = {
-                         'firstSearch': self.firstSearch, 
-                         'oList'      : oList, 
-                         'userMode'   : self.userMode,
-                         'keywords'   : keywords
-                        }
-            t = Template(CheetahDBSTemplate.templateDataFromSelection, searchList=[nameSpace])
-            page+= str(t)
-        else:
-            for dbsInst in dbsList:
-                self.helperInit(dbsInst)
-                oList=self.searchHelper(keywords)
-                nameSpace = {
-                             'firstSearch': self.firstSearch, 
-                             'oList'      : oList, 
-                             'userMode'   : self.userMode,
-                             'keywords'   : keywords,
-                             'dbs'        : dbsInst
-                            }
-                t = Template(CheetahDBSTemplate.templateDataFromKeywordSelection, searchList=[nameSpace])
-                page+= str(t)
-        page+=endAjaxMsg
-        if self.verbose:
-#        if 1:
-           print page
-        return page
-    search.exposed = True
-
-    def getSummary(self):
-        """
-           Constructs summary page.
-           @type  self: class object
-           @param self: none
-           @rtype : string
-           @return: returns HTML code
-        """
-        page = """
-<table id="table_summary" cellspacing="2" cellpadding="5" border="1">
-<tr>
-<th class="box_gray">DBS instance</th>
-<th class="box_gray"># files</th>
-<th class="box_gray">size</th>
-</tr>
-        """
-        if self.userMode:
-           dbsList=[DBSGLOBAL]
-        else:
-           dbsList = self.dbsList
-        for dbsInst in dbsList:
-            sumDict   = self.helper.getDBSSummary(dbsInst) 
-            nameSpace = {'dbsInst':dbsInst,'sumDict':sumDict}
-            t = Template(CheetahDBSTemplate.templateSummary, searchList=[nameSpace])
-            page+=str(t)
-        page+="</table>"
-        return page
-
     def getDBSDict(self,dbsInst):
         """
             Read dbsDict file in local directory which contains
@@ -678,60 +545,20 @@ class DBSDataDiscoveryServer(DDLogger):
         f.close()
         return self.dbsDict
            
-    def getDBSDict_orig(self):
-        """
-            Read dbsDict.all, dbsDict.all files in local directory which contains
-            a JS dictionary for pull down menu.
-        """
-        f = open('dbsDict.global','r')
-        self.dbsUser = string.strip(f.read())
-        f.close()
-        f = open('dbsDict.all','r')
-        self.dbsDict = string.strip(f.read())
-        f.close()
-        if self.userMode:
-           return self.dbsUser
-        else:
-           return self.dbsDict
-           
-    def getDBSDict_v2(self):
-        if (time.time()-self.timer)>1*60*60: # use 2h interval to update menu
-           print "expert reset"
-           self.timer=time.time()
-           self.dbsDict="" # next call will update self.dbsDict
-           self.dbsUser=""
-           
-        if self.dbsDict:
-           dbsDict = self.dbsDict
-           dbsUser = self.dbsUser
-           print "from cache"
-        else:
-           dbsDict=self.helper.initJSDict(False)
-           dbsUser=self.helper.initJSDict(True)
-           self.dbsDict=dbsDict
-           self.dbsUser=dbsUser
-           print "new dict"
-        if self.userMode:
-           return self.dbsUser
-        else:
-           return self.dbsDict
-        
     def genNavigatorMenuDict(self,dbsInst,**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="navigatorDict">"""
         endAjaxMsg="</response></ajax-response>"
         try:
-#            page+="navDict="+self.getDBSDict()
             page+="navDict="+self.getDBSDict(dbsInst)
         except:
             t=self.errorReport("Fail in genNavigatorMenuDict function")
             page+=str(t)
             pass
         page+=endAjaxMsg
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     genNavigatorMenuDict.exposed = True
         
@@ -770,7 +597,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'firstPrim': firstPrim,
                      'firstTier': firstTier
                     }
-        t = Template(CheetahDBSTemplate.templateJS, searchList=[nameSpace])
+        t = templateJS(searchList=[nameSpace]).respond()
         page = str(t)
         if self.userMode:
            dbsList=[DBSGLOBAL]
@@ -787,13 +614,13 @@ class DBSDataDiscoveryServer(DDLogger):
                      'firstApp' : firstApp,
                      'firstPrim': firstPrim,
                      'firstTier': firstTier,
-                     'dbsDesc'  : CheetahDBSTemplate.DBSInstanceDesc,
-                     'siteDesc' : CheetahDBSTemplate.TierSiteDesc,
-                     'primDesc' : CheetahDBSTemplate.ApplicationDesc,
-                     'appDesc'  : CheetahDBSTemplate.PrimaryDatasetDesc,
-                     'tierDesc' : CheetahDBSTemplate.DataTierDesc,
+                     'dbsDesc'  : templateDBSInstanceDesc().respond(),
+                     'siteDesc' : templateTierSiteDesc().respond(),
+                     'primDesc' : templateApplicationDesc().respond(),
+                     'appDesc'  : templatePrimaryDatasetDesc().respond(),
+                     'tierDesc' : templateDataTierDesc().respond(),
                     }
-        t = Template(CheetahDBSTemplate.templateJSForm, searchList=[nameSpace])
+        t = templateJSForm(searchList=[nameSpace]).respond()
         page+= str(t)
         return page
         
@@ -821,7 +648,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'primD'   : primD,
                      'tier'    : tier
                     }
-        t = Template(CheetahDBSTemplate.templateSnapshot, searchList=[nameSpace])
+        t = templateSnapshot(searchList=[nameSpace]).respond()
         return str(t)
         
     def getDataFromSelection(self,userSelection,ajax=1,**kwargs):
@@ -862,9 +689,8 @@ class DBSDataDiscoveryServer(DDLogger):
            page+=endAjaxMsg
         else:
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getDataFromSelection.exposed = True 
     
@@ -960,7 +786,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'primD'   : primD,
                      'tier'    : tier
                     }
-        t = Template(CheetahDBSTemplate.templateProcDatasets, searchList=[nameSpace])
+        t = templateProcDatasets(searchList=[nameSpace]).respond()
         return str(t)
     
     def getURL(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",hist=""): 
@@ -1063,20 +889,13 @@ class DBSDataDiscoveryServer(DDLogger):
                      'tier'    : tier,
                      'proc'    : proc
                     }
-        t = Template(CheetahDBSTemplate.templateSnapshot, searchList=[nameSpace])
+        t = templateSnapshot(searchList=[nameSpace]).respond()
         snapshot=str(t)
         # the view and process page should be generated once
         if  int(_idx)==0:
             nameSpace = {'leftBar' : leftBar}
-            t = Template(CheetahDBSTemplate.templateLeftBar, searchList=[nameSpace])
+            t = templateLeftBar(searchList=[nameSpace]).respond()
             page+=str(t)
-
-
-#        jsPage="<!-- parents\n"
-        # begin of response tag
-
-#        page+="""<span id="results_response_%s" class="show_inline">"""%_idx
-#        page+="""<script type="text/javascript">ClearTag('cell_waiting');ClearCells(%s,%s)</script>"""%(_idx,nDatasets)
 
         page+="""<script type="text/javascript">ShowPageResults()</script>"""
         self.dbsTime=(t2-t1)
@@ -1093,7 +912,6 @@ class DBSDataDiscoveryServer(DDLogger):
             self.dbsTime+=self.helper.dbsTime
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
-#            jsPage+="""registerTreeView();ajaxAddTreeElement('root','%s');"""%dataset
             p = self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot)
             if oldTotEvt==totEvt and oldTotFiles==totFiles and oldDataset:
                bList.append((dataset,totEvt))
@@ -1113,7 +931,6 @@ class DBSDataDiscoveryServer(DDLogger):
         page+=self.blockListToHTML(dbsInst,bList,appPath)
         page+=prevPage # end of new stuff
 
-#        page+=jsPage+"\n-->\n"
         # generate URL link
         page+=self.getURL(dbsInst,site,group,app,primD,tier,proc,hist)
         # end of response tag
@@ -1137,7 +954,7 @@ class DBSDataDiscoveryServer(DDLogger):
                          'proc'    : proc,
                          'res_page': RES_PER_PAGE
                         }
-            t = Template(CheetahDBSTemplate.templateNextBar, searchList=[nameSpace])
+            t = templateNextBar(searchList=[nameSpace]).respond()
             page+=str(t)
         return page
     getDataHelper.exposed=True
@@ -1145,7 +962,7 @@ class DBSDataDiscoveryServer(DDLogger):
     def blockListToHTML(self,dbsInst,bList,appPath="*"):
         if not len(bList): return ""
         nameSpace = {'host': self.dbsdd, 'dbsInst': dbsInst, 'blockList' : bList,'appPath':appPath}
-        t = Template(CheetahDBSTemplate.templateBlockList, searchList=[nameSpace])
+        t = templateBlockList(searchList=[nameSpace]).respond()
         page=str(t)
         return page
         
@@ -1154,7 +971,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dataset'  : dataset,
                      'totEvt'   : totEvt
                     }
-        t = Template(CheetahDBSTemplate.templateCRAB, searchList=[nameSpace])
+        t = templateCRAB(searchList=[nameSpace]).respond()
         page=str(t)
         return page
     crabCfg.exposed=True
@@ -1166,7 +983,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'htmlTime' : "%5.3f"%(htmlTime-self.dbsTime-self.dlsTime),
                      'totalTime': "%5.3f"%htmlTime
                     }
-        t = Template(CheetahDBSTemplate.templateTime, searchList=[nameSpace])
+        t = templateTime(searchList=[nameSpace]).respond()
         page=str(t)
         return page
 
@@ -1227,9 +1044,8 @@ class DBSDataDiscoveryServer(DDLogger):
            
            page+= """<script type="text/javascript">ajaxInit('%s');showResultsMenu();%s;%s;%s;%s;%s;showResMenu('results')</script>"""%(dbsInst,sumData,dbsData,runData,parents,configs)
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getData.exposed = True 
 
@@ -1241,12 +1057,9 @@ class DBSDataDiscoveryServer(DDLogger):
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results">"""
         page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax)
-#        pList = self.helper.getUserData(group,tier,rel,prim,site)
-#        page+= self.getDataHelper(dbsInst,site,"*","*","*",pList,"",_idx,ajax)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getUserData.exposed=True
 
@@ -1288,7 +1101,6 @@ class DBSDataDiscoveryServer(DDLogger):
             dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc)
             nDatasets=len(dList)
             className="hide"
-#            if not _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
             if int(_idx)==0:
                className="show_inline"
             page+="""<div id="results_dbs_response_%s" class="%s">"""%(_idx,className)
@@ -1305,7 +1117,7 @@ class DBSDataDiscoveryServer(DDLogger):
                              'host'     : self.dbsdd,
                              'dbsInst'  : dbsInst
                             }
-                t = Template(CheetahDBSTemplate.templateDbsInfo, searchList=[nameSpace])
+                t = templateDbsInfo(searchList=[nameSpace]).respond()
                 page+=str(t)
             page+="</div>"
         except:
@@ -1318,9 +1130,8 @@ class DBSDataDiscoveryServer(DDLogger):
            page+="</response></ajax-response>"
         else:
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getDbsData.exposed = True 
 
@@ -1376,7 +1187,7 @@ class DBSDataDiscoveryServer(DDLogger):
                              'tableId'  : tid,
                              'proc'     : dataset
                             }
-                t = Template(CheetahDBSTemplate.templateRunsInfo, searchList=[nameSpace])
+                t = templateRunsInfo(searchList=[nameSpace]).respond()
                 page+=str(t)
             page+="</div>"
         except:
@@ -1389,9 +1200,8 @@ class DBSDataDiscoveryServer(DDLogger):
            page+="</response></ajax-response>"
         else:
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getRuns.exposed = True 
 
@@ -1517,7 +1327,7 @@ class DBSDataDiscoveryServer(DDLogger):
             self.htmlInit()
             page = self.genTopHTML()
             nameSpace={'name':name,'content':self.helper.getConfigContent(dbsInst,id)}
-            t = Template(CheetahDBSTemplate.templateAppConfigContent, searchList=[nameSpace])
+            t = templateAppConfigContent(searchList=[nameSpace]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
             return page
@@ -1534,7 +1344,6 @@ class DBSDataDiscoveryServer(DDLogger):
         try:
             self.htmlInit()
             page ="""<html><body><pre>\n"""
-#            for blockName in self.siteDict[site]:
             for blockName in self.helper.getBlocksFromSite(site):
                 page+="%s\n"%blockName
             page+="\n</pre></body></html>"
@@ -1591,7 +1400,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'blockName' : blockName,
                      'lfnList'   : lfnList
                     }
-        t = Template(CheetahDBSTemplate.templateLFN, searchList=[nameSpace])
+        t = templateLFN(searchList=[nameSpace]).respond()
         return str(t)
         
     def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot=""):
@@ -1620,7 +1429,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'tid'        : id,
                      'snapshot'   : snapshot
                     }
-        t = Template(CheetahDBSTemplate.templateLFB, searchList=[nameSpace])
+        t = templateLFB(searchList=[nameSpace]).respond()
 	page+=str(t)
         return page
         
@@ -1656,14 +1465,14 @@ class DBSDataDiscoveryServer(DDLogger):
                          'host'     : self.dbsdd,
                          'dbsInst'  : dbsInst
                         }
-            t = Template(CheetahDBSTemplate.templateDbsInfoTableEntry, searchList=[nameSpace])
+            t = templateDbsInfoTableEntry(searchList=[nameSpace]).respond()
             # query DBS and get more info about blocks
             page+=str(t)
 #        page+= str(t)
         page+="</table>"
         page+="</response></ajax-response>"
-        if self.verbose:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getFileBlocks.exposed=True
 
@@ -1683,11 +1492,11 @@ class DBSDataDiscoveryServer(DDLogger):
                      'site'   : site,
                      'bList'  : bList
                     }
-        t = Template(CheetahDBSTemplate.templateFileBlocksFromSite, searchList=[nameSpace])
+        t = templateFileBlocksFromSite(searchList=[nameSpace]).respond()
         page+= str(t)
 #        page+="</response></ajax-response>"
-#        if self.verbose:
-#           print page
+#        if self.verbose==2:
+#           self.writeLog(page)
         return page
     getBlocksFromSiteHelper.exposed=True
     
@@ -1712,14 +1521,14 @@ class DBSDataDiscoveryServer(DDLogger):
                          'site'   : site,
                          'bList'  : bList
                         }
-            t = Template(CheetahDBSTemplate.templateFileBlocksFromSite, searchList=[nameSpace])
+            t = templateFileBlocksFromSite(searchList=[nameSpace]).respond()
         except:
             t=self.errorReport("Fail in getBlocksFromSite function")
             pass
         page+= str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getBlocksFromSite.exposed=True
 
@@ -1739,8 +1548,8 @@ class DBSDataDiscoveryServer(DDLogger):
             page+=self.getPrimaryDatasetsHelper(dbs)
             page+="</response>\n"
         page+="</ajax-response>"
-        if self.verbose:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getAllPrimaryDatasets.exposed=True
 
@@ -1759,7 +1568,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dbsInst' : dbsInst,
                      'dList'   : dList
                     }
-        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        t = templatePrintList(searchList=[nameSpace]).respond()
         return str(t)
 
     def getPrimaryDatasets(self,dbsInst,**kwargs):
@@ -1773,9 +1582,8 @@ class DBSDataDiscoveryServer(DDLogger):
         page+="""<div class="div_scroll">"""+self.getPrimaryDatasetsHelper(dbsInst)+"</div>"
         page+="</response>\n"
         page+="</ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getPrimaryDatasets.exposed=True
 
@@ -1794,7 +1602,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dbsInst' : dbsInst,
                      'dList'   : dList
                     }
-        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        t = templatePrintList(searchList=[nameSpace]).respond()
         return str(t)
 
     def getProcessedDatasets(self,dbsInst,**kwargs):
@@ -1808,9 +1616,8 @@ class DBSDataDiscoveryServer(DDLogger):
         page+="""<div class="div_scroll">"""+self.getProcessedDatasetsHelper(dbsInst)+"</div>"
         page+="</response>\n"
         page+="</ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getProcessedDatasets.exposed=True
 
@@ -1829,7 +1636,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dbsInst' : dbsInst,
                      'dList'   : dList
                     }
-        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        t = templatePrintList(searchList=[nameSpace]).respond()
         return str(t)
 
     def getApplications(self,dbsInst,**kwargs):
@@ -1843,8 +1650,8 @@ class DBSDataDiscoveryServer(DDLogger):
         page+="""<div class="div_scroll">"""+self.getApplicationsHelper(dbsInst)+"</div>"
         page+="</response>\n"
         page+="</ajax-response>"
-        if self.verbose:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getApplications.exposed=True
 
@@ -1858,12 +1665,11 @@ class DBSDataDiscoveryServer(DDLogger):
         self.helperInit(dbsInst)
         dList=['ROOT1','ROOT2','FIXME']
         nameSpace = {'name':'release','iList': dList}
-        t = Template(CheetahDBSTemplate.templateSelectList, searchList=[nameSpace])
+        t = templateSelectList(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getBranches.exposed=True
 
@@ -1877,12 +1683,11 @@ class DBSDataDiscoveryServer(DDLogger):
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getDataTypes()
         nameSpace = {'name':'dataTypes','iList': dList,'selTag':'dataTypes','changeFunction':''}
-        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getTiers.exposed=True
 
@@ -1896,12 +1701,11 @@ class DBSDataDiscoveryServer(DDLogger):
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getPrimaryDatasets()
         nameSpace = {'name':'trigLines','iList': dList,'selTag':'trigLines','changeFunction':''}
-        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getTriggerLines.exposed=True
 
@@ -1915,12 +1719,11 @@ class DBSDataDiscoveryServer(DDLogger):
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getSoftwareReleases()
         nameSpace = {'name':'softReleases','iList': dList,'selTag':'softReleases','changeFunction':''}
-        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getSoftwareReleases.exposed=True
 
@@ -1938,7 +1741,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'msg'   : "Available primary datasets",
                      'dList' : dList
                     }
-        t = Template(CheetahDBSTemplate.templatePrintList, searchList=[nameSpace])
+        t = templatePrintList(searchList=[nameSpace]).respond()
         page = self.genTopHTML()
         page+= self.genMenuForm()
         page+= str(t)
@@ -1982,7 +1785,7 @@ class DBSDataDiscoveryServer(DDLogger):
                        'dataset'   : dataset, 
                        'parentList': parents
                       }
-            t = Template(CheetahDBSTemplate.templateProvenance, searchList=[nameSpace])
+            t = templateProvenance(searchList=[nameSpace]).respond()
             page = str(t)
         except:
             page="No provenance information found at this time"
@@ -1997,8 +1800,8 @@ class DBSDataDiscoveryServer(DDLogger):
         page ="""<ajax-response><response type="element" id="parentGraph">"""
         page+=self.getDatasetProvenanceHelper(dataset)
         page+="</response></ajax-response>"
-        if self.verbose:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getDatasetProvenance.exposed=True
 
@@ -2049,9 +1852,8 @@ class DBSDataDiscoveryServer(DDLogger):
            page+="</response></ajax-response>"
         else:
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getProvenanceForAllDatasets.exposed = True 
     
@@ -2067,9 +1869,8 @@ class DBSDataDiscoveryServer(DDLogger):
             page+=str(t)
             pass
         page+=endAjaxMsg
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     genSiteMenuDict.exposed = True
         
@@ -2086,7 +1887,7 @@ class DBSDataDiscoveryServer(DDLogger):
                      'dbsList'  : self.dbsList,
                      'siteDict' : getDictOfSites()
                     }
-        t = Template(CheetahDBSTemplate.templateSiteForm, searchList=[nameSpace])
+        t = templateSiteForm(searchList=[nameSpace]).respond()
         page = str(t)
         return page
 
@@ -2110,6 +1911,7 @@ class DBSDataDiscoveryServer(DDLogger):
     sendFeedback.exposed=True
 
     def storeHistory(self,actionString,userId):
+        print "\n\n storeHistory",actionString,userId
         # update DB history
         # select cmdid from given history string
         c = sqlalchemy.select([t_command.c.id],t_command.c.command==actionString).execute()
@@ -2168,12 +1970,11 @@ class DBSDataDiscoveryServer(DDLogger):
                        'time'      : str(rows[1]),
                        'action'    : str(rows[2])
                       }
-            t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
+            t = templateHistory(searchList=[nameSpace]).respond()
             page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     historySearch.exposed=True
 
@@ -2205,12 +2006,11 @@ class DBSDataDiscoveryServer(DDLogger):
                        'time'      : str(rows[1]),
                        'action'    : str(rows[2])
                       }
-            t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
+            t = templateHistory(searchList=[nameSpace]).respond()
             page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getHistory.exposed=True
 
@@ -2222,7 +2022,7 @@ class DBSDataDiscoveryServer(DDLogger):
             self.storeHistory(actionString,userId)
         except:
 #            if not self.quiet:
-#               printExcept()
+            printExcept()
             pass
         # AJAX wants response as "text/xml" type
         iDate=time.strftime("%Y-%m-%d",time.localtime())
@@ -2233,13 +2033,12 @@ class DBSDataDiscoveryServer(DDLogger):
                    'time'      : iTime, 
                    'action'    : actionString
                   }
-        t = Template(CheetahDBSTemplate.templateHistory, searchList=[nameSpace])
+        t = templateHistory(searchList=[nameSpace]).respond()
         page="""<ajax-response><response type="object" id="sessionHistory">"""
         page+= str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     history.exposed=True
 
@@ -2262,7 +2061,7 @@ class DBSDataDiscoveryServer(DDLogger):
         except:
             pass
         nameSpace={'selTag':"",'changeFunction':"",'name':"selRels",'iList':rList}
-        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        t = templateSelect(searchList=[nameSpace]).respond()
         rels=str(t)
         nameSpace={
                    'appPath'   : appPath,
@@ -2271,7 +2070,7 @@ class DBSDataDiscoveryServer(DDLogger):
                    'configList': self.helper.listApplicationConfigs(appPath),
                    'releases'  : rList
                   }
-        t = Template(CheetahDBSTemplate.templateAppConfigs, searchList=[nameSpace])
+        t = templateAppConfigs(searchList=[nameSpace]).respond()
         if int(ajax):
            # AJAX wants response as "text/xml" type
            self.setContentType('xml')
@@ -2284,9 +2083,8 @@ class DBSDataDiscoveryServer(DDLogger):
            page+="</response></ajax-response>"
         else:
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getAppConfigs.exposed=True
 
@@ -2302,10 +2100,10 @@ class DBSDataDiscoveryServer(DDLogger):
 
         diff = difflib.HtmlDiff()
         nameSpace={'config':appConfig,'iRel':iRel,'oRel':oRel,'iConf':c1,'oConf':c2}
-        t = Template(CheetahDBSTemplate.templateConfigDiff, searchList=[nameSpace])
+        t = templateConfigDiff(searchList=[nameSpace]).respond()
         page+=str(t)
         page+= diff.make_table(c1.splitlines(1),c2.splitlines(1),'','',True)
-        t = Template(CheetahDBSTemplate.templateDiffLegend, searchList=[{}])
+        t = templateDiffLegend(searchList=[{}]).respond()
         page+=str(t)
 
         page+=self.genBottomHTML()
@@ -2344,9 +2142,8 @@ class DBSDataDiscoveryServer(DDLogger):
         page="""<ajax-response><response type="object" id="historyUserName">"""
         page+= msg
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     checkUser.exposed=True
 
@@ -2370,9 +2167,8 @@ class DBSDataDiscoveryServer(DDLogger):
             page+='<option value="%s">%s</option>'%(appVal,appVal)
         page+= '</select>'
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     selectApplications.exposed=True
 
@@ -2393,9 +2189,8 @@ class DBSDataDiscoveryServer(DDLogger):
             page+='<option value="%s">%s</option>'%(dataset,dataset)
         page+= '</select>'
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     selectPrimaryDatasets.exposed=True
 
@@ -2422,9 +2217,8 @@ class DBSDataDiscoveryServer(DDLogger):
                page+='<option value="%s">%s</option>'%(tier,tier)
         page+= '</select>'
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     selectDataTiers.exposed=True
 
@@ -2441,59 +2235,16 @@ class DBSDataDiscoveryServer(DDLogger):
         dList=self.helper.getDataDescription(processedDataset)
         # get formatted output of dataset details
         nameSpace={'dList' : dList, 'dataset':processedDataset }
-        t = Template(CheetahDBSTemplate.templateDatasetDetails, searchList=[nameSpace])
+        t = templateDatasetDetails(searchList=[nameSpace]).respond()
         description+=str(t)
         page+=description
 
-#        description+="<p>Once available data description will be placed here</p>"
-#        nameSpace={
-#                   'description' : description
-#                  }
-#        t = Template(CheetahDBSTemplate.templateDescription, searchList=[nameSpace])
-#        page+=str(t)
         page+=self.genBottomHTML()
 #        page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getDataDescription.exposed=True
-
-    def getTableTemplate_v1(self,func,dbsInst,lfn,msg,ajax,**kwargs):
-        self.htmlInit()
-        iList=func(dbsInst,lfn)
-        p=content=""
-        if int(ajax):
-           # AJAX wants response as "text/xml" type
-           self.setContentType('xml')
-           page="""<ajax-response><response type="element" id="floatDataDescription">"""
-        else:
-           page=self.genTopHTML()
-        if  len(iList):
-            try:
-                for dict in iList:
-                    nameSpace={'branch':dict.values()}
-                    t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
-                    content+=str(t)
-                nameSpace={'header':iList[0].keys(),'content':content}
-                t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
-                p=str(t)
-            except:
-                printExcept()
-                p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
-        else:
-           p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
-        if int(ajax):
-           nameSpace={'title':msg,'description':p,'className':'float_help_box'}
-           t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
-           page+=str(t)+"</response></ajax-response>"
-        else:
-           page+=p
-           page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
-        return page
 
     def getTableTemplate(self,func,dbsInst,lfn,msg,ajax,**kwargs):
         self.htmlInit()
@@ -2508,10 +2259,10 @@ class DBSDataDiscoveryServer(DDLogger):
         if  len(iList):
             try:
                 nameSpace={'branch':iList}
-                t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
+                t = templateTableBody(searchList=[nameSpace]).respond()
                 content+=str(t)
                 nameSpace={'header':tList,'content':content}
-                t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
+                t = templateTable(searchList=[nameSpace]).respond()
                 p=str(t)
             except:
                 printExcept()
@@ -2520,15 +2271,15 @@ class DBSDataDiscoveryServer(DDLogger):
            p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
         if int(ajax):
            nameSpace={'title':msg,'description':p,'className':'float_help_box'}
-           t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+           t = templateFloatBox(searchList=[nameSpace]).respond()
            page+=str(t)+"</response></ajax-response>"
         else:
            page+=p
            page+=self.genBottomHTML()
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
+
     def getLFN_Branches(self,dbsInst,lfn,ajax=0,**kwargs):
         page=self.getTableTemplate(self.helper.getLFN_Branches,dbsInst,lfn,'ROOT branches',ajax)
         return page
@@ -2566,12 +2317,11 @@ class DBSDataDiscoveryServer(DDLogger):
                    'description' : description,
                    'className'   : className
                   }
-        t = Template(CheetahDBSTemplate.templateFloatBox, searchList=[nameSpace])
+        t = templateFloatBox(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getFloatBox.exposed=True
 
@@ -2583,12 +2333,11 @@ class DBSDataDiscoveryServer(DDLogger):
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="%s">"""%id
         nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id}
-        t = Template(CheetahDBSTemplate.templateMoreInfo, searchList=[nameSpace])
+        t = templateMoreInfo(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getMoreInfo.exposed=True
 
@@ -2609,12 +2358,11 @@ class DBSDataDiscoveryServer(DDLogger):
                        'dbs'         : dbs,
                        'rssList'     : rssList
                       }
-            t = Template(CheetahDBSTemplate.templateRssList, searchList=[nameSpace])
+            t = templateRssList(searchList=[nameSpace]).respond()
             page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getRss.exposed=True
 
@@ -2641,12 +2389,11 @@ class DBSDataDiscoveryServer(DDLogger):
         tableList = self.sectionDict['Algorithm']
         tableList.sort()
         nameSpace={'id':int(id),'sectionList':sectionList,'tableList':tableList}
-        t = Template(CheetahDBSTemplate.templateSelectLine, searchList=[nameSpace])
+        t = templateSelectLine(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     makeLine.exposed=True
 
@@ -2655,12 +2402,11 @@ class DBSDataDiscoveryServer(DDLogger):
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="%s">"""%tag
         nameSpace={'iList':iList,'changeFunction':changeFunction,'selTag':selTag,'name':name}
-        t = Template(CheetahDBSTemplate.templateSelect, searchList=[nameSpace])
+        t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     makeSelect.exposed=True
 
@@ -2691,11 +2437,26 @@ class DBSDataDiscoveryServer(DDLogger):
     getTableColumnsFromSection.exposed=True
 
     def finderExample(self):
-        page = self.genTopHTML(intro=False)
-        page+= """This is an example how to select run=111222.
-        <img src="images/SelectRun.jpg" alt="selectRun" />
-        """
-        page+= self.genBottomHTML()
+        page = """
+<object width='800' height='600'>
+<param name='movie' value='images/DataDiscoveryFinder.swf'>
+<embed src='images/DataDiscoveryFinder.swf' width='800' height='600'>
+</embed>
+</object>
+"""
+#        page = self.genTopHTML(intro=False)
+#        page+= """Here you can find a few examples demonstrating usage of Finder on discovery page.
+
+#        <p />
+#        <img src="images/FinderExample1.jpg" alt="selectRun" />
+#        Here is an example how to make a selection of different items in a finder.
+#        In order to make your select please click on plus button and choose from appropriate menu.
+#        <p />
+
+#        <img src="images/FinderExample2.jpg" alt="selectRun" />
+#        This example demostrate how to make a selection while applying some cuts.
+#        """
+#        page+= self.genBottomHTML()
         return page
     finderExample.exposed=True
 
@@ -2722,14 +2483,13 @@ class DBSDataDiscoveryServer(DDLogger):
 #        res = self.helper.formSQLQuery(iDict)
 #        page+=res
         query,oList = self.helper.queryMaker(iList)
-        t = Template(CheetahDBSTemplate.templateQueryOutput, searchList=[{'query':query,'iList':oList}])
+        t = templateQueryOutput(searchList=[{'query':query,'iList':oList}]).respond()
         page+=str(t)
 #        page+="<pre>%s\n%s</pre>"%(writer.getvalue(),repr(oList))
         
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     finderSearch.exposed=True
 
@@ -2747,15 +2507,14 @@ class DBSDataDiscoveryServer(DDLogger):
                page+=iList
            else:
                nameSpace={'branch':iList[1:]}
-               t = Template(CheetahDBSTemplate.templateTableBody, searchList=[nameSpace])
+               t = templateTableBody(searchList=[nameSpace]).respond()
                content=str(t)
                nameSpace={'header':iList[0],'content':content}
-               t = Template(CheetahDBSTemplate.templateTable, searchList=[nameSpace])
+               t = templateTable(searchList=[nameSpace]).respond()
                page+=str(t)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     executeSQLQuery.exposed=True
 
@@ -2766,9 +2525,8 @@ class DBSDataDiscoveryServer(DDLogger):
         page="""<ajax-response><response type="object" id="results_finder">"""
         page+= self.helper.getDbsSchema(table)
         page+="</response></ajax-response>"
-        if self.verbose:
-#        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
     getDbsSchema.exposed=True
 
@@ -2802,39 +2560,17 @@ class DBSDataDiscoveryServer(DDLogger):
 
     def addTreeElement(self,parent,node,**kwargs):
         cherrypy.response.headerMap['Content-Type'] = "text/xml"
-        p="""<ajax-response><response type="object" id="treeViewInfo">
+        page="""<ajax-response><response type="object" id="treeViewInfo">
 %s</response></ajax-response>"""%self.genTreeElement(parent,node)
-        if self.verbose:
-#        if 1:
-           print p
-        return p
-    addTreeElement.exposed=True
-
-    def dummy(self,arr=[],**kwargs):
-#        print "\n\n#### dummy",arr,type(arr)
-        iList=string.split(arr,",")
-        print iList
-        print "\n\n"
-#        page=self.genTopHTML()
-        cherrypy.response.headerMap['Content-Type'] = "text/xml"
-        page="""<ajax-response><response type="object" id="dummy">"""
-        nameSpace = {
-                     'firstSearch': 0 
-                    }
-        t = Template(CheetahDBSTemplate.templateDummy, searchList=[nameSpace])
-        page+= str(t)
-        page+="</response></ajax-response>"
-#        page+=self.genBottomHTML()
-#        if self.verbose:
-        if 1:
-           print page
+        if self.verbose==2:
+           self.writeLog(page)
         return page
-    dummy.exposed=True
+    addTreeElement.exposed=True
 #
 # main
 #
 if __name__ == "__main__":
-    optManager  = DBSOptions.DBSOptionParser()
+    optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
 
     # load DBS history tables module
@@ -2845,22 +2581,11 @@ if __name__ == "__main__":
            printExcept()
         print "WARNING! Cannot load DDTables, your persistent history will be turned off"
         pass
-    dbsManager = DBSDataDiscoveryServer(opts.verbose,opts.profile)
+    dbsManager = DDServer(opts.verbose,opts.profile)
     if opts.quiet:
        dbsManager.setQuiet()
     if  int(string.split(cherrypy.__version__,".")[0])==3:
-#        cherrypy.tree.mount(dbsManager)
-#        myConfig = os.path.join(os.getcwd(), 'CherryServer3.conf')
         cherrypy.config.update("CherryServer3.conf")
-#        cherrypy.config.update({'/': {'tools.staticdir.root' : os.getcwd() }})
-
-#        cherrypy.config.update(
-#               {'environment': 'production', 
-#                'log.screen': True,
-#                'server.socket_port': 8001,
-#                'server.thread_pool': 20,
-#                'log.error_file': 'dbs.log'
-#               })
         conf = {'/'         : {'tools.staticdir.root': os.getcwd()},
                 '/images'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'images'},
                 '/rss'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'rss'},
@@ -2876,25 +2601,21 @@ if __name__ == "__main__":
         cherrypy.config.update(file="CherryServer.conf")
         cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
 
-#    cherrypy.root = dbsManager
-#    cherrypy.config.update(file="CherryServer.conf")
-#    cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
-
     if opts.profile:
        import hotshot                   # Python profiler
        import hotshot.stats             # profiler statistics
        print "Start DBS/DLS discovery server in profile mode"
        profiler = hotshot.Profile("profile.dat")
-       profiler.run("cherrypy.server.start()")
+       if  int(string.split(cherrypy.__version__,".")[0])==3:
+           profiler.run("cherrypy.quickstart(dbsManager, '/', config=conf)")
+       else:
+           profiler.run("cherrypy.server.start()")
        profiler.close()
        stats = hotshot.stats.load("profile.dat")
        stats.sort_stats('time', 'calls')
        stats.print_stats()
     else:       
-       if  cherrypy.__version__=='3.0.1':
-#           print "test start",cherrypy.config
-#           cherrypy.server.quickstart()
-#           cherrypy.engine.start()
+       if  int(string.split(cherrypy.__version__,".")[0])==3:
            cherrypy.quickstart(dbsManager, '/', config=conf)
        else:
            cherrypy.server.start()

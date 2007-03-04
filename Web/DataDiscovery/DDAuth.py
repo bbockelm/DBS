@@ -13,10 +13,10 @@ DBS data discovery authentication module.
 import os, string, sys
 
 # import DBS modules
-from DBSUtil import *
+from DDUtil import *
 from DDExceptions import *
 
-class DBSAuthentication:
+class DDAuthentication:
   """
       DBS authentication module constructor. It reads DBS_DBPARAM file and parse it.
   """
@@ -74,6 +74,6 @@ class DBSAuthentication:
 # main
 #
 if __name__ == "__main__":
-   a = DBSAuthentication("leppcms")
+   a = DDAuthentication("leppcms")
    print a.dbInfo()
 

@@ -14,16 +14,16 @@ import os, string, logging, types, time, socket
 import httplib, urllib, inspect
 
 # DBS  modules
-import CheetahDBSTemplate
-from   DBSUtil   import *
-from   DDConfig  import *
+from   DDUtil   import *
+from   DDConfig import *
 
 class DDLucene(DDLogger): 
-    def __init__(self,verbose=0,profile=0):
+    def __init__(self,verbose=0):
         DDLogger.__init__(self,"DDLucene",verbose)
-#        self.ddConfig   = DBSDDConfig()
+#        self.ddConfig   = DDConfig()
 #        self.luceneHost = self.ddConfig.luceneHost()
 #        self.lucenePort = self.ddConfig.lucenePort()
+        self.verbose = verbose
         self.luceneHost = "http://kusanagi.rcac.purdue.edu"
         self.lucenePort = 8080
         self.luceneHost = "http://www.google.com"
@@ -67,7 +67,7 @@ class DDLucene(DDLogger):
 # main
 #
 if __name__ == "__main__":
-    optManager  = DBSOptions.DBSOptionParser()
+    optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
     lucene = DDLucene()
     data = lucene.sendGetMessage(debug=1)

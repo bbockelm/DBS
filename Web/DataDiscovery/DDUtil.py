@@ -11,8 +11,16 @@ Common utilities module used by DBS data discovery.
 # import system modules
 import os, string, sys, time, types, logging, traceback, random, difflib
 
+logging.basicConfig(level=logging.DEBUG,
+                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                filename='/tmp/DataDiscovery_debug.log',
+                filemode='w')
+logging.getLogger('sqlalchemy.engine').setLevel(logging.NOTSET)
+logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.NOTSET)
+logging.getLogger('sqlalchemy.pool').setLevel(logging.NOTSET)
+
 # import DBS modules
-import DBSOptions
+import DDOptions
 
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
 RES_PER_PAGE=5 # number of results per page shown
@@ -265,7 +273,7 @@ def constructExpression(s,listName):
        word1 or (word2 and word3)
        converted to
        listName.count(word1) or (listName.count(word2) and listName.count(word3))
-       Such expression statement is further used by eval in search method of DBSHelper. 
+       Such expression statement is further used by eval in search method of DDHelper. 
     """
     specialSymbols=["(",")","and","or","not"]
     oList = []
@@ -432,23 +440,7 @@ def addToDict(iDict,key,value):
        @return: none
     """
     iDict.setdefault(key,[]).append(value)
-#def addToDict(iDict,key,value,unique="False"):
-#    """Add value as a list to the dictionary for given key. If dictionary contains such key, update
-#    its list with given value. Return dictionary itself."""
-#    if iDict.has_key(key):
-#       if unique:
-#          if not iDict[key].count(value):
-#             iList = iDict[key]+[value]
-#             iDict[key] = iList
-#       else:
-#          iList = iDict[key]+[value]
-#          iDict[key] = iList
-#    else:
-#       if type(value) is types.ListType:
-#          iDict[key]=value
-#       else:
-#          iDict[key]=[value]
-#    return iDict
+
 def monthId(month):
     d={'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12}
     return d[string.lower(month)[:3]]
@@ -482,8 +474,10 @@ class DDLogger:
       """
       if verbose==1:
          self.logLevel = logging.INFO
+      elif verbose==2:
+         self.logLevel = logging.DEBUG
       else:
-         self.logLevel = logging.CRITICAL
+         self.logLevel = logging.NOTSET
       self.name = name
       self.setLogger()
 
@@ -498,8 +492,12 @@ class DDLogger:
           @rtype : none
           @return: none
       """
-      if self.verbose:
+      if self.verbose==1:
          self.logger.info(msg)
+      elif self.verbose>=2:
+         self.logger.debug(msg)
+      else:
+         pass
 
   def setLogger(self):
       """
@@ -509,13 +507,19 @@ class DDLogger:
          @rtype : none
          @return: none
       """
+      # set up logging to file
+      logging.getLogger('sqlalchemy.engine').setLevel(self.logLevel)
+      logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(self.logLevel)
+      logging.getLogger('sqlalchemy.pool').setLevel(self.logLevel)
+
       self.logger = logging.getLogger(self.name)
       self.logger.setLevel(self.logLevel)
       ch = logging.StreamHandler()
-      ch.setLevel(self.logLevel)
+      ch.setLevel(logging.INFO)
       formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
       ch.setFormatter(formatter)
       self.logger.addHandler(ch)
+
 
 def removeEmptyLines(s):
     return ''.join(line for line in s.splitlines(1) if not line.isspace())

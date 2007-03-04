@@ -20,14 +20,15 @@ except:
    pass
 # Drew's modules, need to remove try block once it's ready
 try:
-    from Table import Column
-    from Table import Table
+#    import QueryBuilder
+    from QueryBuilder.Table import Column
+    from QueryBuilder.Table import Table
 except:
     pass
 
 # DBS modules
-from DBSUtil import *
-from DBSAuth import *
+from DDUtil import *
+from DDAuth import *
 from DDExceptions import *
 
 ################################################################################################
@@ -91,7 +92,7 @@ def getDictOfSites():
     s=s[:-2]+"}}"
     return s
 
-class DBSDB(DDLogger):
+class DBManager(DDLogger):
   """
      DBSDD class takes care of authentication with underlying DB using
      DBS_DBPARAM. SQLAlchemy to provides DB access layer, currently I added
@@ -110,14 +111,15 @@ class DBSDB(DDLogger):
          @rtype : none
          @return: none
       """
-      DDLogger.__init__(self,"DBSDD",verbose)
+      DDLogger.__init__(self,"DBManager",verbose)
       self.engine = {}
       self.tQuery = {}
       self.iface=iface
-      if verbose:
-         self.verbose=True
-      else:
-         self.verbose=False
+      self.verbose=verbose
+#      if verbose:
+#         self.verbose=True
+#      else:
+#         self.verbose=False
       self.dbTables = {}
       self.dbType = {}
       self.lowTableList = []
@@ -126,11 +128,11 @@ class DBSDB(DDLogger):
   def connect(self,dbsInst):
       t_ini=time.time()
       if  not self.engine.has_key(dbsInst):
-          dbAuth = DBSAuthentication(dbsInst,self.verbose) 
+          dbAuth = DDAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass, host = dbAuth.dbInfo()
           eType  = string.lower(dbType)
           if self.verbose:
-             print "DBSDB:connect /%s/%s/%s"%(dbType,dbName,host)
+             print "DBManager:connect /%s/%s/%s"%(dbType,dbName,host)
 
           # Initialize SQLAlchemy engines
           eName=""
@@ -138,23 +140,21 @@ class DBSDB(DDLogger):
              self.writeLog("Use SQLite instance '%s'"%dbsInst)
              eName = "%s:///%s"%(eType,dbName)
              tQuery= "SELECT name FROM SQLITE_MASTER WHERE type='table';"
+             engine= sqlalchemy.create_engine(eName)
           elif eType=='oracle':
              self.writeLog("Use ORACLE instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
              tQuery= "select table_name from user_tables"
+             engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s/%s"%(eType,dbUser,dbPass,host,dbName)
              tQuery= "show tables"
+             engine= sqlalchemy.create_engine(eName,strategy='threadlocal')
           else:
              printExcept("Unsupported DB engine backend for '%s'"%dbsInst)
-          self.dbType[dbsInst]=eType
-
-#          print "eName,dbsInst",eName,dbsInst
-          self.engine[dbsInst] = sqlalchemy.create_engine(eName, 
-                                                          strategy='threadlocal',
-#                                                          threaded=True,
-                                                          echo=self.verbose)
+          self.dbType[dbsInst] = eType
+          self.engine[dbsInst] = engine
           self.tQuery[dbsInst] = tQuery
 
       dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=True)
@@ -262,7 +262,7 @@ class DBSDB(DDLogger):
 # main
 #
 if __name__ == "__main__":
-   dbsDB = DBSDB()
+   dbsDB = DBManager()
    for t in dbsDB.tables.keys():
        table = dbsDB.getTable(t)
        print t, type(t), table

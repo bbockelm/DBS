@@ -13,10 +13,10 @@ CLI DBS Data discovery toolkit.
 import string, sys, time, types, popen2
 
 # import DBS modules
-import DBSOptions
-from   DDConfig   import *
-from   DBSInst    import * # defines DBS instances and schema
-from   DBSUtil    import * # general utils
+import DDOptions
+from   DDConfig  import *
+from   DBSInst   import * # defines DBS instances and schema
+from   DDUtil    import * # general utils
 
 # import DLS modules
 import dlsClient
@@ -24,8 +24,8 @@ import dlsApi
 
 # DREW code, need to remove try block once it's ready
 try:
-    from Schema import Schema
-    from QueryWriter import SqlQueryWriter, OracleQueryWriter
+    from QueryBuilder.Schema import Schema
+    from QueryBuilder.QueryWriter import SqlQueryWriter, OracleQueryWriter
 except:
     pass
 
@@ -54,8 +54,7 @@ class DDHelper(DDLogger):
       # cache
       self.blockDict   = {} #  {'dataset': {'fileBlock': [LFNs]}}
       try:
-         self.dbManager      = DBSDB(self.iface,self.verbose)
-#         self.dbsDB       = self.dbManager.engine #  {'dbsInst': DBSDB }
+         self.dbManager      = DBManager(self.iface,self.verbose)
       except:
          if self.verbose:
             print "WARNING! some of the functionality will be disable due to missing authentication"
@@ -82,7 +81,7 @@ class DDHelper(DDLogger):
       self.quiet=1
 
   def rssMaker(self,dbsInst):
-      ddConfig  = DBSDDConfig()
+      ddConfig  = DDConfig()
       url = ddConfig.url()
       self.setDBSDLS(dbsInst)
       #aList = self.listApplications()
@@ -260,7 +259,7 @@ class DDHelper(DDLogger):
   def setDBSDLS(self,dbsInst):
       """
          Set DBS/DLS instance to use at given time. All instances are cached. Its initialization
-         is done via L{DBSInst.DBSDB} call. For DBS/DLS we use dbsCgiApi and dlsClient.getDlsApi calls,
+         is done via L{DBSInst.DBManager} call. For DBS/DLS we use dbsCgiApi and dlsClient.getDlsApi calls,
          respectively.
          @type  dbsInst: string 
          @param dbsInst: DBS instance name, e.g. MCGlobal/Writer 
@@ -372,7 +371,7 @@ class DDHelper(DDLogger):
           printExcept()
           raise "Fail in listApplicationsConfigs"
       if self.verbose:
-          print "time listApplicationsConfigs:",(time.time()-t1)
+         self.writeLog("time listApplicationsConfigs: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -512,7 +511,7 @@ class DDHelper(DDLogger):
           else:
              aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize]
       if self.verbose:
-         print "time listBlocks_al:",(time.time()-t1)
+         self.writeLog("time listBlocks_al: %s"%(time.time()-t1))
       con.close()
       if kwargs.has_key('fullOutput'):
          return aList
@@ -677,7 +676,7 @@ class DDHelper(DDLogger):
           if ver and fam and exe and prim and tier and proc:
              addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,tier,proc))
       if self.verbose:
-         print "time getDatasetsFromApplications:",(time.time()-t1)
+         self.writeLog("time getDatasetsFromApplications: %s"%(time.time()-t1))
       con.close()
       return aDict
 
@@ -713,7 +712,7 @@ class DDHelper(DDLogger):
              path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,path)
           oList.append(path)
       if self.verbose:
-         print "time getApplications",(time.time()-t1)
+         self.writeLog("time getApplications: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -730,7 +729,7 @@ class DDHelper(DDLogger):
       for item in content:
           oList.append(item[0])
       if self.verbose:
-         print "time getPhysicsGroups",(time.time()-t1)
+         self.writeLog("time getPhysicsGroups: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -747,7 +746,7 @@ class DDHelper(DDLogger):
       for item in content:
           oList.append(item[0])
       if self.verbose:
-         print "time getDataTypes",(time.time()-t1)
+         self.writeLog("time getDataTypes: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -764,7 +763,7 @@ class DDHelper(DDLogger):
       for item in content:
           oList.append(item[0])
       if self.verbose:
-         print "time getSoftwareReleases",(time.time()-t1)
+         self.writeLog("time getSoftwareReleases: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -820,7 +819,7 @@ class DDHelper(DDLogger):
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
       if self.verbose:
-         print "time getPrimaryDatasets",(time.time()-t1)
+         self.writeLog("time getPrimaryDatasets: %s"%(time.time()-t1))
       con.close()
       return oList
       
@@ -864,7 +863,7 @@ class DDHelper(DDLogger):
              name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
       if self.verbose:
-         print "time getProcessedDatasets",(time.time()-t1)
+         self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
       con.close()
       return oList
   
@@ -928,7 +927,7 @@ class DDHelper(DDLogger):
 #             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
           oList.append(name)
       if self.verbose:
-         print "time getProcessedDatasets",(time.time()-t1)
+         self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -1031,10 +1030,6 @@ class DDHelper(DDLogger):
           else:
              sel = sqlalchemy.select(iList, from_obj=[tableName])
           result = self.getSQLAlchemyResult(con,sel)
-          if  self.verbose:
-#              print "\n\n#### getTableContent",tableName,iList
-              for item in result:
-                  print item
       except:
           printExcept()
           raise "Fail to get content for table='%s'"%tableName
@@ -1062,10 +1057,9 @@ class DDHelper(DDLogger):
       query.Write(writer)
       
       if  self.verbose:
-#      if 1:
-          print qb
-          print "\n\niList=",iList
-          print query,type(query),query.__dict__,writer,writer.getvalue()
+          self.writeLog(qb)
+          self.writeLog(repr(iList))
+          self.writeLog(writer.getvalue())
       return writer.getvalue(),self.executeSQLQuery(writer.getvalue())
 
   def getDbsSchema(self,iTable='all',html=1):
@@ -1285,7 +1279,7 @@ class DDHelper(DDLogger):
           printExcept()
           raise "Fail in getConfigContentByName"
       if self.verbose:
-         print "time getConfigContentByName:",(time.time()-t1)
+         self.writeLog("time getConfigContentByName: %s"%(time.time()-t1))
       con.close()
       return content
 
@@ -1682,7 +1676,7 @@ class DDHelper(DDLogger):
           aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':type}
           oList.append(aDict)
       if self.verbose:
-         print "time in getRuns:",(time.time()-t1)
+         self.writeLog("time in getRuns: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -1744,7 +1738,7 @@ class DDHelper(DDLogger):
           if not pset: continue
           oList.append("/%s/%s/%s"%(prim,tier,pset))
       if self.verbose:
-         print "time in getUserData:",(time.time()-t1)
+         self.writeLog("time in getUserData: %s"%(time.time()-t1))
       con.close()
       return oList
 
@@ -1808,7 +1802,7 @@ class DDHelper(DDLogger):
           # end of DLS query
           blockInfoDict[blockName]+=hostList
       if self.verbose:
-         print "### time =",self.dbsTime,self.dlsTime,(time.time()-t1)
+         self.writeLog("time getData: dbs=%s dls=%s tot=%s"%(self.dbsTime,self.dlsTime,(time.time()-t1)))
       siteList.sort()
       return siteList,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
 
@@ -1873,7 +1867,7 @@ def formAppPath(iAppString):
 # main
 #
 if __name__ == "__main__":
-    optManager  = DBSOptions.DBSOptionParser()
+    optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
 #    print "options:  ",opts
 #    print "arguments:",args

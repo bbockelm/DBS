@@ -12,7 +12,7 @@ from   sqlalchemy import *
 # DBS modules
 from   DDConfig import *
 
-ddConfig  = DBSDDConfig()
+ddConfig  = DDConfig()
 useEngine = ddConfig.engine()
 verbose   = ddConfig.verbose()
 user      = ddConfig.user()
@@ -32,46 +32,37 @@ dbname    = ddConfig.dbname()
 #   raise "Unsupported DB engine backend"
 if useEngine=='sqlite':
    print "Use SQLite engine"
-   engine = create_engine('sqlite:///sqlite.db', echo=verbose)
+   engine = create_engine('sqlite:///sqlite.db')
 elif useEngine=='oracle':
    print "Use ORACLE engine"
-   engine = create_engine('oracle://%s:%s@%s'%(user,password,dbname),echo=verbose)
+   engine = create_engine('oracle://%s:%s@%s'%(user,password,dbname),strategy='threadlocal',threaded=True)
 elif useEngine=='mysql':
    print "Use MySQL engine"
-   engine = create_engine('mysql://%s:%s@localhost/%s'%(user,password,dbname),echo=verbose)
+   engine = create_engine('mysql://%s:%s@localhost/%s'%(user,password,dbname),strategy='threadlocal')
 else:
    raise "Unsupported DB engine backend"
 
-DBS_DB = engine
-DBS_CONNECTION = DBS_DB.connect()
+#DBS_CONNECTION = engine.connect()
+#metadata = MetaData()
 
 tableList = []
-# TABLE DEFINITIONS go here, define your table and check if its schema in DBS_DB is the same
-# if necessary create table
-#
-#
 #
 seq_user = Sequence(name='seq_user',start=1,increment=True)
-#t_user = Table('t_user', DBS_DB,
-#  Column('id', Integer, Sequence('seq_user'), nullable = False, primary_key = True),
-#  Column('name', String(10), nullable = False, unique=True),
-#  Column('password', String(60), nullable = False)
-#)
-t_user = Table('t_user', DBS_DB,
+t_user = Table('t_user', engine,
   Column('id', Integer, Sequence('seq_user'), nullable = False, primary_key = True),
   Column('userid', String(60), nullable = False, unique=True)
 )
 tableList.append(t_user)
 #
 seq_command = Sequence(name='seq_command',start=1,increment=True)
-t_command = Table('t_command', DBS_DB,
+t_command = Table('t_command', engine,
   Column('id', Integer, Sequence('seq_command'), nullable = False, primary_key = True),
   Column('command', String(1000))
 )
 tableList.append(t_command)
 #
 seq_history = Sequence(name='seq_history',start=1,increment=True)
-t_history = Table('t_history', DBS_DB,
+t_history = Table('t_history', engine,
   Column('id', Integer, Sequence('seq_history'), nullable = False, primary_key = True),
   Column('userid', Integer, ForeignKey("t_user.id"), nullable = False),
   Column('cmdid', Integer, ForeignKey("t_command.id"), nullable = False),

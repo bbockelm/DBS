@@ -7,16 +7,16 @@
 
 """
 DBS Data discovery option module. It defines optinos used by both
-DBSDataDiscoveryServer and DBSHelper classes.
-To get option list and explanation please run DBSHelper.py --help.
+DDServer and DDHelper classes.
+To get option list and explanation please run DDHelper.py --help.
 """
 
 import sys
 from optparse import OptionParser
 
-class DBSOptionParser: 
+class DDOptionParser: 
   """
-     DBSOptinoParser is main class to parse options for L{DBSHelper} and L{DBSDataDiscoveryServer}.
+     DDOptionParser is main class to parse options for L{DDHelper} and L{DDServer}.
   """
   def __init__(self):
     self.parser = OptionParser()
@@ -38,8 +38,8 @@ class DBSOptionParser:
          help="specify DLS site you're interesting, e.g. --site=fnal.gov")
     self.parser.add_option("--search",action="store", type="string", dest="search",
          help="specify any keywords to search your data, e.g. --search='CMSSW_0_8_1 and Merged'")
-    self.parser.add_option("-v","--verbose",action="store_true", default=False, dest="verbose",
-         help="be verbose")
+    self.parser.add_option("-v","--verbose",action="store", type="int", default=0, dest="verbose",
+         help="specify verbosity level, 0-none, 1-info, 2-debug")
     self.parser.add_option("--profile",action="store_true", default=False, dest="profile",
          help="perform profiling of the code")
     self.parser.add_option("--iface",action="store", type="string", default=False, dest="iface",
@@ -59,7 +59,7 @@ class DBSOptionParser:
 # main
 #
 if __name__ == "__main__":
-    optManager  = DBSOptionParser()
+    optManager  = DDOptionParser()
     (opts,args) = optManager.getOpt()
     print "options:  ",opts
     print "arguments:",args
