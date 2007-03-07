@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApiFileLogic.java,v 1.25 2007/02/09 20:09:47 sekhri Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApiFileLogic.java,v 1.26 2007/02/12 16:04:43 afaq Exp $"
  *
  */
 
@@ -54,10 +54,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String aDSID = null;
 		String blockID = null;
 
-                String tierID = null;
+                //String tierID = null;
+		Vector tierIDList = new Vector();
 		if(!isNull(path)) {
 			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
-                        tierID = getID(conn, "DataTier", "Name",  parseDSPath(path)[2], true);  
+			String[] tierList = parseTier(parseDSPath(path)[3]);
+			for (int j = 0; j < tierList.length; ++j) {
+				tierIDList.add(getID(conn, "DataTier", "Name", tierList[j] , true));
+			}
+			//tierID = getID(conn, "DataTier", "Name",  parseDSPath(path)[3], true);  
 		}
 		if (!isNull(aDSName)) {
 			aDSID = getID(conn, "AnalysisDataset", "Name", aDSName, true);
@@ -83,7 +88,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		ResultSet rs =  null;
 		try {
 			//ps = DBSSql.listFiles(conn, procDSID, blockID, tierID, getPattern(patternLFN, "pattern_lfn"));
-			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, patternlfn);
+			//ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierID, patternlfn);
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");

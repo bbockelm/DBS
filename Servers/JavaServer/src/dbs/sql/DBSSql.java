@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.77 $"
- $Id: DBSSql.java,v 1.77 2007/03/01 15:46:52 sekhri Exp $"
+ $Revision: 1.78 $"
+ $Id: DBSSql.java,v 1.78 2007/03/01 20:44:25 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -971,8 +971,8 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-
-	public static PreparedStatement listBlocks(Connection conn, String procDSID, String blockName, String seName) throws SQLException {
+	
+	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
 			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
@@ -1004,6 +1004,12 @@ public class DBSSql {
 			sql += "b.Dataset = ? \n";
 			useAnd = true;
 		}
+		if(!DBSUtil.isNull(patternPath)) {
+			if(useAnd) sql += " AND ";
+			sql += "b.Name like ? \n";
+			useAnd = true;
+		}
+
 		if(!blockName.equals("%")) {
 			if(useAnd) sql += " AND ";
 			sql += "b.Name like ? \n";
@@ -1018,12 +1024,15 @@ public class DBSSql {
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
+		if(!DBSUtil.isNull(patternPath)) ps.setString(columnIndx++, patternPath);
 		if(!blockName.equals("%")) ps.setString(columnIndx++, blockName);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
 		
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+
 
 	public static PreparedStatement listStorageElements(Connection conn, String seName) throws SQLException {
 		String sql = "SELECT DISTINCT se.ID as ID, \n " +
@@ -1051,14 +1060,20 @@ public class DBSSql {
 		return ps;
 	}
 
-	//public static PreparedStatement listFiles(Connection conn, String procDSID, String blockID, String tierID, String patternLFN) throws SQLException {
-	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, String tierID, String patternLFN) throws SQLException {
-		String joinStr = "";
+	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN) throws SQLException {
+		String joinStrAna = "";
 		if(!DBSUtil.isNull(aDSID)) {
-			joinStr = "JOIN AnalysisDSFileLumi adfl \n" +
+			joinStrAna = "JOIN AnalysisDSFileLumi adfl \n" +
 				"ON adfl.fileid = f.ID \n";
 		}
-			
+		String joinStrTier = "";
+		for(int i = 0 ; i != tierIDList.size(); ++i) {
+			String index = String.valueOf(i);
+			joinStrTier += "LEFT OUTER JOIN FileTier fdt" + index + "\n" +
+				"ON fdt" + index + ".Fileid = f.id \n";
+		}
+
+
 		//System.out.println("Block ID is "+blockID);
 		String sql = "SELECT DISTINCT f.ID as ID, \n " +
 			"f.LogicalFileName as LFN, \n" +
@@ -1078,9 +1093,10 @@ public class DBSSql {
 			"FROM Files f \n" +
 			"LEFT OUTER JOIN Block b \n" +
 				"ON b.id = f.Block \n "+  
-			"LEFT OUTER JOIN FileTier fdt \n" +
-				"ON fdt.Fileid = f.id \n" +
-			joinStr +
+			//"LEFT OUTER JOIN FileTier fdt \n" +
+			//	"ON fdt.Fileid = f.id \n" +
+			joinStrTier +
+			joinStrAna +
 			//"LEFT OUTER JOIN DataTier dt \n" +
 			//	"ON dt.id = fdt.DataTier " +
 			"LEFT OUTER JOIN FileType ty \n" +
@@ -1093,23 +1109,19 @@ public class DBSSql {
 				"ON percb.id = f.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = f.LastModifiedBy \n";
-
-		//if(patternLFN == null) patternLFN = "%";
 		sql += "WHERE f.LogicalFileName like ? \n" ;
-		if(!DBSUtil.isNull(procDSID)){
-			sql += "and f.Dataset = ? \n";
-		}
-		if(!DBSUtil.isNull(blockID)){
-			sql += "and f.Block = ? \n";
-		}
-		if(!DBSUtil.isNull(tierID)){
-			sql += "and fdt.DataTier = ? \n";
-		}
+		if(!DBSUtil.isNull(procDSID)) sql += "AND f.Dataset = ? \n";
+		if(!DBSUtil.isNull(blockID)) sql += "AND f.Block = ? \n";
+		for(int i = 0 ; i != tierIDList.size(); ++i) sql += "AND fdt" + String.valueOf(i) + ".DataTier = ?\n\t";
+
+		/*if(!DBSUtil.isNull(tierID)){
+			sql += "AND fdt.DataTier = ? \n";
+		}*/
 		if(!DBSUtil.isNull(aDSID)) {
-			sql += "and adfl.AnalysisDataset = ? \n";
+			sql += "AND adfl.AnalysisDataset = ? \n";
 		}
 
-		sql +=	"and st.Status <> 'INVALID' \n" +
+		sql +=	"AND st.Status <> 'INVALID' \n" +
 			"ORDER BY LFN DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
@@ -1122,9 +1134,10 @@ public class DBSSql {
 		if(!DBSUtil.isNull(blockID)){
 			ps.setString(columnIndx++, blockID);
 		}
-		if(!DBSUtil.isNull(tierID)){
+		/*if(!DBSUtil.isNull(tierID)){
 			ps.setString(columnIndx++, tierID);
-		}
+		}*/
+		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
 		if(!DBSUtil.isNull(aDSID)) {
 			ps.setString(columnIndx++, aDSID);
 		}

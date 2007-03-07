@@ -17,11 +17,14 @@ rand=`uuidgen`
 #$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 block='/TestPrimary1164144491.29/TestProcessed1164144491.29#42665801-a716-487e-9220-057e955f3a39'
 primary_name="This_is_a_test_primary_$rand"
-tier_name1="This_is_a_test_tier_HIT_$rand"
-tier_name2="This_is_a_test_tier_SIM_$rand"
+#tier_name1="This_is_a_test_tier_HIT_$rand"
+tier_name1="This_is_a_test_tier_HIT"
+#tier_name2="This_is_a_test_tier_SIM_$rand"
+tier_name2="This_is_a_test_tier_SIM"
 processed_name="This_is_a_test_processed_$rand"
-path="/$primary_name/$tier_name1/$processed_name"
-path_child="/$primary_name/$tier_name2/CHILD_$processed_name"
+#path="/$primary_name/$tier_name1/$processed_name"
+path="/$primary_name/$processed_name/$tier_name1"
+path_child="/$primary_name/CHILD_$processed_name/$tier_name2"
 run_number1="9999"
 run_number2="9998"
 block_name="/test/test#$rand"
@@ -112,6 +115,7 @@ listFiles () {
 	message="Executing listFiles API..."
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=listFiles path=$path_child detail="true"`
+	#out=`$CMD api=listFiles "path=$path_child-$tier_name1"`
 	display "$out"
 	#$CMD api=listFiles block_name=$block 
 	#$CMD api=listFiles path=$path pattern_lfn=* 
@@ -528,8 +532,8 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-remapFiles
-##createAnalysisDatasetFromPD
+#remapFiles
+#createAnalysisDatasetFromPD
 createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition
@@ -541,7 +545,7 @@ listRuns
 listTiers
 listBlocks
 listFiles
-#listDatasetContents
+listDatasetContents
 listDatasetParents
 listFileParents
 listFileAlgorithms

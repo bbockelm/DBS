@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiProcDSLogic.java,v 1.19 2007/02/09 20:09:47 sekhri Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiProcDSLogic.java,v 1.20 2007/02/23 17:02:05 sekhri Exp $"
  *
  */
 
@@ -481,7 +481,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 		if(isNull(path) && !excep) return "";
 		String[] data = parseDSPath(path);
-		id = getProcessedDSID(conn, data[1], data[3], excep);
+		id = getProcessedDSID(conn, data[1], data[2], excep);
 		this.data.globalPDPath.put(path, id);
 		return  id;
 	}
@@ -509,7 +509,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 				//throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" + dt + "/" +proc );
-				if (excep) throw new DBSException("Unavailable data", "1008", "No such processed dataset /" + prim + "/" + proc );
+				if (excep) throw new DBSException("Unavailable data", "1008", "No such dataset primary : " + prim + " processed :" + proc );
 				return "";
 			} 
 			id = get(rs, "ID");
