@@ -722,7 +722,8 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
+  #def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
+  def listFiles(self, dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -733,6 +734,8 @@ class DbsApi(DbsConfig):
         dataset: want to list files of THIS dataset, 
 	(can be an Analysis dataset)
 	This is again an optional parameter.
+	
+	analysisDataset is the namef the analysis dataset the user wants to list the files from. This is an optional parameter
          
         blockName: Defaulted to "" means files (That match dataset and/or LFN pattern criteria). 
         If the blockName is given, it will be matched against the block name.
@@ -755,6 +758,8 @@ class DbsApi(DbsConfig):
              api.listFiles("", "", "GoodFile*")
           List all files in block /this/block#1230-87698
              api.listFiles("", "/this/block#1230-87698")
+          List all files in analysis dataset abcd
+             api.listFiles("", "abcd","", "")
 
           Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -777,11 +782,13 @@ class DbsApi(DbsConfig):
     # Invoke Server.
     if details not in ("", None, False):
        data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
+		                    'analysis_dataset_name' : analysisDataset,
                                     'block_name' : blockName, 
                                     'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
                                     'path' : path, 'block_name' : blockName, 
+		                    'analysis_dataset_name' : analysisDataset,
                                     'pattern_lfn' : patternLFN}, 'GET')
     logging.debug(data)
 

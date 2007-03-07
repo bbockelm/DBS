@@ -20,8 +20,9 @@ try:
   
   # List all parameter sets
   print ""
-  for file in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS001", "", "", False):
-     print "  %s" % file
+  for afile in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS001", "", "", "", False):
+  #for afile in api.listFiles("", "TestAnalysisDataset005_20070209_13h24m43s", "", "", False):
+     print "  %s" % afile
 
   #for file in api.listFiles("", "", "MERGEDFILE_003", True):
   #for file in api.listFiles("/test_primary_anzar_001/SIM/ThisISMergedDataset001", "", "MERGEDFILE_003", True):
@@ -29,8 +30,8 @@ try:
   #for file in api.listFiles("", "", "NEW_TEST0006", True):
 
   ## Details and a file with ONLY RunList, No Lumis
-  for file in api.listFiles("", "", "NEW_TEST0070", True):
-    print "  %s" % file
+  #for file in api.listFiles("", "", "NEW_TEST0070", True):
+  #  print "  %s" % file
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
