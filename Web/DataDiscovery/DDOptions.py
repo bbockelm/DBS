@@ -18,32 +18,43 @@ class DDOptionParser:
   """
      DDOptionParser is main class to parse options for L{DDHelper} and L{DDServer}.
   """
-  def __init__(self):
+  def __init__(self,service=""):
     self.parser = OptionParser()
-    self.parser.add_option("--quiet",action="store_true", default=False, dest="quiet",
-         help="be quiet and don't print exceptions")
-    self.parser.add_option("--dict",action="store", type="string", dest="dict",
-         help="use to generate JavaScript dictionary, pass Global/All")
-    self.parser.add_option("--primaryDataset",action="store", type="string", dest="primD",
-         help="specify primary dataset, e.g. --primaryDataset=CSA06-081-os-minbias")
-    self.parser.add_option("--dataTier",action="store", type="string", dest="DT",
-         help="specify Data Tier within dataset, e.g. --dataTier=RECO")
-    self.parser.add_option("--app",action="store", type="string", dest="app",
-         help="specify application keys (version,family,exe), e.g. --app=CMSSW_0_8_1,Merged,cmsRun")
+
+    # options which are applied to any services
     self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
          help="specify DBS instance to use, e.g. --dbsInst=MCLocal_1/Writer")
-    self.parser.add_option("--showProcDatasets",action="store_true", default=False, dest="showProcD",
-         help="be quiet and show only processed datasets")
-    self.parser.add_option("--site",action="store", type="string", dest="site",
-         help="specify DLS site you're interesting, e.g. --site=fnal.gov")
-    self.parser.add_option("--search",action="store", type="string", dest="search",
-         help="specify any keywords to search your data, e.g. --search='CMSSW_0_8_1 and Merged'")
+    self.parser.add_option("--quiet",action="store_true", default=False, dest="quiet",
+         help="be quiet and don't print exceptions")
     self.parser.add_option("-v","--verbose",action="store", type="int", default=0, dest="verbose",
          help="specify verbosity level, 0-none, 1-info, 2-debug")
     self.parser.add_option("--profile",action="store_true", default=False, dest="profile",
          help="perform profiling of the code")
     self.parser.add_option("--iface",action="store", type="string", default=False, dest="iface",
          help="specify server name, e.g. cgi or JavaServer")
+
+    # options specific to DDHelper
+    if  service=="DDHelper":
+        self.parser.add_option("--dict",action="store", type="string", dest="dict",
+             help="use to generate JavaScript dictionary, pass Global/All")
+        self.parser.add_option("--primaryDataset",action="store", type="string", dest="primD",
+             help="specify primary dataset, e.g. --primaryDataset=CSA06-081-os-minbias")
+        self.parser.add_option("--dataTier",action="store", type="string", dest="DT",
+             help="specify Data Tier within dataset, e.g. --dataTier=RECO")
+        self.parser.add_option("--app",action="store", type="string", dest="app",
+             help="specify application keys (version,family,exe), e.g. --app=CMSSW_0_8_1,Merged,cmsRun")
+        self.parser.add_option("--showProcDatasets",action="store_true", default=False, dest="showProcD",
+             help="be quiet and show only processed datasets")
+        self.parser.add_option("--site",action="store", type="string", dest="site",
+             help="specify DLS site you're interesting, e.g. --site=fnal.gov")
+        self.parser.add_option("--search",action="store", type="string", dest="search",
+             help="specify any keywords to search your data, e.g. --search='CMSSW_0_8_1 and Merged'")
+
+
+    # options specific to DDExplorer
+    if service=="DDExplorer":
+        self.parser.add_option("--file",action="store", type="string", default=False, dest="input",
+             help="specify input file name which contains your request")
          
   def getOpt(self):
     """
