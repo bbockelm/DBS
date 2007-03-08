@@ -259,9 +259,9 @@ function ajaxGetDbsData(_dbs,_site,_group,_app,_primD,_tier,proc) {
 // AJAX registration
 function SendAjaxCalls(dbs,site,group,app,prim,tier,proc) {
   ajaxGetData(dbs,site,group,app,prim,tier,proc);
-  ajaxGetDbsData(dbs,site,group,app,prim,tier,proc);
-  ajaxGetRuns(dbs,site,group,app,prim,tier,proc);
-  ajaxGenAppConfigs(dbs,site,group,app,prim,tier,proc);
+//  ajaxGetDbsData(dbs,site,group,app,prim,tier,proc);
+//  ajaxGetRuns(dbs,site,group,app,prim,tier,proc);
+//  ajaxGenAppConfigs(dbs,site,group,app,prim,tier,proc);
 }
 function ajaxGetUserData() {
   var dbs=$('kw_dbsSelector').value
@@ -305,7 +305,7 @@ function ajaxNextGetData(dbs,site,group,app,primD,tier,proc,idx) {
 //  alert('ajaxGetData idx='+idx);
   ajaxEngine.sendRequest('ajaxGetData','dbsInst='+dbs,'site='+site,'group='+group,'app='+app,'primD='+primD,'tier='+tier,'proc='+proc,'_idx='+idx);
   }
-
+/*
   var id=document.getElementById('results_dbs_response'+idx);
   if(!id) {
 //  alert('ajaxGetiDbsData idx='+idx);
@@ -317,6 +317,7 @@ function ajaxNextGetData(dbs,site,group,app,primD,tier,proc,idx) {
 //  alert('ajaxGetRuns idx='+idx);
   ajaxEngine.sendRequest('ajaxGetRuns',"dbsInst="+dbs,"site="+site,"group="+group,"app="+app,"primD="+primD,"tier="+tier,"proc="+proc,'_idx='+idx);
   }
+*/
 }
 function ajaxGetDataFromSelection(iParamString) {
   var uSelection;
