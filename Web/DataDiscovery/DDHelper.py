@@ -107,7 +107,7 @@ class DDHelper(DDLogger):
           pList = self.listDatasetsFromApp(app)
           for datasetName in pList:
               page+="<item>"
-              empty,prim,tier,proc = string.split(datasetName,"/")
+              empty,prim,proc,tier = string.split(datasetName,"/")
               if not os.path.isdir('rss/%s/%s/%s'%(dbsInst,appPath,prim)):
                  os.makedirs(os.path.join(os.getcwd(),'rss/%s/%s/%s'%(dbsInst,appPath,prim)))
               evt=self.numberOfEvents(datasetName)
@@ -202,7 +202,7 @@ class DDHelper(DDLogger):
               oldPrimD=""
 #              for primD,tier,proc in pList:
               for path in pList:
-                  empty,primD,tier,proc = string.split( path, "/" )
+                  empty,primD,proc,tier = string.split( path, "/" )
                   if oldPrimD!=primD:
                      s+='\"%s\",'%primD
                      oldPrimD=primD
@@ -215,7 +215,7 @@ class DDHelper(DDLogger):
               oldTier  = ""
 #              for primD,tier,proc in pList:
               for path in pList:
-                  empty,primD,tier,proc = string.split( path, "/" )
+                  empty,primD,proc,tier = string.split( path, "/" )
 #                  s+="\n# %s %s, %s, %s\n"%(app,primD,tier,proc)
                   if primD!=oldPrimD:
                      oldPrimD=primD
@@ -376,11 +376,11 @@ class DDHelper(DDLogger):
       return oList
 
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*"):
-      if group=='Any': group="*"
-      if app  =='Any': app  ="*"
-      if prim =='Any': prim ="*"
-      if tier =='Any': tier ="*"
-      if proc =='Any': proc ="*"
+      if group.lower()=='any': group="*"
+      if app.lower()  =='any': app  ="*"
+      if prim.lower() =='any': prim ="*"
+      if tier.lower() =='any': tier ="*"
+      if proc.lower() =='any': proc ="*"
       # TODO: add group to join when table is available
       if proc and proc!="*":
          if type(proc) is types.ListType:
@@ -416,6 +416,9 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           if app and app!="*":
              empty,ver,fam,exe=string.split(app,"/")
+             if ver.lower()=="any" or ver.lower()=="all": ver="*"
+             if fam.lower()=="any" or fam.lower()=="all": fam="*"
+             if exe.lower()=="any" or exe.lower()=="all": exe="*"
              if ver and ver!="*":
                 sel.append_whereclause(self.col(tapv,'Version')==ver)
              if fam and fam!="*":
@@ -425,12 +428,12 @@ class DDHelper(DDLogger):
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
-          raise "Fail in listProcessedDataset_al"
+          raise "Fail in listProcessedDataset"
       for item in result:
           prim = item[0]
           tier = item[1]
           proc = item[2]
-          oList.append("/%s/%s/%s"%(prim,tier,proc))
+          oList.append("/%s/%s/%s"%(prim,proc,tier))
       con.close()
       return oList
 
@@ -457,7 +460,7 @@ class DDHelper(DDLogger):
 #         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
          return res
 
-  def listBlocks_al(self,kwargs):
+  def listBlocks(self,kwargs):
       # {'blockName': (nEvt,blockStatus,nFiles,blockSize)}
       # second output:
       # [{'Name':,'BlockSize':,'NumberOfFiles':,'NumberOfEvents':,'OpenForWriting':,'CreationDate','CreationDate':,'LastModificationDate':,'LastModifiedBy'}]
@@ -473,8 +476,10 @@ class DDHelper(DDLogger):
           tdt  = self.alias('DataTier','tdt')
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
 
-          oSel = [self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate')]
+          oSel = [self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),self.col(tse,'SEName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                           tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
@@ -483,55 +488,61 @@ class DDHelper(DDLogger):
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
+                          .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                          .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
           if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
-             empty,prim,tier,proc=string.split(kwargs['datasetPath'],"/")
+             empty,prim,proc,tier=string.split(kwargs['datasetPath'],"/")
              if proc and proc!="*":
                 sel.append_whereclause(self.col(tprd,'Name')==proc)
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
-             if prim and prim!="*":
+             if tier and tier!="*":
                 sel.append_whereclause(self.col(tdt,'Name')==tier)
           if kwargs.has_key('blockName') and kwargs['blockName']:
              sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
+          if kwargs.has_key('site') and kwargs['site'] and kwargs['site']!="*" and string.lower(kwargs['site'])!='all':
+             sel.append_whereclause(self.col(tse,'SEName')==kwargs['site'])
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
-          raise "Fail in listBlocks_al"
+          raise "Fail in listBlocks"
       aDict={}
       aList=[]
+      siteList=[]
+      totEvt=totFiles=totSize=0
       for item in result:
-#          print "\n\nlistBlock_al",item
-          blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate=item
+          blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
           if not blockName: continue
+          totEvt+=nEvts
+          totFiles+=nFiles
+          totSize+=blockSize
+          if not sename: sename='N/A'
+
+          if not siteList.count(sename): siteList.append(sename)
+
           if kwargs.has_key('fullOutput'):
              aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModifiedBy':mBy,'LastModificationDate':mDate}
              aList.append(aDict)
           else:
-             aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize]
+             if aDict.has_key(blockName):
+                if not aDict[blockName].count(sename):
+                   sList = aDict[blockName]
+                   aDict[blockName]=sList+[sename]
+             else:
+                aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize,sename]
       if self.verbose:
-         self.writeLog("time listBlocks_al: %s"%(time.time()-t1))
+         self.writeLog("time listBlocks: %s"%(time.time()-t1))
       con.close()
       if kwargs.has_key('fullOutput'):
          return aList
-      return aDict
-
-  def listBlocks(self,datasetPath="*",app="*",events="yes"):
-      """
-         Wrapper around dbsApi
-      """
-      if self.iface=="cgi":
-         return self.api.listBlocks(datasetPath,app,events)
-      else:
-         kwargs={'datasetPath':datasetPath}
-         res = self.listBlocks_al(kwargs)
-         return res
+      return aDict,totEvt,totFiles,totSize,siteList
 
   def numberOfEvents(self,datasetPath):
       prim=tier=proc=""
       if datasetPath and datasetPath!="*":
-         empty,prim,tier,proc=string.split(datasetPath,"/")
+         empty,prim,proc,tier=string.split(datasetPath,"/")
       con = self.connectToDB()
       try:
           tprd = self.alias('ProcessedDataset','tprd')
@@ -566,15 +577,9 @@ class DDHelper(DDLogger):
   ### END OF WRAPPER ###
 
   def getDataDescription(self,processedDataset):
-#      if self.iface=="cgi":
-#         return {}
-#      else:
-#         if processedDataset:
-#            empty,prim,tier,proc=string.split(processedDataset,"/")
-#            return self.api.getDatasetDetails(patternPrim=prim,patternDT=tier,patternProc=proc)
       prim=tier=proc=""
       if processedDataset and processedDataset!="*":
-         empty,prim,tier,proc=string.split(processedDataset,"/")
+         empty,prim,proc,tier=string.split(processedDataset,"/")
       con = self.connectToDB()
       try:
           tprd = self.alias('ProcessedDataset','tprd')
@@ -665,7 +670,7 @@ class DDHelper(DDLogger):
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
-          raise "Fail in listProcessedDataset_al"
+          raise "Fail in listProcessedDataset"
       for item in result:
           ver  = item[0]
           fam  = item[1]
@@ -674,7 +679,7 @@ class DDHelper(DDLogger):
           tier = item[4]
           proc = item[5]
           if ver and fam and exe and prim and tier and proc:
-             addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,tier,proc))
+             addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,proc,tier))
       if self.verbose:
          self.writeLog("time getDatasetsFromApplications: %s"%(time.time()-t1))
       con.close()
@@ -707,9 +712,10 @@ class DDHelper(DDLogger):
           if self.html:
              navBar   ="MakeNavBarApp('%s','%s')"%(self.dbsInstance,path)
              dataInfo ="ajaxGetData('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
-             blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
-             runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
-             path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,path)
+#             blockInfo="ajaxGetDbsData('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
+#             runInfo  ="ajaxGetRuns('%s','all','*','%s','*','*','*')"%(self.dbsInstance,path)
+#             path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,path)
+             path="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,path)
           oList.append(path)
       if self.verbose:
          self.writeLog("time getApplications: %s"%(time.time()-t1))
@@ -796,7 +802,8 @@ class DDHelper(DDLogger):
       oList = []
       dList = self.listDatasetsFromApp(appPath)
       for dataset in dList:
-          empty,prim,tier,app = string.split(dataset,"/")
+#          empty,prim,tier,app = string.split(dataset,"/")
+          empty,prim,proc,tier = string.split(dataset,"/")
           if _prim!="*" and prim!=_prim: continue
           if _tier!="*" and tier!=_tier: continue
           oList.append(dataset)
@@ -814,9 +821,10 @@ class DDHelper(DDLogger):
           if html:
              navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-             blockInfo="ajaxGetDbsData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-             runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
+#             blockInfo="ajaxGetDbsData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+#             runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
+             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
           oList.append(name)
       if self.verbose:
          self.writeLog("time getPrimaryDatasets: %s"%(time.time()-t1))
@@ -827,7 +835,7 @@ class DDHelper(DDLogger):
       t1=time.time()
       prim=tier=proc=""
       if datasetPath and datasetPath!="*":
-         empty,prim,tier,proc=string.split(datasetPath,"/")
+         empty,prim,proc,tier=string.split(datasetPath,"/")
       con = self.connectToDB()
       oList  = []
       try:
@@ -858,9 +866,10 @@ class DDHelper(DDLogger):
           if html:
              navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
              dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
+#             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+#             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
+             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
           oList.append(name)
       if self.verbose:
          self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
@@ -884,7 +893,7 @@ class DDHelper(DDLogger):
       t1=time.time()
       prim=tier=proc=""
       if datasetPath and datasetPath!="*":
-         empty,prim,tier,proc=string.split(datasetPath,"/")
+         empty,prim,proc,tier=string.split(datasetPath,"/")
       con = self.connectToDB()
       oList  = []
       try:
@@ -1061,6 +1070,16 @@ class DDHelper(DDLogger):
           self.writeLog(repr(iList))
           self.writeLog(writer.getvalue())
       return writer.getvalue(),self.executeSQLQuery(writer.getvalue())
+
+  def getAllTableColumns(self):
+      tList = self.dbManager.dbTables[self.dbsInstance].keys()
+      tList.sort()
+      oList = []
+      for table in tList:
+          tObj= self.dbManager.dbTables[self.dbsInstance][table]
+          for col  in tObj.columns:
+              oList.append('%s.%s'%(tObj.fullname,col.name))
+      return oList
 
   def getDbsSchema(self,iTable='all',html=1):
       res = ""
@@ -1286,7 +1305,7 @@ class DDHelper(DDLogger):
   def getLFNs(self,dbsInst,blockName,dataset):
       prim=tier=proc=""
       if dataset and dataset!="*":
-         empty,prim,tier,proc=string.split(dataset,"/")
+         empty,prim,proc,tier=string.split(dataset,"/")
       con = self.connectToDB()
       try:
           tprd = self.alias('ProcessedDataset','tprd')
@@ -1658,7 +1677,7 @@ class DDHelper(DDLogger):
                                 ],distinct=True,order_by=oSel
                                  )
           if dataset:
-             empty,prim,tier,proc=string.split(dataset,"/")
+             empty,prim,proc,tier=string.split(dataset,"/")
              if proc and proc!="*":
                 sel.append_whereclause(self.col(tprd,'Name')==proc)
              if prim and prim!="*":
@@ -1682,11 +1701,11 @@ class DDHelper(DDLogger):
 
   def getDbsData(self,dataset):
       kwargs={'datasetPath':dataset,'fullOutput':1}
-      return self.listBlocks_al(kwargs)
+      return self.listBlocks(kwargs)
 
   def getDbsBlockData(self,blockName):
       kwargs={'blockName':blockName,'fullOutput':1}
-      return self.listBlocks_al(kwargs)
+      return self.listBlocks(kwargs)
 
   def getUserData(self,group,tier,rel,prim,site):
       # TODO: I need to add physics group table when it's available
@@ -1736,13 +1755,13 @@ class DDHelper(DDLogger):
       for item in result:
           pset = item[0]
           if not pset: continue
-          oList.append("/%s/%s/%s"%(prim,tier,pset))
+          oList.append("/%s/%s/%s"%(prim,pset,tier))
       if self.verbose:
          self.writeLog("time in getUserData: %s"%(time.time()-t1))
       con.close()
       return oList
 
-  def getData(self,dataset,app,site="All"):
+  def getData(self,dataset,site="All"):
       """
          Returns 
          blockDict={'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}
@@ -1758,53 +1777,9 @@ class DDHelper(DDLogger):
          {'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}, 
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
-      locDict  = {}
-      nEvts    = totFiles = totSize = self.dbsTime = self.dlsTime = 0
-
-      t1 = time.time()
-      blockInfoDict = self.listBlocks(dataset,app,"yes")
-      t2 = time.time()
-      self.dbsTime=(t2-t1)
-      if string.lower(site)=="all": site="*"
-
-      siteList=[]
-      for blockName in blockInfoDict.keys():
-          evts,bStatus,nFiles,bBytes  = blockInfoDict[blockName]
-          if evts:
-             nEvts+=evts
-          else:
-             continue # this eliminates file blocks with no events
-          totFiles+=nFiles
-          totSize+=bBytes
-          # query DLS
-          hostList=[]
-          try:
-              t3 = time.time()
-              dlsList = self.dlsApi.getLocations(blockName)
-              t4 = time.time()
-              self.dlsTime+=(t4-t3)
-#              print "dlsTime",self.dlsTime
-              for entry in dlsList:
-                  for loc in entry.locations:
-                      dlsHost = str(loc.host)
-                      if site=="*" or dlsHost==site:
-                         hostList.append(dlsHost)
-                      if not siteList.count(dlsHost): siteList.append(dlsHost)
-#                         addToDict(locDict,str(loc.host),blockName)
-          except:
-              if not self.quiet:
-                 printExcept()
-              if site=="*":
-                 hostList.append('N/A')
-              if not siteList.count('N/A'): siteList.append('N/A')
-#                 addToDict(locDict,'N/A',blockName)
-              pass
-          # end of DLS query
-          blockInfoDict[blockName]+=hostList
-      if self.verbose:
-         self.writeLog("time getData: dbs=%s dls=%s tot=%s"%(self.dbsTime,self.dlsTime,(time.time()-t1)))
-      siteList.sort()
-      return siteList,blockInfoDict,nEvts,totFiles,sizeFormat(totSize)
+      kwargs={'datasetPath':dataset,'site':site}
+      blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
+      return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
   def getBlocksFromSite(self,site):
       """
@@ -1826,22 +1801,6 @@ class DDHelper(DDLogger):
           pass
       return bList
       
-def formDatasetPath(primD="*",tier="*",app="*"):
-    """
-       Helper function to form path out of primD,tier,app. It can be used to construct
-       any path out of three arguments.
-       @type  primD: string 
-       @param primD: name of primary dataset
-       @type tier: string
-       @param tier: name of tier
-       @type app: string
-       @param app: application name
-       @rtype : string
-       @return: path
-    """
-    return "/"+primD+"/"+tier+"/"+app
-#def formAppPath(ver="*",family="*",exe="*"):
-#    return "/"+ver+"/"+family+"/"+exe
 def formAppPath(iAppString):
     """
        Helper function to construct application path out of given pattern
@@ -1867,7 +1826,7 @@ def formAppPath(iAppString):
 # main
 #
 if __name__ == "__main__":
-    optManager  = DDOptions.DDOptionParser()
+    optManager  = DDOptions.DDOptionParser('DDHelper')
     (opts,args) = optManager.getOpt()
 #    print "options:  ",opts
 #    print "arguments:",args
@@ -1968,7 +1927,7 @@ if __name__ == "__main__":
     t0=time.time()
     for dataset in appDatasets:
         t1 = time.time()
-        empty,prim,tier,app = string.split(dataset,"/")
+        empty,prim,proc,tier = string.split(dataset,"/")
         if primaryDataset!="*" and prim!=primaryDataset: continue
         if dataTier!="*" and tier!=dataTier: continue
         locDict, blockDict, totEvt, totFiles, totSize = helper.getData(dataset,appPath)
