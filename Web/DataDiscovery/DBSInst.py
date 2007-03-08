@@ -17,6 +17,7 @@ try:
    import sqlalchemy
 except:
    print "Fail to load sqlalchemy module, some functionality will be disabled"
+   sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
    pass
 # Drew's modules, need to remove try block once it's ready
 try:
