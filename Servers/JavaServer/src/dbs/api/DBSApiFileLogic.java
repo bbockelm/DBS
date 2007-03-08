@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApiFileLogic.java,v 1.27 2007/03/07 23:01:37 sekhri Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApiFileLogic.java,v 1.28 2007/03/08 22:13:32 afaq Exp $"
  *
  */
 
@@ -399,7 +399,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			}
 
                         if ( ! pathTierVec.containsAll(tierVec) ) {
-                                //System.out.println("TIER MISMATCH !!!!!!!!!!!!!!!!");
+				throw new DBSException("Tier Mismatch", "1037", 
+							"Provided Tier(s) combinition is not present in dataset");
                         }
 		}
 
@@ -499,8 +500,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                                 if( isNull(blockID)) {                       // && i % 10 ) {  //Every 10th file ???
 
+
+					System.out.println("BLOCK NAME is Not GIVEN");
                                         //Adding "*" before and after orderedTiers will let us search for ALL possible tiers
-                                        String correctedPath = notierpath + "/*" + orderedTiers +"*";
+                                        //String correctedPath = notierpath + "/*" + orderedTiers +"*";
+                                        String correctedPath = notierpath + "/" + orderedTiers;
                                         blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, procDSID, correctedPath, block, dbsUser);
                                 }
 

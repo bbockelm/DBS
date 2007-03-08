@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.79 $"
- $Id: DBSSql.java,v 1.79 2007/03/07 23:01:37 sekhri Exp $"
+ $Revision: 1.80 $"
+ $Id: DBSSql.java,v 1.80 2007/03/08 22:13:33 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -586,9 +586,10 @@ public class DBSSql {
                         sql += " AND se.SEName IN ("+ tmpSql + ") \n\t";
                 }
 
-                if ( ! !DBSUtil.isNull(blockNamePattern) ) {
-                        sql += " AND blk.Name like '%"+blockNamePattern+"'%";
+                if ( !DBSUtil.isNull(blockNamePattern) ) {
+                        sql += " AND blk.Name like '%"+blockNamePattern+"%'";
                 }
+                sql += " AND blk.OpenForWriting=1";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;

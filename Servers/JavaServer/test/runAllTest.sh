@@ -29,7 +29,7 @@ path="/$primary_name/$processed_name/$tier_name1"
 path_child="/$primary_name/CHILD_$processed_name/$tier_name2"
 run_number1="9999"
 run_number2="9998"
-block_name="/test/test#$rand"
+block_name="/test/test/test#$rand"
 lfn1="TEST_LFN_1_$rand"
 lfn2="TEST_LFN_2_$rand"
 algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMYa_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
@@ -360,10 +360,11 @@ insertBlock () {
 	#echo "$out"
 }
 
+		#<!--processed_datatset path='$path_child' block_name='$block_name'--/>
 insertFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-		<processed_datatset path='$path_child' block_name='$block_name'>
+		<processed_datatset path='$path_child'>
 			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<file_lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<file_lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
@@ -525,8 +526,6 @@ remapFiles () {
 
 }
 
-
-
 insertPrimaryDataset
 insertAlgorithm
 insertTier
@@ -535,8 +534,6 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-#remapFiles
-#createAnalysisDatasetFromPD
 createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition

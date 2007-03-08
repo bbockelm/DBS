@@ -1,6 +1,6 @@
 /**
- $Revision: 1.78 $"
- $Id: DBSApiLogic.java,v 1.78 2007/03/07 23:01:37 sekhri Exp $"
+ $Revision: 1.79 $"
+ $Id: DBSApiLogic.java,v 1.79 2007/03/08 22:13:32 afaq Exp $"
  *
  */
 
@@ -43,8 +43,10 @@ public class DBSApiLogic {
 	//A regular expression used to validate a path that will contain exactly three slashes.
 	private static String VALID_PATH = "^/([^/]+)/([^/]+)/([^/]+)";
 	//A regular expression used to validate a block name that will contain exactly thw slashes and a hash.
-	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
-	private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)#([^/]+)|%";
+	//private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
+	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)/([^/]+)#([^/]+)";
+	//private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)#([^/]+)|%";
+	private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)/([^/]+)#([^/]+)|%";
 	//We can store the path id once and everytime the id is needed it can be fetched from this table instead of fetching it through database.
 	/*protected static Hashtable globalUser = new Hashtable();
 	protected static Hashtable globalFile = new Hashtable();
