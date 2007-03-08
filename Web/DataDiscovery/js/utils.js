@@ -567,6 +567,7 @@ function checkNavSelection() {
   showWaitingMessage();
   return 1;
 }
+/*
 function submitNavRequest() {
   if(checkNavSelection()==1) {
      ajaxGetData();
@@ -574,7 +575,7 @@ function submitNavRequest() {
      ajaxGenAppConfigs();
   }
 }
-
+*/
 function GetMonthIdx(month) {
   var mArr = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
   for(i=0;i<mArr.length;i++) {
