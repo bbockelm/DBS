@@ -13,26 +13,22 @@ CLI DBS Data discovery toolkit. JavaScript navigator menu dictionary generator.
 import string, os, sys, stat, shutil
 
 # DBS modules
-import DBSHelper, DBSInst, DBSUtil
-from   DBSOptions import *
-from   DDConfig   import *
+import DDHelper, DBSInst, DDUtil
+from   DDOptions    import *
+from   DDConfig     import *
 from   DDExceptions import *
-import DDHelper
 
 #
 # main
 #
 if __name__ == "__main__":
-    optManager  = DBSOptionParser()
+    optManager  = DDOptionParser('DDHelper')
     (opts,args) = optManager.getOpt()
-    ddConfig    = DBSDDConfig()
+    ddConfig    = DDConfig()
     iface       = ddConfig.iface()
     if opts.iface:
        iface=opts.iface
-    if iface=='sqlalchemy':
-       helper   = DDHelper.DDHelper(iface=iface)
-    else:
-       helper   = DBSHelper.DBSHelper(iface=iface)
+    helper   = DDHelper.DDHelper(iface=iface)
     if opts.quiet:
        helper.setQuiet()
     if opts.dbsInst:
