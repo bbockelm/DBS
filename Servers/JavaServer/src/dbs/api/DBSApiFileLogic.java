@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiFileLogic.java,v 1.26 2007/02/12 16:04:43 afaq Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiFileLogic.java,v 1.27 2007/03/07 23:01:37 sekhri Exp $"
  *
  */
 
@@ -362,6 +362,47 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+
+                String[] tmpPath = path.split("/");
+                String notierpath = "/" + tmpPath[1] + "/" + tmpPath[2];
+
+		Vector pathTierVec = new Vector();
+                /**String[] pathTiers = parseTier(tmpPath[3]);
+                for (int j=0; j != pathTiers.length ; ++j)
+                                pathTierVec.add(pathTiers[j]);**/
+
+		//List Tiers from ProcDS
+                PreparedStatement pss = null;
+                ResultSet rss = null;
+                try {
+                        pss =  DBSSql.listTiers(conn, procDSID);
+                        rss =  pss.executeQuery();
+                        while(rss.next()) {
+				pathTierVec.add(get(rss, "NAME"));
+				//System.out.println("insertFiles: pathTierVec[i]: "+get(rss, "NAME"));
+                        }
+                } finally {
+                        if (rss != null) rss.close();
+                        if (pss != null) pss.close();
+                }
+
+		//File Tiers must be within ProcDS Tiers
+		for (int i = 0; i != files.size() ; ++i) {
+			Hashtable file = (Hashtable)files.get(i);
+                        Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
+                        Vector tierVec = new Vector();
+
+                        for (int j=0; j != tierVector.size() ; ++j) {
+                                tierVec.add((String) get((Hashtable)tierVector.get(j), "name"));
+				//System.out.println("insertFiles: tierVector.get(j):"+get((Hashtable)tierVector.get(j), "name"));
+			}
+
+                        if ( ! pathTierVec.containsAll(tierVec) ) {
+                                //System.out.println("TIER MISMATCH !!!!!!!!!!!!!!!!");
+                        }
+		}
+
 		/*//Check if all the path is in the files are same.
 		if(files.size() > 0) {
 			String path = get((Hashtable)files.get(0), "path");
@@ -373,7 +414,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			
 			}
 		}*/
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
                 String blockID = null;
 
                 //If user INSIST to provide a BlockName
@@ -391,6 +431,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String statusID = "";
 		String typeID = "";
 		String valStatusID = "";
+				
+		Vector tierVec = new Vector();
+		String orderedTiers = "";
+
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
 		
@@ -406,6 +450,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
 			Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
+
+			if (i == 0 && isNull(blockID) ) {  //Save the Tier List ONCE, if User wants DBS to manage Blocks
+				//for (int j=0; j != tierVector.size() ; ++j)
+				//	tierVec.add(tierVector.get(j));
+				//Make the orderedTiers
+                        	orderedTiers = makeOrderedTierList(conn, tierVector);
+			}
+
 			Vector parentVector = DBSUtil.getVector(file,"file_parent");
 			Vector childVector = DBSUtil.getVector(file,"file_child");
 			Vector algoVector = DBSUtil.getVector(file,"file_algorithm");
@@ -441,14 +493,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					typeTable.put(type, typeID);
 				}
 				if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
-					valStatusID = getID(conn, "FileStatus", "Status", valStatus, true);
+					valStatusID = getID(conn, "FileValidStatus", "Status", valStatus, true);
 					valStatusTable.put(valStatus, valStatusID);
 				}
-                                if( isNull(blockID) ) {
-                                        //Let DBS choose the Block, And that could be slow
-                                        //We need to have Storage Element List here !!!!!!!
-                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, procDSID, path, block, dbsUser);
+
+                                if( isNull(blockID)) {                       // && i % 10 ) {  //Every 10th file ???
+
+                                        //Adding "*" before and after orderedTiers will let us search for ALL possible tiers
+                                        String correctedPath = notierpath + "/*" + orderedTiers +"*";
+                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, procDSID, correctedPath, block, dbsUser);
                                 }
+
 	
 				PreparedStatement ps = null;
 				try {

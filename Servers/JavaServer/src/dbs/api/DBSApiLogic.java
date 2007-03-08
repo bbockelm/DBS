@@ -1,6 +1,6 @@
 /**
- $Revision: 1.76 $"
- $Id: DBSApiLogic.java,v 1.76 2007/03/01 15:46:51 sekhri Exp $"
+ $Revision: 1.78 $"
+ $Id: DBSApiLogic.java,v 1.78 2007/03/07 23:01:37 sekhri Exp $"
  *
  */
 
@@ -18,6 +18,10 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
 import dbs.DBSConstants;
+import java.util.Arrays;
+import java.util.Vector;
+
+
 
 /**
 * A class that has the core business logic of some of the general DBS API. Here some of the API is defined and implemented. The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. The APIs are group together into other classes that inherits from this class. For example all the file APIs are in DBSApiFileLogic class.
@@ -774,6 +778,73 @@ public class DBSApiLogic {
 		//(new DBSApiBlockLogic()).checkBlock(pattern);
         	return pattern;
 	}
+
+       protected Vector getDataTierOrder(Connection conn) throws Exception {
+
+                Vector dbOrderedList = new Vector();
+                PreparedStatement ps = null;
+                ResultSet rs = null; 
+                try {
+                        //List all rows of DataTierOrder Table
+                        ps =  DBSSql.getDataTierOrder(conn);
+                        rs =  ps.executeQuery();
+                        if(!rs.next()) {
+                                throw new DBSException("Unavailable data", "1011", "DataTierOrder table does not exist" );
+                        }
+                        while(rs.next()) {
+                                dbOrderedList.add(get(rs, "DATATIERORDER"));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+                //From Database GET OrderedTierList
+                return dbOrderedList;
+
+        }
+
+        protected String makeOrderedTierList(Connection conn, Vector tierVec)  throws Exception {
+
+                Vector dbOrderedList = getDataTierOrder(conn);
+
+                boolean found=false;
+
+                for (int i=0; i != dbOrderedList.size(); ++i) {
+                        String currRow = (String)dbOrderedList.get(i);
+			//System.out.println("makeOrderedTierList: currRow:"+currRow);
+                        String[] parsed = parseTier(currRow); 
+                        //Ignore the smaller arrays
+
+			//System.out.println("makeOrderedTierList: parsed.length:"+parsed.length);
+			//System.out.println("makeOrderedTierList: tierVec.size():"+tierVec.size());
+
+                        if ( parsed.length != tierVec.size())
+                                continue;
+
+			//We can check if its already IN ORDER ?????????
+
+                        for (int j=0; j != tierVec.size() ; ++j) {
+				String currTier = (String) get((Hashtable)tierVec.get(j), "name");
+				//System.out.println("makeOrderedTierList: tierVec.get(j):"+currTier);
+
+                                if (Arrays.binarySearch(parsed, currTier) >= 0 )
+                                        found=true;
+                                else {
+                                        found=false;
+                                        break;
+                                }
+                        }
+
+                        if (found) {
+				//System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
+				return currRow;
+			}
+
+                }
+                if (!found) throw new DBSException("Invalid Format", "1037", "Provided Tier(s) combinition is not permitted");
+                return "";
+
+        }
 
 	
 }

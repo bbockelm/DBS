@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiBlockLogic.java,v 1.21 2007/03/01 20:44:24 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiBlockLogic.java,v 1.22 2007/03/07 23:01:37 sekhri Exp $"
  *
  */
 
@@ -150,8 +150,11 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);//Getting ID before spliting the path will type chech the path also.
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
-		String[] data = path.split("/");
-		if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
+
+		//String[] data = path.split("/");
+		//if (isNull(name)) name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID(); 
+
+		if (isNull(name)) name = path +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
 
 		if(getBlockID(conn, name, false, false) == null ) {
@@ -239,12 +242,11 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 	}
 
-
 	//insertBlock USED by dbsManagedBlockID
-        private String insertBlock(Connection conn, Writer out, String procDSID, String path, Hashtable block, Hashtable dbsUser) throws Exception {
-                String[] data = path.split("/");
-                String name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID();
-                String openForWriting = "1";
+        private String insertBlock(Connection conn, Writer out, String procDSID, String path, Hashtable block, Vector seVector, Hashtable dbsUser) throws Exception {
+                //String[] data = path.split("/");
+                //String name = "/" + data[1] + "/" + data[3] +"#" + UUID.randomUUID();
+		String name = path +"#" + UUID.randomUUID();
                 String lmbUserID = personApi.getUserID(conn, dbsUser);
                 String userID = personApi.getUserID(conn, dbsUser);
                 String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
@@ -259,7 +261,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                 procDSID,
                                 "0",// A new block should always have 0 files
                                 "0",// A new block should always have 0 events ??
-                                openForWriting,
+                                "1",// A new block should always be openForWriting = 1
 				"",
                                 personApi.getUserID(conn, dbsUser),
 				"");
@@ -269,33 +271,33 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
 
-                //SEs defined in block
-                Vector seVector = DBSUtil.getVector(block, "storage_element");
-
                 //Storage Element will be added to an existing block
                 String blockID = getBlockID(conn, name, false, true);
-                //System.out.println("seVector.size() " + seVector.size() );
-                //System.out.println("BLOCK ID is " + blockID);
-                for (int j = 0; j < seVector.size(); ++j) {
-                        String seName = get((Hashtable)seVector.get(j), "storage_element_name");
-                        //System.out.println("storage_element_name " + seName);
-                        insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
-                }
+
+		for(int i = 0 ; i != seVector.size(); ++i) {
+				insertStorageElement(conn, out, blockID, (String)seVector.get(i), cbUserID, lmbUserID, creationDate);
+		}
 
                 out.write("<block block_name='" + name + "'/>");
                 return blockID;
         }
 
-        public String dbsManagedBlockID (Connection conn, Writer out, String procDSID, String path, Hashtable block, Hashtable dbsUser) throws Exception {
+        public String dbsManagedBlockID (Connection conn, Writer out, String procDSID, String blockNamePath, Hashtable block, Hashtable dbsUser) throws Exception {
                 String id = "";
                 PreparedStatement ps = null;
                 ResultSet rs = null;
                 try {
-                        ps = DBSSql.getOpenBlockID(conn, procDSID);
+			//SEs defined in block, make a name vector out of it (generally one SE must be in this list)
+	                Vector storageVector = DBSUtil.getVector(block, "storage_element");
+			Vector seVector = new Vector();
+			for (int j = 0; j < storageVector.size(); ++j) seVector.add(get((Hashtable)storageVector.get(j), "storage_element_name"));
+
+			//See if an Open Block exists for this Dataset for These SEs (generally one SE must be in this list)
+                        ps = DBSSql.getOpenBlockID(conn, procDSID, blockNamePath, seVector);
                         rs =  ps.executeQuery();
                         if(!rs.next()) {
                            //Unable to find an Open Block, Create one.
-                           id = insertBlock(conn, out, procDSID, path, block, dbsUser);
+                           id = insertBlock(conn, out, procDSID, blockNamePath, block, seVector, dbsUser);
                            return id;
                         }
                         id = get(rs, "ID");
@@ -304,22 +306,22 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
                         int configuredBlkSize = config.getMaxBlockSize();
                         int configuredNumFiles = config.getMaxBlockFiles();
-                        DBSUtil.writeLog("*********************TEST BLOCK****************");  
-                        DBSUtil.writeLog("configuredBlkSize: "+configuredBlkSize);
-                        DBSUtil.writeLog("configuredNumFiles: "+configuredNumFiles);
+                        //DBSUtil.writeLog("*********************TEST BLOCK****************");  
+                        //DBSUtil.writeLog("configuredBlkSize: "+configuredBlkSize);
+                        //DBSUtil.writeLog("configuredNumFiles: "+configuredNumFiles);
 
                         int blockSize = Integer.parseInt(get(rs, "BLOCKSIZE"));
                         int numberOfFiles = Integer.parseInt(get(rs, "NUMBER_OF_FILES"));
-                        DBSUtil.writeLog("blockSize: "+blockSize);
-                        DBSUtil.writeLog("numberOfFiles: "+numberOfFiles);
+                        //DBSUtil.writeLog("blockSize: "+blockSize);
+                        //DBSUtil.writeLog("numberOfFiles: "+numberOfFiles);
                         if (blockSize > configuredBlkSize || numberOfFiles >= configuredNumFiles ) {
-                           DBSUtil.writeLog("*********************CLOSING BLOCK****************");
+                           //DBSUtil.writeLog("*********************CLOSING BLOCK****************");
                            closeBlock(conn, id);
                            insertTimeLog(conn, "CloseBlock", "Close Block Condition Sensed",
                                                    "Block Closed", "Auto Closing Block",
                                                    dbsUser);
 
-                           id = insertBlock(conn, out, procDSID, path, block, dbsUser);
+                           id = insertBlock(conn, out, procDSID, blockNamePath, block, seVector, dbsUser);
                         }
                 } finally {
                         if (rs != null) rs.close();
@@ -327,9 +329,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 }
                 return id;
         }
-
-
-
 
 
 /*

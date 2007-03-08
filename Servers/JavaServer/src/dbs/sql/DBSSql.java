@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.78 $"
- $Id: DBSSql.java,v 1.78 2007/03/01 20:44:25 afaq Exp $"
+ $Revision: 1.79 $"
+ $Id: DBSSql.java,v 1.79 2007/03/07 23:01:37 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -564,19 +564,40 @@ public class DBSSql {
 		return ps;
 	}
 
-
-        public static PreparedStatement getOpenBlockID(Connection conn, String processedDSID) throws SQLException {
+        public static PreparedStatement getOpenBlockID(Connection conn, String processedDSID, String blockNamePattern, Vector seVector) throws SQLException {
                 String sql = "SELECT DISTINCT blk.ID as ID, \n" +
                              "blk.BlockSize as BLOCKSIZE, \n" +
                              "blk.NumberOfFiles as NUMBER_OF_FILES \n" +
-                             "From Block blk \n" +
-                             " WHERE blk.Dataset = ?";
+                             "From Block blk \n";
+                              if (seVector.size() > 0) {
+                                      sql += " LEFT OUTER JOIN SEBlock seb \n" +
+                                                " ON seb.BlockID = blk.ID \n" +
+                                             " LEFT OUTER JOIN StorageElement se \n" +
+                                                " ON se.ID = seb.SEID \n";
+                              }
+                              sql += " WHERE blk.Dataset = ?";
+
+                if (seVector.size() > 0) {
+                        String tmpSql = "";
+                        for(int i = 0 ; i !=seVector.size(); ++i) {
+                                if(!DBSUtil.isNull(tmpSql)) tmpSql += ",";
+                                tmpSql += "?";
+                        }
+                        sql += " AND se.SEName IN ("+ tmpSql + ") \n\t";
+                }
+
+                if ( ! !DBSUtil.isNull(blockNamePattern) ) {
+                        sql += " AND blk.Name like '%"+blockNamePattern+"'%";
+                }
+
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, processedDSID);
+                for(int i = 0 ; i != seVector.size(); ++i) ps.setString(columnIndx++, (String)seVector.get(i));
+
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
-        }  
+        }
 
 
         public static PreparedStatement getBlockID(Connection conn, String blockName) throws SQLException {
@@ -596,6 +617,13 @@ public class DBSSql {
 
 	// ____________________________________________________
 	
+        public static PreparedStatement getDataTierOrder(Connection conn) throws SQLException {
+                String sql = "SELECT DataTierOrder as DATATIERORDER \n" +
+                                "FROM DataTierOrder";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 	
         public static PreparedStatement listRowsInTable(Connection conn, String tableName, String from, String rows) 
         throws SQLException
@@ -1103,7 +1131,7 @@ public class DBSSql {
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
-			"LEFT OUTER JOIN FileStatus vst \n" +
+			"LEFT OUTER JOIN FileValidStatus vst \n" +
 				"ON vst.id = f.ValidationStatus \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
@@ -1183,6 +1211,8 @@ public class DBSSql {
 				"ON ty.id = f.FileType \n" +
 			"LEFT OUTER JOIN FileStatus st \n" +
 				"ON st.id = f.FileStatus \n" +
+                        //"LEFT OUTER JOIN FileValidStatus vst \n" +
+                        //        "ON vst.id = f.ValidationStatus \n" +
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = f.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
