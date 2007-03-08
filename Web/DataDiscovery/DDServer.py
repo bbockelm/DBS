@@ -11,6 +11,8 @@ DBS data discovery server module.
 
 # system modules
 import os, string, logging, types, time, socket, socket, urlparse, random, urllib, difflib
+import xml.sax, xml.sax.handler
+from   xml.sax.saxutils import escape
 
 # Cheetah template modules
 from   Cheetah.Template import Template
@@ -811,19 +813,7 @@ class DDServer(DDLogger):
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
         """
-        if self.ddConfig.iface()=='sqlalchemy':
-           return self.helper.listProcessedDatasets(group,app,prim,tier,proc)
-        
-        dList=[]
-        if (proc and proc!="*") and app=="*" and prim=="*":
-           dList=string.split(proc,",")
-        elif proc=="*" and (app and app!="*") and (prim and prim!="*"):
-           dList = self.helper.getDatasetsFromApp(app,prim,tier)
-        elif proc=="*" and app=="*" and (prim and prim!="*"):
-           dList=self.helper.getProcessedDatasets("/"+prim+"/*/*",app=0)
-        elif proc=="*" and (app and app!="*") and prim=="*":
-           dList=self.helper.getProcessedDatasets(app,app=1)
-        return dList
+        return self.helper.listProcessedDatasets(group,app,prim,tier,proc)
 
     def getDataHelper(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,**kwargs): 
         """
@@ -842,8 +832,8 @@ class DDServer(DDLogger):
            @rtype : string
            @return: returns HTML code
         """
-        if string.lower(tier)=="all": tier="*"
-        if string.lower(site)=="all": site="*"
+        if string.lower(tier)=="all" or string.lower(tier)=="all": tier="*"
+        if string.lower(site)=="all" or string.lower(site)=="all": site="*"
         self.dbsTime=self.dlsTime=0
         page=""
         className="hide"
@@ -908,7 +898,7 @@ class DDServer(DDLogger):
             # process only RES_PER_PAGE datasets within given (_idx) index range
             if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
 
-            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,appPath,site)
+            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
             self.dbsTime+=self.helper.dbsTime
             self.dlsTime+=self.helper.dlsTime
             # new stuff which do not show repeating datasets
@@ -1015,8 +1005,8 @@ class DDServer(DDLogger):
             self.setContentType('xml')
             page="""<ajax-response><response type="object" id="results">"""
             try:
-                if string.lower(tier)=="all": tier="*"
-                if string.lower(site)=="all": site="*"
+                if string.lower(tier)=="all" or string.lower(tier)=="any": tier="*"
+                if string.lower(site)=="all" or string.lower(site)=="any": site="*"
                 self.helperInit(dbsInst)
                 self.htmlInit()
                 msg="dbsInst='%s', site='%s', app='%s', primD='%s', tier='%s'"%(dbsInst,site,app,primD,tier)
@@ -1762,7 +1752,7 @@ class DDServer(DDLogger):
         page=""
         try:
             self.helperInit(dbsInst)
-            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,None,"*")
+            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,"*")
             page+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
             page+=self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id=0)
         except:
@@ -1911,7 +1901,6 @@ class DDServer(DDLogger):
     sendFeedback.exposed=True
 
     def storeHistory(self,actionString,userId):
-        print "\n\n storeHistory",actionString,userId
         # update DB history
         # select cmdid from given history string
         c = sqlalchemy.select([t_command.c.id],t_command.c.command==actionString).execute()
@@ -2566,11 +2555,55 @@ class DDServer(DDLogger):
            self.writeLog(page)
         return page
     addTreeElement.exposed=True
+
+    def cliHandler(self,input):
+        data=urllib.unquote(input)
+        if self.verbose==1:
+           self.writeLog(data)
+        try:
+            selList = []
+            conDict = {}
+            class Handler (xml.sax.handler.ContentHandler):
+                def startElement(self, name, attrs):
+                    if name=='select':
+                       selList.append(attrs['column'])
+                    if name=='list':
+                       selList.append(1)
+            xml.sax.parseString (data, Handler ())
+        except:
+            printExcept()
+#        print selList,conDict,listTables
+        if not len(selList):
+           return """<?xml version="1.0" encoding="utf-8"?><ddResponse></ddResponse>"""
+        if len(selList)==1 and selList[0]==1:
+           oList=self.helper.getAllTableColumns()
+           res="""<?xml version="1.0" encoding="utf-8"?><ddResponse>"""
+           for item in oList:
+                res+="""<row><column name='Table.colName' value='%s' /></row>"""%item
+           res+="""</ddResponse>"""
+           return res
+        # HACK, TODO: when Drew will provide a single query replace this hack
+        if len(selList)==1:
+           table,col=string.split(selList[0],".")
+           query="SELECT DISTINCT %s FROM %s"%(col,table)
+           oList=self.helper.executeSQLQuery(query)
+        else:
+           query,oList = self.helper.queryMaker(selList)
+#        print query,oList
+        res="""<?xml version="1.0" encoding="utf-8"?><ddResponse>"""
+        for iList in oList[1:]: # here first element in a list is column names
+            res+="<row>"
+            for idx in xrange(0,len(iList)):
+                res+="""<column name='%s' value='%s' />"""%(oList[0][idx],iList[idx])
+            res+="</row>"
+        res+="""</ddResponse>"""
+        return res
+    cliHandler.exposed=True
 #
 # main
 #
 if __name__ == "__main__":
-    optManager  = DDOptions.DDOptionParser()
+    optManager  = DDOptions.DDOptionParser('DDServer')
     (opts,args) = optManager.getOpt()
 
     # load DBS history tables module
