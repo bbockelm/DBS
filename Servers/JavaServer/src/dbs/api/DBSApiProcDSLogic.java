@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiProcDSLogic.java,v 1.20 2007/02/23 17:02:05 sekhri Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiProcDSLogic.java,v 1.21 2007/03/07 23:01:37 sekhri Exp $"
  *
  */
 
@@ -341,13 +341,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//Insert ProcDSTier table by fetching data tier ID
 		for (int j = 0; j < tierVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)tierVector.get(j);
-			String tierName = get(hashTable, "name", true);
-			//Insert DataTier if it does not exists
-			insertTier(conn, out, tierName, cbUserID, lmbUserID, creationDate);
+			//String tierName = get(hashTable, "name", true);
+			//Insert DataTier if it does not exists. But there is a default list of tier and we never add a new tier. 
+			//It is an admin operation
+			//insertTier(conn, out, tierName, cbUserID, lmbUserID, creationDate);
 			//insertName(conn, out, "DataTier", "Name", tierName , lmbUserID);
 			insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 					procDSID, 
-					getID(conn, "DataTier", "Name", tierName , true), 
+					getID(conn, "DataTier", "Name", get(hashTable, "name", true).toUpperCase() , true), 
 					cbUserID, lmbUserID, creationDate);
 		}
 
@@ -386,7 +387,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	public void insertTierInPD(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 				getProcessedDSID(conn, get(table, "path"), true), 
-				getID(conn, "DataTier", "Name", tierName , true), 
+				getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
