@@ -1,6 +1,6 @@
 /**
- $Revision: 1.78 $"
- $Id: DBSApi.java,v 1.78 2007/03/09 20:28:04 sekhri Exp $"
+ $Revision: 1.79 $"
+ $Id: DBSApi.java,v 1.79 2007/03/09 20:53:29 sekhri Exp $"
  *
 */
 
@@ -356,7 +356,13 @@ public class DBSApi {
 				(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out,
 						DBSApiParser.parse( getXml(table), "primary_dataset") , 
 						dbsUser);
-				
+
+			} else if (apiStr.equals("updatePrimDSType")) {
+				(new DBSApiPrimDSLogic(this.data)).updatePrimDSType(conn, out,
+						get(table, "prmary_dataset_name", true),
+						get(table, "type", true),
+						dbsUser);
+
 			} else if (apiStr.equals("insertAlgorithm")) {
 				(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out,
 						DBSApiParser.parse(getXml(table), "algorithm") , 
@@ -404,6 +410,18 @@ public class DBSApi {
 					DBSApiParser.parse(getXml(table), "analysis_dataset"),
 					dbsUser);
 	
+			} else if (apiStr.equals("updateAnalDSType")) {
+				(new DBSApiAnaDSLogic(this.data)).updateAnalDSType(conn, out,
+						get(table, "analysis_dataset_name", true),
+						get(table, "type", true),
+						dbsUser);
+
+			} else if (apiStr.equals("updateAnalDSStatus")) {
+				(new DBSApiAnaDSLogic(this.data)).updateAnalDSStatus(conn, out,
+						get(table, "analysis_dataset_name", true),
+						get(table, "status", true),
+						dbsUser);
+
                         } else if (apiStr.equals("insertBlock")) {
 				(new DBSApiBlockLogic(this.data)).insertBlock(conn, out,
 						DBSApiParser.parseBlock(getXml(table)) , 
@@ -412,6 +430,20 @@ public class DBSApi {
 			} else if (apiStr.equals("insertFiles")) {
 				DBSApiParser.insertFiles(conn, out, getXml(table), dbsUser);
 	
+			} else if (apiStr.equals("updateFileStatus")) {
+				(new DBSApiFileLogic(this.data)).updateFileStatus(conn, out,
+						get(table, "lfn", true),
+						get(table, "status", true),
+						dbsUser);
+	
+			} else if (apiStr.equals("updateFileType")) {
+				(new DBSApiFileLogic(this.data)).updateFileType(conn, out,
+						get(table, "lfn", true),
+						get(table, "type", true),
+						dbsUser);
+
+
+
 			} else if (apiStr.equals("remapFiles")) {
 				DBSApiParser.remapFiles(conn, out, getXml(table), dbsUser);
 			
@@ -439,8 +471,8 @@ public class DBSApi {
 						get(table, "run_number", true), 
 						dbsUser);
 	
-			} else if (apiStr.equals("updateProcDStatus")) {
-				(new DBSApiProcDSLogic(this.data)).updateProcDStatus(conn, out,
+			} else if (apiStr.equals("updateProcDSStatus")) {
+				(new DBSApiProcDSLogic(this.data)).updateProcDSStatus(conn, out,
 						get(table, "path", true),
 						get(table, "status", true),
 						dbsUser);

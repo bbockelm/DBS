@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiPrimDSLogic.java,v 1.13 2007/02/09 20:09:47 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.14 2007/03/09 20:53:29 sekhri Exp $"
  *
  */
 
@@ -179,9 +179,9 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 	 * @param primName the name ofthe primarydataset.
 	 * @param value a value of the type field to be set in this primary dataset
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
-	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void updatePrimDStatus(Connection conn, Writer out, String primName, String value, Hashtable dbsUser) throws Exception {
+	public void updatePrimDSType(Connection conn, Writer out, String primName, String value, Hashtable dbsUser) throws Exception {
 		updateValue(conn, out, "PrimaryDataset",  getID(conn, "PrimaryDataset", "Name", primName, true),
 				                        "Type", "PrimaryDSType", "Type", value, personApi.getUserID(conn, dbsUser));
 	}

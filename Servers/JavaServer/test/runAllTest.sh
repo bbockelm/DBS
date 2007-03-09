@@ -73,13 +73,49 @@ listProcessedDatasets () {
 	#$CMD api=listProcessedDatasets primary_datatset_name_pattern=* data_tier_name_pattern=* processed_datatset_name_pattern=* app_version=* app_family_name=* app_executable_name=* parameterset_name=* 
 }
 
-updateProcDStatus () {
-	message="Executing updateProcDStatus API..."
+updatePrimDSStatus () {
+	message="Executing updatePrimDSStatus API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updateProcDStatus path=$path_child status=INVALID`
-	#out=`$CMD api=updateProcDStatus path=/TestPrimary_002_20070207_16h08m26s/TestProcessed_20070207_16h08m26s/SIM_20070207_16h08m26s status=INVALID`
+	out=`$CMD api=updatePrimDSStatus primary_dataset_name=$primary_name status=INVALID`
 	display "$out"
 }
+
+updateProcDSStatus () {
+	message="Executing updateProcDSStatus API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateProcDSStatus path=$path_child status=INVALID`
+	#out=`$CMD api=updateProcDSStatus path=/TestPrimary_002_20070207_16h08m26s/TestProcessed_20070207_16h08m26s/SIM_20070207_16h08m26s status=INVALID`
+	display "$out"
+}
+
+updateAnalDSStatus () {
+	message="Executing updateAnalDSStatus API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateAnalDSStatus analysis_dataset_name=AnalysisDS1_$rand status=INVALID`
+	display "$out"
+}
+
+updateFileStatus () {
+	message="Executing updateFileDSStatus API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateFileStatus lfn=$lfn1 status=INVALID`
+	display "$out"
+}
+
+updateAnalDSType () {
+	message="Executing updateAnalDSType API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateAnalDSType analysis_dataset_name=AnalysisDS1_$rand type=NEW`
+	display "$out"
+}
+
+updateFileType () {
+	message="Executing updateFileType API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateFileType lfn=$lfn1 type=ROOT`
+	display "$out"
+}
+
 
 listAlgorithms () {
 	message="Executing listAlgorithms API..."
@@ -542,8 +578,8 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
-#createAnalysisDatasetDefinition
-#createAnalysisDataset
+createAnalysisDatasetDefinition
+createAnalysisDataset
 #listAnalysisDatasetDefinition
 #listAnalysisDataset
 #listPrimaryDatasets
@@ -562,6 +598,13 @@ insertFiles
 #listRowsInTable
 #listStorageElements
 #deleteSEFromBlock
+updatePrimDSStatus
+updateProcDSStatus
+updateAnalDSStatus
+updateFileStatus
+updateAnalDSType
+updateFileType
+
 ###
 #updateRun
 ##	

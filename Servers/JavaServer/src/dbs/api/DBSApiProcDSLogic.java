@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiProcDSLogic.java,v 1.23 2007/03/09 20:28:05 sekhri Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApiProcDSLogic.java,v 1.24 2007/03/09 20:53:29 sekhri Exp $"
  *
  */
 
@@ -477,9 +477,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
 	 * @param value a value of the status filed to be set in this processed dataset
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
-	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void updateProcDStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
+	public void updateProcDSStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
 		updateValue(conn, out, "ProcessedDataset", getProcessedDSID(conn, path, true),
 				                        "Status", "ProcDSStatus", "Status", value, personApi.getUserID(conn, dbsUser));
 	}

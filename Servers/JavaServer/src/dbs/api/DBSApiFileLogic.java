@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApiFileLogic.java,v 1.29 2007/03/08 22:39:53 afaq Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSApiFileLogic.java,v 1.30 2007/03/09 20:28:01 afaq Exp $"
  *
  */
 
@@ -691,7 +691,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	public void insertTierInFile(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "FileTier", "Fileid", "DataTier", 
 				getFileID(conn, get(table, "lfn", true), true), 
-				getID(conn, "DataTier", "Name", tierName , true), 
+				getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
@@ -833,6 +833,37 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		
 	}
 
+ 	 /**
+	 * Updates the type of a file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the file ID and call a generic methods updateValue that fetches the type id and updates it in Files table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn the logocal file name.
+	 * @param value a value of the type field to be set in this file.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
+	public void updateFileType(Connection conn, Writer out, String lfn, String value, Hashtable dbsUser) throws Exception {
+		updateValue(conn, out, "Files",  getFileID(conn, lfn, true),
+				                        "FileType", "FileType", "Type", value, personApi.getUserID(conn, dbsUser));
+	}
+
+	/**
+	 * Updates the status of a file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the file ID and call a generic methods updateValue that fetches the status id and updates it in Files table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn the logocal file name.
+	 * @param value a value of the status field to be set in this file.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
+	public void updateFileStatus(Connection conn, Writer out, String lfn, String value, Hashtable dbsUser) throws Exception {
+		updateValue(conn, out, "Files",  getFileID(conn, lfn, true),
+				                        "FileStatus", "FileStatus", "Status", value, personApi.getUserID(conn, dbsUser));
+	}
 
 
 	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {
