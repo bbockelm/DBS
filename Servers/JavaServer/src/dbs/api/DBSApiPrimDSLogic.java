@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiPrimDSLogic.java,v 1.12 2007/01/23 21:20:49 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.13 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -169,6 +169,22 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		}
 		return  get(rs, "id");
 	}*/
+
+	/**
+	 * Updates the type of a primary dataset. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the primary dataset ID and call a generic methods updateValue that fetches the type id and updates it in PrimaryDataset table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param primName the name ofthe primarydataset.
+	 * @param value a value of the type field to be set in this primary dataset
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
+	public void updatePrimDStatus(Connection conn, Writer out, String primName, String value, Hashtable dbsUser) throws Exception {
+		updateValue(conn, out, "PrimaryDataset",  getID(conn, "PrimaryDataset", "Name", primName, true),
+				                        "Type", "PrimaryDSType", "Type", value, personApi.getUserID(conn, dbsUser));
+	}
 
 	
 }

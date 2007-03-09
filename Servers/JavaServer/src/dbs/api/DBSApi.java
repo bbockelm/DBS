@@ -1,6 +1,6 @@
 /**
- $Revision: 1.77 $"
- $Id: DBSApi.java,v 1.77 2007/03/01 20:44:24 afaq Exp $"
+ $Revision: 1.78 $"
+ $Id: DBSApi.java,v 1.78 2007/03/09 20:28:04 sekhri Exp $"
  *
 */
 
@@ -439,8 +439,8 @@ public class DBSApi {
 						get(table, "run_number", true), 
 						dbsUser);
 	
-			} else if (apiStr.equals("updatePDStatus")) {
-				(new DBSApiProcDSLogic(this.data)).updatePDStatus(conn, out,
+			} else if (apiStr.equals("updateProcDStatus")) {
+				(new DBSApiProcDSLogic(this.data)).updateProcDStatus(conn, out,
 						get(table, "path", true),
 						get(table, "status", true),
 						dbsUser);

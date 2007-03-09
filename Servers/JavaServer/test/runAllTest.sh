@@ -73,6 +73,14 @@ listProcessedDatasets () {
 	#$CMD api=listProcessedDatasets primary_datatset_name_pattern=* data_tier_name_pattern=* processed_datatset_name_pattern=* app_version=* app_family_name=* app_executable_name=* parameterset_name=* 
 }
 
+updateProcDStatus () {
+	message="Executing updateProcDStatus API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateProcDStatus path=$path_child status=INVALID`
+	#out=`$CMD api=updateProcDStatus path=/TestPrimary_002_20070207_16h08m26s/TestProcessed_20070207_16h08m26s/SIM_20070207_16h08m26s status=INVALID`
+	display "$out"
+}
+
 listAlgorithms () {
 	message="Executing listAlgorithms API..."
 	echo $message >> $outFile ; echo $message

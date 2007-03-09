@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.80 $"
- $Id: DBSSql.java,v 1.80 2007/03/08 22:13:33 afaq Exp $"
+ $Revision: 1.81 $"
+ $Id: DBSSql.java,v 1.81 2007/03/08 22:39:55 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -38,8 +38,21 @@ public class DBSSql {
 		return ps;
         }
 
+	public static PreparedStatement updateValue(Connection conn, String tableName, String ID, String key, String value, String lmbUserID) throws SQLException {
+		String sql = "UPDATE " + tableName + " \n" +
+			"SET " + key + " = ?, \n" +
+			"LastModifiedBy = ? \n" +
+			"WHERE ID = ?" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, value);
+		ps.setString(columnIndx++, lmbUserID);
+		ps.setString(columnIndx++, ID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
-        public static PreparedStatement insertTimeLog(Connection conn, String action, String cause, 
+       public static PreparedStatement insertTimeLog(Connection conn, String action, String cause, 
 									String effect, String description,
 									String cbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
