@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiProcDSLogic.java,v 1.24 2007/03/09 20:53:29 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiProcDSLogic.java,v 1.25 2007/03/09 21:32:11 sekhri Exp $"
  *
  */
 
@@ -59,6 +59,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		// to store all of them in a vector so that while writing xml, previously written data tier does not get written again.
 		Vector dtVec = null; 
 		Vector algoVec = null; 
+                String primDSName = null;
+                String procDSName = null;
 		
 		//The xml genrated is nested and this flag is needed to know if first time a tag needs to be written
 		boolean first = true; 
@@ -83,15 +85,18 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				String exe = get(rs, "APP_EXECUTABLE_NAME");
 				String ver = get(rs, "APP_VERSION");
 				String pset = get(rs, "PS_HASH");
+				primDSName = get(rs, "PRIMARY_DATATSET_NAME");
+				procDSName = get(rs, "PROCESSED_DATATSET_NAME");
 	
 				if( !prevDS.equals(procDSID) && ! first) {
+					out.write((String)"<path='/"+primDSName+ "/"+ procDSName+"/"+ makeOrderedTierList(conn, dtVec) + "'/>");
 					out.write(((String) "</processed_dataset>\n")); 
 				}
 				if( !prevDS.equals(procDSID) || first) {
 					out.write(((String) "<processed_dataset id='" + get(rs, "ID") + 
 							//"' path='" +  get(rs, "PATH") +
-							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
-							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
+							"' primary_datatset_name='" +  primDSName +
+							"' processed_datatset_name='" +  procDSName +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
@@ -101,7 +106,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							"'>\n"));
 					first = false;
 					prevDS = procDSID;
-					dtVec = new Vector();// Or dtVec.removeAllElements();
+		        		dtVec = new Vector();// Or dtVec.removeAllElements();
 					algoVec = new Vector();// Or algoVec.removeAllElements();
 				}
 				//if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
@@ -110,6 +115,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					dtVec.add(tier);
 					//prevTier = tier;
 				}
+
 				//if( !prevExe.equals(exe) || !prevFam.equals(fam) || !prevVer.equals(ver) || !prevPS.equals(pset) || first) {
 				String uniqueAlgo = ver + exe + fam + pset;
 				if(!algoVec.contains(uniqueAlgo) && !isNull(uniqueAlgo) ) {
@@ -135,7 +141,10 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 
-                if (!first) out.write(((String) "</processed_dataset>\n")); 
+                if (!first) {
+			out.write(((String) "</processed_dataset>\n")); 
+			out.write((String)"<path='/"+primDSName+ "/"+ procDSName+"/"+ makeOrderedTierList(conn, dtVec) + "'/>");
+		}
 	}
 
 	/**

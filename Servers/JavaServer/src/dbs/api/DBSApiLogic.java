@@ -1,6 +1,6 @@
 /**
- $Revision: 1.81 $"
- $Id: DBSApiLogic.java,v 1.81 2007/03/09 17:27:44 sekhri Exp $"
+ $Revision: 1.82 $"
+ $Id: DBSApiLogic.java,v 1.82 2007/03/09 20:28:04 sekhri Exp $"
  *
  */
 
@@ -805,6 +805,23 @@ public class DBSApiLogic {
         	return pattern;
 	}
 
+
+/*********
+        private String getTier(Connection conn, String lfn, boolean excep) throws Exception {
+                String id = "";
+                if(!isNull( id = get(this.data.globalFile, lfn) )) {
+                        return id;
+                }
+                if( !isNull(id = getID(conn, "Files", "LogicalFileName", lfn, excep)) ) {
+                        this.data.globalFile = new Hashtable();//Just store one file id only
+                        this.data.globalFile.put(lfn, id);
+                }
+                return id;
+        }
+***********/
+
+
+
        protected Vector getDataTierOrder(Connection conn) throws Exception {
 
                 Vector dbOrderedList = new Vector();
@@ -831,6 +848,8 @@ public class DBSApiLogic {
 
         protected String makeOrderedTierList(Connection conn, Vector tierVec)  throws Exception {
 
+
+		System.out.println("makeOrderedTierList"+tierVec.size());
                 Vector dbOrderedList = getDataTierOrder(conn);
 
                 boolean found=false;
@@ -850,7 +869,8 @@ public class DBSApiLogic {
 			//We can check if its already IN ORDER ?????????
 
                         for (int j=0; j != tierVec.size() ; ++j) {
-				String currTier = (String) get((Hashtable)tierVec.get(j), "name");
+				//String currTier = (String) get((Hashtable)tierVec.get(j), "name");
+				String currTier = (String) tierVec.get(j);
 				//System.out.println("makeOrderedTierList: tierVec.get(j):"+currTier);
 
                                 if (Arrays.binarySearch(parsed, currTier) >= 0 )

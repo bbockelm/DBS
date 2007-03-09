@@ -1,6 +1,6 @@
 /**
- $Revision: 1.30 $"
- $Id: DBSApiFileLogic.java,v 1.30 2007/03/09 20:28:01 afaq Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApiFileLogic.java,v 1.31 2007/03/09 21:32:11 sekhri Exp $"
  *
  */
 
@@ -470,13 +470,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
 			Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
+			
 
 			//Save the Tier List ONCE, if User wants DBS to manage Blocks
 			if ( i == 0 && dbsBlockManagment ) {  
-				//for (int j=0; j != tierVector.size() ; ++j)
-				//	tierVec.add(tierVector.get(j));
+				Vector tierVec = new Vector();
+				for (int j=0; j != tierVector.size() ; ++j)
+					tierVec.add((String) get((Hashtable)tierVec.get(j), "name"));
 				//Make the orderedTiers
-                        	orderedTiers = makeOrderedTierList(conn, tierVector);
+                        	orderedTiers = makeOrderedTierList(conn, tierVec);
                                 correctedPath = notierpath + "/" + orderedTiers;
 			}
 
