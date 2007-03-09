@@ -1,6 +1,6 @@
 /**
- $Revision: 1.28 $"
- $Id: DBSApiFileLogic.java,v 1.28 2007/03/08 22:13:32 afaq Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSApiFileLogic.java,v 1.29 2007/03/08 22:39:53 afaq Exp $"
  *
  */
 
@@ -387,6 +387,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         if (pss != null) pss.close();
                 }
 
+
+		Vector firstFileTiers = new Vector();
 		//File Tiers must be within ProcDS Tiers
 		for (int i = 0; i != files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
@@ -402,6 +404,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				throw new DBSException("Tier Mismatch", "1037", 
 							"Provided Tier(s) combinition is not present in dataset");
                         }
+
+			if (i > 0) 
+				if (firstFileTiers.size() != tierVec.size() || 
+						(! firstFileTiers.containsAll(tierVec)) ) {
+					throw new DBSException("Tier Mismatch", "1038",
+                                                        "All files must belong to same path (Set of tiers)");
+				}
+			if (i == 0) firstFileTiers.addAll(tierVec);
 		}
 
 		/*//Check if all the path is in the files are same.
@@ -415,14 +425,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			
 			}
 		}*/
-                String blockID = null;
 
-                //If user INSIST to provide a BlockName
-                if ( ! isNull(blockName) && !(blockName.equals("")) ) {
-		    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
-                    //FIXME: We must need to verify that Block is OpenForWriting
-                    
-                }
 		//These tables are used to store the types and staus fileds along with thier id
 		//If the id can be fetched from here then we do not have to fietch it from database again and again
 		boolean newFileInserted = false;
@@ -433,8 +436,24 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String typeID = "";
 		String valStatusID = "";
 				
-		Vector tierVec = new Vector();
 		String orderedTiers = "";
+
+		Vector blockInfoVec = new Vector();
+		Boolean dbsBlockManagment = false;
+		String correctedPath = null;
+
+
+                String blockID = null;
+                //If user INSIST to provide a BlockName
+                if ( ! isNull(blockName) && !(blockName.equals("")) ) {
+                    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
+                    //FIXME: We must need to verify that Block is OpenForWriting
+
+                }
+                //Do the DBS Block management
+                else {
+                        dbsBlockManagment = true;
+                }
 
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
@@ -452,11 +471,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
 			Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
 
-			if (i == 0 && isNull(blockID) ) {  //Save the Tier List ONCE, if User wants DBS to manage Blocks
+			//Save the Tier List ONCE, if User wants DBS to manage Blocks
+			if ( i == 0 && dbsBlockManagment ) {  
 				//for (int j=0; j != tierVector.size() ; ++j)
 				//	tierVec.add(tierVector.get(j));
 				//Make the orderedTiers
                         	orderedTiers = makeOrderedTierList(conn, tierVector);
+                                correctedPath = notierpath + "/" + orderedTiers;
 			}
 
 			Vector parentVector = DBSUtil.getVector(file,"file_parent");
@@ -498,14 +519,19 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					valStatusTable.put(valStatus, valStatusID);
 				}
 
-                                if( isNull(blockID)) {                       // && i % 10 ) {  //Every 10th file ???
+                                if( dbsBlockManagment ) {                       // && i % 10 ) {  //Every 10th file ???
+					//Either this is first time, OR we have reached the BlockSize/NumberOfFiles limit
 
+					if (blockInfoVec.size() <= 0 || (new DBSApiBlockLogic(this.data)).mustOpenNewBlock(blockInfoVec) ) {
+		                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, 
+												procDSID, correctedPath, block, dbsUser);
 
-					System.out.println("BLOCK NAME is Not GIVEN");
-                                        //Adding "*" before and after orderedTiers will let us search for ALL possible tiers
-                                        //String correctedPath = notierpath + "/*" + orderedTiers +"*";
-                                        String correctedPath = notierpath + "/" + orderedTiers;
-                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, procDSID, correctedPath, block, dbsUser);
+							//Grab this blocks details
+							//recycle vector	
+							blockInfoVec.removeAllElements();
+							blockInfoVec.addAll((new DBSApiBlockLogic(this.data)).getOpenBlockDetails(conn, 
+												procDSID, correctedPath, block));
+					}
                                 }
 
 	
@@ -524,6 +550,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							get(file, "queryable_meta_data", false), 
 							cbUserID, lmbUserID, creationDate);
 					ps.execute();
+
+					//Update the Block stats in case it is dbsManaged Block
+					if ( blockInfoVec.size() > 0 ) {
+						blockInfoVec.set(1, (Integer)blockInfoVec.get(1) + 
+									Integer.parseInt((String)get(file, "size", false)));
+						blockInfoVec.set(2, (Integer)blockInfoVec.get(2) + 1 );
+					}
+ 
 				} finally { 
 					if (ps != null) ps.close();
 				}
