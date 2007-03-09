@@ -1,6 +1,6 @@
 /**
- $Revision: 1.76 $"
- $Id: DBSApi.java,v 1.76 2007/02/27 22:12:19 sekhri Exp $"
+ $Revision: 1.77 $"
+ $Id: DBSApi.java,v 1.77 2007/03/01 20:44:24 afaq Exp $"
  *
 */
 
@@ -437,6 +437,12 @@ public class DBSApi {
 				(new DBSApiProcDSLogic(this.data)).insertRunInPD(conn, out,
 						DBSApiParser.parse(getXml(table), "processed_dataset"),
 						get(table, "run_number", true), 
+						dbsUser);
+	
+			} else if (apiStr.equals("updatePDStatus")) {
+				(new DBSApiProcDSLogic(this.data)).updatePDStatus(conn, out,
+						get(table, "path", true),
+						get(table, "status", true),
 						dbsUser);
 				
 			} else if (apiStr.equals("insertTierInFile")) {

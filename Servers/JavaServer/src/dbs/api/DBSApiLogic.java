@@ -1,6 +1,6 @@
 /**
- $Revision: 1.80 $"
- $Id: DBSApiLogic.java,v 1.80 2007/03/08 22:39:53 afaq Exp $"
+ $Revision: 1.81 $"
+ $Id: DBSApiLogic.java,v 1.81 2007/03/09 17:27:44 sekhri Exp $"
  *
  */
 
@@ -285,6 +285,30 @@ public class DBSApiLogic {
 	}
 
 
+	/**
+	 * This is a generic method that can be used to update status or types in any table.
+	 * @param tableName1 the table name of the table whose status or type needs to be changed.
+	 * @param ID1 the value of the unique key ID of tableName1.
+	 * @param updateKey1 the key in tableName1 which needs to be updated.
+	 * @param tableName2 the table name of the table whose statusID or typeID needs to be fetched. This ID is the forign key in tableName1
+	 * @param uniqueKey2 the unique key of the table by which the unique row can be identified in the tableName2.
+	 * @param uniqueValue2 the value of the unique key of tableName2.
+	 * @param lmbUserID a user id of the person who is updating this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 */
+	protected void updateValue(Connection conn, Writer out, String tableName1, String ID1, 
+			String updateKey1, String tableName2, String uniqueKey2, String uniqueValue2, String lmbUserID) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.updateValue(conn, tableName1, 
+					ID1,
+					updateKey1, 
+					getID(conn, tableName2, uniqueKey2, uniqueValue2, true), 
+					lmbUserID);
+			ps.execute();
+		} finally {
+			if (ps != null) ps.close();
+		}
+	}
 
 
 	/**

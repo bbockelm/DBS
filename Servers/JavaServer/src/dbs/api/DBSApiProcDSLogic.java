@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiProcDSLogic.java,v 1.21 2007/03/07 23:01:37 sekhri Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiProcDSLogic.java,v 1.22 2007/03/09 17:27:44 sekhri Exp $"
  *
  */
 
@@ -468,6 +468,22 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	}
 
 	
+	/**
+	 * Updates the status of a processed dataset. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the processed dataset ID and call a generic methods updateValue that fetches the status id and updates it in ProcessedDataset table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
+	 * @param value a value of the status filed to be set in this processed dataset
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
+	public void updatePDStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
+		updateValue(conn, out, "ProcessedDataset", getProcessedDSID(conn, path, true),
+				                        "Status", "ProcDSStatus", "Status", value, personApi.getUserID(conn, dbsUser));
+	}
+
 	/**
 	 * Gets a processed data set ID from the datbase by using the dataset path. This method calls another private method getProcessedDSID after spliting the dataset path.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
