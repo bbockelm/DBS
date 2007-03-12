@@ -23,7 +23,7 @@ try:
                     ApplicationVersion= "v101",
                     ApplicationFamily="Merge",
                     )
-   path = "/test_primary_anzar_001/SIM/TestProcessedDS001"
+   path = "/test_primary_001/TestProcessedDS001/SIM"
    proc = api.insertMergedDataset(path, "ThisISMergedDataset001", merge_algo)
 
    print "Result: %s" % proc

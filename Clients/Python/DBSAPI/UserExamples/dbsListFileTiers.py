@@ -17,13 +17,10 @@ try:
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
   
-  try:
-   # List all tiers  of the file
-   print ""
-   for file in api.listFileTiers("NEW_TEST0006"):
+  # List all tiers  of the file
+  print ""
+  for file in api.listFileTiers("NEW_TEST0001"):
      print "  %s" % file
-  except DbsDatabaseError,e:
-   print e
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

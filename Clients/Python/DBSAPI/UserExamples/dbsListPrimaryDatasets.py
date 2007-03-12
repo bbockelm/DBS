@@ -24,16 +24,12 @@ try:
 
   api = DbsApi(opts.__dict__)
 
-  try:
-   # List all parameter sets
-   print ""
-   print "Primary Datasets"
-   for primary in api.listPrimaryDatasets('*'):
-   #for primary in api.listPrimaryDatasets(''):
-   #for primary in api.listPrimaryDatasets('ab;bc'):
+  # List all parameter sets
+  print ""
+  print "Primary Datasets"
+  for primary in api.listPrimaryDatasets('*'):
+  #for primary in api.listPrimaryDatasets(''):
      print "  %s" % primary
-  except DbsDatabaseError,e:
-   print e
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

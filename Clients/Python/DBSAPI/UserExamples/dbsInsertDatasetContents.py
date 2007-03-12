@@ -12,7 +12,7 @@ try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
-  xml = api.listDatasetContents("/test_primary_anzar_001/SIM/TestProcessedDS002", "/this/hahah#12345");
+  xml = api.listDatasetContents("/test_primary_001/TestProcessedDS001/SIM", "/test_primary_001/TestProcessedDS001/SIM#12345");
   print xml
   print api.insertDatasetContents(xml)
 

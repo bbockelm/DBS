@@ -20,19 +20,10 @@ try:
   
   # List all parameter sets
   print ""
-  for afile in api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS001", "", "", "", False):
-  #for afile in api.listFiles("", "TestAnalysisDataset005_20070209_13h24m43s", "", "", False):
+  for afile in api.listFiles("/test_primary_anzar_001/TestProcessedDS0011/SIM", "", "", "", False):
      print "  %s" % afile
-
-  #for file in api.listFiles("", "", "MERGEDFILE_003", True):
-  #for file in api.listFiles("/test_primary_anzar_001/SIM/ThisISMergedDataset001", "", "MERGEDFILE_003", True):
-  #for file in api.listFiles("/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"):
-  #for file in api.listFiles("", "", "NEW_TEST0006", True):
-
-  ## Details and a file with ONLY RunList, No Lumis
-  #for file in api.listFiles("", "", "NEW_TEST0070", True):
-  #  print "  %s" % file
-  
+     #print "  %s" % afile['LogicalFileName']
+     	
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):

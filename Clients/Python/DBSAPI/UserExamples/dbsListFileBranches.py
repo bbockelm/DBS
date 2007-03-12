@@ -20,7 +20,7 @@ try:
   try:
    # List all brancjes of the file
    print ""
-   for file in api.listFileBranches("NEW_TEST0006"):
+   for file in api.listFileBranches("NEW_TEST0001"):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e

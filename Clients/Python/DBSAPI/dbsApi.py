@@ -162,14 +162,20 @@ class DbsApi(DbsConfig):
 	    return ""
     if type(dataset) == type(''):
        return dataset
+
+    if dataset.get('Path') not in ('', None):
+	return dataset.get('Path')
  
+    # Worst case fabricate a Path !
     if dataset.get('Name') not in ('', None):
          primary = dataset.get('PrimaryDataset')
          if primary != None:
             tier= dataset.get('TierList', [])
             if tier != []:
-               return "/" + primary.get('Name') \
-                     + "/" + tier[0] + "/" + dataset.get('Name')
+	       return "/" + primary.get('Name') \
+			+ "/" + dataset.get('Name') + "/" + tier[0] 	
+               #return "/" + primary.get('Name') \
+               #      + "/" + tier[0] + "/" + dataset.get('Name')
 
     # Anything missing (name, primary or tier) thats an error 
     raise InvalidDatasetPathName(Message="The dataset/path provided is incorrect")      
@@ -330,6 +336,7 @@ class DbsApi(DbsConfig):
 
 
     logging.debug(data)  
+
     # Parse the resulting xml output.
     try:
       result = []
@@ -350,7 +357,10 @@ class DbsApi(DbsConfig):
                                                 )
           if name == 'data_tier':
             self.currDataset['TierList'].append(str(attrs['name']))
-            self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
+            #self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
+
+          if name == 'path':
+	    self.currDataset['Path'] = str(attrs['path'])
 
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
@@ -1345,13 +1355,14 @@ class DbsApi(DbsConfig):
         def startElement(self, name, attrs):
           if name == 'processed_dataset_parent':
 		  result.append(DbsProcessedDataset ( 
-                                                PathList=[str(attrs['path'])],     
                                                 PhysicsGroup=str(attrs['physics_group_name']),
                                                 PhysicsGroupConverner=str(attrs['physics_group_convener']),
                                                 CreationDate=str(attrs['creation_date']),
                                                 CreatedBy=str(attrs['created_by']),
                                                 LastModificationDate=str(attrs['last_modification_date']),
                                                 LastModifiedBy=str(attrs['last_modified_by']),
+                                                #PathList=[str(attrs['path'])],     
+                                                Path=[str(attrs['path'])],     
                                                 ))
 
       xml.sax.parseString (data, Handler ())
@@ -1772,7 +1783,7 @@ class DbsApi(DbsConfig):
     logging.debug(data)
 
   # ------------------------------------------------------------
-  def insertFiles(self, dataset, files, block):
+  def insertFiles(self, dataset, files, block=None):
     """ 
     Inserts a new dbs file in an existing block in a given processed dataset. It also insertes lumi sections
     assocated with the file. It insert all the parents of the file, assocaite  all the tiers of the file and 
@@ -1887,15 +1898,16 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
-    if block != None:
+    if block not in (None, ""):
        xmlinput += "<block block_name='"+ block.get("Name", "") +"'>"
-    if type(block) != type("str") and block != None :
        #xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
        #xmlinput += " path='"+path+"'>"
+    if type(block) != type("str") and block not in (None, "") :
        if (block['StorageElementList'] not in ( [], None)) :
          for aSe in block['StorageElementList']:
-            xmlinput += " <storage_element storage_element_name='"+aSe+"'/>"
-    xmlinput += "</block>"
+            xmlinput += " <storage_element storage_element_name='"+aSe['Name']+"'/>"
+    if block not in (None, ""):	
+    	xmlinput += "</block>"
 
     for file in files:
        xmlinput += " <file lfn='"+file.get('LogicalFileName', '')+"'"
@@ -2014,7 +2026,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def insertBlock(self, dataset, block=None, storage_element=None, open_for_writing='y'):
+  def insertBlock(self, dataset, block=None, storage_element_list=None, open_for_writing='y'):
     """
     Inserts a new dbs file block in a given processed dataset. 
     
@@ -2044,15 +2056,15 @@ class DbsApi(DbsConfig):
 
          api.insertBlock (proc, "/this/hahah#12345")
     
-         api.insertBlock (proc, "/this/hahah#12345",  ['se1', 'se2', 'se3'])
+         api.insertBlock (proc, "/this/hahah#12345",  [se1Obj, se2Obj, se3Obj])
 	 
          api.insertBlock (proc, "",  ['se1', 'se2', 'se3'])
     
          api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345")
     
-         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345",  ['se1', 'se2', 'se3'])
+         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345",  [se1Obj, se2Obj, se3Obj])
 	 
-         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "",  ['se1', 'se2', 'se3'])
+         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "",  [se1Obj, se2Obj, se3Obj])
     
 
     """
@@ -2069,9 +2081,9 @@ class DbsApi(DbsConfig):
     if type(block) != type("str") and block != None :
        xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
     xmlinput += " path='"+path+"'>"
-    if (storage_element not in ( [], None)) : 
-         for aSe in storage_element:
-            xmlinput += " <storage_element storage_element_name='"+aSe+"'/>"
+    if (storage_element_list) not in ( [], None ) : 
+         for aSe in storage_element_list:
+            xmlinput += " <storage_element storage_element_name='"+self._name(aSe)+"'/>"
     xmlinput += "</block>"  
     xmlinput += "</dbs>"
 
@@ -2102,7 +2114,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def deleteSEFromBlock(self, block="", storage_element=""):
+  def deleteSEFromBlock(self, block, storage_element):
     """
     Deletes the Storage Element assocaition with the Block in the DBS.
     
@@ -2117,16 +2129,20 @@ class DbsApi(DbsConfig):
     examples:
          api.deleteSEFromBlock ("/this/hahah#12345", "se1")
 
+
+	Note that se1 is a STRING not a StorageElement Object
+
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
-    name = self._name(block)
+    bname = self._name(block)
+    sename = self._name(storage_element)
     
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<storage_element storage_element_name='"+ storage_element +"' block_name='"+ name +"'/>"
+    xmlinput += "<storage_element storage_element_name='"+ sename +"' block_name='"+ bname +"'/>"
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)
@@ -2196,12 +2212,13 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
-    name = self._name(block)
+    bname = self._name(block)
+    sename = self._name(storageElement)
     
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     if (storageElement not in ( '', None)) : 
-          xmlinput += " <storage_element block_name='" + name + "' storage_element_name='"+ storageElement +"'/>"
+          xmlinput += " <storage_element block_name='" + bname + "' storage_element_name='"+ sename +"'/>"
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)

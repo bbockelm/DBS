@@ -18,7 +18,7 @@ try:
   api = DbsApi(opts.__dict__)
   
   print "Analysis Daatset...."
-  #for analysis in api.listAnalysisDataset("*t005", "/test_primary_anzar_001/SIM/TestProcessedDS001"):
+  #for analysis in api.listAnalysisDataset("*t005", "/test_primary_001/TestProcessedDS001/SIM"):
   for analysis in api.listAnalysisDataset():
      print "  %s" % analysis
   

@@ -29,13 +29,13 @@ try:
                     ApplicationVersion= "v101",
                     ApplicationFamily="Merge",
                     )
-  path = "/test_primary_anzar_001/SIM/TestProcessedDS001"
+  path = "/test_primary_001/TestProcessedDS001/SIM"
   merge_proc = api.insertMergedDataset(path, "ThisISMergedDataset001", merge_algo)
 
   # File will go into THIS Block
   block = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-         Name="/this/hahah#12345"
+         Name="/test_primary_001/TestProcessedDS001/SIM#12345"
          )
 
   merged_file = DbsFile (

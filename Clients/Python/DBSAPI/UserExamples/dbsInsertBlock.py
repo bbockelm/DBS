@@ -24,42 +24,31 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-#primary = DbsPrimaryDataset (Name = "test_primary_anzar_03")
-#primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+primary = DbsPrimaryDataset (Name = "test_primary_001")
 
 proc = DbsProcessedDataset (
          PrimaryDataset=primary,
          Name="TestProcessedDS001",
-         TierList=['SIM', 'RECO'],
+         TierList=['GEN', 'SIM'],
          )
-#ran = str(int(random.random()*10000000))
-#block = DbsFileBlock (
-#		Name= "/this/isaqqqqqqqqqxstbddddlock#016712"+ ran,
-#         )
-
 
 block = DbsFileBlock (
-         Name="/this/hahah#12345"
+         Name="/test_primary_001/TestProcessedDS001/SIM#12345"
          )
 
 print "Creating block %s" % block
 
 try:
-    #api.insertBlock (proc, block)
-    #api.insertBlock ('/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48') 
-    #api.insertBlock (proc)
-    #print api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002", block=None, storage_element=["thisIsMyOnlySE"])
-    print api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS001", "/this/hahah#12345", storage_element=["thisIsMyOnlySE"])
-    #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345" , ['se1', 'se2', 'se3'])
-    #api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahaah#12345" , ['sea1', 'sea2', 'sea3'])
-    #api.insertBlock ("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah#12345", ['se1', 'se2', 'se3'])
-    #print "Result: %s" % primary
+    print api.insertBlock (proc, block)
+    #print api.insertBlock (proc)
+    #print api.insertBlock ("/test_primary_001/TestProcessedDS001/SIM", block=None, storage_element=["thisIsMyOnlySE"])
+    #print api.insertBlock ("/test_primary_001/TestProcessedDS001/SIM")
+    #print api.insertBlock ("/test_primary_001/SIM/TestProcessedDS001", "/test_primary_001/TestProcessedDS001/GEN-SIM#12345" , ['se1', 'se2', 'se3'])
+
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
     print "DBS Exception Error Code: ", ex.getErrorCode()
-
 
 print "Done"
 

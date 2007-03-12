@@ -20,7 +20,7 @@ try:
   try:
    # List all algos of the file
    print ""
-   for file in api.listFileAlgorithms("NEW_TEST0070"):
+   for file in api.listFileAlgorithms("NEW_TEST0001"):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e

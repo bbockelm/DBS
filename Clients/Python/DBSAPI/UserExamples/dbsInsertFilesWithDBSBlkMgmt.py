@@ -37,7 +37,7 @@ algo = DbsAlgorithm (
            )
          )
 
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+primary = DbsPrimaryDataset (Name = "test_primary_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
         Name="TestProcessedDS003", 

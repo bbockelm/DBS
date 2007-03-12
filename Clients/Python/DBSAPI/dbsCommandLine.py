@@ -49,10 +49,10 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--apiver","--apiversion", action="store", type="string", default=VERSION, dest="version",
            help="specify dbs client api version, e.g. --ver=v00_00_05, or --version=v00_00_05")
 
-      self.add_option("--p","--path", action="store", type="string", default="/*/*/*", dest="path",
-           help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed")
+      self.add_option("--p","--path", action="store", type="string", dest="path",
+           help="specify dataset path, e.g. -p=/primary/processed/tier, or --path=/primary/processed/tier")
 
-      self.add_option("--pattern", action="store", type="string", default="*", dest="pattern",
+      self.add_option("--pattern", action="store", type="string", dest="pattern",
            help="some command scope could be restricted with pattern, e.g. listPrimaryDataset")
 
       self.add_option("--report", action="store_true", default="False", dest="report",
@@ -74,7 +74,7 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n           listAlgorithms or lsa, can provide --path"
       command_help += "\n           listRuns or lsr, can provide --path"
       command_help += "\n           listTiers or lst, can provide --path"
-      command_help += "\n           listBlocks or lsb, must provide --path"
+      command_help += "\n           listBlocks or lsb, can provide --path and/or --pattern"
       command_help += "\n           listFiles or lsf, must provide --path"
       command_help += "\n           listFileParents or lsfp, must be qualified with --pattern"
       command_help += "\n           listFileAlgorithms or lsfa,"
@@ -148,7 +148,6 @@ class Report(dict):
 
 # API Call Wrapper
 class ApiDispatcher:
-
   def __init__(self, args):
    try:
     #print args
@@ -158,9 +157,7 @@ class ApiDispatcher:
        print "No command specified, use --help for details" 
     if self.optdict.has_key('help'):
        print "NEED Help!!"
-
     self.api = DbsApi(opts.__dict__)
-
     #Execute the proper API call
     ##listPrimaryDatasets 
     if apiCall in ('listPrimaryDatasets', 'lsp'):
@@ -195,25 +192,29 @@ class ApiDispatcher:
         traceback.print_exc(file=sys.stdout)
 
   def handleListPrimaryDatasets(self):
-       	#if self.optdict.has_key('pattern'):
-       	apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+       	if self.optdict.get('pattern'):
+          apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+        else:
+          apiret = self.api.listPrimaryDatasets("*")
        	for anObj in apiret:
         	print anObj['Name']
 
   def handleListProcessedDatasets(self):
 	datasetPaths = []
-        wholepath= self.optdict.get('path')
+        
+        if self.optdict.get('path'):
+          wholepath= self.optdict.get('path')
+        else:
+          wholepath= "*"
+
 	if wholepath == "*":
 		apiret = self.api.listProcessedDatasets("*")
 	else:
 		pathl = breakPath(self.optdict.get('path'))
-		#pathl[] is always empty !
-		apiret = self.api.listProcessedDatasets(pathl[1], pathl[2], pathl[3])
+		apiret = self.api.listProcessedDatasets(pathl[1], pathl[3], pathl[2])
         if len(apiret) < 1 :
 		print "No Datasets found"
 	for anObj in apiret:
-	    #import pdb
-            #pdb.set_trace()
 
 	    if self.optdict.get('report') != 'False' :	
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
@@ -236,8 +237,7 @@ class ApiDispatcher:
 
 
   def handleListFiles(self):
-       path=self.optdict.get('path')
-       print "Path: ", path
+       path=self.optdict.get('path') or '/*/*/*'
        if path == '/*/*/*':
          print "Can not list ALL files of ALL datasets, please specify a dataset path"
        else:
@@ -248,14 +248,16 @@ class ApiDispatcher:
 
        print "Total files listed: %s" %len(apiret) 
   def handleBlockCall(self):
-       path=self.optdict.get('path')
-       print "Path: ", path
-       if path == '/*/*/*':
-         print "Can not list ALL Blocks of ALL datasets, please specify a dataset path"
+       path=self.optdict.get('path') or ''
+       pattern=self.optdict.get('pattern') or ''
+       if path == '/*/*/*' and pattern == '*':
+         print "Can not list ALL Blocks of ALL datasets, please specify a dataset path or a block pattern"
        else:
-         apiret = self.api.listBlocks(path)
+         apiret = self.api.listBlocks(path, pattern)
          for anObj in apiret:
              print anObj['Name']
+
+
 
 #
 # main
@@ -270,7 +272,7 @@ if __name__ == "__main__":
 
     # Todo
     # Help on individual commands
-    # 
+    #
     if opts.__dict__.get('command') != 'notspecified' : 
        ApiDispatcher(opts)
     else:
@@ -289,4 +291,3 @@ if __name__ == "__main__":
   except Exception, ex:
     if ex.__doc__ != 'Request to exit from the interpreter.' :
        print "Caught Unknown Exception %s "  % ex
-

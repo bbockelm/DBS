@@ -38,13 +38,13 @@ algo = DbsAlgorithm (
            Hash="001234565798685",
            )
          )
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+primary = DbsPrimaryDataset (Name = "test_primary_001")
 proc = DbsProcessedDataset (
         PrimaryDataset=primary, 
         Name="TestProcessedDS001", 
         PhysicsGroup="BPositive",
         Status="Valid",
-        TierList=['SIM', 'RECO'],
+        TierList=['SIM', 'GEN'],
         AlgoList=[algo],
         )
 
@@ -76,7 +76,7 @@ lumi3 = DbsLumiSection (
 
 myfile1= DbsFile (
         Checksum= '999',
-        LogicalFileName= 'NEW_TEST0005',
+        LogicalFileName= 'NEW_TEST0001',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -87,13 +87,13 @@ myfile1= DbsFile (
         #Block= isDictType,
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM', 'RECO'],
+        TierList= ['SIM'],
         #ParentList = ['NEW_TEST0003']  
          )
 
 myfile2= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0006',
+        LogicalFileName= 'NEW_TEST0002',
         #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
@@ -103,7 +103,7 @@ myfile2= DbsFile (
         Dataset= proc,
         #Block= isDictType,
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM', 'RECO'],
+        TierList= ['SIM'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
         #ParentList = ['NEW_TEST0004']  
@@ -113,15 +113,14 @@ myfile2= DbsFile (
 # A file with RunsList and NOT lumi list
 myfile3= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST007',
+        LogicalFileName= 'NEW_TEST0017',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
         ValidationStatus = 'VALID',
         FileType= 'EVD',
         Dataset= proc,
-        #LumiList= [lumi3],
-        TierList= ['SIM', 'RECO'],
+        TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
 	RunsList = [1],
          )
@@ -131,10 +130,8 @@ myfile3= DbsFile (
 # Make a choice
                    
 block = DbsFileBlock (
-         #Name="/test_primary_anzar_001/TestProcessedDS002#879143ef-b527-44cb-867d-fff54f5730db",
-         #Name="/test_primary_anzar_001/TestProcessedDS002#337da02b-8dc9-4437-8490-bca5c670ea40",
          StorageElement=['test1', 'test3'],
-         Name="/this/hahah#12345"
+	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"
@@ -145,9 +142,10 @@ print "Inserting files in processDS %s" % proc
 
 try:
     # A file with RunsList and NOT lumi list
-    api.insertFiles (proc, [myfile3], block)
 
-    api.insertFiles (proc, [myfile1, myfile2], block)
+    api.insertFiles (proc, [myfile3], block)
+    api.insertFiles (proc, [myfile3] )
+
     print "Result: %s" % myfile3
 
 except DbsApiException, ex:

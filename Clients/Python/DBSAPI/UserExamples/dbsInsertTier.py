@@ -21,10 +21,13 @@ api = DbsApi(opts.__dict__)
 print "Adding a TIER"
 
 try:
-    tier_name = "GEN-SIM-TEST"
-    api.insertTier (tier_name)
 
-    print "Result: %s" % tier_name
+    api.insertTier ('GEN')
+    api.insertTier ('SIM')
+    api.insertTier ('DIGI')
+    api.insertTier ('RECO')
+
+    print "Result: %s" % 'GEN' 
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

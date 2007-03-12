@@ -33,10 +33,10 @@ algo = DbsAlgorithm (
          )
 
 analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005",
-                                         ProcessedDatasetPath="/test_primary_anzar_001/SIM/TestProcessedDS002",
+                                         ProcessedDatasetPath="/test_primary_001/TestProcessedDS001/SIM",
                                          FileList=['NEW-AUTO-BLOCK-001', 'NEW-AUTO-BLOCK-002'],
                                          AlgoList=[algo],
-                                         TierList=['SIM', 'RECO'],
+                                         TierList=['SIM', 'GEN'],
                                          #LumiList=['1234', '1222'],
                                          #RunsList=[1, 2],
                                          AnalysisDSList=[],

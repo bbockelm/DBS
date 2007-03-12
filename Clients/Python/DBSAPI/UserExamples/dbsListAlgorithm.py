@@ -17,10 +17,8 @@ try:
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
   
-  # List all parameter sets
   print ""
   print "Algorithms...."
-  #for app in api.listAlgorithms('ab', 's;'):
   for app in api.listAlgorithms("*"):
      print " %s" % app
   

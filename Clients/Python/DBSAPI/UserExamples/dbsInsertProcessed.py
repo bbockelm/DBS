@@ -37,13 +37,13 @@ algo = DbsAlgorithm (
          )
 
 #primary = DbsPrimaryDataset (Name = "TestPrimary1164750596.79")
-primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
+primary = DbsPrimaryDataset (Name = "test_primary_001")
 proc = DbsProcessedDataset (
                             PrimaryDataset=primary, 
-                            Name="TestProcessedDS0011", 
+                            Name="TestProcessedDS001", 
                             PhysicsGroup="BPositive",
                             Status="VALID",
-                            TierList=['SIM', 'RECO'],
+                            TierList=['GEN', 'SIM'],
                             AlgoList=[algo],
                             RunsList=[1],   # Provide a Run Number List that goes with this ProcDS                   
                             )

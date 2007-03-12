@@ -20,7 +20,7 @@ try:
   try:
    # List all lumi sections of the file
    print ""
-   for file in api.listFileLumis("NEW_TEST0006"):
+   for file in api.listFileLumis("NEW_TEST0001"):
      print "  %s" % file
   except DbsDatabaseError,e:
    print e
