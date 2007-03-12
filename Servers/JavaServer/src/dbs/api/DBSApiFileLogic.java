@@ -1,6 +1,6 @@
 /**
- $Revision: 1.32 $"
- $Id: DBSApiFileLogic.java,v 1.32 2007/03/09 23:27:57 afaq Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSApiFileLogic.java,v 1.33 2007/03/12 17:19:20 afaq Exp $"
  *
  */
 
@@ -381,7 +381,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         Vector tierVec = new Vector();
 
                         for (int j=0; j != tierVector.size() ; ++j) {
-                                tierVec.add((String) get((Hashtable)tierVector.get(j), "name"));
+                                tierVec.add(((String) get((Hashtable)tierVector.get(j), "name")).toUpperCase());
 				//System.out.println("insertFiles: tierVector.get(j):"+get((Hashtable)tierVector.get(j), "name"));
 			}
 

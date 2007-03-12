@@ -1,6 +1,6 @@
 /**
- $Revision: 1.84 $"
- $Id: DBSApiLogic.java,v 1.84 2007/03/12 17:19:20 afaq Exp $"
+ $Revision: 1.85 $"
+ $Id: DBSApiLogic.java,v 1.85 2007/03/12 20:11:10 sekhri Exp $"
  *
  */
 
@@ -641,7 +641,7 @@ public class DBSApiLogic {
 	}
 
 	protected String[] parseTier(String tierList) {
-		return tierList.split("-");
+		return tierList.toUpperCase().split("-");
 	}
 
 
