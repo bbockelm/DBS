@@ -110,10 +110,46 @@ myfile2= DbsFile (
          )
         
 
+myfile11= DbsFile (
+        Checksum= '999',
+        LogicalFileName= 'NEW_TEST0004',
+        #QueryableMetadata= 'This is a test file',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EVD',
+        Dataset= proc,
+        #Block= isDictType,
+        AlgoList = [algo],
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM'],
+        ParentList = ['NEW_TEST0001']  
+         )
+
+myfile22= DbsFile (
+        Checksum= '000',
+        LogicalFileName= 'NEW_TEST0005',
+        #QueryableMetadata= 'This is a test file',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EVD',
+        Dataset= proc,
+        #Block= isDictType,
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM'],
+        AlgoList = [algo],
+        BranchList=['testbranch01', 'testbranch02'],
+        ParentList = ['NEW_TEST0002']  
+         )
+
+
 # A file with RunsList and NOT lumi list
 myfile3= DbsFile (
         Checksum= '000',
-        LogicalFileName= 'NEW_TEST0017',
+        LogicalFileName= 'NEW_TEST003',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
@@ -131,7 +167,7 @@ myfile3= DbsFile (
                    
 block = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
+	 Name="/test_primary_001/TestProcessedDS001/GEN#12345"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"
@@ -143,7 +179,7 @@ print "Inserting files in processDS %s" % proc
 try:
     # A file with RunsList and NOT lumi list
 
-    api.insertFiles (proc, [myfile3], block)
+    api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22], block)
     api.insertFiles (proc, [myfile3] )
 
     print "Result: %s" % myfile3

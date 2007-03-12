@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiBlockLogic.java,v 1.24 2007/03/09 20:28:01 afaq Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiBlockLogic.java,v 1.25 2007/03/12 17:19:20 afaq Exp $"
  *
  */
 
@@ -166,8 +166,14 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		if (!isNull(name)) {
 			String[] data = name.split("#");
-			if ( ! path.equals(data[0])) throw new DBSException("Path mismatch", "1039", 
+
+			String[] pathToks = path.split("/");
+			if ( ! pathToks[1].equals(data[0].split("/")[1])  ||
+				! pathToks[2].equals(data[0].split("/")[2]) ) {
+			//if ( ! path.equals(data[0])) 
+				throw new DBSException("Path mismatch", "1039", 
 							"Block path portion "  + data[0] + " does not match with Path " + path);
+			}
 
 			//Check the Order of Tier list	
 			makeOrderedTierList(conn, parseTierVec(data[0].split("/")[3]));
@@ -285,9 +291,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                 "0",// A new block should always have 0 files
                                 "0",// A new block should always have 0 events ??
                                 "1",// A new block should always be openForWriting = 1
-				"",
+				cbUserID,
                                 personApi.getUserID(conn, dbsUser),
-				"");
+				creationDate);
 
                         ps.execute();
                 } finally {

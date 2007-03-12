@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiProcDSLogic.java,v 1.26 2007/03/09 23:27:57 afaq Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiProcDSLogic.java,v 1.27 2007/03/12 17:19:20 afaq Exp $"
  *
  */
 
@@ -298,7 +298,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String primaryName = get(dataset, "primary_datatset_name", true);
 		//Insert a Processed Datatset before by fetching the primDSID, status
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
-		if( isNull(procDSID = getProcessedDSID(conn, "/" + primaryName + "/nothing/" +procDSName, false) ) ){
+		if( isNull(procDSID = getProcessedDSID(conn, "/" + primaryName + "/" + procDSName +  "/nothing", false) ) ){
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertProcessedDatatset(conn, 

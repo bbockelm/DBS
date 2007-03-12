@@ -30,10 +30,12 @@ proc = DbsProcessedDataset (
          PrimaryDataset=primary,
          Name="TestProcessedDS001",
          TierList=['GEN', 'SIM'],
+	 #Path='/test_primary_001/TestProcessedDS001/GEN'
          )
 
 block = DbsFileBlock (
-         Name="/test_primary_001/TestProcessedDS001/SIM#12345"
+         Name="/test_primary_001/TestProcessedDS001/GEN#12345"
+         #Name="/test_primary_001/TestProcessedDS001/SIM#12345"
          )
 
 print "Creating block %s" % block

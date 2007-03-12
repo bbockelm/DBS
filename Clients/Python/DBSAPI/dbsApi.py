@@ -360,7 +360,7 @@ class DbsApi(DbsConfig):
             #self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
 
           if name == 'path':
-	    self.currDataset['Path'] = str(attrs['path'])
+	    self.currDataset['Path'] = str(attrs['dataset_path'])
 
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
@@ -2486,7 +2486,10 @@ class DbsApi(DbsConfig):
 
     path = self._path(dataset) 
     token = path.split("/")
-    proc = self.listProcessedDatasets(token[1], token[2], token[3])[0]
+
+    print token
+
+    proc = self.listProcessedDatasets(token[1], token[3], token[2])[0]
     logging.debug("proc fetched from DBS %s" %proc)
 
     proc['Name'] = merege_ds_name
@@ -2519,7 +2522,7 @@ class DbsApi(DbsConfig):
     outputFile['ParentList'] = []
     for anInputLFN in parents:
         
-	fileDetails = self.listFiles("", "", self._name(anInputLFN), True)
+	fileDetails = self.listFiles("", "", "", self._name(anInputLFN), True)
         if len(fileDetails) < 1:
 		raise DbsApiException(args="Unmerged file %s not found in DBS" %self._name(anInputLFN), code="1999")
         fileDetail = fileDetails[0] 

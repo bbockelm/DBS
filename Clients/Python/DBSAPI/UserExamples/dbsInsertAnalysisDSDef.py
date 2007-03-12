@@ -32,7 +32,7 @@ algo = DbsAlgorithm (
            )
          )
 
-analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005",
+analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_001",
                                          ProcessedDatasetPath="/test_primary_001/TestProcessedDS001/SIM",
                                          FileList=['NEW-AUTO-BLOCK-001', 'NEW-AUTO-BLOCK-002'],
                                          AlgoList=[algo],

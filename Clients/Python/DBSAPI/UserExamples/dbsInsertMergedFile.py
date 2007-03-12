@@ -40,9 +40,9 @@ try:
 
   merged_file = DbsFile (
         Checksum= '00000',
-        LogicalFileName= 'MERGEDFILE_006',
+        LogicalFileName= 'MERGEDFILE_001',
         NumberOfEvents= 10000,
-        FileSize= 000000,
+        FileSize= 1000000,
         Status= 'VALID',
 	ValidationStatus = 'VALID',
         FileType= 'EVD',
@@ -53,7 +53,7 @@ try:
 
   #api.insertFiles (proc, [myfile1], block)
 
-  parentList = ['NEW_TEST0005', 'NEW_TEST0006'] # The parent Un-Merged files
+  parentList = ['NEW_TEST0001', 'NEW_TEST0002'] # The parent Un-Merged files
   api.insertMergedFile(parentList, merged_file)
   print "Result: %s" % merged_file
 
