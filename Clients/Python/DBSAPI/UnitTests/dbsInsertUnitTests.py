@@ -254,8 +254,10 @@ f.write("\n***********************insertAlgorithm API tests*********************
 apiObj = DbsUnitTestApi(api.insertTier, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertTier API tests***************************")
-tierName1 = "HIT" + mytime
-tierName2 = "SIM" + mytime
+#tierName1 = "HIT" + mytime
+tierName1 = "GEN"
+#tierName2 = "SIM" + mytime
+tierName2 = "SIM"
 apiObj.run(tierName1, excep = False)
 apiObj.run(tierName1, excep = False)
 apiObj.run(tierName2, excep = False)
@@ -447,10 +449,14 @@ f.write("\n***********************insertProcessedDataset API tests**************
 apiObj = DbsUnitTestApi(api.insertBlock, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertBlock API tests***************************")
-path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
-blockName =  "/"+ mytime + "this/isatestblock#016712"
-blockName1 =  "/"+ mytime + "this/isatestskljblock#016712"
-blockName2 =  "/"+ mytime + "thislkss/isatestskljblock#016712"
+#path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
+path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + str(proc1['TierList'][0])
+#blockName =  "/"+ mytime + "this/isatestblock#016712"
+blockName =   path + "#016712"
+blockName1 =   path + "#016713"
+blockName2 =   path + "#016714"
+#blockName1 =  "/"+ mytime + "this/isatestskljblock#016712"
+#blockName2 =  "/"+ mytime + "thislkss/isatestskljblock#016712"
 block = DbsFileBlock (Path = path)
 apiObj.run(path, excep = False)
 
