@@ -1,6 +1,6 @@
 /**
- $Revision: 1.85 $"
- $Id: DBSApiLogic.java,v 1.85 2007/03/12 20:11:10 sekhri Exp $"
+ $Revision: 1.86 $"
+ $Id: DBSApiLogic.java,v 1.86 2007/03/12 20:59:51 sekhri Exp $"
  *
  */
 
@@ -852,8 +852,8 @@ public class DBSApiLogic {
 
         protected String makeOrderedTierList(Connection conn, Vector tierVec)  throws Exception {
 
-
-		System.out.println("makeOrderedTierList"+tierVec.size());
+		if (tierVec.size() == 0) return "";
+		//System.out.println("makeOrderedTierList"+tierVec.size());
                 Vector dbOrderedList = getDataTierOrder(conn);
 
                 boolean found=false;
