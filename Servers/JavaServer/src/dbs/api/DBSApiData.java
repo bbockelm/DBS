@@ -1,11 +1,12 @@
 /**
- $Revision: 1.63 $"
- $Id: DBSApiLogic.java,v 1.63 2007/01/11 21:16:43 sekhri Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiData.java,v 1.1 2007/01/17 23:06:56 sekhri Exp $"
  *
  */
 
 package dbs.api;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /**
 * @author sekhri
@@ -15,7 +16,7 @@ public class DBSApiData {
 	public Hashtable globalUser = new Hashtable();
 	public Hashtable globalFile = new Hashtable();
 	public Hashtable globalPDPath = new Hashtable();
-		
+	public Vector dbOrderedList = new Vector();	
 	/**
 	* Constructs a DBSApiData object. The constructor does notthing.
 	*/

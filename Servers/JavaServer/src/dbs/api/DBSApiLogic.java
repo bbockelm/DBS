@@ -1,6 +1,6 @@
 /**
- $Revision: 1.82 $"
- $Id: DBSApiLogic.java,v 1.82 2007/03/09 20:28:04 sekhri Exp $"
+ $Revision: 1.83 $"
+ $Id: DBSApiLogic.java,v 1.83 2007/03/09 23:27:57 afaq Exp $"
  *
  */
 
@@ -637,6 +637,14 @@ public class DBSApiLogic {
 	}
 
 
+        protected Vector parseTierVec(String tierList) {
+		Vector tierVect = new Vector();
+		String[] parseTierList = parseTier(tierList);
+		for (int i=0; i != parseTierList.length; ++i) tierVect.add(parseTierList[i]);
+                return tierVect;
+        }
+
+
 	protected String[] parseDSPath(String path) throws Exception {
 		checkPath(path);
 		String[] data = path.split("/");
@@ -805,45 +813,33 @@ public class DBSApiLogic {
         	return pattern;
 	}
 
-
-/*********
-        private String getTier(Connection conn, String lfn, boolean excep) throws Exception {
-                String id = "";
-                if(!isNull( id = get(this.data.globalFile, lfn) )) {
-                        return id;
-                }
-                if( !isNull(id = getID(conn, "Files", "LogicalFileName", lfn, excep)) ) {
-                        this.data.globalFile = new Hashtable();//Just store one file id only
-                        this.data.globalFile.put(lfn, id);
-                }
-                return id;
-        }
-***********/
-
-
-
        protected Vector getDataTierOrder(Connection conn) throws Exception {
 
-                Vector dbOrderedList = new Vector();
-                PreparedStatement ps = null;
-                ResultSet rs = null; 
-                try {
-                        //List all rows of DataTierOrder Table
-                        ps =  DBSSql.getDataTierOrder(conn);
-                        rs =  ps.executeQuery();
-                        if(!rs.next()) {
-                                throw new DBSException("Unavailable data", "1011", "DataTierOrder table does not exist" );
-                        }
-                        while(rs.next()) {
-                                dbOrderedList.add(get(rs, "DATATIERORDER"));
-                        }
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-                //From Database GET OrderedTierList
-                return dbOrderedList;
+		if (this.data.dbOrderedList.size() > 0) {
+			return this.data.dbOrderedList;
+		}
 
+                else {
+			//Vector dbOrderedList = new Vector();
+                	PreparedStatement ps = null;
+	                ResultSet rs = null; 
+        	        try {
+                	        //List all rows of DataTierOrder Table
+	                        ps =  DBSSql.getDataTierOrder(conn);
+        	                rs =  ps.executeQuery();
+                	        if(!rs.next()) {
+                        	        throw new DBSException("Unavailable data", "1011", "DataTierOrder table does not exist" );
+	                        }
+        	                while(rs.next()) {
+                	                this.data.dbOrderedList.add(get(rs, "DATATIERORDER"));
+	                        }
+        	        } finally {
+                		if (rs != null) rs.close();
+	                        if (ps != null) ps.close();
+        	        }
+		}
+                //From Database GET OrderedTierList
+                return this.data.dbOrderedList;
         }
 
         protected String makeOrderedTierList(Connection conn, Vector tierVec)  throws Exception {
@@ -887,7 +883,8 @@ public class DBSApiLogic {
 			}
 
                 }
-                if (!found) throw new DBSException("Invalid Format", "1037", "Provided Tier(s) combinition is not permitted");
+                if (!found) throw new DBSException("Invalid Format", "1037", "Provided Tier(s) combinition " 
+				+ tierVec.toString() + " is not permitted, The allowed values are: "+dbOrderedList.toString() );
                 return "";
 
         }

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApiProcDSLogic.java,v 1.25 2007/03/09 21:32:11 sekhri Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApiProcDSLogic.java,v 1.26 2007/03/09 23:27:57 afaq Exp $"
  *
  */
 
@@ -89,8 +89,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				procDSName = get(rs, "PROCESSED_DATATSET_NAME");
 	
 				if( !prevDS.equals(procDSID) && ! first) {
-					out.write((String)"<path='/"+primDSName+ "/"+ procDSName+"/"+ makeOrderedTierList(conn, dtVec) + "'/>");
-					out.write(((String) "</processed_dataset>\n")); 
+
+					out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
+					out.write(((String) "</processed_dataset>\n"));
 				}
 				if( !prevDS.equals(procDSID) || first) {
 					out.write(((String) "<processed_dataset id='" + get(rs, "ID") + 
@@ -142,8 +143,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 
                 if (!first) {
-			out.write(((String) "</processed_dataset>\n")); 
-			out.write((String)"<path='/"+primDSName+ "/"+ procDSName+"/"+ makeOrderedTierList(conn, dtVec) + "'/>");
+				out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
+				out.write(((String) "</processed_dataset>\n"));
 		}
 	}
 
@@ -546,6 +547,27 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 		return  id;
 	}
+
+
+        public Vector getProcDSTierVec(Connection conn, String procDSID) throws Exception {
+                Vector procTierVec  = new Vector();
+                //List Tiers from ProcDS
+                PreparedStatement pss = null;
+                ResultSet rss = null;
+                try {
+                        pss =  DBSSql.listTiers(conn, procDSID);
+                        rss =  pss.executeQuery();
+                        while(rss.next()) {
+                                procTierVec.add(get(rss, "NAME"));
+                                //System.out.println("insertFiles: pathTierVec[i]: "+get(rss, "NAME"));
+                        }
+                } finally {
+                        if (rss != null) rss.close();
+                        if (pss != null) pss.close();
+                }
+                return procTierVec;
+        }
+
 
 
 }

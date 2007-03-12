@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiBlockLogic.java,v 1.23 2007/03/08 22:13:32 afaq Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApiBlockLogic.java,v 1.24 2007/03/09 20:28:01 afaq Exp $"
  *
  */
 
@@ -147,19 +147,35 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
 		String creationDate = getTime(block, "creation_date", false);
 
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);//Getting ID before spliting the path will type chech the path also.
+		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
+		//Getting ID before spliting the path will type chech the path also.
+		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
+                Vector procDSTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
+
+		String[] datapath = path.split("/");
+                Vector pathTierVec = parseTierVec(datapath[3]);
+
+		if ( ! procDSTierVec.containsAll(pathTierVec) )
+				throw new DBSException("Tier Mismatch", "1037",
+                                                        "Provided Tier(s) combinition " +pathTierVec.toString() + 
+							" is not present in dataset "+path + " Path contains " + 
+							procDSTierVec.toString());
+
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 
-		String[] data = path.split("/");
-		if (isNull(name)) {
-				String[] pathTiers = parseTier(data[3]);
-				Vector pathTierVec = new Vector();
-                		for (int j=0; j != pathTiers.length ; ++j)
-                                	pathTierVec.add(pathTiers[j]);
-					name = "/" + data[1] + "/" + data[2] 
+		if (!isNull(name)) {
+			String[] data = name.split("#");
+			if ( ! path.equals(data[0])) throw new DBSException("Path mismatch", "1039", 
+							"Block path portion "  + data[0] + " does not match with Path " + path);
+
+			//Check the Order of Tier list	
+			makeOrderedTierList(conn, parseTierVec(data[0].split("/")[3]));
+		} else {
+
+				name = "/" + datapath[1] + "/" + datapath[2] 
 				   		+ "/"+ makeOrderedTierList(conn, pathTierVec) + "#" + UUID.randomUUID(); 
-				}
+		}
 
 		//if (isNull(name)) name = path +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";

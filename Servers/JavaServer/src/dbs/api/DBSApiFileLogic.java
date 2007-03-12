@@ -1,6 +1,6 @@
 /**
- $Revision: 1.31 $"
- $Id: DBSApiFileLogic.java,v 1.31 2007/03/09 21:32:11 sekhri Exp $"
+ $Revision: 1.32 $"
+ $Id: DBSApiFileLogic.java,v 1.32 2007/03/09 23:27:57 afaq Exp $"
  *
  */
 
@@ -362,31 +362,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
-
+		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
+		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
                 String[] tmpPath = path.split("/");
                 String notierpath = "/" + tmpPath[1] + "/" + tmpPath[2];
 
-		Vector pathTierVec = new Vector();
+		//List Tiers from ProcDS
+		Vector pathTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
                 /**String[] pathTiers = parseTier(tmpPath[3]);
                 for (int j=0; j != pathTiers.length ; ++j)
                                 pathTierVec.add(pathTiers[j]);**/
-
-		//List Tiers from ProcDS
-                PreparedStatement pss = null;
-                ResultSet rss = null;
-                try {
-                        pss =  DBSSql.listTiers(conn, procDSID);
-                        rss =  pss.executeQuery();
-                        while(rss.next()) {
-				pathTierVec.add(get(rss, "NAME"));
-				//System.out.println("insertFiles: pathTierVec[i]: "+get(rss, "NAME"));
-                        }
-                } finally {
-                        if (rss != null) rss.close();
-                        if (pss != null) pss.close();
-                }
-
 
 		Vector firstFileTiers = new Vector();
 		//File Tiers must be within ProcDS Tiers
@@ -401,15 +386,20 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			}
 
                         if ( ! pathTierVec.containsAll(tierVec) ) {
-				throw new DBSException("Tier Mismatch", "1037", 
-							"Provided Tier(s) combinition is not present in dataset");
+                               throw new DBSException("Tier Mismatch", "1037",
+                                                        "Provided Tier(s) combinition " + tierVec.toString() +
+                                                        " is not present in dataset "+path + " Path contains " +
+                                                        pathTierVec.toString());
+
                         }
 
 			if (i > 0) 
 				if (firstFileTiers.size() != tierVec.size() || 
 						(! firstFileTiers.containsAll(tierVec)) ) {
 					throw new DBSException("Tier Mismatch", "1038",
-                                                        "All files must belong to same path (Set of tiers)");
+                                                        "All files must belong to same path (Set of tiers) " + 
+							"given tiers in this file are "+ tierVec.toString() +
+							" and in other file within this call are "+firstFileTiers.toString() );
 				}
 			if (i == 0) firstFileTiers.addAll(tierVec);
 		}
@@ -476,7 +466,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if ( i == 0 && dbsBlockManagment ) {  
 				Vector tierVec = new Vector();
 				for (int j=0; j != tierVector.size() ; ++j)
-					tierVec.add((String) get((Hashtable)tierVec.get(j), "name"));
+					tierVec.add((String) get((Hashtable)tierVector.get(j), "name"));
 				//Make the orderedTiers
                         	orderedTiers = makeOrderedTierList(conn, tierVec);
                                 correctedPath = notierpath + "/" + orderedTiers;
