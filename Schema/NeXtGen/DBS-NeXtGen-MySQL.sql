@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 626
+-- === Build : 628
 -- ======================================================================
 
 drop database if exists dbs_new_era_v17;
@@ -235,7 +235,7 @@ CREATE TABLE Branch
 
 CREATE TABLE TimeLog
   (
-    ID            BIGINT UNSIGNED,
+    ID                    BIGINT UNSIGNED,
     Action        varchar(100)          not null,
     Cause         varchar(100)          not null,
     Effect        varchar(100)          not null,
@@ -245,6 +245,21 @@ CREATE TABLE TimeLog
 
     primary key(ID)
   );
+
+-- ======================================================================
+
+CREATE TABLE DataTierOrder
+  (
+    ID                    BIGINT UNSIGNED,
+    DataTierOrder varchar(250)          unique not null,
+    Description   varchar(1000),
+    CreationDate  TIMESTAMP DEFAULT 0,
+    CreatedBy     BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
 
 -- ======================================================================
 
@@ -891,6 +906,10 @@ ALTER TABLE Branch ADD CONSTRAINT
 
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+
+ALTER TABLE DataTierOrder ADD CONSTRAINT 
+    DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 

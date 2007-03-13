@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 626
+-- === Build : 628
 -- ======================================================================
 
 drop database if exists dbs_new_era_v17;
@@ -235,13 +235,28 @@ CREATE TABLE Branch
 
 CREATE TABLE TimeLog
   (
-    ID            BIGINT UNSIGNED,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     Action        varchar(100)          not null,
     Cause         varchar(100)          not null,
     Effect        varchar(100)          not null,
     Description   varchar(500)          not null,
     CreationDate  TIMESTAMP DEFAULT 0,
     CreatedBy     BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE DataTierOrder
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    DataTierOrder varchar(250)          unique not null,
+    Description   varchar(1000),
+    CreationDate  TIMESTAMP DEFAULT 0,
+    CreatedBy     BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -893,6 +908,10 @@ ALTER TABLE TimeLog ADD CONSTRAINT
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
 
+ALTER TABLE DataTierOrder ADD CONSTRAINT 
+    DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
     AlgorithmConfigExecutableNa_FK foreign key(ExecutableName) references AppExecutable(ID)
 ;
@@ -1219,9 +1238,22 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
 
 INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_05', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
-INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
+INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
+INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());
 INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("GEN", "Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("SIM", "Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("DIGI", "Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("RECO", "Reconstructed products produced from either real data or DIGI data       TBA");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("AOD", "Analysis Object Data products TBA");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("RAW", "Raw detector output from the HLT system   TBA");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("ALCARECO", "IS ITS A TIER ? TBA");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("USER", "Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("GEN-SIM", "Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("GEN-SIM-DIGI", "Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct");
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ("GEN-SIM-DIGI-RECO", "Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct");
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('ALCARECO', NOW()), ('USER', NOW());
 commit;

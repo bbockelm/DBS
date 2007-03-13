@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 626
+REM === Build : 628
 REM ======================================================================
 
 CREATE TABLE Person
@@ -147,6 +147,18 @@ CREATE TABLE TimeLog
     Description   varchar(500)          not null,
     CreationDate  TIMESTAMP DEFAULT 0,
     CreatedBy     BIGINT UNSIGNED,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE DataTierOrder
+  (
+    ID             BIGINT UNSIGNED,
+    DataTierOrder  varchar(250)          unique not null,
+    Description    varchar(1000),
+    CreationDate   TIMESTAMP DEFAULT 0,
+    CreatedBy      BIGINT UNSIGNED,
     primary key(ID)
   );
 
@@ -765,6 +777,10 @@ ALTER TABLE Branch ADD CONSTRAINT
 
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+
+ALTER TABLE DataTierOrder ADD CONSTRAINT 
+    DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 
 ALTER TABLE AppFamily ADD CONSTRAINT 

@@ -52,11 +52,32 @@ echo "-- ======================================================================"
 echo  >> $ddl_file
 echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('$SchemaVersion', NOW());"  >> $ddl_file
 echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());"  >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());"  >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());"  >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());"  >> $ddl_file
 echo "INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;"  >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());"  >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());"  >> $ddl_file
+#
+#
+#
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"SIM\", \"Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"DIGI\", \"Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RECO\", \"Reconstructed products produced from either real data or DIGI data       TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"AOD\", \"Analysis Object Data products TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RAW\", \"Raw detector output from the HLT system   TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"ALCARECO\", \"IS ITS A TIER ? TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"USER\", \"Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DIGI\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DIGI-RECO\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+#
+#
+#
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('ALCARECO', NOW()), ('USER', NOW());" >> $ddl_file
+#
+#
 echo "commit;"  >> $ddl_file
 
 echo "   Deploy DBS-NeXtGen-MySQL_DEPLOYABLE.sql to MySQL"
