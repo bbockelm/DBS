@@ -34,6 +34,164 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	}
 
 
+	//This api call WILL only take into consideration the PATH parameter
+        private void listFiles(Connection conn, Writer out, String path, String detail) throws Exception {
+
+		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+
+		PreparedStatement ps = null;
+                ResultSet rs =  null;
+
+                try {
+                        ps = DBSSql.listFiles(conn, procDSID, path);
+			rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                String fileID = get(rs, "ID");
+                                String lfn = get(rs, "LFN");
+                                out.write(((String) "<file id='" + fileID +
+                                        "' lfn='" + lfn +
+                                        "' checksum='" + get(rs, "CHECKSUM") +
+                                        "' size='" + get(rs, "FILESIZE") +
+                                        "' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
+                                        "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+                                        "' validation_status='" + get(rs, "VALIDATION_STATUS") +
+                                        "' type='" + get(rs, "TYPE") +
+                                        "' status='" + get(rs, "STATUS") +
+                                        "' block_name='" + get(rs, "BLOCK_NAME") +
+                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                        "'>\n"));
+                                if (!isNull(detail)) {
+                                        this.data.globalFile = new Hashtable();
+                                        this.data.globalFile.put(lfn, fileID);
+                                        //listFileParents(conn, out, lfn); 
+                                        listFileProvenence(conn, out, lfn, true);//Parents
+                                        listFileProvenence(conn, out, lfn, false);//Children
+                                        listFileAlgorithms(conn, out, lfn);
+                                        listFileTiers(conn, out, lfn);
+                                        listFileBranches(conn, out, lfn);
+                                        listFileLumis(conn, out, lfn);
+                                        listFileRuns(conn, out, lfn);
+                                }
+                                out.write(((String) "</file>\n"));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+
+        }
+
+
+	public void listFiles(Connection conn, Writer out, String path, 
+					String primary, String proc, String dataTierList, String aDSName, 
+					String blockName, String patternLFN, String detail) throws Exception {
+
+		//By default a file detail is not needed
+
+
+		//if path is given we will only regard it to be sufficient criteria for listing files.
+		if (!isNull(path)) {  
+			listFiles(conn, out, path, detail);
+			return;
+		}
+				
+
+		//User asks to search on Other parameters then.
+
+		String procDSID = null;
+		String aDSID = null;
+		String blockID = null;
+
+                //String tierID = null;
+		Vector tierIDList = new Vector();
+
+		//Get the procDSID and TierIDs if Tiers are given
+		if(!isNull(primary) && !isNull(proc) ) {
+			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, primary, proc, true);
+		}
+
+		//dataTierList is a "-" separated list of ALLL tiers that user wants to look for
+		String[] tierList = parseTier(dataTierList);
+		for (int j = 0; j < tierList.length; ++j) {
+				tierIDList.add(getID(conn, "DataTier", "Name", tierList[j] , true));
+		}
+
+		//Search can be based on Analysis Dataset
+		if (!isNull(aDSName)) {
+			aDSID = getID(conn, "AnalysisDataset", "Name", aDSName, true);
+		}
+
+		//Search can be based on Block Name
+		if(!isNull(blockName)) {
+			blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
+		}
+
+		//Search can be based on LFN pattern
+                String patternlfn= getPattern(patternLFN, "pattern_lfn");
+
+		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternlfn)  ) {
+			throw new DBSException("Missing data", "1005", 
+					"Null Fields. Expected either a (Primary, Processed) Dataset, Analysis Dataset, Block or LFN pattern");
+		}
+
+		if(!isNull(procDSID) && !isNull(aDSName)) {
+			writeWarning(out, "Both Processed dataset and Analysis dataset given", "1090", 
+						"If Analysis dataset is given then there is no need for a processed dataset. " + 
+						"While fetcing the files processed dataset will be ignored." +
+						" Given Processed Dataset is  " +proc+ " and given Analysis Dataset is " + aDSName);
+			procDSID = "";
+		}
+
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				String fileID = get(rs, "ID");
+				String lfn = get(rs, "LFN");
+				out.write(((String) "<file id='" + fileID +
+					"' lfn='" + lfn +
+					"' checksum='" + get(rs, "CHECKSUM") +
+					"' size='" + get(rs, "FILESIZE") +
+					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+					"' validation_status='" + get(rs, "VALIDATION_STATUS") +
+					"' type='" + get(rs, "TYPE") +
+					"' status='" + get(rs, "STATUS") +
+					"' block_name='" + get(rs, "BLOCK_NAME") +
+					"' creation_date='" + getTime(rs, "CREATION_DATE") +
+					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+					"' created_by='" + get(rs, "CREATED_BY") +
+					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+					"'>\n"));
+				if (!isNull(detail)) {
+					this.data.globalFile = new Hashtable();
+					this.data.globalFile.put(lfn, fileID);
+					//listFileParents(conn, out, lfn);
+					listFileProvenence(conn, out, lfn, true);//Parents
+					listFileProvenence(conn, out, lfn, false);//Children
+					listFileAlgorithms(conn, out, lfn);
+					listFileTiers(conn, out, lfn);
+					listFileBranches(conn, out, lfn);
+					listFileLumis(conn, out, lfn);
+					listFileRuns(conn, out, lfn);
+
+				}
+                		out.write(((String) "</file>\n"));
+      
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+
+	}
+
+
 	/**
 	 * Lists all the files within a processed dataset or within a block from the database in a xml format. This method makes one sql query, execute it, fetch the results and packs and write it in xml format to the output stream. The query that it executes get generated by <code>dbs.DBSSql.listFiles</code> method. First it fetches the processed dataset ID from the database by calling a private <code>getProcessedDSID<code> method using the path provided in the parameter. It also fetches the block id from the database by calling a private method <code>getBlockID</code> If niether the processed dataset id nor the block id exists then it throws an exception. A sample XML that is written to the output stream is like <br>
 	 * <code> <"file id='9' lfn='TEST_LFN' checksum='CHKSUM' size='200' queryable_meta_data='any' number_of_events='200' validation_status='1' type='EVD' status='VALID' block_name='/test/test#8a99a0' creation_date='2006-12-07 09:52:55.0' last_modification_date='2006-12-07 09:52:55.0' created_by='ANZARDN' last_modified_by='ANZARDN'"><"data_tier name='HIT'"/><"data_tier name='SIM'"/><"/file"></code>
@@ -46,7 +204,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patternLFN is invalid, the database connection is unavailable or processed dataset or block is not found.
 	 */
 	//public void listFiles(Connection conn, Writer out, String path, String blockName, String patternLFN, String detail) throws Exception {
-	public void listFiles(Connection conn, Writer out, String path, String aDSName, String blockName, String patternLFN, String detail) throws Exception {
+	public void listFilesOLD(Connection conn, Writer out, String path, String aDSName, String blockName, String patternLFN, String detail) throws Exception {
 
 		//By default a file detail is not needed
 
@@ -435,11 +593,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                 String blockID = null;
                 //If user INSIST to provide a BlockName
-                if ( ! isNull(blockName) )  blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
+                if ( ! isNull(blockName) && !(blockName.equals("")) ) {
+                    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
                     //FIXME: We must need to verify that Block is OpenForWriting
+
+                }
                 //Do the DBS Block management
-                else dbsBlockManagment = true;
-                
+                else {
+                        dbsBlockManagment = true;
+                }
 
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);

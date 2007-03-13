@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.81 $"
- $Id: DBSSql.java,v 1.81 2007/03/08 22:39:55 afaq Exp $"
+ $Revision: 1.82 $"
+ $Id: DBSSql.java,v 1.82 2007/03/09 20:53:30 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -167,7 +167,7 @@ public class DBSSql {
         }
 
 
-	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String nOfEvts, String openForWriting, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertBlock(Connection conn, String size, String name, String procDSID, String nOfFiles, String nOfEvts, String openForWriting, String path, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("BlockSize", size);
 		table.put("Name", name);
@@ -175,6 +175,7 @@ public class DBSSql {
 		table.put("NumberOfFiles", nOfFiles);
 		table.put("NumberOfEvents", nOfEvts);
 		table.put("OpenForWriting", openForWriting);
+		table.put("Path", path);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
@@ -766,7 +767,8 @@ public class DBSSql {
 			"ps.Annotation as PS_ANNOTATION, \n" +
 			"ps.Content as PS_CONTENT, \n" +
 			"percb.DistinguishedName as CREATED_BY, \n" +
-			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+			"blk.Path as PATH \n" +
 			"FROM ProcessedDataset procds \n" +
 			"JOIN PrimaryDataset primds \n" +
 				"ON primds.id = procds.PrimaryDataset \n" +
@@ -795,7 +797,9 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person percb \n" +
 				"ON percb.id = procds.CreatedBy \n" +
 			"LEFT OUTER JOIN Person perlm \n" +
-				"ON perlm.id = procds.LastModifiedBy \n";
+				"ON perlm.id = procds.LastModifiedBy \n" +
+			"LEFT OUTER JOIN Block blk \n" +
+				"ON blk.Dataset = procds.id \n";
 
 
 		/*if(patternPrim == null) patternPrim = "%";
@@ -1101,6 +1105,54 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+        public static PreparedStatement listFiles(Connection conn, String procDSID, String path) throws SQLException {
+
+                String sql = "SELECT DISTINCT f.ID as ID, \n " +
+                        "f.LogicalFileName as LFN, \n" +
+                        "f.Checksum as CHECKSUM, \n" +
+                        "f.FileSize as FILESIZE, \n" +
+                        "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+                        "f.CreationDate as CREATION_DATE, \n" +
+                        "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "vst.Status as VALIDATION_STATUS, \n" +
+                        "st.Status as STATUS, \n" +
+                        "ty.Type as TYPE, \n" +
+                        "b.Name as BLOCK_NAME, \n"+
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM Files f \n" +
+                        "LEFT OUTER JOIN Block b \n" +
+                                "ON b.id = f.Block \n "+
+                        "LEFT OUTER JOIN FileType ty \n" +
+                                "ON ty.id = f.FileType \n" +
+                        "LEFT OUTER JOIN FileStatus st \n" +
+                                "ON st.id = f.FileStatus \n" +
+                        "LEFT OUTER JOIN FileValidStatus vst \n" +
+                                "ON vst.id = f.ValidationStatus \n" +
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = f.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = f.LastModifiedBy \n";
+                sql += "WHERE b.Path = ? \n" ;
+                sql += "AND f.Dataset = ? \n";
+		sql +=  "AND st.Status <> 'INVALID' \n" +
+                        "ORDER BY LFN DESC";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+
+                int columnIndx=1;
+
+                ps.setString(columnIndx++, path);
+                ps.setString(columnIndx++, procDSID);
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+	}
+
+
 
 	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN) throws SQLException {
 		String joinStrAna = "";

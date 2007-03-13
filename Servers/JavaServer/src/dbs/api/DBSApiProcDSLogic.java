@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApiProcDSLogic.java,v 1.27 2007/03/12 17:19:20 afaq Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApiProcDSLogic.java,v 1.28 2007/03/12 19:34:37 afaq Exp $"
  *
  */
 
@@ -58,6 +58,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		// When data is returned from the database, a bunch of tiers and application are returned in random order, so we need
 		// to store all of them in a vector so that while writing xml, previously written data tier does not get written again.
 		Vector dtVec = null; 
+		Vector pathVec = null; 
 		Vector algoVec = null; 
                 String primDSName = null;
                 String procDSName = null;
@@ -85,12 +86,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				String exe = get(rs, "APP_EXECUTABLE_NAME");
 				String ver = get(rs, "APP_VERSION");
 				String pset = get(rs, "PS_HASH");
-				primDSName = get(rs, "PRIMARY_DATATSET_NAME");
-				procDSName = get(rs, "PROCESSED_DATATSET_NAME");
+
+				String path =  get(rs, "PATH");
+
+				//primDSName = get(rs, "PRIMARY_DATATSET_NAME");
+				//procDSName = get(rs, "PROCESSED_DATATSET_NAME");
 	
 				if( !prevDS.equals(procDSID) && ! first) {
 
-					out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
+					//out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
 					out.write(((String) "</processed_dataset>\n"));
 				}
 				if( !prevDS.equals(procDSID) || first) {
@@ -108,8 +112,16 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					first = false;
 					prevDS = procDSID;
 		        		dtVec = new Vector();// Or dtVec.removeAllElements();
+		        		pathVec = new Vector();// Or pathVec.removeAllElements();
 					algoVec = new Vector();// Or algoVec.removeAllElements();
 				}
+
+                                if( !pathVec.contains(path) && !isNull(path) ) {
+                                        out.write(((String) "\t<path dataset_path='"+path+"'/>\n"));
+                                        pathVec.add(path);
+                                } 
+
+
 				//if( (!prevTier.equals(tier) || first) && !dtVec.contains(tier) ) {
 				if( !dtVec.contains(tier) && !isNull(tier) ) {
 					out.write(((String) "\t<data_tier name='" + tier + "'/>\n"));
@@ -143,7 +155,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 
                 if (!first) {
-				out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
+				//out.write((String)"<path dataset_path='/"+primDSName+ "/"+ procDSName+"/"+makeOrderedTierList(conn, dtVec)+ "'/>");
 				out.write(((String) "</processed_dataset>\n"));
 		}
 	}
@@ -522,7 +534,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	 //* @param dt the name of the data tier whose processed dataset id needs to be fetched..
 	//private String getProcessedDSID(Connection conn, String prim, String dt, String proc) throws Exception {
-	private String getProcessedDSID(Connection conn, String prim, String proc, boolean excep) throws Exception {
+	public String getProcessedDSID(Connection conn, String prim, String proc, boolean excep) throws Exception {
 		checkWord(prim, "primary_dataset_name");
 		//checkWord(dt, "data_tier");
 		checkWord(proc, "processed_dataset_name");

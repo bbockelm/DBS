@@ -20,8 +20,10 @@ try:
   
   # List all parameter sets
   print ""
-  for afile in api.listFiles("/test_primary_001/TestProcessedDS001/SIM", "", "", "", False):
-  #for afile in api.listFiles("", "TestAnalysisDataset001", "", "", False):
+  #def listFiles(self, path, pri="", proc="", tier_list=[], dataset="", analysisDataset="",blockName="", patternLFN="*", details=None)
+  
+  for afile in api.listFiles("/test_primary_001/TestProcessedDS001/GEN-SIM"):
+  #for afile in api.listFiles("", "test_primary_001", "TestProcessedDS001", ['GEN', 'SIM'], "", "", "", "", False):
      print "  %s" % afile
      #print "  %s" % afile['LogicalFileName']
      	

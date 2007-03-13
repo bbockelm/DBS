@@ -360,7 +360,7 @@ class DbsApi(DbsConfig):
             #self.currDataset['PathList'].append("/" + self.primName + "/" + str(attrs['name']) + "/" + self.procName)
 
           if name == 'path':
-	    self.currDataset['Path'] = str(attrs['dataset_path'])
+	    self.currDataset['PathList'].append(str(attrs['dataset_path']))
 
           if name == 'algorithm':
             self.currDataset['AlgoList'].append(DbsAlgorithm( ExecutableName=str(attrs['app_executable_name']),
@@ -733,7 +733,8 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
 
   #def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
-  def listFiles(self, dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
+  #def listFiles(self, path, dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
+  def listFiles(self, path, pri="", proc="", tier_list=[], dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -741,11 +742,15 @@ class DbsApi(DbsConfig):
     returns: list of DbsFile objects
 
     params: 
-        dataset: want to list files of THIS dataset, 
-	(can be an Analysis dataset)
-	This is again an optional parameter.
-	
-	analysisDataset is the namef the analysis dataset the user wants to list the files from. This is an optional parameter
+
+	path : STRICTLY is the DBS Data PATH in its definition. CANNOT be substituted for anyything else like Processed Dataset
+       
+        pri: 
+        prov: want to list files of THIS primary AND processed dataset combinition
+		(pri, proc) is mutually exclusive to path. Give path or give (pri, proc) pair
+
+	analysisDataset: is the name of the analysis dataset the user wants to list the files from. This is an optional parameter
+                         It is mutually exclusive to (path and (pri, proc))
          
         blockName: Defaulted to "" means files (That match dataset and/or LFN pattern criteria). 
         If the blockName is given, it will be matched against the block name.
@@ -753,7 +758,7 @@ class DbsApi(DbsConfig):
         patternLFN: Defaulted to "*" means files (That match dataset and/or LFN pattern criteria). 
         If the patternLFN patterm is given, it will be matched against the content as a shell glob pattern.
 
-	User MUST provide one of (dataset, blockName, patternLFN)
+	User MUST provide one of (path, (pri, proc), blockName, patternLFN)
 
         details: if not None, then server will return details like list of Tier, Parents, etc etc.
          
@@ -788,15 +793,24 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
-    path = self._path(dataset)
+    #path = self._path(dataset)
     # Invoke Server.
+
+    sendTier = string.join(tier_list, "-")
+
     if details not in ("", None, False):
        data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
+				    'primary_dataset' : pri, 
+				    'processed_dataset' : proc,
+				    'data_tier_list' : sendTier,
 		                    'analysis_dataset_name' : analysisDataset,
                                     'block_name' : blockName, 
                                     'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
+                                    'primary_dataset': pri,
+                                    'processed_dataset' : proc,
+                                    'data_tier_list' : sendTier,
                                     'path' : path, 'block_name' : blockName, 
 		                    'analysis_dataset_name' : analysisDataset,
                                     'pattern_lfn' : patternLFN}, 'GET')

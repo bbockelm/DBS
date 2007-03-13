@@ -12,10 +12,10 @@ try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
-  #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/SIM"):
-  for block in api.listBlocks(""):
+  for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM"):
+  #for block in api.listBlocks(""):
   #for block in api.listBlocks(block_name="/test_primary_001*"):
-  #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/SIM", "/test_primary_001/TestProcessedDS001/SIM*"):
+  #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN*"):
      #print "%s  %s" % (block['Name'], block['StorageElementList'])
      print "  %s" % block
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiBlockLogic.java,v 1.26 2007/03/12 19:34:37 afaq Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiBlockLogic.java,v 1.27 2007/03/13 17:07:57 sekhri Exp $"
  *
  */
 
@@ -163,6 +163,10 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 
+		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
+                                                                + "/"+ makeOrderedTierList(conn, pathTierVec);
+
+
 		if (!isNull(name)) {
 			String[] data = name.split("#");
 
@@ -178,8 +182,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			makeOrderedTierList(conn, parseTierVec(data[0].split("/")[3]));
 		} else {
 
-				name = "/" + datapath[1] + "/" + datapath[2] 
-				   		+ "/"+ makeOrderedTierList(conn, pathTierVec) + "#" + UUID.randomUUID(); 
+				name = correctedPath  + "#" + UUID.randomUUID(); 
 		}
 
 		//if (isNull(name)) name = path +"#" + UUID.randomUUID(); 
@@ -195,6 +198,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					"0",// A new block should always have 0 files
                                         "0",// A new block should always have 0 events ??
 					openForWriting, //openForWriting must be 1 fr a new block
+					correctedPath,
 					cbUserID,
 					userID,
 					creationDate);
@@ -290,6 +294,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                                 "0",// A new block should always have 0 files
                                 "0",// A new block should always have 0 events ??
                                 "1",// A new block should always be openForWriting = 1
+				path,
 				cbUserID,
                                 personApi.getUserID(conn, dbsUser),
 				creationDate);

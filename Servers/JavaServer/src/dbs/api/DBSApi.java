@@ -1,6 +1,6 @@
 /**
- $Revision: 1.79 $"
- $Id: DBSApi.java,v 1.79 2007/03/09 20:53:29 sekhri Exp $"
+ $Revision: 1.80 $"
+ $Id: DBSApi.java,v 1.80 2007/03/09 21:32:11 sekhri Exp $"
  *
 */
 
@@ -302,6 +302,9 @@ public class DBSApi {
 			} else if (apiStr.equals("listFiles")) {
 				(new DBSApiFileLogic(this.data)).listFiles(conn, out, 
 						get(table, "path", false),
+						get(table, "primary_dataset", false),
+						get(table, "processed_dataset", false),
+						get(table, "data_tier_list", false),
 						get(table, "analysis_dataset_name", false),
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),

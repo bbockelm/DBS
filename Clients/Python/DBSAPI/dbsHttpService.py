@@ -80,7 +80,8 @@ class DbsHttpService:
 		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
 
        logging.info(conto)
-        
+  
+      
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
@@ -112,6 +113,7 @@ class DbsHttpService:
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
        logging.debug(data)
+       print data
 
     except Exception, ex:
       msg = "HTTP ERROR, Unable to make API call: %s" % conto
