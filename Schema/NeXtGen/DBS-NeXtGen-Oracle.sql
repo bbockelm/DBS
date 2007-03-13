@@ -154,11 +154,13 @@ REM ======================================================================
 
 CREATE TABLE DataTierOrder
   (
-    ID             BIGINT UNSIGNED,
-    DataTierOrder  varchar(250)          unique not null,
-    Description    varchar(1000),
-    CreationDate   TIMESTAMP DEFAULT 0,
-    CreatedBy      BIGINT UNSIGNED,
+    ID                    BIGINT UNSIGNED,
+    DataTierOrder varchar(250)          unique not null,
+    Description   varchar(1000),
+    CreationDate  TIMESTAMP DEFAULT 0,
+    CreatedBy     BIGINT UNSIGNED,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
 

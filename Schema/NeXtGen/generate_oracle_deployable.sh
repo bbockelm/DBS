@@ -9,7 +9,7 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=v00_00_05
+SchemaVersion=v00_00_06
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
@@ -117,74 +117,6 @@ echo "PROMPT Creating timestamp triggers" >> $ddl_file
 cat $stamp_trig >>  $ddl_file
 #
 #
-#  Creat the ROLES
-#
-echo "PROMPT Creating Role 'CMS_DBS_ADMIN_ROLE'" >> $ddl_file
-echo "create role  CMS_DBS_ADMIN_ROLE NOT IDENTIFIED" >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "PROMPT Creating Role 'CMS_DBS_WRITER_ROLE'" >> $ddl_file
-echo "create role  CMS_DBS_WRITER_ROLE NOT IDENTIFIED" >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "PROMPT Creating Role 'CMS_DBS_READER_ROLE'" >> $ddl_file
-echo "create role  CMS_DBS_READER_ROLE NOT IDENTIFIED" >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "GRANT CMS_DBS_READER_ROLE TO CMS_DBS_WRITER_ROLE" >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "GRANT CMS_DBS_WRITER_ROLE TO CMS_DBS_ADMIN_ROLE" >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "GRANT CMS_DBS_ADMIN_ROLE TO CMS_DBS_INT_GLOBAL_ADMIN" >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "GRANT CMS_DBS_WRITER_ROLE TO CMS_DBS_INT_GLOBAL_WRITER " >> $ddl_file
-echo "/" >> $ddl_file
-
-echo "GRANT CMS_DBS_READER_ROLE TO CMS_DBS_INT_GLOBAL_READER " >> $ddl_file
-#
-#
-#  Granting Permissions to tables
-#
-echo "-- ================Granting Permissions ======================================"  >> $ddl_file 
-echo "PROMPT Granting Permissions"  >> $ddl_file
-echo "-- ================Granting Permissions to CMS_DBS_READER_ROLE ==============="  >> $ddl_file 
-echo "set serveroutput on size 100000"  >> $ddl_file
-echo "BEGIN"  >> $ddl_file
-echo "   -- Tables"  >> $ddl_file
-echo "   FOR o IN (SELECT table_name name FROM user_tables) LOOP"  >> $ddl_file
-echo "      dbms_output.put_line ('Changing permissions on ' || o.name || ' for CMS_DBS_READER_ROLE');"  >> $ddl_file
-echo "      execute immediate 'grant select on ' || o.name || ' to CMS_DBS_READER_ROLE';"  >> $ddl_file
-echo "   END LOOP;"  >> $ddl_file
-echo "END;"  >> $ddl_file
-echo "/"  >> $ddl_file
-
-echo "-- ================Granting Permissions CMS_DBS_WRITER_ROLE==============="  >> $ddl_file
-echo "set serveroutput on size 100000"  >> $ddl_file
-echo "BEGIN"  >> $ddl_file
-echo "   -- Tables"  >> $ddl_file
-echo "   FOR o IN (SELECT table_name name FROM user_tables) LOOP"  >> $ddl_file
-echo "      dbms_output.put_line ('Changing permissions on ' || o.name || ' for CMS_DBS_WRITER_ROLE');"  >> $ddl_file
-echo "      execute immediate 'grant insert, update on ' || o.name || ' to CMS_DBS_WRITER_ROLE';"  >> $ddl_file
-echo "   END LOOP;"  >> $ddl_file
-echo "END;"  >> $ddl_file
-echo "/"  >> $ddl_file
-
-echo "-- ================Granting Permissions CMS_DBS_ADMIN_ROLE ==============="  >> $ddl_file
-echo "set serveroutput on size 100000"  >> $ddl_file
-echo "BEGIN"  >> $ddl_file
-echo "   -- Tables"  >> $ddl_file
-echo "   FOR o IN (SELECT table_name name FROM user_tables) LOOP"  >> $ddl_file
-echo "      dbms_output.put_line ('Changing permissions on ' || o.name || ' for CMS_DBS_ADMIN_ROLE');"  >> $ddl_file
-echo "      execute immediate 'grant delete on ' || o.name || ' to CMS_DBS_ADMIN_ROLE';"  >> $ddl_file
-echo "   END LOOP;"  >> $ddl_file
-echo "END;"  >> $ddl_file
-echo "/"  >> $ddl_file
-#
-#
-#
 echo "-- Set the Schema Version -- " >> $ddl_file
 echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
 echo "-- Pre Fill some information into tables ---------" >> $ddl_file
@@ -200,6 +132,30 @@ echo "INSERT INTO FileType(Type) VALUES ('EVD') ;" >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type) VALUES ('TEST');" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type) VALUES ('VALID');" >> $ddl_file
 echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', SYSTIMESTAMP);"  >> $ddl_file
+#
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"SIM\", \"Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"DIGI\", \"Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RECO\", \"Reconstructed products produced from either real data or DIGI data       TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"AOD\", \"Analysis Object Data products TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RAW\", \"Raw detector output from the HLT system   TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"ALCARECO\", \"IS ITS A TIER ? TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"USER\", \"Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DIGI\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DIGI-RECO\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+#
+#
+#
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', SYSTIMESTAMP);" >> $ddl_file
+#
 #
 echo "commit;" >> $ddl_file
 #
