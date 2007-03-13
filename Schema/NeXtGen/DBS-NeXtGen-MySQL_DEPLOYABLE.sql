@@ -710,6 +710,7 @@ CREATE TABLE Block
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(500)                                                      unique not null,
+    Path                  varchar(500)                                                      not null,
     Dataset               BIGINT UNSIGNED                                                   not null,
     BlockSize             BIGINT UNSIGNED                                                   not null,
     NumberOfFiles         BIGINT UNSIGNED                                                   not null,
@@ -1236,7 +1237,7 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_05', NOW());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_06', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());

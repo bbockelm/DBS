@@ -559,6 +559,7 @@ CREATE TABLE Block
   (
     ID                    BIGINT UNSIGNED,
     Name                  varchar(500)                                                      unique not null,
+    Path                  varchar(500)                                                      not null,
     Dataset               BIGINT UNSIGNED                                                   not null,
     BlockSize             BIGINT UNSIGNED                                                   not null,
     NumberOfFiles         BIGINT UNSIGNED                                                   not null,
