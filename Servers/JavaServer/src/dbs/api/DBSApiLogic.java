@@ -1,6 +1,6 @@
 /**
- $Revision: 1.86 $"
- $Id: DBSApiLogic.java,v 1.86 2007/03/12 20:59:51 sekhri Exp $"
+ $Revision: 1.87 $"
+ $Id: DBSApiLogic.java,v 1.87 2007/03/12 21:38:24 sekhri Exp $"
  *
  */
 
@@ -45,8 +45,10 @@ public class DBSApiLogic {
 	//A regular expression used to validate a block name that will contain exactly thw slashes and a hash.
 	//private static String VALID_BLOCK = "^/([^/]+)/([^/]+)#([^/]+)";
 	private static String VALID_BLOCK = "^/([^/]+)/([^/]+)/([^/]+)#([^/]+)";
+	private static String VALID_BLOCK_DBS1 = "^/([^/]+)/([^/]+)#([^/]+)";
 	//private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)#([^/]+)|%";
 	private static String VALID_BLOCK_LIST = "^/([^/]+)/([^/]+)/([^/]+)#([^/]+)|%";
+	//private static String VALID_BLOCK_LIST_DBS1 = "^/([^/]+)/([^/]+)#([^/]+)|%";
 	//We can store the path id once and everytime the id is needed it can be fetched from this table instead of fetching it through database.
 	/*protected static Hashtable globalUser = new Hashtable();
 	protected static Hashtable globalFile = new Hashtable();
@@ -684,11 +686,11 @@ public class DBSApiLogic {
 
 	protected void checkBlock(String blockName) throws Exception {
 		if(isNull(blockName)) 
-			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid block_name in format /PRIMARY/PROCESSED#GUID");
-		if (! Pattern.matches(VALID_BLOCK, blockName) ) 
-			throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK + " The given block_name is " + blockName);
+			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid block_name in format /PRIMARY/PROCESSED/TIER1-TIER2#GUID");
+		if ( !Pattern.matches(VALID_BLOCK, blockName) && !Pattern.matches(VALID_BLOCK_DBS1, blockName))   
+			throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED/TIER1-TIER2#GUID which should satisfy the regular expression " + VALID_BLOCK + " The given block_name is " + blockName);
 		if( ! Pattern.matches(SAFE_BLOCK, blockName) ) 
-			throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK);
+			throw new DBSException("Invalid format", "1015", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED/TIER1-TIER2#GUID which should satisfy the regular expression " + SAFE_BLOCK);
 	}
 
 
@@ -697,7 +699,7 @@ public class DBSApiLogic {
                         throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid block_name in format /PRIMARY/PROCESSED#GUID");
                // if (! Pattern.matches(VALID_BLOCK_LIST, blockName) )
                //         throw new DBSException("Invalid format", "1014", "Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + VALID_BLOCK_LIST + " The given block_name is " + blockName);
-                if( ! Pattern.matches(SAFE_BLOCK_LIST, blockName) )
+                if(! Pattern.matches(SAFE_BLOCK_LIST, blockName ))
                         throw new DBSException("Invalid format", "1022", "Invalid Characters in " + blockName + " for block_name. Expected a block_name in format /PRIMARY/PROCESSED#GUID which should satisfy the regular expression " + SAFE_BLOCK_LIST);
         }
 

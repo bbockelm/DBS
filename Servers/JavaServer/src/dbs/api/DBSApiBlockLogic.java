@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApiBlockLogic.java,v 1.25 2007/03/12 17:19:20 afaq Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApiBlockLogic.java,v 1.26 2007/03/12 19:34:37 afaq Exp $"
  *
  */
 
@@ -154,7 +154,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		String[] datapath = path.split("/");
                 Vector pathTierVec = parseTierVec(datapath[3]);
-
 		if ( ! procDSTierVec.containsAll(pathTierVec) )
 				throw new DBSException("Tier Mismatch", "1037",
                                                         "Provided Tier(s) combinition " +pathTierVec.toString() + 
