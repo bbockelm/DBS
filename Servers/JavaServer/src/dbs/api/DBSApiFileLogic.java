@@ -1,6 +1,6 @@
 /**
- $Revision: 1.33 $"
- $Id: DBSApiFileLogic.java,v 1.33 2007/03/12 17:19:20 afaq Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSApiFileLogic.java,v 1.34 2007/03/12 20:59:51 sekhri Exp $"
  *
  */
 
@@ -435,15 +435,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                 String blockID = null;
                 //If user INSIST to provide a BlockName
-                if ( ! isNull(blockName) && !(blockName.equals("")) ) {
-                    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
+                if ( ! isNull(blockName) )  blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
                     //FIXME: We must need to verify that Block is OpenForWriting
-
-                }
                 //Do the DBS Block management
-                else {
-                        dbsBlockManagment = true;
-                }
+                else dbsBlockManagment = true;
+                
 
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
