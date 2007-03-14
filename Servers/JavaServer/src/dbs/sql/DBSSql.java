@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.82 $"
- $Id: DBSSql.java,v 1.82 2007/03/09 20:53:30 sekhri Exp $"
+ $Revision: 1.83 $"
+ $Id: DBSSql.java,v 1.83 2007/03/13 22:31:48 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1021,6 +1021,7 @@ public class DBSSql {
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
+			"b.Path as PATH, \n" +
 			"b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
 			"b.BlockSize as BLOCKSIZE, \n" +
 			"b.NumberOfFiles as NUMBER_OF_FILES, \n" +
@@ -1052,7 +1053,8 @@ public class DBSSql {
 		}
 		if(!DBSUtil.isNull(patternPath)) {
 			if(useAnd) sql += " AND ";
-			sql += "b.Name like ? \n";
+			sql += "b.Path = ? \n";
+			//sql += "b.Name like ? \n";
 			useAnd = true;
 		}
 

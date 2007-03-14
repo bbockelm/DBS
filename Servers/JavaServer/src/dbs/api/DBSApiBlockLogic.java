@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApiBlockLogic.java,v 1.27 2007/03/13 17:07:57 sekhri Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApiBlockLogic.java,v 1.28 2007/03/13 22:31:47 afaq Exp $"
  *
  */
 
@@ -56,7 +56,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			String patternPath = "";
 			if (!isNull(path)) {
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
-				patternPath = path + "%";
+				//patternPath = path + "%";
+				patternPath = path;
 			}
 			ps =  DBSSql.listBlocks(conn, procDSID, patternPath, getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
 			rs =  ps.executeQuery();
@@ -67,7 +68,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				}
 				if( !prevBlock.equals(blockID) || first) {
 					out.write(((String) "<block id='" + get(rs, "ID") +
-						"' path='" + path +
+						"' path='" + get(rs, "PATH") +
 						"' name='" + get(rs, "NAME") +
 						"' size='" + get(rs, "BLOCKSIZE") +
 						"' number_of_files='" + get(rs, "NUMBER_OF_FILES") +

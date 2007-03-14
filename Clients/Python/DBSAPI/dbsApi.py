@@ -650,6 +650,7 @@ class DbsApi(DbsConfig):
           if name == 'block':
                self.currBlock = DbsFileBlock(
                                        Name=str(attrs['name']), 
+                                       Path=str(attrs['path']), 
                                        BlockSize=long(attrs['size']),
                                        NumberOfFiles=long(attrs['number_of_files']),
                                        NumberOfEvents=long(attrs['number_of_events']),
