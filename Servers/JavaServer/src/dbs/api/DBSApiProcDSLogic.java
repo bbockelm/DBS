@@ -1,6 +1,6 @@
 /**
- $Revision: 1.28 $"
- $Id: DBSApiProcDSLogic.java,v 1.28 2007/03/12 19:34:37 afaq Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSApiProcDSLogic.java,v 1.29 2007/03/13 22:31:47 afaq Exp $"
  *
  */
 
@@ -100,8 +100,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				if( !prevDS.equals(procDSID) || first) {
 					out.write(((String) "<processed_dataset id='" + get(rs, "ID") + 
 							//"' path='" +  get(rs, "PATH") +
-							"' primary_datatset_name='" +  primDSName +
-							"' processed_datatset_name='" +  procDSName +
+							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
+							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +

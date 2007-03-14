@@ -20,7 +20,7 @@ try:
   # List all parameter sets
   print "Processed Datasets:"
   for proc in api.listProcessedDatasets("*"):
-     print "  %s" % proc
+     print "  %s" % proc['Name']
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
