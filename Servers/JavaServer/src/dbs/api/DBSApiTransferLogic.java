@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiTransferLogic.java,v 1.12 2007/03/09 20:28:05 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiTransferLogic.java,v 1.13 2007/03/13 22:31:47 afaq Exp $"
  *
  */
 
@@ -57,7 +57,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
-		pdApi.listProcessedDatasets(conn, out, data[1], data[2], data[3], null, null, null, null);
+		pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
 		pdApi.listDatasetParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null);
@@ -109,10 +109,13 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 				closeBlockVector.add("name");
 				block.remove("open_for_writing");
 			}
+			System.out.println("---------> Inserting block "+name);
 			blockApi.insertBlock(conn, out, block, dbsUser);
+			System.out.println("---------> DONE Inserting block "+name);
 		}
 		
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
+		System.out.println("---------> Inserting files for path " + path);
                 (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, fileblock, DBSUtil.getVector(table, "file"), dbsUser);
  
 		//Close all the block which were created as open block

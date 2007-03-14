@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiParser.java,v 1.5 2007/02/01 22:11:51 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiParser.java,v 1.6 2007/02/06 20:54:54 sekhri Exp $"
  *
 */
 
@@ -93,6 +93,7 @@ public class DBSApiParser {
 	public static Hashtable parseDatasetContents(String inputXml) throws Exception {
 		int index = -1;
 		int blockIndex = -1;
+		System.out.println("inputXml "+inputXml);
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
 		Vector allElement = dbsParser.getElements();
@@ -124,9 +125,9 @@ public class DBSApiParser {
 				((Vector)(psDS.get("algorithm"))).add(e.attributes);
 			if (name.equals("run") ) 
 				((Vector)(psDS.get("run"))).add(e.attributes);
-			if (name.equals("block") ) {
+			if (name.equals("block") ) 
 				((Vector)(psDS.get("block"))).add(e.attributes);
-			}
+			
 			if (name.equals("block") ) {
 				Hashtable block = e.attributes;
 				block.put("storage_element", new Vector());

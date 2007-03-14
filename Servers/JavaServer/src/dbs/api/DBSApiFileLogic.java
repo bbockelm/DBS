@@ -1,6 +1,6 @@
 /**
- $Revision: 1.36 $"
- $Id: DBSApiFileLogic.java,v 1.36 2007/03/13 22:31:47 afaq Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSApiFileLogic.java,v 1.37 2007/03/14 14:47:43 afaq Exp $"
  *
  */
 
@@ -517,8 +517,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-        public void insertFiles(Connection conn, Writer out, String path, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
+        //public void insertFiles(Connection conn, Writer out, String path, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
 	//public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
+        public void insertFiles(Connection conn, Writer out, String path, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
                 //Get the Block name (if provided)
                 String blockName = DBSUtil.get(block, "block_name");
 		
@@ -526,58 +527,58 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 
 		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
-		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
-                String[] tmpPath = path.split("/");
-                String notierpath = "/" + tmpPath[1] + "/" + tmpPath[2];
+		
+		boolean dbsBlockManagment = false; 
 
+		Vector tierVecToCheckWithFile = new Vector();
+		String pathToCheck = "";
+		if( isNull(blockName) && !isNull(path)) {
+			dbsBlockManagment = true;
+			pathToCheck = path;
+			tierVecToCheckWithFile = parseTierVec(pathToCheck.split("/")[3]);
+		} else if( !isNull(blockName) && isNull(path)) {
+			pathToCheck = blockName.split("#")[0];
+			tierVecToCheckWithFile = parseTierVec(pathToCheck.split("/")[3]);
+		} else if( !isNull(blockName) && !isNull(path)) {
+			writeWarning(out, "Both block and processed dataset are provided", "1021", "Processed dataset  " + path + " will be ignored and the block " + blockName + " will be used");
+			if(!(blockName.split("#")[0]).equals(path)) throw new DBSException("Block Path Mismatch", "1041", "Block " + blockName +"'s path does not match with the given path " + path);
+			pathToCheck = path;
+			tierVecToCheckWithFile = parseTierVec(pathToCheck.split("/")[3]);
+		} else if( isNull(blockName) && isNull(path)) throw new DBSException("Missing data", "1040", "Block name and path both cannot be null");
+		
+		String procDSID = procDSApiObj.getProcessedDSID(conn, pathToCheck, true);
+                
 		//List Tiers from ProcDS
 		Vector pathTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
-                /**String[] pathTiers = parseTier(tmpPath[3]);
-                for (int j=0; j != pathTiers.length ; ++j)
-                                pathTierVec.add(pathTiers[j]);**/
+		if (!pathTierVec.containsAll(tierVecToCheckWithFile)) 
+					throw new DBSException("Tier does not exist in Processed datatset", "1042", "The given tier in the path " + tierVecToCheckWithFile.toString() + " does not exist in the given processed dataset. The valid tiers in this dataset are " +  pathTierVec.toString());
 
-		Vector firstFileTiers = new Vector();
 		//File Tiers must be within ProcDS Tiers
 		for (int i = 0; i != files.size() ; ++i) {
-			Hashtable file = (Hashtable)files.get(i);
-                        Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
-                        Vector tierVec = new Vector();
+                        Vector tierVector = DBSUtil.getVector((Hashtable)files.get(i) ,"file_data_tier");
+			if(tierVector.size() != tierVecToCheckWithFile.size())
+				throw new DBSException("Tier Mismatch", "1043", "Provided number of tiers " + tierVector.size() + 
+						" is not equal to the number of tiers " + tierVecToCheckWithFile.size() + 
+						" in the path " + pathTierVec);
+                        for (int j = 0; j != tierVector.size() ; ++j) {
+				String tierName = ((String) get((Hashtable)tierVector.get(j), "name")).toUpperCase();
+				if(!tierVecToCheckWithFile.contains(tierName))
+	   				throw new DBSException("Tier Mismatch", "1037",
+                                                        "Provided tier " + tierName +
+                                                        " is not present in dataset " + path + " Path contains " +
+                                                        tierVecToCheckWithFile.toString());
 
-                        for (int j=0; j != tierVector.size() ; ++j) {
-                                tierVec.add(((String) get((Hashtable)tierVector.get(j), "name")).toUpperCase());
 			}
-
-                        if ( ! pathTierVec.containsAll(tierVec) ) {
-                               throw new DBSException("Tier Mismatch", "1037",
-                                                        "Provided Tier(s) combinition " + tierVec.toString() +
-                                                        " is not present in dataset "+path + " Path contains " +
-                                                        pathTierVec.toString());
-
-                        }
-
-			if (i > 0) 
-				if (firstFileTiers.size() != tierVec.size() || 
-						(! firstFileTiers.containsAll(tierVec)) ) {
-					throw new DBSException("Tier Mismatch", "1038",
-                                                        "All files must belong to same path (Set of tiers) " + 
-							"given tiers in this file are "+ tierVec.toString() +
-							" and in other file within this call are "+firstFileTiers.toString() );
-				}
-			if (i == 0) firstFileTiers.addAll(tierVec);
 		}
 
-		/*//Check if all the path is in the files are same.
-		if(files.size() > 0) {
-			String path = get((Hashtable)files.get(0), "path");
-			for (int i = 1; i < files.size() ; ++i) {
-				String tmpPath = get((Hashtable)files.get(i), "path");
-				if(!tmpPath.equals(path)) {
-					throw new DBSException("Bad Data", "300", "Different Processed Datatsets. All files in the list should belong to same processed datatset. Dataset1 " + path + " Datatset2 " + tmpPath);
-				}
-			
-			}
-		}*/
+                String blockID = null;
+                if ( ! isNull(blockName) ) 
+    			blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
 
+		String[] tmpPath = pathToCheck.split("/");
+                String notierpath = "/" + tmpPath[1] + "/" + tmpPath[2];
+
+	
 		//These tables are used to store the types and staus fileds along with thier id
 		//If the id can be fetched from here then we do not have to fietch it from database again and again
 		boolean newFileInserted = false;
@@ -591,21 +592,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String orderedTiers = "";
 
 		Vector blockInfoVec = new Vector();
-		Boolean dbsBlockManagment = false;
 		String correctedPath = null;
 
 
-                String blockID = null;
                 //If user INSIST to provide a BlockName
-                if ( ! isNull(blockName) && !(blockName.equals("")) ) {
-                    blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
-                    //FIXME: We must need to verify that Block is OpenForWriting
-
-                }
+    			//FIXME: We must need to verify that Block is OpenForWritin
                 //Do the DBS Block management
-                else {
-                        dbsBlockManagment = true;
-                }
 
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
@@ -625,14 +617,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			
 
 			//Save the Tier List ONCE, if User wants DBS to manage Blocks
-			if ( i == 0 && dbsBlockManagment ) {  
+			/*if ( i == 0 && dbsBlockManagment ) {  
 				Vector tierVec = new Vector();
 				for (int j=0; j != tierVector.size() ; ++j)
 					tierVec.add((String) get((Hashtable)tierVector.get(j), "name"));
 				//Make the orderedTiers
                         	orderedTiers = makeOrderedTierList(conn, tierVec);
                                 correctedPath = notierpath + "/" + orderedTiers;
-			}
+			}*/
+
 
 			Vector parentVector = DBSUtil.getVector(file,"file_parent");
 			Vector childVector = DBSUtil.getVector(file,"file_child");
@@ -678,13 +671,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 					if (blockInfoVec.size() <= 0 || (new DBSApiBlockLogic(this.data)).mustOpenNewBlock(blockInfoVec) ) {
 		                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, 
-												procDSID, correctedPath, block, dbsUser);
+												procDSID, pathToCheck, block, dbsUser);
 
 							//Grab this blocks details
 							//recycle vector	
 							blockInfoVec.removeAllElements();
 							blockInfoVec.addAll((new DBSApiBlockLogic(this.data)).getOpenBlockDetails(conn, 
-												procDSID, correctedPath, block));
+												procDSID, pathToCheck, block));
 					}
                                 }
 
