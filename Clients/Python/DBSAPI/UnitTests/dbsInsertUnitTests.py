@@ -450,7 +450,7 @@ apiObj = DbsUnitTestApi(api.insertBlock, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertBlock API tests***************************")
 #path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
-path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + str(proc1['TierList'][0])
+path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + str(proc1['TierList'][0]) + "-" + str(proc1['TierList'][1])
 #blockName =  "/"+ mytime + "this/isatestblock#016712"
 blockName =   path + "#016712"
 blockName1 =   path + "#016713"
@@ -571,14 +571,15 @@ file2= DbsFile (
 		AlgoList = [algo1, algo2],
 		)
 
-apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
+#apiObj.run(proc1 ,[file1,file2], block1,  excep = False)
+apiObj.run("" ,[file1,file2], block1,  excep = False)
 
 file3 = DbsFile (LogicalFileName= '1111-0909-9767-8764222' + mytime,
 		Checksum= '999',
 		NumberOfEvents= 10000,
                 Status= 'VALID',
 		FileSize= 12340)
-apiObj.run(proc1 ,[file3], block1,  excep = False)
+apiObj.run(path ,[file3], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111*-0909-9767-8764222' + mytime,
 		Checksum= '999',
@@ -614,8 +615,9 @@ file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		Checksum= '999',
 		NumberOfEvents= 10000,
                 Status= 'VALID',
+		TierList= tierList,
 		FileSize= 12340)
-apiObj.run(proc1 ,[file], block1,  excep = False)
+apiObj.run(path ,[file], block1,  excep = False)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
 		ParentList = [lfn1,'doesnotexists'],
