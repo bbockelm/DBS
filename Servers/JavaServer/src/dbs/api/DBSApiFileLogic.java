@@ -1,6 +1,6 @@
 /**
- $Revision: 1.34 $"
- $Id: DBSApiFileLogic.java,v 1.34 2007/03/12 20:59:51 sekhri Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApiFileLogic.java,v 1.36 2007/03/13 22:31:47 afaq Exp $"
  *
  */
 
@@ -110,13 +110,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		//Get the procDSID and TierIDs if Tiers are given
 		if(!isNull(primary) && !isNull(proc) ) {
+			
 			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, primary, proc, true);
 		}
 
 		//dataTierList is a "-" separated list of ALLL tiers that user wants to look for
 		String[] tierList = parseTier(dataTierList);
+
+
 		for (int j = 0; j < tierList.length; ++j) {
-				tierIDList.add(getID(conn, "DataTier", "Name", tierList[j] , true));
+				if (!isNull(tierList[j]))
+					tierIDList.add(getID(conn, "DataTier", "Name", tierList[j] , true));
 		}
 
 		//Search can be based on Analysis Dataset
@@ -132,7 +136,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Search can be based on LFN pattern
                 String patternlfn= getPattern(patternLFN, "pattern_lfn");
 
-		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternlfn)  ) {
+		if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && patternlfn.equals("%") ) {
+		//if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && isNull(patternlfn) && patternlfn.equals("%") ) {
 			throw new DBSException("Missing data", "1005", 
 					"Null Fields. Expected either a (Primary, Processed) Dataset, Analysis Dataset, Block or LFN pattern");
 		}
@@ -540,7 +545,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                         for (int j=0; j != tierVector.size() ; ++j) {
                                 tierVec.add(((String) get((Hashtable)tierVector.get(j), "name")).toUpperCase());
-				//System.out.println("insertFiles: tierVector.get(j):"+get((Hashtable)tierVector.get(j), "name"));
 			}
 
                         if ( ! pathTierVec.containsAll(tierVec) ) {

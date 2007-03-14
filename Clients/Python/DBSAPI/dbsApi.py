@@ -735,7 +735,7 @@ class DbsApi(DbsConfig):
 
   #def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
   #def listFiles(self, path, dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
-  def listFiles(self, path, pri="", proc="", tier_list=[], dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
+  def listFiles(self, path, primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -746,8 +746,8 @@ class DbsApi(DbsConfig):
 
 	path : STRICTLY is the DBS Data PATH in its definition. CANNOT be substituted for anyything else like Processed Dataset
        
-        pri: 
-        prov: want to list files of THIS primary AND processed dataset combinition
+        primary: 
+        proc: want to list files of THIS primary AND processed dataset combinition
 		(pri, proc) is mutually exclusive to path. Give path or give (pri, proc) pair
 
 	analysisDataset: is the name of the analysis dataset the user wants to list the files from. This is an optional parameter
@@ -801,7 +801,7 @@ class DbsApi(DbsConfig):
 
     if details not in ("", None, False):
        data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
-				    'primary_dataset' : pri, 
+				    'primary_dataset' : primary, 
 				    'processed_dataset' : proc,
 				    'data_tier_list' : sendTier,
 		                    'analysis_dataset_name' : analysisDataset,
@@ -809,7 +809,7 @@ class DbsApi(DbsConfig):
                                     'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
-                                    'primary_dataset': pri,
+                                    'primary_dataset': primary,
                                     'processed_dataset' : proc,
                                     'data_tier_list' : sendTier,
                                     'path' : path, 'block_name' : blockName, 
