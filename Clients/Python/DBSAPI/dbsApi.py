@@ -42,6 +42,9 @@ import urllib2
 import logging
 import inspect
 
+#DBS Api version
+__version__ = "v00_00_06"
+
 def getInt(value = None):
 	if (value == None ) :
 		return 0
@@ -75,6 +78,11 @@ class DbsApi(DbsConfig):
     """
 
     DbsConfig.__init__(self,Args)
+
+    if not self.configDict.has_key('version'):
+       self.configDict['version'] = self.setApiVersion()
+ 
+
     if self.verbose():
        print "configuration dictionary:", self.configDict
        print "using version",self.version()
@@ -88,23 +96,10 @@ class DbsApi(DbsConfig):
     if self.mode() == "EXEC" :
 	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
-	    spliturl = urlparse.urlparse(self.url())
-            callType = spliturl[0]
-	    hostport=urllib2.splitport(spliturl[1])  
-	    host=hostport[0]
-	    port=hostport[1]
-	    servlet=spliturl[2] 
-            if self.verbose():
-               print "using url   ", self.url()
-            if callType == 'https':
-	       ##Make a secure connection	
-               self._server = DbsHttpService(host, port, servlet, self.version(), Args, True)
-            else: 
-               self._server = DbsHttpService(host, port, servlet, self.version(), Args)
+            self._server = DbsHttpService(self.url(), self.version(), Args)
     #
     # Setup Proper logging
     #
-
     # Default LOG Level is DEBUG
     if not self.configDict.has_key('level'):
       self.configDict['level'] = "DEBUG" 
@@ -138,11 +133,22 @@ class DbsApi(DbsConfig):
           
     logging.debug("DBS Api initialized")  
 
+
+  def setApiVersion(self):
+    """
+    Sets DBS Client Api Version
+    Reading for __version__ tag
+
+    Note: Config (dbs.config) and Constructor 
+      arguments have higher presedence 
+    """
+    return __version__
+
   def getApiVersion(self):
     """
     Returns the API version of the API
     """
-    return sel.version()
+    return self.version()
 
   def _path (self, dataset):
     """
@@ -463,9 +469,12 @@ class DbsApi(DbsConfig):
 
         List ALL Runs for Dataset Path /test_primary_anzar_001/SIM/TestProcessedDS002 
 
+	   Note: Mind that the TIER(s) portion of Path will have NO effect on the selection
+		 This is still an open question if we need include that to Run selection as well.
+
+
            api.listRuns("/test_primary_anzar_001/SIM/TestProcessedDS002")
         
-
        Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
             proc = DbsProcessedDataset (
@@ -540,6 +549,9 @@ class DbsApi(DbsConfig):
     examples: 
 
         List ALL Data Tiers for Dataset Path /test_primary_anzar_001/SIM/TestProcessedDS002 
+          Note: Mind that the TIER(s) portion of Path will have NO effect on the selection
+                 This is still an open question, this call will return ALL tiers in the Processed Dataset.
+
 
            api.listTiers("/test_primary_anzar_001/SIM/TestProcessedDS002")
 
@@ -619,9 +631,6 @@ class DbsApi(DbsConfig):
       All Blocks with all storage element with in any dataset
            api.listBlocks():
 
-
-       
-
       Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
             proc = DbsProcessedDataset (
@@ -678,9 +687,6 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
-
-
-
   #-------------------------------------------------------------------
 
   def listStorageElements(self, storage_element_name="*"):
@@ -725,13 +731,11 @@ class DbsApi(DbsConfig):
 		       LastModifiedBy=str(attrs['last_modified_by']),
 		       ))
 	       
-
       xml.sax.parseString (data, Handler ())
       return result
 
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
-
 
   # ------------------------------------------------------------
 
@@ -1750,11 +1754,44 @@ class DbsApi(DbsConfig):
 
 
 # ------------------------------------------------------------
+  def updateFileStatus(self, lfn, status):
+    """
+    Updates the Status filed of a File (lfn)
 
-  def updateRun(self, run):
+    lfn: Logical File Name of file that needs to be updated
+    status: One of the possible status 
+  
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    data = self._server._call ({ 'api' : 'updateFileStatus',
+                         'lfn' : self._file_name(lfn),
+                         'status' : status,
+                         }, 'POST')
+
+# ------------------------------------------------------------
+  def updateProcDSStatus(self, dataset, status):
+    """
+    Updates the Status filed of a Dataset
+
+    dataset: Dataset to be updated
+    status: One of the possible status 
+  
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+    data = self._server._call ({ 'api' : 'updateProcDSStatus',
+                         'path' : self._path(dataset),
+                         'status' : status,
+                         }, 'POST')
+
+# -----------------------------------------------------------
+  def updateRun(self, run):
+
 
     """
     Updates a run in the DBS databse.
@@ -1780,6 +1817,10 @@ class DbsApi(DbsConfig):
          api.insertRun (run)
 
     """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<run"
@@ -2061,7 +2102,7 @@ class DbsApi(DbsConfig):
     
     param: 
         dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
-	          path in the format of /prim/dt/proc
+	          path in the format of /prim/dt/proc  [PATH is recommended]
 
 	block : The dbs file block passed in as a string containing the block name. This field is not mandatory.
 	        If the block name is not provided the server creates one based on the primary dataset name, processed
@@ -2102,7 +2143,6 @@ class DbsApi(DbsConfig):
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
     path = self._path(dataset)
-
     name = self._name(block)
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
@@ -2150,8 +2190,6 @@ class DbsApi(DbsConfig):
         return None   
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
-
-
 
   # ------------------------------------------------------------
 
