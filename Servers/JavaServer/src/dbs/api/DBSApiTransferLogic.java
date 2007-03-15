@@ -57,7 +57,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
-		pdApi.listProcessedDatasets(conn, out, data[1], "%", data[2], null, null, null, null);
+		pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
 		pdApi.listDatasetParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null);
@@ -116,7 +116,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
 		System.out.println("---------> Inserting files for path " + path);
-                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, fileblock, DBSUtil.getVector(table, "file"), dbsUser);
+                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getVector(table, "file"), dbsUser);
  
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {

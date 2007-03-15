@@ -1912,7 +1912,11 @@ class DbsApi(DbsConfig):
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
+
+    if (isinstance(dataset, DbsProcessedDataset)) :
+        xmlinput += " <processed_datatset path=''>"
+    else :
+       xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
     if block not in (None, ""):
        xmlinput += "<block block_name='"+ block.get("Name", "") +"'>"
        #xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
@@ -1990,10 +1994,18 @@ class DbsApi(DbsConfig):
     if self.verbose():
        print "insertFiles, xmlinput",xmlinput
 
-    # Call the method
-    data = self._server._call ({ 'api' : 'insertFiles',
+    if (isinstance(dataset, DbsProcessedDataset)) :
+
+	# Call the method
+	data = self._server._call ({ 'api' : 'insertFiles',
+			 'primary_dataset' : dataset['PrimaryDataset']['Name'],
+			 'processed_dataset' : dataset['Name'],
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    else :
+        # Call the method
+        data = self._server._call ({ 'api' : 'insertFiles',
+                         'xmlinput' : xmlinput }, 'POST')
+        logging.debug(data)
 
   # ------------------------------------------------------------
   def remapFiles(self, inFiles, outFile):
@@ -2087,15 +2099,21 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
-    path = self._path(dataset)
+    #path = self._path(dataset)
+
     name = self._name(block)
-    
+
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<block name='"+ name +"'"
     if type(block) != type("str") and block != None :
        xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
-    xmlinput += " path='"+path+"'>"
+    if (isinstance(dataset, DbsProcessedDataset)) :
+	xmlinput += " primary_dataset='"+dataset['PrimaryDataset']['Name']+"'"
+	xmlinput += " processed_dataset='"+dataset['Name']+"'"
+	xmlinput += " path='' >"
+    else :
+    	xmlinput += " path='"+dataset+"'>"
     if (storage_element_list) not in ( [], None ) : 
          for aSe in storage_element_list:
             xmlinput += " <storage_element storage_element_name='"+self._name(aSe)+"'/>"
@@ -2110,6 +2128,8 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
     logging.debug(data)
 
+
+    
     # Parse the resulting xml output.
     try:
      result = []

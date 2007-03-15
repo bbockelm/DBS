@@ -180,6 +180,7 @@ try:
     # A file with RunsList and NOT lumi list
 
     #Insert in a Block	
+    #api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22])
     api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22], block)
     #DBS Creates the Block and add file that has ONLYU run, No Lumi
     api.insertFiles (proc, [myfile3] )

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.28 $"
- $Id: DBSApiBlockLogic.java,v 1.28 2007/03/13 22:31:47 afaq Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSApiBlockLogic.java,v 1.29 2007/03/14 14:07:01 afaq Exp $"
  *
  */
 
@@ -140,53 +140,82 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertBlock(Connection conn, Writer out, Hashtable block, Hashtable dbsUser) throws Exception {
-		String path = get(block, "path");
-		String name = getBlock(block, "name", false);
-		String openForWriting = get(block, "open_for_writing", false);
-                String lmbUserID = personApi.getUserID(conn, dbsUser);
-                String userID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
-		String creationDate = getTime(block, "creation_date", false);
 
+		//IF path is given, and block name too, add Block to path ONLY if path == block[path]
+		//IF path is given, and NO block name, make sure PATH data tiers exist in ProcDS
+		//IF primary/proc are given, make sure dataset exists, also name IS provide. 
+		
+		String path = get(block, "path", false);
+		String name = getBlock(block, "name", false);
+		String primary = get(block, "primary_dataset");
+		String processed = get(block, "processed_dataset");
+
+		if ( isNull(path) && (isNull(primary) || isNull(processed)) )
+			throw new DBSException("Missing Parameters", "1041",
+							"Either a valid dataset PATH or (primary,processed) is required");
 		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
 		//Getting ID before spliting the path will type chech the path also.
-		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
-                Vector procDSTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
+		String procDSID = null;
+		Vector procDSTierVec = null;
+		String correctedPath =  null;	
 
-		String[] datapath = path.split("/");
-                Vector pathTierVec = parseTierVec(datapath[3]);
-		if ( ! procDSTierVec.containsAll(pathTierVec) )
-				throw new DBSException("Tier Mismatch", "1037",
-                                                        "Provided Tier(s) combinition " +pathTierVec.toString() + 
-							" is not present in dataset "+path + " Path contains " + 
-							procDSTierVec.toString());
+		//ProcDS exists
+		if (!isNull(path)){
+			procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
+			String[] pathToks = path.split("/");
+			primary = pathToks[1];
+			processed = pathToks[2];
+			correctedPath =  "/" + primary +"/"+ processed + "/" + makeOrderedTierList(conn, parseTierVec(pathToks[3])) ;
+		}
+		else 
+			//There better be (primary, processed)
+                        procDSID = procDSApiObj.getProcessedDSID(conn, primary, processed, true);
+                
+		//Get ProcDS Tiers
+                procDSTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
+
+                if (!isNull(name)) {
+			//Takes care of BOTH path or (primary, processed) with name given
+                        String[] data = name.split("#");
+                        String[] blockPathToks = data[0].split("/");
+                        Vector blockTiers = parseTierVec(blockPathToks[3]);
+			//
+			// The teir portion of Path (if provided) must exists in DBS anyhow so checking 
+			// that blockTiers are in ProcDS must be enough..block tiers CAN be different 
+			// form PATH tiers, and its already checked that PATH teirs must exists in that Processced dataset
+			// which in turn must already be SAME for block.....oh.....this is just true so difficult to explain
+			// ah !!!
+			//
+				
+			//These primary, processed can be from path 
+			if ( !blockPathToks[1].equals(primary) ||
+				!blockPathToks[2].equals(processed) ||
+					! procDSTierVec.containsAll(blockTiers) ) 
+                                throw new DBSException("Path mismatch", "1039",
+                                                        "Block path portion "  + data[0] + " does not match with dataset:"
+							+ "/"+primary+"/"+processed+"/"+procDSTierVec+"   "+blockTiers+"  "+data[0]);
+
+			//Corrected name
+                        //While check the Order of Tier list from Block
+                        correctedPath =  "/" + blockPathToks[1] + "/" + blockPathToks[2] + "/"+ makeOrderedTierList(conn, blockTiers);
+
+                        name = correctedPath + "#" + data[1];
+                } 
+		else {  
+			//Just make the name from PATH
+			name = correctedPath + "#" + UUID.randomUUID();
+                }
 
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 
-		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
-                                                                + "/"+ makeOrderedTierList(conn, pathTierVec);
+		//Time to insert the Block
+                String openForWriting = get(block, "open_for_writing", false);
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+                String userID = personApi.getUserID(conn, dbsUser);
+                String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
+                String creationDate = getTime(block, "creation_date", false);
 
-
-		if (!isNull(name)) {
-			String[] data = name.split("#");
-
-			String[] pathToks = path.split("/");
-			if ( ! pathToks[1].equals(data[0].split("/")[1])  ||
-				! pathToks[2].equals(data[0].split("/")[2]) ) {
-			//if ( ! path.equals(data[0])) 
-				throw new DBSException("Path mismatch", "1039", 
-							"Block path portion "  + data[0] + " does not match with Path " + path);
-			}
-
-			//Check the Order of Tier list	
-			makeOrderedTierList(conn, parseTierVec(data[0].split("/")[3]));
-		} else {
-
-				name = correctedPath  + "#" + UUID.randomUUID(); 
-		}
-
-		//if (isNull(name)) name = path +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
 
 		if(getBlockID(conn, name, false, false) == null ) {
@@ -221,7 +250,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			//System.out.println("storage_element_name " + seName);
 			insertStorageElement(conn, out, blockID, seName , cbUserID, lmbUserID, creationDate);
 		}
-
                         
 		out.write("<block block_name='" + name + "'/>");
 	}

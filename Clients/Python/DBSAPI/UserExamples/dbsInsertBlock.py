@@ -41,11 +41,11 @@ block = DbsFileBlock (
 print "Creating block %s" % block
 
 try:
-    print api.insertBlock (proc, block)
+    #print api.insertBlock (proc, block)
     #print api.insertBlock (proc)
     #print api.insertBlock ("/test_primary_001/TestProcessedDS001/SIM", block=None, storage_element=["thisIsMyOnlySE"])
     #print api.insertBlock ("/test_primary_001/TestProcessedDS001/SIM")
-    #print api.insertBlock ("/test_primary_001/SIM/TestProcessedDS001", "/test_primary_001/TestProcessedDS001/GEN-SIM#12345" , ['se1', 'se2', 'se3'])
+    print api.insertBlock ("/test_primary_001/TestProcessedDS001/GEN", "/test_primary_001/TestProcessedDS001/GEN#12345" , ['se1', 'se2', 'se3'])
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

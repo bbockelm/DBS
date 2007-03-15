@@ -1,6 +1,6 @@
 /**
- $Revision: 1.80 $"
- $Id: DBSApi.java,v 1.80 2007/03/09 21:32:11 sekhri Exp $"
+ $Revision: 1.81 $"
+ $Id: DBSApi.java,v 1.81 2007/03/13 22:31:47 afaq Exp $"
  *
 */
 
@@ -431,7 +431,10 @@ public class DBSApi {
 						dbsUser);
 				
 			} else if (apiStr.equals("insertFiles")) {
-				DBSApiParser.insertFiles(conn, out, getXml(table), dbsUser);
+
+				DBSApiParser.insertFiles(conn, out, get(table, "primary_dataset", false), 
+									get(table, "processed_dataset", false), 
+									getXml(table), dbsUser);
 	
 			} else if (apiStr.equals("updateFileStatus")) {
 				(new DBSApiFileLogic(this.data)).updateFileStatus(conn, out,

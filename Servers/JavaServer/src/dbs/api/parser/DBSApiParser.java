@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiParser.java,v 1.6 2007/02/06 20:54:54 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiParser.java,v 1.7 2007/03/14 20:21:10 sekhri Exp $"
  *
 */
 
@@ -164,7 +164,7 @@ public class DBSApiParser {
 		return table;
 	}
 
-	public static void insertFiles(Connection conn, Writer out, String inputXml, Hashtable dbsUser) throws Exception {
+	public static void insertFiles(Connection conn, Writer out, String primary, String proc, String inputXml, Hashtable dbsUser) throws Exception {
 		Vector topLevel = new Vector();
 		int index = -1;
 		DBSXMLParser dbsParser = new DBSXMLParser();
@@ -212,7 +212,7 @@ public class DBSApiParser {
 				psDS = e.attributes;
 			}
 		}
-                (new DBSApiFileLogic(new DBSApiData())).insertFiles(conn, out, DBSUtil.get(psDS, "path"), block, topLevel, dbsUser);
+                (new DBSApiFileLogic(new DBSApiData())).insertFiles(conn, out, DBSUtil.get(psDS, "path"), primary, proc, block, topLevel, dbsUser);
 	}
 
 	public static Hashtable parseADD(String inputXml) throws Exception {

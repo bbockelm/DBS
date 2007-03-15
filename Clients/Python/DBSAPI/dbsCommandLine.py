@@ -22,9 +22,8 @@ from dbsApiException import *
 
 #############################################################################
 ##Default URL for the Service
-#URL="http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet"
-
-URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
+URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
+#URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
 #############################################################################
@@ -50,7 +49,7 @@ class DbsOptionParser(optparse.OptionParser):
            help="specify dbs client api version, e.g. --ver=v00_00_05, or --version=v00_00_05")
 
       self.add_option("--p","--path", action="store", type="string", dest="path",
-           help="specify dataset path, e.g. -p=/primary/processed/tier, or --path=/primary/processed/tier")
+           help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed")
 
       self.add_option("--pattern", action="store", type="string", dest="pattern",
            help="some command scope could be restricted with pattern, e.g. listPrimaryDataset")
