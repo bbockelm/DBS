@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiAlgoLogic.java,v 1.10 2007/02/07 16:45:16 afaq Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApiAlgoLogic.java,v 1.11 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -64,7 +64,6 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
 						"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
-						//"' ps_content='" + get(rs, "PS_CONTENT") +
 						"' ps_content='" + Base64.encodeBytes(get(rs, "PS_CONTENT").getBytes()) +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -121,12 +120,9 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		insertName(conn, out, "AppExecutable", "ExecutableName", exe, cbUserID, userID, creationDate);
 
 		//Insert the ParameterSet if it does not exists
-		//insertParameterSet(conn, psHash, psName, psVersion, psType, psAnnotation, psContent, userID);
-		//insertParameterSet(conn, out, algo, cbUserID, userID, creationDate);
 		insertParameterSet(conn, out, algo, cbUserID, userID, creationDate);
 			    
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
-		//if(getAlgorithmID(conn, version, family, exe, psName, false) == null) {
 		if(getAlgorithmID(conn, version, family, exe, psHash, false) == null) {
 			PreparedStatement ps = null;
 			try {
@@ -134,7 +130,6 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 					getID(conn, "AppExecutable", "ExecutableName", exe, true), 
 					getID(conn, "AppVersion", "Version", version, true), 
 					getID(conn, "AppFamily", "FamilyName", family, true), 
-					//getID(conn, "QueryableParameterSet", "Name", psName, true), 
 					getID(conn, "QueryableParameterSet", "Hash", psHash, true), 
 					cbUserID, userID, creationDate);
 				ps.execute();
@@ -162,14 +157,12 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
 	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String cbUserID, String userID, String creationDate) throws Exception {
-		//String psName = get(algo, "ps_name", true);
 		String psHash = get(algo, "ps_hash", false);
 
                 if ( isNull(psHash) ) {
                         psHash = "NO_PSET_HASH";
                 }
 
-		//if( getID(conn, "QueryableParameterSet", "Name", psName, false) == null ) {
 		if( getID(conn, "QueryableParameterSet", "Hash", psHash, false) == null ) {
 			PreparedStatement ps = null;
 			try {
@@ -178,20 +171,13 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 				if(!isNull(content)) {
 					contentBase64 = new String(Base64.decode(get(algo, "ps_content")));
 				}
-				//String c =  new String(Base64.decode(get(algo, "ps_content")));
-				//System.out.println("CONTENT    ---> " + c);
 				ps = DBSSql.insertParameterSet(conn,
-						//get(algo, "ps_hash", true), 
 						psHash,
 						get(algo, "ps_name"), 
-						//getStr(algo, "ps_version", true), 
 						get(algo, "ps_version"), 
-						//getStr(algo, "ps_type", true), 
 						get(algo, "ps_type"), 
-						//getStr(algo, "ps_annotation", true), 
 						get(algo, "ps_annotation"), 
                                                 //FIXME We are allowing every thing in content, need to fix it
-						//get(algo, "ps_content"), 
 						contentBase64, 
 						cbUserID, userID, creationDate);
 				ps.execute();
@@ -219,12 +205,10 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		checkWord(fam, "app_family_name");
 		checkWord(exe, "app_executable_name");
 		checkWord(psHash, "ps_hash");
-		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getAlgorithmID(ver, fam, exe, ps));
 		String id = "";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			//ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psName);
 			ps =  DBSSql.getAlgorithmID(conn, ver, fam, exe, psHash);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {

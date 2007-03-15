@@ -1,6 +1,6 @@
 /**
- $Revision: 1.31 $"
- $Id: DBSApiBlockLogic.java,v 1.31 2007/03/15 17:16:25 sekhri Exp $"
+ $Revision: 1.32 $"
+ $Id: DBSApiBlockLogic.java,v 1.32 2007/03/15 19:05:03 sekhri Exp $"
  *
  */
 
@@ -51,12 +51,10 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			//ps =  DBSSql.listBlocks(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true), getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));
 			String procDSID = "";
 			String patternPath = "";
 			if (!isNull(path)) {
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
-				//patternPath = path + "%";
 				patternPath = path;
 			}
 			ps =  DBSSql.listBlocks(conn, procDSID, patternPath, getBlockPattern(patternBlockName), getPattern(patternSEName, "storage_element_name"));

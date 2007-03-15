@@ -1,6 +1,6 @@
 /**
- $Revision: 1.39 $"
- $Id: DBSApiFileLogic.java,v 1.39 2007/03/15 14:24:45 afaq Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSApiFileLogic.java,v 1.40 2007/03/15 19:05:03 sekhri Exp $"
  *
  */
 
@@ -176,7 +176,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				if (!isNull(detail)) {
 					this.data.globalFile = new Hashtable();
 					this.data.globalFile.put(lfn, fileID);
-					//listFileParents(conn, out, lfn);
 					listFileProvenence(conn, out, lfn, true);//Parents
 					listFileProvenence(conn, out, lfn, false);//Children
 					listFileAlgorithms(conn, out, lfn);
@@ -770,11 +769,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
 			for (int j = 0; j < algoVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)algoVector.get(j);
-		                String psHash = get(hashTable, "ps_hash", false);
-		
-                		if (isNull (psHash) ) {
-              		          psHash =  "NO_PSET_HASH";
-                		}
+				String psHash = get(hashTable, "ps_hash", false);
+				if (isNull (psHash) ) psHash =  "NO_PSET_HASH";
 
 				insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 						fileID, 

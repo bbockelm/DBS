@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApiProcDSLogic.java,v 1.29 2007/03/13 22:31:47 afaq Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSApiProcDSLogic.java,v 1.30 2007/03/14 15:06:42 afaq Exp $"
  *
  */
 
@@ -298,7 +298,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//Set defaults Values
 		if (isNull(status)) status = "VALID";
 		if (isNull(phyGroupName)) phyGroupName = "ALLGROUP";
-		if (isNull(phyGroupCon)) phyGroupCon = "ANZARDN";//FIXME Some default convenor name should be used
+		if (isNull(phyGroupCon)) phyGroupCon = "/DC=org/DC=doegrids/OU=People/CN=Vijay Sekhri 316706";//FIXME Some default convenor name should be used
 		
 		//Insert a Processed Dataset status if it does not exists
 		//insertName(conn, out, "Status", "Status", status , lmbUserID);
@@ -346,9 +346,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
 			String psHash = get(hashTable, "ps_hash");
 			
-		        if ( isNull(psHash) ) {
-                	        psHash = "NO_PSET_HASH";
-                	}
+		        if ( isNull(psHash) ) psHash = "NO_PSET_HASH";
 
 			insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
 					procDSID, 

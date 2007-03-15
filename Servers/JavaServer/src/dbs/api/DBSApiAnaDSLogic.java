@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiAnaDSLogic.java,v 1.26 2007/03/01 16:06:00 sekhri Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.27 2007/03/09 21:32:11 sekhri Exp $"
  *
  */
 
@@ -81,137 +81,53 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
          * @param path a parameter passed in from the client that contains Path of a Processed Dataset name. It is used to restrict the SQL query results by sustitution it in the WHERE clause.
          * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
          */
-         public void listAnalysisDataset(Connection conn, Writer out, String patternName, String path) throws Exception {
-                PreparedStatement ps = null;
-                ResultSet rs =  null;
-
-                String procDSID = null;
-                if(!isNull(path)) {
-                        procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
-                }
-		//System.out.println("Pattern ---------> " + patternName);
-                try {
-                        ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "analysis_dataset_name_pattern"), procDSID);
-                        rs =  ps.executeQuery();
-                        while(rs.next()) {
-
-                                out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
-                                        "' analysis_dataset_name='" + get(rs, "ANALYSIS_DATASET_NAME") +
-                                        "' annotation='" + get(rs, "ANNOTATION") +
-                                        //"' processed_dataset='" + get(rs, "PROCDSID") +
-                                        //"' Definition='" + get(rs, "DEFID") +
-                                        "' type='" + get(rs, "TYPE") +
-                                        "' status='" + get(rs, "STATUS") +
-                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
-                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-                                        "' created_by='" + get(rs, "CREATED_BY") +
-                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-                                        "'>\n"));
+	 public void listAnalysisDataset(Connection conn, Writer out, String patternName, String path) throws Exception {
+ 		 PreparedStatement ps = null;
+ 		 ResultSet rs =  null;
+		 String procDSID = null;
+ 		 if(!isNull(path)) 
+ 			 procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+ 		 try {
+ 			 ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "analysis_dataset_name_pattern"), procDSID);
+ 			 rs =  ps.executeQuery();
+ 			 while(rs.next()) {
+ 				 out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
+							"' analysis_dataset_name='" + get(rs, "ANALYSIS_DATASET_NAME") +
+							"' annotation='" + get(rs, "ANNOTATION") +
+							"' type='" + get(rs, "TYPE") +
+							"' status='" + get(rs, "STATUS") +
+							"' creation_date='" + getTime(rs, "CREATION_DATE") +
+							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+							"' created_by='" + get(rs, "CREATED_BY") +
+							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+							"'>\n"));
 				//Add the details of definition also for this dataset
-                                out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
-                                        "' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
-                                        "' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
-                                        "' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
-                                        "' runs='" + get(rs, "RUNS") +
-                                        "' runs_ranges='" + get(rs, "RUNS_RANGES") +
-                                        "' algorithms='" + get(rs, "ALGORITHMS") +
-                                        "' lfns='" + get(rs, "LFNS") +
-                                        "' path='" + get(rs, "PATH") +
-                                        "' tiers='" + get(rs, "TIERS") +
-                                        "' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
-                                        "' user_cut='" + get(rs, "USER_CUT") +
-                                        "' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
-                                        "' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
-                                        "' created_by='" + get(rs, "ADD_CREATED_BY") +
-                                        "' last_modified_by='" + get(rs, "ADD_LAST_MODIFIED_BY") +
-                                        "'/>\n"));
-                                 out.write("</analysis_dataset>\n");
-
-                        }
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-         }
-
-
-
-
- 	/**
-	 * Insert a analysis dataset whose parameters are provided in the passed dataset <code>java.util.Hashtable</code>. This hashtable is generated externally and filled in with the analysis dataset parameters by parsing the xml input provided by the client. This method inserts entry into more than one table associated with AnalysisDataset table. The the main query that it executes to insert in AnalysisDataset table, get generated by <code>dbs.DBSSql.insertAnalysisDataset</code> method.<br> 
-	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
-	 * Then it insert a new type field in AnalysisDSType table by calling a generic private  insertName method. <br>
-	 * Then it insert a new status field in AnalysisDSStatus table by calling a generic private  insertName method. <br>
-	 * Then it insert a new analysis dataset in AnalysisDataset table. <br>
-	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
-	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param dataset a  <code>java.util.Hastable</code>  that contain all the necessary key value pairs required for inserting a new analysis dataset. The keys along with its values that it may or may not contain are <br>
-	 * <code>name, type, status, annotation, physics_group_name, created_by, creation_date </code> <br>
-	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
-	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
-	 */
-         public void createAnalysisDatasetFromPD(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception { 
-		String name = get(dataset, "name", true);
-		String type = get(dataset, "type", true);
-		String status = get(dataset, "status", true);
-		String lmbUserID = personApi.getUserID(conn, dbsUser);
-		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by"), dbsUser );
-		String creationDate = getTime(dataset, "creation_date", false);
-
-		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(dataset, "path"), true);
-
-		//FIXME Parentage of Analysis Datasets (not well understood yet)
-		//Vector parentVector = DBSUtil.getVector(dataset,"parent");
-
-		//FIXME   Make sure that Type and Status fileds are well understood
-		//        will they pre-exist, or user can define as they create AnalysisDS ??     
-
-		insertName(conn, out, "AnalysisDSType", "Type", type , cbUserID, lmbUserID, creationDate);
-		insertName(conn, out, "AnalysisDSStatus", "Status", status, cbUserID, lmbUserID, creationDate);
-
-	        ResultSet rsLumi = null;
-                PreparedStatement psLumi = null; 
-		try { 
-			psLumi = DBSSql.listLumiSections(conn, procDSID); 
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.insertAnalysisDataset(conn,
-		   				getStr(dataset, "annotation", true),
-		   				name,
-		   				psLumi.toString(),
-		   				procDSID,
-		   				getID(conn, "AnalysisDSType", "Type", type, true),
-						getID(conn, "AnalysisDSStatus", "Status", status, true),
-						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
-							get(dataset, "physics_group_name", true), 
-							true), 
-						cbUserID, lmbUserID, creationDate); 
-                                                
-				ps.execute();
-			 } finally {
-				if (ps != null) ps.close();   
-			 }
-
-			 //System.out.println("ANZAR: procDSID="+procDSID);
-			 //ID of just added AnalysisDS 
-			 String analysisDSID = getID(conn, "AnalysisDataset", "Name", name , true);
-                 
-			  //For eacxh run belonging to this ProcDS, get LumiSections and
-			  //make an entry into AnalysisDatasetLumi
-
-			  rsLumi =  psLumi.executeQuery(); 
-			  while(rsLumi.next())    
-				insertMap(conn, out, "AnalysisDatasetLumi", "AnalysisDataset", "Lumi",  
-	 					analysisDSID, 
-						get(rsLumi, "ID"), 
-						cbUserID, lmbUserID, creationDate);
-			  
+				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
+							"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
+							"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
+							"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
+							"' runs='" + get(rs, "RUNS") +
+							"' runs_ranges='" + get(rs, "RUNS_RANGES") +
+							"' algorithms='" + get(rs, "ALGORITHMS") +
+							"' lfns='" + get(rs, "LFNS") +
+							"' path='" + get(rs, "PATH") +
+							"' tiers='" + get(rs, "TIERS") +
+							"' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
+							"' user_cut='" + get(rs, "USER_CUT") +
+							"' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
+							"' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
+							"' created_by='" + get(rs, "ADD_CREATED_BY") +
+							"' last_modified_by='" + get(rs, "ADD_LAST_MODIFIED_BY") +
+							"'/>\n"));
+				out.write("</analysis_dataset>\n");
+			}
 		} finally {
-                          if (psLumi != null) psLumi.close();
-                          if (rsLumi != null) rsLumi.close();
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
 		}
-         }
-	 
+	 }
+
+
 
 		
         public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
