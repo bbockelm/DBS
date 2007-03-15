@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSApiTransferLogic.java,v 1.14 2007/03/14 20:21:09 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiTransferLogic.java,v 1.16 2007/03/15 14:24:45 afaq Exp $"
  *
  */
 
@@ -106,7 +106,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 			String name = getBlock(block, "name", true);
 			String openForWriting = get(block, "open_for_writing", false);
 			if(openForWriting.equals("0")) {
-				closeBlockVector.add("name");
+				closeBlockVector.add(name);
 				block.remove("open_for_writing");
 			}
 			System.out.println("---------> Inserting block "+name);

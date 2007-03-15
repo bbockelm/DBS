@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApiBlockLogic.java,v 1.29 2007/03/14 14:07:01 afaq Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApiBlockLogic.java,v 1.31 2007/03/15 17:16:25 sekhri Exp $"
  *
  */
 
@@ -422,6 +422,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 
 	public void closeBlock(Connection conn, Writer out, String name, Hashtable dbsUser) throws Exception {
+
 		closeBlock(conn, getBlockID(conn, name, false, true));
                 insertTimeLog(conn, "CloseBlock", "Close Block Called By User",
                                                   "Block Closed", "Block Name: "+name,

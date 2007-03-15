@@ -1,6 +1,6 @@
 /**
- $Revision: 1.38 $"
- $Id: DBSApiFileLogic.java,v 1.38 2007/03/14 20:21:09 sekhri Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSApiFileLogic.java,v 1.39 2007/03/15 14:24:45 afaq Exp $"
  *
  */
 
@@ -562,31 +562,33 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 boolean dbsBlockManagment = false;
 
 		String correctedPath = null;
+		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
+		
 
+		if (!isNull(blockName) && !isNull(path))
+				writeWarning(out, "Both Block and Path provided", "1050", "Both Block " + blockName + " and path " +
+					       path + " are provided. Ignoring path. Block is suifficent");
 		//Block is given -------------  insertFiles in Block
                 //Get the Block name (if provided)
 		if (!isNull(blockName)) {
-			//Get the path portion of Block
-			String pathFromBlock = blockName.split("#")[0];
-
-			//Get the tier portion of block
-			Vector blockTierVec = parseTierVec(pathFromBlock.split("/")[3]);
-			//This will either raise exception, or return true
-			matchWithFileTiers(files, blockTierVec, blockName);
-				
 			//Verify Block exists
+			//This also check is the tiers are in the database or not. 
+			//When the block was first inserted it did the tier check, so there is no need to do this again
        	                blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
-			
-			//get the processed dataset ID
-			DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
-			procDSID = procDSApiObj.getProcessedDSID(conn, pathFromBlock, true);
 
-			//Now we can insertFiles and be done.
+			//Get the path portion of Block
+			String blockPath = blockName.split("#")[0];
+			String[] blockPathTokens = blockPath.split("/");
+			
+			if(blockPathTokens.length == 4) matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
+			else blockPath += "/nothing";//In case block come from DBS1 it does not have tier
+						
+			procDSID = procDSApiObj.getProcessedDSID(conn, blockPath, true);
+
 		}
 
 		//Path is given ------- insertFiles in path
 		else if (!isNull(path)){
-			DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
 			procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
 
 			//List Tiers from ProcDS
@@ -606,12 +608,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 			//Now blockID == null and hence let DBS do its Block Management
 			dbsBlockManagment = true;
+			// you do not need to add tier on the right order here in correctPath since the path for the dbsmanaged block
+			// comes from tiers iin the file
 			correctedPath = path;
 		}
 
 		//primary, proc given -------- insertFiles in (primary, proc) == dataset
 		else if (!isNull(primary) && !isNull(proc)) {
-			DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
 			procDSID = procDSApiObj.getProcessedDSID(conn, primary, proc, true);
 			//Alright the Processed Dataset exists
 
