@@ -172,8 +172,10 @@ class DbsApi(DbsConfig):
          if primary != None:
             tier= dataset.get('TierList', [])
             if tier != []:
+	       #return "/" + primary.get('Name') \
+			#+ "/" + dataset.get('Name') + "/" + tier[0] 	
 	       return "/" + primary.get('Name') \
-			+ "/" + dataset.get('Name') + "/" + tier[0] 	
+			+ "/" + dataset.get('Name') + "/" + string.join(tier, "-")
                #return "/" + primary.get('Name') \
                #      + "/" + tier[0] + "/" + dataset.get('Name')
 
@@ -2099,7 +2101,7 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
-    #path = self._path(dataset)
+    path = self._path(dataset)
 
     name = self._name(block)
 
@@ -2108,12 +2110,16 @@ class DbsApi(DbsConfig):
     xmlinput += "<block name='"+ name +"'"
     if type(block) != type("str") and block != None :
        xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"
+    """
     if (isinstance(dataset, DbsProcessedDataset)) :
 	xmlinput += " primary_dataset='"+dataset['PrimaryDataset']['Name']+"'"
 	xmlinput += " processed_dataset='"+dataset['Name']+"'"
 	xmlinput += " path='' >"
     else :
-    	xmlinput += " path='"+dataset+"'>"
+    	xmlinput += " path='"+path+"'>"
+    """
+    xmlinput += " path='"+path+"'>"
+
     if (storage_element_list) not in ( [], None ) : 
          for aSe in storage_element_list:
             xmlinput += " <storage_element storage_element_name='"+self._name(aSe)+"'/>"
