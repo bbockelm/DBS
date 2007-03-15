@@ -141,6 +141,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"DIGI\", \"
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RECO\", \"Reconstructed products produced from either real data or DIGI data       TBA\");"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"AOD\", \"Analysis Object Data products TBA\");"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RAW\", \"Raw detector output from the HLT system   TBA\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"FEVT\", \"IS ITS A TIER \");"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"ALCARECO\", \"IS ITS A TIER ? TBA\");"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"USER\", \"Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA\");"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
@@ -152,6 +153,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DI
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', SYSTIMESTAMP);" >> $ddl_file
