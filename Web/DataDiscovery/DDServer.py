@@ -2588,7 +2588,7 @@ class DDServer(DDLogger):
                 table,col,op,where=string.split(item,"__")
                 if col.lower()=='all': col='*'
                 addToDict(iDict,table,col)
-                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName('localhost',table),col))
+                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName(dbsInst,table),col))
         print "looking for",iDict
         
         # TODO: for now I test how query will work
