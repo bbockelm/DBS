@@ -174,7 +174,10 @@ class DDServer(DDLogger):
         msg = ""
         if iMsg: msg+=iMsg
         msg+="Request internals:\n"
-        msg+="Request from: %s:%s\n"%(cherrypy.request.remote_host,cherrypy.request.remote_port)
+        if  int(string.split(cherrypy.__version__,".")[0])==3:
+            msg+="Request from: %s:%s\n"%(cherrypy.request.remote.host,cherrypy.request.remote.port)
+        else:
+            msg+="Request from: %s:%s\n"%(cherrypy.request.remote_host,cherrypy.request.remote_port)
         msg+="Request url : %s\n"%cherrypy.request.browser_url
         msg+="\n\n"
         msg+="DDServer:\n"
@@ -292,11 +295,19 @@ class DDServer(DDLogger):
            @rtype: string
            @return: returns HTML code
         """
+        if  int(string.split(cherrypy.__version__,".")[0])==3:
+            port=cherrypy.request.remote.port
+            host=cherrypy.request.remote.host
+            url =cherrypy.url()
+        else:
+            port=cherrypy.request.remote_port
+            host=cherrypy.request.remote_host
+            url =cherrypy.request.browser_url
         nameSpace = {
                      'msg':getExceptionInHTML(),
-                     'port': cherrypy.request.remote_port,
-                     'host': cherrypy.request.remote_host,
-                     'url' : cherrypy.request.browser_url
+                     'port': port,
+                     'host': host,
+                     'url' : url 
                     }
         t = templateERROR(searchList=[nameSpace]).respond()
         self.sendErrorReport(msg+"\n"+getExcept())
@@ -545,6 +556,7 @@ class DDServer(DDLogger):
                      'dbsList'        : self.dbsList,
                      'searchFunction' : searchFunc,
                      'selectLine'     : selectLine,
+                     'dbsGlobal'      : DBSGLOBAL,
                     }
         t = templateSearchTable(searchList=[nameSpace]).respond()
         page = str(t)
