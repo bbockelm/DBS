@@ -25,16 +25,21 @@ var GLOBAL_STEP=$step
   </li>
 
   <li id="Search_Menu">
-    <a href="javascript:showMenu('Search')">Finder</a>
-    ###<a href="javascript:showMenu('Search');ajaxGetKWFields()">Selections</a>
+    ###<a href="javascript:showMenu('Search')">Finder</a>
+    #set hList=['builder','queries']
+    #set hDict={'builder':'my builder','queries':'my queries'}
+    <a href="javascript:showMenu('Search');showFinderMenu('$hList[0]',$hList);">Finder</a>
+      <table id="finder_table" class="hide">
+    #for name in $hList
+          <tr><td>&\#187;</td><td id="_${name}Finder"><a href="javascript:showFinderMenu('$name',$hList);">$hDict[$name]</a></td></tr>
+    #end for
+      </table>       
   </li>
 #end if
 
-#if $userMode=="dbsExpert"
   <li id="Lucene_Menu">
-    <a href="javascript:showMenu('Lucene');ajaxGetLuceneParams()">Lucene</a>
+    <a href="javascript:showMenu('Lucene');ajaxGetLuceneParams()">configs</a>
   </li>
-#end if
 
 #if not $userMode
   <li id="Site_Menu">
@@ -81,17 +86,9 @@ var GLOBAL_STEP=$step
 
   <li class="plain"><br /></li>
 
-#*
-<a href="javascript:GetSessionHistory();" class="td_gray_box" id="SessionHistory_Menu">
-Session History
-</a>
-###<span class="yellow_box" onMouseOver="KeywordHelp('SessDesc_tag','Session history is a quick way to find out your previous actions on a web page')" onMouseOut="ClearTag('SessDesc_tag')">?</span><span id="SessDesc_tag"></span>
-    #set hList=['user','auth','search']
-    #set hDict={'user':'Session','auth':'Authentication','search':'Search'}
-*#
   <li id="History_Menu">
     #set hList=['user','search']
-    #set hDict={'user':'Session','search':'Search'}
+    #set hDict={'user':'Last 20','search':'Search'}
     <a href="javascript:showMenu('History');showHistoryMenu('$hList[0]',$hList);ajaxGetHistory();">History</a>
       <table id="history_table" class="hide">
     #for name in $hList
@@ -133,11 +130,14 @@ Navigator menu
 </tr>
 <tr valign="top">
 <td>
+$userNavigator
+#*
 #if $userMode
 $userNavigator
 #else
 $navigatorForm
 #end if
+*#
 </td>
 </tr>
 </table>
@@ -239,7 +239,7 @@ DBS instance: <select name="keywordsSearch_dbsInst" id="kw_dbsSelector">
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
-Lucene search
+Config parameter search
 </td>
 </tr>
 <tr valign="top">
@@ -321,25 +321,8 @@ $siteForm
 <!-- userHistory -->
 <div id="userHistory" class="hide">
 
-<table class="table_round_box" border="0" width="100%">
-<tr valign="top">
-<td class="box_darkblue">
-
-#set menuArr=['sessionHistory','allHistory']
-<table id="userHistory_info" class="show_table" cellspacing="1" width="50%">
-<tr>
-<td class="td_menu_white_box" align="center" id="_sessionHistory"><a href="javascript:showResMenu('sessionHistory',$menuArr)">Current session</a></td>
-<td class="td_menu_gray_box" align="center" id="_allHistory"><a href="javascript:showResMenu('allHistory',$menuArr)">Last 100</a></td>
-</tr>
-</table>
-
-</td>
-</tr>
-</table>
-
 <div class="div_scroll">
-<span id="sessionHistory" class="show_inline"></span>
-<span id="allHistory" class="hide"></span>
+<span id="allHistory" class="show_inline"></span>
 </div>
 
 </div>
@@ -640,9 +623,9 @@ SQL query
          DBS instance:
          </td>
          <td>
-         <select id="kw_dbsSelector">
+         <select id="dbsExpert_dbsSelector">
          #for dbs in $dbsList
-         <option>$dbs</option>
+         <option value="$dbs">$dbs</option>
          #end for
          </select>
          </td>
@@ -656,7 +639,7 @@ SQL query
          <select id="kw_dbsTables" name="dbsTables">
          <option>All</option>
          #for table in $dbsTables
-         <option>$table</option>
+         <option value="$table">$table</option>
          #end for
          </select>
          </td>
@@ -684,17 +667,17 @@ SQL query
 </table>
 
 <script type="text/javascript">
+#*
 ajaxEngine.registerAjaxObject('tableCols_999999', new GetDataUpdater('tableCols_999999','replace','noResultsMenu'));
 ChangeCols(999999,'dbsTables');
-#*
+
 #if $frontPage
 showMenu('Navigator');
 #end if
-*#
 #if $userMode
 registerAjaxUserMenuCalls();
 resetPhysGroups();
 ajaxGetKWFields();
 #end if
-
+*#
 </script>

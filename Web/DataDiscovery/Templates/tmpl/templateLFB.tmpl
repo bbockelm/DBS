@@ -85,7 +85,7 @@ Details
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center">
      <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=cff',1000)">cff</a>
-     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList',1000)">plain</a>
+     <a href="javascript:popUp('$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=txt',1000)">plain</a>
      </td>
   </tr>
 #end for
@@ -140,9 +140,15 @@ Details
      <td align="center" style="background-color:AntiqueWhite;"><div class="dbs_cell">CLOSED</div></td>
 #end if
      <td align="left" class="td20">
+      $name
+#*
 #from DDUtil import splitString 
-#set sName=$splitString($name,30,"\\n")
-     $sName
+#set sName=$splitString($name,30,"<br />")
+#set sName=$name.replace('#','&#173;#')
+     $sName 
+*#
+###<span class="yellow_box"><a title="$name">cut and paste</a></span>
+     ###<table><tr valign="bottom"><td>$sName</td><td align="right"><span class="yellow_box"><a title="$name" onclick="ClipBoard()">&#8224;</a></span></td></tr></table>
      </td>
   </tr>
 #end for

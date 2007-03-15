@@ -73,7 +73,7 @@ class DDHelper(DDLogger):
       # set DBS/DLS 
       self.setDBSDLS(dbsInst)
       self.quiet       = 0
-
+      self.ddConfig  = DDConfig()
 
   def col(self,table,col):
       return self.dbManager.col(self.dbsInstance,table,col)
@@ -81,8 +81,8 @@ class DDHelper(DDLogger):
       self.quiet=1
 
   def rssMaker(self,dbsInst):
-      ddConfig  = DDConfig()
-      url = ddConfig.url()
+#      ddConfig  = DDConfig()
+      url = self.ddConfig.url()
       self.setDBSDLS(dbsInst)
       #aList = self.listApplications()
       aList = self.getApplications()
@@ -286,7 +286,7 @@ class DDHelper(DDLogger):
 #            self.api = dbsWebApi.DbsWebApi({'url':url})
             self.api=""
             con = self.connectToDB()
-            con.close()
+            self.closeConnection(con)
          self.dbsApi[dbsInst]=self.api
       else:
          self.api = self.dbsApi[dbsInst]
@@ -329,7 +329,21 @@ class DDHelper(DDLogger):
       else:
          self.dls_iface = self.dlsInst[(dlsType,endpoint)]
 
-  ### WRAPPER ###
+  ### HELPER functions ###
+  def getTableColumn(self,table,column,iRow=1,iLimit=0):
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          content = self.getTableContent(con,table,iList=[column],fromRow=iRow,limit=iLimit)
+      except:
+          printExcept()
+          raise "Fail in getTableColumn"
+      for item in content:
+          oList.append(item[0])
+      self.closeConnection(con)
+      return oList
+
   def listApplicationConfigs(self,appPath):
       t1=time.time()
       con = self.connectToDB()
@@ -340,8 +354,8 @@ class DDHelper(DDLogger):
           tapf = self.alias('AppFamily','tapf')
           talc = self.alias('AlgorithmConfig','talc')
           tqps = self.alias('QueryableParameterSet','tqps')
-          tp1   = self.alias('Person','tp1')
-          tp2   = self.alias('Person','tp2')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
 
           oSel = [self.col(tqps,'ID'),self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
           sel  = sqlalchemy.select(oSel,
@@ -372,7 +386,7 @@ class DDHelper(DDLogger):
           raise "Fail in listApplicationsConfigs"
       if self.verbose:
          self.writeLog("time listApplicationsConfigs: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*"):
@@ -434,7 +448,7 @@ class DDHelper(DDLogger):
           tier = item[1]
           proc = item[2]
           oList.append("/%s/%s/%s"%(prim,proc,tier))
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def listDatasetsFromApp(self,appPath="*"):
@@ -504,7 +518,9 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
           if kwargs.has_key('site') and kwargs['site'] and kwargs['site']!="*" and string.lower(kwargs['site'])!='all':
              sel.append_whereclause(self.col(tse,'SEName')==kwargs['site'])
-          result = self.getSQLAlchemyResult(con,sel)
+          idx=-1
+          if kwargs.has_key('idx'): idx=kwargs['idx']
+          result = self.getSQLAlchemyResult(con,sel,idx)
       except:
           printExcept()
           raise "Fail in listBlocks"
@@ -513,8 +529,8 @@ class DDHelper(DDLogger):
       siteList=[]
       totEvt=totFiles=totSize=0
       for item in result:
+          if not item[0]: continue
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
-          if not blockName: continue
           totEvt+=nEvts
           totFiles+=nFiles
           totSize+=blockSize
@@ -534,7 +550,7 @@ class DDHelper(DDLogger):
                 aDict[blockName]=[nEvts,blockStatus,nFiles,blockSize,sename]
       if self.verbose:
          self.writeLog("time listBlocks: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       if kwargs.has_key('fullOutput'):
          return aList
       return aDict,totEvt,totFiles,totSize,siteList
@@ -571,7 +587,7 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           evts+= item[0]
-      con.close()
+      self.closeConnection(con)
       return evts
 
   ### END OF WRAPPER ###
@@ -636,7 +652,7 @@ class DDHelper(DDLogger):
 #      oList=[]
 #      for item in result:
 #          oList.append(item)
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def getDatasetsFromApplications(self):
@@ -682,7 +698,7 @@ class DDHelper(DDLogger):
              addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,proc,tier))
       if self.verbose:
          self.writeLog("time getDatasetsFromApplications: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return aDict
 
   def getApplications(self):
@@ -719,77 +735,35 @@ class DDHelper(DDLogger):
           oList.append(path)
       if self.verbose:
          self.writeLog("time getApplications: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def getPhysicsGroups(self):
-      t1=time.time()
-      con = self.connectToDB()
-      oList  = []
-      try:
-          content = self.getTableContent(con,'PhysicsGroup',iList=['PhysicsGroupName'],fromRow=1,limit=0)
-      except:
-          printExcept()
-          raise "Fail in getPhysicsGroups"
-      oList   = []
-      for item in content:
-          oList.append(item[0])
-      if self.verbose:
-         self.writeLog("time getPhysicsGroups: %s"%(time.time()-t1))
-      con.close()
-      return oList
+      return self.getTableColumn('PhysicsGroup','PhysicsGroupName')
+#      t1=time.time()
+#      con = self.connectToDB()
+#      oList  = []
+#      try:
+#          content = self.getTableContent(con,'PhysicsGroup',iList=['PhysicsGroupName'],fromRow=1,limit=0)
+#      except:
+#          printExcept()
+#          raise "Fail in getPhysicsGroups"
+#      oList   = []
+#      for item in content:
+#          oList.append(item[0])
+#      if self.verbose:
+#         self.writeLog("time getPhysicsGroups: %s"%(time.time()-t1))
+#      self.closeConnection(con)
+#      return oList
 
-  def getDataTypes(self):
-      t1=time.time()
-      con = self.connectToDB()
-      oList  = []
-      try:
-          content = self.getTableContent(con,'DataTier',iList=['Name'],fromRow=1,limit=0)
-      except:
-          printExcept()
-          raise "Fail in getDataTypes"
-      oList   = []
-      for item in content:
-          oList.append(item[0])
-      if self.verbose:
-         self.writeLog("time getDataTypes: %s"%(time.time()-t1))
-      con.close()
-      return oList
+  def getSites(self):
+      return self.getTableColumn('StorageElement','SEName')
+
+  def getDataTiers(self):
+      return self.getTableColumn('DataTier','Name')
 
   def getSoftwareReleases(self):
-      t1=time.time()
-      con = self.connectToDB()
-      oList  = []
-      try:
-          content = self.getTableContent(con,'AppVersion',iList=['Version'],fromRow=1,limit=0)
-      except:
-          printExcept()
-          raise "Fail in getSoftwareReleases"
-      oList   = []
-      for item in content:
-          oList.append(item[0])
-      if self.verbose:
-         self.writeLog("time getSoftwareReleases: %s"%(time.time()-t1))
-      con.close()
-      return oList
-
-  def getSoftwareReleases_old(self):
-      """
-         DBS data discovery wrapper around listApplications
-         @type  datasetPath: string 
-         @param datasetPath: dataset path 
-         @rtype : list 
-         @return: a list of application in the following form, [(family,version,exe)]
-      """
-      aList = []
-      dList = self.listApplications()
-      for item in dList:
-          path=item
-          empty,soft,fam,exe=string.split(path,'/')
-          aList.append(soft)
-      aList.sort()
-      aList.reverse()
-      return aList
+      return self.getTableColumn('AppVersion','Version')
 
   def getDatasetsFromApp(self,appPath="*",_prim="*",_tier="*"):
       """
@@ -799,6 +773,8 @@ class DDHelper(DDLogger):
          @rtype : list 
          @return: a list of datasets from application in the following form, [datasetPathName]
       """
+      if _prim.lower()=="any" or _prim.lower()=="all": _prim="*"
+      if _tier.lower()=="any" or _tier.lower()=="all": _tier="*"
       oList = []
       dList = self.listDatasetsFromApp(appPath)
       for dataset in dList:
@@ -828,7 +804,7 @@ class DDHelper(DDLogger):
           oList.append(name)
       if self.verbose:
          self.writeLog("time getPrimaryDatasets: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
       
   def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
@@ -873,7 +849,7 @@ class DDHelper(DDLogger):
           oList.append(name)
       if self.verbose:
          self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
   
   def getDatasetContent(self,dataset):
@@ -937,7 +913,7 @@ class DDHelper(DDLogger):
           oList.append(name)
       if self.verbose:
          self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
 
 
@@ -964,13 +940,19 @@ class DDHelper(DDLogger):
 	 pass
       return result
 
+  def closeConnection(self,con):
+      # if SQLAlchemy uses pool for engine, then it should correctly handle all connections
+      # and there is no needs to close it, since a new one will be taken from pool
+      # but I can keep it commented out here and use this function everywhere to rollback
+      # quickly.
+#      con.close()
+      return
+
   def connectToDB(self):
-#      self.setDBSDLS(self.dbsInstance)
       con=""
       try:
           con = self.dbManager.connect(self.dbsInstance)
       except Exception, ex:
-         # if we fail because of connection drop let's reconnect again
 	 try:
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
@@ -980,7 +962,7 @@ class DDHelper(DDLogger):
          pass
       return con
 
-  def getSQLAlchemyResult(self,con,sel):
+  def getSQLAlchemyResult(self,con,sel,idx=-1):
       """
          Set DBS instance and
          execute given query, if fails throws exception, including query
@@ -991,10 +973,13 @@ class DDHelper(DDLogger):
       """
       res = []
       try:
+          if idx>-1:
+             sel.limit=self.ddConfig.queryLimit()
+             sel.offset=idx
 #          if not con:
 #             con = self.connectToDB()
           res = con.execute(sel)
-#          con.close()
+#          self.closeConnection(con)
       except:
           msg="While connecting to %s exception was thrown:\n"%self.dbsInstance
           msg+=getExcept()
@@ -1016,7 +1001,7 @@ class DDHelper(DDLogger):
 #          con = self.dbManager.engine[self.dbsInstance].connect()
           con = self.dbManager.connect(self.dbsInstance)
           res = con.execute(sel)
-          con.close()
+          self.closeConnection(con)
       except Exception, ex:
          # if we fail because of connection drop let's reconnect again
 	 try:
@@ -1026,7 +1011,7 @@ class DDHelper(DDLogger):
 #             con = self.dbManager.engine[self.dbsInstance].connect()
              con = self.dbManager.connect(self.dbsInstance)
              res = con.execute(sel)
-             con.close()
+             self.closeConnection(con)
          except Exception, ex:
              raise DbsDatabaseError(args=ex)
          pass
@@ -1047,7 +1032,8 @@ class DDHelper(DDLogger):
   def getTableColumns(self,tableName):
       res=[]
       try:
-          res = ['All']+self.dbManager.getColumns(self.dbsInstance,tableName)
+#          res = ['All']+self.dbManager.getColumns(self.dbsInstance,tableName)
+          res = self.dbManager.getColumns(self.dbsInstance,tableName)
       except:
 #          printExcept()
 #          raise "Fail to get columns for table='%s'"%tableName
@@ -1056,20 +1042,40 @@ class DDHelper(DDLogger):
           res=msg
       return res
 
-  def queryMaker(self,iList):
+  def queryMaker(self,iList,execute=1):
       """ 
          Build a query out of input iList=['TableName.ColumnName',]
       """
-      qb = Schema(self.dbManager.constructSchema(self.dbsInstance))
-      query = qb.BuildQuery(iList)
+      # I need to lookup SQLAlchemy tables
+#      oSel = []
+#      for item in iList:
+#          table,col=item.split(".")
+#          if col=="*":
+#             for c in self.dbManager.getColumns(self.dbsInstance,table):
+#                 oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),c))
+#          else:
+#             oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),col))
+#      md     = self.dbManager.metaDict[self.dbsInstance]
+#      sel    = sqlalchemy.select(oSel)
+#      qb     = Schema(md)
+#      query  = qb.BuildQuery(sel)
+#      print str(query)
+#      if  execute:
+#          res = self.executeSQLQuery(query)
+#      return str(query),res
+      qb     = Schema(self.dbManager.constructSchema(self.dbsInstance))
+      query  = qb.BuildQuery(iList)
       writer = SqlQueryWriter()
       query.Write(writer)
-      
       if  self.verbose:
           self.writeLog(qb)
           self.writeLog(repr(iList))
           self.writeLog(writer.getvalue())
-      return writer.getvalue(),self.executeSQLQuery(writer.getvalue())
+      res = []
+      print writer.getvalue()
+      if  execute:
+          res = self.executeSQLQuery(writer.getvalue())
+      return writer.getvalue(),res
 
   def getAllTableColumns(self):
       tList = self.dbManager.dbTables[self.dbsInstance].keys()
@@ -1113,6 +1119,7 @@ class DDHelper(DDLogger):
           
 
   def checkQuery(self,query):
+      if type(query) is sqlalchemy.sql.Select: return True
       if string.find(query.lower(),"insert")!=-1:
          return False
       if string.find(query.lower(),"update")!=-1:
@@ -1137,7 +1144,7 @@ class DDHelper(DDLogger):
          res = con.execute(query)
       except:
          res = getExceptionInHTML()
-         con.close()
+         self.closeConnection(con)
          return res
       oList = []
       counter=0
@@ -1146,7 +1153,7 @@ class DDHelper(DDLogger):
              oList.append(item.keys())
           oList.append(item)
           counter+=1
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def formSQLQuery(self,tDict):
@@ -1226,7 +1233,7 @@ class DDHelper(DDLogger):
                      tDict[tName]=[]
                      print tDict
                      return self.formSQLQuery(tDict)
-                     con.close()
+                     self.closeConnection(con)
                      return
                       
 #                  print fk,refList,fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[0])),fk.references(self.dbManager.getTableObject(self.dbsInstance,refList[1]))
@@ -1238,7 +1245,7 @@ class DDHelper(DDLogger):
 #                     print "Found",fk,refList,tName
 #                     tDict[tName]=[]
 #                     print tDict
-#                     con.close()
+#                     self.closeConnection(con)
 #                     return
 #          print "#### ac,procAlgo"
 #          fKeys=self.dbManager.getTableObject(self.dbsInstance,'AlgorithmConfig').foreign_keys
@@ -1253,7 +1260,7 @@ class DDHelper(DDLogger):
 #          nList.append(getattr(tObj.c,x))
 #      return map(cList,lambda x: getattr(table,x))
           
-      con.close() 
+      self.closeConnection(con) 
 
   def formQuery(self):
       return
@@ -1271,7 +1278,7 @@ class DDHelper(DDLogger):
       content=""
       for item in res:
           content=str(item[0]) # need to use str to make ORACLE happy
-      con.close()
+      self.closeConnection(con)
       return content
 
   def getConfigContentByName(self,dbsInst,name,rel=""):
@@ -1299,11 +1306,11 @@ class DDHelper(DDLogger):
           raise "Fail in getConfigContentByName"
       if self.verbose:
          self.writeLog("time getConfigContentByName: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return content
 
   def getLFNs(self,dbsInst,blockName,dataset):
-      prim=tier=proc=""
+      prim=tier=proc="*"
       if dataset and dataset!="*":
          empty,prim,proc,tier=string.split(dataset,"/")
       con = self.connectToDB()
@@ -1314,22 +1321,22 @@ class DDHelper(DDLogger):
           tdt  = self.alias('DataTier','tdt')
           tb   = self.alias('Block','tb')
           tf   = self.alias('Files','tf')
-          sel  = sqlalchemy.select([self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tf,'FileStatus'),self.col(tf,'FileType'),self.col(tf,'NumberOfEvents')],
+          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tf,'FileStatus'),self.col(tf,'FileType'),self.col(tf,'NumberOfEvents')]
+          sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                          .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                          .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
-                     ],distinct=True,
-                 order_by=[self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tf,'FileStatus'),self.col(tf,'FileType'),self.col(tf,'NumberOfEvents')]
+                     ],distinct=True,order_by=oSel
                                   )
           sel.append_whereclause(self.col(tf,'Block')==self.col(tb,'ID'))
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if prim and prim!="*":
+          if tier and tier!="*":
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           if blockName and blockName!="*":
              sel.append_whereclause(self.col(tb,'Name')==blockName)
@@ -1341,7 +1348,7 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           oList.append(item)
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def getLFNs_old(self,dbsInst,blockName,dataset):
@@ -1382,7 +1389,7 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           oList.append(item)
-      con.close()
+      self.closeConnection(con)
       return tList,oList
 
 #  def getLFN_Lumis(self,dbsInst,lfn):
@@ -1418,7 +1425,7 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           oList.append(item)
-      con.close()
+      self.closeConnection(con)
       return tList,oList
 
 #  def getLFN_Algos(self,dbsInst,lfn):
@@ -1459,7 +1466,7 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           oList.append(item)
-      con.close()
+      self.closeConnection(con)
       return tList,oList
 
 #  def getLFN_Parents(self,dbsInst,lfn):
@@ -1586,7 +1593,7 @@ class DDHelper(DDLogger):
               if not proc or not tier or not proc: continue
               d+="/%s/%s/%s,"%(prim,tier,proc)
           oList=d[:-1] # remove last ","
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def searchTier(self,input):
@@ -1623,7 +1630,7 @@ class DDHelper(DDLogger):
       sumDict['Number of files'] = self.getSQLAlchemyResult(con,sel).fetchone()[0]
       sel = sqlalchemy.select([sqlalchemy.func.sum(tf.c.filesize)])
       sumDict['Total file size'] = sizeFormat(self.getSQLAlchemyResult(con,sel).fetchone()[0])
-      con.close()
+      self.closeConnection(con)
       return sumDict
 
   def WhatExists(self,datasetPath):
@@ -1696,7 +1703,7 @@ class DDHelper(DDLogger):
           oList.append(aDict)
       if self.verbose:
          self.writeLog("time in getRuns: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
 
   def getDbsData(self,dataset):
@@ -1744,7 +1751,7 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tver,'Version')==rel)
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if prim and prim!="*":
+          if tier and tier!="*":
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           print str(sel)
           result = self.getSQLAlchemyResult(con,sel)
@@ -1758,10 +1765,10 @@ class DDHelper(DDLogger):
           oList.append("/%s/%s/%s"%(prim,pset,tier))
       if self.verbose:
          self.writeLog("time in getUserData: %s"%(time.time()-t1))
-      con.close()
+      self.closeConnection(con)
       return oList
 
-  def getData(self,dataset,site="All"):
+  def getData(self,dataset,site="Any",idx=-1):
       """
          Returns 
          blockDict={'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}
@@ -1777,11 +1784,83 @@ class DDHelper(DDLogger):
          {'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}, 
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
-      kwargs={'datasetPath':dataset,'site':site}
+      kwargs={'datasetPath':dataset,'site':site,'idx':idx}
       blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
+  def getBlockInfoForSite(self,site):
+      if site.lower()=='all' or site.lower()=='any': site="*"
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tblk = self.alias('Block','tblk')
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
+
+          oSel = [self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),self.col(tse,'SEName')]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                     tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                     .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
+                     .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
+                            ],distinct=True,order_by=oSel
+                                 )
+          if site!="*":
+             sel.append_whereclause(self.col(tse,'SEName')==site)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listBlocksFromSite"
+      aList=[]
+      aDict={}
+      for item in result:
+          blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
+          if not blockName: continue
+          aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModifiedBy':mBy,'LastModificationDate':mDate}
+          aList.append(aDict)
+      if self.verbose:
+         self.writeLog("time listBlocksFromSite: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return aList
+
   def getBlocksFromSite(self,site):
+      if site.lower()=='all' or site.lower()=='any': site="*"
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tblk = self.alias('Block','tblk')
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
+
+          oSel = [self.col(tblk,'Name')]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                     tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                            ],distinct=True,order_by=oSel
+                                 )
+          if site!="*":
+             sel.append_whereclause(self.col(tse,'SEName')==site)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in listBlocksFromSite"
+      aList=[]
+      for item in result:
+          aList.append(item[0])
+      if self.verbose:
+         self.writeLog("time listBlocksFromSite: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return aList
+
+  def getBlocksFromSite_dls(self,site):
       """
          Use DLS api to get block names for given site.
          @type  site: string

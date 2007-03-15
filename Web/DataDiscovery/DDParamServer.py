@@ -17,9 +17,9 @@ import httplib, urllib, inspect
 from   DDUtil   import *
 from   DDConfig import *
 
-class DDParamSearch(DDLogger): 
+class DDParamServer(DDLogger): 
     def __init__(self,verbose=0):
-        DDLogger.__init__(self,"DDParamSearch",verbose)
+        DDLogger.__init__(self,"DDParamServer",verbose)
 #        self.ddConfig   = DDConfig()
 #        self.serverHost = self.ddConfig.serverHost()
 #        self.serverPort = self.ddConfig.serverPort()
@@ -69,7 +69,7 @@ class DDParamSearch(DDLogger):
 if __name__ == "__main__":
     optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
-    server = DDParamSearch()
+    server = DDParamServer()
     data = server.sendGetMessage(debug=1)
     print data
 

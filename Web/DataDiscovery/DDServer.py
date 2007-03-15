@@ -21,12 +21,13 @@ from   Cheetah.Template import Template
 import cherrypy 
 
 # DBS  modules
-from   DDUtil    import *
-from   DDConfig  import *
-from   DDLucene  import *
-from   DDHelper  import *
-from   Templates import *
- 
+from   DDUtil      import *
+from   DDConfig    import *
+from   DDHelper    import *
+from   Templates   import *
+from DDParamServer import *
+#from   DDLucene  import *
+
 class DDServer(DDLogger): 
     """
        DBS Data discovery server class.
@@ -65,7 +66,8 @@ class DDServer(DDLogger):
         """
         DDLogger.__init__(self,"DDServer",verbose)
         self.ddConfig  = DDConfig()
-        self.lucene = DDLucene(verbose)
+#        self.lucene = DDLucene(verbose)
+        self.pServer= DDParamServer(verbose)
         self.dbs  = DBSGLOBAL
         self.site = ""
         self.app  = ""
@@ -130,6 +132,9 @@ class DDServer(DDLogger):
                'Run/Lumi' : ['Runs','LumiSection'],
                'Files'    : ['Files','Branch'],
                'Datasets' : ['PrimaryDataset','ProcessedDataset','AnalysisDataset'],
+               'Storage'  : ['StorageElement','Block'],
+               'Tier'     : ['DataTier'],
+               'Description' : ['MCDescription','TriggerPathDescription','PrimaryDatasetDescription'],
               }
         self.writeLog("DDServer init")
 
@@ -362,11 +367,12 @@ class DDServer(DDLogger):
         dbsInst=self.formDict['searchForm']
         searchForm=self.searchForm(dbsInst)
 
-        userNav = self.genUserNavigator()
+        userNav = self.genUserNavigator(DBSGLOBAL)
 
-        t = templateOperators(searchList=[{'tag':'parameterListOperators'}]).respond()
-        nameSpace={'operators':str(t)}
-        t = templateSearchEngine(searchList=[nameSpace]).respond()
+#        t = templateOperators(searchList=[{'tag':'parameterListOperators'}]).respond()
+#        nameSpace={'operators':str(t)}
+#        t = templateSearchEngine(searchList=[nameSpace]).respond()
+        t = templateSearchEngine(searchList=[{}]).respond()
         luceneForm=str(t)
         dbsTables = self.helper.dbManager.getTableNames(dbsInst)
         dbsTables.sort()
@@ -374,7 +380,7 @@ class DDServer(DDLogger):
         nameSpace = {
                      'host'         : self.dbsdd,
                      'userMode'     : self.userMode,
-                     'navigatorForm': menuForm,
+#                     'navigatorForm': menuForm,
                      'userNavigator': userNav,
                      'searchForm'   : searchForm,
                      'siteForm'     : siteForm,
@@ -444,8 +450,7 @@ class DDServer(DDLogger):
     
     def expert(self):
         """
-           Constructs 'expert' service page. The summary, L{getSummary}, has been updated
-           once a day by using internal timer.
+           Constructs 'expert' service page. 
            @type  self: class object
            @param self: none
            @rtype : string
@@ -462,8 +467,7 @@ class DDServer(DDLogger):
 
     def dbsExpert(self):
         """
-           Constructs 'dbsExpert' service page. The summary, L{getSummary}, has been updated
-           once a day by using internal timer.
+           Constructs 'dbsExpert' service page. 
            @type  self: class object
            @param self: none
            @rtype : string
@@ -489,18 +493,30 @@ class DDServer(DDLogger):
         oList = self.helper.search(keywords)
         return oList
         
-    def genUserNavigator(self):
+    def genUserNavigator(self,dbsInst,ajax=0,**kwargs):
+        page=""
+        if  int(ajax)==1:
+            self.setContentType('xml')
+            page+="""<ajax-response><response type="element" id="kw_userNavigator">"""
         nameSearch={
-                    'dbsInst'     : DBSGLOBAL,
+                    'dbsInst'     : dbsInst,
+                    'userMode'    : self.userMode,
+                    'dbsList'     : self.dbsList,
                     'groupList'   : self.helper.getPhysicsGroups,
-                    'dataTypes'   : self.helper.getDataTypes(),
+                    'dataTypes'   : self.helper.getDataTiers(),
                     'softReleases': self.helper.getSoftwareReleases(),
                     'primDatasets': self.helper.getPrimaryDatasets(),
-                    'siteList'    : getListOfSites(), 
+                    'siteList'    : self.helper.getSites(), 
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
-        return str(t)
-        
+        page+= str(t)
+        if  int(ajax)==1:
+            page+="</response></ajax-response>"
+            print page
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    genUserNavigator.exposed=True 
 
     def searchForm(self,firstDBS=DBSGLOBAL):
         """
@@ -667,7 +683,7 @@ class DDServer(DDLogger):
            page+= self.genResultsHTML()
         try:
             if  not userSelection:
-                page+="No data found"
+                page+="""<span class="box_red">No data found</span>"""
             else:
                 # see CheetahDBSTemplate templateSearchTable form
                 sList = string.split(userSelection,",")
@@ -815,7 +831,7 @@ class DDServer(DDLogger):
         """
         return self.helper.listProcessedDatasets(group,app,prim,tier,proc)
 
-    def getDataHelper(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,**kwargs): 
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -834,6 +850,9 @@ class DDServer(DDLogger):
         """
         if string.lower(tier)=="all" or string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all" or string.lower(site)=="all": site="*"
+        if string.lower(site)=="any" or string.lower(site)=="any": site="*"
+        if string.lower(group)=="all" or string.lower(group)=="all": group="*"
+        if string.lower(group)=="any" or string.lower(group)=="any": group="*"
         self.dbsTime=self.dlsTime=0
         page=""
         className="hide"
@@ -889,6 +908,8 @@ class DDServer(DDLogger):
 
         page+="""<script type="text/javascript">ShowPageResults()</script>"""
         self.dbsTime=(t2-t1)
+        if not nDatasets:
+           page+="""<p><span class="box_red">No data found</span></p>"""
         for idx in xrange(0,nDatasets):
             ttt1 = time.time()
             dataset = datasetsList[idx]
@@ -1279,7 +1300,7 @@ class DDServer(DDLogger):
             for blockName in bList:
                 try:
                     lfnList = self.helper.getLFNs(dbsInst,blockName,"")
-                    if not lfnList: page+="No LFNs found in '%s' on site='%s' for blockName='%s'"%(dbsInst,site,blockName)
+                    if not lfnList: page+="No LFNs found in '%s' on site='%s' for blockName='%s'\n"%(dbsInst,site,blockName)
                     for item in lfnList:
                         if  what=="cff":
                             lfn=item[0]
@@ -1442,23 +1463,27 @@ class DDServer(DDLogger):
 <td>Modifiction time</td>
 </tr>
 """
-        self.helper.setDBSDLS(dbsInst)
-        self.helper.setDLS_LFC()
-        # code stolen from DLS, TODO: add try/except and handle error conditions
-        partialList = self.helper.dls_iface._getEntriesFromDir("/", site, True)
-        for i in partialList:
-            if(not i.fileBlock.name.startswith('/')): i.fileBlock.name = '/' + i.fileBlock.name
-            blockName = i.fileBlock.name
-            nameSpace = {
-                         'dbsList'  : self.helper.getDbsBlockData(blockName),
-                         'tableId'  : 'blockInfo_'+blockName,
-                         'host'     : self.dbsdd,
-                         'dbsInst'  : dbsInst
-                        }
-            t = templateDbsInfoTableEntry(searchList=[nameSpace]).respond()
-            # query DBS and get more info about blocks
-            page+=str(t)
-#        page+= str(t)
+#        self.helper.setDBSDLS(dbsInst)
+#        self.helper.setDLS_LFC()
+        ####### code stolen from DLS, TODO: add try/except and handle error conditions
+#        partialList = self.helper.dls_iface._getEntriesFromDir("/", site, True)
+#        for i in partialList:
+#            if(not i.fileBlock.name.startswith('/')): i.fileBlock.name = '/' + i.fileBlock.name
+#            blockName = i.fileBlock.name
+#            nameSpace = {
+#                         'dbsList'  : self.helper.getDbsBlockData(blockName),
+#                         'tableId'  : 'blockInfo_'+blockName,
+#                         'host'     : self.dbsdd,
+#                         'dbsInst'  : dbsInst
+#                        }
+        nameSpace = {
+                     'dbsList'  : self.helper.getBlockInfoForSite(site),
+                     'host'     : self.dbsdd,
+                     'dbsInst'  : dbsInst
+                    }
+        t = templateDbsInfoTableEntry(searchList=[nameSpace]).respond()
+        page+=str(t)
+
         page+="</table>"
         page+="</response></ajax-response>"
         if self.verbose==2:
@@ -1663,16 +1688,53 @@ class DDServer(DDLogger):
         return page
     getBranches.exposed=True
 
+    def getGroups(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get groups for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_group_holder">"""
+        self.helperInit(dbsInst)
+        dList=['Any']+self.helper.getPhysicsGroups()
+        nameSpace = {'name':'kw_group','iList': dList,'selTag':'kw_group','changeFunction':''}
+        t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getGroups.exposed=True
+
+    def getSites(self,dbsInst,sel="",**kwargs):
+        """
+           Generates AJAX response to get sites for given DBS instances
+        """
+        if not sel: sel="kw_site_holder"
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="%s">"""%sel
+        self.helperInit(dbsInst)
+        dList=['Any']+self.helper.getSites()
+        nameSpace = {'name':'kw_site','iList': dList,'selTag':'kw_site','changeFunction':''}
+        t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getSites.exposed=True
+
     def getTiers(self,dbsInst,**kwargs):
         """
            Generates AJAX response to get tiers for given DBS instances
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_tier">"""
+        page="""<ajax-response><response type="element" id="kw_tier_holder">"""
         self.helperInit(dbsInst)
-        dList=['Any']+self.helper.getDataTypes()
-        nameSpace = {'name':'dataTypes','iList': dList,'selTag':'dataTypes','changeFunction':''}
+        dList=['Any']+self.helper.getDataTiers()
+        nameSpace = {'name':'kw_tier','iList': dList,'selTag':'kw_tier','changeFunction':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1687,10 +1749,10 @@ class DDServer(DDLogger):
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_prim">"""
+        page="""<ajax-response><response type="element" id="kw_prim_holder">"""
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getPrimaryDatasets()
-        nameSpace = {'name':'trigLines','iList': dList,'selTag':'trigLines','changeFunction':''}
+        nameSpace = {'name':'kw_prim','iList': dList,'selTag':'kw_prim','changeFunction':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1705,10 +1767,10 @@ class DDServer(DDLogger):
         """
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="element" id="kw_release">"""
+        page="""<ajax-response><response type="element" id="kw_release_holder">"""
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getSoftwareReleases()
-        nameSpace = {'name':'softReleases','iList': dList,'selTag':'softReleases','changeFunction':''}
+        nameSpace = {'name':'kw_release','iList': dList,'selTag':'kw_release','changeFunction':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1847,22 +1909,47 @@ class DDServer(DDLogger):
         return page
     getProvenanceForAllDatasets.exposed = True 
     
-    def genSiteMenuDict(self):
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="navigatorDict">"""
-        endAjaxMsg="</response></ajax-response>"
-        try:
-            page+="siteDict="+getDictOfSites()
-        except:
-            t=self.errorReport("Fail in genSiteMenuDict function")
-            page+=str(t)
-            pass
-        page+=endAjaxMsg
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    genSiteMenuDict.exposed = True
+#    def getSites(self,dbsInst,ajax=0,**kwargs):
+#        self.helperInit(dbsInst)
+#        if int(ajax):
+#           self.setContentType('xml')
+#           page="""<ajax-response><response type="element" id="sitesHolder">"""
+#        else:
+#           page=self.genTopHTML()
+#           page+= self.genResultsHTML()
+#        try:
+#            siteList=['AnyVK']+self.helper.getSites()
+#            nameSpace={'selTag':"siteList",'changeFunction':"",'name':"siteList",'iList':siteList}
+#            t = templateSelect(searchList=[nameSpace]).respond()
+#            page+=str(t)
+#        except:
+#            t=self.errorReport("Fail in getSites function")
+#            page+=str(t)
+#            pass
+#        if int(ajax):
+#           page+="</response></ajax-response>"
+#        else:
+#           page+=self.genBottomHTML()
+#        if self.verbose==2:
+#           self.writeLog(page)
+#        return page
+#    getSites.exposed = True
+
+#    def genSiteMenuDict(self):
+#        self.setContentType('xml')
+#        page="""<ajax-response><response type="object" id="navigatorDict">"""
+#        endAjaxMsg="</response></ajax-response>"
+#        try:
+#            page+="siteDict="+getDictOfSites()
+#        except:
+#            t=self.errorReport("Fail in genSiteMenuDict function")
+#            page+=str(t)
+#            pass
+#        page+=endAjaxMsg
+#        if self.verbose==2:
+#           self.writeLog(page)
+#        return page
+#    genSiteMenuDict.exposed = True
         
     def siteForm(self,firstDBS="",firstSite=""):
         """
@@ -1870,12 +1957,13 @@ class DDServer(DDLogger):
         """
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
-        # IMPORTANT: we removed here siteDict, since it's replaced by AJAX call genSiteMenuDict
+        siteList=['Any']+self.helper.getSites()
         nameSpace = {
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
                      'dbsList'  : self.dbsList,
-                     'siteDict' : getDictOfSites()
+#                     'siteDict' : getDictOfSites(),
+                     'siteList' : siteList
                     }
         t = templateSiteForm(searchList=[nameSpace]).respond()
         page = str(t)
@@ -1900,47 +1988,62 @@ class DDServer(DDLogger):
         return page
     sendFeedback.exposed=True
 
-    def storeHistory(self,actionString,userId):
+    def storeHistory(self,dbsInst,userId,actionString,alias=''):
+        print "\n\nstoreHistory",dbsInst,userId,actionString,alias
         # update DB history
+        # try to insert dbsInst, otherwise get its id from DB
+        dbsid=0
+        try:
+           res=DD_INSTANCE.insert().execute(dbsinstance=dbsInst)
+           dbsid=res.last_inserted_ids()[0]
+        except:
+           c = DD_USER.select(and_(DD_INSTANCE.c.dbsinstance==dbsInst)).execute()
+           r = c.fetchone()
+           if r and r[0]:
+              dbsid = r[0]
+        if not dbsid:
+           raise "Fail to find dbsid in DBS DD history for %s"%(dbsInst,)
         # select cmdid from given history string
-        c = sqlalchemy.select([t_command.c.id],t_command.c.command==actionString).execute()
+        c = sqlalchemy.select([DD_COMMAND.c.id],DD_COMMAND.c.command==actionString).execute()
         r = c.fetchone()
         if r and r[0]:
            cid = r[0]
         else:
-           res=t_command.insert().execute(command=actionString)
+           res=DD_COMMAND.insert().execute(command=actionString,alias=alias)
            cid=res.last_inserted_ids()[0]
-        # try to insert name/password, if fail get them from DB
+        # try to insert user id, if fail get them from DB
         uid=0
         try:
-           res=t_user.insert().execute(userid=userId)
+           res=DD_USER.insert().execute(userid=userId)
+           print "after DD_USER insert",res
            uid=res.last_inserted_ids()[0]
+           print "after DD_USER insert, uid=",uid
         except:
-           c = t_user.select(and_(t_user.c.userid==userId)).execute()
+           c = DD_USER.select(and_(DD_USER.c.userid==userId)).execute()
            r = c.fetchone()
            if r and r[0]:
               uid = r[0]
         if not uid:
            raise "Fail to find uid in DBS DD history for %s"%(userId,)
-        # insert into t_history date/userid/cmdid
+        # insert into DD_HISTORY date/userid/cmdid
         iDate=time.strftime("%Y-%m-%d",time.localtime())
         iTime=time.strftime("%H:%M:%S",time.localtime())
-        t_history.insert().execute(userid=uid,cmdid=cid,date=iDate,time=iTime)
+        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid,date=iDate,time=iTime)
 
     def historySearch(self,iYear,iMonth,oYear,oMonth,userId,**kwargs):
         cList=[]
         try:
             iDate='%s-%s-%s'%(iYear,monthId(iMonth),'01')
             oDate='%s-%s-%s'%(oYear,monthId(oMonth),'31')
-            c = select([t_history.c.date,t_history.c.time,t_command.c.command],
+            c = select([DD_HISTORY.c.date,DD_HISTORY.c.time,DD_COMMAND.c.command],
                         and_(
-                             t_history.c.userid==t_user.c.id,
-                             t_history.c.cmdid==t_command.c.id,
-                             t_history.c.date>=iDate,t_history.c.date<=oDate,
-                             t_user.c.userid==userId
+                             DD_HISTORY.c.userid==DD_USER.c.id,
+                             DD_HISTORY.c.cmdid==DD_COMMAND.c.id,
+                             DD_HISTORY.c.date>=iDate,DD_HISTORY.c.date<=oDate,
+                             DD_USER.c.userid==userId
                             ),
                         use_labels=True,distinct=True,
-                        order_by=[desc(t_history.c.date),desc(t_history.c.time)]).execute()
+                        order_by=[desc(DD_HISTORY.c.date),desc(DD_HISTORY.c.time)]).execute()
             cList=c.fetchall()
         except:
             if not self.quiet:
@@ -1967,17 +2070,18 @@ class DDServer(DDLogger):
         return page
     historySearch.exposed=True
 
-    def getHistory(self,userId,iLimit=100,**kwargs):
+    def getHistory(self,userId,iLimit=20,**kwargs):
         cList=[]
         try:
-            c = select([t_history.c.date,t_history.c.time,t_command.c.command],
+            c = select([DD_HISTORY.c.date,DD_HISTORY.c.time,DD_COMMAND.c.command],
                         and_(
-                             t_history.c.userid==t_user.c.id,
-                             t_history.c.cmdid==t_command.c.id,
-                             t_user.c.userid==userId
+                             DD_HISTORY.c.userid==DD_USER.c.id,
+                             DD_HISTORY.c.cmdid==DD_COMMAND.c.id,
+                             DD_USER.c.userid==userId
                             ),
                         use_labels=True,distinct=True,limit=iLimit,
-                        order_by=[desc(t_history.c.date),desc(t_history.c.time)]).execute()
+                        order_by=[desc(DD_HISTORY.c.date),desc(DD_HISTORY.c.time)]).execute()
+            cList=c.fetchall()
         except:
             if not self.quiet:
                printExcept()
@@ -2003,32 +2107,33 @@ class DDServer(DDLogger):
         return page
     getHistory.exposed=True
 
-    def history(self,actionString,userId,**kwargs):
+    def history(self,dbsInst,userId,actionString,**kwargs):
         """
             History updater
         """
+        alias=''
+        if kwargs.has_key('alias'): alias=kwargs['alias']
         try:
-            self.storeHistory(actionString,userId)
+            self.storeHistory(dbsInst,userId,actionString,alias)
         except:
-#            if not self.quiet:
             printExcept()
             pass
         # AJAX wants response as "text/xml" type
-        iDate=time.strftime("%Y-%m-%d",time.localtime())
-        iTime=time.strftime("%H:%M:%S",time.localtime())
-        self.setContentType('xml')
-        nameSpace={
-                   'date'      : iDate, 
-                   'time'      : iTime, 
-                   'action'    : actionString
-                  }
-        t = templateHistory(searchList=[nameSpace]).respond()
-        page="""<ajax-response><response type="object" id="sessionHistory">"""
-        page+= str(t)
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
+#        iDate=time.strftime("%Y-%m-%d",time.localtime())
+#        iTime=time.strftime("%H:%M:%S",time.localtime())
+#        self.setContentType('xml')
+#        nameSpace={
+#                   'date'      : iDate, 
+#                   'time'      : iTime, 
+#                   'action'    : actionString
+#                  }
+#        t = templateHistory(searchList=[nameSpace]).respond()
+#        page="""<ajax-response><response type="object" id="sessionHistory">"""
+#        page+= str(t)
+#        page+="</response></ajax-response>"
+#        if self.verbose==2:
+#           self.writeLog(page)
+#        return page
     history.exposed=True
 
     def register(self,nameinput,passinput,**kwargs):
@@ -2112,17 +2217,17 @@ class DDServer(DDLogger):
         """
         msg=""
         # check user name
-        c = select([t_user.c.name],t_user.c.userid==userId).execute()
+        c = select([DD_USER.c.name],DD_USER.c.userid==userId).execute()
         r = c.fetchone()
         if r and r[0]==userId:
            msg=userId
-           c = t_user.select(and_(t_user.c.userid==userId)).execute()
+           c = DD_USER.select(and_(DD_USER.c.userid==userId)).execute()
            r = c.fetchone()
 #           if (not r) or (r and r[2]!=password):
 #              msg='wrong password'
         else:
            try:
-               res=t_user.insert().execute(userid=userId)
+               res=DD_USER.insert().execute(userid=userId)
                msg=userId
            except:
                msg="fail";
@@ -2355,13 +2460,18 @@ class DDServer(DDLogger):
         return page
     getRss.exposed=True
 
-    def getLucene(self,**kwargs):
-        print "\n\ngetLucene",kwargs
+    def getLucene(self,method,params="",**kwargs):
+#        print "\n\ngetLucene",params,kwargs
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
 #        param = {'method':'lookup','term':'block.subsys.NumberParameter129=111'}
 #        data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",param,debug=1)
-        data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",kwargs,debug=1)
+#        data = self.lucene.sendPostMessage("/DBSLookupWeb/DBSLookup",kwargs,debug=1)
+        if params:
+           params=params.replace('&lt;','%3C')
+           params=params.replace('&gt;','%3E')
+           method+='?'+params
+        data = self.pServer.sendPostMessage("/DBSSearch/%s"%method,{},debug=1)
         if string.find(data,"""<?xml version="1.0" encoding="ISO-8859-1"?>""")!=-1:
            res=string.split(data,"""<?xml version="1.0" encoding="ISO-8859-1"?>""")
            return res[1]
@@ -2407,7 +2517,7 @@ class DDServer(DDLogger):
 
     def getTableColumns(self,dbsInst,tableName,id,**kwargs):
         self.helperInit(dbsInst)
-        tList = self.helper.getTableColumns(tableName)
+        tList = ['All']+self.helper.getTableColumns(tableName)
         changeFunction=""
         return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id)
     getTableColumns.exposed=True
@@ -2449,8 +2559,9 @@ class DDServer(DDLogger):
         return page
     finderExample.exposed=True
 
-    def finderSearch(self,**kwargs):
-        print "\n\n####",kwargs
+    def finderSearch(self,dbsInst,**kwargs):
+        self.helperInit(dbsInst)
+        print "\n\n####finderSearch",kwargs
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results_finder">"""
@@ -2463,8 +2574,8 @@ class DDServer(DDLogger):
             print kwargs[key],pList
             for item in pList:
                 table,col,op,where=string.split(item,"__")
+                if col.lower()=='all': col='*'
                 addToDict(iDict,table,col)
-                print "####",table,self.helper.dbManager.getDBTableName('localhost',table),col
                 iList.append("%s.%s"%(self.helper.dbManager.getDBTableName('localhost',table),col))
         print "looking for",iDict
         
@@ -2482,13 +2593,79 @@ class DDServer(DDLogger):
         return page
     finderSearch.exposed=True
 
-    def executeSQLQuery(self,query,**kwargs):
+    def finderStoreQuery(self,userId,alias,**kwargs):
+        print "\n\n####finderStoreQuery",userId,alias,kwargs
+        iList=[]
+        for key in kwargs.keys():
+            if key=="_": continue
+            pList = kwargs[key].split("_newparam_")
+            print kwargs[key],pList
+            for item in pList:
+                table,col,op,where=string.split(item,"__")
+                if col.lower()=='all': col='*'
+                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName('localhost',table),col))
+        query,oList = self.helper.queryMaker(iList)
+        try:
+            self.storeHistory(userId,query,alias)
+        except:
+            printExcept()
+            pass
+    finderStoreQuery.exposed=True
+
+    def finderSearchQuery(self,userId,alias,**kwargs):
+        cList=[]
+        try:
+#            c = select([DD_COMMAND.c.command,DD_COMMAND.c.alias],
+            oSel = [DD_HISTORY.c.date,DD_HISTORY.c.time,DD_COMMAND.c.command,DD_COMMAND.c.alias]
+            c = select(oSel,
+                        and_(
+                             DD_HISTORY.c.userid==DD_USER.c.id,
+                             DD_HISTORY.c.cmdid==DD_COMMAND.c.id,
+                             DD_USER.c.userid==userId,
+                             DD_COMMAND.c.alias.like('%%%s%%'%alias)
+                            ),
+                        use_labels=True,distinct=True,
+                        order_by=[desc(DD_HISTORY.c.date),desc(DD_HISTORY.c.time)]
+                      ).execute()
+            cList=c.fetchall()
+        except:
+            printExcept()
+            pass
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="myQueries">"""
+        count=0
+        for item in cList:
+            oDate,oTime,oCmd,oName=item
+            if not count:
+                page+="""<div class="sectionhead_tight">Upon your request the following query aliases were found:</div>"""
+            if  oName:
+                # TODO: I need to query DB which dbs instance were used and pass it here.
+                cmd="""<a href="javascript:ajaxExecuteQuery('%s','%s')">%s</a>"""%(self.dbsInstance,oCmd,oName)
+                nameSpace={
+                           'date'      : str(oDate),
+                           'time'      : str(oTime),
+                           'action'    : str(cmd)
+                          }
+                t = templateHistory(searchList=[nameSpace]).respond()
+                page+=str(t)
+                count+=1
+        if not count:
+           page+="""<div class="sectionhead_tight">No queries were found for provided alias name: '%s'</div>"""%alias
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    finderSearchQuery.exposed=True
+
+    def executeSQLQuery(self,dbsInst,query,**kwargs):
+        self.helperInit(dbsInst)
         q = string.lower(query.strip())
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results_finder">"""
         if q.find("select")==-1:
-           page+="You are attempt execute non select query, it's forbidden"
+           page+="You are attempted execute non select query, it's forbidden"
         else:
            # here we got back a list whose first entry is column names
            iList = self.helper.executeSQLQuery(query)
@@ -2569,10 +2746,15 @@ class DDServer(DDLogger):
                        selList.append(attrs['column'])
                     if name=='list':
                        selList.append(1)
+                    if name=='output':
+                       if attrs.has_key('limit'):
+                          conDict['limit']=attrs['limit']
+                       if attrs.has_key('offset'):
+                          conDict['offset']=attrs['offset']
             xml.sax.parseString (data, Handler ())
         except:
             printExcept()
-#        print selList,conDict,listTables
+#        print selList,conDict
         if not len(selList):
            return """<?xml version="1.0" encoding="utf-8"?><ddResponse></ddResponse>"""
         if len(selList)==1 and selList[0]==1:

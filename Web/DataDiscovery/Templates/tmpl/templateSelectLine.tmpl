@@ -3,8 +3,8 @@
 <table class="selMenu">
 #if $id==1
 <tr>
-<th align="left">Group task</th>
-<th align="left">DBS table</th>
+<th align="left">View</th>
+<th align="left">Table</th>
 <th align="left">Show</th>
 <th align="left">Column</th>
 <th align="left">Operator</th>
@@ -17,7 +17,7 @@
 <select id="selSection_$id" onchange="ChangeTables($id)" name="selSection">
 <option value="$sectionList[0]" selected="selected">$sectionList[0]</option>
 #for section in $sectionList[1:]
-<option>$section</option>
+<option value="$section">$section</option>
 #end for
 </select>
 </td>
@@ -25,8 +25,8 @@
 <td style="width:160px">
 <div id="divSectionTables_$id">
 <select id="sectionTables_$id" onchange="ChangeCols($id)" name="sectionTables">
-#for section in $tableList
-<option>$section</option>
+#for table in $tableList
+<option value="$table">$table</option>
 #end for
 </select>
 </div>
@@ -42,19 +42,19 @@
 
 <td style="width:100px">
 <select id="colSel_$id" name="colOperators" onchange="ChangeWhere('colSel_$id','where_$id')">
-<option>None</option>
-<option>like</option>
-<option>=</option>
-<option>&lt;</option>
-<option>&gt;</option>
+<option value="None">None</option>
+<option value="like">like</option>
+<option value="equal">=</option>
+<option value="lt">&lt;</option>
+<option value="gt">&gt;</option>
 </select>
 </td>
 <td>
 <input type="text" size="20" id="where_$id" name="whereClause" class="hide" />
 </td>
 <td align="right">
-<a href="javascript:ajaxMakeLine($nextId)"><img src="images/plus2.gif" alt="add" style="border:none" /></a>
-<a href="javascript:ClearTag('makeMenu_$id')"><img src="images/minus2.gif" alt="remove" style="border:none" /></a>
+<a href="javascript:ajaxMakeLine($nextId)"><img src="images/plus.png" alt="add" style="border:none" /></a>
+<a href="javascript:ClearTag('makeMenu_$id')"><img src="images/minus.png" alt="remove" style="border:none" /></a>
 </td>
 </tr>
 </table>

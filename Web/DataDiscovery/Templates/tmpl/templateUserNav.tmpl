@@ -4,22 +4,48 @@
 <td valign="top">
 
 <form action="javascript:ResetAllResults();MakeUserNavBar();showResMenu('results');ajaxGetUserData()" method="get">
-<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsSelector" />
+
 <!-- begin menu table -->
 <table class="small" cellspacing="5">
+
+#if $userMode
+<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+#else
+<tr>
+<td align="right">
+<b>DBS instances</b>
+</td>
+<td>
+<div class="yellow_box" onMouseOver="KeywordHelp('kw_dbs_tag','<p>List of known DBS instances.</p>')" onMouseOut="ClearTag('kw_dbs_tag')">?</div><span id="kw_dbs_tag"></span></td>
+<td>
+<select id="kw_dbsInstSelector" onchange="javascript:ajaxGetKWFields()">
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+</tr>
+#end if
+
+
 <tr>
 <td align="right">
 <b>Physics groups</b>
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_groups_tag','<p>Here you select the physics group.</p> <p><b>Example:</b> Higgs, top group.</p>')" onMouseOut="ClearTag('kw_groups_tag')">?</div><span id="kw_groups_tag"></span></td>
 <td>
-##<select id="groupSelector" onchange="javascript:replace('navSelector');showLoadingMessage('selectApps');replace('selectPrim','to be defined');replace('selectTier','to be defined');ajaxSelectApps()">
-<select id="kw_group" onchange="ajaxGetKWFields()">
-<option selected="selected">Select</option>
+##<select id="kw_group" onchange="ajaxGetKWFields()">
+##<option selected="selected">Select</option>
+
+<div id="kw_group_holder">
+<select id="kw_group">
+<option value="Any">Any</option>
 #for group in $groupList
 <option value="$group">$group</option>
 #end for
 </select>
+</div>
+
 </td>
 </tr>
 
@@ -30,9 +56,16 @@
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_tier_tag','<p>This menu shows all known in DBS data types.</p> <p><b>Example:</b> DIGI, RECO.</p>')" onMouseOut="ClearTag('kw_tier_tag')">?</div><span id="kw_tier_tag"></span></td>
 <td>
-<div id="kw_tier">
-<select><option>Any</option></select>
+
+<div id="kw_tier_holder">
+<select id="kw_tier">
+<option value="Any">Any</option>
+#for tier in $dataTypes
+<option value="$tier">$tier</option>
+#end for
+</select>
 </div>
+
 </td>
 </tr>
 
@@ -42,9 +75,16 @@
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_rel_tag','<p>All known software releases.</p> <p><b>Example:</b> CMSSW_1_1_1</p>')" onMouseOut="ClearTag('kw_rel_tag')">?</div><span id="kw_rel_tag"></span></td>
 <td>
-<div id="kw_release">
-<select><option>Any</option></select>
+
+<div id="kw_release_holder">
+<select id="kw_release">
+<option value="Any" selected="selected">Any</option>
+#for rel in $softReleases
+<option value="$rel">$rel</option>
+#end for
+</select>
 </div>
+
 </td>
 </tr>
 
@@ -54,10 +94,16 @@
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_prim_tag','<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>')" onMouseOut="ClearTag('kw_prim_tag')">?</div><span id="kw_prim_tag"></span></td>
 <td>
-<div id="kw_prim">
-<select><option>Any</option></select>
+
+<div id="kw_prim_holder">
+<select id="kw_prim">
+<option value="Any" selected="selected">Any</option>
+#for prim in $primDatasets
+<option value="$prim">$prim</option>
+#end for
 </select>
 </div>
+
 </td>
 </tr>
 
@@ -67,12 +113,16 @@
 </td>
 <td><div class="yellow_box" onMouseOver="KeywordHelp('kw_site_tag','<p>List of know CMS sites</p> <p><b>Example: cmssrm.fnal.gov</b></p>')" onMouseOut="ClearTag('kw_site_tag')">?</div><span id="kw_site_tag"></span></td>
 <td>
+
+<div id="kw_site_holder">
 <select id="kw_site">
 <option selected="selected" value="All">Any</option>
 #for site in $siteList
 <option>$site</option>
 #end for
 </select>
+</div>
+
 </td>
 </tr>
 

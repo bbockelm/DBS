@@ -193,7 +193,12 @@ em.smallbold  {
  */
 .div_scroll {
 /* border: 1px solid; */
- height: 400px; 
+ height: 300px; 
+ overflow:auto;
+}
+.div_scroll_border {
+ border: 1px solid; 
+ max-height: 250px; 
  overflow:auto;
 }
 

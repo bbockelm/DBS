@@ -4,14 +4,6 @@ var GLOBAL_CELL='cell_1';
 //var DBSDD='http://cmsdbs.cern.ch/discovery/';
 //var DBSDD_EXPERT=DBSDD+'expert';
 
-// Override masthead
-//YAHOO.namespace("cms.dmwt");
-//function insertSiteMasthead(){
-//        YAHOO.cms.dmwt.masthead.setFooter('<ul><li><a href="'+DBSDD+'">DBS/DLS::User Mode</a></li><li>|</li><li><a href="'+DBSDD_EXPERT+'">DBS/DLS::Expert Mode</a></li></ul>');
-//        YAHOO.cms.dmwt.masthead.render(document.body);
-//        YAHOO.cms.dmwt.masthead.show();
-//}
-
 function SetMain() {
   var id=document.getElementById("main");
   if (id) {
@@ -61,6 +53,21 @@ function ResetAllResults() {
   HideTag('parents');
   HideTag('appConfigs');
 //  showWaitingMessage('results');
+}
+function showFinderMenu(name,histArr) {
+  var id=document.getElementById("finder_table");
+  id.className="show_table";
+  for(i=0;i<histArr.length;i++) {
+      var _id=document.getElementById('_'+histArr[i]+'Finder'); // menu's
+      var  id=document.getElementById(histArr[i]+'Finder');     // content's
+      if (histArr[i]==name) {
+          _id.className="td_right";
+           id.className="show_inline";
+      } else {
+          _id.className="show_cell";
+           id.className="hide";
+      }
+  }
 }
 function showHistoryMenu(name,histArr) {
   var id=document.getElementById("history_table");
@@ -332,6 +339,10 @@ function showMenu(menu) {
            }
            if(menuArr[i]=='History') {
               var id=document.getElementById("history_table");
+              id.className="hide";
+           }
+           if(menuArr[i]=='Search') {
+              var id=document.getElementById("finder_table");
               id.className="hide";
            }
        }
@@ -1008,12 +1019,12 @@ function MakeNavBar() {
   }
 }
 function MakeUserNavBar() {
-  var dbs=$('kw_dbsSelector').value
+  var dbs  =$('kw_dbsInstSelector').value
   var group=$('kw_group').value;
-  var type=$('dataTypes').value;
-  var prim=$('trigLines').value;
-  var rels=$('softReleases').value;
-  var site=$('kw_site').value;
+  var type =$('kw_tier').value;
+  var prim =$('kw_prim').value;
+  var rels =$('kw_release').value;
+  var site =$('kw_site').value;
   var id=document.getElementById('navBar');
   if (id) {
       id.innerHTML='<span class="td_underline" style="padding: 3px 3px 3px 3px;"><b>Menu:Navigator</b></span> &#187; <b>Physics group:</b>'+group+' &#187; <b>Data types:</b>'+type+' &#187; <b>Software releases:</b>'+rels+' &#187; <b>Trigger Line/MC gens:</b>'+prim+' &#187; <b>Sites:</b>'+site;
@@ -1088,3 +1099,92 @@ function CompareAppConfigs(host,dbsInst,rel,fName) {
        }
    }
 }
+function ResetAllSelects(dbsInst) {
+   ResetNavigator(dbsInst);
+   ResetFinder(dbsInst);
+   ResetSiteSearch(dbsInst);
+   ResetDbsExpert(dbsInst);
+}
+function ResetSelect(tag,value) {
+   var sel=$(tag);
+   if (sel) {
+       for(i=0;i<sel.length;i++) {
+           if(sel[i].value==value) {
+              sel[i].selected="selected";
+           }  else {
+              sel[i].selected="";
+           }
+       }
+   }
+}
+function ResetNavigator(dbsInst) {
+   ResetSelect('kw_dbsInstSelector',dbsInst);
+   ajaxGetKWFields();
+   ResetSelect('kw_group','Any');
+   ResetSelect('kw_tier','Any');
+   ResetSelect('kw_release','Any');
+   ResetSelect('kw_prim','Any');
+   ResetSelect('kw_site','Any');
+}
+function ResetFinder(dbsInst) {
+   ResetSelect('finder_dbsSelector',dbsInst);
+   ResetSelect('selSection_1','Algorithm');
+   ChangeTables(1);
+   ChangeCols(1);
+   $('where_1').value="";
+}
+function ResetSiteSearch(dbsInst) {
+   ResetSelect('form2_dbsSelector',dbsInst);
+   ajaxGetSites('','form2_dbsSelector','form2_siteHolder');
+}
+function ResetDbsExpert(dbsInst) {
+   ResetSelect('dbsExpert_dbsSelector',dbsInst);
+   $('queryText').value="";
+}
+
+function AddConfigParameter() {
+   
+   var sel=$('selectcfgparam');
+   var p_name,p_type;
+   for(i=0;i<sel.options.length;i++) {
+          if(sel.options[i].selected) {
+             p_name = '<td valign="middle"><span name="p_name">'+sel.options[i].id+'</span></td>';
+             p_type = '<td><span name="p_type" class="hide">'+sel.options[i].value+'</span></td>';
+          }
+   }
+   var op='<td valign="middle"><span name="p_op">'+$('parameterListOperators').value+'</span></td>';
+   var val='<td valign="middle"><span name="p_val">'+$('searchInput').value+'</span></td>';
+   var pSpace=$('parameterSpace');
+   var oldId=$('parameterCounter').value;
+   var id='param_'+oldId;
+   var minus='<td valign="middle" style="width:30px"><a href="javascript:ClearTag(\''+id+'\')"><img src="images/minus.png" alt="remove" style="border:none" align="top" /></a></td>'
+   pSpace.innerHTML=pSpace.innerHTML+'<tr id="'+id+'">'+minus+p_name+p_type+op+val+'</tr>\n';
+   $('parameterCounter').value=parseInt(oldId)+1;
+}
+function CheckOperator() {
+   var params=$('selectcfgparam');
+   var p_type=0;
+   for(i=0;i<params.length;i++) {
+       if(params[i].selected) {
+          p_type=params[i].value;
+          break;
+       }
+   }
+   var sel=$('parameterListOperators');
+   for(i=0;i<sel.length;i++) {
+      if(p_type==1) {
+         if(sel[i].value.match('like')) {
+            sel[i].disabled='true';
+         } else {
+            sel[i].disabled='';
+         }
+      } else {
+         if(sel[i].value.match('like')) {
+            sel[i].disabled='';
+         } else {
+            sel[i].disabled='true';
+         }
+      } 
+   }
+}
+

@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface']
+    iList=['engine','user','password','verbose','dbname','url','iface','querylimit']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -44,6 +44,10 @@ class DDConfig:
                self.configDict[item] = string.split(line,"%s="%keyword)[1]
             if iConfig.has_key(item) and iConfig[item]:
                self.configDict[item] = iConfig[item]
+  def queryLimit(self):
+    if not self.configDict.has_key('querylimit'):
+       raise DDException(args="DBS configuration missing querylimit parameter")
+    return self.configDict['querylimit']
   def iface(self):
     if not self.configDict.has_key('iface'):
        raise DDException(args="DBS configuration missing iface parameter")

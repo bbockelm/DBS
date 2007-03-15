@@ -17,7 +17,6 @@ from Templates.templateCRAB import templateCRAB
 from Templates.templateConfigDiff import templateConfigDiff
 from Templates.templateDBSInstanceDesc import templateDBSInstanceDesc
 from Templates.templateDataFromKeywordSelection import templateDataFromKeywordSelection
-from Templates.templateDataFromSelection import templateDataFromSelection
 from Templates.templateDataTierDesc import templateDataTierDesc
 from Templates.templateDatasetDetails import templateDatasetDetails
 from Templates.templateDbsCont import templateDbsCont
@@ -63,7 +62,6 @@ from Templates.templateSelectList import templateSelectList
 from Templates.templateSiteForm import templateSiteForm
 from Templates.templateSnapshot import templateSnapshot
 from Templates.templateSnapshotParameters import templateSnapshotParameters
-from Templates.templateSummary import templateSummary
 from Templates.templateTable import templateTable
 from Templates.templateTableBody import templateTableBody
 from Templates.templateTableColumns import templateTableColumns

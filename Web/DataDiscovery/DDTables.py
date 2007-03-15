@@ -19,17 +19,6 @@ user      = ddConfig.user()
 password  = ddConfig.password()
 dbname    = ddConfig.dbname()
 
-#if useEngine=='sqlite':
-#   print "Use SQLite engine"
-#   engine = create_engine('sqlite:///sqlite.db', strategy='threadlocal', echo=verbose)
-#elif useEngine=='oracle':
-#   print "Use ORACLE engine"
-#   engine = create_engine('oracle://%s:%s@%s'%(ddConfig.user(),ddConfig.password(),ddConfig.dbname()),strategy='threadlocal', echo=verbose)
-#elif useEngine=='mysql':
-#   print "Use MySQL engine"
-#   engine = create_engine('mysql://%s:%s@localhost/%s'%(ddConfig.user(),ddConfig.password(),ddConfig.dbname()),echo=verbose)
-#else:
-#   raise "Unsupported DB engine backend"
 if useEngine=='sqlite':
    print "Use SQLite engine"
    engine = create_engine('sqlite:///sqlite.db')
@@ -47,51 +36,38 @@ else:
 
 tableList = []
 #
-seq_user = Sequence(name='seq_user',start=1,increment=True)
-t_user = Table('t_user', engine,
-  Column('id', Integer, Sequence('seq_user'), nullable = False, primary_key = True),
+SEQ_USER = Sequence(name='SEQ_USER',start=1,increment=True)
+DD_USER = Table('DD_USER', engine,
+  Column('id', Integer, Sequence('SEQ_USER'), nullable = False, primary_key = True),
   Column('userid', String(60), nullable = False, unique=True)
 )
-tableList.append(t_user)
+tableList.append(DD_USER)
 #
-seq_command = Sequence(name='seq_command',start=1,increment=True)
-t_command = Table('t_command', engine,
-  Column('id', Integer, Sequence('seq_command'), nullable = False, primary_key = True),
-  Column('command', String(1000))
+SEQ_INSTANCE = Sequence(name='SEQ_INSTANCE',start=1,increment=True)
+DD_INSTANCE = Table('DD_INSTANCE', engine,
+  Column('id', Integer, Sequence('SEQ_INSTANCE'), nullable = False, primary_key = True),
+  Column('dbsinstance', String(60), nullable = False, unique=True)
 )
-tableList.append(t_command)
+tableList.append(DD_INSTANCE)
 #
-seq_history = Sequence(name='seq_history',start=1,increment=True)
-t_history = Table('t_history', engine,
-  Column('id', Integer, Sequence('seq_history'), nullable = False, primary_key = True),
-  Column('userid', Integer, ForeignKey("t_user.id"), nullable = False),
-  Column('cmdid', Integer, ForeignKey("t_command.id"), nullable = False),
+SEQ_COMMAND = Sequence(name='SEQ_COMMAND',start=1,increment=True)
+DD_COMMAND = Table('DD_COMMAND', engine,
+  Column('id', Integer, Sequence('SEQ_COMMAND'), nullable = False, primary_key = True),
+  Column('command', String(1000)),
+  Column('alias', String(1000))
+)
+tableList.append(DD_COMMAND)
+#
+SEQ_HISTORY = Sequence(name='SEQ_HISTORY',start=1,increment=True)
+DD_HISTORY = Table('DD_HISTORY', engine,
+  Column('id', Integer, Sequence('SEQ_HISTORY'), nullable = False, primary_key = True),
+  Column('userid', Integer, ForeignKey("DD_USER.id"), nullable = False),
+  Column('cmdid', Integer, ForeignKey("DD_COMMAND.id"), nullable = False),
+  Column('dbsid', Integer, ForeignKey("DD_INSTANCE.id"), nullable = False),
   Column('date', Date, onupdate=func.current_timestamp()),
   Column('time', Time, onupdate=func.current_timestamp())
 )
-tableList.append(t_history)
-#
-# Table mappers
-class T_USER(object):
-   def __init__(self,iName=None,iPassword=None):
-       self.name = iName
-       self.password = iPassword
-
-class T_HISTORY(object):
-   def __init__(self,iUserId=None,iDate=None,iCmdId=None):
-       self.userid = iUserId
-       self.date   = iDate
-       self.cmdid  = iCmdId
-
-class T_COMMAND(object):
-   def __init__(self,iCmd=None):
-       self.command  = iCmd
-#
-############ MAPPERS ###############
-#
-#map_user = mapper(T_USER,t_user)
-#map_hist = mapper(T_HISTORY,t_history,properties={'t_user':relation(T_USER)})
-#
+tableList.append(DD_HISTORY)
 #
 # main
 #

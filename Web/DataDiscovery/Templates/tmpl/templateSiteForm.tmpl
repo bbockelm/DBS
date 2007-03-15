@@ -1,27 +1,5 @@
-<script type="text/javascript">
-// siteDict = { DBSInst: { siteDict={ site:null } } }, } }
-// it is going to be inserted here by AJAX call
-siteDict=$siteDict
-var siteObj = null
-var first   = null
-#if $firstDBS
-  var _dbs  = "$firstDBS"
-#else
-  var _dbs  = null
-#end if
-#if $firstSite
-  var _site = "$firstSite"
-#else
-  var _site = null
-#end if
-</script>
-<script type="text/javascript" src="js/updates.js"></script>
-
 Use this form to show detailed information about particular site.
 <p></p>
-<span class="box">
-NOTE: the DLS queries may take a lot of time, since they go through LFC.
-</span>
 
 <!--
 <form action="getBlocksFromSite" method="get">
@@ -31,7 +9,8 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <tr>
 <td>Choose DBS instance</td>
 <td>
-<select name="dbsInst" onchange="updateSites(this)" id="form2_dbsSelector">
+###<select name="dbsInst" onchange="updateSites(this)" id="form2_dbsSelector">
+<select name="dbsInst" onchange="ajaxGetSites('','form2_dbsSelector','form2_siteHolder')" id="form2_dbsSelector">
 #for dbs in $dbsList
 #if $dbs==$firstDBS
 <option value="$dbs" selected="selected">$dbs</option>
@@ -48,7 +27,15 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 <td align="right">Please select a site:
 </td>
 <td>
-<div id="form2_siteHolder"></div>
+
+<div id="form2_siteHolder">
+<select id="form2_siteSelector">
+#for site in $siteList
+<option value="$site">$site</option>
+#end for
+</select>
+</div>
+
 </td>
 <td>
 <input type="submit" value="Search" id="form2_submit-button" onclick="javascript:showWaitingMessage()"/>
@@ -57,8 +44,4 @@ NOTE: the DLS queries may take a lot of time, since they go through LFC.
 </table>
 </form>
 
-<script type="text/javascript">
-  var dbs = document.getElementById("form2_dbsSelector")
-  updateSites(dbs)
-</script>
 

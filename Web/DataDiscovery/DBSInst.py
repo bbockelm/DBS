@@ -41,9 +41,15 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 DBSGLOBAL="localhost"
 DBS_DLS_INST= {
    "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-   "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-   "cmslcgco01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"), 
-   "FNAL8989":("http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+   "localhost17" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+}
+#DBS_DLS_INST= {
+#   "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+#   "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+#   "cmslcgco01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"), 
+#   "FNAL8989":("http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+#}
+
 #   "MCLocal_1/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
 #   "MCLocal_2/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_2"), 
 #   "MCLocal_3/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_3"),
@@ -55,7 +61,7 @@ DBS_DLS_INST= {
 #   "MCLocal_5/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_5"),
 #   "MCLocal_6/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_6"),
 #   "MCLocal_7/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_7")
-}
+#}
 ################################################################################################
 def getDictOfSites():
     """
@@ -113,18 +119,13 @@ class DBManager(DDLogger):
          @return: none
       """
       DDLogger.__init__(self,"DBManager",verbose)
-      self.engine = {}
-      self.tQuery = {}
-      self.iface=iface
-      self.verbose=verbose
-#      if verbose:
-#         self.verbose=True
-#      else:
-#         self.verbose=False
-      self.dbTables = {}
-      self.dbType = {}
-      self.lowTableList = []
-#      self.connect()
+      self.engine    = {}
+      self.tQuery    = {}
+      self.iface     = iface
+      self.verbose   = verbose
+      self.dbTables  = {}
+      self.dbType    = {}
+      self.lowTables = {}
       
   def connect(self,dbsInst):
       t_ini=time.time()
@@ -158,15 +159,15 @@ class DBManager(DDLogger):
           self.engine[dbsInst] = engine
           self.tQuery[dbsInst] = tQuery
 
-      dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=True)
+      dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=False)
       dbsMeta.connect(self.engine[dbsInst])
-
       con = self.engine[dbsInst].connect()
+
       if  not self.dbTables.has_key(dbsInst):
           tables={}
           tList = con.execute(self.tQuery[dbsInst])
           for t in tList: 
-              tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True, case_sensitive=True)
+              tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True, case_sensitive=False)
           self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
@@ -233,10 +234,14 @@ class DBManager(DDLogger):
       # TODO: need to cache tList for given dbsIntance
       tList = self.dbTables[dbsInst].keys()
       tList.sort()
-      if  not self.lowTableList:
+      lowTableList=[]
+      if self.lowTables.has_key(dbsInst):
+         lowTableList=self.lowTables[dbsInst]
+      if  not lowTableList:
           for t in tList:
-              self.lowTableList.append(string.lower(t))
-      return tList[self.lowTableList.index(table.lower())]
+              lowTableList.append(string.lower(t))
+          self.lowTables[dbsInst]=lowTableList
+      return tList[self.lowTables[dbsInst].index(table.lower())]
       
   def constructSchema(self,dbsInst):
       # convert SQLAlchemy schema to Drew's one.

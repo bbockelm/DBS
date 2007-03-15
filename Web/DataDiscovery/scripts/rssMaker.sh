@@ -1,6 +1,6 @@
 #!/bin/sh
 unset PYTHONPATH
-export PATH=/usr/local/bin:/usr/bin:/bin
+#export PATH=/usr/local/bin:/usr/bin:/bin:/opt/local/bin
 
 # setup environment
 . `dirname $0`/setup.sh 2>&1 1>& /dev/null 

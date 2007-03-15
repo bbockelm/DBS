@@ -63,7 +63,7 @@ export CVSROOT=:kserver:cmscvs.cern.ch:/cvs_server/repositories/CMSSW
 
 export ORACLE_HOME=/afs/cern.ch/project/oracle/linux/10102gcc323/
 export LD_LIBRARY_PATH=/afs/cern.ch/project/oracle/linux/10102gcc323/lib:$LD_LIBRARY_PATH
-export DBS_DBPARAM=/data/DBSAccessInfo/DBParam
+#export DBS_DBPARAM=/data/DBSAccessInfo/DBParam
 export TNS_ADMIN=$DDHOME
 
 

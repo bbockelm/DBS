@@ -1,8 +1,9 @@
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
-#from DDUtil import splitString 
+###from DDUtil import splitString 
 #for dbsDict in $dbsList
 #set bName=$dbsDict['Name']
-#set sName=$splitString($dbsDict['Name'],30,"\\n")
+###set sName=$splitString($dbsDict['Name'],30,"\\n")
+#set sName=$bName.replace('#','<br />#')
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 <td align="left" class="td20">$sName</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>

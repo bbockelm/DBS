@@ -19,7 +19,7 @@ def help():
     h ="""
 This tool support a three input formats: xml string, xml file, txt file.
 
-The XML structure is the foolowing
+The XML structure:
 <?xml version="1.0" encoding="utf-8"?>
 <ddRequest>
 <select column='Table.colName'>
@@ -27,12 +27,11 @@ The XML structure is the foolowing
 <where column='Table.colName' condition='Table.colName like some text here'
 </ddRequest>
 
-The following conditions are supported:
-=,>=,<=,>,<,like
+The following conditions are supported: =,>=,<=,>,<,like
 
 The XML file should contain the proper XML structure, see above.
 
-You can also use a txt file format, where specify what you want to select and your conditions
+The txt file format:
 [select]
 PrimaryDataset.Name
 ProcessedDataset.Name
@@ -40,6 +39,10 @@ ProcessedDataset.Name
 [where]
 PrimaryDataset.Name like 'test'
 ProcessedDataset.Name='test'
+
+[output]
+limit=5
+offset=10
 
 To list all known TableName.colName's please use the following XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -68,8 +71,14 @@ class DDOptionParser:
          help="specify a host name of Data Discovery service, e.g. cmsdbs.cern.ch/discovery/")
     self.parser.add_option("--port",action="store",type="string",dest="port",
          help="specify a port number of Data Discovery service")
-    self.parser.add_option("--output",action="store",type="string",default="list",dest="output",
-         help="specify output format, supported formats are: xml, list (default), txt")
+    self.parser.add_option("--output",action="store",type="string",default="txt",dest="output",
+         help="specify output format, supported formats are: xml, list, txt (default)")
+    self.parser.add_option("--limit",action="store",type="string",default="-1",dest="limit",
+         help="specify a limit on output, e.g. 50 results, usually it should come together with --offset")
+    self.parser.add_option("--offset",action="store",type="string",default="-1",dest="offset",
+         help="specify an offset for query output, in other words it allow skip up to specified value the output, usually it should come together with --limit")
+    self.parser.add_option("--list",action="store_true",dest="list",
+         help="retrieve a list of know DBS tables.columns")
     self.parser.add_option("--help-usage",action="store_true",dest="format")
   def getOpt(self):
     """
@@ -168,6 +177,9 @@ def parseInput(input):
         if line.lower()=='[where]':
            item='where'
            continue
+        if line.lower()=='[output]':
+           item='output'
+           continue
         oDict.setdefault(item,[]).append(line)
 #    print oDict
     return formXMLInput(oDict)
@@ -213,13 +225,11 @@ if __name__ == "__main__":
             print "Read input from file '%s'"%opts.input
         inputXML=opts.input
     else:
-        if  opts.verbose:
-            print "Take default input:"
         # input examples
-        inputXML="""<?xml version="1.0" encoding="utf-8"?>
-        <ddRequest>
-        <select column='DataTier.Name' />
-        </ddRequest>
-        """
-    result = queryDBS(host,port,dbsInst,inputXML,opts.output,opts.verbose)
-    print "### RESULT:",result
+        inputXML="""<?xml version="1.0" encoding="utf-8"?><ddRequest><list /></ddRequest>"""
+    if  not opts.input and not opts.list:
+        print "\nUsage: DDExplorer.py --help"
+    else:
+        result = queryDBS(host,port,dbsInst,inputXML,opts.output,opts.verbose)
+        if opts.output!="txt":
+           print "### RESULT:",result
