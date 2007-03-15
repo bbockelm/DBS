@@ -628,7 +628,7 @@ function ajaxExecuteQuery(iDbs,iQuery) {
 }
 function ajaxFinderSearch() {
     ShowTag('results_finder');
-    var dbsInst='';
+    var dbsInst=$('finder_dbsSelector').value;
     var dbsList=$('finder_dbsSelector');
     for(i=0;i<dbsList.length;i++) {
        if(dbsList[i].selected) {
