@@ -146,7 +146,8 @@ class DBManager(DDLogger):
           elif eType=='oracle':
              self.writeLog("Use ORACLE instance '%s'"%dbsInst)
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
-             tQuery= "select table_name from user_tables"
+#             tQuery= "select table_name from user_tables"
+             tQuery= "select tname from tab"
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
