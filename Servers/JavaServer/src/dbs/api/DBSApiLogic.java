@@ -1,6 +1,6 @@
 /**
- $Revision: 1.89 $"
- $Id: DBSApiLogic.java,v 1.89 2007/03/15 20:21:40 sekhri Exp $"
+ $Revision: 1.90 $"
+ $Id: DBSApiLogic.java,v 1.90 2007/03/16 18:42:51 sekhri Exp $"
  *
  */
 
@@ -507,7 +507,7 @@ public class DBSApiLogic {
 			try {
 				ps = DBSSql.insertPhysicsGroup(conn,
 					name, 
-					getID(conn, "Person", "DistinguishedName", phyGroupCon, true), 
+					getIDNoCheck(conn, "Person", "DistinguishedName", phyGroupCon, true), 
 					cbUserID,
 					lmbUserID,
 					creationDate);
