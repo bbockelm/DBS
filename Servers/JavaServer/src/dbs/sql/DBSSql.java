@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.83 $"
- $Id: DBSSql.java,v 1.83 2007/03/13 22:31:48 afaq Exp $"
+ $Revision: 1.84 $"
+ $Id: DBSSql.java,v 1.84 2007/03/14 14:07:01 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -52,6 +52,21 @@ public class DBSSql {
 		return ps;
 	}
 
+	public static PreparedStatement updateName(Connection conn, String tableName, String key, String valueFrom, String valueTo, String lmbUserID) throws Exception {
+		String sql = "UPDATE " + tableName + " \n" +
+			"SET " + key + " = ?, \n" +
+			"LastModifiedBy = ? \n" +
+			"WHERE " + key + " = ?" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, valueTo);
+		ps.setString(columnIndx++, lmbUserID);
+		ps.setString(columnIndx++, valueFrom);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	
        public static PreparedStatement insertTimeLog(Connection conn, String action, String cause, 
 									String effect, String description,
 									String cbUserID, String cDate) throws SQLException {
@@ -546,6 +561,19 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+	public static PreparedStatement deleteName(Connection conn, String tableName, String key, String value) throws SQLException {	
+		String sql = "DELETE FROM \n" +
+			tableName + "\n" +
+			"WHERE \n" +
+			key + " = ?\n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, value);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 
 	//FIXME Just use this and delete all other getBlockIds
 	public static PreparedStatement getBlock(Connection conn, String procDSID,  String blockName) throws SQLException {
@@ -1082,6 +1110,7 @@ public class DBSSql {
 
 
 
+
 	public static PreparedStatement listStorageElements(Connection conn, String seName) throws SQLException {
 		String sql = "SELECT DISTINCT se.ID as ID, \n " +
 			"se.SEName as STORAGE_ELEMENT_NAME, \n" +
@@ -1559,6 +1588,29 @@ public class DBSSql {
 		ps.setString(1, value);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		//return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
+		return ps;
+	}
+
+	public static PreparedStatement getMap(Connection conn, String table, String key1, String key2, String value1, String value2) throws SQLException {
+		String sql = "SELECT DISTINCT ID, " + key1 + ", " + key2 + " \n " +
+			"FROM " + table + "\n ";
+		if(!DBSUtil.isNull(value1) || !DBSUtil.isNull(value2)) sql += "WHERE \n";
+		boolean useAnd = false;
+		
+		if(!DBSUtil.isNull(value1)) { 
+			sql += key1 + " = ? \n";
+			useAnd = true;
+		}
+		if(!DBSUtil.isNull(value2)) { 
+			if(useAnd) sql += " AND ";
+			sql += key2 + " = ? \n";
+		}
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		if(!DBSUtil.isNull(value1)) ps.setString(columnIndx++, value1);
+		if(!DBSUtil.isNull(value2)) ps.setString(columnIndx++, value2);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
 

@@ -29,7 +29,8 @@ path="/$primary_name/$processed_name/$tier_name1"
 path_child="/$primary_name/CHILD_$processed_name/$tier_name2"
 run_number1="9999"
 run_number2="9998"
-block_name="/test/test/test#$rand"
+#block_name="/test/test/test#$rand"
+block_name="$path_child#$rand"
 lfn1="TEST_LFN_1_$rand"
 lfn2="TEST_LFN_2_$rand"
 algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMYa_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
@@ -404,6 +405,13 @@ insertBlock () {
 	#echo "$out"
 }
 
+updateSEName () {
+	message="Executing updateSEName API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateSEName storage_element_name_from=SE1_$rand storage_element_name_to=HAHAHHHAHAHH`
+	display "$out"
+}
+
 		#<!--processed_datatset path='$path_child' block_name='$block_name'--/>
 insertFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
@@ -604,7 +612,7 @@ updateAnalDSStatus
 updateFileStatus
 updateAnalDSType
 updateFileType
-
+updateSEName
 ###
 #updateRun
 ##	

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApiAnaDSLogic.java,v 1.27 2007/03/09 21:32:11 sekhri Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.28 2007/03/15 19:41:42 sekhri Exp $"
  *
  */
 
@@ -422,7 +422,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
  	 /**
 	 * Updates the type of the analysis dataset. 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
-	 * Then it fetches the analysis ID and call a generic methods updateValue that fetches the type id and updates it in AnalysisDataset table.
+	 * Then it fetches the analysis ID and call a generic methods updateName that fetches the type id and updates it in AnalysisDataset table.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param analName the name ofthe primarydataset.
@@ -431,14 +431,14 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void updateAnalDSType(Connection conn, Writer out, String analName, String value, Hashtable dbsUser) throws Exception {
-		updateValue(conn, out, "AnalysisDataset",  getID(conn, "AnalysisDataset", "Name", analName, true),
+		updateName(conn, out, "AnalysisDataset",  getID(conn, "AnalysisDataset", "Name", analName, true),
 				                        "Type", "AnalysisDSType", "Type", value, personApi.getUserID(conn, dbsUser));
 	}
 
 	/**
 	 * Updates the status of the analysis dataset. 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
-	 * Then it fetches the analysis ID and call a generic methods updateValue that fetches the status id and updates it in AnalysisDataset table.
+	 * Then it fetches the analysis ID and call a generic methods updateName that fetches the status id and updates it in AnalysisDataset table.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param analName the name ofthe primarydataset.
@@ -447,7 +447,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void updateAnalDSStatus(Connection conn, Writer out, String analName, String value, Hashtable dbsUser) throws Exception {
-		updateValue(conn, out, "AnalysisDataset",  getID(conn, "AnalysisDataset", "Name", analName, true),
+		updateName(conn, out, "AnalysisDataset",  getID(conn, "AnalysisDataset", "Name", analName, true),
 				                        "Status", "AnalysisDSStatus", "Status", value, personApi.getUserID(conn, dbsUser));
 	}
 

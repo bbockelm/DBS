@@ -1,6 +1,6 @@
 /**
- $Revision: 1.30 $"
- $Id: DBSApiProcDSLogic.java,v 1.30 2007/03/14 15:06:42 afaq Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApiProcDSLogic.java,v 1.31 2007/03/15 19:41:42 sekhri Exp $"
  *
  */
 
@@ -491,7 +491,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	/**
 	 * Updates the status of a processed dataset. 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
-	 * Then it fetches the processed dataset ID and call a generic methods updateValue that fetches the status id and updates it in ProcessedDataset table.
+	 * Then it fetches the processed dataset ID and call a generic methods updateName that fetches the status id and updates it in ProcessedDataset table.
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
@@ -500,7 +500,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void updateProcDSStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
-		updateValue(conn, out, "ProcessedDataset", getProcessedDSID(conn, path, true),
+		updateName(conn, out, "ProcessedDataset", getProcessedDSID(conn, path, true),
 				                        "Status", "ProcDSStatus", "Status", value, personApi.getUserID(conn, dbsUser));
 	}
 

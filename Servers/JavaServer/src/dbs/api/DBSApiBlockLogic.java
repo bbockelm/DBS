@@ -1,6 +1,6 @@
 /**
- $Revision: 1.32 $"
- $Id: DBSApiBlockLogic.java,v 1.32 2007/03/15 19:05:03 sekhri Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSApiBlockLogic.java,v 1.33 2007/03/15 19:41:42 sekhri Exp $"
  *
  */
 
@@ -258,7 +258,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}
 	
 	private void insertStorageElement(Connection conn, Writer out, String blockID, String seName, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		insertName(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
+		insertNameInfo(conn, out, "StorageElement", "SEName", seName , cbUserID, lmbUserID, creationDate);
 		insertMap(conn, out, "SEBlock", "SEID", "BlockID", 
 					getID(conn, "StorageElement", "SEName", seName , true),
 					blockID, 
@@ -278,9 +278,24 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}*/
 	
 	public void deleteSEFromBlock(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+		String seName = get(table, "storage_element_name", true);
+		String seID = getID(conn, "StorageElement", "SEName", seName , true);
 		deleteMap(conn,	out, "SEBlock", "SEID", "BlockID", 
-				getID(conn, "StorageElement", "SEName", get(table, "storage_element_name", true) , true), 
+				seID, 
 				getBlockID(conn, getBlock(table, "block_name", true), false, true));
+		
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+				deleteName(conn, out, "StorageElement", "SEName", seName);
+			}
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
 
 	}
 
@@ -325,6 +340,19 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 return blockID;
         }
 
+	/**
+	 * Updates the name of the storage element. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param seNameFrom the name ofthe Storage Element that need to be changed.
+	 * @param seNameTo the name ofthe Storage Element that it has to be changed to.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
+	public void updateSEName(Connection conn, Writer out, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
+		updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
+	}
 
 	//Get the details of a OPEN Block for certain procDSID, blockNamePattern (includes Tiers list), seVector
 	//Returns null if NO Block is found matching the criteria

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.88 $"
- $Id: DBSApiLogic.java,v 1.88 2007/03/13 17:07:57 sekhri Exp $"
+ $Revision: 1.89 $"
+ $Id: DBSApiLogic.java,v 1.89 2007/03/15 20:21:40 sekhri Exp $"
  *
  */
 
@@ -283,17 +283,40 @@ public class DBSApiLogic {
 
 */
 	protected static void writeWarning(Writer out, String message, String code, String detail) throws Exception {
-		//out.write(DBSConstants.XML_EXCEPTION_HEADER);
-		message = message.replace('\'',' ');
-		detail= detail.replace('\'',' ');
-		code =code.replace('\'',' ');
-		out.write("<warning message='" + message + "' ");
-		out.write(" code ='" + code + "' ");
-		out.write(" detail ='" + detail + "' />\n");
+		out.write("<warning message='" + message.replace('\'',' ') + "' ");
+		out.write(" code ='" + code.replace('\'',' ') + "' ");
+		out.write(" detail ='" + detail.replace('\'',' ') + "' />\n");
 		out.flush();
-		//out.write(DBSConstants.XML_EXCEPTION_FOOTER);
 	}
 
+	protected static void writeInfo(Writer out, String message, String code, String detail) throws Exception {
+		out.write("<info message='" + message.replace('\'',' ') + "' ");
+		out.write(" code ='" + code.replace('\'',' ') + "' ");
+		out.write(" detail ='" + detail.replace('\'',' ') + "' />\n");
+		out.flush();
+	}
+
+	/**
+	 * This is a generic method that can be used to a row in any table which has just one unique key.
+	 * @param tableName the table name of the table whose coloum needs to be changed.
+	 * @param updateKey the key in tableName which needs to be updated.
+	 * @param uniqueValueFrom the value of the unique key that needs to be changed.
+	 * @param uniqueValueTo the value of the unique key it will be changed to.
+	 * @param lmbUserID a user id of the person who is updating this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 */
+	protected void updateName(Connection conn, Writer out, String tableName, String updateKey, String uniqueValueFrom, String uniqueValueTo, String lmbUserID) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.updateName(conn, tableName, 
+					updateKey, 
+					uniqueValueFrom,
+					uniqueValueTo,
+					lmbUserID);
+			ps.execute();
+		} finally {
+			if (ps != null) ps.close();
+		}
+	}
 
 	/**
 	 * This is a generic method that can be used to update status or types in any table.
@@ -305,7 +328,7 @@ public class DBSApiLogic {
 	 * @param uniqueValue2 the value of the unique key of tableName2.
 	 * @param lmbUserID a user id of the person who is updating this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 */
-	protected void updateValue(Connection conn, Writer out, String tableName1, String ID1, 
+	protected void updateName(Connection conn, Writer out, String tableName1, String ID1, 
 			String updateKey1, String tableName2, String uniqueKey2, String uniqueValue2, String lmbUserID) throws Exception {
 		PreparedStatement ps = null;
 		try {
@@ -331,6 +354,16 @@ public class DBSApiLogic {
 	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 */
 	protected void insertName(Connection conn, Writer out, String table, String key, String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		if(!insertNameMain(conn, out, table, key, value, cbUserID, lmbUserID, creationDate))
+			writeWarning(out, "Already Exists", "1020", "Table " + table + " " + key + " with value " + value +  " Already Exists");
+	}
+	
+	protected void insertNameInfo(Connection conn, Writer out, String table, String key, String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		if(!insertNameMain(conn, out, table, key, value, cbUserID, lmbUserID, creationDate))
+			writeInfo(out, "Already Exists", "1020", "Table " + table + " " + key + " with value " + value +  " Already Exists");
+	}
+
+	private boolean insertNameMain(Connection conn, Writer out, String table, String key, String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
 		if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
 		if(isNull(lmbUserID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
 		if( getID(conn, table, key, value, false) == null ) {
@@ -341,12 +374,11 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
-		} else {
-			writeWarning(out, "Already Exists", "1020", "Table " + table + " " + key + " with value " + value +  " Already Exists");
-		}	
-
+			return true;
+		} 
+		return false;
 	}
-	
+
 	/**
 	 * This is a generic method that can insert entry into any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.
 	 * @param tableName the table name of the table in the database schema.
@@ -393,6 +425,27 @@ public class DBSApiLogic {
 		} else {
 			writeWarning(out, "Does Not Exists", "1820", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " does not exists");
 		}
+	}
+	
+	/**
+	 * This is a generic method that can delete entry from any table that has just one coloum in it which is unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it exist, it goes ahead and performs the delete.
+	 * @param tableName the table name of the table in the database schema.
+	 * @param key the coloumn name of the table in the database schema.
+	 * @param value the value to be inserted in the coloumn name of the table.
+	 */
+	protected void deleteName(Connection conn, Writer out, String tableName, String key, String value) throws Exception {
+		if( !isNull(getID(conn, tableName, key, value, false)) ) {
+			PreparedStatement ps = null;
+			try {
+				ps = DBSSql.deleteName(conn, tableName, key, value);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
+		} else {
+			writeWarning(out, "Does Not Exists", "1820", "Table " + tableName + " " + key +  " with value " + value + " does not exists");
+		}
+
 	}
 
 	/**
