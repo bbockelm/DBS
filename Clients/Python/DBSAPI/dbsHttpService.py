@@ -165,6 +165,12 @@ class DbsHttpService:
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
                 logging.warning(warn)
 
+
+	     if name =='info':
+                info = "\n DBS Info Message: %s " %attrs['message']
+		info += "\n Detail: %s " %attrs['detail']+"\n"
+		logging.info(info)
+
     xml.sax.parseString (data, Handler ())
     # All is ok, return the data
     return data
