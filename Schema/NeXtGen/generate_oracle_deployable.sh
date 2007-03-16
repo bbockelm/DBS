@@ -57,17 +57,20 @@ echo "-- ====================================================" >> $ddl_file
 table_list=`cat DBS-NeXtGen-Oracle.sql.tmp.0 |grep "CREATE TABLE"| awk -FTABLE '{print $2}' | tr '[A-Z]' '[a-z]'`
 echo "-- ====================================================" >> $ddl_file
 for atable in $table_list; do
+   echo "PROMPT creating sequence seq_$atable ;"  >> $seq_ddl
    echo "create sequence seq_$atable ;"  >> $seq_ddl
    #echo   >> $seq_ddl
    echo "-- ====================================================" >> $trig_ddl
    echo "-- AUTO INC TRIGGER FOR $atable.ID using SEQ seq_$atable" >> $trig_ddl
    echo >> $trig_ddl
+   echo "PROMPT AUTO INC TRIGGER FOR Trigger for Table: ${atable}" >> $trig_ddl
    echo " CREATE OR REPLACE TRIGGER "${atable}_TRIG" before insert on "$atable"    for each row begin     if inserting then       if :NEW."ID" is null then          select seq_$atable.nextval into :NEW."ID" from dual;       end if;    end if; end;"   >> $trig_ddl
    echo "/" >> $trig_ddl
    echo >> $trig_ddl
    echo "-- ====================================================" >> $stamp_trig
    echo "-- LastModified Time Stamp Trigger" >> $stamp_trig
    echo >> $stamp_trig
+   echo "PROMPT LastModified Time Stamp Trigger for Table: ${atable}" >> $stamp_trig
    echo "CREATE OR REPLACE TRIGGER TRTS${atable} BEFORE INSERT OR UPDATE ON ${atable}" >> $stamp_trig
    echo "FOR EACH ROW" >> $stamp_trig
    echo "BEGIN" >> $stamp_trig
@@ -120,40 +123,44 @@ cat $stamp_trig >>  $ddl_file
 echo "-- Set the Schema Version -- " >> $ddl_file
 echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
 echo "-- Pre Fill some information into tables ---------" >> $ddl_file
-echo "INSERT INTO AnalysisDSStatus (Status) VALUES ('NEW');" >> $ddl_file
-echo "INSERT INTO FileStatus (Status) VALUES ('VALID');" >> $ddl_file
-echo "INSERT INTO FileStatus (Status) VALUES ('INVALID');" >> $ddl_file
-echo "INSERT INTO FileStatus (Status) VALUES ('MERGED');" >> $ddl_file
-echo "INSERT INTO FileStatus (Status) VALUES ('PROMOTED');" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status) VALUES ('VALID');" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status) VALUES ('INVALID');" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status) VALUES ('PROMOTED');" >> $ddl_file
-echo "INSERT INTO FileType(Type) VALUES ('EVD') ;" >> $ddl_file
-echo "INSERT INTO AnalysisDSType(Type) VALUES ('TEST');" >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type) VALUES ('VALID');" >> $ddl_file
+echo "INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW');" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('MERGED', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('PROMOTED', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('PROMOTED', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EVD', SYSTIMESTAMP) ;" >> $ddl_file
+echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST');" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MTCC', SYSTIMESTAMP);"  >> $ddl_file
+
 echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP, SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', SYSTIMESTAMP, SYSTIMESTAMP);"  >> $ddl_file
 #
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"SIM\", \"Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"DIGI\", \"Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RECO\", \"Reconstructed products produced from either real data or DIGI data       TBA\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"AOD\", \"Analysis Object Data products TBA\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"RAW\", \"Raw detector output from the HLT system   TBA\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"FEVT\", \"IS ITS A TIER \");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"ALCARECO\", \"IS ITS A TIER ? TBA\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"USER\", \"Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DIGI\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES (\"GEN-SIM-DIGI-RECO\", \"Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct\");"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AOD', 'Analysis Object Data products TBA', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RAW', 'Raw detector output from the HLT system', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('FEVT', 'IS ITS A TIER', SYSTIMESTAMP);"  >> $ddl_file
 #
 #
-#
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', SYSTIMESTAMP);" >> $ddl_file
