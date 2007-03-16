@@ -123,7 +123,7 @@ cat $stamp_trig >>  $ddl_file
 echo "-- Set the Schema Version -- " >> $ddl_file
 echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
 echo "-- Pre Fill some information into tables ---------" >> $ddl_file
-echo "INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW');" >> $ddl_file
+echo "INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('MERGED', SYSTIMESTAMP);" >> $ddl_file
@@ -132,15 +132,15 @@ echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMEST
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('PROMOTED', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EVD', SYSTIMESTAMP) ;" >> $ddl_file
-echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST');" >> $ddl_file
+echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', SYSTIMESTAMP);"  >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', SYSTIMESTAMP);"  >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MTCC', SYSTIMESTAMP);"  >> $ddl_file
 
 echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP, SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', SYSTIMESTAMP, SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', SYSTIMESTAMP);"  >> $ddl_file
 #
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame', SYSTIMESTAMP);"  >> $ddl_file
