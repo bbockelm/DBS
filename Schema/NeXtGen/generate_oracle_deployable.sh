@@ -133,7 +133,7 @@ echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIME
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('PROMOTED', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EVD', SYSTIMESTAMP) ;" >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST');" >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', SYSTIMESTAMP);"  >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', SYSTIMESTAMP);"  >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MTCC', SYSTIMESTAMP);"  >> $ddl_file
