@@ -1,6 +1,6 @@
 /**
- $Revision: 1.15 $"
- $Id: DBSApiPrimDSLogic.java,v 1.15 2007/03/09 21:32:11 sekhri Exp $"
+ $Revision: 1.16 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.16 2007/03/16 18:42:51 sekhri Exp $"
  *
  */
 
@@ -102,7 +102,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
                 if (isNull(type)) type = "TEST";
 		//System.out.println("creation_date " + creationDate);		
 		//Insert a Dataset Type if it does not exists
-		insertName(conn, out, "PrimaryDSType", "Type", type , cbUserID, lmbUserID, creationDate);
+		//insertName(conn, out, "PrimaryDSType", "Type", type , cbUserID, lmbUserID, creationDate);
 		
 		//Insert a Dataset Trigger Desc if it does not exists
 		//FIXME some problem with this table while insertng rows

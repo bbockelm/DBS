@@ -1,6 +1,6 @@
 /**
- $Revision: 1.31 $"
- $Id: DBSApiProcDSLogic.java,v 1.31 2007/03/15 19:41:42 sekhri Exp $"
+ $Revision: 1.32 $"
+ $Id: DBSApiProcDSLogic.java,v 1.32 2007/03/16 18:42:51 sekhri Exp $"
  *
  */
 
@@ -298,7 +298,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//Set defaults Values
 		if (isNull(status)) status = "VALID";
 		if (isNull(phyGroupName)) phyGroupName = "ALLGROUP";
-		if (isNull(phyGroupCon)) phyGroupCon = "/DC=org/DC=doegrids/OU=People/CN=Vijay Sekhri 316706";//FIXME Some default convenor name should be used
+		if (isNull(phyGroupCon)) phyGroupCon = "NO_CONVENOR";//FIXME Some default convenor name should be used
 		
 		//Insert a Processed Dataset status if it does not exists
 		//insertName(conn, out, "Status", "Status", status , lmbUserID);

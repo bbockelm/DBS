@@ -6,7 +6,7 @@
     <property name="configsrcdir" value="${basedir}/etc"/>
     <property name="configtargetdir" value="${basedir}/bin/META-INF"/>
     <property name="librarydir" value="${basedir}/lib"/>
-    <property name="app.name" value="DBS.18"/>
+    <property name="app.name" value="DBS"/>
     <property environment="env"/>
     <property name="jredir" value="${env.JAVA_HOME}/jre/lib"/>
     <path id="libraries">
