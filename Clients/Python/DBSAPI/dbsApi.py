@@ -1862,7 +1862,7 @@ class DbsApi(DbsConfig):
 	Note:
 		IF block (boock name or DbsFileBlock object) is provide it gets precedense over dataset (or path)
                 So files will be inserted into provided block and DBS will only raise a warning that dataset/path
-                is being ignored. 
+                is being ignored. In that case just set dataset="" anbd DBS will ignore it.
 		
 	  
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
@@ -2116,6 +2116,11 @@ class DbsApi(DbsConfig):
 	storage_element : The list of storage element names in the string format. This field is not mandatory. If 
 	                  this field is not provided then just the block is inserted without any storage element 
 			  associated with it.
+
+        Note:
+                IF block (boock name or DbsFileBlock object) is provide it gets precedense over dataset (or path)
+                So files will be inserted into provided block and DBS will only raise a warning that dataset/path
+                is being ignored. In that case just set dataset="" anbd DBS will ignore it.
 			  
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
