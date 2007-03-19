@@ -3,23 +3,23 @@
 # Yuyi Guo
 #
 # 
-#  @cvsid $Id: $
+#  @cvsid $Id: MTCCdbs2Writer.py,v 1.1 2007/02/21 17:12:05 yuyi Exp $
 #
 #
 import sys
 import fileinput
-from dbsApi import DbsApi
-from dbsException import *
-from dbsApiException import *
-from dbsAlgorithm import DbsAlgorithm
-from dbsFileBlock import DbsFileBlock
-from dbsFile import DbsFile
-from dbsLumiSection import DbsLumiSection
-from dbsQueryableParameterSet import DbsQueryableParameterSet
-from dbsPrimaryDataset import DbsPrimaryDataset
-from dbsProcessedDataset import DbsProcessedDataset
-from dbsOptions import DbsOptionParser
-from dbsRun import DbsRun
+from DBSAPI.dbsApi import DbsApi
+from DBSAPI.dbsException import *
+from DBSAPI.dbsApiException import *
+from DBSAPI.dbsAlgorithm import DbsAlgorithm
+from DBSAPI.dbsFileBlock import DbsFileBlock
+from DBSAPI.dbsFile import DbsFile
+from DBSAPI.dbsLumiSection import DbsLumiSection
+from DBSAPI.dbsQueryableParameterSet import DbsQueryableParameterSet
+from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
+from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
+from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsRun import DbsRun
 
 sys.stdout = sys.stderr
 
@@ -27,15 +27,15 @@ sys.stdout = sys.stderr
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
-#files=['/home/yuyi/MTCC/data/MTCC1_files.txt']
-files=['/home/yuyi/MTCC/data/MTCC2_files_primaryDSchanged.txt']
+files=['./MTCC1_files.txt']
+#files=['/home/yuyi/MTCC/data/MTCC2_files_primaryDSchanged.txt']
 #Run dic use run number as key and number of event as value
 runDic={}
 #verDic
 verDic={}
 #
 tireDic={};
-#runPsDS dic use priDSName/PsDSName as key and : seperate run number as value
+#runPsDS dic use priDSName/PsDSName as key and a list of Run as value
 runPsDSDic={}
 #verPsDSDic use priDSName/PsDSName as key and ":" seperated version number as value
 verPsDSDic={}
@@ -55,7 +55,7 @@ LFNTireDic = {}
 LFNChsmDic = {}
 
 for line in fileinput.input(files):
-    if(fileinput.lineno()>0):
+    if(fileinput.lineno()<2):
             #print '%5d %s' %(fileinput.lineno(), line)
             parts=line.split()
             primaryDS = parts[0]
@@ -82,7 +82,7 @@ for line in fileinput.input(files):
             #processedDS = CMSSW_0_7_0-RAW-Run-00001541
             #try to get out run number from it
             processedInfo = processedDS.split('-')
-            runNum = processedInfo[3]
+            runNum = int(processedInfo[3])
             dataTire = processedInfo[1]
             ##primaryDS=MTCC-070-os-DAQ-MTCC1
             processdDSName = primaryDS.split('-')[4]
@@ -141,9 +141,9 @@ for line in fileinput.input(files):
             #
             if(myPsDS in runPsDSDic):
                 if(runNum not in runPsDSDic[myPsDS]):
-                     runPsDSDic[myPsDS] =  runPsDSDic[myPsDS]+':'+runNum
+                     runPsDSDic[myPsDS] =  runPsDSDic[myPsDS].append(runNum)
             else:
-                 runPsDSDic[myPsDS] = runNum
+                 runPsDSDic[myPsDS] = [runNum]
             #
             if(myPsDS in verPsDSDic):
                 if(cmsswV not in verPsDSDic[myPsDS]):
@@ -162,7 +162,7 @@ fileinput.close()
 
 #create all the runs in db
 for runNum in runDic.keys():
-     run = DbsRun (RunNumber=int(runNum),
+     run = DbsRun (RunNumber=runNum,
                           #MTCC has one run per file. So the number of events in a run is the same as in the file???
                           NumberOfEvents= runDic[runNum],
                           #MTCC does not have lumi, no store
@@ -236,20 +236,27 @@ for processed in psDSDic.keys():
                              )
                         )
     tireList = tirePsDSDic[processed].rsplit(':')
-    runList =  runPsDSDic[processed].rsplit(':')
+    runList =  runPsDSDic[processed]
                     
     print '## Creating  processed DS ... ##'
     proc = DbsProcessedDataset (PrimaryDataset=DbsPrimaryDataset(Name = primaryName),
                                         Name=processedName, 
                                         TierList=tireList,
                                         AlgoList=algoList,
-                                        RunList=runList,
+                                        RunsList=runList,
+
+
                                 )
+    for t in tireList:
+        tire=t 
+        
     #Create block
-    block = DbsFileBlock (Name= "/"+ primaryName+ "/"+ processedName + "#01")                   
+    block = DbsFileBlock (Name= "/"+ primaryName+ "/"+ processedName + "/"+ tire +"#01")                   
     try:
          api.insertProcessedDataset (proc)
          print "## Inserted Processed: %s ##" % proc
+         import pdb
+         pdb.set_trace()
          api.insertBlock (proc, block)
          print "## Inserted Block: %s ##" % block
     except DbsApiException, ex:
@@ -294,7 +301,7 @@ for LFN in LFNList:
         print "### LastPsName: %s ###" % lastPsName
         #print "###pName[0]: %s, PName[1]: %s, pName[2]: %s " %(pNames[0], pNames[1], pNames[2])
         #print "###pName[3]: %s" %(pNames[3])
-        block = DbsFileBlock (Name= "/"+ pNames[1]+ "/"+ pNames[3] + "#01") 
+        block = DbsFileBlock (Name= "/"+ pNames[1]+ "/"+ pNames[3] + "/"+ pNames[2] + "#01") 
         #       
         try:
             api.insertFiles(lastPsName, fileList, block)
@@ -336,7 +343,7 @@ for LFN in LFNList:
 print "## Taking care the last banch of runs. ##"
 pNames = lastPsName.split('/')
 print "### LastPsName: %s ###" % lastPsName
-block = DbsFileBlock (Name= "/"+ pNames[1]+ "/"+ pNames[3] + "#01") 
+block = DbsFileBlock (Name= "/"+ pNames[1]+ "/"+ pNames[3] + "/" + pNames[2] + "#01") 
 #       
 try:
     api.insertFiles(lastPsName, fileList, block)
