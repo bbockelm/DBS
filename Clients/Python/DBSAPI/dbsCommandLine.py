@@ -18,15 +18,34 @@ from dbsApi import DbsApi
 from dbsException    import DbsException
 from dbsApiException import *
 
+import threading
+import sys
+
+class printDot ( threading.Thread ):
+       def __init__(self):  
+          threading.Thread.__init__(self)
+          self.doIt = 1
+          self.write = sys.stdout.write
+
+       def run ( self ):
+          last = int(str(time.time()).split('.')[0])
+          while ( self.doIt != 0 ) :
+            curr = int(str(time.time()).split('.')[0])
+            if curr > last+5 :
+               self.write("-")
+            else: 
+              continue
+            last =  int(str(time.time()).split('.')[0])
 
 
 #############################################################################
 ##Default URL for the Service
-URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
-#URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
+#URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
+URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
 #############################################################################
+
 
 class DbsOptionParser(optparse.OptionParser):
   """
@@ -234,29 +253,65 @@ class ApiDispatcher:
 	                 #Print on screen as well
         	         print aPath
 
-
   def handleListFiles(self):
        path=self.optdict.get('path') or '/*/*/*'
        if path == '/*/*/*':
-         print "Can not list ALL files of ALL datasets, please specify a dataset path"
+         print "Can not list ALL files of ALL datasets, please specify a dataset path using --path="
        else:
+         #dot = printDot()
+         #dot.start()
+         print "making api call, this may take sometime depending upon size of dataset, please wait...."
          apiret = self.api.listFiles(path)
-         for anObj in apiret:
-           print anObj['LogicalFileName']
+         #dot.doIt = 0
+         #dot.stop()
+         
+	 if self.optdict.get('report') != 'False' :
+            for anObj in apiret:
+              report = Report()
+              report.addSummary("LogicalFileName: %s" %anObj['LogicalFileName'])
+              report.addLine("File Details:")
+              report.addLine("    Status : %s"  %anObj['Status'])
+              report.addLine("    NumberOfEvents : %s"  %anObj['NumberOfEvents'])
+              report.addLine("    Checksum : %s"  %anObj['Checksum'])
+              report.addLine("    FileType : %s"  %anObj['FileType'])
+              report.addLine("    Block : %s"  %anObj['Block']['Name'])
+              report.addLine("\n")
+              printReport(report)
+            print "Total files listed: %s" %len(apiret)
+	 else:
+              for anObj in apiret:
+           	print anObj['LogicalFileName']
+              print "Total files listed: %s" %len(apiret)
 
 
-       print "Total files listed: %s" %len(apiret) 
   def handleBlockCall(self):
        path=self.optdict.get('path') or ''
        pattern=self.optdict.get('pattern') or ''
-       if path == '/*/*/*' and pattern == '*':
-         print "Can not list ALL Blocks of ALL datasets, please specify a dataset path or a block pattern"
+       if path in ['/*/*/*', 'K'] and pattern in ['*', 'K'] :
+         print "Can not list ALL Blocks of ALL datasets, please specify a dataset path (--path=) and/or a block name pattern (--pattern=)"
+	 return
        else:
          apiret = self.api.listBlocks(path, pattern)
-         for anObj in apiret:
-             print anObj['Name']
-
-
+         if self.optdict.get('report') != 'False' :
+            for anObj in apiret:
+                sumry  = "\nBlock Name %s " %anObj['Name']
+                sumry += "\nBlock Path %s" %anObj['Path']
+                sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
+                report = Report()
+                report.addSummary(sumry)
+                report.addLine("Block Details:")
+                report.addLine("      BlockSize: %s" %anObj['BlockSize'])
+                report.addLine("      NumberOfFiles: %s" %anObj['NumberOfFiles'])
+                report.addLine("      OpenForWriting: %s" % anObj['OpenForWriting'])
+                report.addLine("      Storage Elements in this Block:")
+                for aSE in anObj['StorageElementList']:
+                        report['lines'].append("                      %s" %aSE['Name'])
+                #Print it
+                report.addLine("\n")
+                printReport(report)
+	 else :
+                for anObj in apiret:
+                    print anObj['Name']
 
 #
 # main
