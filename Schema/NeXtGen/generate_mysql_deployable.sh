@@ -76,7 +76,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIG
 #
 #
 #
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW());" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()),  ('RAW', NOW());" >> $ddl_file
 #
 #
 echo "commit;"  >> $ddl_file
