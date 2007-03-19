@@ -119,14 +119,17 @@ try:
 							Content = "NOT KNOWN"
 							)
 						)
+				print "Inserting algorithm  %s " % self.algo
+				api.insertAlgorithm (self.algo)
+
 				
 			if name == 'block':
 				print "block found %s " % str(attrs['name'])
 				if(self.first):
 					print "Inserting primary %s " % self.primary
 					api.insertPrimaryDataset (self.primary)
-					print "Inserting algorithm  %s " % self.algo
-					api.insertAlgorithm (self.algo)
+					#print "Inserting algorithm  %s " % self.algo
+					#api.insertAlgorithm (self.algo)
 					self.processed['AlgoList'] = [self.algo]
 					print "Inserting processed  %s " % self.processed
 					api.insertProcessedDataset (self.processed)
@@ -149,6 +152,7 @@ try:
 						#OpenForWriting = ofw
 						)
 					print "Inserting block  %s " % self.block
+					print "proc dataset is %s " % self.processed
 					api.insertBlock (self.processed, self.block)
 				
 			if name == 'afile':
@@ -201,8 +205,12 @@ try:
 					print "block  %s " % self.block
 					api.insertFiles (self.processed, self.fileList, self.block)
 				for b in self.blockList:
+					tmpBlockFile = open('CloseBlock.txt', 'a+')
 					print "Closing block %s " % b
-					api.closeBlock (b)
+					tmpBlockFile.write(b)
+					tmpBlockFile.write("\n")
+					tmpBlockFile.close()
+					#api.closeBlock (b)
 								
 	xml.sax.parseString (data, Handler ())
 except Exception, ex:

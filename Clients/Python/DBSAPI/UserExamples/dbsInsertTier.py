@@ -26,6 +26,7 @@ try:
     api.insertTier ('SIM')
     api.insertTier ('DIGI')
     api.insertTier ('RECO')
+    api.insertTier ('RAW')
 
     print "Result: %s" % 'GEN' 
 
