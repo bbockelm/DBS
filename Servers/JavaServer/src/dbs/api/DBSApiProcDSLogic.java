@@ -1,6 +1,6 @@
 /**
- $Revision: 1.32 $"
- $Id: DBSApiProcDSLogic.java,v 1.32 2007/03/16 18:42:51 sekhri Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSApiProcDSLogic.java,v 1.33 2007/03/16 20:25:26 sekhri Exp $"
  *
  */
 
@@ -338,7 +338,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//FIXME this might use processed datatset with primary datatset combination instead of just proDSName
 		//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
 		if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0) 
-			if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
+			//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
+			if(isNull(procDSID)) procDSID = getProcessedDSID(conn, "/" + primaryName + "/" + procDSName +  "/nothing", true);
 		
 		//Insert ProcAlgoMap table by fetching application ID. 
 		for (int j = 0; j < algoVector.size(); ++j) {
