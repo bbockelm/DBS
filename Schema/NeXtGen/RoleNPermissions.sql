@@ -65,6 +65,15 @@ BEGIN
 END;
 /
 
+-- This is for DLS
+
+grant delete on Block to CMS_DBS_WRITER_ROLE
+/
+grant delete on SEBlock to CMS_DBS_WRITER_ROLE
+/
+
+
+
 #
 #
 

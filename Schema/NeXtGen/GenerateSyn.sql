@@ -1,4 +1,4 @@
-set serveroutput on size 7000000;
+set serveroutput on size 1000000;
 set feedback off
 spool privateSyn.sql
 
