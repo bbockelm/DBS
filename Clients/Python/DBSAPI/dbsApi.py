@@ -1859,7 +1859,12 @@ class DbsApi(DbsConfig):
         	as a string containing the block name, instead of DbsFileBlock object. The following fields 
 		are mandatory and should be present in the dbs file block object: block_name
 			  
-		  
+	Note:
+		IF block (boock name or DbsFileBlock object) is provide it gets precedense over dataset (or path)
+                So files will be inserted into provided block and DBS will only raise a warning that dataset/path
+                is being ignored. 
+		
+	  
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
 	   
@@ -1956,7 +1961,7 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
 
-    if (isinstance(dataset, DbsProcessedDataset)) :
+    if (isinstance(dataset, DbsProcessedDataset)):
         xmlinput += " <processed_datatset path=''>"
     else :
        xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
