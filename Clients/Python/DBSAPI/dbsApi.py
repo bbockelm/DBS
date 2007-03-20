@@ -2796,7 +2796,7 @@ class DbsApi(DbsConfig):
         xmlinput += "<data_tier tier_name='"+tier+"'/>"
 
     for run in analysisDatasetDefinition.get('RunsList',[]):
-        xmlinput += "<run run_number='"+run+"'/>"
+        xmlinput += "<run run_number='"+str(self._get_run(run))+"'/>"
 
     for alumiRange in analysisDatasetDefinition.get('LumiRangeList', []):
         xmlinput += "<lumi_section lumi_section_range='"+ alumiRange[0] +','+alumiRange[1]+"'/>"
