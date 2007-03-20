@@ -1,6 +1,6 @@
 /**
- $Revision: 1.42 $"
- $Id: DBSApiFileLogic.java,v 1.42 2007/03/16 18:42:51 sekhri Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSApiFileLogic.java,v 1.43 2007/03/20 16:27:51 sekhri Exp $"
  *
  */
 
@@ -496,13 +496,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 for (int i = 0; i != files.size() ; ++i) {
                         Vector tierVector = DBSUtil.getVector((Hashtable)files.get(i) ,"file_data_tier");
                         if(tierVector.size() != tierVecToCheckWithFile.size())
-                                throw new DBSException("Tier Mismatch", "1038", "Number of Tiers in file " + tierVector.size() +
+                                throw new DBSException("Tier Mismatch", "1039", "Number of Tiers in file " + tierVector.size() +
                                                 " is not equal to the number of tiers " + tierVecToCheckWithFile.size() +
                                                 " in the dataset " + path);
                         for (int j = 0; j != tierVector.size() ; ++j) {
                                 String tierName = ((String) get((Hashtable)tierVector.get(j), "name")).toUpperCase();
                                 if(!tierVecToCheckWithFile.contains(tierName))
-                                        throw new DBSException("Tier Mismatch", "1039",
+                                        throw new DBSException("Tier Mismatch", "1042",
                                                         "Provided tier " + tierName +
                                                         " is not present in " + path + " it contains " +
                                                         tierVecToCheckWithFile.toString());
@@ -548,7 +548,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                 String blockName = DBSUtil.get(block, "block_name");
                 if (isNull(blockName) && isNull(primary) && isNull(proc) && isNull(path) ) 
-                        throw new DBSException("Wrong Parameters", "1037",
+                        throw new DBSException("Wrong Parameters", "1038",
 							"User must provide either of a blockName, path or (primaryDataset, processedDataset)");
 
                 String blockID = null;
@@ -565,7 +565,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		
 
 		if (!isNull(blockName) && !isNull(path))
-				writeWarning(out, "Both Block and Path provided", "1050", "Both Block " + blockName + " and path " +
+				writeWarning(out, "Both Block and Path provided", "1070", "Both Block " + blockName + " and path " +
 					       path + " are provided. Ignoring path. Block is suifficent");
 		//Block is given -------------  insertFiles in Block
                 //Get the Block name (if provided)
@@ -597,7 +597,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			Vector pathTiers = parseTierVec(path.split("/")[3]);
 
 			if ( procDSTiers.size() != pathTiers.size() || !procDSTiers.containsAll(pathTiers) )
-                                throw new DBSException("Tier Mismatch", "1040", "Provided path tiers " + pathTiers +
+                                throw new DBSException("Tier Mismatch", "1041", "Provided path tiers " + pathTiers +
                                                 " are not present in path " + path +
                                                 " which contains " + procDSTiers);
 

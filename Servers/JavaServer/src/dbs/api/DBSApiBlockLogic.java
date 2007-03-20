@@ -1,6 +1,6 @@
 /**
- $Revision: 1.33 $"
- $Id: DBSApiBlockLogic.java,v 1.33 2007/03/15 19:41:42 sekhri Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSApiBlockLogic.java,v 1.34 2007/03/16 18:42:51 sekhri Exp $"
  *
  */
 
@@ -154,7 +154,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String[] datapath = path.split("/");
                 Vector pathTierVec = parseTierVec(datapath[3]);
 		if ( ! procDSTierVec.containsAll(pathTierVec) )
-				throw new DBSException("Tier Mismatch", "1037",
+				throw new DBSException("Tier Mismatch", "1044",
                                                         "Provided Tier(s) combinition " + pathTierVec.toString() + 
 							" is not present in dataset "+ path + " Path contains " + 
 							procDSTierVec.toString());
@@ -174,7 +174,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			String[] pathToks = path.split("/");
 			if ( ! pathToks[1].equals(blockPath[1])  ||
 					! pathToks[2].equals(blockPath[2]) ) {
-				throw new DBSException("Path mismatch", "1039", 
+				throw new DBSException("Path mismatch", "1045", 
 						"Block path portion "  + data[0] + " does not match with Path " + path);
 			}
 
