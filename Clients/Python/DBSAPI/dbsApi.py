@@ -234,6 +234,9 @@ class DbsApi(DbsConfig):
     if type(obj) == type(long(1)):
        return obj
 
+    if type(obj) == type (""):
+       return obj
+
     num = obj.get('RunNumber')
     if num ==  None:
             return ""
