@@ -3,7 +3,7 @@
 # Yuyi Guo
 #
 # 
-#  @cvsid $Id: MTCCdbs2Writer.py,v 1.1 2007/02/21 17:12:05 yuyi Exp $
+#  @cvsid $Id: MTCCdbs2Writer.py,v 1.2 2007/03/19 18:13:44 yuyi Exp $
 #
 #
 import sys
@@ -27,8 +27,8 @@ sys.stdout = sys.stderr
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
-files=['./MTCC1_files.txt']
-#files=['/home/yuyi/MTCC/data/MTCC2_files_primaryDSchanged.txt']
+#files=['./MTCC1_files.txt']
+files=['./MTCC2_files_primaryDSchanged.txt']
 #Run dic use run number as key and number of event as value
 runDic={}
 #verDic
@@ -55,7 +55,7 @@ LFNTireDic = {}
 LFNChsmDic = {}
 
 for line in fileinput.input(files):
-    if(fileinput.lineno()<2):
+    if(fileinput.lineno()>0):
             #print '%5d %s' %(fileinput.lineno(), line)
             parts=line.split()
             primaryDS = parts[0]
@@ -105,7 +105,7 @@ for line in fileinput.input(files):
             if(LFN not in LFNRunDic):
                 LFNRunDic[LFN] = [runNum]
             else:
-                LFNRunDic[LFN] = LFNRunDic[LFN].append(runNum)
+                (LFNRunDic[LFN]).append(runNum)
                 
             #find promary DS
             if(primaryDS in priDSDic):
@@ -141,9 +141,9 @@ for line in fileinput.input(files):
             #
             if(myPsDS in runPsDSDic):
                 if(runNum not in runPsDSDic[myPsDS]):
-                     runPsDSDic[myPsDS] =  runPsDSDic[myPsDS].append(runNum)
+                    (runPsDSDic[myPsDS]).append(runNum)
             else:
-                 runPsDSDic[myPsDS] = [runNum]
+                runPsDSDic[myPsDS] = [runNum]
             #
             if(myPsDS in verPsDSDic):
                 if(cmsswV not in verPsDSDic[myPsDS]):
@@ -206,7 +206,7 @@ for cmsswV in verDic.keys():
 #Create all the primary DS
 for primary in  priDSDic.keys():
     try:
-        api.insertPrimaryDataset (DbsPrimaryDataset (Name = primary))
+        api.insertPrimaryDataset (DbsPrimaryDataset (Name = primary, Type="MTCC"))
         print "##Inserted Primary: %s ##" % primary
 
     except DbsApiException, ex:
@@ -255,8 +255,8 @@ for processed in psDSDic.keys():
     try:
          api.insertProcessedDataset (proc)
          print "## Inserted Processed: %s ##" % proc
-         import pdb
-         pdb.set_trace()
+         #import pdb
+         #pdb.set_trace()
          api.insertBlock (proc, block)
          print "## Inserted Block: %s ##" % block
     except DbsApiException, ex:
@@ -346,7 +346,9 @@ print "### LastPsName: %s ###" % lastPsName
 block = DbsFileBlock (Name= "/"+ pNames[1]+ "/"+ pNames[3] + "/" + pNames[2] + "#01") 
 #       
 try:
-    api.insertFiles(lastPsName, fileList, block)
+    #api.insertFiles(lastPsName, fileList, block)
+    #with the new API, ProcName can be constructed from block.
+    api.insertFiles('',fileList, block)
     print "## Inserted File: %s ##" % fileList
 except DbsApiException, ex:
     print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
