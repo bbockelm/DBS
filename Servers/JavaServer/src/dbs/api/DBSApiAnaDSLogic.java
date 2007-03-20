@@ -1,6 +1,6 @@
 /**
- $Revision: 1.28 $"
- $Id: DBSApiAnaDSLogic.java,v 1.28 2007/03/15 19:41:42 sekhri Exp $"
+ $Revision: 1.29 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.29 2007/03/16 18:42:51 sekhri Exp $"
  *
  */
 
@@ -342,8 +342,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		//Insert a row in AnalysisDataset Table
 		String analysisDatasetName = get(table, "name", true); 
-		String status = get(table, "status", false);
-		String type = get(table, "type", false);
+		String status = get(table, "status", false).toUpperCase();
+		String type = get(table, "type", false).toUpperCase();
 
 		//FIXME Dafults should no be set by the server
 		if (isNull(status)) status = "NEW";
@@ -355,7 +355,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			try {
 				ps = DBSSql.insertAnalysisDataset(conn, 
 						analysisDatasetName,
-						get(table, "annotation", false),
+						getStr(table, "annotation", false),
 						procDSID,
 						anaDSDefID,
 						getID(conn, "AnalysisDSType", "Type", type, true),

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.41 $"
- $Id: DBSApiFileLogic.java,v 1.41 2007/03/15 19:41:42 sekhri Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSApiFileLogic.java,v 1.42 2007/03/16 18:42:51 sekhri Exp $"
  *
  */
 
@@ -666,9 +666,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		
 			String fileID = "";
 			String lfn = get(file, "lfn", true);
-			String fileStatus = get(file, "file_status", false);
-			String type = get(file, "type", false);
-			String valStatus = get(file, "validation_status", false);
+			String fileStatus = get(file, "file_status", false).toUpperCase();
+			String type = get(file, "type", false).toUpperCase();
+			String valStatus = get(file, "validation_status", false).toUpperCase();
 			String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 			String creationDate = getTime(file, "creation_date", false);
 			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
@@ -787,7 +787,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
 					fileID, 
 					getID(conn, "DataTier", "Name", 
-						get((Hashtable)tierVector.get(j), "name") , 
+						get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
 						true), 
 					cbUserID, lmbUserID, creationDate);
 			}

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.90 $"
- $Id: DBSApiLogic.java,v 1.90 2007/03/16 18:42:51 sekhri Exp $"
+ $Revision: 1.91 $"
+ $Id: DBSApiLogic.java,v 1.91 2007/03/16 20:22:44 sekhri Exp $"
  *
  */
 
@@ -335,7 +335,7 @@ public class DBSApiLogic {
 			ps = DBSSql.updateValue(conn, tableName1, 
 					ID1,
 					updateKey1, 
-					getID(conn, tableName2, uniqueKey2, uniqueValue2, true), 
+					getID(conn, tableName2, uniqueKey2, uniqueValue2.toUpperCase(), true), 
 					lmbUserID);
 			ps.execute();
 		} finally {
