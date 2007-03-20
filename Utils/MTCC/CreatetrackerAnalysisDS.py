@@ -42,9 +42,9 @@ NodeingRunList2=[]
 
 for nr in NodeingRunList:
     if(nr in runList1):
-        NodeingRunList1.append(str(nr))
+        NodeingRunList1.append(nr)
     elif(nr in runList2):
-        NodeingRunList2.append(str(nr))
+        NodeingRunList2.append(nr)
     else:
         print 'This run is not in MTCC1 %d' %(nr)
 
