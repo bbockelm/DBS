@@ -303,7 +303,9 @@ class DbsApi(DbsConfig):
     Retrieve list of processed datasets matching shell glob patterns for dataset and application
     User can provide a comprehensive list of parameters for which he/she want to find dataset(s).
     The search criteria can be based of a pattern for Primary dataset, Processed Dataset, Data Tier,
-    Application version, Application Family, Application executyable name and ParameterSet name.
+    Application version, Application Family, Application executyable name and ParameterSet name. Note that
+    this API returns the list of processed dataset which are diffrent from datasetPath. A processed dataset
+    can conatin multiple datasetPath only if files exists in that dataset
 
     Returns a list of DbsProcessedDataset objects.  If the pattern(s) are
 
@@ -458,7 +460,7 @@ class DbsApi(DbsConfig):
   # ------------------------------------------------------------
   def listRuns(self, dataset):
     """
-    Retrieve list of runs matching a shell glob pattern within a dataset (Processed Dataset).
+    Retrieve list of runs inside a Processed Dataset.
 
     returns: list of DbsRun objects.
   
@@ -539,7 +541,7 @@ class DbsApi(DbsConfig):
   def listTiers(self, dataset):
 
     """
-    Retrieve list of Tiers matching a shell glob pattern for a dataset (Processed Dataset).
+    Retrieve list of Tiers inside a Processed Dataset.
 
     returns: list of DbsDataTier objects.
 
@@ -604,7 +606,7 @@ class DbsApi(DbsConfig):
   def listBlocks(self, dataset=None, block_name="*", storage_element_name="*"):
     """
     Retrieve list of Blocks matching shell glob pattern for Block Name and/or 
-    Storage Element Name, for a dataset path (or glob pattern for dataset path). All the three parameters are optional.
+    Storage Element Name, for a dataset path.  All the three parameters are optional.
     
 
     returns: list of DbsFileBlock objects.
@@ -620,8 +622,8 @@ class DbsApi(DbsConfig):
 
       All Blocks from path /test_primary_001/SIM/TestProcessedDS001
          api.listBlocks("/test_primary_001/SIM/TestProcessedDS001") 
-      Block from path /test_primary_001/SIM/TestProcessedDS001 whoes name is /this/hahah#12345
-           api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah#12345"):
+      Block from path /test_primary_001/SIM/TestProcessedDS001 whoes name is /this/hahah/SIM#12345
+           api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah/SIM#12345"):
       All Blocks from path /test_primary_001/SIM/TestProcessedDS001 whoes name starts with /this/*
            api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/*"):
       All Blocks with a storage element name starting with SE3
@@ -750,11 +752,16 @@ class DbsApi(DbsConfig):
 
     params: 
 
-	path : STRICTLY is the DBS Data PATH in its definition. CANNOT be substituted for anyything else like Processed Dataset
+	path : STRICTLY is the DBS Data PATH in its definition. CANNOT be substituted for anything else like Processed Dataset.
+	Note that if path is supplied then all other parameters like primary and processed and tier_list are ignored. The files
+	are listed just from within this path
        
-        primary: 
+        primary: If the user does not specify the path then he/she can specify the primary dataset name with processed dataset name
+	
         proc: want to list files of THIS primary AND processed dataset combinition
 		(pri, proc) is mutually exclusive to path. Give path or give (pri, proc) pair
+		
+	tier_list: is a list of tiers that the user wants the file to belong to. If not supplied then all the tiers are returned
 
 	analysisDataset: is the name of the analysis dataset the user wants to list the files from. This is an optional parameter
                          It is mutually exclusive to (path and (pri, proc))
@@ -775,25 +782,13 @@ class DbsApi(DbsConfig):
           List all files in path /PrimaryDS_01/SIM/procds-01
              api.listFiles("/PrimaryDS_01/SIM/procds-01")
           List all files in path /PrimaryDS_01/SIM/procds-01, with LFNs that start with 'GoodFile'
-             api.listFiles("/PrimaryDS_01/SIM/procds-01", "", "GoodFile*")
+             api.listFiles(path="/PrimaryDS_01/SIM/procds-01", patternLFN="GoodFile*")
 	  List all files with pattern "GoodFile*"
-             api.listFiles("", "", "GoodFile*")
+             api.listFiles(patternLFN="GoodFile*")
           List all files in block /this/block#1230-87698
-             api.listFiles("", "/this/block#1230-87698")
+             api.listFiles(blockName="/this/block#1230-87698")
           List all files in analysis dataset abcd
-             api.listFiles("", "abcd","", "")
-
-          Using a Dataset Object 
-            primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
-            proc = DbsProcessedDataset (
-                            PrimaryDataset=primary,
-                            Name="TestProcessedDS002",
-                            PhysicsGroup="BPositive",
-                            Status="VALID",
-                            TierList=['SIM', 'RECO'],
-                            AlgoList=[WhateverAlgoObject],
-                            )
-             api.listFiles(proc)
+             api.listFiles(analysisDataset="abcd")
 
           etc etc.
     """
@@ -1265,11 +1260,11 @@ class DbsApi(DbsConfig):
     
     params:
           analysis_dataset_name_pattern:  the shell pattren for nanlysis dataset name. If not given then the default value of * is assigned to it and all the datasets are listed
-	  path: is the processed dataset path in the format /prim/datatier/proc which if given list all the analysis dataset within that processed dataset
+	  path: is the processed dataset path in the format /prim/proc/datatier which if given list all the analysis dataset within that processed dataset
     returns: 
           list of DbsAnalysisDataset objects  
     examples: 
-          api.listAnalysisDataset("*t005", "/test_primary_anzar_001/SIM/TestProcessedDS001")
+          api.listAnalysisDataset("*t005", "/test_primary_anzar_001/TestProcessedDS001/SIM")
           api.listAnalysisDataset()
 
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
@@ -1406,8 +1401,8 @@ class DbsApi(DbsConfig):
         block_name : Name of the Block thats being dumped.
 
     examples:
-        Dump the contents of Block /this/block#1230-87698 for Dataset /PrimaryDS_01/SIM/procds-01
-                  api.listDatasetContents("/PrimaryDS_01/SIM/procds-01", "/this/block#1230-87698") 
+        Dump the contents of Block /this/block#1230-87698 for Dataset /PrimaryDS_01/procds-01/SIM
+                  api.listDatasetContents("/PrimaryDS_01/procds-01/SIM", "/this/block#1230-87698") 
         
         Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -1453,8 +1448,8 @@ class DbsApi(DbsConfig):
 
     examples:
 
-        Dump the contents of Block /this/block#1230-87698 for Dataset /PrimaryDS_01/SIM/procds-01
-                  api.listDatasetContents("/PrimaryDS_01/SIM/procds-01", "/this/block#1230-87698") 
+        Dump the contents of Block /this/block#1230-87698 for Dataset /PrimaryDS_01/procds-01/SIM
+                  api.listDatasetContents("/PrimaryDS_01/procds-01/SIM", "/this/block#1230-87698") 
         
         Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -1601,7 +1596,9 @@ class DbsApi(DbsConfig):
     """
     Inserts a new dbs processed dataset in an existing primary dataset . It insert all the parents of the processed dataset, 
     insert and assocaite  all the tiers of the processed dataset, associate all the algorithms of the processed dataset and 
-    associate all the runs of the processed dataset. 
+    associate all the runs of the processed dataset. Note that inserting a processed dataset doesnot imply that there are now
+    datasetPaths in this processed dataset. Only when a block or a file is inserted a datasetPath becomes available in the processed
+    dataset.
     The parents, algorithms and runs of the processed dataset should exist before the  processed dataset could be inserted.
     
     param: 
@@ -1841,6 +1838,7 @@ class DbsApi(DbsConfig):
     logging.debug(data)
 
   # ------------------------------------------------------------
+
   def insertFiles(self, dataset, files, block=None):
     """ 
     Inserts a new dbs file in an existing block in a given processed dataset. It also insertes lumi sections
@@ -1850,7 +1848,7 @@ class DbsApi(DbsConfig):
     
     param: 
         dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
-	          path in the format of /prim/dt/proc
+	          path in the format of /prim/proc/datatier
 	
 	files : The list of dbs files in the format of DbsFile obejct. The following are mandatory and should be present 
 		in the dbs file object:	lfn
@@ -1941,16 +1939,16 @@ class DbsApi(DbsConfig):
          )
                             
          block = DbsFileBlock (
-                 Name="/this/hahah#12345"
+                 Name="/this/hahah/SIM#12345"
          )
 
          api.insertFiles (proc, [myfile1, myfile2], block)
 
-         api.insertFiles ("/test_primary_anzar_001/SIM/TestProcessedDS002",[myfile1, myfile2], "/this/hahah#12345")
+         api.insertFiles ("/test_primary_anzar_001/TestProcessedDS002/SIM",[myfile1, myfile2], "/this/hahah/SIM#12345")
 	 
-         api.insertFiles (proc, [myfile1, myfile2], "/this/hahah#12345")
+         api.insertFiles (proc, [myfile1, myfile2], "/this/hahah/SIM#12345")
    
-         api.insertFiles ("/test_primary_anzar_001/SIM/TestProcessedDS002", [myfile1, myfile2],  block)
+         api.insertFiles ("/test_primary_anzar_001/TestProcessedDS002/SIM", [myfile1, myfile2],  block)
 
     """
     # Prepare XML description of the input
@@ -2107,7 +2105,7 @@ class DbsApi(DbsConfig):
     
     param: 
         dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
-	          path in the format of /prim/dt/proc  [PATH is recommended]
+	          path in the format of /prim/proc/datatier  [PATH is recommended]
 
 	block : The dbs file block passed in as a string containing the block name. This field is not mandatory.
 	        If the block name is not provided the server creates one based on the primary dataset name, processed
@@ -2134,17 +2132,17 @@ class DbsApi(DbsConfig):
          )
          api.insertBlock (proc)
 
-         api.insertBlock (proc, "/this/hahah#12345")
+         api.insertBlock (proc, "/this/hahah/SIM#12345")
     
-         api.insertBlock (proc, "/this/hahah#12345",  [se1Obj, se2Obj, se3Obj])
+         api.insertBlock (proc, "/this/hahah/SIM#12345",  [se1Obj, se2Obj, se3Obj])
 	 
          api.insertBlock (proc, "",  ['se1', 'se2', 'se3'])
     
-         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345")
+         api.insertBlock ("/test_primary_anzar_001/TestProcessedDS002/SIM" , "/this/hahah/SIM#12345")
     
-         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "/this/hahah#12345",  [se1Obj, se2Obj, se3Obj])
+         api.insertBlock ("/test_primary_anzar_001/TestProcessedDS002/SIM , "/this/hahah/SIM#12345",  [se1Obj, se2Obj, se3Obj])
 	 
-         api.insertBlock ("/test_primary_anzar_001/SIM/TestProcessedDS002" , "",  [se1Obj, se2Obj, se3Obj])
+         api.insertBlock ("/test_primary_anzar_001/TestProcessedDS002/SIM , "",  [se1Obj, se2Obj, se3Obj])
     
 
     """
@@ -2219,7 +2217,7 @@ class DbsApi(DbsConfig):
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
 	   
     examples:
-         api.deleteSEFromBlock ("/this/hahah#12345", "se1")
+         api.deleteSEFromBlock ("/this/hahah/SIM#12345", "se1")
 
 
 	Note that se1 is a STRING not a StorageElement Object
@@ -2295,7 +2293,7 @@ class DbsApi(DbsConfig):
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
 	   
     examples:
-         api.closeBlock ("/this/hahah#12345")
+         api.closeBlock ("/this/hahah/SIM#12345")
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
@@ -2332,7 +2330,7 @@ class DbsApi(DbsConfig):
          )
 	 api.insertStorageElement ( block , 'se1')
 	 
-	 api.insertStorageElement ( "/this/hahah#12345" , 'se2')
+	 api.insertStorageElement ( "/this/hahah/SIM#12345" , 'se2')
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
@@ -2738,6 +2736,7 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'createAnalysisDataset',
                          'xmlinput' : xmlinput }, 'POST')
     logging.debug(data)
+
 
     #-----------------------------------------------------------------------------
   def createAnalysisDatasetDefinition(self, analysisDatasetDefinition ):
