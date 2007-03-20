@@ -741,7 +741,7 @@ class DbsApi(DbsConfig):
 
   #def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
   #def listFiles(self, path, dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
-  def listFiles(self, path, primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None):
+  def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
