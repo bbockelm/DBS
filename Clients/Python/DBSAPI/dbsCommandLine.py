@@ -21,6 +21,9 @@ from dbsApiException import *
 import threading
 import sys
 
+import pdb
+
+
 class printDot ( threading.Thread ):
        def __init__(self):  
           threading.Thread.__init__(self)
@@ -40,8 +43,8 @@ class printDot ( threading.Thread ):
 
 #############################################################################
 ##Default URL for the Service
-#URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
-URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
+URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
+#URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
 #############################################################################
@@ -112,6 +115,7 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\npython dbsCommandLine.py -c lsd --p=/QCD_pt_0_15_PU_OnSel/SIM/CMSSW_1_2_0-FEVT-1168294751-unmerged"
       command_help += "\npython dbsCommandLine.py -c listFiles --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
       command_help += "\npython dbsCommandLine.py -c lsf --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
+      command_help += "\nNote: Definition of '--pattern=' may vary for each commandline option."
       command_help += "\n"
       return command_help
 
@@ -133,6 +137,11 @@ class DbsOptionParser(optparse.OptionParser):
 
 def breakPath(inpath):
    
+   if not inpath.startswith('/'):
+      raise DbsException (args="Path starts with a '/'",  code="1201")
+   if inpath.endswith('/'):
+      inpath=inpath[:-1]
+
    pathl = inpath.split('/')
    if len(pathl) < 3:
       print "Error must provide a full qualifying path"
@@ -184,6 +193,11 @@ class ApiDispatcher:
     ##listProcessedDatasets
     elif apiCall in ('listProcessedDatasets', 'lsd'):
 	self.handleListProcessedDatasets()
+
+
+    ##listAlgorithms
+    elif apiCall in ('listAlgorithms', 'lsa'):
+	self.handleListAlgorithms()
 
     ##listFiles
     elif apiCall in ('listFiles', 'lsf'):
@@ -252,6 +266,49 @@ class ApiDispatcher:
                 	 #datasetPaths.append(aPath)
 	                 #Print on screen as well
         	         print aPath
+
+
+  def getAlgoPattern(self):
+
+        if self.optdict.get('pattern'):
+          algopat = self.optdict.get('pattern')
+          if not algopat.startswith('/'):
+             raise DbsException (args="Algorithm patters starts with a '/'",  code="1200")
+          algopat=algopat[1:]
+          if algopat.endswith('/'):
+                algopat=algopat[:-1]
+          algotoks = algopat.split('/')
+          return algotoks
+        return []
+          
+#{'ApplicationVersion': 'CMSSW_1_2_0', 'ExecutableName': 'cmsRun', 'ParameterSetID': {'Content': 'NOT KNOWN', 'Version': 'NOT KNOWN', 'Hash': 'fa8cd7e4d090367ed1459e9397d1464f', 'Name': 'fa8cd7e4d090367ed1459e9397d1464f', 'Type': 'CSA06', 'Annotation': 'NOT KNOWN'}, 'LastModifiedBy': 'NO_DN', 'CreatedBy': 'NO_DN', 'CreationDate': '1174329371237', 'LastModificationDate': '2007-3-19.19.36. 11. 257693000', 'ApplicationFamily': 'DIGI-RECO'}
+
+  def handleListAlgorithms(self):
+
+        print "Retrieving list of Algorithm, Please wait..." 
+        algotoks = self.getAlgoPattern()
+        if len(algotoks):
+          #pdb.set_trace()
+          if len(algotoks)==4:
+             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam=algotoks[2], patternPS=algotoks[3])
+          if len(algotoks)==3:
+             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam=algotoks[2], patternPS="*")
+	  if len(algotoks)==2:
+             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam="*", patternPS="*")
+	  if len(algotoks)==1:
+             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer="*", patternFam="*", patternPS="*")
+          #apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+        else:
+          apiret = self.api.listAlgorithms()
+
+        print "\n/ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n"  
+        for anObj in apiret:
+                print "       /"+ anObj['ExecutableName'] \
+				+ "/" + anObj['ApplicationVersion']  \
+					+"/"+ anObj['ApplicationFamily'] \
+						+ "/" + anObj['ParameterSetID']['Hash']
+        if (len(apiret) > 10): print "\n/ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash"  
+
 
   def handleListFiles(self):
        path=self.optdict.get('path') or '/*/*/*'
