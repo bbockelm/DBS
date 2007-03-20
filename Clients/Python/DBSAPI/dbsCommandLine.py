@@ -49,6 +49,11 @@ URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
 VERSION="v00_00_06"
 #############################################################################
 
+saved_help="/tmp/out.log"
+
+def print_help(self):
+       print open(saved_help, 'r').read()
+       print "Help is in my control now............!!!!!!!!!"
 
 class DbsOptionParser(optparse.OptionParser):
   """
@@ -68,17 +73,22 @@ class DbsOptionParser(optparse.OptionParser):
            help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
 
       self.add_option("--apiver","--apiversion", action="store", type="string", default=VERSION, dest="version",
-           help="specify dbs client api version, e.g. --ver=v00_00_05, or --version=v00_00_05")
+           help="specify dbs client api version, e.g. --ver=v00_00_06, or --version=v00_00_06")
 
       self.add_option("--p","--path", action="store", type="string", dest="path",
-           help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed")
+           help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed, supports shell glob")
 
       self.add_option("--pattern", action="store", type="string", dest="pattern",
-           help="some command scope could be restricted with pattern, e.g. listPrimaryDataset")
+           help="some command scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob")
 
-      self.add_option("--report", action="store_true", default="False", dest="report",
+      self.add_option("--algopattern", action="store", type="string", dest="algopattern",
+           help="Algorithms can be specified as algopattern /appname/appversion/appfamily/pset_hash, supports shell glob")
+
+      self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
 
+      self.add_option("--doc", action="store_true", default=False, dest="doc",
+           help="Generates a detailed documentation for reference")
 
       #self.add_option("--apppattern", action="store", type="string", default="*", dest="apppattern",
       #     help="Pattern of Application in /appname/family/version format")
@@ -86,6 +96,19 @@ class DbsOptionParser(optparse.OptionParser):
       ## Always keep this as the last option in the list
       self.add_option("-c","--command", action="store", type="string", default="notspecified", dest="command",
                            help="specify what command would you like to run, e.g. -c=listPrimaryDataset, or --command=listPrimaryDataset")
+
+      self.capture_help()
+      print "done capture"
+      optparse.OptionParser.print_help=print_help 
+
+
+  def capture_help(self):
+      saveout = sys.stdout
+      savehere = open(saved_help, 'w')
+      sys.stdout = savehere
+      self.print_help()
+      sys.stdout = saveout
+      savehere.close()
 
   def use(self):
 
@@ -115,14 +138,14 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\npython dbsCommandLine.py -c lsd --p=/QCD_pt_0_15_PU_OnSel/SIM/CMSSW_1_2_0-FEVT-1168294751-unmerged"
       command_help += "\npython dbsCommandLine.py -c listFiles --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
       command_help += "\npython dbsCommandLine.py -c lsf --path=/PrimaryDS_ANZAR_01/SIM/anzar-procds-01"
-      command_help += "\nNote: Definition of '--pattern=' may vary for each commandline option."
+      command_help += "\n\nUse --doc for detailed documentation"
       command_help += "\n"
       return command_help
 
   def print_help(self):
        help=1
        optparse.OptionParser.print_help(self)
-       print self.use()
+       #print self.use()
    
   def getOpt(self):
       """
@@ -194,7 +217,6 @@ class ApiDispatcher:
     elif apiCall in ('listProcessedDatasets', 'lsd'):
 	self.handleListProcessedDatasets()
 
-
     ##listAlgorithms
     elif apiCall in ('listAlgorithms', 'lsa'):
 	self.handleListAlgorithms()
@@ -233,7 +255,8 @@ class ApiDispatcher:
 
   def handleListProcessedDatasets(self):
 	datasetPaths = []
-        
+        if self.optdict.get('pattern'):
+          raise DbsException (args="--pattern has no effect on listProcessedDataset, --path can be used as such", code="1202") 
         if self.optdict.get('path'):
           wholepath= self.optdict.get('path')
         else:
@@ -267,11 +290,10 @@ class ApiDispatcher:
 	                 #Print on screen as well
         	         print aPath
 
-
   def getAlgoPattern(self):
 
-        if self.optdict.get('pattern'):
-          algopat = self.optdict.get('pattern')
+        if self.optdict.get('algopattern'):
+          algopat = self.optdict.get('algopattern')
           if not algopat.startswith('/'):
              raise DbsException (args="Algorithm patters starts with a '/'",  code="1200")
           algopat=algopat[1:]
@@ -281,14 +303,10 @@ class ApiDispatcher:
           return algotoks
         return []
           
-#{'ApplicationVersion': 'CMSSW_1_2_0', 'ExecutableName': 'cmsRun', 'ParameterSetID': {'Content': 'NOT KNOWN', 'Version': 'NOT KNOWN', 'Hash': 'fa8cd7e4d090367ed1459e9397d1464f', 'Name': 'fa8cd7e4d090367ed1459e9397d1464f', 'Type': 'CSA06', 'Annotation': 'NOT KNOWN'}, 'LastModifiedBy': 'NO_DN', 'CreatedBy': 'NO_DN', 'CreationDate': '1174329371237', 'LastModificationDate': '2007-3-19.19.36. 11. 257693000', 'ApplicationFamily': 'DIGI-RECO'}
-
   def handleListAlgorithms(self):
-
         print "Retrieving list of Algorithm, Please wait..." 
         algotoks = self.getAlgoPattern()
         if len(algotoks):
-          #pdb.set_trace()
           if len(algotoks)==4:
              apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam=algotoks[2], patternPS=algotoks[3])
           if len(algotoks)==3:
@@ -301,13 +319,13 @@ class ApiDispatcher:
         else:
           apiret = self.api.listAlgorithms()
 
-        print "\n/ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n"  
+        print "\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n"  
         for anObj in apiret:
                 print "       /"+ anObj['ExecutableName'] \
 				+ "/" + anObj['ApplicationVersion']  \
 					+"/"+ anObj['ApplicationFamily'] \
 						+ "/" + anObj['ParameterSetID']['Hash']
-        if (len(apiret) > 10): print "\n/ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash"  
+        if (len(apiret) > 10): print "\nListed as:      /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n\n"  
 
 
   def handleListFiles(self):
@@ -384,10 +402,15 @@ if __name__ == "__main__":
     # Todo
     # Help on individual commands
     #
+    #optparse.print_help = optManager.print_help 
+    #pdb.set_trace()
     if opts.__dict__.get('command') != 'notspecified' : 
        ApiDispatcher(opts)
     else:
-       optManager.print_help() 
+          optManager.print_help()
+          #Print doc as well
+          if opts.__dict__.get('doc'):
+              print optManager.use()
 
   except DbsApiException, ex:
     print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
