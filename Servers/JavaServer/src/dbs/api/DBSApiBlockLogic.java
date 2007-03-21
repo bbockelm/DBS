@@ -1,6 +1,6 @@
 /**
- $Revision: 1.34 $"
- $Id: DBSApiBlockLogic.java,v 1.34 2007/03/16 18:42:51 sekhri Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSApiBlockLogic.java,v 1.35 2007/03/20 18:37:09 sekhri Exp $"
  *
  */
 
@@ -98,7 +98,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * <code> <"storage_element id='2' name='/test/test#9ac2b28b-781f-4907-a87a-40e233ab139a' creation_date='2006-12-06 16:29:34.0' last_modification_date='2006-12-06 16:29:34.0' created_by='ANZARDN' last_modified_by='ANZARDN'"/></code>
 	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
 	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
-	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
 	 * @param patternSEName a pattern for storage element name that can contain wild card characters.  This is not a mandatory field.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable  or processed dataset is not found.
 	 */

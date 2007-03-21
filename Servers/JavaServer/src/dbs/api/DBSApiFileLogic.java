@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApiFileLogic.java,v 1.43 2007/03/20 16:27:51 sekhri Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApiFileLogic.java,v 1.44 2007/03/20 18:37:09 sekhri Exp $"
  *
  */
 
@@ -534,8 +534,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * <code>lumi_section_number, run_number, start_event_number, end_event_number, lumi_start_time, lumi_end_time</code> <br>
 	 * The keys that <code>algorithm </code> hashtable may or may not contain are <br> 
 	 * <code>app_version, app_family_name, app_executable_name, ps_name</code> <br>
-	  * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
-	 * @param blockName a block name in the format of /primary/processed#GUID. This block name is used to find the existing block id.
+	 * @param path a dataset path in the format of /primary/processed/tier. This path is used to find the existing processed dataset id.
+	 * @param block a block hashtable in the format of /primary/processed/tier#GUID. This block name is used to find the existing block id.
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
