@@ -131,12 +131,14 @@ echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('PROMOTED', SYSTIMES
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('PROMOTED', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EVD', SYSTIMESTAMP) ;" >> $ddl_file
+echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', SYSTIMESTAMP) ;" >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('COSMIC', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('ALIGN', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('CALIB', SYSTIMESTAMP);"  >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MTCC', SYSTIMESTAMP);"  >> $ddl_file
 
 echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP);"  >> $ddl_file
@@ -164,6 +166,7 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', SYSTIMESTAMP);" 
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', SYSTIMESTAMP);" >> $ddl_file
 #
 #
 echo "commit;" >> $ddl_file

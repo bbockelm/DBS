@@ -1242,9 +1242,9 @@ INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());
-INSERT INTO FileType(Type, CreationDate) VALUES ('EVD', NOW()) ;
+INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', NOW()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
-INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW());
+INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW()), ('RAW', NOW()) , ('MC', NOW()), ('COSMIC', NOW()), ('ALIGN', NOW()), ('CALIB', NOW());
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');
@@ -1257,5 +1257,22 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things th
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()), ('RAW', NOW());
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()),  ('RAW', NOW()), ('AOD', NOW());
+INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', NOW()), 
+('Individual', '', NOW()), 
+('Higgs', '', NOW()), 
+('SUSY', '', NOW()), 
+('BSM', '', NOW()), 
+('EWK', '', NOW()), 
+('Top', '', NOW()), 
+('QCD', '', NOW()), 
+('Diffraction', '', NOW()), 
+('Online Selection', '', NOW()), 
+('B-physics', '', NOW()), 
+('Muons', '', NOW()), 
+('Egamma', '', NOW()), 
+('JetMet', '', NOW()), 
+('E-flow', '', NOW()), 
+('tau', '', NOW()), 
+('B-tagging', '', NOW());
 commit;
