@@ -183,6 +183,8 @@ try:
 				else:
 					checkSum = tmp[1]
 
+				fileType = str(attrs['type'])
+				if (fileType == 'EVD'): fileType = 'EDM'
 				self.dbsfile = DbsFile (
 						Checksum = checkSum,
 						LogicalFileName = str(attrs['lfn']),
@@ -190,7 +192,7 @@ try:
 						FileSize = int(attrs['size']),
 						Status = str(attrs['status']),
 						ValidationStatus = 'VALID',
-						FileType = str(attrs['type']),
+						FileType = fileType,
 						AlgoList = [self.algo],
 						TierList = self.tierList
 						)
