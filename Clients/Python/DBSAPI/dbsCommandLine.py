@@ -79,10 +79,19 @@ class DbsOptionParser(optparse.OptionParser):
            help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed, supports shell glob")
 
       self.add_option("--pattern", action="store", type="string", dest="pattern",
-           help="some command scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob")
+           help="some commands scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob for Primary Dataset Names")
 
       self.add_option("--algopattern", action="store", type="string", dest="algopattern",
            help="Algorithms can be specified as algopattern /appname/appversion/appfamily/pset_hash, supports shell glob")
+
+      self.add_option("--blockpattern", action="store", type="string", dest="blockpattern",
+           help="BlockName pattern for listBlocks and other calls in format /primary/tier/processed#guid, supports shell glob")
+
+      self.add_option("--sepattern", action="store", type="string", dest="sepattern",
+           help="Storage Element Name pattern for glob serach")
+
+      self.add_option("--lfnpattern", action="store", type="string", dest="lfnpattern",
+           help="Logical File Name pattern for glob serach")
 
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
@@ -90,17 +99,14 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--doc", action="store_true", default=False, dest="doc",
            help="Generates a detailed documentation for reference")
 
-      #self.add_option("--apppattern", action="store", type="string", default="*", dest="apppattern",
-      #     help="Pattern of Application in /appname/family/version format")
-
       ## Always keep this as the last option in the list
       self.add_option("-c","--command", action="store", type="string", default="notspecified", dest="command",
                            help="specify what command would you like to run, e.g. -c=listPrimaryDataset, or --command=listPrimaryDataset")
 
+      ## capture help
       self.capture_help()
-      print "done capture"
+      ## redirect print_help
       optparse.OptionParser.print_help=print_help 
-
 
   def capture_help(self):
       saveout = sys.stdout
@@ -118,13 +124,14 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n           listAlgorithms or lsa, can provide --path"
       command_help += "\n           listRuns or lsr, can provide --path"
       command_help += "\n           listTiers or lst, can provide --path"
-      command_help += "\n           listBlocks or lsb, can provide --path and/or --pattern"
+      command_help += "\n           listBlocks or lsb, can provide --path and/or --blockpattern"
       command_help += "\n           listFiles or lsf, must provide --path"
       command_help += "\n           listFileParents or lsfp, must be qualified with --pattern"
       command_help += "\n           listFileAlgorithms or lsfa,"
       command_help += "\n           listFileTiers or lsft,"
       command_help += "\n           listFileBranches or lsfb,"
       command_help += "\n           listFileLumis or lsfl,"
+      command_help += "\n           listStorageElements or lsse,"
       command_help += "\n           listAnalysisDatasetDefinition or lsad,"
       command_help += "\n           listAnalysisDataset or lsa,"
       command_help += "\n           listDatasetContents or lsdc,"
@@ -157,19 +164,6 @@ class DbsOptionParser(optparse.OptionParser):
       """
       return self.parse_args()
   
-
-def breakPath(inpath):
-   
-   if not inpath.startswith('/'):
-      raise DbsException (args="Path starts with a '/'",  code="1201")
-   if inpath.endswith('/'):
-      inpath=inpath[:-1]
-
-   pathl = inpath.split('/')
-   if len(pathl) < 3:
-      print "Error must provide a full qualifying path"
-   else:
-      return pathl  
 
 class printReport:
 
@@ -228,6 +222,11 @@ class ApiDispatcher:
     ##listBlocks
     elif apiCall in ('listBlocks', 'lsb'):
 	self.handleBlockCall()
+
+    ##listStorageElements
+    elif apiCall in ('listStorageElements', 'lsse'):
+        self.handlelistSECall()
+
     else:
        print "API Call: %s not implemented" %apiCall
 
@@ -254,24 +253,31 @@ class ApiDispatcher:
         	print anObj['Name']
 
   def handleListProcessedDatasets(self):
+
 	datasetPaths = []
         if self.optdict.get('pattern'):
-          raise DbsException (args="--pattern has no effect on listProcessedDataset, --path can be used as such", code="1202") 
-        if self.optdict.get('path'):
-          wholepath= self.optdict.get('path')
-        else:
-          wholepath= "*"
+          raise DbsException (args="--pattern has no effect on listProcessedDataset, --path can be used for dataset patterns", code="1202") 
+        
+        paramDict = {}
 
-	if wholepath == "*":
-		apiret = self.api.listProcessedDatasets("*")
-	else:
-		pathl = breakPath(self.optdict.get('path'))
-		apiret = self.api.listProcessedDatasets(pathl[1], pathl[3], pathl[2])
+        # See if Algorithm is specified for selection
+        algoparam = self.getAlgoPattern()
+
+        # See if any path is provided
+        pathl = self.getPath(self.optdict.get('path'))
+        if len(pathl):
+		paramDict.update(pathl)
+        if len(algoparam):
+                paramDict.update(algoparam)
+
+        print "listing datasets, please wiat...\n"
+        apiret = self.api.listProcessedDatasets(**paramDict)
+
         if len(apiret) < 1 :
 		print "No Datasets found"
 	for anObj in apiret:
 
-	    if self.optdict.get('report') != 'False' :	
+	    if self.optdict.get('report'):	
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
 		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
 		
@@ -290,8 +296,34 @@ class ApiDispatcher:
 	                 #Print on screen as well
         	         print aPath
 
+  def getPath(self, inpath):
+
+    pathDict = {} 
+    if self.optdict.get('path'): 
+	inpath = self.optdict.get('path')
+   	if not inpath.startswith('/'):
+      		raise DbsException (args="Path must start with a '/'",  code="1201")
+   	# remove the starting '/' 
+   	inpath=inpath[1:]
+   	if inpath.endswith('/'):
+      		inpath=inpath[:-1]
+   	pathl = inpath.split('/')
+   	if len(pathl) < 3:
+		raise DbsException (args="must provide a full qualifying --path=/?/?/?, or no --path", code="1203")
+   	else:
+      		pathDict['patternPrim'] = pathl[0]
+      		pathDict['patternDT'] = pathl[2]
+      		pathDict['patternProc'] = pathl[1]
+    else :
+         pathDict['patternPrim'] = "*"
+         pathDict['patternDT'] = "*"
+         pathDict['patternProc'] = "*"
+
+    return pathDict
+
   def getAlgoPattern(self):
 
+        algodict = {} 
         if self.optdict.get('algopattern'):
           algopat = self.optdict.get('algopattern')
           if not algopat.startswith('/'):
@@ -300,22 +332,19 @@ class ApiDispatcher:
           if algopat.endswith('/'):
                 algopat=algopat[:-1]
           algotoks = algopat.split('/')
-          return algotoks
-        return []
+
+          if len(algotoks) >=1 : algodict['patternExe']=algotoks[0]
+          if len(algotoks) >=2 : algodict['patternVer']=algotoks[1]
+          if len(algotoks) >=3 : algodict['patternFam']=algotoks[2]
+          if len(algotoks) >=4 : algodict['patternPS']=algotoks[3]
+
+        return algodict
           
   def handleListAlgorithms(self):
         print "Retrieving list of Algorithm, Please wait..." 
-        algotoks = self.getAlgoPattern()
-        if len(algotoks):
-          if len(algotoks)==4:
-             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam=algotoks[2], patternPS=algotoks[3])
-          if len(algotoks)==3:
-             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam=algotoks[2], patternPS="*")
-	  if len(algotoks)==2:
-             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer=algotoks[1], patternFam="*", patternPS="*")
-	  if len(algotoks)==1:
-             apiret = self.api.listAlgorithms(patternExe=algotoks[0], patternVer="*", patternFam="*", patternPS="*")
-          #apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
+        algoparam = self.getAlgoPattern()
+        if len(algoparam):
+             apiret = self.api.listAlgorithms(**algoparam)
         else:
           apiret = self.api.listAlgorithms()
 
@@ -329,18 +358,24 @@ class ApiDispatcher:
 
 
   def handleListFiles(self):
-       path=self.optdict.get('path') or '/*/*/*'
-       if path == '/*/*/*':
-         print "Can not list ALL files of ALL datasets, please specify a dataset path using --path="
+       path=self.optdict.get('path') or ''
+       blockpattern=self.optdict.get('blockpattern') or ''
+       lfnpattern=self.optdict.get('lfnpattern') or ''
+
+       if path == '' and blockpattern == '' and lfnpattern=='' :
+         print "Can not list ALL files of ALL datasets, please specify a dataset path using --path= and/or --blockpattern= and/or --lfnpattern"
        else:
          #dot = printDot()
          #dot.start()
          print "making api call, this may take sometime depending upon size of dataset, please wait...."
-         apiret = self.api.listFiles(path)
+
+         #def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None)
+
+         apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern)
          #dot.doIt = 0
          #dot.stop()
          
-	 if self.optdict.get('report') != 'False' :
+	 if self.optdict.get('report') :
             for anObj in apiret:
               report = Report()
               report.addSummary("LogicalFileName: %s" %anObj['LogicalFileName'])
@@ -358,16 +393,25 @@ class ApiDispatcher:
            	print anObj['LogicalFileName']
               print "Total files listed: %s" %len(apiret)
 
+  def handlelistSECall(self):
+       sepattern=self.optdict.get('sepattern') or '*'
+       apiret = self.api.listStorageElements(sepattern)
+       print "Listing storage elements, please wait..." 
+       for anObj in apiret:
+           print anObj['Name']
 
   def handleBlockCall(self):
        path=self.optdict.get('path') or ''
-       pattern=self.optdict.get('pattern') or ''
-       if path in ['/*/*/*', 'K'] and pattern in ['*', 'K'] :
-         print "Can not list ALL Blocks of ALL datasets, please specify a dataset path (--path=) and/or a block name pattern (--pattern=)"
+       blockpattern=self.optdict.get('blockpattern') or ''
+       sepattern=self.optdict.get('sepattern') or ''
+
+       if path in ['/*/*/*', ''] and blockpattern in ['*', ''] and sepattern in ['*', '']:
+         print "Can not list ALL Blocks of ALL datasets, specify a dataset path (--path=) and/or a block name (--blockpattern=) and/or storage element (--sepattern)"
 	 return
        else:
-         apiret = self.api.listBlocks(path, pattern)
-         if self.optdict.get('report') != 'False' :
+         print "Listing block, please wait..." 
+         apiret = self.api.listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
+         if self.optdict.get('report') :
             for anObj in apiret:
                 sumry  = "\nBlock Name %s " %anObj['Name']
                 sumry += "\nBlock Path %s" %anObj['Path']
