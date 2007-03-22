@@ -23,8 +23,8 @@ logging.getLogger('sqlalchemy.pool').setLevel(logging.NOTSET)
 import DDOptions
 
 SENDMAIL = "/usr/sbin/sendmail" # sendmail location
-RES_PER_PAGE=5 # number of results per page shown
-GLOBAL_STEP =5 # number of iterators shown in Results bar
+RES_PER_PAGE=25 # number of results per page shown
+GLOBAL_STEP =10 # number of iterators shown in Results bar
 
 # file created by crontab job, see getDLSsites.sh
 DLS_INFO='dls.all'

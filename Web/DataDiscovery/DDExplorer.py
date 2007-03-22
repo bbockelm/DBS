@@ -27,7 +27,7 @@ The XML structure:
 <where column='Table.colName' condition='Table.colName like some text here'
 </ddRequest>
 
-The following conditions are supported: =,>=,<=,>,<,like
+The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
 
 The XML file should contain the proper XML structure, see above.
 
@@ -188,6 +188,17 @@ def formXMLInput(iDict):
     xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
     for item in iDict['select']:
         xmlOutput+="""<select column='%s' />\n"""%item
+    if  iDict.has_key('output'):
+        for item in iDict['output']:
+            xmlOutput+="""<output %s />\n"""%item
+    if  iDict.has_key('where'):
+        for item in iDict['where']:
+            col,op,val=item.split()
+            if val[0]=="'" and val[-1]=="'":
+               val=val[1:-2]
+            if val[0]=="\"" and val[-1]=="\"":
+               val=val[1:-2]
+            xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(col,op,val)
     xmlOutput+="</ddRequest>"
     return xmlOutput
     

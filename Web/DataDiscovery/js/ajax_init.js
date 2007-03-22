@@ -626,38 +626,47 @@ function ajaxExecuteQuery(iDbs,iQuery) {
 // This is how we add back button support.
 //  ajax_dhtmlHistory('ajaxGetDbsData',ajaxCall);
 }
-function ajaxFinderSearch() {
-    ShowTag('results_finder');
-    var dbsInst=$('finder_dbsSelector').value;
-    var dbsList=$('finder_dbsSelector');
-    for(i=0;i<dbsList.length;i++) {
-       if(dbsList[i].selected) {
-          dbsInst=dbsList[i].value;
-          break;
-       }
-    }
-    var sel=document.getElementsByName("sectionTables");
-    var maxId=1;
-    for(var i=0;i<sel.length;i++) {
-        var sel_id = sel[i].id;
-        var id=sel_id.split('_')[1];
-        if(id>maxId) { maxId=id; }
-    }
-    var parameters='';
-    for(var i=1;i<=maxId;i++) {
-        table=$('sectionTables_'+i).value;
-        column=$('tableColumns_'+i).value;
-        operator=$('colSel_'+i).value;
-        where=$('where_'+i).value;
-        if(!parameters) {
-        parameters='params='+table+'__'+column+'__'+operator+'__'+where;
-        } else {
-        parameters=parameters+'_newparam_'+table+'__'+column+'__'+operator+'__'+where;
+function ajaxFinderSearch(dbsInst,parameters,limit,offset) {
+    if (dbsInst && parameters) {
+        ajaxEngine.sendRequest('ajaxFinderSearch','dbsInst='+dbsInst,"limit="+limit,"offset="+offset,parameters);
+    } else {
+        ShowTag('results_finder');
+        var dbsInst=$('finder_dbsSelector').value;
+        var dbsList=$('finder_dbsSelector');
+        for(i=0;i<dbsList.length;i++) {
+           if(dbsList[i].selected) {
+              dbsInst=dbsList[i].value;
+              break;
+           }
         }
+        var sel=document.getElementsByName("sectionTables");
+        var maxId=1;
+        for(var i=0;i<sel.length;i++) {
+            var sel_id = sel[i].id;
+            var id=sel_id.split('_')[1];
+            if(id>maxId) { maxId=id; }
+        }
+        var parameters='';
+        for(var i=1;i<=maxId;i++) {
+            table=$('sectionTables_'+i).value;
+            column=$('tableColumns_'+i).value;
+            operator=$('colSel_'+i).value;
+            where=$('where_'+i).value;
+    //        out=$('outCol_'+i).value;
+    //        str=table+'__'+column+'__'+operator+'__'+where+'__'+out;
+            limit=$('kw_limit').value
+            str=table+'__'+column+'__'+operator+'__'+where+'__'+limit;
+            if(!parameters) {
+                parameters='params='+str;
+            } else {
+                parameters=parameters+'_newparam_'+str;
+            }
+        }
+        ajaxEngine.sendRequest('ajaxFinderSearch','dbsInst='+dbsInst,parameters);
     }
-    ajaxEngine.sendRequest('ajaxFinderSearch','dbsInst='+dbsInst,parameters);
 }
 function ajaxFinderStoreQuery(iUser) {
+    var dbsInst=$('finder_dbsSelector').value;
     var sel=document.getElementsByName("sectionTables");
     var maxId=1;
     for(var i=0;i<sel.length;i++) {
@@ -678,7 +687,7 @@ function ajaxFinderStoreQuery(iUser) {
         parameters=parameters+'_newparam_'+table+'__'+column+'__'+operator+'__'+where;
         }
     }
-    ajaxEngine.sendRequest('ajaxFinderStoreQuery','userId='+getUserName(iUser),'alias='+aName,parameters);
+    ajaxEngine.sendRequest('ajaxFinderStoreQuery','dbsInst='+dbsInst,'userId='+getUserName(iUser),'alias='+aName,parameters);
 }
 function ajaxFinderSearchQuery(iUser) {
     ajaxEngine.sendRequest('ajaxFinderSearchQuery','userId='+getUserName(iUser),'alias='+$('kw_alias_lookup').value);
@@ -693,7 +702,14 @@ function ajaxGetKWFields() {
   showLoadingMessage('kw_prim_holder');
   ajaxGetTriggerLines();
   showLoadingMessage('kw_site_holder');
-  ajaxGetSites('','kw_dbsInstSelector','kw_site_holder');
+  ajaxGetSites('','kw_dbsInstSelector','kw_site_holder','kw_site');
+//  var rel = $('kw_release').value;
+//  var tier= $('kw_tier').value;
+//  var group=$('kw_group').value;
+//alert('rel='+rel+' tier='+tier+' group='+group);
+//  if(rel!='Any' || tier!='Any' || group!='Any') {
+//     ajaxUpdatePrimaryDatasets();
+//  }
 }
 
 function getDBS_kw(_dbs) {
@@ -713,11 +729,20 @@ function ajaxGetTriggerLines(_dbs) {
   dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
 }
+function ajaxUpdatePrimaryDatasets(_dbs) {
+  dbs=getDBS_kw(_dbs);
+  var rel = $('kw_release').value;
+  var tier= $('kw_tier').value;
+  var group=$('kw_group').value;
+//  showLoadingMessage('kw_prim_holder');
+  $('kw_prim').disabled="disabled";
+  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel);
+}
 function ajaxGetTiers(_dbs) {
   dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetTiers','dbsInst='+dbs);
 }
-function ajaxGetSites(_dbs,dbsSel,siteSel) {
+function ajaxGetSites(_dbs,dbsSel,siteSel,siteTag) {
   var dbs;
   if(dbsSel) {
      dbs=$(dbsSel).value;
@@ -725,7 +750,9 @@ function ajaxGetSites(_dbs,dbsSel,siteSel) {
      getDBS_kw(_dbs);
   }
   if(siteSel) {
-      ajaxEngine.sendRequest('ajaxGetSites','dbsInst='+dbs,'sel='+siteSel);
+      var sTag='';
+      if(siteTag) {sTag=siteTag;}
+      ajaxEngine.sendRequest('ajaxGetSites','dbsInst='+dbs,'sel='+siteSel,'tag='+sTag);
   } else {
       ajaxEngine.sendRequest('ajaxGetSites','dbsInst='+dbs);
   }
@@ -839,6 +866,7 @@ function getProvenance(id) {
   ajaxEngine.sendRequest('getProvenance',"dataset="+dataset);
 }
 
+/*
 var NavigatorMenuDictUpdater=Class.create();
 NavigatorMenuDictUpdater.prototype = {
    initialize: function() {
@@ -880,6 +908,7 @@ function ajaxGenNavigatorMenuDict(_dbs) {
   showLoadingMessage('navSelector');
   ajaxEngine.sendRequest('ajaxGenNavigatorMenuDict','dbsInst='+dbsInst);
 }
+*/
 /*
 var SiteMenuDictUpdater=Class.create();
 SiteMenuDictUpdater.prototype = {
@@ -915,13 +944,11 @@ function ajaxInit(_dbs) {
   registerAjaxProvenanceCalls();
   registerAjaxProvenanceGraphCalls();
   registerAjaxAppConfigsCalls();
-  registerAjaxGenNavigatorMenuDictCalls();
-//  registerAjaxGetDataDescriptionCalls();
+//  registerAjaxGenNavigatorMenuDictCalls();
   registerAjaxGetFloatBoxCalls();
   registerAjaxGetLumisCalls();
-//  registerAjaxGetAlgosCalls();
 
-  ajaxGenNavigatorMenuDict(_dbs);
+//  ajaxGenNavigatorMenuDict(_dbs);
   registerAjaxLucene();
   registerAjaxUserMenuCalls();
   initialize_dhtmlHistory();
@@ -1182,8 +1209,8 @@ function registerAjaxGetMoreInfoCalls() {
     ajaxEngine.registerRequest('ajaxMoreInfo','getMoreInfo');
 //    ajaxEngine.registerAjaxElement('floatDataDescription');
 }
-function ajaxMoreInfo(dbsInst,path,appPath,id) {
-    ajaxEngine.sendRequest('ajaxMoreInfo','dbsInst='+dbsInst,'path='+path,'appPath='+appPath,'id='+id);
+function ajaxMoreInfo(dbsInst,path,appPath,id,userMode) {
+    ajaxEngine.sendRequest('ajaxMoreInfo','dbsInst='+dbsInst,'path='+path,'appPath='+appPath,'id='+id,'userMode='+userMode);
     ShowTag(id);
 }
 function ajaxWriteUserQuery() {

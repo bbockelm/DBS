@@ -25,7 +25,7 @@ import dlsApi
 # DREW code, need to remove try block once it's ready
 try:
     from QueryBuilder.Schema import Schema
-    from QueryBuilder.QueryWriter import SqlQueryWriter, OracleQueryWriter
+#    from QueryBuilder.QueryWriter import SqlQueryWriter, OracleQueryWriter
 except:
     pass
 
@@ -389,6 +389,62 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
+  def listApplicationConfigsContent(self,appPath):
+      t1=time.time()
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tape = self.alias('AppExecutable','tape')
+          tapv = self.alias('AppVersion','tapv')
+          tapf = self.alias('AppFamily','tapf')
+          talc = self.alias('AlgorithmConfig','talc')
+          tqps = self.alias('QueryableParameterSet','tqps')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
+
+          oSel = [self.col(tqps,'Name'),self.col(tqps,'Content'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                     tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
+                     .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     .outerjoin(tp1,onclause=self.col(tqps,'CreatedBy')==self.col(tp1,'ID'))
+                     .outerjoin(tp2,onclause=self.col(tqps,'LastModifiedBy')==self.col(tp2,'ID'))
+                            ]
+                                 )
+          # to avoid ORA-00932: inconsistent datatypes: expected - got CLOB, I don't need to
+          # supply distinct and order while dealing with ORACLE
+          # http://forums.bea.com/bea/message.jspa?messageID=202461255&tstart=0
+          if self.dbManager.dbType[self.dbsInstance]!='oracle':
+             sel.distinct=True
+             sel.order_by=oSel
+          if appPath and appPath!="*":
+             empty,ver,fam,exe=string.split(appPath,"/")
+             if ver.lower()=='any': ver="*"
+             if fam.lower()=='any': fam="*"
+             if exe.lower()=='any': exe="*"
+             if ver and ver!="*":
+                sel.append_whereclause(self.col(tapv,'Version')==ver)
+             if fam and fam!="*":
+                sel.append_whereclause(self.col(tapf,'FamilyName')==fam)
+             if exe and exe!="*":
+                sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
+          result = self.getSQLAlchemyResult(con,sel)
+          for item in result:
+              name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
+              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 content=content.read() # since content is LOB object
+              if name:
+                 oList.append((name,content,ver,type,ann,cDate,cBy,mDate,mBy))
+      except:
+          printExcept()
+          raise "Fail in listApplicationsConfigsContent"
+      if self.verbose:
+         self.writeLog("time listApplicationsConfigsContent: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return oList
+
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*"):
       if group.lower()=='any': group="*"
       if app.lower()  =='any': app  ="*"
@@ -648,10 +704,11 @@ class DDHelper(DDLogger):
       except:
           printExcept()
           raise "Fail in getDataDescription"
-      oList = result.fetchall()
-#      oList=[]
-#      for item in result:
-#          oList.append(item)
+#      oList = result.fetchall()
+      oList=[]
+      for item in result:
+          if not item[0]:
+             oList.append(item)
       self.closeConnection(con)
       return oList
 
@@ -787,7 +844,66 @@ class DDHelper(DDLogger):
       oList.reverse()
       return oList
       
-  def getPrimaryDatasets(self,datasetPath="*",html=0):
+  def getPrimaryDatasets(self,group="*",tier="*",rel="*",html=0):
+      t1=time.time()
+      con = self.connectToDB()
+      oList   = []
+      if group.lower()=="any": group="*"
+      if tier.lower()=="any": tier="*"
+      if rel.lower()=="any": rel="*"
+      if  group=="*" and tier=="*" and rel=="*":
+          content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=1,limit=0)
+          for entry in content:
+              name=entry[0]
+              if html:
+                 navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
+                 dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+    #             blockInfo="ajaxGetDbsData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+    #             runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+    #             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
+                 name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
+              oList.append(name)
+      else: # I need to make a full query
+
+          try:
+              tpg  = self.alias('PhysicsGroup','tpg')
+              tapv = self.alias('AppVersion','tapv')
+              talc = self.alias('AlgorithmConfig','talc')
+              tprd = self.alias('ProcessedDataset','tprd')
+              tpm  = self.alias('PrimaryDataset','tpm')
+              tpds = self.alias('ProcDSTier','tpds')
+              tdt  = self.alias('DataTier','tdt')
+              tpal = self.alias('ProcAlgo','tpal')
+              oSel = [self.col(tpm,'Name')]
+              sel  = sqlalchemy.select(oSel,
+                     from_obj=[
+                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
+                     .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                         ],distinct=True,order_by=oSel )
+              if group and group!="*":
+                 sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
+              if tier and tier!="*":
+                 sel.append_whereclause(self.col(tdt,'Name')==tier)
+              if rel and rel!="*":
+                 sel.append_whereclause(self.col(tapv,'Version')==rel)
+              result = self.getSQLAlchemyResult(con,sel)
+              for item in result:
+                  if item[0]:
+                     oList.append(item[0])
+          except:
+              printExcept()
+              raise "Fail in getPrimaryDatasets"
+      if self.verbose:
+         self.writeLog("time getPrimaryDatasets: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return oList
+
+  def getPrimaryDatasets_old(self,datasetPath="*",html=0):
       t1=time.time()
       con = self.connectToDB()
       content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=1,limit=0)
@@ -835,7 +951,7 @@ class DDHelper(DDLogger):
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
-          raise "Fail in listProcessedDataset_al"
+          raise "Fail in getProcessedDataset"
       for item in result:
           if not item[0] or not item[1] or not item[2]: continue
           name="/%s/%s/%s"%(item[0],item[1],item[2])
@@ -868,8 +984,8 @@ class DDHelper(DDLogger):
 
       t1=time.time()
       prim=tier=proc=""
-      if datasetPath and datasetPath!="*":
-         empty,prim,proc,tier=string.split(datasetPath,"/")
+      if dataset and dataset!="*":
+         empty,prim,proc,tier=string.split(dataset,"/")
       con = self.connectToDB()
       oList  = []
       try:
@@ -877,19 +993,24 @@ class DDHelper(DDLogger):
           tprd = self.alias('ProcessedDataset','tprd')
           tprd2= self.alias('ProcessedDataset','tprd2')
           tpm  = self.alias('PrimaryDataset','tpm')
+          tpm2 = self.alias('PrimaryDataset','tpm2')
           tpds = self.alias('ProcDSTier','tpds')
+          tpds2= self.alias('ProcDSTier','tpds2')
           tdt  = self.alias('DataTier','tdt')
+          tdt2 = self.alias('DataTier','tdt2')
           tpdp = self.alias('ProcDSParent','tpdp')
-          tpdp2= self.alias('ProcDSParent','tpdp2')
 
-          oSel = [self,col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd2,'Name')]
+          oSel = [self.col(tpdp,'ItsParent'),self.col(tpm2,'Name'),self.col(tprd2,'Name'),self.col(tdt2,'Name')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      .outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
-                     .outerjoin(tpdp2,onclause=self.col(tpdp2,'ItsParent')==self.col(tprd2,'ID'))
+                     .outerjoin(tprd2,onclause=self.col(tpdp,'ItsParent')==self.col(tprd2,'ID'))
+                     .outerjoin(tpds2,onclause=self.col(tpds2,'Dataset')==self.col(tprd2,'ID'))
+                     .outerjoin(tdt2,onclause=self.col(tpds2,'DataTier')==self.col(tdt2,'ID'))
+                     .outerjoin(tpm2,onclause=self.col(tprd2,'PrimaryDataset')==self.col(tpm2,'ID'))
                      ],distinct=True,order_by=oSel )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
@@ -897,20 +1018,46 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
+          print sel,prim,proc,tier
           result = self.getSQLAlchemyResult(con,sel)
+          for item in result:
+              id,prim,proc,tier=item
+              if not id and not prim: continue
+              name="/%s/%s/%s"%(prim,proc,tier)
+              oList.append(name)
+
+#          if  len(pList):
+#              oSel = [self.col(tpm,'Name'),self.col(tprd,'Name'),self.col(tdt,'Name')]
+#              w_or = sqlalchemy.or_( map( lambda x: getattr(self.col(tprd,'ID'),x),pList ) )
+#              sel  = sqlalchemy.select(oSel,w_or,
+#                     from_obj=[
+#                         tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+#                         .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+#                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+#                         ],distinct=True,order_by=oSel )
+#              result = self.getSQLAlchemyResult(con,sel)
+#              for item in result:
+#                  print item
+#                  if not item[0] or not item[1] or not item[2]: continue
+#                  name="/%s/%s/%s"%(item[0],item[1],item[2])
+#                  oList.append(name)
+          
       except:
           printExcept()
-          raise "Fail in listProcessedDataset_al"
-      for item in result:
-          if not item[0] or not item[1] or not item[2]: continue
-          name="/%s/%s/%s"%(item[0],item[1],item[2])
+          raise "Fail in getDatasetProvenance"
+#      for item in result:
+#          print item
+#          if not item[0] or not item[1] or not item[2]: continue
+#          name="/%s/%s/%s"%(item[0],item[1],item[2])
+
 #          if html:
 #             navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
 #             dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
 #             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
 #             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
 #             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
-          oList.append(name)
+
+#          oList.append(name)
       if self.verbose:
          self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
       self.closeConnection(con)
@@ -1042,40 +1189,70 @@ class DDHelper(DDLogger):
           res=msg
       return res
 
-  def queryMaker(self,iList,execute=1):
+  def queryMaker(self,iList,whereClause=[],limit=0,offset=0,execute=1):
       """ 
          Build a query out of input iList=['TableName.ColumnName',]
+         whereClause is a list of (table,col,operator,value)
       """
       # I need to lookup SQLAlchemy tables
-#      oSel = []
-#      for item in iList:
-#          table,col=item.split(".")
-#          if col=="*":
-#             for c in self.dbManager.getColumns(self.dbsInstance,table):
-#                 oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),c))
-#          else:
-#             oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),col))
-#      md     = self.dbManager.metaDict[self.dbsInstance]
-#      sel    = sqlalchemy.select(oSel)
-#      qb     = Schema(md)
-#      query  = qb.BuildQuery(sel)
-#      print str(query)
-#      if  execute:
-#          res = self.executeSQLQuery(query)
-#      return str(query),res
-      qb     = Schema(self.dbManager.constructSchema(self.dbsInstance))
-      query  = qb.BuildQuery(iList)
-      writer = SqlQueryWriter()
-      query.Write(writer)
-      if  self.verbose:
-          self.writeLog(qb)
-          self.writeLog(repr(iList))
-          self.writeLog(writer.getvalue())
-      res = []
-      print writer.getvalue()
+      oSel = []
+      for item in iList:
+          table,col=item.split(".")
+          if col=="*":
+             for c in self.dbManager.getColumns(self.dbsInstance,table):
+                 oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),c))
+          else:
+             oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),col))
+      md     = self.dbManager.metaDict[self.dbsInstance]
+#      print "\n\nDDHelper:queryMaker",self.dbsInstance,self.dbManager.dbTables[self.dbsInstance].keys()
+      sel    = sqlalchemy.select(oSel)
+      qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
+      query  = qb.BuildQuery(sel)
+      for tableName,col,op,val in whereClause:
+          if col=='All':
+             return query,"Incorrect query, Column All %s %s is invalid statement"%(op,val)
+          t=self.dbManager.getTable(self.dbsInstance,tableName)
+          lval=self.col(t,col)
+          if op=="=":
+             query.append_whereclause(lval==val)
+          elif op=="<":
+             query.append_whereclause(lval<val)
+          elif op=="<=":
+             query.append_whereclause(lval<=val)
+          elif op==">":
+             query.append_whereclause(lval>val)
+          elif op==">=":
+             query.append_whereclause(lval>=val)
+          elif op=="like":
+             query.append_whereclause(lval.like("%%%s%%"%val))
+          elif op=="likeLeft":
+             query.append_whereclause(lval.like("%%%s"%val))
+          elif op=="likeRight":
+             query.append_whereclause(lval.like("%s%%"%val))
+      if long(limit):
+         query.limit=long(limit)
+      if long(offset):
+         query.offset=long(offset)
+      query.Distinct=True
+#      print oSel,str(query)
       if  execute:
-          res = self.executeSQLQuery(writer.getvalue())
-      return writer.getvalue(),res
+          res = self.executeSQLQuery(query)
+      return str(query),res
+
+      # first version of Drew's code
+#      qb     = Schema(self.dbManager.constructSchema(self.dbsInstance))
+#      query  = qb.BuildQuery(iList)
+#      writer = SqlQueryWriter()
+#      query.Write(writer)
+#      if  self.verbose:
+#          self.writeLog(qb)
+#          self.writeLog(repr(iList))
+#          self.writeLog(writer.getvalue())
+#      res = []
+#      print writer.getvalue()
+#      if  execute:
+#          res = self.executeSQLQuery(writer.getvalue())
+#      return writer.getvalue(),res
 
   def getAllTableColumns(self):
       tList = self.dbManager.dbTables[self.dbsInstance].keys()
@@ -1124,11 +1301,13 @@ class DDHelper(DDLogger):
          return False
       if string.find(query.lower(),"update")!=-1:
          return False
+      if string.find(query.lower(),"alter")!=-1:
+         return False
         
       known_tables = self.dbManager.getTableNames(self.dbsInstance)
       found=0
       for tName in known_tables:
-          if string.find(query,tName)!=-1:
+          if string.find(query.lower(),tName.lower())!=-1:
              found=1
       if not found:
          return False
@@ -1321,7 +1500,9 @@ class DDHelper(DDLogger):
           tdt  = self.alias('DataTier','tdt')
           tb   = self.alias('Block','tb')
           tf   = self.alias('Files','tf')
-          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tf,'FileStatus'),self.col(tf,'FileType'),self.col(tf,'NumberOfEvents')]
+          tfs  = self.alias('FileStatus','tfs')
+          tft  = self.alias('FileType','tft')
+          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
@@ -1329,6 +1510,8 @@ class DDHelper(DDLogger):
                          .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                          .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                         .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+                         .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
                      ],distinct=True,order_by=oSel
                                   )
           sel.append_whereclause(self.col(tf,'Block')==self.col(tb,'ID'))
@@ -1360,7 +1543,7 @@ class DDHelper(DDLogger):
 #      self.setDBSDLS(dbsInst)
 #      res = self.api.listFileBranches(lfn)
 #      return res
-  def getLFN_Branches(self,dbsInst,lfn):
+  def getLFN_Branches(self,dbsInst,lfn,userMode='user'):
       con = self.connectToDB()
       try:
           tb   = self.alias('Branch','tb')
@@ -1368,8 +1551,10 @@ class DDHelper(DDLogger):
           tf   = self.alias('Files','tf')
           tp1   = self.alias('Person','tp1')
           tp2   = self.alias('Person','tp2')
-
-          oSel = [self.col(tb,'Name'),self.col(tp1,'DistinguishedName'),self.col(tb,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tb,'LastModificationDate')]
+          if userMode!='user':
+             oSel = [self.col(tb,'Name'),self.col(tp1,'DistinguishedName'),self.col(tb,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tb,'LastModificationDate')]
+          else:
+             oSel = [self.col(tb,'Name')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tf.outerjoin(tfb,self.col(tfb,'Fileid')==self.col(tf,'ID'))
@@ -1384,7 +1569,10 @@ class DDHelper(DDLogger):
       except:
           printExcept()
           raise "Fail in getLFN_Branches"
-      tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
+      if userMode!='user':
+         tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
+      else:
+         tList=['Name']
       oList=[]
       for item in result:
           if not item[0]: continue
@@ -1396,7 +1584,7 @@ class DDHelper(DDLogger):
 #      self.setDBSDLS(dbsInst)
 #      res = self.api.listFileLumis(lfn)
 #      return res
-  def getLFN_Lumis(self,dbsInst,lfn):
+  def getLFN_Lumis(self,dbsInst,lfn,userMode='user'):
       con = self.connectToDB()
       try:
           tls   = self.alias('LumiSection','tls')
@@ -1405,7 +1593,10 @@ class DDHelper(DDLogger):
           tp1   = self.alias('Person','tp1')
           tp2   = self.alias('Person','tp2')
 
-          oSel = [self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tp1,'DistinguishedName'),self.col(tls,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tls,'LastModificationDate')]
+          if userMode!='user':
+             oSel = [self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tp1,'DistinguishedName'),self.col(tls,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tls,'LastModificationDate')]
+          else:
+             oSel = [self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tf.outerjoin(tfr,self.col(tfr,'Fileid')==self.col(tf,'ID'))
@@ -1420,7 +1611,10 @@ class DDHelper(DDLogger):
       except:
           printExcept()
           raise "Fail in getLFN_Lumis"
-      tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
+      if userMode!='user':
+         tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
+      else:
+         tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime']
       oList=[]
       for item in result:
           if not item[0]: continue

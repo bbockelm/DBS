@@ -1,8 +1,10 @@
 // Global variables
 var GLOBAL_CELL='cell_1';
 //var GLOBAL_STEP=5;
-//var DBSDD='http://cmsdbs.cern.ch/discovery/';
-//var DBSDD_EXPERT=DBSDD+'expert';
+var DBSDD='http://cmsdbs.cern.ch/discovery/';
+var DBSDD_EXPERT=DBSDD+'expert';
+
+
 
 function SetMain() {
   var id=document.getElementById("main");
@@ -1135,7 +1137,7 @@ function ResetFinder(dbsInst) {
 }
 function ResetSiteSearch(dbsInst) {
    ResetSelect('form2_dbsSelector',dbsInst);
-   ajaxGetSites('','form2_dbsSelector','form2_siteHolder');
+   ajaxGetSites('','form2_dbsSelector','form2_siteHolder','form2_siteSelector');
 }
 function ResetDbsExpert(dbsInst) {
    ResetSelect('dbsExpert_dbsSelector',dbsInst);

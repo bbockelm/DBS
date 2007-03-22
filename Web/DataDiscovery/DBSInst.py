@@ -126,6 +126,7 @@ class DBManager(DDLogger):
       self.dbTables  = {}
       self.dbType    = {}
       self.lowTables = {}
+      self.metaDict  = {}
       
   def connect(self,dbsInst):
       t_ini=time.time()
@@ -148,6 +149,7 @@ class DBManager(DDLogger):
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
 #             tQuery= "select table_name from user_tables"
              tQuery= "select tname from tab"
+             tQuery="""SELECT table_name FROM all_tables WHERE owner='CMS_DBS_INT_GLOBAL'"""
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
@@ -160,15 +162,16 @@ class DBManager(DDLogger):
           self.engine[dbsInst] = engine
           self.tQuery[dbsInst] = tQuery
 
-      dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=False)
-      dbsMeta.connect(self.engine[dbsInst])
       con = self.engine[dbsInst].connect()
 
       if  not self.dbTables.has_key(dbsInst):
+          dbsMeta = sqlalchemy.DynamicMetaData(case_sensitive=False)
+          dbsMeta.connect(self.engine[dbsInst])
+          self.metaDict[dbsInst]=dbsMeta
           tables={}
           tList = con.execute(self.tQuery[dbsInst])
           for t in tList: 
-              tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True, case_sensitive=False)
+              tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False)
           self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
