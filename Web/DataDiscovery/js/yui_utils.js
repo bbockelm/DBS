@@ -90,7 +90,7 @@ function insertSiteMasthead(view){
 function footerUserMenuText(){
     return [
             {label: "Navigator", link: "_navigator?userMode=user", title: "Navigator: menu-driven search"},
-//            {label: "Finder", link: "_finder?userMode=user", title: "Finder: query-driven search"},
+            {label: "Finder", link: "_finder?userMode=user", title: "Finder: query-driven search"},
 //            {label: "Config", link: "_config?userMode=user", title: "Config search: parameter set search"},
             {label: "RSS", link: "_rss?userMode=user", title: "RSS Feeds publish frequently updates about your data"},
 //            {label: "History", link: "_history?userMode=user", title: "History: persistent history of user queries"},
