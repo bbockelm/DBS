@@ -2825,10 +2825,14 @@ class DDServer(DDLogger):
             else:
                 page+="No more results"
         else:
-            page+="""<span class="box_red">%s</span>"""%oList.replace('<','&lt;').replace('>','&gt;')
+            if not oList.count('<table>'):
+               page+="""<div class="box_red">%s</div>"""%oList.replace('<','&lt;').replace('>','&gt;')
+            else:
+               page+=oList
 #        page+="<pre>%s\n%s</pre>"%(writer.getvalue(),repr(oList))
         
         page+="</response></ajax-response>"
+        print page
         if self.verbose==2:
            self.writeLog(page)
         return page
