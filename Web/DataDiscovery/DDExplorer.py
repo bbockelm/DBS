@@ -86,7 +86,7 @@ class DDOptionParser:
     """
     return self.parser.parse_args()
 
-def sendMessage(host,port,xmlEnvelope,output="list",debug=0):
+def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
     """
        Send message to server, message should be an well formed XML document.
     """
@@ -94,7 +94,7 @@ def sendMessage(host,port,xmlEnvelope,output="list",debug=0):
        httplib.HTTPConnection.debuglevel = 1
        print "Contact",host,port
     http_conn = httplib.HTTP(host,port)
-    http_conn.putrequest('POST','/cliHandler?input=%s'%xmlEnvelope)
+    http_conn.putrequest('POST','/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope))
     http_conn.putheader('Host',host)
     http_conn.putheader('Content-Type','text/xml; charset=utf-8')
     http_conn.putheader('Content-Length',str(len(xmlEnvelope)))
@@ -187,10 +187,10 @@ def parseInput(input):
 def formXMLInput(iDict):
     xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
     for item in iDict['select']:
-        xmlOutput+="""<select column='%s' />\n"""%item
+        xmlOutput+="""<select column='%s' />\n"""%str(item)
     if  iDict.has_key('output'):
         for item in iDict['output']:
-            xmlOutput+="""<output %s />\n"""%item
+            xmlOutput+="""<output %s />\n"""%str(item)
     if  iDict.has_key('where'):
         for item in iDict['where']:
             col,op,val=item.split()
@@ -198,7 +198,7 @@ def formXMLInput(iDict):
                val=val[1:-2]
             if val[0]=="\"" and val[-1]=="\"":
                val=val[1:-2]
-            xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(col,op,val)
+            xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(str(col),str(op),str(val))
     xmlOutput+="</ddRequest>"
     return xmlOutput
     
@@ -207,7 +207,7 @@ def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
     if  verbose:
         print inputXML
     envelope=urllib.quote(inputXML)
-    return sendMessage(host,port,envelope,opts.output,opts.verbose)
+    return sendMessage(host,port,dbsInst,envelope,opts.output,opts.verbose)
 
 #
 # main
@@ -216,6 +216,10 @@ if __name__ == "__main__":
     host= "localhost"
     port= 8001
     dbsInst="localhost"
+
+#    host= "cmslcgco01.cern.ch"
+#    port= 8003
+#    dbsInst="cmslcgco01"
 
     optManager  = DDOptionParser()
     (opts,args) = optManager.getOpt()

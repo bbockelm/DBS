@@ -2974,7 +2974,7 @@ class DDServer(DDLogger):
         return page
     addTreeElement.exposed=True
 
-    def cliHandler(self,input):
+    def cliHandler(self,dbsInst,input):
         data=urllib.unquote(input)
         if self.verbose==1:
            self.writeLog(data)
@@ -2982,20 +2982,24 @@ class DDServer(DDLogger):
             selList  = []
             conDict  = {}
             whereList= []
+            helper=self.helper
             class Handler (xml.sax.handler.ContentHandler):
                 def startElement(self, name, attrs):
                     if name=='select':
-                       selList.append(attrs['column'])
+                       table,col=attrs['column'].split(".")
+                       entry="%s.%s"%(helper.dbManager.getDBTableName(dbsInst,str(table)),str(col))
+                       selList.append(entry)
+#                       selList.append(str(attrs['column']))
                     if name=='list':
                        selList.append(1)
                     if name=='where':
                        table,col=attrs['column'].split(".")
-                       whereList.append((table,col,attrs['operator'],attrs['value']))
+                       whereList.append((str(table),str(col),str(attrs['operator']),str(attrs['value'])))
                     if name=='output':
                        if attrs.has_key('limit'):
-                          conDict['limit']=attrs['limit']
+                          conDict['limit']=long(attrs['limit'])
                        if attrs.has_key('offset'):
-                          conDict['offset']=attrs['offset']
+                          conDict['offset']=long(attrs['offset'])
             xml.sax.parseString (data, Handler ())
         except:
             printExcept()
