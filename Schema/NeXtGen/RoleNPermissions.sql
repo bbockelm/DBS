@@ -15,7 +15,15 @@ PROMPT Creating Role 'CMS_DBS_READER_ROLE'
 create role  CMS_DBS_READER_ROLE NOT IDENTIFIED
 /
 
+PROMPT Creating Role 'CMS_DBS_DLS_ROLE'
+create role  CMS_DBS_DLS_ROLE NOT IDENTIFIED
+/
+
+
 GRANT CMS_DBS_READER_ROLE TO CMS_DBS_WRITER_ROLE
+/
+
+GRANT CMS_DBS_DLS_ROLE TO CMS_DBS_WRITER_ROLE
 /
 
 GRANT CMS_DBS_WRITER_ROLE TO CMS_DBS_ADMIN_ROLE
@@ -28,6 +36,7 @@ GRANT CMS_DBS_WRITER_ROLE TO CMS_DBS_INT_GLOBAL_WRITER
 /
 
 GRANT CMS_DBS_READER_ROLE TO CMS_DBS_INT_GLOBAL_READER
+/
 -- ==================================
 -- 
 --  Granting Permissions to tables
@@ -67,9 +76,9 @@ END;
 
 -- This is for DLS
 
-grant delete on Block to CMS_DBS_WRITER_ROLE
+grant delete on Block to CMS_DBS_DLS_ROLE
 /
-grant delete on SEBlock to CMS_DBS_WRITER_ROLE
+grant delete on SEBlock to CMS_DBS_DLS_ROLE
 /
 
 
