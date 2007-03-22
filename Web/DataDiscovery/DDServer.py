@@ -2846,7 +2846,7 @@ class DDServer(DDLogger):
             for item in pList:
                 table,col,op,where=string.split(item,"__")
                 if col.lower()=='all': col='*'
-                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName('localhost',table),col))
+                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName(dbsInst,table),col))
         query,oList = self.helper.queryMaker(iList)
         try:
             self.storeHistory(dbsInst,userId,query,alias)
