@@ -1,18 +1,18 @@
 /*
  * General settings
  */
-body  {
-  margin-left: 1.2em;
-  margin-right: 1.2em;
-  margin-top: 1.2em;
-  margin-bottom: 1.2em;
-  font-size: 12px;
-  font-weight: normal;
-  font-family: "Trebuchet MS", verdana, helvetica, arial, sans-serif;
-  background: #ffffff;
-  color: #000000;
-  text-decoration: none;
-}
+/*body  {*/
+/*  margin-left: 1.2em;*/
+/*  margin-right: 1.2em;*/
+/*  margin-top: 1.2em;*/
+/*  margin-bottom: 1.2em;*/
+/*  font-size: 12px;*/
+/*  font-weight: normal;*/
+/*  font-family: "Trebuchet MS", verdana, helvetica, arial, sans-serif;*/
+/*  background: #ffffff;*/
+/*  color: #000000;*/
+/*  text-decoration: none;*/
+/*}*/
 
 .main  {
   margin-left: 1.2em;
@@ -237,6 +237,37 @@ table.dbs_table td {
   vertical-align: top;
   text-align: right;
 }
+table.dbs_table_plain {
+  font-size: 12px;
+  font-weight: normal;
+  font-family: verdana, sans-serif;
+  text-decoration: none;
+  border-width: 1px 1px 1px 1px;
+  border-spacing: 3px;
+  /* border-style: top right bottom left */
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  border-collapse: collapse;
+  background-color: rgb(255, 250, 250);
+  vertical-align: top;
+}
+table.dbs_table_plain th {
+  border-width: 1px 1px 1px 1px;
+  padding: 2px 2px 2px 2px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  background-color: #F0F0F0;
+  vertical-align: top;
+}
+table.dbs_table_plain td {
+  border-width: 1px 1px 1px 1px;
+  padding: 2px 2px 2px 2px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray;
+  background-color: #FFFADC;
+  vertical-align: top;
+}
+
 table.intro {
   border-width: 1px 1px 1px 1px;
   border-spacing: 4px;
@@ -371,7 +402,7 @@ table.table_box td {
   background-color: rgb(255, 250, 250);
 }
 table.table_box_white {
-  height: 330px;
+/*  height: 330px;*/
   border-width: 0px 0px 0px 0px;
   border-spacing: 1px;
   /* border-style: top right bottom left */
@@ -1025,15 +1056,15 @@ table.sortable span.sortarrow {
   background-color: rgb(255, 250, 250);
   color: #000000;
 
-  filter:alpha(opacity=80);   /* Internet Explorer       */
-  -moz-opacity:0.8;           /* Mozilla 1.6 and below   */
-  opacity: 0.8;               /* newer Mozilla and CSS-3 */
+/*  filter:alpha(opacity=80);   |+ Internet Explorer       +|*/
+/*  -moz-opacity:0.8;           |+ Mozilla 1.6 and below   +|*/
+/*  opacity: 0.8;               |+ newer Mozilla and CSS-3 +|*/
 }
 .float_yellow_box {
   position: absolute; 
   padding: 5px 5px 5px 5px;
   margin-top: 20px;
-  width: 50%;
+  width: 400px;
   overflow:auto;
 
   color: #000000;
@@ -1045,18 +1076,21 @@ table.sortable span.sortarrow {
 
   z-index: 3; /* to make visible a new window above all others CSS, for more details see http://www.devx.com/projectcool/Article/19918/1954?pf=true */
 
-  filter:alpha(opacity=90);   /* Internet Explorer       */
-  -moz-opacity:0.9;           /* Mozilla 1.6 and below   */
-  opacity: 0.9;               /* newer Mozilla and CSS-3 */
+/*  filter:alpha(opacity=90);   |+ Internet Explorer       +|*/
+/*  -moz-opacity:0.9;           |+ Mozilla 1.6 and below   +|*/
+/*  opacity: 0.9;               |+ newer Mozilla and CSS-3 +|*/
 }
 
 .float_moreInfo {
   position: absolute; 
 
-  padding: 5px 5px 5px 5px;
+  padding: 1px 1px 1px 1px;
+/*  margin-top: 10px;*/
+/*  width: 25%;*/
+/*  height: 250px; */
   margin-top: 10px;
-  width: 25%;
-  height: 250px; 
+  width: 240px;
+  height: 180px; 
   overflow:auto;
 
   color: #000000;
@@ -1073,9 +1107,9 @@ table.sortable span.sortarrow {
   vertical-align: top;
   text-align: left;
 
-  filter:alpha(opacity=90);   /* Internet Explorer       */
-  -moz-opacity:0.9;           /* Mozilla 1.6 and below   */
-  opacity: 0.9;               /* newer Mozilla and CSS-3 */
+/*  filter:alpha(opacity=90);   |+ Internet Explorer       +|*/
+/*  -moz-opacity:0.9;           |+ Mozilla 1.6 and below   +|*/
+/*  opacity: 0.9;               |+ newer Mozilla and CSS-3 +|*/
 }
 
 .float_help_box {
@@ -1098,9 +1132,9 @@ table.sortable span.sortarrow {
 
   z-index: 3;
 
-  filter:alpha(opacity=80);   /* Internet Explorer       */
-  -moz-opacity:0.8;           /* Mozilla 1.6 and below   */
-  opacity: 0.8;               /* newer Mozilla and CSS-3 */
+/*  filter:alpha(opacity=80);   |+ Internet Explorer       +|*/
+/*  -moz-opacity:0.8;           |+ Mozilla 1.6 and below   +|*/
+/*  opacity: 0.8;               |+ newer Mozilla and CSS-3 +|*/
 }
 
 table.menu {
@@ -1148,18 +1182,19 @@ table.menu a {
 #navlist
 {
     padding: 1px;
-    margin-top:0px;
+/*    margin-top:0px;*/
+    margin-top:-10px;
+    margin-bottom:-10px;
     margin-left: 0px;
-/*    font: 10px verdana, sans-serif;*/
     /*width: 12em;*/
     color: gray; 
 }
 #navlist li
 {
     list-style: none;
-    margin-left:15px;
+/*    margin-left:15px;*/
     text-align: left;
-    border-bottom: 1px dotted #F0F0F0; /* use the same color as in menu_td_gray_fixed, for IE*/
+/*    border-bottom: 1px dotted #F0F0F0; |+ use the same color as in menu_td_gray_fixed, for IE+|*/
 }
 #navlist li.moreInfo
 {
@@ -1169,7 +1204,7 @@ table.menu a {
 }
 #navlist li a
 {
-    display: block;
+/*    display: block;*/
     padding: 1px 1px 1px 1px;
     text-decoration: none;
 }
@@ -1204,7 +1239,7 @@ table.menu a {
 #navlist li.selected
 {
     list-style: none;
-    margin-left:15px;
+/*    margin-left:15px;*/
     text-align: left;
     color: #000000;
     background-color: #FFFFFF;
@@ -1229,4 +1264,13 @@ table.selMenu  {
 }
 table.selMenu th {
     font-weight: bold;
+}
+
+
+/*YUI panel*/
+.panel .hd {
+        padding:4px 20px 4px 4px;
+}
+.panel{
+        width:200px;
 }
