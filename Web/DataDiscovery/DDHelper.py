@@ -1319,6 +1319,7 @@ class DDHelper(DDLogger):
 
       con = self.connectToDB()
       res = ""
+      query.use_labels=True
       try:
          res = con.execute(query)
       except:
