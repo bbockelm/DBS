@@ -3024,14 +3024,7 @@ class DDServer(DDLogger):
         limit=offset=0
         if conDict.has_key('limit'):  limit  = conDict['limit']
         if conDict.has_key('offset'): offset = conDict['offset']
-
-        # HACK, TODO: when Drew will provide a single query replace this hack
-        if len(selList)==1:
-           table,col=string.split(selList[0],".")
-           query="SELECT DISTINCT %s FROM %s"%(col,table)
-           oList=self.helper.executeSQLQuery(query)
-        else:
-           query,oList = self.helper.queryMaker(selList,whereList,limit,offset)
+        query,oList = self.helper.queryMaker(selList,whereList,limit,offset)
         if self.verbose==2:
            self.writeLog(query)
            self.writeLog(str(oList))
