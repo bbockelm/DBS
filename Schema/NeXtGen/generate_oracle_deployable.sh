@@ -169,6 +169,23 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', SYSTIMESTAMP
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', SYSTIMESTAMP);" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', SYSTIMESTAMP);" >> $ddl_file
 #
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSY', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('BSM', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('EWK', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Top', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('QCD', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Diffraction', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Online Selection', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-physics', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Muons', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Egamma', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('JetMet', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('E-flow', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('tau', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-tagging', SYSTIMESTAMP);">> $ddl_file
 #
 echo "commit;" >> $ddl_file
 #

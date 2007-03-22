@@ -77,23 +77,41 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIG
 #
 #
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()),  ('RAW', NOW()), ('AOD', NOW());" >> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', NOW()), 
-('Individual', '', NOW()), 
-('Higgs', '', NOW()), 
-('SUSY', '', NOW()), 
-('BSM', '', NOW()), 
-('EWK', '', NOW()), 
-('Top', '', NOW()), 
-('QCD', '', NOW()), 
-('Diffraction', '', NOW()), 
-('Online Selection', '', NOW()), 
-('B-physics', '', NOW()), 
-('Muons', '', NOW()), 
-('Egamma', '', NOW()), 
-('JetMet', '', NOW()), 
-('E-flow', '', NOW()), 
-('tau', '', NOW()), 
-('B-tagging', '', NOW());" >> $ddl_file
+#echo "INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', NOW()), 
+#('Individual', '', NOW()), 
+#('Higgs', '', NOW()), 
+#('SUSY', '', NOW()), 
+#('BSM', '', NOW()), 
+#('EWK', '', NOW()), 
+#('Top', '', NOW()), 
+#('QCD', '', NOW()), 
+#('Diffraction', '', NOW()), 
+#('Online Selection', '', NOW()), 
+#('B-physics', '', NOW()), 
+#('Muons', '', NOW()), 
+#('Egamma', '', NOW()), 
+#('JetMet', '', NOW()), 
+#('E-flow', '', NOW()), 
+#('tau', '', NOW()), 
+#('B-tagging', '', NOW());" >> $ddl_file
+#
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', NOW()), 
+('Individual', NOW()), 
+('Higgs', NOW()), 
+('SUSY', NOW()), 
+('BSM', NOW()), 
+('EWK', NOW()), 
+('Top', NOW()), 
+('QCD', NOW()), 
+('Diffraction', NOW()), 
+('Online Selection', NOW()), 
+('B-physics', NOW()), 
+('Muons', NOW()), 
+('Egamma', NOW()), 
+('JetMet', NOW()), 
+('E-flow', NOW()), 
+('tau', NOW()), 
+('B-tagging', NOW());" >> $ddl_file
 #
 #
 echo "commit;"  >> $ddl_file
