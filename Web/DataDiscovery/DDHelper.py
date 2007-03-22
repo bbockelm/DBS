@@ -1224,11 +1224,11 @@ class DDHelper(DDLogger):
           elif op==">=":
              query.append_whereclause(lval>=val)
           elif op=="like":
-             query.append_whereclause(lval.like("%%%s%%"%val))
+             query.append_whereclause(lval.like("%%%s%%"%str(val)))
           elif op=="likeLeft":
-             query.append_whereclause(lval.like("%%%s"%val))
+             query.append_whereclause(lval.like("%%%s"%str(val)))
           elif op=="likeRight":
-             query.append_whereclause(lval.like("%s%%"%val))
+             query.append_whereclause(lval.like("%s%%"%str(val)))
       if long(limit):
          query.limit=long(limit)
       if long(offset):
