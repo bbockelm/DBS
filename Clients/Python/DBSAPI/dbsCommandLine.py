@@ -43,6 +43,7 @@ class printDot ( threading.Thread ):
 
 #############################################################################
 ##Default URL for the Service
+#URL="http://cmssrv17.fnal.gov:8989/DBSANZAR/servlet/DBSServlet"
 URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
 #URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
@@ -96,6 +97,13 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
 
+      self.add_option("--searchtype", action="store", type="string", default="datasets", dest="searchtype",
+           help="User can specify a general DBS serach type --searchtype=block,datasets,files (--searchtype=block,files or  any other combinition) " + \
+										"works with other parameters"+ \
+										",  --algopattern, --sepattern, --blockpattern and --path= "+ \
+										"(path can represent a path pattern here /*primary*/*/* whatever)," + \
+										" DEFAULT=datasets")
+
       self.add_option("--doc", action="store_true", default=False, dest="doc",
            help="Generates a detailed documentation for reference")
 
@@ -127,14 +135,14 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n           listBlocks or lsb, can provide --path and/or --blockpattern"
       command_help += "\n           listFiles or lsf, must provide --path"
       command_help += "\n           listFileParents or lsfp, must be qualified with --pattern"
-      command_help += "\n           listFileAlgorithms or lsfa,"
-      command_help += "\n           listFileTiers or lsft,"
-      command_help += "\n           listFileBranches or lsfb,"
-      command_help += "\n           listFileLumis or lsfl,"
-      command_help += "\n           listStorageElements or lsse,"
-      command_help += "\n           listAnalysisDatasetDefinition or lsad,"
-      command_help += "\n           listAnalysisDataset or lsa,"
-      command_help += "\n           listDatasetContents or lsdc,"
+      command_help += "\n           listFileAlgorithms or lsfa"
+      command_help += "\n           listFileTiers or lsft"
+      command_help += "\n           listFileBranches or lsfb"
+      command_help += "\n           listFileLumis or lsfl"
+      command_help += "\n           listStorageElements or lsse"
+      command_help += "\n           listAnalysisDatasetDefinition or lsad"
+      command_help += "\n           listAnalysisDataset or lsa"
+      command_help += "\n           search --searchtype=block,files,datasets"
       command_help += "\n\nSome examples:\n"
       command_help += "\npython dbsCommandLine.py --help"
       command_help += "\npython dbsCommandLine.py -c lsp --pattern=TestPrimary*"
@@ -227,6 +235,10 @@ class ApiDispatcher:
     elif apiCall in ('listStorageElements', 'lsse'):
         self.handlelistSECall()
 
+    ##Search data
+    elif apiCall in ('search'):
+	self.handleSearchCall()
+
     else:
        print "API Call: %s not implemented" %apiCall
 
@@ -256,7 +268,7 @@ class ApiDispatcher:
 
 	datasetPaths = []
         if self.optdict.get('pattern'):
-          raise DbsException (args="--pattern has no effect on listProcessedDataset, --path can be used for dataset patterns", code="1202") 
+          print "--pattern has no effect on listProcessedDataset, --path can be used for dataset patterns"
         
         paramDict = {}
 
@@ -278,6 +290,15 @@ class ApiDispatcher:
 	for anObj in apiret:
 
 	    if self.optdict.get('report'):	
+		self.reportProcessedDatasets(anObj)
+            else:
+                  for aPath in anObj['PathList']:
+                      if aPath not in datasetPaths:
+                         #datasetPaths.append(aPath)
+                         #Print on screen as well
+                         print aPath
+
+  def reportProcessedDatasets(self, anObj):
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
 		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
 		
@@ -289,12 +310,6 @@ class ApiDispatcher:
 			report['lines'].append("        "+aPath)
 		#Print it
         	printReport(report)
-	    else:
-	          for aPath in anObj['PathList']:
-        	      if aPath not in datasetPaths:
-                	 #datasetPaths.append(aPath)
-	                 #Print on screen as well
-        	         print aPath
 
   def getPath(self, inpath):
 
@@ -377,6 +392,13 @@ class ApiDispatcher:
          
 	 if self.optdict.get('report') :
             for anObj in apiret:
+		self.reportFile(anObj)
+         else:
+              for anObj in apiret:
+                print anObj['LogicalFileName']
+         print "Total files listed: %s" %len(apiret)
+
+  def reportFile(self, anObj):
               report = Report()
               report.addSummary("LogicalFileName: %s" %anObj['LogicalFileName'])
               report.addLine("File Details:")
@@ -387,11 +409,6 @@ class ApiDispatcher:
               report.addLine("    Block : %s"  %anObj['Block']['Name'])
               report.addLine("\n")
               printReport(report)
-            print "Total files listed: %s" %len(apiret)
-	 else:
-              for anObj in apiret:
-           	print anObj['LogicalFileName']
-              print "Total files listed: %s" %len(apiret)
 
   def handlelistSECall(self):
        sepattern=self.optdict.get('sepattern') or '*'
@@ -413,6 +430,12 @@ class ApiDispatcher:
          apiret = self.api.listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
          if self.optdict.get('report') :
             for anObj in apiret:
+		self.reportBlock(anObj)
+         else :
+                for anObj in apiret:
+                    print anObj['Name']
+
+  def reportBlock(self, anObj):
                 sumry  = "\nBlock Name %s " %anObj['Name']
                 sumry += "\nBlock Path %s" %anObj['Path']
                 sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
@@ -428,10 +451,58 @@ class ApiDispatcher:
                 #Print it
                 report.addLine("\n")
                 printReport(report)
-	 else :
-                for anObj in apiret:
-                    print anObj['Name']
 
+  def handleSearchCall(self):
+       pathpattern = self.optdict.get('path') or ''
+       blockpattern = self.optdict.get('blockpattern') or ''
+       sepattern = self.optdict.get('sepattern') or ''
+       algopattern = self.optdict.get('algopattern') or ''
+       searchtype = self.optdict.get('searchtype') or '' 
+
+
+       ###########print searching for 
+
+
+       #if path in ['/*/*/*', ''] and blockpattern in ['*', ''] and sepattern in ['*', ''] and algopattern = :
+       
+       #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
+       # See if any path is provided
+       paramDict={}
+       pathl = self.getPath(pathpattern)
+       if len(pathl):
+                paramDict.update(pathl)
+
+       algoparam=self.getAlgoPattern() 
+       if len(algoparam):
+                paramDict.update(algoparam)
+       print "listing data, please wait...\n"
+       procret = self.api.listProcessedDatasets(**paramDict)
+
+       if len(procret) < 1 :
+                print "No Datasets found..?"
+                return  
+       #avoid duplication, wonder thats must not be possible anyways.
+       datasetPaths=[]
+       for anObj in procret:
+		for aPath in anObj['PathList']:
+                      if aPath not in datasetPaths:
+                         datasetPaths.append(aPath)
+                         print "\n\n Dataset %s " %aPath
+                         # List the Blocks next
+                         blockret = self.api.listBlocks(dataset=aPath, block_name=blockpattern, storage_element_name=sepattern)
+			 for aBlk in blockret:
+         			if self.optdict.get('report') :
+                			self.reportBlock(aBlk)
+         			else :
+                    			print anObj['Name']
+				#Lets list files for this Block
+				filesret = self.api.listFiles(blockName=aBlk['Name'])
+                                for aFile in filesret:
+					if self.optdict.get('report') :
+						self.reportFile(aFile)
+					else: 
+						print aFile['LogicalFileName']
+				
 #
 # main
 #
