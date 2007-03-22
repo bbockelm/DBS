@@ -262,8 +262,8 @@ class DbsApi(DbsConfig):
     examples: 
           api.listPrimaryDatasets() : List ALL primary Datasets in DBS
           api.listPrimaryDatasets("*") : List ALL primary Datasets in DBS
-          api.listPrimaryDatasets('MyPrimaryDataset001') : List MyPrimaryDataset001
-          api.listPrimaryDatasets('MyPrimaryDataset*') : List All Primary datasets whoes names start with MyPrimaryDataset
+          api.listPrimaryDatasets(pattern='MyPrimaryDataset001') : List MyPrimaryDataset001
+          api.listPrimaryDatasets(pattern='MyPrimaryDataset*') : List All Primary datasets whoes names start with MyPrimaryDataset
 
     raise: DbsApiException, DbsBadResponse
              
@@ -327,7 +327,7 @@ class DbsApi(DbsConfig):
            Say I want to list all datasets that have a Primary Dataset of type MyPrimaryDatasets*, with SIM data tier,
            and application version v00_00_03, produced by Application CMSSW, I can make my call as,
 
-           api.listProcessedDatasets('MyPrimaryDatasets*', 'SIM', '*', 'v00_00_03', '*', 'CMSSW', '*') 
+           api.listProcessedDatasets(patternPrim='MyPrimaryDatasets*', patternDT='SIM', patternVer='v00_00_03', patternFam='CMSSW') 
    
     raise: DbsApiException, DbsBadResponse
 
@@ -335,6 +335,10 @@ class DbsApi(DbsConfig):
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
+
+
+    # Lets get all tiers no matter what, otherwise Server puts unnecessary checks on the DataTier
+    patternDT='*'
 
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listProcessedDatasets', 
@@ -412,7 +416,7 @@ class DbsApi(DbsConfig):
            Say I want to list all listAlgorithms that have application version v00_00_03, 
            produced by Application CMSSW, I can make my call as,
 
-                 api.listAlgorithms('v00_00_03', '*', 'CMSSW', '*') 
+                 api.listAlgorithms(patternVer='v00_00_03', patternFam='CMSSW') 
 
            List ALL Algorithms know to DBS
 
@@ -472,13 +476,13 @@ class DbsApi(DbsConfig):
 
     examples: 
 
-        List ALL Runs for Dataset Path /test_primary_anzar_001/SIM/TestProcessedDS002 
+        List ALL Runs for Dataset Path /test_primary_anzar_001/TestProcessedDS002/SIM
 
 	   Note: Mind that the TIER(s) portion of Path will have NO effect on the selection
 		 This is still an open question if we need include that to Run selection as well.
 
 
-           api.listRuns("/test_primary_anzar_001/SIM/TestProcessedDS002")
+           api.listRuns("/test_primary_anzar_001/TestProcessedDS002/SIM")
         
        Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -553,12 +557,12 @@ class DbsApi(DbsConfig):
 
     examples: 
 
-        List ALL Data Tiers for Dataset Path /test_primary_anzar_001/SIM/TestProcessedDS002 
+        List ALL Data Tiers for Dataset Path /test_primary_anzar_001/TestProcessedDS002/SIM 
           Note: Mind that the TIER(s) portion of Path will have NO effect on the selection
                  This is still an open question, this call will return ALL tiers in the Processed Dataset.
 
 
-           api.listTiers("/test_primary_anzar_001/SIM/TestProcessedDS002")
+           api.listTiers("/test_primary_anzar_001/TestProcessedDS002/SIM")
 
        Using a Dataset Object 
             primary = DbsPrimaryDataset (Name = "test_primary_anzar_001")
@@ -615,7 +619,7 @@ class DbsApi(DbsConfig):
     returns: list of DbsFileBlock objects.
 
     params:
-        dataset: Not a mandatory field. It represent the dataset path in the format /prim/dt/proc . The user can leave it empty
+        dataset: An optional field. It represent the dataset path in the format /prim/proc/dt . The user can leave it empty
         block_name: pattern, if provided it will be matched against the content as a shell glob pattern
         storage_element_name: pattern, if provided it will be matched against the content as a shell glob pattern
          
@@ -623,16 +627,16 @@ class DbsApi(DbsConfig):
 
     examples:
 
-      All Blocks from path /test_primary_001/SIM/TestProcessedDS001
-         api.listBlocks("/test_primary_001/SIM/TestProcessedDS001") 
-      Block from path /test_primary_001/SIM/TestProcessedDS001 whoes name is /this/hahah/SIM#12345
-           api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/hahah/SIM#12345"):
-      All Blocks from path /test_primary_001/SIM/TestProcessedDS001 whoes name starts with /this/*
-           api.listBlocks("/TestPrimary1167862926.47/SIM1167862926.47/TestProcessed1167862926.47", "/this/*"):
+      All Blocks from path /test_primary_001/TestProcessedDS001/SIM
+         api.listBlocks("/test_primary_001/TestProcessedDS001/SIM") 
+      Block from path /test_primary_001/TestProcessedDS001/SIM whoes name is /this/hahah/SIM#12345
+           api.listBlocks("/TestPrimary1167862926.47/TestProcessed1167862926/SIM", "/this/hahah/SIM#12345"):
+      All Blocks from path /test_primary_001/TestProcessedDS001/SIM whoes name starts with /this/*
+           api.listBlocks("/TestPrimary1167862926.47/TestProcessed1167862926/SIM", "/this/*"):
       All Blocks with a storage element name starting with SE3
-           api.listBlocks("", "", "SE3*"):
+           api.listBlocks(storage_element_name="SE3*"):
       All Storage elements within a block name starting with /this/haha
-           api.listBlocks("", "/this/haha*", ""):
+           api.listBlocks(block_name="/this/haha*"):
       All Blocks with all storage element with in any dataset
            api.listBlocks():
 
@@ -744,8 +748,6 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  #def listFiles(self, dataset="", blockName="", patternLFN="*", details=None):
-  #def listFiles(self, path, dataset="", analysisDataset="",blockName="", patternLFN="*", details=None):
   def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
@@ -1191,7 +1193,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listAnalysisDatasetDefinition(self, pattern_analysis_dataset_definition_name="*"):
+  def listAnalysisDatasetDefinition(self, pattern="*"):
     """
     Retrieves the list of definitions of the analysis dataset by matching against the given shell pattern for analysis 
     dataset definition name.
@@ -1199,7 +1201,8 @@ class DbsApi(DbsConfig):
 
     
     params:
-          pattern_analysis_dataset_definition_name:  the shell pattren for nanlysis dataset definition name. If not given then the default value of * is assigned to it and all the definations are listed
+          pattern:  the shell pattren for nanlysis dataset definition name. 
+                    If not given then the default value of * is assigned to it and all the definations are listed
     returns: 
           list of DbsAnalysisDatasetDefinition objects  
     examples: 
@@ -1216,7 +1219,7 @@ class DbsApi(DbsConfig):
 
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listAnalysisDatasetDefinition',
-				 'pattern_analysis_dataset_definition_name' : pattern_analysis_dataset_definition_name 
+				 'pattern_analysis_dataset_definition_name' : pattern 
 				}, 'GET')
 
     logging.debug(data)
@@ -1254,7 +1257,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listAnalysisDataset(self, analysis_dataset_name_pattern="*", path=""):
+  def listAnalysisDataset(self, pattern="*", path=""):
     """
     Retrieves the list of analysis dataset by matching against the given shell pattern for analysis 
     dataset name.
@@ -1262,7 +1265,7 @@ class DbsApi(DbsConfig):
 
     
     params:
-          analysis_dataset_name_pattern:  the shell pattren for nanlysis dataset name. If not given then the default value of * is assigned to it and all the datasets are listed
+          pattern:  the shell pattren for nanlysis dataset name. If not given then the default value of * is assigned to it and all the datasets are listed
 	  path: is the processed dataset path in the format /prim/proc/datatier which if given list all the analysis dataset within that processed dataset
     returns: 
           list of DbsAnalysisDataset objects  
@@ -1282,7 +1285,7 @@ class DbsApi(DbsConfig):
 
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listAnalysisDataset', 
-                                 'analysis_dataset_name_pattern' : analysis_dataset_name_pattern,
+                                 'analysis_dataset_name_pattern' : pattern,
                                  'path' : path  
 				}, 'GET')
 
@@ -1349,7 +1352,7 @@ class DbsApi(DbsConfig):
     returns: 
           list of DbsProcessedDataset objects  
     examples: 
-          api.listDatasetParents("/test_primary_anzar_001/SIM/TestProcessedDS001")
+          api.listDatasetParents("/test_primary_anzar_001/TestProcessedDS001/SIM")
 
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsException	
@@ -1842,7 +1845,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def insertFiles(self, dataset, files, block=None):
+  def insertFiles(self, dataset=None, files=[], block=None):
     """ 
     Inserts a new dbs file in an existing block in a given processed dataset. It also insertes lumi sections
     assocated with the file. It insert all the parents of the file, assocaite  all the tiers of the file and 
@@ -1852,14 +1855,14 @@ class DbsApi(DbsConfig):
     param: 
         dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
 	          path in the format of /prim/proc/datatier
-	
+                  
+        block : The dbs file block passed in as an DbsFileBlock obejct. This object can be passed in also, 
+                as a string containing the block name, instead of DbsFileBlock object. The following fields 
+                are mandatory and should be present in the dbs file block object: block_name
+                          
 	files : The list of dbs files in the format of DbsFile obejct. The following are mandatory and should be present 
 		in the dbs file object:	lfn
 		  
-	block : The dbs file block passed in as an DbsFileBlock obejct. This object can be passed in also, 
-        	as a string containing the block name, instead of DbsFileBlock object. The following fields 
-		are mandatory and should be present in the dbs file block object: block_name
-			  
 	Note:
 		IF block (boock name or DbsFileBlock object) is provide it gets precedense over dataset (or path)
                 So files will be inserted into provided block and DBS will only raise a warning that dataset/path
@@ -2057,7 +2060,7 @@ class DbsApi(DbsConfig):
         logging.debug(data)
 
   # ------------------------------------------------------------
-  def remapFiles(self, inFiles, outFile):
+  def remapFiles_DEPRECATED(self, inFiles, outFile):
     """ 
     Remaps the file parentage . This api is called after a merge job is completed.
     A list of input file lfns and one output file is given to this api. The parents of all the input files
@@ -2108,21 +2111,17 @@ class DbsApi(DbsConfig):
     
     param: 
         dataset : The procsssed dataset can be passed as an DbsProcessedDataset object or just as a dataset 
-	          path in the format of /prim/proc/datatier  [PATH is recommended]
+	          path in the format of /prim/proc/datatier  
+	          [PATH is mandatory, To Support DBS-1 block which do not have Tiers in BlockName]
 
 	block : The dbs file block passed in as a string containing the block name. This field is not mandatory.
 	        If the block name is not provided the server creates one based on the primary dataset name, processed
-		dataset name and a random GUID. It retuirns back this newly created block
+		dataset name and tiers (from Path) and a random GUID. It returns back this newly created block
 			  
 	storage_element : The list of storage element names in the string format. This field is not mandatory. If 
 	                  this field is not provided then just the block is inserted without any storage element 
 			  associated with it.
 
-        Note:
-                IF block (boock name or DbsFileBlock object) is provide it gets precedense over dataset (or path)
-                So files will be inserted into provided block and DBS will only raise a warning that dataset/path
-                is being ignored. In that case just set dataset="" anbd DBS will ignore it.
-			  
     raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
 	   
@@ -2202,11 +2201,33 @@ class DbsApi(DbsConfig):
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 
+
+  # ------------------------------------------------------------
+  def deleteReplicaFromBlock(self, block, storage_element):
+
+    """
+    Deletes the Storage Element assocaition with the Block in the DBS.
+    
+    param: 
+        block : The dbs file block passed in as a string containing the block name or a dbsFileBlock object.
+        storage_element : The name of storage element in the string format. Please note that if the user does not provide any
+        of these two parameters then all the file blcoks with thier storage elements relationships will get deleted.
+                          
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
+           
+    examples:
+         api.deleteSEFromBlock ("/this/hahah/SIM#12345", "se1")
+
+
+        Note that se1 is a STRING not a StorageElement Object
+ 
+    """   
+
+    deleteSEFromBlock(block, storage_element)
+	  
   # ------------------------------------------------------------
 
-  def deleteReplicaFromBlock(self, block, storage_element):
-	  deleteSEFromBlock(block, storage_element)
-	  
   def deleteSEFromBlock(self, block, storage_element):
     """
     Deletes the Storage Element assocaition with the Block in the DBS.
@@ -2263,8 +2284,6 @@ class DbsApi(DbsConfig):
     examples:
          api.renameSE ("se1", "se2")
 
-
-
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
@@ -2280,10 +2299,6 @@ class DbsApi(DbsConfig):
 
    # ------------------------------------------------------------
 
-
-
-   # ------------------------------------------------------------
-   
   def closeBlock(self, block=None ):
     """
     Updates the dbs file block states to closed. 
@@ -2311,7 +2326,31 @@ class DbsApi(DbsConfig):
    # ------------------------------------------------------------
 
   def addReplicaToBlock(self, block, storageElement):
-	  insertStorageElement(block, storageElement)
+    """
+    Inserts a new storage element in a given block. 
+    
+    param: 
+        block : The dbs file block passed in as an DbsFileBlock obejct. This object can be  passed in also, 
+                as a string containing the block name, instead of DbsFileBlock object. The following fields 
+                are mandatory and should be present in the dbs file block object: 
+                block_name and storage_element_name
+                          
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
+           
+    examples:
+         block = DbsFileBlock (
+                Name="/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48"
+         )
+         api.addReplicaToBlock ( block , 'se1')
+         
+         api.addReplicaToBlock ( "/this/hahah/SIM#12345" , 'se2')
+
+    """
+
+    insertStorageElement(block, storageElement)
+
+   # ------------------------------------------------------------
 
   def insertStorageElement(self, block, storageElement):
 	  
@@ -2393,7 +2432,6 @@ class DbsApi(DbsConfig):
     logging.debug(data)
 
 
-
   # ------------------------------------------------------------
 
   def insertTierInPD(self, dataset, tier_name):
@@ -2444,7 +2482,7 @@ class DbsApi(DbsConfig):
 	   
     examples:
          tier_name = "GEN-SIM-TEST"
-         api.insertParentInPD ("/prim/dt/proc", "/adc/def/rfg")
+         api.insertParentInPD ("/prim/proc/dt", "/adc/def/rfg")
 
     """
 
@@ -2481,7 +2519,7 @@ class DbsApi(DbsConfig):
 	   
     examples:
          tier_name = "GEN-SIM-TEST"
-         api.insertParentInPD ("/prim/dt/proc", "/adc/def/rfg")
+         api.insertParentInPD ("/prim/proc/dt", "/adc/def/rfg")
 
     """
 
@@ -2526,7 +2564,7 @@ class DbsApi(DbsConfig):
 	   
     examples:
          tier_name = "GEN-SIM-TEST"
-         api.insertParentInPD ("/prim/dt/proc", "/adc/def/rfg")
+         api.insertParentInPD ("/prim/proc/dt", "/adc/def/rfg")
 
     """
 
@@ -2614,7 +2652,7 @@ class DbsApi(DbsConfig):
     path = self._path(dataset) 
     token = path.split("/")
 
-    print token
+    #print token
 
     proc = self.listProcessedDatasets(token[1], token[3], token[2])[0]
     logging.debug("proc fetched from DBS %s" %proc)
@@ -2752,7 +2790,14 @@ class DbsApi(DbsConfig):
 
     params: 
          analysisDatasetDefinition: DbsAnalysisDatasetDefinition object
-    
+
+    Note:    
+    In case the definition already exists an EXCEPTION will be raised by the Server
+    This is to avoid the case that User might use an already existing Definition silently 
+    as happens for other tables. By raising exception we are telling user that definition 
+    was already created by him/someone with blah blah criteria, so he/she can compare what 
+    alraedy defined.
+
     """
 
     defName = analysisDatasetDefinition.get('Name')
@@ -2818,14 +2863,6 @@ class DbsApi(DbsConfig):
                          'xmlinput' : xmlinput }, 'POST')
 
 
-    """ 
-    In case the definition already exists an EXCEPTION will be raiused by the Server
-    This is to avoid the case that User might use an already existing Definition silently 
-    as happens for other tables. By raising exception we are telling user that definition 
-    was already created by him/someone with blah blah criteria, so he/she can compare what 
-    alraedy defined.
-    """   
-
     #Just return the name of definition if everything went fine.  
     return defName
 
@@ -2834,7 +2871,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
   #def remap(self, eventCollections, outEventCollection, dataset):
-  def remap(self, files, outFile):
+  def remap_DEPRECATED(self, files, outFile):
 
    funcInfo = inspect.getframeinfo(inspect.currentframe())
    logging.debug("Api call invoked %s" % str(funcInfo[2]))
