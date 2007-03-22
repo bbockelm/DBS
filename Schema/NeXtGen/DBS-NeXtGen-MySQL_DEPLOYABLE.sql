@@ -1239,7 +1239,7 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
 
 INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_06', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
-INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());
+INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('IMPORTED', NOW()), ('EXPORTED', NOW());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());
 INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', NOW()) ;

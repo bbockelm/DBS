@@ -52,7 +52,7 @@ echo "-- ======================================================================"
 echo  >> $ddl_file
 echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('$SchemaVersion', NOW());"  >> $ddl_file
 echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());"  >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('PROMOTED', NOW());"  >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('IMPORTED', NOW()), ('EXPORTED', NOW());"  >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());"  >> $ddl_file
 echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());"  >> $ddl_file
 echo "INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', NOW()) ;"  >> $ddl_file
