@@ -9,7 +9,7 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import os, string, sys, time, types, logging, traceback, random, difflib
+import os, string, sys, time, types, logging, traceback, random, difflib, urllib
 
 logging.basicConfig(level=logging.DEBUG,
                 format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -240,6 +240,8 @@ def getExceptionInHTML():
        returns exception type/value in HTML form
     """
     exp = sys.exc_info()
+    e1  = str(exp[0])
+    e2  = str(exp[1]).replace('\n',' ').replace('<','&lt;').replace('>','&gt;')
     msg = """
     <table>
     <tr>
@@ -248,10 +250,10 @@ def getExceptionInHTML():
     </tr>
     <tr>
     <td align="right"><b>Exception value:</b></td>
-    <td><em>%s</em></td>
+    <td><pre>%s</pre></td>
     </tr>
     </table>
-    """%(exp[0],exp[1])
+    """%(e1,e2)
     return msg
 
 def getExcept():
