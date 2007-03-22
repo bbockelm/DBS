@@ -82,6 +82,8 @@ try:
 			flog.write(apiTar.insertDatasetContents(xmlinput))
 			flog.close()
 			print "The transfer log for " + argsTar['url'] + " in XML format is saved in " + name + fileName + ".log"
+		#FIXME Check if the apiSrc is not Global DBS
+		apiSrc.updateProcDSStatus(path, "EXPORTED")
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
