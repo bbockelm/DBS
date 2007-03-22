@@ -2832,7 +2832,6 @@ class DDServer(DDLogger):
 #        page+="<pre>%s\n%s</pre>"%(writer.getvalue(),repr(oList))
         
         page+="</response></ajax-response>"
-        print page
         if self.verbose==2:
            self.writeLog(page)
         return page
