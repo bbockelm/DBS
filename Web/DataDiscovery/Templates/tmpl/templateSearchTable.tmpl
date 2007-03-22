@@ -2,14 +2,14 @@
 
 <div id="builderFinder" class="show_inline">
 
-<div class="div_scroll">
+###<div class="div_scroll">
 ###<form action="javascript:ajaxSearch();" method="get">
 <form action="$searchFunction" method="get">
 
 <table width="100%">
 <tr>
 <td align="left">
-#if $userMode
+#if $userMode=='user'
 <input type="hidden" name="keywordsSearch_dbsInst" value="$dbsGlobal" id="finder_dbsSelector" />
 #else
 DBS instance:
@@ -32,25 +32,24 @@ Query limit:
 &nbsp;
 alias: <input type="text" name="finderAlias" size="30" id="kw_alias" /> 
 <input type="button" value="Save" id="saveQuery" onclick="javascript:ajaxFinderStoreQuery();" />
-&nbsp;
-<input type="button" value="Select all" id="showAll-button" onclick="javascript:SelectAll('selectDBS')" />
-&nbsp;
-<input type="reset"  value="Reset" id="reset-button"  />
+###&nbsp;
+###<input type="button" value="Select all" id="showAll-button" onclick="javascript:SelectAll('selectDBS')" />
+###&nbsp;
+###<input type="reset"  value="Reset" id="reset-button"  />
 &nbsp;
 ###<input type="submit" value="Search" id="submitQuery" onclick="javascript:showWaitingMessage();ajaxWriteUserQuery();" />
 <input type="submit" value="Search" id="submitQuery" onclick="javascript:showWaitingMessage()" />
 </div>
 
 </form>
-</div>
+###</div>
 
 </div> <!-- end of div id="_builderFinder" -->
-
 
 <div id="queriesFinder" class="hide">
 My query alias: <input type="text" size="30" id="kw_alias_lookup" /> 
 <input type="submit" value="Search" id="sButton-searchQueries" onclick="javascript:ajaxFinderSearchQuery()" />
 <p>
-<div class="div_scroll"><div id="myQueries"></div></div>
+<div id="myQueries"></div>
 </p>
 </div>

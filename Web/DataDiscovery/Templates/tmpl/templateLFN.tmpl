@@ -1,5 +1,17 @@
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
-Block name: <b>$blockName</b>
+<div>
+Block:<br /> 
+<table class="offset_left">
+<tr>
+<td align="left">
+<b>$blockName</b>
+</td>
+</tr>
+</table>
+#set nLFNs=len($lfnList)
+contians $nLFNs file(s)
+</div>
+<p />
 <!-- Main table -->
 ###<table id="lfn_table" class="sortable" cellspacing="0" border="1">
 <table id="lfn_table" cellspacing="0" border="1">
@@ -26,9 +38,9 @@ Block name: <b>$blockName</b>
 $name<br />
 <table>
 <tr>
-<td><a href="$host/getLFN_Branches?dbsInst=$dbsInst&lfn=$name">ROOT branches</a></td>
+<td><a href="$host/getLFN_Branches?dbsInst=$dbsInst&lfn=$name&amp;userMode=$userMode">ROOT branches</a></td>
 <td>|</td>
-<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name">Lumis</a></td>
+<td><a href="$host/getLFN_Lumis?dbsInst=$dbsInst&lfn=$name&amp;userMode=$userMode">Lumis</a></td>
 #*
 <td>|</td>
 <td><a href="javascript:ajaxGetLumis('$dbsInst','$name')">Lumis2</a></td>

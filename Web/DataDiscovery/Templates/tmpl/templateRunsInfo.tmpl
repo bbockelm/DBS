@@ -1,7 +1,23 @@
-Processed dataset:<br /> 
-<span class="offset_left">
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+DBS Discovery :: Navigator :: Results :: Run information
+</td>
+</tr>
+</table>
+<p />
+
+#set nRun=len($runList)
+<div>
+Dataset:<br />
+<table class="offset_left">
+<tr>
+<td align="left">
 <b>$proc</b>
-</span>
+</td></tr></table>
+contains $nRun run(s)
+</div>
+<p />
 ###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 <table id="$tableId" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
@@ -12,10 +28,12 @@ Processed dataset:<br />
 <td>Store</td>
 <td>StartOfRun</td>
 <td>EndOfRun</td>
+#if $userMode!="user"
 <td>Created by</td>
 <td>Creation time</td>
 <td>Modified by</td>
 <td>Modification time</td>
+#end if
 </tr>
 #for dbsDict in $runList
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
@@ -35,10 +53,12 @@ $dbsDict['RunNumber']
 <td align="right">$dbsDict['StoreNumber']</td>
 <td align="right">$dbsDict['StartOfRun']</td>
 <td align="right">$dbsDict['EndOfRun']</td>
+#if $userMode!="user"
 <td align="right">$dbsDict['CreatedBy']</td>
 <td align="right">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
 <td align="right">$dbsDict['LastModificationDate']</td>
+#end if
 </tr>
 #end for
 </table>

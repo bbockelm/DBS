@@ -6,6 +6,7 @@
 <th>$item</th>
 #end for
 </tr>
+#if len($iList)>0
 #for itemList in $iList[1:]
 <tr>
 #for elem in $itemList
@@ -13,4 +14,5 @@
 #end for
 </tr>
 #end for
+#end if
 </table>

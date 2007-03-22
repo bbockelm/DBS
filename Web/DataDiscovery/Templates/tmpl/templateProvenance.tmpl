@@ -1,3 +1,52 @@
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+DBS Discovery :: Navigator :: Results :: Provenance information
+</td>
+</tr>
+</table>
+<p />
+
+
+<div>
+#if len($parentList)
+
+Dataset:
+<table class="offset_left">
+<tr>
+<td align="left">
+<b>$dataset</b>
+</td>
+<tr>
+</table>
+has the following list of parents:
+<table class="offset_left">
+    #for parent in $parentList
+    <tr>
+    <td align="left">
+    <b>$parent</b>
+    </td>
+    </tr>
+    #end for
+</table>
+
+#else
+
+No parents found for dataset:
+<table class="offset_left">
+<tr>
+<td align="left">
+<b>$dataset</b>
+</td>
+<tr>
+</table>
+
+#end if
+</div>
+
+
+
+#*
 #set idPath=$dataset.replace("/","___")
     <p>
     <table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -26,3 +75,4 @@
     #end if
     </table>
     </p>
+*#
