@@ -2217,36 +2217,12 @@ class DbsApi(DbsConfig):
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
            
     examples:
-         api.deleteSEFromBlock ("/this/hahah/SIM#12345", "se1")
+         api.deleteReplicaFromBlock ("/this/hahah/SIM#12345", "se1")
 
 
         Note that se1 is a STRING not a StorageElement Object
  
     """   
-
-    deleteSEFromBlock(block, storage_element)
-	  
-  # ------------------------------------------------------------
-
-  def deleteSEFromBlock(self, block, storage_element):
-    """
-    Deletes the Storage Element assocaition with the Block in the DBS.
-    
-    param: 
-	block : The dbs file block passed in as a string containing the block name or a dbsFileBlock object.
-	storage_element : The name of storage element in the string format. Please note that if the user does not provide any
-	of these two parameters then all the file blcoks with thier storage elements relationships will get deleted.
-			  
-    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
-           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
-	   
-    examples:
-         api.deleteSEFromBlock ("/this/hahah/SIM#12345", "se1")
-
-
-	Note that se1 is a STRING not a StorageElement Object
-
-    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
@@ -2261,7 +2237,7 @@ class DbsApi(DbsConfig):
 
     logging.debug(xmlinput)
     if self.verbose():
-       print "deleteSEFromBlock, xmlinput",xmlinput
+       print "deleteReplicaFromBlock, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'deleteSEFromBlock',
                          'xmlinput' : xmlinput }, 'POST')
@@ -2348,33 +2324,6 @@ class DbsApi(DbsConfig):
 
     """
 
-    insertStorageElement(block, storageElement)
-
-   # ------------------------------------------------------------
-
-  def insertStorageElement(self, block, storageElement):
-	  
-    """
-    Inserts a new storage element in a given block. 
-    
-    param: 
-	block : The dbs file block passed in as an DbsFileBlock obejct. This object can be  passed in also, 
-	        as a string containing the block name, instead of DbsFileBlock object. The following fields 
-		are mandatory and should be present in the dbs file block object: 
-		block_name and storage_element_name
-			  
-    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
-           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
-	   
-    examples:
-         block = DbsFileBlock (
-                Name="/TestPrimary1164751189.48/HIT1164751189.48/TestProcessed1164751189.48"
-         )
-	 api.insertStorageElement ( block , 'se1')
-	 
-	 api.insertStorageElement ( "/this/hahah/SIM#12345" , 'se2')
-
-    """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
 
@@ -2388,9 +2337,6 @@ class DbsApi(DbsConfig):
     xmlinput += "</dbs>"
 
     logging.debug(xmlinput)
-    #print "insertStorageElement, xmlinput",xmlinput
-    if self.verbose():
-       print "insertStorageElement, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertStorageElement',
                          'xmlinput' : xmlinput }, 'POST')
