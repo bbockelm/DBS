@@ -73,9 +73,9 @@ class DDOptionParser:
          help="specify a port number of Data Discovery service")
     self.parser.add_option("--output",action="store",type="string",default="txt",dest="output",
          help="specify output format, supported formats are: xml, list, txt (default)")
-    self.parser.add_option("--limit",action="store",type="string",default="-1",dest="limit",
+    self.parser.add_option("--limit",action="store",type="string",default="100",dest="limit",
          help="specify a limit on output, e.g. 50 results, usually it should come together with --offset")
-    self.parser.add_option("--offset",action="store",type="string",default="-1",dest="offset",
+    self.parser.add_option("--offset",action="store",type="string",default="0",dest="offset",
          help="specify an offset for query output, in other words it allow skip up to specified value the output, usually it should come together with --limit")
     self.parser.add_option("--list",action="store_true",dest="list",
          help="retrieve a list of know DBS tables.columns")
@@ -191,6 +191,8 @@ def formXMLInput(iDict):
     if  iDict.has_key('output'):
         for item in iDict['output']:
             xmlOutput+="""<output %s />\n"""%str(item)
+    else:
+        xmlOutput+="""<option limit="100" offset="0" />"""
     if  iDict.has_key('where'):
         for item in iDict['where']:
             col,op,val=item.split()
@@ -213,13 +215,13 @@ def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
 # main
 #
 if __name__ == "__main__":
-    host= "localhost"
-    port= 8001
-    dbsInst="localhost"
+#    host= "localhost"
+#    port= 8001
+#    dbsInst="localhost"
 
-#    host= "cmslcgco01.cern.ch"
-#    port= 8003
-#    dbsInst="cmslcgco01"
+    host= "cmslcgco01.cern.ch"
+    port= 8003
+    dbsInst="cmslcgco01"
 
     optManager  = DDOptionParser()
     (opts,args) = optManager.getOpt()
