@@ -1980,8 +1980,39 @@ class DDHelper(DDLogger):
          {'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}, 
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
+# This code is ready for use in DBS2, once SEnames will be in place
+#      kwargs={'datasetPath':dataset,'site':site,'idx':idx}
+#      blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
+#      return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
+
       kwargs={'datasetPath':dataset,'site':site,'idx':idx}
       blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
+      # blockInfoDict=[nEvts,blockStatus,nFiles,blockSize,list of se's]
+      siteList=[]
+      for blockName in blockInfoDict.keys():
+          evts,bStatus,nFiles,bBytes,seList  = blockInfoDict[blockName]
+          if not evts:
+             continue # this eliminates file blocks with no events
+          # query DLS
+          hostList=[]
+          try:
+              dlsList = self.dlsApi.getLocations(blockName)
+              for entry in dlsList:
+                  for loc in entry.locations:
+                      dlsHost = str(loc.host)
+                      if site=="*" or dlsHost==site:
+                         hostList.append(dlsHost)
+                      if not siteList.count(dlsHost): siteList.append(dlsHost)
+          except:
+              if not self.quiet:
+                 printExcept()
+              if site=="*":
+                 hostList.append('N/A')
+              if not siteList.count('N/A'): siteList.append('N/A')
+              pass
+          # end of DLS query
+          blockInfoDict[blockName]=blockInfoDict[blockName][:4]+hostList
+      siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
   def getBlockInfoForSite(self,site):
