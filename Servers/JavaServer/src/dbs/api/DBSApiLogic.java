@@ -1,6 +1,6 @@
 /**
- $Revision: 1.91 $"
- $Id: DBSApiLogic.java,v 1.91 2007/03/16 20:22:44 sekhri Exp $"
+ $Revision: 1.92 $"
+ $Id: DBSApiLogic.java,v 1.92 2007/03/20 16:27:51 sekhri Exp $"
  *
  */
 
@@ -912,40 +912,35 @@ public class DBSApiLogic {
                 Vector dbOrderedList = getDataTierOrder(conn);
 
                 boolean found=false;
+                String currRow = "";
 
                 for (int i=0; i != dbOrderedList.size(); ++i) {
-                        String currRow = (String)dbOrderedList.get(i);
+                        currRow = (String)dbOrderedList.get(i);
 			//System.out.println("makeOrderedTierList: currRow:"+currRow);
-                        String[] parsed = parseTier(currRow); 
+
+			Vector parsed = parseTierVec(currRow);
                         //Ignore the smaller arrays
 
-			//System.out.println("makeOrderedTierList: parsed.length:"+parsed.length);
+			//System.out.println("makeOrderedTierList: parsed.length:"+parsed.size());
 			//System.out.println("makeOrderedTierList: tierVec.size():"+tierVec.size());
 
-                        if ( parsed.length != tierVec.size())
+                        if ( parsed.size() != tierVec.size())
                                 continue;
 
 			//We can check if its already IN ORDER ?????????
-
-                        for (int j=0; j != tierVec.size() ; ++j) {
-				//String currTier = (String) get((Hashtable)tierVec.get(j), "name");
-				String currTier = (String) tierVec.get(j);
-				//System.out.println("makeOrderedTierList: tierVec.get(j):"+currTier);
-
-                                if (Arrays.binarySearch(parsed, currTier) >= 0 )
-                                        found=true;
-                                else {
-                                        found=false;
-                                        break;
-                                }
+			if (parsed.containsAll(tierVec)) {
+				found=true;
+				break;
                         }
 
-                        if (found) {
-				//System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
-				return currRow;
-			}
+		}
 
-                }
+                if (found) {
+			System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
+			return currRow;
+		}
+
+                
                 if (!found) throw new DBSException("Invalid Format", "1037", "Provided Tier(s) combinition " 
 				+ tierVec.toString() + " is not permitted, The allowed values are: "+dbOrderedList.toString() );
                 return "";
