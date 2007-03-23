@@ -30,7 +30,7 @@ Operator
 #end if
 <tr>
 <td align="left" style="width:100px">
-<select id="selSection_$id" onchange="ChangeTables($id)" name="selSection">
+<select id="selSection_$id" onchange="ChangeTables($id)" name="selSection" style="width:100px">
 <option value="$sectionList[0]" selected="selected">$sectionList[0]</option>
 #for section in $sectionList[1:]
 <option value="$section">$section</option>
@@ -40,7 +40,7 @@ Operator
 
 <td style="width:160px">
 <div id="divSectionTables_$id">
-<select id="sectionTables_$id" onchange="ChangeCols($id)" name="sectionTables">
+<select id="sectionTables_$id" onchange="ChangeCols($id)" name="sectionTables" style="width:160px">
 #for table in $tableList
 <option value="$table">$table</option>
 #end for
