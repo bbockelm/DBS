@@ -2632,8 +2632,10 @@ class DbsApi(DbsConfig):
     #from the Parent of Unmerged files
     outputFile['ParentList'] = []
     for anInputLFN in parents:
-        
-	fileDetails = self.listFiles("", "", "", self._name(anInputLFN), True)
+       
+
+        #def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None)
+        fileDetails = self.listFiles(patternLFN=self._name(anInputLFN), details=True) 
         if len(fileDetails) < 1:
 		raise DbsApiException(args="Unmerged file %s not found in DBS" %self._name(anInputLFN), code="1999")
         fileDetail = fileDetails[0] 
