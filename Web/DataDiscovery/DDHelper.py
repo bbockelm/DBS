@@ -1319,7 +1319,8 @@ class DDHelper(DDLogger):
 
       con = self.connectToDB()
       res = ""
-      query.use_labels=True
+      if type(query) is sqlalchemy.sql.Select:
+         query.use_labels=True
       try:
          res = con.execute(query)
       except:
