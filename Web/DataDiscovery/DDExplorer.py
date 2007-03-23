@@ -22,9 +22,9 @@ This tool support a three input formats: xml string, xml file, txt file.
 The XML structure:
 <?xml version="1.0" encoding="utf-8"?>
 <ddRequest>
-<select column='Table.colName'>
-<where column='Table.colName' condition='Table.colName = 50'>
-<where column='Table.colName' condition='Table.colName like some text here'>
+<select column='Table.colName' />
+<where column='Table.colName' condition='Table.colName = 50' />
+<where column='Table.colName' condition='Table.colName like some text here' />
 </ddRequest>
 
 The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
