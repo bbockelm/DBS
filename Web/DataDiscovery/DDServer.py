@@ -2175,6 +2175,7 @@ class DDServer(DDLogger):
            res=DD_INSTANCE.insert().execute(dbsinstance=dbsInst)
            dbsid=res.last_inserted_ids()[0]
         except:
+           printExcept()
            c = DD_USER.select(and_(DD_INSTANCE.c.dbsinstance==dbsInst)).execute()
            r = c.fetchone()
            if r and r[0]:
@@ -2204,9 +2205,11 @@ class DDServer(DDLogger):
         if not uid:
            raise "Fail to find uid in DBS DD history for %s"%(userId,)
         # insert into DD_HISTORY date/userid/cmdid
-        iDate=time.strftime("%Y-%m-%d",time.localtime())
-        iTime=time.strftime("%H:%M:%S",time.localtime())
-        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid,history_date=iDate,history_time=iTime)
+#        iDate=time.strftime("%Y/%m/%d",time.localtime())
+#        iDate=time.strftime("%d-%b-%Y %H:%M:%S",time.localtime())
+#        iTime=str(time.strftime("%H:%M:%S",time.localtime()))
+#        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid,history_date=iDate,history_time=iTime)
+        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid)
 
     def historySearch(self,iYear,iMonth,oYear,oMonth,userId,**kwargs):
         cList=[]
@@ -2885,9 +2888,15 @@ class DDServer(DDLogger):
             if  oName:
                 # TODO: I need to query DB which dbs instance were used and pass it here.
                 cmd="""<a href="javascript:ajaxExecuteQuery('%s','%s')">%s</a>"""%(dbsInst,oCmd,oName)
+                iDate="N/A"
+                if oDate:
+                   iDate=str(oDate).split()[0]
+                iTime="N/A"
+                if oTime:
+                   iTime=str(oTime)
                 nameSpace={
-                           'date'      : str(oDate),
-                           'time'      : str(oTime),
+                           'date'      : iDate,
+                           'time'      : iTime,
                            'action'    : str(cmd)
                           }
                 t = templateHistory(searchList=[nameSpace]).respond()

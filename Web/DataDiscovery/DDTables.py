@@ -36,34 +36,34 @@ else:
 
 tableList = []
 #
-SEQ_USER = Sequence(name='SEQ_USER',start=1,increment=True)
+SEQ_USER = Sequence(name="%s.%s"%(dbname,'SEQ_USER'),start=1,increment=True)
 DD_USER = Table('DD_USER', engine,
-  Column('id', Integer, Sequence('SEQ_USER'), nullable = False, primary_key = True),
+  Column('id', Integer, Sequence("%s.%s"%(dbname,'SEQ_USER')), nullable = False, primary_key = True,autoincrement=True),
   Column('userid', String(60), nullable = False, unique=True),
   schema=dbname
 )
 tableList.append(DD_USER)
 #
-SEQ_INSTANCE = Sequence(name='SEQ_INSTANCE',start=1,increment=True)
+SEQ_INSTANCE = Sequence(name="%s.%s"%(dbname,'SEQ_INSTANCE'),start=1,increment=True)
 DD_INSTANCE = Table('DD_INSTANCE', engine,
-  Column('id', Integer, Sequence('SEQ_INSTANCE'), nullable = False, primary_key = True),
+  Column('id', Integer, Sequence("%s.%s"%(dbname,'SEQ_INSTANCE')), nullable = False, primary_key = True,autoincrement=True),
   Column('dbsinstance', String(60), nullable = False, unique=True),
   schema=dbname
 )
 tableList.append(DD_INSTANCE)
 #
-SEQ_COMMAND = Sequence(name='SEQ_COMMAND',start=1,increment=True)
+SEQ_COMMAND = Sequence(name="%s.%s"%(dbname,'SEQ_COMMAND'),start=1,increment=True)
 DD_COMMAND = Table('DD_COMMAND', engine,
-  Column('id', Integer, Sequence('SEQ_COMMAND'), nullable = False, primary_key = True),
+  Column('id', Integer, Sequence("%s.%s"%(dbname,'SEQ_COMMAND')), nullable = False, primary_key = True,autoincrement=True),
   Column('command', String(1000)),
   Column('alias', String(1000)),
   schema=dbname
 )
 tableList.append(DD_COMMAND)
 #
-SEQ_HISTORY = Sequence(name='SEQ_HISTORY',start=1,increment=True)
+SEQ_HISTORY = Sequence(name="%s.%s"%(dbname,'SEQ_HISTORY'),start=1,increment=True)
 DD_HISTORY = Table('DD_HISTORY', engine,
-  Column('id', Integer, Sequence('SEQ_HISTORY'), nullable = False, primary_key = True),
+  Column('id', Integer, Sequence("%s.%s"%(dbname,'SEQ_HISTORY')), nullable = False, primary_key = True,autoincrement=True),
   Column('userid', Integer, ForeignKey("DD_USER.id"), nullable = False),
   Column('cmdid', Integer, ForeignKey("DD_COMMAND.id"), nullable = False),
   Column('dbsid', Integer, ForeignKey("DD_INSTANCE.id"), nullable = False),
