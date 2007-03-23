@@ -23,8 +23,8 @@ The XML structure:
 <?xml version="1.0" encoding="utf-8"?>
 <ddRequest>
 <select column='Table.colName'>
-<where column='Table.colName' condition='Table.colName = 50'
-<where column='Table.colName' condition='Table.colName like some text here'
+<where column='Table.colName' condition='Table.colName = 50'>
+<where column='Table.colName' condition='Table.colName like some text here'>
 </ddRequest>
 
 The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
