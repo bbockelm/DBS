@@ -19,9 +19,8 @@ try:
   
   # List all storage elements
   print ""
-  print "deleting storage element  ...."
-  #print api.deleteSEFromBlock("/test/test#c801c8e8-4f55-45b9-84f4-438d28e9504e","SE2_c801c8e8-4f55-45b9-84f4-438d28e9504e")
-  print api.deleteSEFromBlock("/test/test#c801c8e8-4f55-45b9-84f4-438d28e9504e")
+  print "deleting storage element (replica from Block)  ...."
+  print api.deleteReplicaFromBlock("/test/test#c801c8e8-4f55-45b9-84f4-438d28e9504e", "se1")
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

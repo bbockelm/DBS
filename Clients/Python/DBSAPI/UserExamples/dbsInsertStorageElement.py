@@ -32,7 +32,7 @@ api = DbsApi(opts.__dict__)
 print "Inserting SE in a block /test_primary_001/TestProcessedDS001/SIM#12345"
 
 try:
-	api.insertStorageElement ( "/test_primary_001/TestProcessedDS001/GEN#12345" , 'seaa1')
+	api.addReplicaToBlock( "/test_primary_001/TestProcessedDS001/GEN#12345" , 'seaa1')
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):
