@@ -52,9 +52,13 @@ VERSION="v00_00_06"
 
 saved_help="/tmp/out.log"
 
+def redirected_print_help(self):
+	print self.print_usage()
+	print print_help(self)
+      
+# This function just dumps the generic help text on screen
 def print_help(self):
        print open(saved_help, 'r').read()
-       print "Help is in my control now............!!!!!!!!!"
 
 class DbsOptionParser(optparse.OptionParser):
   """
@@ -62,7 +66,7 @@ class DbsOptionParser(optparse.OptionParser):
   """
 
   def __init__(self):
-      optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0", conflict_handler="resolve")
+      optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.1", conflict_handler="resolve")
 
       self.add_option("-q", "--quiet",action="store_true", default=False, dest="quiet",
            help="be quiet during deployment procedure")
@@ -73,8 +77,8 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("-v","--verbose", action="store", type="string", default="WARNING", dest="level",
            help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
 
-      self.add_option("--apiver","--apiversion", action="store", type="string", default=VERSION, dest="version",
-           help="specify dbs client api version, e.g. --ver=v00_00_06, or --version=v00_00_06")
+      #self.add_option("--apiver","--apiversion", action="store", type="string", default=VERSION, dest="version",
+      #     help="specify dbs client api version, e.g. --ver=v00_00_06, or --version=v00_00_06")
 
       self.add_option("--p","--path", action="store", type="string", dest="path",
            help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed, supports shell glob")
@@ -114,7 +118,7 @@ class DbsOptionParser(optparse.OptionParser):
       ## capture help
       self.capture_help()
       ## redirect print_help
-      optparse.OptionParser.print_help=print_help 
+      optparse.OptionParser.print_help=redirected_print_help
 
   def capture_help(self):
       saveout = sys.stdout
@@ -157,11 +161,36 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n"
       return command_help
 
-  def print_help(self):
-       help=1
-       optparse.OptionParser.print_help(self)
-       #print self.use()
-   
+  def parse_args(self):
+      """
+      Intercepting the parser and removing help from menu, if exist
+      This is to avoid STUPID handling of help by nice optparse (optp-arse!)
+      """
+      help=False
+      if '--help' in sys.argv: 
+		sys.argv.remove('--help')
+		help=True
+      if '-h' in sys.argv: 
+		sys.argv.remove('-h')
+		help=True
+      if '-help' in sys.argv: 
+		sys.argv.remove('-help')
+		help=True
+      if '--h' in sys.argv : 
+		sys.argv.remove('--h')
+		help=True
+      if '-?' in sys.argv: 
+		sys.argv.remove('-?')
+		help=True
+      if '--?' in sys.argv : 
+		sys.argv.remove('--?') 
+		help=True
+
+      if help==True:
+      		self.add_option("--want_help", action="store", type="string", dest="want_help", default="yes",
+           		help="another way to ask for help")
+      return optparse.OptionParser.parse_args(self)	
+
   def getOpt(self):
       """
           Returns parse list of options
@@ -205,14 +234,19 @@ class ApiDispatcher:
     #print args
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
-    if apiCall in ("", None):
-       print "No command specified, use --help for details" 
-    if self.optdict.has_key('help'):
-       print "NEED Help!!"
     self.api = DbsApi(opts.__dict__)
+    
+    if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
+	print_help(self)
+	return
+
+    elif apiCall in ("", None):
+       print "No command specified, use --help for details" 
+       return
+
     #Execute the proper API call
     ##listPrimaryDatasets 
-    if apiCall in ('listPrimaryDatasets', 'lsp'):
+    elif apiCall in ('listPrimaryDatasets', 'lsp'):
 	self.handleListPrimaryDatasets()
 
     ##listProcessedDatasets
@@ -238,9 +272,8 @@ class ApiDispatcher:
     ##Search data
     elif apiCall in ('search'):
 	self.handleSearchCall()
-
     else:
-       print "API Call: %s not implemented" %apiCall
+       print "Unsupported API Call, please use --doc or --help"
 
    except DbsApiException, ex:
       print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
@@ -257,6 +290,14 @@ class ApiDispatcher:
         traceback.print_exc(file=sys.stdout)
 
   def handleListPrimaryDatasets(self):
+	if self.optdict.has_key('want_help'):
+		print "   Arguments:"
+		print "         -c lsp, or --command=listPrimaryDataset or --command=lsp"
+		print "         --pattern=<Primary_Dataset_Name_Patter>"
+		print "   examples:"
+		print "         python dbsCommandLine.py -c lsp"
+		print "         python dbsCommandLine.py -c lsp --pattern=mc*"
+		return
        	if self.optdict.get('pattern'):
           apiret = self.api.listPrimaryDatasets(self.optdict.get('pattern'))
         else:
@@ -383,9 +424,6 @@ class ApiDispatcher:
          #dot = printDot()
          #dot.start()
          print "making api call, this may take sometime depending upon size of dataset, please wait...."
-
-         #def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None)
-
          apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern)
          #dot.doIt = 0
          #dot.stop()
@@ -395,18 +433,18 @@ class ApiDispatcher:
 		self.reportFile(anObj)
          else:
               for anObj in apiret:
-                print anObj['LogicalFileName']
+                print "          %s" %anObj['LogicalFileName']
          print "Total files listed: %s" %len(apiret)
 
   def reportFile(self, anObj):
               report = Report()
-              report.addSummary("LogicalFileName: %s" %anObj['LogicalFileName'])
-              report.addLine("File Details:")
-              report.addLine("    Status : %s"  %anObj['Status'])
-              report.addLine("    NumberOfEvents : %s"  %anObj['NumberOfEvents'])
-              report.addLine("    Checksum : %s"  %anObj['Checksum'])
-              report.addLine("    FileType : %s"  %anObj['FileType'])
-              report.addLine("    Block : %s"  %anObj['Block']['Name'])
+              report.addSummary("                 LogicalFileName: %s" %anObj['LogicalFileName'])
+              report.addLine("                    File Details:")
+              report.addLine("                         Status : %s"  %anObj['Status'])
+              report.addLine("                         NumberOfEvents : %s"  %anObj['NumberOfEvents'])
+              report.addLine("                         Checksum : %s"  %anObj['Checksum'])
+              report.addLine("                         FileType : %s"  %anObj['FileType'])
+              report.addLine("                         Block : %s"  %anObj['Block']['Name'])
               report.addLine("\n")
               printReport(report)
 
@@ -436,18 +474,18 @@ class ApiDispatcher:
                     print anObj['Name']
 
   def reportBlock(self, anObj):
-                sumry  = "\nBlock Name %s " %anObj['Name']
-                sumry += "\nBlock Path %s" %anObj['Path']
-                sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
+                sumry  = "\n     Block Name %s " %anObj['Name']
+                sumry += "\n     Block Path %s" %anObj['Path']
+                sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
                 report = Report()
                 report.addSummary(sumry)
-                report.addLine("Block Details:")
-                report.addLine("      BlockSize: %s" %anObj['BlockSize'])
-                report.addLine("      NumberOfFiles: %s" %anObj['NumberOfFiles'])
-                report.addLine("      OpenForWriting: %s" % anObj['OpenForWriting'])
-                report.addLine("      Storage Elements in this Block:")
+                report.addLine("     Block Details:")
+                report.addLine("           BlockSize: %s" %anObj['BlockSize'])
+                report.addLine("           NumberOfFiles: %s" %anObj['NumberOfFiles'])
+                report.addLine("           OpenForWriting: %s" % anObj['OpenForWriting'])
+                report.addLine("           Storage Elements in this Block:")
                 for aSE in anObj['StorageElementList']:
-                        report['lines'].append("                      %s" %aSE['Name'])
+                        report['lines'].append("                           %s" %aSE['Name'])
                 #Print it
                 report.addLine("\n")
                 printReport(report)
@@ -515,18 +553,10 @@ if __name__ == "__main__":
     optManager  = DbsOptionParser()
     (opts,args) = optManager.getOpt()
 
-    # Todo
-    # Help on individual commands
-    #
-    #optparse.print_help = optManager.print_help 
-    #pdb.set_trace()
-    if opts.__dict__.get('command') != 'notspecified' : 
-       ApiDispatcher(opts)
+    if opts.__dict__.get('doc'):
+	print optManager.use()
     else:
-          optManager.print_help()
-          #Print doc as well
-          if opts.__dict__.get('doc'):
-              print optManager.use()
+    	ApiDispatcher(opts)
 
   except DbsApiException, ex:
     print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
