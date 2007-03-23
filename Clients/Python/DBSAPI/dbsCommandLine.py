@@ -3,8 +3,8 @@
 # Revision: 1.3 $"
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
+#  Developed by M. Anzar Afaq @ FNAL
 #
-
 # system modules
 import os, sys, string, stat, re, time
 import traceback
@@ -487,21 +487,22 @@ class ApiDispatcher:
 		for aPath in anObj['PathList']:
                       if aPath not in datasetPaths:
                          datasetPaths.append(aPath)
-                         print "\n\n Dataset %s " %aPath
+                         print "\n\nDataset: %s " %aPath
                          # List the Blocks next
                          blockret = self.api.listBlocks(dataset=aPath, block_name=blockpattern, storage_element_name=sepattern)
 			 for aBlk in blockret:
          			if self.optdict.get('report') :
                 			self.reportBlock(aBlk)
          			else :
-                    			print anObj['Name']
+                    			print "        Block:  %s" %anObj['Name']
 				#Lets list files for this Block
 				filesret = self.api.listFiles(blockName=aBlk['Name'])
+				print "              Files: "
                                 for aFile in filesret:
 					if self.optdict.get('report') :
 						self.reportFile(aFile)
 					else: 
-						print aFile['LogicalFileName']
+						print "                    %s" %aFile['LogicalFileName']
 				
 #
 # main
