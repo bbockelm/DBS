@@ -516,7 +516,8 @@ class DDServer(DDLogger):
 
     def _finder(self,userMode="user"):
         try:
-            page = self.genTopHTML(intro=False,userMode=userMode)
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="ResetFinder('%s')"%DBSGLOBAL)
+#            page = self.genTopHTML(intro=False,userMode=userMode)
             searchForm=self.searchForm(DBSGLOBAL,userMode)
             nameSearch={'host':self.dbsdd,'searchForm':searchForm,'userMode':userMode}
             t = templateMenuFinder(searchList=[nameSearch]).respond()
@@ -1858,7 +1859,7 @@ class DDServer(DDLogger):
         page="""<ajax-response><response type="element" id="kw_group_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getPhysicsGroups()
-        nameSpace = {'name':'kw_group','iList': dList,'selTag':'kw_group','changeFunction':''}
+        nameSpace = {'name':'kw_group','iList': dList,'selTag':'kw_group','changeFunction':'','style':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1877,7 +1878,7 @@ class DDServer(DDLogger):
         page="""<ajax-response><response type="element" id="%s">"""%sel
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getSites()
-        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':''}
+        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1895,7 +1896,7 @@ class DDServer(DDLogger):
         page="""<ajax-response><response type="element" id="kw_tier_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getDataTiers()
-        nameSpace = {'name':'kw_tier','iList': dList,'selTag':'kw_tier','changeFunction':''}
+        nameSpace = {'name':'kw_tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1923,7 +1924,7 @@ class DDServer(DDLogger):
 
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
 
-        nameSpace = {'name':'kw_prim','iList': dList,'selTag':'kw_prim','changeFunction':''}
+        nameSpace = {'name':'kw_prim','iList': dList,'selTag':'kw_prim','changeFunction':'','style':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1941,7 +1942,7 @@ class DDServer(DDLogger):
         page="""<ajax-response><response type="element" id="kw_release_holder">"""
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getSoftwareReleases()
-        nameSpace = {'name':'kw_release','iList': dList,'selTag':'kw_release','changeFunction':''}
+        nameSpace = {'name':'kw_release','iList': dList,'selTag':'kw_release','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2721,11 +2722,11 @@ class DDServer(DDLogger):
         return page
     makeLine.exposed=True
 
-    def makeSelect(self,iList,tag,name="",changeFunction="",selTag="",**kwargs):
+    def makeSelect(self,iList,tag,name="",changeFunction="",selTag="",style="",**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="%s">"""%tag
-        nameSpace={'iList':iList,'changeFunction':changeFunction,'selTag':selTag,'name':name}
+        nameSpace={'iList':iList,'changeFunction':changeFunction,'selTag':selTag,'name':name,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2737,14 +2738,14 @@ class DDServer(DDLogger):
     def getSectionTables(self,dbsInst,section,id,**kwargs):
         tList = self.sectionDict[section]
         changeFunction="ChangeCols(%s)"%id
-        return self.makeSelect(tList,"divSectionTables_%s"%id,"sectionTables",changeFunction,"sectionTables_%s"%id)
+        return self.makeSelect(tList,"divSectionTables_%s"%id,"sectionTables",changeFunction,"sectionTables_%s"%id,"width:160px")
     getSectionTables.exposed=True
 
     def getTableColumns(self,dbsInst,tableName,id,**kwargs):
         self.helperInit(dbsInst)
         tList = ['All']+self.helper.getTableColumns(tableName)
         changeFunction=""
-        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id)
+        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id,"width:200px")
     getTableColumns.exposed=True
 
     def getTableColumnsFromSection(self,dbsInst,section,id,**kwargs):
@@ -2755,9 +2756,9 @@ class DDServer(DDLogger):
         self.helperInit(dbsInst)
         tList = self.sectionDict[section]
         tableName = tList[0]
-        tList = self.helper.getTableColumns(tableName)
+        tList = ['All']+self.helper.getTableColumns(tableName)
         changeFunction=""
-        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id)
+        return self.makeSelect(tList,"tableCols_%s"%id,"tableCols",changeFunction,"tableColumns_%s"%id,style="width:160px")
     getTableColumnsFromSection.exposed=True
 
     def finderExample(self,userMode='user'):
