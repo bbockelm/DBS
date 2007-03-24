@@ -22,9 +22,10 @@ This tool support a three input formats: xml string, xml file, txt file.
 The XML structure:
 <?xml version="1.0" encoding="utf-8"?>
 <ddRequest>
-<select column='Table.colName' />
-<where column='Table.colName' condition='Table.colName = 50' />
-<where column='Table.colName' condition='Table.colName like some text here' />
+<select column='PrimaryDataset.Name' />
+<select column='ProcessedDataset.Name' />
+<output limit="5" offset="2" />
+<where column="PrimaryDataset.Name" operator="like" value="MTCC" />
 </ddRequest>
 
 The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
@@ -37,8 +38,7 @@ PrimaryDataset.Name
 ProcessedDataset.Name
 
 [where]
-PrimaryDataset.Name like 'test'
-ProcessedDataset.Name='test'
+PrimaryDataset.Name like 'MTCC'
 
 [output]
 limit=5
@@ -208,8 +208,8 @@ def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
     inputXML=parseInput(input)
     if  verbose:
         print inputXML
-    envelope=urllib.quote(inputXML)
-    return sendMessage(host,port,dbsInst,envelope,opts.output,opts.verbose)
+    envelope=urllib.quote(inputXML.strip())
+    return sendMessage(host,port,dbsInst,envelope,output,verbose)
 
 #
 # main
