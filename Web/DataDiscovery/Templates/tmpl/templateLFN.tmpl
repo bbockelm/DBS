@@ -21,6 +21,9 @@ contians $nLFNs file(s)
 <td>type</td>
 <td>events</td>
 <td>size</td>
+#if $userMode!='user'
+<td>checksum</td>
+#end if
 <td>name</td>
 </tr>
 #for item in $lfnList:
@@ -29,11 +32,15 @@ contians $nLFNs file(s)
 #set stat=item[2]
 #set type=item[3]
 #set evts=item[4]
+#set csum=item[5]
 <tr class="sortable_yellow">
 <td>$stat</td>
 <td>$type</td>
 <td>$evts</td>
 <td>$colorSizeHTMLFormat($size)</td>
+#if $userMode!='user'
+<td>$csum</td>
+#end if
 <td>
 $name<br />
 <table>

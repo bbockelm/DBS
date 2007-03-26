@@ -1510,7 +1510,7 @@ class DDHelper(DDLogger):
           tf   = self.alias('Files','tf')
           tfs  = self.alias('FileStatus','tfs')
           tft  = self.alias('FileType','tft')
-          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents')]
+          oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents'),self.col(tf,'Checksum')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
