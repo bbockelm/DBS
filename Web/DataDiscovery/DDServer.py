@@ -2184,7 +2184,7 @@ class DDServer(DDLogger):
 #        iDate=time.strftime("%d-%b-%Y %H:%M:%S",time.localtime())
 #        iTime=str(time.strftime("%H:%M:%S",time.localtime()))
 #        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid,history_date=iDate,history_time=iTime)
-        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid)
+        DD_HISTORY.insert().execute(userid=uid,cmdid=cid,dbsid=dbsid,history_date=sqlalchemy.func.current_timestamp())
 
     def historySearch(self,iYear,iMonth,oYear,oMonth,userId,**kwargs):
         cList=[]
@@ -2863,15 +2863,19 @@ class DDServer(DDLogger):
             if  oName:
                 # TODO: I need to query DB which dbs instance were used and pass it here.
                 cmd="""<a href="javascript:ajaxExecuteQuery('%s','%s')">%s</a>"""%(dbsInst,oCmd,oName)
-                iDate="N/A"
-                if oDate:
-                   iDate=str(oDate).split()[0]
-                iTime="N/A"
-                if oTime:
-                   iTime=str(oTime)
+#                iDate="N/A"
+#                if oDate:
+#                   iDate=str(oDate).split()[0]
+#                iTime="N/A"
+#                if oTime:
+#                   iTime=str(oTime)
+#                nameSpace={
+#                           'date'      : iDate,
+#                           'time'      : iTime,
+#                           'action'    : str(cmd)
+#                          }
                 nameSpace={
-                           'date'      : iDate,
-                           'time'      : iTime,
+                           'date'      : str(oDate),
                            'action'    : str(cmd)
                           }
                 t = templateHistory(searchList=[nameSpace]).respond()

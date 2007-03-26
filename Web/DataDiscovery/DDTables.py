@@ -67,7 +67,7 @@ DD_HISTORY = Table('DD_HISTORY', engine,
   Column('userid', Integer, ForeignKey("DD_USER.id"), nullable = False),
   Column('cmdid', Integer, ForeignKey("DD_COMMAND.id"), nullable = False),
   Column('dbsid', Integer, ForeignKey("DD_INSTANCE.id"), nullable = False),
-  Column('history_date', Date, onupdate=func.current_timestamp()),
+  Column('history_date', Date, onupdate=func.current_timestamp(), nullable = False),
   Column('history_time', String(100), onupdate=func.current_timestamp()),
   schema=dbname
 )

@@ -48,7 +48,7 @@ CREATE TABLE DD_HISTORY (
         userid INTEGER NOT NULL, 
         cmdid INTEGER NOT NULL, 
         dbsid INTEGER NOT NULL, 
-        history_date DATE,
+        history_date DATE NOT NULL,
         history_time VARCHAR2(100),
         PRIMARY KEY (id), 
          FOREIGN KEY(userid) REFERENCES "DD_USER" (id), 

@@ -28,7 +28,7 @@ CREATE TABLE DD_HISTORY (
 	userid BIGINT UNSIGNED NOT NULL, 
 	cmdid BIGINT UNSIGNED NOT NULL, 
 	dbsid BIGINT UNSIGNED NOT NULL, 
-        history_date DATE,
+        history_date DATE NOT NULL,
         history_time VARCHAR(100),
 	PRIMARY KEY (id), 
         FOREIGN KEY(userid) REFERENCES `DD_USER` (id), 
