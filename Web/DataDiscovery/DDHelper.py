@@ -1996,7 +1996,13 @@ class DDHelper(DDLogger):
       # blockInfoDict=[nEvts,blockStatus,nFiles,blockSize,list of se's]
       siteList=[]
       for blockName in blockInfoDict.keys():
-          evts,bStatus,nFiles,bBytes,seList  = blockInfoDict[blockName]
+          item   = blockInfoDict[blockName]
+          evts   = item[0]
+          bStatus= item[1]
+          nFiles = item[2]
+          bBytes = item[3]
+          seList = item[4]
+#          evts,bStatus,nFiles,bBytes,seList  = blockInfoDict[blockName]
           if not evts:
              continue # this eliminates file blocks with no events
           # query DLS
