@@ -19,7 +19,8 @@ try:
   #for block in api.listBlocks("/test_primary_001/TestProcessedDS001/GEN-SIM", "/test_primary_001/TestProcessedDS001/GEN*"):
   #for block in api.listBlocks("/TestPrimary_001_20070315_02h53m32s/TestPrimary_001_20070315_02h53m32s/GEN-SIM"):
      #print "%s  %s" % (block['Name'], block['StorageElementList'])
-     print "  %s" % block['Name']
+     #print "  %s" % block['Name']
+     print "  %s" % block
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
