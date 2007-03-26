@@ -1976,7 +1976,7 @@ class DbsApi(DbsConfig):
     if type(block) != type("str") and block not in (None, "") :
        if (block['StorageElementList'] not in ( [], None)) :
          for aSe in block['StorageElementList']:
-            xmlinput += " <storage_element storage_element_name='"+aSe['Name']+"'/>"
+            xmlinput += " <storage_element storage_element_name='"+self._name(aSe)+"'/>"
     if block not in (None, ""):	
     	xmlinput += "</block>"
 
