@@ -445,7 +445,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*"):
+  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",userMode="user"):
       if group.lower()=='any': group="*"
       if app.lower()  =='any': app  ="*"
       if prim.lower() =='any': prim ="*"
@@ -468,6 +468,7 @@ class DDHelper(DDLogger):
           tpal = self.alias('ProcAlgo','tpal')
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
+          tblk = self.alias('Block','tblk')
           sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
                  from_obj=[
                      tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
@@ -478,6 +479,7 @@ class DDHelper(DDLogger):
                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      ],distinct=True,
                  order_by=[sqlalchemy.desc(self.col(tpm,'Name')),sqlalchemy.desc(self.col(tdt,'Name')),sqlalchemy.desc(self.col(tprd,'Name'))] )
           if prim and prim!="*":
@@ -495,6 +497,8 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tapf,'FamilyName')==fam)
              if exe and exe!="*":
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
+          if userMode=="user":
+                sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -576,6 +580,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tse,'SEName')==kwargs['site'])
           idx=-1
           if kwargs.has_key('idx'): idx=kwargs['idx']
+          if kwargs.has_key('userMode') and kwargs['userMode']=="user":
+             sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           result = self.getSQLAlchemyResult(con,sel,idx)
       except:
           printExcept()
@@ -1964,7 +1970,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def getData(self,dataset,site="Any",idx=-1):
+  def getData(self,dataset,site="Any",userMode="user",idx=-1):
       """
          Returns 
          blockDict={'blockName': (nEvt,blockStatus,nFiles,blockSize,hostList)}
@@ -1981,11 +1987,11 @@ class DDHelper(DDLogger):
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
 # This code is ready for use in DBS2, once SEnames will be in place
-#      kwargs={'datasetPath':dataset,'site':site,'idx':idx}
+#      kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
 #      blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
 #      return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
-      kwargs={'datasetPath':dataset,'site':site,'idx':idx}
+      kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
       blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
       # blockInfoDict=[nEvts,blockStatus,nFiles,blockSize,list of se's]
       siteList=[]

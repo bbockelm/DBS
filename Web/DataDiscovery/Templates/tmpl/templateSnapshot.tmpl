@@ -27,8 +27,10 @@ DBS Discovery :: Navigator :: Results
 #set site="Any"
 #end if
 
+<table width="100%" cellspacing="1">
+<tr valign="top">
+<td>
 
-###<div class="sectionhead">RESULTS FOR:</div>
 <table class="small" bgcolor="#DDDDDD">
 #if $userMode!='user'
 <tr>
@@ -67,4 +69,28 @@ DBS Discovery :: Navigator :: Results
 </tr>
 
 </table>
+
+</td>
+<td>
+
+Found $nDatasets
+#if $nDatasets
+datasets.<br />
+Get full dataset<a href="$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;app=$app&amp;primD=$primD&amp;tier=$tier&amp;userMode=$userMode">
+list</a>.<br />
+#else
+datasets.<br />
+#end if
+###</p>
+<span id="expandHolder">
+Expand all datasets table 
+<a href="javascript:ExpandDetails()">Details</a>.
+</span>
+
+
+</td>
+</tr>
+</table>
+
+
 <br />

@@ -926,34 +926,34 @@ class DDServer(DDLogger):
             return str(t)
     showProcDatasets.exposed=True
 
-    def showProcDatasetsHTML(self,dbsInst,site,app,primD,tier,nDatasets,userMode='user'):
-        """
-           Get all processed datasets for given set of input parameters
-           @type  dbs: string
-           @param dbs: user selection of DBS menu
-           @type  site: string
-           @param site: user selection of the site, default "All"
-           @type  app: string
-           @param app: user selection of the application, default "*"
-           @type  primD: string
-           @param primD: user selection of the primary dataset, default "*"
-           @type  tier: string
-           @param tier: user selection of the data tier, default "*"
-           @rtype : string
-           @return: returns HTML code
-        """
-        nameSpace = {
-                     'host'    : self.dbsdd,
-                     'dbsInst' : dbsInst, 
-                     'site'    : site,
-                     'app'     : app,
-                     'primD'   : primD,
-                     'tier'    : tier,
-                     'nDatasets': nDatasets,
-                     'userMode': userMode
-                    }
-        t = templateListDatasets(searchList=[nameSpace]).respond()
-        return str(t)
+#    def showProcDatasetsHTML(self,dbsInst,site,app,primD,tier,nDatasets,userMode='user'):
+#        """
+#           Get all processed datasets for given set of input parameters
+#           @type  dbs: string
+#           @param dbs: user selection of DBS menu
+#           @type  site: string
+#           @param site: user selection of the site, default "All"
+#           @type  app: string
+#           @param app: user selection of the application, default "*"
+#           @type  primD: string
+#           @param primD: user selection of the primary dataset, default "*"
+#           @type  tier: string
+#           @param tier: user selection of the data tier, default "*"
+#           @rtype : string
+#           @return: returns HTML code
+#        """
+#        nameSpace = {
+#                     'host'    : self.dbsdd,
+#                     'dbsInst' : dbsInst, 
+#                     'site'    : site,
+#                     'app'     : app,
+#                     'primD'   : primD,
+#                     'tier'    : tier,
+#                     'nDatasets': nDatasets,
+#                     'userMode': userMode
+#                    }
+#        t = templateListDatasets(searchList=[nameSpace]).respond()
+#        return str(t)
     
     def getURL(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",hist=""): 
         # add URL link to the page
@@ -972,14 +972,14 @@ class DDServer(DDLogger):
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
         return page
 
-    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*"):
+    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",userMode='user'):
         """
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
         """
-        return self.helper.listProcessedDatasets(group,app,prim,tier,proc)
+        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,userMode)
 
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",**kwargs): 
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -996,6 +996,7 @@ class DDServer(DDLogger):
            @rtype : string
            @return: returns HTML code
         """
+        pagerStep=int(pagerStep)
         if string.lower(tier)=="all" or string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all" or string.lower(site)=="all": site="*"
         if string.lower(site)=="any" or string.lower(site)=="any": site="*"
@@ -1008,7 +1009,6 @@ class DDServer(DDLogger):
 #        if int(_idx)==0:
 #           className="show_inline"
             
-        page+="""<div id="results_response_%s" class="%s">"""%(_idx,className)
         
         self.helperInit(dbsInst)
         self.dbs  = dbsInst
@@ -1027,45 +1027,64 @@ class DDServer(DDLogger):
         id=0
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
-        t1=time.time()
-        datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc)
+        datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,userMode=userMode)
         nDatasets=len(datasetsList)
-        leftBar = self.showProcDatasetsHTML(dbsInst,site,app,primD,tier,nDatasets,userMode)
-#        print "\n\nGetDataHelper",nDatasets,_idx,(_idx+1)*RES_PER_PAGE
 
-#        if _idx and nDatasets<(_idx+1)*RES_PER_PAGE:
-#           return ""
-#        if _idx and not (nDatasets>_idx*RES_PER_PAGE and nDatasets<(_idx+1)*RES_PER_PAGE):
-        if _idx and _idx*RES_PER_PAGE>nDatasets:
+        # Construct result page
+        rPage=""
+        if nDatasets:
+           rPage+="Result page:"
+
+        # the progress bar for all results
+        if _idx:
+            rPage+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s&pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode,pagerStep)
+        tot=_idx
+        for x in xrange(_idx,_idx+GLOBAL_STEP):
+            if nDatasets>x*pagerStep:
+               tot+=1
+        for index in xrange(_idx,tot):
+           ref=index+1
+           if index==_idx:
+              ref="""<span class="gray_box">%s</span>"""%(index+1)
+           rPage+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s&pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,index,userMode,pagerStep,ref)
+#        if nDatasets>tot*pagerStep:
+        if nDatasets>(_idx+1)*pagerStep:
+           rPage+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s&pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode,pagerStep)
+
+        if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
 
-        t2=time.time()
-        self.dbsTime=(t2-t1)
+        page+="""<div id="results_response_%s" class="%s">"""%(_idx,className)
+
         regList=[]
         bList=[]
         id=0
 
-        nameSpace = {
-                     'userMode': userMode,
-                     'dbsInst' : dbsInst,
-                     'site'    : site,
-                     'rel'     : softRel,
-                     'primD'   : primD,
-                     'tier'    : tier,
-                     'proc'    : proc,
-                     'group'   : group
+        # I re-use this dict for different templates
+        _nameSpace = {
+                     'nDatasets': nDatasets,
+                     'userMode' : userMode,
+                     'dbsInst'  : dbsInst,
+                     'site'     : site,
+                     'rel'      : softRel,
+                     'primD'    : primD,
+                     'tier'     : tier,
+                     'proc'     : proc,
+                     'group'    : group,
+                     'app'      : app,
+                     'idx'      : _idx,
+                     'ajax'     : ajax,
+                     'host'     : self.dbsdd,
+                     'style'    : "margin-top:-20px",
+                     'rPage'    : rPage,
+                     'pagerStep': pagerStep
                     }
-        t = templateSnapshot(searchList=[nameSpace]).respond()
+        t = templateSnapshot(searchList=[_nameSpace]).respond()
         snapshot=str(t)
         page+=snapshot
-        # the view and process page should be generated once
-        if  int(_idx)==0:
-            nameSpace = {'leftBar' : leftBar}
-            t = templateLeftBar(searchList=[nameSpace]).respond()
-            page+=str(t)
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
+        page+=str(t)
 
-        page+="""<script type="text/javascript">ShowPageResults()</script>"""
-        self.dbsTime=(t2-t1)
         if not nDatasets:
            page+="""<p><span class="box_red">No data found</span></p>"""
         for idx in xrange(0,nDatasets):
@@ -1073,64 +1092,20 @@ class DDServer(DDLogger):
             id+=1
             self.writeLog(dataset)
 
-            # process only RES_PER_PAGE datasets within given (_idx) index range
-            if not (_idx*RES_PER_PAGE<=idx and idx<(_idx*RES_PER_PAGE+RES_PER_PAGE)): continue
+            # process only pagerStep datasets within given (_idx) index range
+            if not (_idx*pagerStep<=idx and idx<(_idx*pagerStep+pagerStep)): continue
 
-            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site)
-            if not totEvt and userMode=="user":
-               idx-=1
-               continue
+            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
+#            if not totEvt and userMode=="user":
+#               idx-=1
+#               continue
             page+= self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode)
         # end of response tag
         page+="""</div><hr class="dbs" />"""
-        if nDatasets:
-           page+="Result page:"
+        _nameSpace['style']="" # change style for the pager
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
+        page+=str(t)
 
-        # the progress bar for all results
-        if _idx:
-            page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode)
-        tot=_idx
-        for x in xrange(_idx,_idx+GLOBAL_STEP):
-            if nDatasets>x*RES_PER_PAGE:
-               tot+=1
-        for index in xrange(_idx,tot):
-           ref=index+1
-           if index==_idx:
-              ref="""<span class="gray_box">%s</span>"""%(index+1)
-           page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,index,userMode,ref)
-        if nDatasets>tot*RES_PER_PAGE:
-           page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode)
-
-#        if _idx:
-#            page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode)
-#        if nDatasets>(_idx+1)*RES_PER_PAGE:
-#           if _idx: page+=" | "
-#           page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode)
-
-
-
-
-
-
-#        if  int(_idx)==0:
-#            step=GLOBAL_STEP
-#            pages = nPages(nDatasets,RES_PER_PAGE)
-#            if step>pages: step=pages
-#            nameSpace = {
-#                         'idx'     : _idx,
-#                         'step'    : step,
-#                         'tot'     : pages,
-#                         'dbsInst' : dbsInst,
-#                         'site'    : site,
-#                         'group'   : group,
-#                         'app'     : app,
-#                         'prim'    : primD,
-#                         'tier'    : tier,
-#                         'proc'    : proc,
-#                         'res_page': RES_PER_PAGE
-#                        }
-#            t = templateNextBar(searchList=[nameSpace]).respond()
-#            page+=str(t)
         return page
     getDataHelper.exposed=True
 
@@ -1164,7 +1139,7 @@ class DDServer(DDLogger):
         page=str(t)
         return page
 
-    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",**kwargs): 
+    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1202,7 +1177,7 @@ class DDServer(DDLogger):
                 self.writeLog(msg)
                 msg=""
                 self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax,userMode)
+                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax,userMode,pagerStep)
             except:
                 t=self.errorReport("Fail in getData function")
                 page+=str(t)
@@ -1214,7 +1189,7 @@ class DDServer(DDLogger):
            page=self.genTopHTML(userMode=userMode)
            if hist:
               page+=hist
-           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax,userMode)
+           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax,userMode,pagerStep)
            page+= result
 #           if result:
 #              if _idx:
@@ -1973,26 +1948,26 @@ class DDServer(DDLogger):
 #        return page
 #    getDatasets.exposed=True
 
-    def getDatasetContentHelper(self,dbsInst,dataset,**kwargs):
-        """
-           Get dataset content
-           @type  dbsInst: string
-           @param dbsInst: dbs instance
-           @type  dataset: string
-           @param dataset: dataset name
-           @rtype: string
-           @return: returns parents fro given datasets in HTML form 
-        """
-        page=""
-        try:
-            self.helperInit(dbsInst)
-            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,"*")
-            page+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
-            page+=self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id=0)
-        except:
-            printExcept()
-            page="""<hr class="dbs" />No information found for dataset '%s' in DBS='%s'"""%(dataset,dbsInst)
-        return page
+#    def getDatasetContentHelper(self,dbsInst,dataset,**kwargs):
+#        """
+#           Get dataset content
+#           @type  dbsInst: string
+#           @param dbsInst: dbs instance
+#           @type  dataset: string
+#           @param dataset: dataset name
+#           @rtype: string
+#           @return: returns parents fro given datasets in HTML form 
+#        """
+#        page=""
+#        try:
+#            self.helperInit(dbsInst)
+#            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,"*")
+#            page+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
+#            page+=self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id=0)
+#        except:
+#            printExcept()
+#            page="""<hr class="dbs" />No information found for dataset '%s' in DBS='%s'"""%(dataset,dbsInst)
+#        return page
 
     def getDatasetProvenanceHelper(self,dataset,userMode='user',**kwargs):
         """
