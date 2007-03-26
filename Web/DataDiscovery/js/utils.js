@@ -30,6 +30,28 @@ function ShowTag(tag) {
       id.className="show_inline";
   }
 }
+function ChangeNameTags(tag,className) {
+  var sel=document.getElementsByName(tag);
+  for(i=0;i<sel.length;i++) {
+      if (sel[i]) {
+          sel[i].className=className;
+      }
+  }
+}
+function ExpandDetails()  {
+  ChangeNameTags('detailsTables','show_inline');
+  ChangeNameTags('summaryTables','hide');
+  ChangeNameTags('_summaryTable','td_plain');
+  ChangeNameTags('_detailsTable','td_underline');
+  $('expandHolder').innerHTML='<span id="expandHolder">Collapse all datasets table <a href="javascript:HideDetails()">Details</a>.</span>';
+}
+function HideDetails()  {
+  ChangeNameTags('detailsTables','hide');
+  ChangeNameTags('summaryTables','show_inline');
+  ChangeNameTags('_summaryTable','td_underline');
+  ChangeNameTags('_detailsTable','td_plain');
+  $('expandHolder').innerHTML='<span id="expandHolder">Expand all datasets table <a href="javascript:ExpandDetails()">Details</a>.</span>';
+}
 function ResetTag(tag) {
   ClearTag(tag);
   ShowTag(tag);
@@ -1189,4 +1211,11 @@ function CheckOperator() {
       } 
    }
 }
-
+function load(url) {
+  window.location.href=url;
+}
+function LoadGetData(dbsInst,site,group,app,prim,tier,proc,idx,ajax,userMode) {
+   var pagerStep=$('pagerStep').value;
+   var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
+   load(url);
+}
