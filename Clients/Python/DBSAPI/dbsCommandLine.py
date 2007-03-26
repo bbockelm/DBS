@@ -188,9 +188,6 @@ class DbsOptionParser(optparse.OptionParser):
   def __init__(self):
       optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.1", conflict_handler="resolve")
 
-      self.add_option("-q", "--quiet",action="store_true", default=False, dest="quiet",
-           help="be quiet during deployment procedure")
-
       self.add_option("--url",action="store", type="string", dest="url", default=URL,
            help="specify URL, e.g. http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet")
 
