@@ -1240,7 +1240,7 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
 INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_06', NOW());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('IMPORTED', NOW()), ('EXPORTED', NOW());
-INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('PROMOTED', NOW());
+INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('IMPORTED', NOW()) , ('EXPORTED', NOW());
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());
 INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', NOW()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
@@ -1258,40 +1258,21 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Genera
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()),  ('RAW', NOW()), ('AOD', NOW());
--- INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', NOW()),
--- ('Individual', '', NOW()),
--- ('Higgs', '', NOW()),
--- ('SUSY', '', NOW()),
--- ('BSM', '', NOW()),
--- ('EWK', '', NOW()),
--- ('Top', '', NOW()),
--- ('QCD', '', NOW()),
--- ('Diffraction', '', NOW()),
--- ('Online Selection', '', NOW()),
--- ('B-physics', '', NOW()),
--- ('Muons', '', NOW()),
--- ('Egamma', '', NOW()),
--- ('JetMet', '', NOW()),
--- ('E-flow', '', NOW()),
--- ('tau', '', NOW()),
--- ('B-tagging', '', NOW());
-
-INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', NOW()),
-('Individual', NOW()),
-('Higgs', NOW()),
-('SUSY', NOW()),
-('BSM', NOW()),
-('EWK', NOW()),
-('Top', NOW()),
-('QCD', NOW()),
-('Diffraction', NOW()),
-('Online Selection', NOW()),
-('B-physics', NOW()),
-('Muons', NOW()),
-('Egamma', NOW()),
-('JetMet', NOW()),
-('E-flow', NOW()),
-('tau', NOW()),
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', NOW()), 
+('Individual', NOW()), 
+('Higgs', NOW()), 
+('SUSY', NOW()), 
+('BSM', NOW()), 
+('EWK', NOW()), 
+('Top', NOW()), 
+('QCD', NOW()), 
+('Diffraction', NOW()), 
+('Online Selection', NOW()), 
+('B-physics', NOW()), 
+('Muons', NOW()), 
+('Egamma', NOW()), 
+('JetMet', NOW()), 
+('E-flow', NOW()), 
+('tau', NOW()), 
 ('B-tagging', NOW());
-
 commit;
