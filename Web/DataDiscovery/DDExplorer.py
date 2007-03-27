@@ -148,9 +148,9 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
       sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
     return []
 
-def parseInput(input):
+def parseInput(input,verbose=0):
     if type(input) is types.DictType:
-       return formXMLInput(input)
+       return formXMLInput(input,verbose)
     lines=""
     iFileName=input
     try:
@@ -182,9 +182,9 @@ def parseInput(input):
            continue
         oDict.setdefault(item,[]).append(line)
 #    print oDict
-    return formXMLInput(oDict)
+    return formXMLInput(oDict,verbose)
 
-def formXMLInput(iDict):
+def formXMLInput(iDict,verbose=0):
     xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>\n"""
     for item in iDict['select']:
         xmlOutput+="""<select column='%s' />\n"""%str(item)
@@ -202,11 +202,12 @@ def formXMLInput(iDict):
                val=val[1:-2]
             xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(str(col),str(op),str(val))
     xmlOutput+="</ddRequest>"
-#    print "\n\nformed outputXML\n",xmlOutput
+    if verbose:
+       print "\n\nformed outputXML\n",xmlOutput
     return xmlOutput
     
 def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
-    inputXML=parseInput(input)
+    inputXML=parseInput(input,verbose)
     if  verbose:
         print inputXML
     envelope=urllib.quote(inputXML.strip())
@@ -252,6 +253,6 @@ if __name__ == "__main__":
         if opts.output!="txt":
            print "### RESULT:",result
     # Test input as dictionary
-    iDict={'select':['PrimaryDataset.Name'],'output':['limit="5" offset="1"'],'where':['PrimaryDataset.Name like MTCC']}
-    result=queryDBS(host,port,dbsInst,iDict,"list")
-    print "\n###",iDict,result
+#    iDict={'select':['PrimaryDataset.Name'],'output':['limit="5" offset="1"'],'where':['PrimaryDataset.Name like MTCC']}
+#    result=queryDBS(host,port,dbsInst,iDict,"list")
+#    print "\n###",iDict,result
