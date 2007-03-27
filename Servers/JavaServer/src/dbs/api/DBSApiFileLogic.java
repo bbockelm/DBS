@@ -1,6 +1,6 @@
 /**
- $Revision: 1.45 $"
- $Id: DBSApiFileLogic.java,v 1.45 2007/03/21 21:33:22 sekhri Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSApiFileLogic.java,v 1.46 2007/03/27 16:58:57 sekhri Exp $"
  *
  */
 
@@ -668,7 +668,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String fileID = "";
 			String lfn = get(file, "lfn", true);
 			String fileStatus = get(file, "file_status", false).toUpperCase();
-			String type = get(file, "type", false).toUpperCase();
+			String type = get(file, "type", true).toUpperCase();
 			String valStatus = get(file, "validation_status", false).toUpperCase();
 			String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 			String creationDate = getTime(file, "creation_date", false);
@@ -681,7 +681,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		
 			//Set defaults Values
 			if (isNull(fileStatus)) fileStatus = "VALID";
-			if (isNull(type)) type = "EVD";
+			//if (isNull(type)) type = "EVD";
 			if (isNull(valStatus)) valStatus = "VALID";
 			
 			//Insert a File status if it does not exists
