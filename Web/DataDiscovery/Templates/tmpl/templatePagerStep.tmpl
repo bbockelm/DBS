@@ -1,24 +1,28 @@
+<!-- templatePagerStep.tmpl -->
 <div align="right" style="$style">
 <table width="100%">
 <tr><td align="left">
-Number of datasets per page
-<select id="pagerStep" name="pagerStep" onchange="javascript:LoadGetData('$dbsInst','$site','$group','$app','$primD','$tier','$proc','$idx','$ajax','$userMode')">
-<option>10</option>
-#if int($pagerStep)==25
-<option selected="selected">25</option>
-#else
-<option>25</option>
+##Number of datasets per page
+Number of $nameForPager per page
+#set pList=[10,25,50,100]
+#if not pList.count(int($pagerStep))
+$pList.append(int($pagerStep))
 #end if
-<option>50</option>
-<option>100</option>
+$pList.sort()
+<select id="pagerStep" name="pagerStep" onchange="$onchange">
+#for item in $pList
+
+#if $item==int($pagerStep)
+<option selected="selected">$item</option>
+#else
+<option>$item</option>
+#end if
+
+#end for
 </select>
 </td><td align="right">
 $rPage
 </td></tr></table>
 </div>
 
-#*
-<script type="text/javascript">
- var sel=document.getElementsByName('pagerStep');
-</script>
-*#
+<!-- end of templatePagerStep.tmpl -->
