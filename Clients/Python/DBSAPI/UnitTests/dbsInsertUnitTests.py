@@ -551,7 +551,7 @@ file1= DbsFile (
 		FileSize= 12340,
 		Status= 'VALID',
 		ValidationStatus = 'VALID',
-		FileType= 'EVD',
+		FileType= 'EDM',
 		LumiList= [lumi1, lumi2],
 		TierList= tierList,
 		AlgoList = [algo1, algo2],
@@ -565,7 +565,7 @@ file2= DbsFile (
 		FileSize= 12340,
 		Status= 'VALID',
 		ValidationStatus = 'VALID',
-		FileType= 'EVD',
+		FileType= 'EDM',
 		LumiList= [lumi1, lumi2],
 		TierList= tierList,
 		AlgoList = [algo1, algo2],
@@ -617,7 +617,7 @@ file = DbsFile (LogicalFileName= '1111-0909-9767-876411111' + mytime,
 		FileSize= 12340,
 		TierList=tierList
 		)
-apiObj.run(proc1 ,[file], block1,  excep = False)
+apiObj.run(proc1 ,[file], block1,  excep = True)
 
 file = DbsFile (LogicalFileName= '1111-0909-9767-87641234545' + mytime,
 		ParentList = [lfn1,'doesnotexists'],

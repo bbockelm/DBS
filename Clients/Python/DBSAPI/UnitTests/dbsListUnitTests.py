@@ -72,7 +72,7 @@ apiObj.run("","","","","","MyExe1","", excep = False)
 apiObj.run("","","","","","MyExe1", excep = False)
 #apiObj.run("*/","","","","","MyExe1", excep = True)
 #apiObj.run("*/","","","","","MyExe1", excep = True)
-apiObj.run("*",";","exe", excep = True)
+apiObj.run("*","*","ex;e", excep = True)
 apiObj.run("","","","","","","","", excep = True)
 f.write("\n***********************\tlistProcessedDatasets API tests***************************")
 
