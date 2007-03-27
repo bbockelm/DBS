@@ -185,7 +185,7 @@ def parseInput(input):
     return formXMLInput(oDict)
 
 def formXMLInput(iDict):
-    xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
+    xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>\n"""
     for item in iDict['select']:
         xmlOutput+="""<select column='%s' />\n"""%str(item)
     if  iDict.has_key('output'):
@@ -202,6 +202,7 @@ def formXMLInput(iDict):
                val=val[1:-2]
             xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(str(col),str(op),str(val))
     xmlOutput+="</ddRequest>"
+#    print "\n\nformed outputXML\n",xmlOutput
     return xmlOutput
     
 def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
@@ -250,3 +251,7 @@ if __name__ == "__main__":
         result = queryDBS(host,port,dbsInst,inputXML,opts.output,opts.verbose)
         if opts.output!="txt":
            print "### RESULT:",result
+    # Test input as dictionary
+    iDict={'select':['PrimaryDataset.Name'],'output':['limit="5" offset="1"'],'where':['PrimaryDataset.Name like MTCC']}
+    result=queryDBS(host,port,dbsInst,iDict,"list")
+    print "\n###",iDict,result
