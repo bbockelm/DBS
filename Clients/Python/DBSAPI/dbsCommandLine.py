@@ -377,7 +377,7 @@ class ApiDispatcher:
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
     self.api = DbsApi(opts.__dict__)
-    print "\nUsing DBS instance at: %s\n" %URL
+    print "\nUsing DBS instance at: %s\n" %self.optdict.get('url', 'MISSING URL ?')
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
