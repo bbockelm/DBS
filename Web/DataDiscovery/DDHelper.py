@@ -1987,9 +1987,9 @@ class DDHelper(DDLogger):
          totalNumberOfEvents, totalNumberOfFiles, totalSize of dataset
       """
 # This code is ready for use in DBS2, once SEnames will be in place
-#      kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
-#      blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
-#      return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
+      kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
+      blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
+      return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
       kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
       blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
@@ -2027,7 +2027,7 @@ class DDHelper(DDLogger):
       siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
-  def getBlockInfoForSite(self,site):
+  def getBlockInfoForSite(self,site,iLimit=25,iOffset=0):
       if site.lower()=='all' or site.lower()=='any': site="*"
       t1=time.time()
       aDict = {}
@@ -2035,6 +2035,7 @@ class DDHelper(DDLogger):
       oList  = []
       try:
           tblk = self.alias('Block','tblk')
+#          tblk2= self.alias('Block','tblk2')
           tseb = self.alias('SEBlock','tseb')
           tse  = self.alias('StorageElement','tse')
           tp1  = self.alias('Person','tp1')
@@ -2051,6 +2052,9 @@ class DDHelper(DDLogger):
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
+          sel.limit=int(iLimit)
+          sel.offset=int(iOffset)
+          sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()

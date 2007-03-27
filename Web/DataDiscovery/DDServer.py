@@ -1077,7 +1077,9 @@ class DDServer(DDLogger):
                      'host'     : self.dbsdd,
                      'style'    : "margin-top:-20px",
                      'rPage'    : rPage,
-                     'pagerStep': pagerStep
+                     'pagerStep': pagerStep,
+                     'nameForPager': "datasets",
+                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,_idx,ajax,userMode)
                     }
         t = templateSnapshot(searchList=[_nameSpace]).respond()
         snapshot=str(t)
@@ -1607,7 +1609,8 @@ class DDServer(DDLogger):
 	page+=str(t)
         return page
         
-    def getFileBlocks(self,dbsInst,site,ajax=1,userMode='user',**kwargs):
+    def getFileBlocks(self,dbsInst,site,ajax=1,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+        _idx=int(_idx)
         if  int(ajax):
             # AJAX wants response as "text/xml" type
             self.setContentType('xml')
@@ -1616,14 +1619,36 @@ class DDServer(DDLogger):
             page=self.genTopHTML(userMode=userMode)
             t = templateWhere(searchList=[{'where':'Navigator :: Results :: Blocks at site=%s'%site}]).respond()
             page+=str(t)
+        limit=pagerStep
+        offset=int(_idx)*int(pagerStep)
+        dbsList=self.helper.getBlockInfoForSite(site,limit,offset)
+        rPage="Result page:"
+        # the progress bar for all results
+        if _idx:
+            rPage+="""<a href="getFileBlocks?dbsInst=%s&site=%s&ajax=0&userMode=%s&_idx=%s&pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,userMode,_idx-1,pagerStep)
+            if len(dbsList): rPage+=" | "
+        if len(dbsList):
+           rPage+="""<a href="getFileBlocks?dbsInst=%s&site=%s&ajax=0&userMode=%s&_idx=%s&pagerStep=%s"> Next &#187;</a> """%(dbsInst,site,userMode,_idx+1,pagerStep)
+        _nameSpace = {
+                     'rPage'       : rPage,
+                     'style'       : "",
+                     'pagerStep'   : pagerStep,
+                     'nameForPager': "blocks",
+                     'onchange'    : "javascript:LoadGetFileBlocks('%s','%s','%s','%s','%s','%s')"%(dbsInst,site,ajax,userMode,int(_idx),int(pagerStep))
+        }
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
+        page+=str(t)
         nameSpace = {
-                     'dbsList'  : self.helper.getBlockInfoForSite(site),
+#                     'dbsList'  : self.helper.getBlockInfoForSite(site),
+                     'dbsList'  : dbsList,
                      'host'     : self.dbsdd,
                      'dbsInst'  : dbsInst,
                      'site'     : site,
                      'userMode' : userMode
                     }
         t = templateDbsInfoTableEntry(searchList=[nameSpace]).respond()
+        page+=str(t)
+        t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
         if  int(ajax):
            page+="</response></ajax-response>"
