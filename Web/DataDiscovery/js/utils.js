@@ -1219,3 +1219,8 @@ function LoadGetData(dbsInst,site,group,app,prim,tier,proc,idx,ajax,userMode) {
    var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
+function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx) {
+   var pagerStep=$('pagerStep').value;
+   var url='getFileBlocks?dbsInst='+dbsInst+'&site='+site+'&ajax='+ajax+'&userMode='+userMode+'&idx='+idx+'&pagerStep='+pagerStep;
+   load(url);
+}
