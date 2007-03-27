@@ -1,6 +1,8 @@
+<!-- templateSelect.tmpl -->
 <select id="$selTag" onchange="$changeFunction" name="$name" style="$style">
 <option value="$iList[0]" selected="selected">$iList[0]</option>
 #for item in $iList[1:]
 <option value="$item">$item</option>
 #end for
 </select>
+<!-- end of templateSelect.tmpl -->
