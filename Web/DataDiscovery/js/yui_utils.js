@@ -16,7 +16,7 @@ function PanelInit(myvar,tagName) {
     };
     YAHOO.util.Event.addListener(window,'load',YAHOO.example.panels);
 }
-
+/*
 function insertSiteMasthead(view){
         YAHOO.namespace("cms.dmwt");
         var sdbfooter = document.createElement ("div");
@@ -112,6 +112,6 @@ function footerDBSMenuText() {
     return [{label: "DBS experts", link: "_dbsExpert?userMode=dbsExpert", title: "DBS experts"}]
 }
 
-
+*/
 
 
