@@ -74,12 +74,12 @@ listProcessedDatasets () {
 	#$CMD api=listProcessedDatasets primary_datatset_name_pattern=* data_tier_name_pattern=* processed_datatset_name_pattern=* app_version=* app_family_name=* app_executable_name=* parameterset_name=* 
 }
 
-updatePrimDSStatus () {
-	message="Executing updatePrimDSStatus API..."
-	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updatePrimDSStatus primary_dataset_name=$primary_name status=INVALID`
-	display "$out"
-}
+#updatePrimDSType () {
+#	message="Executing updatePrimDSType API..."
+#	echo $message >> $outFile ; echo $message
+#	out=`$CMD api=updatePrimDSType primary_dataset_name=$primary_name status=INVALID`
+#	display "$out"
+#}
 
 updateProcDSStatus () {
 	message="Executing updateProcDSStatus API..."
@@ -92,7 +92,7 @@ updateProcDSStatus () {
 updateAnalDSStatus () {
 	message="Executing updateAnalDSStatus API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updateAnalDSStatus analysis_dataset_name=AnalysisDS1_$rand status=INVALID`
+	out=`$CMD api=updateAnalDSStatus analysis_dataset_name=AnalysisDS1_$rand status=NEW`
 	display "$out"
 }
 
@@ -106,14 +106,14 @@ updateFileStatus () {
 updateAnalDSType () {
 	message="Executing updateAnalDSType API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updateAnalDSType analysis_dataset_name=AnalysisDS1_$rand type=NEW`
+	out=`$CMD api=updateAnalDSType analysis_dataset_name=AnalysisDS1_$rand type=TEST`
 	display "$out"
 }
 
 updateFileType () {
 	message="Executing updateFileType API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updateFileType lfn=$lfn1 type=ROOT`
+	out=`$CMD api=updateFileType lfn=$lfn1 type=EDM`
 	display "$out"
 }
 
@@ -250,7 +250,7 @@ deleteSEFromBlock () {
 insertPrimaryDataset () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 			<dbs>
-				<primary_dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
+				<primary_dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='COSMIC' created_by='Let_me_try_this' creation_date='1066729598999'>
 				</primary_dataset>
 			</dbs>"
 	message="Executing insertPrimaryDataset API..."
@@ -355,6 +355,25 @@ insertLumiSection () {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=insertLumiSection "xmlinput=$xmlString"`
 	display "$out"
+
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+		</dbs>"
+	message="Executing insertLumiSection API..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=insertLumiSection "xmlinput=$xmlString"`
+	display "$out"
+
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+		</dbs>"
+	message="Executing insertLumiSection API..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=insertLumiSection "xmlinput=$xmlString"`
+	display "$out"
+
 }
 
 # insert processed dataset
@@ -363,6 +382,7 @@ insertProcessedDataset () {
 		<dbs>
 			<processed_dataset primary_datatset_name='$primary_name' processed_datatset_name='$processed_name' open_for_writing='y' physics_group_name='AnyName_$rand' physics_group_convener='ANZARDN' status='VALID' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<data_tier name='$tier_name1'/>
+				<data_tier name='$tier_name2'/>
 				$algo1
 				$algo2
 				<run run_number='$run_number1'/>
@@ -417,20 +437,18 @@ insertFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
 		<processed_datatset path='$path_child'>
-			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
+			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<file_lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<file_lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<file_lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<file_data_tier name='$tier_name1'/>
 				<file_data_tier name='$tier_name2'/>
 				$falgo1
 				$falgo1
 			</file>
-			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
+			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
 				<file_lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<file_lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
 				<file_lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<file_data_tier name='$tier_name1'/>
 				<file_data_tier name='$tier_name2'/>
 				<file_parent lfn='TEST_LFN_1_$rand'/>
 				$falgo3
@@ -449,7 +467,7 @@ insertFiles () {
 createAnalysisDatasetFromPD () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='TEST' path='$path_child' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS_$rand' type='VALID' status='NEW' path='$path_child' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDatasetFromPD API..."
         echo $message >> $outFile ; echo $message
@@ -519,42 +537,42 @@ remapFiles () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
 		<processed_datatset path='$path_child' block_name='$block_name'>
-			<file lfn='${lfn1}_parent_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_parent_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 			
-			<file lfn='${lfn1}_parent_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_parent_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 			
-			<file lfn='${lfn1}_parent_3' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_parent_3' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 
 			
-			<file lfn='${lfn1}_input_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_input_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_parent lfn='${lfn1}_parent_1'/>
 				<file_parent lfn='${lfn1}_parent_2'/>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 	
-			<file lfn='${lfn1}_input_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_input_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_parent lfn='${lfn1}_parent_2'/>
 				<file_parent lfn='${lfn1}_parent_3'/>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 
-			<file lfn='${lfn1}_child_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_child_1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_parent lfn='${lfn1}_input_1'/>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 
-			<file lfn='${lfn1}_child_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_child_2' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_parent lfn='${lfn1}_input_2'/>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 
-			<file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EVD' validation_status='VALID' queryable_meta_data='any'>
+			<file lfn='${lfn1}_OUTPUT_MERGED' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any'>
 				<file_data_tier name='$tier_name2'/>
 			</file>
 
@@ -606,7 +624,6 @@ listFileLumis
 listRowsInTable
 listStorageElements
 deleteSEFromBlock
-updatePrimDSStatus
 updateProcDSStatus
 updateAnalDSStatus
 updateFileStatus

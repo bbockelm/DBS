@@ -1,6 +1,6 @@
 /**
- $Revision: 1.44 $"
- $Id: DBSApiFileLogic.java,v 1.44 2007/03/20 18:37:09 sekhri Exp $"
+ $Revision: 1.45 $"
+ $Id: DBSApiFileLogic.java,v 1.45 2007/03/21 21:33:22 sekhri Exp $"
  *
  */
 
@@ -596,7 +596,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			//Path tiers must exists in ProcDS
 			Vector pathTiers = parseTierVec(path.split("/")[3]);
 
-			if ( procDSTiers.size() != pathTiers.size() || !procDSTiers.containsAll(pathTiers) )
+			//if ( procDSTiers.size() != pathTiers.size() || !procDSTiers.containsAll(pathTiers) )
+			if ( !procDSTiers.containsAll(pathTiers) )
                                 throw new DBSException("Tier Mismatch", "1041", "Provided path tiers " + pathTiers +
                                                 " are not present in path " + path +
                                                 " which contains " + procDSTiers);

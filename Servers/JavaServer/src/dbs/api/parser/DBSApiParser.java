@@ -1,6 +1,6 @@
 /**
- $Revision: 1.7 $"
- $Id: DBSApiParser.java,v 1.7 2007/03/14 20:21:10 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApiParser.java,v 1.8 2007/03/15 14:24:45 afaq Exp $"
  *
 */
 
@@ -58,7 +58,7 @@ public class DBSApiParser {
 				table.put("storage_element", new Vector());
 			} 
 			if (name.equals("storage_element") ) 
-				((Vector)(table.get("storage_element"))).add(e.attributes);
+				((Vector)(get(table, "storage_element", "block"))).add(e.attributes);
 		}
 		return table;
 	}
@@ -79,13 +79,13 @@ public class DBSApiParser {
 				psDS.put("run", new Vector());
 			} 
 			if (name.equals("data_tier") ) 
-				((Vector)(psDS.get("data_tier"))).add(e.attributes);
+				((Vector)(get(psDS, "data_tier", "processed_dataset"))).add(e.attributes);
 			if (name.equals("parent") ) 
-				((Vector)(psDS.get("parent"))).add(e.attributes);
+				((Vector)(get(psDS, "parent", "processed_dataset"))).add(e.attributes);
 			if (name.equals("algorithm") ) 
-				((Vector)(psDS.get("algorithm"))).add(e.attributes);
+				((Vector)(get(psDS, "algorithm", "processed_dataset"))).add(e.attributes);
 			if (name.equals("run") ) 
-				((Vector)(psDS.get("run"))).add(e.attributes);
+				((Vector)(get(psDS, "run", "processed_dataset"))).add(e.attributes);
 		}
 		return psDS;
 	}
@@ -118,24 +118,24 @@ public class DBSApiParser {
 				psDS.put("block", new Vector());
 			} 
 			if (name.equals("data_tier") ) 
-				((Vector)(psDS.get("data_tier"))).add(e.attributes);
+				((Vector)(get(psDS, "data_tier", "processed_dataset"))).add(e.attributes);
 			if (name.equals("processed_dataset_parent") ) 
-				((Vector)(psDS.get("parent"))).add(e.attributes);
+				((Vector)(get(psDS, "parent", "processed_dataset"))).add(e.attributes);
 			if (name.equals("algorithm") ) 
-				((Vector)(psDS.get("algorithm"))).add(e.attributes);
+				((Vector)(get(psDS, "algorithm", "processed_dataset"))).add(e.attributes);
 			if (name.equals("run") ) 
-				((Vector)(psDS.get("run"))).add(e.attributes);
+				((Vector)(get(psDS, "run", "processed_dataset"))).add(e.attributes);
 			if (name.equals("block") ) 
-				((Vector)(psDS.get("block"))).add(e.attributes);
+				((Vector)(get(psDS, "block", "processed_dataset"))).add(e.attributes);
 			
 			if (name.equals("block") ) {
 				Hashtable block = e.attributes;
 				block.put("storage_element", new Vector());
-				((Vector)(psDS.get("block"))).add(block);
+				((Vector)(get(psDS, "block", "processed_dataset"))).add(block);
 				++blockIndex;
 			} 
 			if (name.equals("storage_element") ) 
-				((Vector)((Hashtable)(((Vector)(psDS.get("block"))).get(blockIndex))).get("storage_element")).add(e.attributes);
+				((Vector)((Hashtable)(((Vector)(get(psDS, "block", "processed_dataset"))).get(blockIndex))).get("storage_element")).add(e.attributes);
 
 			if (name.equals("file") ) {
 				Hashtable file = e.attributes;
@@ -148,15 +148,15 @@ public class DBSApiParser {
 				++index;
 			} 
 			if (name.equals("file_lumi_section") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_lumi_section"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_lumi_section", "file"))).add(e.attributes);
 			if (name.equals("file_data_tier") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_data_tier"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_data_tier", "file"))).add(e.attributes);
 			if (name.equals("file_parent") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_parent"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_parent", "file"))).add(e.attributes);
 			if (name.equals("file_algorithm") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_algorithm"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
 			if (name.equals("file_branch") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_branch"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
 
 		}
 		table.put("processed_dataset", psDS);
@@ -194,20 +194,20 @@ public class DBSApiParser {
                                 block.put("storage_element", new Vector());
                         }
                         if (name.equals("storage_element") )
-                                ((Vector)block.get("storage_element")).add(e.attributes);
+                                ((Vector) get(block, "storage_element", "block")).add(e.attributes);
 
 			if (name.equals("file_lumi_section") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_lumi_section"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_lumi_section", "file"))).add(e.attributes);
 			if (name.equals("file_data_tier") )
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_data_tier"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_data_tier", "file"))).add(e.attributes);
 			if (name.equals("file_parent") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_parent"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_parent", "file"))).add(e.attributes);
 			if (name.equals("file_child") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_child"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_child", "file"))).add(e.attributes);
 			if (name.equals("file_algorithm") ) 
-				((Vector)(((Hashtable)topLevel.get(index)).get("file_algorithm"))).add(e.attributes);
+				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
                         if (name.equals("file_branch") ) 
-                                ((Vector)(((Hashtable)topLevel.get(index)).get("file_branch"))).add(e.attributes);
+                                ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
 			if (name.equals("processed_datatset") ) {
 				psDS = e.attributes;
 			}
@@ -233,17 +233,17 @@ public class DBSApiParser {
 				table.put("analysis_dataset", new Vector());
 			} 
 			if (name.equals("lumi_section") ) 
-				((Vector)(table.get("lumi_section"))).add(e.attributes);
+				((Vector)(get(table, "lumi_section", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("run") ) 
-				((Vector)(table.get("run"))).add(e.attributes);
+				((Vector)(get(table, "run", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("data_tier") ) 
-				((Vector)(table.get("data_tier"))).add(e.attributes);
+				((Vector)(get(table, "data_tier", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("algorithm") ) 
-				((Vector)(table.get("algorithm"))).add(e.attributes);
+				((Vector)(get(table, "algorithm", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("file") ) 
-				((Vector)(table.get("file"))).add(e.attributes);
+				((Vector)(get(table, "file", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("analysis_dataset") ) 
-				((Vector)(table.get("analysis_dataset"))).add(e.attributes);
+				((Vector)(get(table, "analysis_dataset", "analysis_dataset_definition"))).add(e.attributes);
 
 		}
 		return table;
@@ -268,5 +268,29 @@ public class DBSApiParser {
                 (new DBSApiFileLogic(new DBSApiData())).remapFiles(conn, out, topLevel, table,  dbsUser);
 	}
 
-	
+	private static Object get(Hashtable table, String key, String missingKey) throws Exception {
+		if(key == null ||  table == null) 
+			throw new XMLException("Invalid XML", "3002", "The given xml is not a valid DBS XML. Most likely the tag " + missingKey + " is missing");
+		
+		if(!table.containsKey(key)) 
+			throw new XMLException("Invalid XML", "3003", "The given xml is not a valid DBS XML. The key " + key + " is missing from the XML and most likely the tag <" + missingKey + "> is missing also");
+		
+		Object tmp = table.get(key);
+		if(tmp == null) 
+			throw new XMLException("Invalid XML", "3002", "The given xml is not a valid DBS XML. Most likely the tag " + missingKey + " is missing");
+		
+		return tmp;
+	}
+
+	private static Object get(Vector v, int index, String missingKey) throws Exception {
+		if((index < 0) || (v.size() <= index)) 
+			throw new XMLException("Invalid XML", "3002", "The given xml is not a valid DBS XML. Most likely the tag " + missingKey + " is missing");
+		
+		Object tmp = v.get(index);
+		if(tmp == null) 
+			throw new XMLException("Invalid XML", "3002", "The given xml is not a valid DBS XML. Most likely the tag " + missingKey + " is missing");
+		
+		return tmp;
+	}
+
 }
