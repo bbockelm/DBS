@@ -1191,8 +1191,12 @@ function ajaxGetAlgos(dbs,lfn) {
     ajaxEngine.sendRequest('ajaxGetAlgos','dbsInst='+dbs,'lfn='+lfn,'ajax=1');
     ShowTag('floatDataDescription');
 }
-
-// dhtml stuff
+/*
+ dhtml stuff
+ For more information see
+ http://codinginparadise.org/projects/dhtml_history/
+ http://www.onjava.com/pub/a/onjava/2005/10/26/ajax-handling-bookmarks-and-back-button.html
+*/
 function initialize_dhtmlHistory() {
     // initialize our DHTML history
     dhtmlHistory.initialize();
@@ -1200,7 +1204,15 @@ function initialize_dhtmlHistory() {
     dhtmlHistory.addListener(historyChange);
 }
 function historyChange(newLocation, historyData) {
-    eval(historyData); 
+   if(newLocation.indexOf("moreInfo")>-1) {
+     var id=newLocation.replace('moreInfo','');
+     data=historyData.split(',');
+     ajaxEngine.registerRequest('ajaxMoreInfo','getMoreInfo');
+     ajaxEngine.registerAjaxElement(id);
+     ajaxMoreInfo(data[0],data[1],data[2],data[3],data[4]);
+   } else {
+   eval(historyData);
+   }
 }
 function ajax_dhtmlHistory(id,action) {
     dhtmlHistory.add(id,action);

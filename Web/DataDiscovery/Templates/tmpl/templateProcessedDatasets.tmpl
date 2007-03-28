@@ -11,7 +11,11 @@ Dataset:
 <div id="$idPath"></div>
 </td>
 <td align="center">
-<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode')">&#171; more &#187;</a>
+#set histLoc="moreInfo"+$idPath
+####set action="""ajaxMoreInfo\("$dbsInst","$path","$appPath","$idPath","$userMode"\)"""
+####set action="ajaxMoreInfo&#40;&#34;"+$dbsInst+"&#34;,&#34;"+$path+"&#34;,&#34;"+$appPath+"&#34;,&#34;"+$idPath+"&#34;,&#34;"+$userMode+"&#34;&#41;"
+#set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
+<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">&#171; more &#187;</a>
 </td>
 </tr>
 </table>
