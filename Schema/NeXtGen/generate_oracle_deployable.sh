@@ -13,6 +13,8 @@ SchemaVersion=v00_00_06
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
+# This is crappy way of setting the time in seconds in Oracle, there are better ways, for now lets do thsi.
+unix_time="(select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)"
 #
 tokenize() {
 index_on_toks=`python -c "instr=\"$1\"
@@ -29,6 +31,7 @@ trig_ddl=trig_ddl.tmp
 stamp_trig=trig_ts_ddl.tmp
 rm -f $seq_ddl
 rm -f $trig_ddl
+rm -f $stamp_trig
 #
 #
 dos2unix DBS-NeXtGen-Oracle.sql
@@ -72,9 +75,11 @@ for atable in $table_list; do
    echo >> $stamp_trig
    echo "PROMPT LastModified Time Stamp Trigger for Table: ${atable}" >> $stamp_trig
    echo "CREATE OR REPLACE TRIGGER TRTS${atable} BEFORE INSERT OR UPDATE ON ${atable}" >> $stamp_trig
-   echo "FOR EACH ROW" >> $stamp_trig
+   echo "FOR EACH ROW declare" >> $stamp_trig
+   echo "  unixtime integer" >> $stamp_trig
+   echo "     := 86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'));" >> $stamp_trig
    echo "BEGIN" >> $stamp_trig
-   echo "  :NEW.LASTMODIFICATIONDATE := SYSTIMESTAMP;" >> $stamp_trig
+   echo "  :NEW.LASTMODIFICATIONDATE := unixtime;" >> $stamp_trig
    echo "END;" >> $stamp_trig
    echo "/" >> $stamp_trig
    echo >> $stamp_trig
@@ -84,7 +89,8 @@ echo "-- ====================================================" >> $ddl_file
 # Add the rest of DDL
 # Along with changing the TIMESTAMP Format to ORACLE (PL/SQL) format
 echo "PROMPT Creating Tables" >> $ddl_file
-cat DBS-NeXtGen-Oracle.sql.tmp.0 | tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%TIMESTAMP DEFAULT SYSTIMESTAMP%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%TIMESTAMP DEFAULT SYSTIMESTAMP%g" >> $ddl_file
+cat DBS-NeXtGen-Oracle.sql.tmp.0 | tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%float%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%float%g" >> $ddl_file
+#cat DBS-NeXtGen-Oracle.sql.tmp.0 | tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%TIMESTAMP DEFAULT SYSTIMESTAMP%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%TIMESTAMP DEFAULT SYSTIMESTAMP%g" >> $ddl_file
 
 #
 #
@@ -121,72 +127,72 @@ cat $stamp_trig >>  $ddl_file
 #
 #
 echo "-- Set the Schema Version -- " >> $ddl_file
-echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', ${unix_time});" >> $ddl_file
 echo "-- Pre Fill some information into tables ---------" >> $ddl_file
-echo "INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('MERGED', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('IMPORTED', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('EXPORTED', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', SYSTIMESTAMP) ;" >> $ddl_file
-echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('COSMIC', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('ALIGN', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('CALIB', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('INVALID', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('MERGED', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('IMPORTED', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('EXPORTED', ${unix_time});" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', ${unix_time});" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', ${unix_time});" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', ${unix_time});" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', ${unix_time}) ;" >> $ddl_file
+echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', ${unix_time});" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', ${unix_time});" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('COSMIC', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('ALIGN', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('CALIB', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', ${unix_time});"  >> $ddl_file
 
-echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', ${unix_time});" >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('INVALID', ${unix_time});"  >> $ddl_file
 #
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AOD', 'Analysis Object Data products TBA', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RAW', 'Raw detector output from the HLT system', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', SYSTIMESTAMP);"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('FEVT', 'IS ITS A TIER', SYSTIMESTAMP);"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AOD', 'Analysis Object Data products TBA', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RAW', 'Raw detector output from the HLT system', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('FEVT', 'IS ITS A TIER', ${unix_time});"  >> $ddl_file
 #
 #
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', SYSTIMESTAMP);" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', SYSTIMESTAMP);" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', ${unix_time});" >> $ddl_file
 #
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSY', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('BSM', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('EWK', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Top', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('QCD', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Diffraction', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Online Selection', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-physics', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Muons', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Egamma', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('JetMet', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('E-flow', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('tau', SYSTIMESTAMP);">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-tagging', SYSTIMESTAMP);">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSY', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('BSM', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('EWK', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Top', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('QCD', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Diffraction', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Online Selection', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-physics', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Muons', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Egamma', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('JetMet', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('E-flow', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('tau', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-tagging', ${unix_time});">> $ddl_file
 #
 echo "commit;" >> $ddl_file
 #

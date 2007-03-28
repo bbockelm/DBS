@@ -45,7 +45,28 @@ cat DBS-NeXtGen-MySQL.sql.TMP.3 >> $ddl_file
 #   echo "CREATE TRIGGER TR_TS_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
 #   echo "FOR EACH ROW SET NEW.CreationDate = NOW();"  >> $ddl_file
 #done
+#
+# INSERT Triggers for LastModificationDate, We need to put unix_timestamp there
+echo "-- =========== INSERT TRIGGERS FOR LastModificationDate ============================"  >> $ddl_file
+table_list=`cat DBS-NeXtGen-MySQL.sql|grep "CREATE TABLE" | awk '{print $3}'`
+for atable in $table_list; do
+   echo   >> $ddl_file
+   echo "CREATE TRIGGER TR_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
+   echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
+done
+#
 echo  >> $ddl_file
+# UPDATE Triggers for LastModificationDate, We need to put unix_timestamp there
+echo "-- =========== UPDATE TRIGGERS FOR LastModificationDate ============================"  >> $ddl_file
+table_list=`cat DBS-NeXtGen-MySQL.sql|grep "CREATE TABLE" | awk '{print $3}'`
+for atable in $table_list; do
+   echo   >> $ddl_file
+   echo "CREATE TRIGGER UTR_${atable} BEFORE UPDATE ON ${atable}"  >> $ddl_file
+   echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
+done
+#
+echo  >> $ddl_file
+#
 echo "-- ======================================================================"  >> $ddl_file
 echo "-- Initialize status tables There can be better ways to do it ( laters ) "  >> $ddl_file
 echo "-- ======================================================================"  >> $ddl_file

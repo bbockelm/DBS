@@ -4,9 +4,9 @@
 -- === Build : 628
 -- ======================================================================
 
-drop database if exists dbs_new_era_v17;
-create database dbs_new_era_v17;
-use dbs_new_era_v17;
+drop database if exists dbs_new_era_v17TRTEST;
+create database dbs_new_era_v17TRTEST;
+use dbs_new_era_v17TRTEST;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -15,9 +15,9 @@ CREATE TABLE Person
     Name                  varchar(100),
     DistinguishedName     varchar(500)                                                      unique not null,
     ContactInfo           varchar(250),
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -30,9 +30,9 @@ CREATE TABLE Role
     ID                    BIGINT UNSIGNED not null auto_increment,
     RoleName              varchar(100)                                                      unique not null,
     RoleDescription       varchar(500)                                                      not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -45,9 +45,9 @@ CREATE TABLE AssignedRole
     ID                    BIGINT UNSIGNED not null auto_increment,
     PersonID              BIGINT UNSIGNED                                                   not null,
     RoleID                BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -60,9 +60,9 @@ CREATE TABLE PhysicsGroup
     ID                    BIGINT UNSIGNED not null auto_increment,
     PhysicsGroupName      varchar(500)                                                      unique not null,
     PhysicsGroupConvener  BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -74,9 +74,9 @@ CREATE TABLE SchemaVersion
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     SchemaVersion         varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -94,8 +94,8 @@ CREATE TABLE PrimaryDataset
     EndDate               varchar(100),
     Type                  BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CreationDate          BIGINT,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -111,9 +111,9 @@ CREATE TABLE ProcessedDataset
     PhysicsGroup          BIGINT UNSIGNED                                                   not null,
     Status                BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID),
     unique(Name,PrimaryDataset)
@@ -132,9 +132,9 @@ CREATE TABLE Runs
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -153,9 +153,9 @@ CREATE TABLE AnalysisDataset
     Parent                BIGINT UNSIGNED,
     PhysicsGroup          BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -176,9 +176,9 @@ CREATE TABLE Files
     ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -190,8 +190,8 @@ CREATE TABLE DataTier
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(100)                                                      unique not null,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModificationDate          BIGINT,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
 
     primary key(ID)
@@ -209,9 +209,9 @@ CREATE TABLE LumiSection
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
@@ -224,8 +224,8 @@ CREATE TABLE Branch
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(500)                                                      unique not null,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModificationDate          BIGINT,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
 
     primary key(ID)
@@ -240,6 +240,7 @@ CREATE TABLE TimeLog
     Cause         varchar(100)          not null,
     Effect        varchar(100)          not null,
     Description   varchar(500)          not null,
+    LastModificationDate          BIGINT,
     CreationDate  TIMESTAMP DEFAULT 0,
     CreatedBy     BIGINT UNSIGNED,
 
@@ -255,7 +256,7 @@ CREATE TABLE DataTierOrder
     Description   varchar(1000),
     CreationDate  TIMESTAMP DEFAULT 0,
     CreatedBy     BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -271,8 +272,8 @@ CREATE TABLE AlgorithmConfig
     ApplicationFamily     BIGINT UNSIGNED                                                   not null,
     ParameterSetID        BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CreationDate          BIGINT,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -286,9 +287,9 @@ CREATE TABLE AppFamily
     ID                    BIGINT UNSIGNED not null auto_increment,
     FamilyName            varchar(100)                                                      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -300,9 +301,9 @@ CREATE TABLE AppVersion
     ID                    BIGINT UNSIGNED not null auto_increment,
     Version               varchar(100)                                                      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -314,9 +315,9 @@ CREATE TABLE AppExecutable
     ID                    BIGINT UNSIGNED not null auto_increment,
     ExecutableName        varchar(100)                                                      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -332,9 +333,9 @@ CREATE TABLE QueryableParameterSet
     Type                  varchar(100),
     Annotation            varchar(1000),
     Content               TEXT,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -348,9 +349,9 @@ CREATE TABLE ParameterBinding
     Self                  BIGINT UNSIGNED                                                   not null,
     Contains              BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -359,7 +360,7 @@ CREATE TABLE ParameterBinding
 
 CREATE TABLE PrimaryDatasetDescription
   (
-    ID                      BIGINT UNSIGNED,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     TriggerDescriptionID    BIGINT UNSIGNED,
     MCChannelDescriptionID  BIGINT UNSIGNED,
     OtherDescriptionID      BIGINT UNSIGNED,
@@ -376,7 +377,7 @@ CREATE TABLE PrimaryDatasetDescription
 
 CREATE TABLE TriggerPathDescription
   (
-    ID                      BIGINT UNSIGNED,
+    ID                    BIGINT UNSIGNED not null auto_increment,
     TriggerPathDescription  varchar(100)                                                      unique not null,
     CreatedBy               BIGINT UNSIGNED,
     CreationDate            TIMESTAMP DEFAULT 0,
@@ -395,9 +396,9 @@ CREATE TABLE MCDescription
     MCProduction          varchar(100),
     MCDecayChain          varchar(100),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID),
     unique(MCChannelDescription,MCProduction,MCDecayChain)
@@ -410,9 +411,9 @@ CREATE TABLE OtherDescription
     ID                    BIGINT UNSIGNED not null auto_increment,
     Description           varchar(100)                                                      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -424,9 +425,9 @@ CREATE TABLE FileTier
     ID                    BIGINT UNSIGNED not null auto_increment,
     Fileid                BIGINT UNSIGNED                                                   not null,
     DataTier              BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -441,9 +442,9 @@ CREATE TABLE FileParentage
     ThisFile              BIGINT UNSIGNED                                                   not null,
     ItsParent             BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID),
     unique(ThisFile,ItsParent)
@@ -457,9 +458,9 @@ CREATE TABLE FileRunLumi
     Fileid                BIGINT UNSIGNED                                                   not null,
     Lumi                  BIGINT UNSIGNED,
     Run                   BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -473,9 +474,9 @@ CREATE TABLE FileAlgo
     ID                    BIGINT UNSIGNED not null auto_increment,
     Fileid                BIGINT UNSIGNED                                                   not null,
     Algorithm             BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -488,9 +489,9 @@ CREATE TABLE FileStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -502,9 +503,9 @@ CREATE TABLE FileType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -517,9 +518,9 @@ CREATE TABLE FileBranch
     ID                    BIGINT UNSIGNED not null auto_increment,
     Fileid                BIGINT UNSIGNED                                                   not null,
     Branch                BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -532,9 +533,9 @@ CREATE TABLE FileValidStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -547,9 +548,9 @@ CREATE TABLE ProcDSRuns
     ID                    BIGINT UNSIGNED not null auto_increment,
     Dataset               BIGINT UNSIGNED                                                   not null,
     Run                   BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -563,9 +564,9 @@ CREATE TABLE ProcDSTier
     ID                    BIGINT UNSIGNED not null auto_increment,
     Dataset               BIGINT UNSIGNED                                                   not null,
     DataTier              BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -580,9 +581,9 @@ CREATE TABLE ProcDSParent
     ThisDataset           BIGINT UNSIGNED                                                   not null,
     ItsParent             BIGINT UNSIGNED                                                   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID),
     unique(ThisDataset,ItsParent)
@@ -595,9 +596,9 @@ CREATE TABLE ProcAlgo
     ID                    BIGINT UNSIGNED not null auto_increment,
     Dataset               BIGINT UNSIGNED                                                   not null,
     Algorithm             BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -610,9 +611,9 @@ CREATE TABLE AnalysisDSType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -624,9 +625,9 @@ CREATE TABLE AnalysisDSStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -640,9 +641,9 @@ CREATE TABLE AnalysisDSFileLumi
     AnalysisDataset       BIGINT UNSIGNED                                                   not null,
     Lumi                  BIGINT UNSIGNED,
     Fileid                BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -666,9 +667,9 @@ CREATE TABLE AnalysisDSDef
     AnalysisDatasets      TEXT,
     UserCut               TEXT,
     Description           TEXT,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -681,9 +682,9 @@ CREATE TABLE SEBlock
     ID                    BIGINT UNSIGNED not null auto_increment,
     SEID                  BIGINT UNSIGNED                                                   not null,
     BlockID               BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -697,9 +698,9 @@ CREATE TABLE StorageElement
     ID                    BIGINT UNSIGNED not null auto_increment,
     SEName                varchar(500)                                                      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -717,9 +718,9 @@ CREATE TABLE Block
     NumberOfEvents        BIGINT UNSIGNED                                                   not null,
     OpenForWriting        int                                                               not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -730,9 +731,9 @@ CREATE TABLE ProcDSStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -744,9 +745,9 @@ CREATE TABLE PrimaryDSType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -1232,6 +1233,285 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
     PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+-- =========== INSERT TRIGGERS FOR LastModificationDate ============================
+
+CREATE TRIGGER TR_Person BEFORE INSERT ON Person
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_Role BEFORE INSERT ON Role
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AssignedRole BEFORE INSERT ON AssignedRole
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_PhysicsGroup BEFORE INSERT ON PhysicsGroup
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_SchemaVersion BEFORE INSERT ON SchemaVersion
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_PrimaryDataset BEFORE INSERT ON PrimaryDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcessedDataset BEFORE INSERT ON ProcessedDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_Runs BEFORE INSERT ON Runs
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AnalysisDataset BEFORE INSERT ON AnalysisDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_Files BEFORE INSERT ON Files
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_DataTier BEFORE INSERT ON DataTier
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_LumiSection BEFORE INSERT ON LumiSection
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_Branch BEFORE INSERT ON Branch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_TimeLog BEFORE INSERT ON TimeLog
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_DataTierOrder BEFORE INSERT ON DataTierOrder
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AlgorithmConfig BEFORE INSERT ON AlgorithmConfig
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AppFamily BEFORE INSERT ON AppFamily
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AppVersion BEFORE INSERT ON AppVersion
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AppExecutable BEFORE INSERT ON AppExecutable
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_QueryableParameterSet BEFORE INSERT ON QueryableParameterSet
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ParameterBinding BEFORE INSERT ON ParameterBinding
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_PrimaryDatasetDescription BEFORE INSERT ON PrimaryDatasetDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_TriggerPathDescription BEFORE INSERT ON TriggerPathDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_MCDescription BEFORE INSERT ON MCDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_OtherDescription BEFORE INSERT ON OtherDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileTier BEFORE INSERT ON FileTier
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileParentage BEFORE INSERT ON FileParentage
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileRunLumi BEFORE INSERT ON FileRunLumi
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileAlgo BEFORE INSERT ON FileAlgo
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileStatus BEFORE INSERT ON FileStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileType BEFORE INSERT ON FileType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileBranch BEFORE INSERT ON FileBranch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileValidStatus BEFORE INSERT ON FileValidStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcDSRuns BEFORE INSERT ON ProcDSRuns
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcDSTier BEFORE INSERT ON ProcDSTier
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcDSParent BEFORE INSERT ON ProcDSParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcAlgo BEFORE INSERT ON ProcAlgo
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AnalysisDSType BEFORE INSERT ON AnalysisDSType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AnalysisDSStatus BEFORE INSERT ON AnalysisDSStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AnalysisDSFileLumi BEFORE INSERT ON AnalysisDSFileLumi
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_AnalysisDSDef BEFORE INSERT ON AnalysisDSDef
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_SEBlock BEFORE INSERT ON SEBlock
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_StorageElement BEFORE INSERT ON StorageElement
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_Block BEFORE INSERT ON Block
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ProcDSStatus BEFORE INSERT ON ProcDSStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_PrimaryDSType BEFORE INSERT ON PrimaryDSType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+-- =========== UPDATE TRIGGERS FOR LastModificationDate ============================
+
+CREATE TRIGGER UTR_Person BEFORE UPDATE ON Person
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_Role BEFORE UPDATE ON Role
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AssignedRole BEFORE UPDATE ON AssignedRole
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_PhysicsGroup BEFORE UPDATE ON PhysicsGroup
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_SchemaVersion BEFORE UPDATE ON SchemaVersion
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_PrimaryDataset BEFORE UPDATE ON PrimaryDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcessedDataset BEFORE UPDATE ON ProcessedDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_Runs BEFORE UPDATE ON Runs
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AnalysisDataset BEFORE UPDATE ON AnalysisDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_Files BEFORE UPDATE ON Files
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_DataTier BEFORE UPDATE ON DataTier
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_LumiSection BEFORE UPDATE ON LumiSection
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_Branch BEFORE UPDATE ON Branch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_TimeLog BEFORE UPDATE ON TimeLog
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_DataTierOrder BEFORE UPDATE ON DataTierOrder
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AlgorithmConfig BEFORE UPDATE ON AlgorithmConfig
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AppFamily BEFORE UPDATE ON AppFamily
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AppVersion BEFORE UPDATE ON AppVersion
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AppExecutable BEFORE UPDATE ON AppExecutable
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_QueryableParameterSet BEFORE UPDATE ON QueryableParameterSet
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ParameterBinding BEFORE UPDATE ON ParameterBinding
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_PrimaryDatasetDescription BEFORE UPDATE ON PrimaryDatasetDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_TriggerPathDescription BEFORE UPDATE ON TriggerPathDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_MCDescription BEFORE UPDATE ON MCDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_OtherDescription BEFORE UPDATE ON OtherDescription
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileTier BEFORE UPDATE ON FileTier
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileParentage BEFORE UPDATE ON FileParentage
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileRunLumi BEFORE UPDATE ON FileRunLumi
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileAlgo BEFORE UPDATE ON FileAlgo
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileStatus BEFORE UPDATE ON FileStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileType BEFORE UPDATE ON FileType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileBranch BEFORE UPDATE ON FileBranch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileValidStatus BEFORE UPDATE ON FileValidStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcDSRuns BEFORE UPDATE ON ProcDSRuns
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcDSTier BEFORE UPDATE ON ProcDSTier
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcDSParent BEFORE UPDATE ON ProcDSParent
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcAlgo BEFORE UPDATE ON ProcAlgo
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AnalysisDSType BEFORE UPDATE ON AnalysisDSType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AnalysisDSStatus BEFORE UPDATE ON AnalysisDSStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AnalysisDSFileLumi BEFORE UPDATE ON AnalysisDSFileLumi
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_AnalysisDSDef BEFORE UPDATE ON AnalysisDSDef
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_SEBlock BEFORE UPDATE ON SEBlock
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_StorageElement BEFORE UPDATE ON StorageElement
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_Block BEFORE UPDATE ON Block
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ProcDSStatus BEFORE UPDATE ON ProcDSStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_PrimaryDSType BEFORE UPDATE ON PrimaryDSType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 

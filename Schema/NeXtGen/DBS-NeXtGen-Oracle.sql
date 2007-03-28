@@ -145,7 +145,7 @@ CREATE TABLE TimeLog
     Cause         varchar(100)          not null,
     Effect        varchar(100)          not null,
     Description   varchar(500)          not null,
-    LastModificationDate  TIMESTAMP DEFAULT SYSTIMESTAMP,
+    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CreationDate  TIMESTAMP DEFAULT 0,
     CreatedBy     BIGINT UNSIGNED,
     primary key(ID)
