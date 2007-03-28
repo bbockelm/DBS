@@ -82,12 +82,12 @@ myfile1= DbsFile (
         FileSize= 12340,
         Status= 'VALID',
 	ValidationStatus = 'VALID',
-        FileType= 'EVD',
+        FileType= 'EDM',
         Dataset= proc,
         #Block= isDictType,
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM'],
+        TierList= ['SIM', 'GEN'],
         #ParentList = ['NEW_TEST0003']  
          )
 
@@ -99,11 +99,11 @@ myfile2= DbsFile (
         FileSize= 12340,
         Status= 'VALID',
 	ValidationStatus = 'VALID',
-        FileType= 'EVD',
+        FileType= 'EDM',
         Dataset= proc,
         #Block= isDictType,
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM'],
+        TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
         #ParentList = ['NEW_TEST0004']  
@@ -118,12 +118,12 @@ myfile11= DbsFile (
         FileSize= 12340,
         Status= 'VALID',
         ValidationStatus = 'VALID',
-        FileType= 'EVD',
+        FileType= 'EDM',
         Dataset= proc,
         #Block= isDictType,
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM'],
+        TierList= ['SIM', 'GEN'],
         ParentList = ['NEW_TEST0001']  
          )
 
@@ -135,11 +135,11 @@ myfile22= DbsFile (
         FileSize= 12340,
         Status= 'VALID',
         ValidationStatus = 'VALID',
-        FileType= 'EVD',
+        FileType= 'EDM',
         Dataset= proc,
         #Block= isDictType,
         LumiList= [lumi1, lumi2],
-        TierList= ['SIM'],
+        TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
         ParentList = ['NEW_TEST0002']  
@@ -154,7 +154,7 @@ myfile3= DbsFile (
         FileSize= 12340,
         Status= 'VALID',
         ValidationStatus = 'VALID',
-        FileType= 'EVD',
+        FileType= 'EDM',
         Dataset= proc,
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
@@ -167,7 +167,7 @@ myfile3= DbsFile (
                    
 block = DbsFileBlock (
          StorageElement=['test1', 'test3'],
-	 Name="/test_primary_001/TestProcessedDS001/GEN#12345"
+	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
          )
 
 print "BUG to be fixed in server, cannot handle QueryableMetadata"
@@ -194,4 +194,3 @@ except DbsApiException, ex:
 
 
 print "Done"
-
