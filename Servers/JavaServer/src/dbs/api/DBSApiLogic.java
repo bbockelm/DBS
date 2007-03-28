@@ -1,6 +1,6 @@
 /**
- $Revision: 1.92 $"
- $Id: DBSApiLogic.java,v 1.92 2007/03/20 16:27:51 sekhri Exp $"
+ $Revision: 1.93 $"
+ $Id: DBSApiLogic.java,v 1.93 2007/03/23 15:47:26 afaq Exp $"
  *
  */
 
@@ -826,6 +826,15 @@ public class DBSApiLogic {
         }
 
 	protected String getTime(Hashtable table, String key, boolean excep) throws Exception{
+
+               //
+               //Special treatment for CreationDate
+               //is removed, CreationDate (and LastModificationDate) is a number
+               //only and this is how it will be read and stored
+               // Anzar Afaq - 03/28/2007
+		
+                //BUT no changes deemed necessary for this function.
+
                 String value = DBSUtil.get(table, key);
                 if(excep) checkTime(value, key);
                 else if(! isNull(value)) { 
@@ -847,9 +856,18 @@ public class DBSApiLogic {
 	}
 	
 	protected String getTime(ResultSet rs, String key) throws Exception {
-		Timestamp value = rs.getTimestamp(key);
-		if(value == null) return "";
-		return Long.toString(value.getTime());
+
+               //
+               //Special treatment for CreationDate
+               //is removed, CreationDate (and LastModificationDate) is a number
+               //only and this is how it will be read and stored
+               // Anzar Afaq - 03/28/2007
+
+                return get(rs, key);
+		//Timestamp value = rs.getTimestamp(key);
+		///if(value == null) return "";
+		//return Long.toString(value.getTime());
+                //return value;
 	}
 
 	protected String getPattern(String pattern, String key) throws Exception {

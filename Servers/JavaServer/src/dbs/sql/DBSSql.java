@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.84 $"
- $Id: DBSSql.java,v 1.84 2007/03/14 14:07:01 afaq Exp $"
+ $Revision: 1.85 $"
+ $Id: DBSSql.java,v 1.85 2007/03/16 18:42:52 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1737,14 +1737,20 @@ public class DBSSql {
 			String key = (String)e.nextElement();
 			String value = DBSUtil.get(table, key);
 			if(!DBSUtil.isNull(value)) {
-				if(key.equals("CreationDate")) {
-					ps.setTimestamp(columnIndx++, new Timestamp(Long.valueOf(value)) );
+				//
+				//Special treatment for CreationDate
+				//is removed, CreationDate (and LastModificationDate) is a number
+				//only and this is how it will be read and stored
+				// Anzar Afaq - 03/28/2007
+				
+				//if(key.equals("CreationDate")) {
+				//	ps.setTimestamp(columnIndx++, new Timestamp(Long.valueOf(value)) );
 				//} else if(key.equals("Content")) {
 				//	ps.setCharacterStream(columnIndx++, (new StringReader(value)), value.length());
 					//ps.setClob(columnIndx++, (Clob)(value)) ;
-				} else {
+				//} else {
 					ps.setString(columnIndx++, value);
-				}
+				//}
 			}
 		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
