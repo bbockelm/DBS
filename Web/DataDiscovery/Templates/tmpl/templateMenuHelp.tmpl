@@ -1,6 +1,6 @@
 <!-- templateMenuHelp.tmpl -->
 
-#set menuArr=['help_intro','help_glossary','help_resources','help_feedback','help_refs']
+#set menuArr=['help_intro','help_glossary','help_resources','help_feedback','help_refs','help_browser']
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
@@ -8,8 +8,9 @@ DBS Discovery :: Help
 - <a href="javascript:showResMenu('help_intro',$menuArr)">Introduction</a>
 | <a href="javascript:showResMenu('help_glossary',$menuArr)">Glossary</a>
 | <a href="javascript:showResMenu('help_resources',$menuArr)">Resources</a>
-| <a href="javascript:showResMenu('help_feedback',$menuArr)">Feedback</a>
+##| <a href="javascript:showResMenu('help_feedback',$menuArr)">Feedback</a>
 | <a href="javascript:showResMenu('help_refs',$menuArr)">References</a>
+| <a href="javascript:showResMenu('help_browser',$menuArr)">Browsers support</a>
 </td>
 </tr>
 </table>
@@ -152,9 +153,56 @@ All terms used on discovery page are defined in DBS glossary.
          <td>It would be impossible to accomplish this task without using 
          <a href="http://www.cheetahtemplate.org">Cheetah</a> template framework</td>
          </tr>
+
+         </tr>
+         <tr><td>&\#187;</td>
+         <td>AJAX history provided through Really Simple History
+         <a href="http://www.onjava.com/pub/a/onjava/2005/10/26/ajax-handling-bookmarks-and-back-button.html">(RSH)</a> framework</td>
+         </tr>
+
          <tr><td>&\#187;</td>
          <td>Some of my work inspired by <a href="http://www.ajaxprojects.com/">Ajax</a> projects</td>
          </tr>
        </table>
 </div>
+
+<div id="help_browser" class="hide">
+<p />
+<p />
+The DBS data discovery page was designed and well tested using 
+<a href="http://www.mozilla.com/en-US/">Firefox</a> browsers. 
+
+<p />
+All other browser may be luck of some functionality or misbehave.
+We are trying to come up with features that are compatible among the browsers, but
+we due to different implementation of browsers it is not always possible.
+<p />
+Below we list of some known issues with different browsers:
+<ul>
+<li> Safari
+     <ul>
+     <li> the "Back" button doesn't restore last session state. Example, when you click on
+          &#171; more &#187;, and move forward with one of the link, on your way back,
+          the &#171; more &#187; menu will not pop-up
+     </ul>
+<li> Internet Explorer
+     <ul>
+     <li>
+     </ul>
+<li> Mozilla
+     <ul>
+     <li>
+     </ul>
+<li> Konqueror
+     <ul>
+     <li>
+     </ul>
+<li> Opera
+     <ul>
+     <li>
+     </ul>
+</ul>
+
+</div>
+
 <!-- end of templateMenuHelp.tmpl -->
