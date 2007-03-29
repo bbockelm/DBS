@@ -612,6 +612,23 @@ class DDServer(DDLogger):
             return str(t)
     _help.exposed=True
 
+    def _contact(self,userMode="user"):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode)
+            nameSpace = {
+                         'host'         : self.dbsdd,
+                         'userMode'     : self.userMode,
+                        }
+            t = templateMenuContact(searchList=[nameSpace]).respond()
+            page+= str(t)
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in contact init function")
+            pass
+            return str(t)
+    _contact.exposed=True
+
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -2153,15 +2170,15 @@ class DDServer(DDLogger):
            Generates feedback form.
         """
         p = os.popen("%s -t" % SENDMAIL, "w")
-        p.write("To: vkuznet@gmail.com\n")
-        p.write("Subject: DBS data discovery user feedback\n")
+        p.write("To: cms-dbs-support@cern.ch\n")
+        p.write("Subject: response from DBS data discovery\n")
         p.write("\n") # blank line separating headers from body
         p.write("From: %s\n"%userEmail)
         p.write("\n") # blank line separating headers from body
         p.write(feedbackText)
         sts = p.close()
         page = self.genTopHTML(userMode=userMode)
-        page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to maintainer.</p>"""
+        page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to DBS support team.</p>"""
 #        page+= self.genVisiblePanel('Resources')
         page+= self.genBottomHTML()
         return page

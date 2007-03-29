@@ -1,0 +1,37 @@
+<!-- templateContacts.tmpl -->
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+DBS Discovery :: Contact information
+</td>
+</tr>
+</table>
+
+<div id="contactInfo" >
+         <p>
+         Use the form below to contact DBS team:
+         <ul>
+         <li> Project leader: Lee Lueking
+         <li> Developers: Vijay Sekhri, Anzar Afaq, Valentin Kuznetsov, Yuyi Guo
+         <li> Web maintainer: Valentin Kuznetsov
+         <li> Operations Team: Vijay Sekhri, Anzar Afaq, Valentin Kuznetsov, Barry Blumenfeld, Lee Lueking, Douglas Teodoro, Dimitrije Maletic
+         </ul>
+         </p>
+         <form action="sendFeedback" method="post">
+         <p>
+         Your Email:
+         <input type="hidden" name="userMode" value="$userMode" />
+         <input type="text" name="userEmail" />
+         <p />
+         <textarea rows="15" cols="100" name="feedbackText">Put your text here</textarea>
+         <br />
+         <input type="submit" value="Submit" id="submit-button-form"/>
+         </p>
+         </form>
+         <p>
+         For bugs, suggestions please use Savannah report 
+         <a href="https://savannah.cern.ch/bugs/?func=additem&group=dbs">system</a>
+         </p>
+</div>
+
+<!-- end oftemplateContacts.tmpl -->
