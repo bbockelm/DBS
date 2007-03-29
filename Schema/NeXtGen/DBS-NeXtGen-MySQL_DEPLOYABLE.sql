@@ -4,9 +4,9 @@
 -- === Build : 628
 -- ======================================================================
 
-drop database if exists dbs_new_era_v17TRTEST;
-create database dbs_new_era_v17TRTEST;
-use dbs_new_era_v17TRTEST;
+drop database if exists dbs_new_era_v20;
+create database dbs_new_era_v20;
+use dbs_new_era_v20;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -241,7 +241,7 @@ CREATE TABLE TimeLog
     Effect        varchar(100)          not null,
     Description   varchar(500)          not null,
     LastModificationDate          BIGINT,
-    CreationDate  TIMESTAMP DEFAULT 0,
+    CreationDate  BIGINT,
     CreatedBy     BIGINT UNSIGNED,
 
     primary key(ID)
@@ -254,7 +254,7 @@ CREATE TABLE DataTierOrder
     ID                    BIGINT UNSIGNED not null auto_increment,
     DataTierOrder varchar(250)          unique not null,
     Description   varchar(1000),
-    CreationDate  TIMESTAMP DEFAULT 0,
+    CreationDate  BIGINT,
     CreatedBy     BIGINT UNSIGNED,
     LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -365,9 +365,9 @@ CREATE TABLE PrimaryDatasetDescription
     MCChannelDescriptionID  BIGINT UNSIGNED,
     OtherDescriptionID      BIGINT UNSIGNED,
     CreatedBy               BIGINT UNSIGNED,
-    CreationDate            TIMESTAMP DEFAULT 0,
+    CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
-    LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate    BIGINT,
 
     primary key(ID),
     unique(TriggerDescriptionID,MCChannelDescriptionID,OtherDescriptionID)
@@ -380,9 +380,9 @@ CREATE TABLE TriggerPathDescription
     ID                    BIGINT UNSIGNED not null auto_increment,
     TriggerPathDescription  varchar(100)                                                      unique not null,
     CreatedBy               BIGINT UNSIGNED,
-    CreationDate            TIMESTAMP DEFAULT 0,
+    CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
-    LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate    BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;

@@ -43,7 +43,7 @@ cat DBS-NeXtGen-MySQL.sql.TMP.3 >> $ddl_file
 #for atable in $table_list; do
 #   echo   >> $ddl_file
 #   echo "CREATE TRIGGER TR_TS_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
-#   echo "FOR EACH ROW SET NEW.CreationDate = NOW();"  >> $ddl_file
+#   echo "FOR EACH ROW SET NEW.CreationDate = UNIX_TIMESTAMP();"  >> $ddl_file
 #done
 #
 # INSERT Triggers for LastModificationDate, We need to put unix_timestamp there
@@ -71,14 +71,14 @@ echo "-- ======================================================================"
 echo "-- Initialize status tables There can be better ways to do it ( laters ) "  >> $ddl_file
 echo "-- ======================================================================"  >> $ddl_file
 echo  >> $ddl_file
-echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('$SchemaVersion', NOW());"  >> $ddl_file
-echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());"  >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('IMPORTED', NOW()), ('EXPORTED', NOW());"  >> $ddl_file
-echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('IMPORTED', NOW()) , ('EXPORTED', NOW());"  >> $ddl_file
-echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());"  >> $ddl_file
-echo "INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', NOW()) ;"  >> $ddl_file
-echo "INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW()), ('RAW', NOW()) , ('MC', NOW()), ('COSMIC', NOW()), ('ALIGN', NOW()), ('CALIB', NOW());"  >> $ddl_file
+echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('$SchemaVersion', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;"  >> $ddl_file
+echo "INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP()), ('RAW', UNIX_TIMESTAMP()) , ('MC', UNIX_TIMESTAMP()), ('COSMIC', UNIX_TIMESTAMP()), ('ALIGN', UNIX_TIMESTAMP()), ('CALIB', UNIX_TIMESTAMP());"  >> $ddl_file
 #
 #
 #
@@ -97,42 +97,42 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIG
 #
 #
 #
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()),  ('RAW', NOW()), ('AOD', NOW());" >> $ddl_file
-#echo "INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', NOW()), 
-#('Individual', '', NOW()), 
-#('Higgs', '', NOW()), 
-#('SUSY', '', NOW()), 
-#('BSM', '', NOW()), 
-#('EWK', '', NOW()), 
-#('Top', '', NOW()), 
-#('QCD', '', NOW()), 
-#('Diffraction', '', NOW()), 
-#('Online Selection', '', NOW()), 
-#('B-physics', '', NOW()), 
-#('Muons', '', NOW()), 
-#('Egamma', '', NOW()), 
-#('JetMet', '', NOW()), 
-#('E-flow', '', NOW()), 
-#('tau', '', NOW()), 
-#('B-tagging', '', NOW());" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP());" >> $ddl_file
+#echo "INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', UNIX_TIMESTAMP()), 
+#('Individual', '', UNIX_TIMESTAMP()), 
+#('Higgs', '', UNIX_TIMESTAMP()), 
+#('SUSY', '', UNIX_TIMESTAMP()), 
+#('BSM', '', UNIX_TIMESTAMP()), 
+#('EWK', '', UNIX_TIMESTAMP()), 
+#('Top', '', UNIX_TIMESTAMP()), 
+#('QCD', '', UNIX_TIMESTAMP()), 
+#('Diffraction', '', UNIX_TIMESTAMP()), 
+#('Online Selection', '', UNIX_TIMESTAMP()), 
+#('B-physics', '', UNIX_TIMESTAMP()), 
+#('Muons', '', UNIX_TIMESTAMP()), 
+#('Egamma', '', UNIX_TIMESTAMP()), 
+#('JetMet', '', UNIX_TIMESTAMP()), 
+#('E-flow', '', UNIX_TIMESTAMP()), 
+#('tau', '', UNIX_TIMESTAMP()), 
+#('B-tagging', '', UNIX_TIMESTAMP());" >> $ddl_file
 #
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', NOW()), 
-('Individual', NOW()), 
-('Higgs', NOW()), 
-('SUSY', NOW()), 
-('BSM', NOW()), 
-('EWK', NOW()), 
-('Top', NOW()), 
-('QCD', NOW()), 
-('Diffraction', NOW()), 
-('Online Selection', NOW()), 
-('B-physics', NOW()), 
-('Muons', NOW()), 
-('Egamma', NOW()), 
-('JetMet', NOW()), 
-('E-flow', NOW()), 
-('tau', NOW()), 
-('B-tagging', NOW());" >> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', UNIX_TIMESTAMP()), 
+('Individual', UNIX_TIMESTAMP()), 
+('Higgs', UNIX_TIMESTAMP()), 
+('SUSY', UNIX_TIMESTAMP()), 
+('BSM', UNIX_TIMESTAMP()), 
+('EWK', UNIX_TIMESTAMP()), 
+('Top', UNIX_TIMESTAMP()), 
+('QCD', UNIX_TIMESTAMP()), 
+('Diffraction', UNIX_TIMESTAMP()), 
+('Online Selection', UNIX_TIMESTAMP()), 
+('B-physics', UNIX_TIMESTAMP()), 
+('Muons', UNIX_TIMESTAMP()), 
+('Egamma', UNIX_TIMESTAMP()), 
+('JetMet', UNIX_TIMESTAMP()), 
+('E-flow', UNIX_TIMESTAMP()), 
+('tau', UNIX_TIMESTAMP()), 
+('B-tagging', UNIX_TIMESTAMP());" >> $ddl_file
 #
 #
 echo "commit;"  >> $ddl_file

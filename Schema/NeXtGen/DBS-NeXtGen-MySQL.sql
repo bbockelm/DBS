@@ -241,7 +241,7 @@ CREATE TABLE TimeLog
     Effect        varchar(100)          not null,
     Description   varchar(500)          not null,
     LastModificationDate          BIGINT,
-    CreationDate  TIMESTAMP DEFAULT 0,
+    CreationDate  BIGINT,
     CreatedBy     BIGINT UNSIGNED,
 
     primary key(ID)
@@ -254,7 +254,7 @@ CREATE TABLE DataTierOrder
     ID                    BIGINT UNSIGNED,
     DataTierOrder varchar(250)          unique not null,
     Description   varchar(1000),
-    CreationDate  TIMESTAMP DEFAULT 0,
+    CreationDate  BIGINT,
     CreatedBy     BIGINT UNSIGNED,
     LastModificationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -365,9 +365,9 @@ CREATE TABLE PrimaryDatasetDescription
     MCChannelDescriptionID  BIGINT UNSIGNED,
     OtherDescriptionID      BIGINT UNSIGNED,
     CreatedBy               BIGINT UNSIGNED,
-    CreationDate            TIMESTAMP DEFAULT 0,
+    CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
-    LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate    BIGINT,
 
     primary key(ID),
     unique(TriggerDescriptionID,MCChannelDescriptionID,OtherDescriptionID)
@@ -380,9 +380,9 @@ CREATE TABLE TriggerPathDescription
     ID                    BIGINT UNSIGNED,
     TriggerPathDescription  varchar(100)                                                      unique not null,
     CreatedBy               BIGINT UNSIGNED,
-    CreationDate            TIMESTAMP DEFAULT 0,
+    CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
-    LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate    BIGINT,
 
     primary key(ID)
   );
