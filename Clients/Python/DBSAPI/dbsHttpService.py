@@ -163,7 +163,8 @@ class DbsHttpService:
                 warn  = "\n DBS Raised a warning message"
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
-                logging.warning(warn)
+                #logging.warning(warn)
+                logging.debug(warn)
 
 
 	     if name =='info':

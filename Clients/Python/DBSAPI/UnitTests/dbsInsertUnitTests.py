@@ -286,8 +286,16 @@ run1 = DbsRun (RunNumber=runNumber1,
 )
 apiObj.run(run1, excep = False)
 
-run2 = DbsRun (RunNumber=runNumber2)
-apiObj.run(run2, excep = True)
+run2 = DbsRun (RunNumber=runNumber2,
+		NumberOfEvents= 100,
+		NumberOfLumiSections= 20,
+		TotalLuminosity= 2222,
+		StoreNumber= 123,
+		StartOfRun= 'now',
+		EndOfRun= 'never',
+
+		)
+apiObj.run(run2, excep = False)
 
 run = DbsRun (RunNumber=runNumber3,
 		StartOfRun= 'no*w')
@@ -472,9 +480,9 @@ apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertTierInPD API tests***************************")
 tierName1Test = "GENTEST"
 tierName2Test = "SIMTEST"
-apiObj.run(proc1, tierName1Test, excep = False)
-apiObj.run(proc1, tierName1Test, excep = False)
-apiObj.run(path, tierName2Test, excep = False)
+apiObj.run(proc1, "GEN", excep = False)
+apiObj.run(proc1, "SIM", excep = False)
+apiObj.run(path, "GEN", excep = False)
 apiObj.run("/Does/Not/Exist", tierName2Test, excep = True)
 apiObj.run("", excep = True)
 apiObj.run(proc1, tierName1Test + "sjhd*lk", excep = True)
@@ -525,7 +533,7 @@ apiObj = DbsUnitTestApi(api.insertRunInPD, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertRunInPD API tests***************************")
 apiObj.run(proc1, runNumber2, excep = False)
-apiObj.run(proc1, runNumber3, excep = False)
+apiObj.run(proc1, runNumber3, excep = True)
 apiObj.run("/Does/Not/Exist", runNumber1, excep = True)
 apiObj.run(proc1, "123456", excep = True)
 apiObj.run(proc1, "123a456", excep = True)
@@ -826,9 +834,9 @@ apiObj = DbsUnitTestApi(api.addReplicaToBlock, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************addReplicaToBlock API tests***************************")
 
-apiObj.run(block, "MySE1", excep = False)
-apiObj.run(block, "MySE2", excep = False)
-apiObj.run(block, "My;SE", excep = True)
+apiObj.run(block1, "MySE1", excep = False)
+apiObj.run(block1, "MySE2", excep = False)
+apiObj.run(block1, "My;SE", excep = True)
 apiObj.run("/does/not/eist#1234", "MySE1", excep = True)
 
 f.write("\n\n***********************addReplicaToBlock API tests***************************")
@@ -837,9 +845,9 @@ apiObj = DbsUnitTestApi(api.deleteReplicaFromBlock, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************deleteReplicaFromBlock API tests***************************")
 
-apiObj.run(block, "MySE1", excep = False)
-apiObj.run(block, "My;SE", excep = True)
-apiObj.run(block, "DOESNOTEXIST", excep = True)
+apiObj.run(block1, "MySE1", excep = False)
+apiObj.run(block1, "My;SE", excep = True)
+apiObj.run(block1, "DOESNOTEXIST", excep = True)
 apiObj.run("/does/not/eist#1234", "MySE1", excep = True)
 
 f.write("\n\n***********************deleteReplicaFromBlock API tests***************************")
@@ -849,10 +857,10 @@ apiObj = DbsUnitTestApi(api.renameSE, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************renameSE API tests***************************")
 
-apiObj.run("MySE2", "MySE2New", excep = False)
-apiObj.run("DOESNOTEXIST", "MySE", excep = True)
-apiObj.run("abcd;edf", "ANTHING", excep = True)
-apiObj.run("/does/no", "MySE1", excep = True)
+apiObj.run("MySE2", "MySE2New" + mytime, excep = False)
+apiObj.run("DOESNOTEXIST", "MySE", excep = False)
+apiObj.run("abcd;edf", "ANTHING", excep = False)
+apiObj.run("/does/no", "MySE1", excep = False)
 
 f.write("\n\n***********************renameSE API tests***************************")
 
@@ -861,7 +869,7 @@ apiObj = DbsUnitTestApi(api.closeBlock, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************closeBlock API tests***************************")
 
-apiObj.run(block, excep = False)
+apiObj.run(block1, excep = False)
 apiObj.run("DOESNOTEXIST",  excep = True)
 apiObj.run("abcd;edf", excep = True)
 apiObj.run("/does/no/exit#1234",  excep = True)

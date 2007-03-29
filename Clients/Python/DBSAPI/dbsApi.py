@@ -1346,7 +1346,7 @@ class DbsApi(DbsConfig):
 
     
     params:
-	  dataset: is the processed dataset represented either in string format as path (/prim/proc/datatier) or in DbsProcessedDataset format.
+	  dataset: is the processed dataset represented either in string format as path (/prim/datatier/proc) or in DbsProcessedDataset format.
 	  This is a mandatory field and is not defaulted
 	  
     returns: 
@@ -2472,7 +2472,6 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
     path = self._path(dataset)
-    parentPath = self._path(parentDS)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<processed_dataset path='" + path + "'/>"
@@ -2517,7 +2516,6 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.debug("Api call invoked %s" % str(funcInfo[2]))
     path = self._path(dataset)
-    parentPath = self._path(parentDS)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<processed_dataset path='" + path + "'/>"
@@ -2528,7 +2526,7 @@ class DbsApi(DbsConfig):
     if self.verbose():
        print "insertParent, xmlinput",xmlinput
 
-    data = self._server._call ({ 'api' : 'insertAlgoInPD', 
+    data = self._server._call ({ 'api' : 'insertRunInPD', 
 		         'run_number' : run,
                          'xmlinput' : xmlinput }, 'POST')
     logging.debug(data)
