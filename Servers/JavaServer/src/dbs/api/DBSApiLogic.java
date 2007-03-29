@@ -1,6 +1,6 @@
 /**
- $Revision: 1.93 $"
- $Id: DBSApiLogic.java,v 1.93 2007/03/23 15:47:26 afaq Exp $"
+ $Revision: 1.94 $"
+ $Id: DBSApiLogic.java,v 1.94 2007/03/28 21:50:19 afaq Exp $"
  *
  */
 
@@ -840,7 +840,7 @@ public class DBSApiLogic {
                 else if(! isNull(value)) { 
 			checkTime(value, key);
 		} else {
-			value = Long.toString( (new Date()).getTime() );
+			value = Long.toString( (new Date()).getTime() / 1000 );
 		}
                 return value;
         }
