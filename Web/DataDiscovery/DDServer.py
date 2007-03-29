@@ -11,6 +11,7 @@ DBS data discovery server module.
 
 # system modules
 import os, string, logging, types, time, socket, socket, urlparse, random, urllib, difflib
+import smtplib, tempfile
 import xml.sax, xml.sax.handler
 from   xml.sax.saxutils import escape
 
@@ -2165,21 +2166,39 @@ class DDServer(DDLogger):
         page = str(t)
         return page
 
-    def sendFeedback(self,userEmail,feedbackText,userMode='user'):
+    def sendFeedback_v1(self,userEmail,feedbackText,userMode='user'):
         """
            Generates feedback form.
         """
         p = os.popen("%s -t" % SENDMAIL, "w")
-        p.write("To: cms-dbs-support@cern.ch\n")
+#        p.write("To: cms-dbs-support@cern.ch\n")
+        p.write("To: vk@mail.lns.cornell.edu\n")
         p.write("Subject: response from DBS data discovery\n")
         p.write("\n") # blank line separating headers from body
         p.write("From: %s\n"%userEmail)
         p.write("\n") # blank line separating headers from body
         p.write(feedbackText)
         sts = p.close()
+        print "Status from sendFeedback",sts
         page = self.genTopHTML(userMode=userMode)
         page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to DBS support team.</p>"""
 #        page+= self.genVisiblePanel('Resources')
+        page+= self.genBottomHTML()
+        return page
+#    sendFeedback.exposed=True
+
+    def sendFeedback(self,userEmail,feedbackText,userMode='user'):
+        """
+           Generates feedback form.
+        """
+        tFileId, tFileName = tempfile.mkstemp()
+        tFile     = open(tFileName,'w')
+        tFile.write("From: %s\n"%userEmail+feedbackText)
+        tFile.close()
+        os.system("""mail -s "response from DBS data discovery" cms-dbs-support@cern.ch < %s"""%tFileName)
+        os.remove(tFileName)
+        page = self.genTopHTML(userMode=userMode)
+        page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to DBS support team.</p>"""
         page+= self.genBottomHTML()
         return page
     sendFeedback.exposed=True
