@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiParser.java,v 1.8 2007/03/15 14:24:45 afaq Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiParser.java,v 1.9 2007/03/27 16:58:58 sekhri Exp $"
  *
 */
 
@@ -93,7 +93,7 @@ public class DBSApiParser {
 	public static Hashtable parseDatasetContents(String inputXml) throws Exception {
 		int index = -1;
 		int blockIndex = -1;
-		System.out.println("inputXml "+inputXml);
+		//System.out.println("inputXml "+inputXml);
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
 		Vector allElement = dbsParser.getElements();
