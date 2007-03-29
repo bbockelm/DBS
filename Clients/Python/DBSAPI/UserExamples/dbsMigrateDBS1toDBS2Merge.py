@@ -97,11 +97,16 @@ try:
 				for i in datasetDBS1:
 					pathDBS1 = i['datasetPathName']
 					tier = pathDBS1.split('/')[2]
-					if((tier != 'RECO') & (tier != 'RAW') & (tier != 'FEVT')):
+					#if((tier != 'RECO') & (tier != 'RAW') & (tier != 'FEVT')):
+					if((tier != 'RECO') & (tier != 'RAW')):
 						self.tierList.append(tier)
 
 				#self.tierList = [path[2]]
-				self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + makeTierList(self.tierList)
+				if('FEVT' in self.tierList) : 
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'FEVT'
+				else :
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + makeTierList(self.tierList)
+					
 				#import pdb
 				#pdb.set_trace()
 				self.processed = DbsProcessedDataset (
@@ -154,10 +159,10 @@ try:
 						ParameterSetID = DbsQueryableParameterSet(
 							Hash = hash,
 							Name = hash,
-							Version="NOT KNOWN",
-							Type = "CSA06",
-							Annotation = "NOT KNOWN",
-							Content = "NOT KNOWN"
+							Version="NOTKNOWN",
+							Type = "NOTKNOWN",
+							Annotation = "NOTKNOWN",
+							Content = "NOTKNOWN"
 							)
 						)
 				print "Inserting algorithm  %s " % self.algo

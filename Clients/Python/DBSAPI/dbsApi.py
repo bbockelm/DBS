@@ -1346,7 +1346,7 @@ class DbsApi(DbsConfig):
 
     
     params:
-	  dataset: is the processed dataset represented either in string format as path (/prim/datatier/proc) or in DbsProcessedDataset format.
+	  dataset: is the processed dataset represented either in string format as path (/prim/proc/datatier) or in DbsProcessedDataset format.
 	  This is a mandatory field and is not defaulted
 	  
     returns: 

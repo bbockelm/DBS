@@ -113,10 +113,10 @@ try:
 						ParameterSetID = DbsQueryableParameterSet(
 							Hash = hash,
 							Name = hash,
-							Version="NOT KNOWN",
-							Type = "CSA06",
-							Annotation = "NOT KNOWN",
-							Content = "NOT KNOWN"
+							Version="NOTKNOWN",
+							Type = "NOTKNOWN",
+							Annotation = "NOTKNOWN",
+							Content = "NOTKNOWN"
 							)
 						)
 				print "Inserting algorithm  %s " % self.algo
