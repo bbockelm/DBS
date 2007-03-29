@@ -54,8 +54,8 @@ class printDot ( threading.Thread ):
 #############################################################################
 ##Default URL for the Service
 #URL="http://cmssrv17.fnal.gov:8989/DBSANZAR/servlet/DBSServlet"
-URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
-#URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
+#URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
+URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
 #############################################################################
@@ -481,7 +481,8 @@ class ApiDispatcher:
 
   def reportProcessedDatasets(self, anObj):
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
-		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
+		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
+		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['LastModificationDate'])))
 		
         	report = Report()
 		report.addSummary(sumry)
@@ -631,7 +632,7 @@ class ApiDispatcher:
   def reportBlock(self, anObj):
                 sumry  = "\n     Block Name %s " %anObj['Name']
                 sumry += "\n     Block Path %s" %anObj['Path']
-                sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])/1000))
+                sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
                 report = Report()
                 report.addSummary(sumry)
                 report.addLine("     Block Details:")
