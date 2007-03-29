@@ -1517,14 +1517,14 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_06', NOW());
-INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', NOW());
-INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('IMPORTED', NOW()), ('EXPORTED', NOW());
-INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW()), ('MERGED', NOW()), ('IMPORTED', NOW()) , ('EXPORTED', NOW());
-INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', NOW()), ('INVALID', NOW());
-INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', NOW()) ;
-INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', NOW());
-INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', NOW()), ('RAW', NOW()) , ('MC', NOW()), ('COSMIC', NOW()), ('ALIGN', NOW()), ('CALIB', NOW());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_06', UNIX_TIMESTAMP());
+INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
+INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());
+INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
+INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());
+INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;
+INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());
+INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP()), ('RAW', UNIX_TIMESTAMP()) , ('MC', UNIX_TIMESTAMP()), ('COSMIC', UNIX_TIMESTAMP()), ('ALIGN', UNIX_TIMESTAMP()), ('CALIB', UNIX_TIMESTAMP());
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');
@@ -1537,22 +1537,22 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things th
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', NOW()), ('SIM', NOW()), ('DIGI', NOW()), ('RECO', NOW()), ('FEVT', NOW()), ('ALCARECO', NOW()), ('USER', NOW()),  ('RAW', NOW()), ('AOD', NOW());
-INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', NOW()), 
-('Individual', NOW()), 
-('Higgs', NOW()), 
-('SUSY', NOW()), 
-('BSM', NOW()), 
-('EWK', NOW()), 
-('Top', NOW()), 
-('QCD', NOW()), 
-('Diffraction', NOW()), 
-('Online Selection', NOW()), 
-('B-physics', NOW()), 
-('Muons', NOW()), 
-('Egamma', NOW()), 
-('JetMet', NOW()), 
-('E-flow', NOW()), 
-('tau', NOW()), 
-('B-tagging', NOW());
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP());
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', UNIX_TIMESTAMP()), 
+('Individual', UNIX_TIMESTAMP()), 
+('Higgs', UNIX_TIMESTAMP()), 
+('SUSY', UNIX_TIMESTAMP()), 
+('BSM', UNIX_TIMESTAMP()), 
+('EWK', UNIX_TIMESTAMP()), 
+('Top', UNIX_TIMESTAMP()), 
+('QCD', UNIX_TIMESTAMP()), 
+('Diffraction', UNIX_TIMESTAMP()), 
+('Online Selection', UNIX_TIMESTAMP()), 
+('B-physics', UNIX_TIMESTAMP()), 
+('Muons', UNIX_TIMESTAMP()), 
+('Egamma', UNIX_TIMESTAMP()), 
+('JetMet', UNIX_TIMESTAMP()), 
+('E-flow', UNIX_TIMESTAMP()), 
+('tau', UNIX_TIMESTAMP()), 
+('B-tagging', UNIX_TIMESTAMP());
 commit;
