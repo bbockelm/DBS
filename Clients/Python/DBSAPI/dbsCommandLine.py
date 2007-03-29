@@ -54,13 +54,14 @@ class printDot ( threading.Thread ):
 #############################################################################
 ##Default URL for the Service
 #URL="http://cmssrv17.fnal.gov:8989/DBSANZAR/servlet/DBSServlet"
+#URL="http://cmssrv17.fnal.gov:8989/DBSTRTEST/servlet/DBSServlet"
 #URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
 URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
 #############################################################################
 
-saved_help="/tmp/out.log"
+saved_help="out.log"
 
 
 # help related funcs
@@ -483,7 +484,7 @@ class ApiDispatcher:
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
 		sumry += "\nCreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
 		#sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
-		#sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['LastModificationDate'])))
+		#sumry += "\nLastModificationDate: %s" % str(time.ctime(long(anObj['LastModificationDate'])))
 		
         	report = Report()
 		report.addSummary(sumry)
@@ -634,7 +635,6 @@ class ApiDispatcher:
                 sumry  = "\n     Block Name %s " %anObj['Name']
                 sumry += "\n     Block Path %s" %anObj['Path']
 		sumry += "\nCreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
-
                 #sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
                 report = Report()
                 report.addSummary(sumry)
