@@ -38,11 +38,15 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 #
 # DLS instances are: https://twiki.cern.ch/twiki/bin/view/CMS/DLS#DLS_instances
 #
-DBSGLOBAL="localhost"
+DBSGLOBAL="cmslcgco01"
 DBS_DLS_INST= {
+   "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+   "cmslcgco01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"), 
+   "FNAL8989":("http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
    "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
    "localhost17" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
 }
+
 #DBS_DLS_INST= {
 #   "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
 #   "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
