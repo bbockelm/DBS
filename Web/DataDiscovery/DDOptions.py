@@ -22,8 +22,6 @@ class DDOptionParser:
     self.parser = OptionParser()
 
     # options which are applied to any services
-    self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
-         help="specify DBS instance to use, e.g. --dbsInst=MCLocal_1/Writer")
     self.parser.add_option("--quiet",action="store_true", default=False, dest="quiet",
          help="be quiet and don't print exceptions")
     self.parser.add_option("-v","--verbose",action="store", type="int", default=0, dest="verbose",
@@ -35,6 +33,8 @@ class DDOptionParser:
 
     # options specific to DDHelper
     if  service=="DDHelper":
+        self.parser.add_option("--dbsInst",action="store", type="string", dest="dbsInst",
+             help="specify DBS instance to use, e.g. --dbsInst=MCLocal_1/Writer")
         self.parser.add_option("--dict",action="store", type="string", dest="dict",
              help="use to generate JavaScript dictionary, pass Global/All")
         self.parser.add_option("--primaryDataset",action="store", type="string", dest="primD",
