@@ -481,8 +481,9 @@ class ApiDispatcher:
 
   def reportProcessedDatasets(self, anObj):
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
-		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
-		sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['LastModificationDate'])))
+		sumry += "\nCreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+		#sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
+		#sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['LastModificationDate'])))
 		
         	report = Report()
 		report.addSummary(sumry)
@@ -632,7 +633,9 @@ class ApiDispatcher:
   def reportBlock(self, anObj):
                 sumry  = "\n     Block Name %s " %anObj['Name']
                 sumry += "\n     Block Path %s" %anObj['Path']
-                sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
+		sumry += "\nCreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+
+                #sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
                 report = Report()
                 report.addSummary(sumry)
                 report.addLine("     Block Details:")
