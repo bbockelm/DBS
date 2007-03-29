@@ -1,6 +1,6 @@
 /**
- $Revision: 1.94 $"
- $Id: DBSApiLogic.java,v 1.94 2007/03/28 21:50:19 afaq Exp $"
+ $Revision: 1.95 $"
+ $Id: DBSApiLogic.java,v 1.95 2007/03/29 15:38:44 afaq Exp $"
  *
  */
 
@@ -535,7 +535,8 @@ public class DBSApiLogic {
 							effect,
 							description,
 							personApi.getUserID(conn, dbsUser),
-							Long.toString( (new Date()).getTime() ) );
+							getTime(new Hashtable(), "creation_date", false)
+							);
 
                                 ps.execute();
                         } finally {
@@ -954,7 +955,7 @@ public class DBSApiLogic {
 		}
 
                 if (found) {
-			System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
+			//System.out.println("makeOrderedTierList: Found the right TierOrder: "+currRow);
 			return currRow;
 		}
 
