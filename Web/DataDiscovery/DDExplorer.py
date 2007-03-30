@@ -158,13 +158,20 @@ def parseInput(input,verbose=0):
     except:
         if type(input) is types.StringType:
            if string.find(input,"""<?xml version="1.0" encoding="utf-8"?>""")!=-1:
+              # I need to check if my XML input contains a limit/offset
+              if input.find("output")==-1 and input.find("limit")==-1:
+                 input=input.replace("</ddRequest>","""<output limit="100" offset="0" /></ddRequest>""")
               return input
            else:
               msg="Provided input '%s' is neither valid XML or existing file, see --help for more options"%input
               raise msg
         raise "Fail to open a file '%s'"%iFileName
     if string.split(lines[0],"\n")[0]=="""<?xml version="1.0" encoding="utf-8"?>""":
-       return string.join(lines)
+       outFlag=0
+       inputXML=string.join(lines)
+       if inputXML.find("output")==-1 and inputXML.find("limit")==-1:
+          inputXML=inputXML.replace("</ddRequest>","""<output limit="100" offset="0" /></ddRequest>""")
+       return inputXML
     select=where=0
     oDict={}
     for read in lines:
@@ -209,7 +216,7 @@ def formXMLInput(iDict,verbose=0):
 def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
     inputXML=parseInput(input,verbose)
     if  verbose:
-        print inputXML
+        print "\n\nParser inputXML:\n",inputXML
     envelope=urllib.quote(inputXML.strip())
     return sendMessage(host,port,dbsInst,envelope,output,verbose)
 
