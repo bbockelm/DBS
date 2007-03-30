@@ -44,6 +44,9 @@ def tip():
 
 SYMBOLS_LIST=[('+','__pl__'),('-','__mi__'),('/','__sl__'),('#','__po__')]
 
+def timeGMT(iTime):
+    return time.strftime("%d %b %Y %H:%M:%S GMT",time.gmtime(iTime))
+
 def encode(dataset):
     for s in SYMBOLS_LIST:
         dataset=string.replace(dataset,s[0],s[1])

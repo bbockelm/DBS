@@ -379,6 +379,8 @@ class DDHelper(DDLogger):
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
               id,name,ver,type,ann,cDate,cBy,mDate,mBy=item
+              cDate=timeGMT(cDate)
+              mDate=timeGMT(mDate)
               if id and name:
                   oList.append((id,name,ver,type,ann,cDate,cBy,mDate,mBy))
       except:
@@ -435,6 +437,8 @@ class DDHelper(DDLogger):
               name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
                  content=content.read() # since content is LOB object
+              cDate=timeGMT(cDate)
+              mDate=timeGMT(mDate)
               if name:
                  oList.append((name,content,ver,type,ann,cDate,cBy,mDate,mBy))
       except:
@@ -593,6 +597,8 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
+          cDate=timeGMT(cDate)
+          mDate=timeGMT(mDate)
           totEvt+=nEvts
           totFiles+=nFiles
           totSize+=blockSize
@@ -1584,7 +1590,11 @@ class DDHelper(DDLogger):
       oList=[]
       for item in result:
           if not item[0]: continue
-          oList.append(item)
+          name,dn1,cDate,dn2,mDate=item
+          cDate=timeGMT(cDate)
+          mDate=timeGMT(mDate)
+#          oList.append(item)
+          oList.append((name,dn1,cDate,dn2,mDate))
       self.closeConnection(con)
       return tList,oList
 
@@ -1626,7 +1636,11 @@ class DDHelper(DDLogger):
       oList=[]
       for item in result:
           if not item[0]: continue
-          oList.append(item)
+          lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate=item
+          cDate=timeGMT(cDate)
+          mDate=timeGMT(mDate)
+#          oList.append(item)
+          oList.append(lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate)
       self.closeConnection(con)
       return tList,oList
 
@@ -1667,7 +1681,9 @@ class DDHelper(DDLogger):
       oList=[]
       for item in result:
           if not item[0]: continue
-          oList.append(item)
+          name,cBy,cDate,mBy,mDate=item
+#          oList.append(item)
+          oList.append(name,cBy,cDate,mBy,mDate)
       self.closeConnection(con)
       return tList,oList
 
@@ -1900,6 +1916,8 @@ class DDHelper(DDLogger):
       oList=[]
       for item in result:
           run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,type=item
+          cDate=timeGMT(cDate)
+          mDate=timeGMT(mDate)
           if not run: continue
           aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':type}
           oList.append(aDict)
@@ -2063,6 +2081,8 @@ class DDHelper(DDLogger):
       aDict={}
       for item in result:
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
+          cDate=timeGMT(cDate)
+          mDate=timeGMT(mDate)
           if not blockName: continue
           aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModifiedBy':mBy,'LastModificationDate':mDate}
           aList.append(aDict)
