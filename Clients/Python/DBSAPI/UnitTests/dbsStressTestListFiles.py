@@ -25,7 +25,9 @@ try:
    #Must run dbsInsertFiles from UserExamples first !!!!!!!!!
    #print len(api.listFiles("/test_primary_anzar_001/SIM/TestProcessedDS001", "", "")) 
    #print len(api.listFiles("/DBSStressTestPrimaryDataset/DBSStressTestHIT/DBSStressTestProcessedDS", "", "")) 
-   print len(api.listFiles("/CSA06-083-os-Wenu/SIM/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877644-merged")) 
+   #print len(api.listFiles("/CSA06-083-os-Wenu/SIM/CMSSW_0_8_3-GEN-SIM-DIGI-HLT-1156877644-merged")) 
+   #print len(api.listFiles(path="/StressTestPrimary260c8c7b-4b28-4654-a8db-6ffd977046b50/StressTestProcessed260c8c7b-4b28-4654-a8db-6ffd977046b50/GEN-SIM"))
+   print len(api.listFiles(path="/StressTestPrimary3aa90e71-7e7e-4e4f-b3a6-f9c99fd704710/StressTestProcessed3aa90e71-7e7e-4e4f-b3a6-f9c99fd704710/GEN-SIM"))
 
   except DbsDatabaseError,e:
    print e

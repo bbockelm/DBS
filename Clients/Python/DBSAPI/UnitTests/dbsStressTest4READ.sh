@@ -7,7 +7,7 @@ cd $tmpdir
 
 tstamp=`date +%m%y%d%M%S`
 result_file=$tstamp.TEST_AVERAGE.txt
-SERVER_DESC="Server:cmslcgco01,DB:ORACLE-MCLOCAL_7,Client:http-cmssrv17"
+SERVER_DESC="Server:cmsdbsprod,DB:ORACLE-INT,Client:http-cmssrv17"
 
 calculateAverage()
 {
@@ -59,7 +59,7 @@ calculateAverage 50 dbsStressTestListFiles.py
 date=`date`
 echo "Test Finishing at $date" >> $result_file
 
-cat $result_file | mail -s "Time Profile Test Done" anzar@fnal.gov
+cat $result_file | mail -s "Stress Test (Production) Time Profile Test Done" anzar@fnal.gov
 echo "DONE"
 cd -
 

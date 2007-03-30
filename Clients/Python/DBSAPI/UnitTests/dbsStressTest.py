@@ -53,20 +53,20 @@ for i in range(maxDS):
         fileList = []
 	#Insert Primary
 	apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
-	primary = 'TestPrimary' + mytime
+	primary = 'StressTestPrimary' + mytime
 	pri1 = DbsPrimaryDataset (Name = primary)
 	apiObj.run(pri1, excep = False)
 
 	#Insert Algorithm
 	apiObj = DbsUnitTestApi(api.insertAlgorithm,f)
-	algo1 = DbsAlgorithm (ExecutableName="TestExe01", 
-		ApplicationVersion= "TestVersion01" + mytime, 
-		ApplicationFamily="AppFamily01", 
+	algo1 = DbsAlgorithm (ExecutableName="StressTestExe01", 
+		ApplicationVersion= "StressTestVersion01" + mytime, 
+		ApplicationFamily="StressTestAppFamily01", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
-							Name="MyFirstParam01", 
+							Name="StressTestParam01", 
 							Version="V001", 
 							Type="test", 
-							Annotation="This is test", 
+							Annotation="This is a stress test param", 
 							Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
@@ -74,8 +74,8 @@ for i in range(maxDS):
 	
 	#Insert Tier
 	apiObj = DbsUnitTestApi(api.insertTier, f)
-	tierName1 = "HIT" + mytime
-	tierName2 = "SIM" + mytime
+	tierName1 = "GEN"
+	tierName2 = "SIM"
 	apiObj.run(tierName1, excep = False)
 	apiObj.run(tierName2, excep = False)
 
@@ -83,8 +83,8 @@ for i in range(maxDS):
 	
 	#Insert Processed Datatset
 	apiObj = DbsUnitTestApi(api.insertProcessedDataset,f)
-	proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
-			Name="TestProcessed" + mytime,
+	proc1  = DbsProcessedDataset(PrimaryDataset=pri1,
+			Name="StressTestProcessed" + mytime,
 			PhysicsGroup="BPositive",
 			Status="VALID",
 			TierList=tierList,
@@ -92,11 +92,12 @@ for i in range(maxDS):
 	apiObj.run(proc1, excep = False)
 
 	apiObj = DbsUnitTestApi(api.insertBlock, f)
-	path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
+
+	path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + tierName1 + "-" + tierName2
 
 	#Insert Block
-	block1 = DbsFileBlock (Name = "/" + mytime + "this/isatestblock#016712", Path = path)
-	apiObj.run(path, "/" + mytime + "this/isatestblock#016712" , excep = False)
+	block1 = DbsFileBlock (Name = path+'#01234-0567', Path = path)
+	apiObj.run(path, block1 , excep = False)
 
 	#Insert Run
 	apiObj = DbsUnitTestApi(api.insertRun, f)
@@ -143,7 +144,7 @@ for i in range(maxDS):
 			NumberOfEvents= 10000,
 			FileSize= 12340,
 			Status= 'VALID',
-			FileType= 'EVD',
+			FileType= 'EDM',
 			LumiList= [lumi1, lumi2],
 			TierList= tierList,
 			)

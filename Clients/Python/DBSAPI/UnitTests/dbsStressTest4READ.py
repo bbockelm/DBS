@@ -17,7 +17,7 @@ from DBSAPI.dbsLumiSection import DbsLumiSection
 from DBSAPI.dbsOptions import DbsOptionParser
 from dbsUnitTestApi import DbsUnitTestApi
 import random
-#import pdb
+import pdb
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
@@ -48,25 +48,25 @@ f = open(filename, "w")
 
 for i in range(maxDS):
         # Make this cycle unique
-        mytime = os.popen('uuidgen').readline().strip()+str(random.random())
+        mytime = os.popen('uuidgen').readline().strip()
         mytime += str(i)
         fileList = []
 	#Insert Primary
 	apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
-	primary = 'DBSStressTestPrimaryDataset' 
-	pri1 = DbsPrimaryDataset (Name = primary, Type="TEST")
+	primary = 'StressTestPrimary' + mytime
+	pri1 = DbsPrimaryDataset (Name = primary)
 	apiObj.run(pri1, excep = False)
 
 	#Insert Algorithm
 	apiObj = DbsUnitTestApi(api.insertAlgorithm,f)
-	algo1 = DbsAlgorithm (ExecutableName="DBSStressTestExe", 
-		ApplicationVersion= "DBSStressTestVersion" + mytime, 
-		ApplicationFamily="DBSStressTestAppFam", 
+	algo1 = DbsAlgorithm (ExecutableName="StressTestExe01", 
+		ApplicationVersion= "StressTestVersion01" + mytime, 
+		ApplicationFamily="StressTestAppFamily01", 
 		ParameterSetID=DbsQueryableParameterSet(Hash="001234565798685", 
-							Name="DBSStressTestParam", 
+							Name="StressTestParam01", 
 							Version="V001", 
 							Type="test", 
-							Annotation="This is test", 
+							Annotation="This is a stress test param", 
 							Content="int a= {}, b={c=1, d=33}, f={}, x, y, x"
 			                              )
 	)
@@ -74,8 +74,8 @@ for i in range(maxDS):
 	
 	#Insert Tier
 	apiObj = DbsUnitTestApi(api.insertTier, f)
-	tierName1 = "DBSStressTestHIT"
-	tierName2 = "DBSStressTestSIM"
+	tierName1 = "GEN"
+	tierName2 = "SIM"
 	apiObj.run(tierName1, excep = False)
 	apiObj.run(tierName2, excep = False)
 
@@ -83,8 +83,8 @@ for i in range(maxDS):
 	
 	#Insert Processed Datatset
 	apiObj = DbsUnitTestApi(api.insertProcessedDataset,f)
-	proc1 = DbsProcessedDataset(PrimaryDataset=pri1,
-			Name="DBSStressTestProcessedDS",
+	proc1  = DbsProcessedDataset(PrimaryDataset=pri1,
+			Name="StressTestProcessed" + mytime,
 			PhysicsGroup="BPositive",
 			Status="VALID",
 			TierList=tierList,
@@ -92,11 +92,13 @@ for i in range(maxDS):
 	apiObj.run(proc1, excep = False)
 
 	apiObj = DbsUnitTestApi(api.insertBlock, f)
-	path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['TierList'][0]) + "/" + str(proc1['Name'])
+
+	path = "/" + str(proc1['PrimaryDataset']['Name']) + "/" + str(proc1['Name']) + "/" + tierName1 + "-" + tierName2
+        print "PATH: %s" % path
 
 	#Insert Block
-	block1 = DbsFileBlock (Name = "/DBSStressTest/isatestblock#016712", Path = path)
-	apiObj.run(path, "/DBSStressTest/isatestblock#016712" , excep = False)
+	block1 = DbsFileBlock (Name = path+'#01234-0567', Path = path)
+	apiObj.run(path, block1 , excep = False)
 
 	#Insert Run
 	apiObj = DbsUnitTestApi(api.insertRun, f)
@@ -133,8 +135,7 @@ for i in range(maxDS):
 	apiObj.run(lumi2, excep = False)
 
 	#Insert File
-        for i in range(3):
-	  for j in range(maxFiles):
+	for j in range(maxFiles):
 		apiObj = DbsUnitTestApi(api.insertFiles, f)
                 lfn1 = mytime+str(j)
 		file1= DbsFile (
@@ -144,16 +145,13 @@ for i in range(maxDS):
 			NumberOfEvents= 10000,
 			FileSize= 12340,
 			Status= 'VALID',
-			FileType= 'EVD',
+			FileType= 'EDM',
 			LumiList= [lumi1, lumi2],
 			TierList= tierList,
 			)
 	
 		fileList.append(file1)
-          print "\n\n\nNUMBER of FILES with which insertFile API is called: %s" %str(len(fileList))               
-	  apiObj.run(proc1 ,fileList, block1,  excep = False)
+        print "\n\n\nNUMBER of FILES with which insertFile API is called: %s" %str(len(fileList))               
+	apiObj.run(proc1 ,fileList, block1,  excep = False)
 
 f.close()
-
-
-
