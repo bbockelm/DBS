@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.86 $"
- $Id: DBSSql.java,v 1.86 2007/03/28 21:50:19 afaq Exp $"
+ $Revision: 1.87 $"
+ $Id: DBSSql.java,v 1.87 2007/03/30 19:36:18 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -901,9 +901,9 @@ public class DBSSql {
 							"concat('/', primds.Name \n" +
 							"),'/' \n" +
 						//"),dt.Name \n" +
-						"),'TIER_DOES_NOT_MATTER' \n" +
+						"),procds.name \n" +
 					"),'/' \n" +
-				"), procds.name \n" +
+				"), 'TIER_DOES_NOT_MATTER' \n" +
 			") as PATH, \n" +
 			"procds.CreationDate as CREATION_DATE, \n" +
 			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
