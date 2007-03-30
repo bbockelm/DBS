@@ -1,6 +1,6 @@
 /**
- $Revision: 1.95 $"
- $Id: DBSApiLogic.java,v 1.95 2007/03/29 15:38:44 afaq Exp $"
+ $Revision: 1.96 $"
+ $Id: DBSApiLogic.java,v 1.96 2007/03/29 22:00:40 sekhri Exp $"
  *
  */
 
@@ -909,12 +909,9 @@ public class DBSApiLogic {
                 	        //List all rows of DataTierOrder Table
 	                        ps =  DBSSql.getDataTierOrder(conn);
         	                rs =  ps.executeQuery();
-                	        if(!rs.next()) {
-                        	        throw new DBSException("Unavailable data", "1011", "DataTierOrder table does not exist" );
-	                        }
-        	                while(rs.next()) {
-                	                this.data.dbOrderedList.add(get(rs, "DATATIERORDER"));
-	                        }
+				if(!rs.next()) throw new DBSException("Unavailable data", "1011", "DataTierOrder table does not exist" );
+				this.data.dbOrderedList.add(get(rs, "DATATIERORDER"));
+        	                while(rs.next()) this.data.dbOrderedList.add(get(rs, "DATATIERORDER"));
         	        } finally {
                 		if (rs != null) rs.close();
 	                        if (ps != null) ps.close();
