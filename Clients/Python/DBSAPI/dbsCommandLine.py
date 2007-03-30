@@ -56,7 +56,8 @@ class printDot ( threading.Thread ):
 #URL="http://cmssrv17.fnal.gov:8989/DBSANZAR/servlet/DBSServlet"
 #URL="http://cmssrv17.fnal.gov:8989/DBSTRTEST/servlet/DBSServlet"
 #URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
-URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
+#URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
+URL="https://cmsdbsprod.cern.ch:8443/DBS/servlet/DBSServlet"
 ##Version of the Cleint API
 VERSION="v00_00_06"
 #############################################################################

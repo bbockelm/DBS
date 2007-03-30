@@ -8,7 +8,7 @@ while [ "1" == "1" ] ; do
 		python dbsListBlocks.py &
 		python dbsListRuns.py &
 		python dbsListFiles.py &
-		sleep 1000
+		sleep 10
 	done
 done
 

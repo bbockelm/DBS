@@ -42,7 +42,6 @@ apiObj.run("//*/ab/bc", excep = False)   ## / and * are allowed in pattern
 apiObj.run("abc bc", excep = True)
 apiObj.run("","", excep = True)
 f.write("\n***********************listPrimaryDatasets API tests***************************")
-
 apiObj = DbsUnitTestApi(api.listAlgorithms,f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listAlgorithm API tests***************************")
@@ -260,5 +259,4 @@ apiObj.run("ahs*",  block, excep = True)
 apiObj.run(path, "noeixts", excep = True)
 apiObj.run(path, "/no/ei/xts#1234", excep = True)
 f.write("\n\n***********************listDatasetContents API tests***************************")
-
 f.close()

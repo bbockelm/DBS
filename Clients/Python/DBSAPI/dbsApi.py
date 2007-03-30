@@ -1376,7 +1376,11 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'processed_dataset_parent':
+		  myPath = str(attrs['path']).split('/')
 		  result.append(DbsProcessedDataset ( 
+			  			Name=myPath[2],
+                                                #openForWriting=str(attrs['open_for_writing']), 
+                                                PrimaryDataset=DbsPrimaryDataset(Name=myPath[1]),
                                                 PhysicsGroup=str(attrs['physics_group_name']),
                                                 PhysicsGroupConverner=str(attrs['physics_group_convener']),
                                                 CreationDate=str(attrs['creation_date']),
@@ -1384,7 +1388,7 @@ class DbsApi(DbsConfig):
                                                 LastModificationDate=str(attrs['last_modification_date']),
                                                 LastModifiedBy=str(attrs['last_modified_by']),
                                                 #PathList=[str(attrs['path'])],     
-                                                Path=[str(attrs['path'])],     
+                                                #Path=[str(attrs['path'])],     
                                                 ))
 
       xml.sax.parseString (data, Handler ())
