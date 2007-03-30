@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.85 $"
- $Id: DBSSql.java,v 1.85 2007/03/16 18:42:52 sekhri Exp $"
+ $Revision: 1.86 $"
+ $Id: DBSSql.java,v 1.86 2007/03/28 21:50:19 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -900,7 +900,8 @@ public class DBSSql {
 						"concat( \n" +
 							"concat('/', primds.Name \n" +
 							"),'/' \n" +
-						"),dt.Name \n" +
+						//"),dt.Name \n" +
+						"),'TIER_DOES_NOT_MATTER' \n" +
 					"),'/' \n" +
 				"), procds.name \n" +
 			") as PATH, \n" +
@@ -915,8 +916,8 @@ public class DBSSql {
 				"ON primds.id = procds.PrimaryDataset \n" +
 			"LEFT OUTER JOIN ProcDSTier pdst \n" +
 				"ON pdst.Dataset = procds.id \n" +
-			"LEFT OUTER JOIN DataTier dt \n" +
-				"ON dt.id = pdst.DataTier \n" +
+			//"LEFT OUTER JOIN DataTier dt \n" +
+			//	"ON dt.id = pdst.DataTier \n" +
 			"LEFT OUTER JOIN PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"JOIN ProcDSParent dp \n" +
