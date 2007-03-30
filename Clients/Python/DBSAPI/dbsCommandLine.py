@@ -66,6 +66,17 @@ saved_help="out.log"
 
 
 # help related funcs
+def _help_andsdeflist():
+                print "Lists Analysis Dataset Definitions know to this DBS"
+                print "   Arguments:"
+                print "         -c lsadef, or --command=listAnalysisDatasetDefinition or --command=lsadef"
+                print "         optional: --pattern=<Analysis_Dataset_Definition_Name_Pattern>"
+                print "                   --help, displays this message"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c lsadef"
+                print "         python dbsCommandLine.py -c lsadef --pattern=WhatILike*"
+                
+
 #primary
 def _help_primarylist():
                 print "Lists PrimaryDatasets know to this DBS"
@@ -259,14 +270,14 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n           listTiers or lst, can provide --path"
       command_help += "\n           listBlocks or lsb, can provide --path and/or --blockpattern"
       command_help += "\n           listFiles or lsf, must provide --path"
-      command_help += "\n           listFileParents or lsfp, must be qualified with --pattern"
-      command_help += "\n           listFileAlgorithms or lsfa"
-      command_help += "\n           listFileTiers or lsft"
-      command_help += "\n           listFileBranches or lsfb"
-      command_help += "\n           listFileLumis or lsfl"
-      command_help += "\n           listStorageElements or lsse"
-      command_help += "\n           listAnalysisDatasetDefinition or lsad"
-      command_help += "\n           listAnalysisDataset or lsa"
+      #command_help += "\n           listFileParents or lsfp, must be qualified with --pattern"
+      #command_help += "\n           listFileAlgorithms or lsfa"
+      #command_help += "\n           listFileTiers or lsft"
+      #command_help += "\n           listFileBranches or lsfb"
+      #command_help += "\n           listFileLumis or lsfl"
+      #command_help += "\n           listStorageElements or lsse"
+      command_help += "\n           listAnalysisDatasetDefinition or lsadef"
+      command_help += "\n           listAnalysisDataset or lsads"
       command_help += "\n           search --searchtype=block,files,datasets"
       command_help += "\n\nSome examples:\n"
       command_help += "\npython dbsCommandLine.py --help"
@@ -413,6 +424,9 @@ class ApiDispatcher:
     elif apiCall in ('listStorageElements', 'lsse'):
         self.handlelistSECall()
 
+    elif apiCall in ('listAnalysisDatasetDefinition', 'lsadef'):
+	self.handlelistANDSDefCall()
+
     ##Search data
     elif apiCall in ('search'):
 	self.handleSearchCall()
@@ -433,6 +447,43 @@ class ApiDispatcher:
         print "Unknow Exception in user code:"
         traceback.print_exc(file=sys.stdout)
 
+
+  def handlelistANDSDefCall(self):
+        if self.optdict.has_key('want_help'):
+                _help_andsdeflist()
+                return
+        if self.optdict.get('pattern'):
+          apiret = self.api.listAnalysisDatasetDefinition(self.optdict.get('pattern'))
+        else:
+          apiret = self.api.listAnalysisDatasetDefinition("*")
+        for anObj in apiret:
+		#print anObj
+                self.reportAnDSDef(anObj)
+        return
+
+  def reportAnDSDef(self, anObj):
+	print "\nAnalysis Dataset Definition: %s" %anObj['Name']
+	print "      Dataset Path: %s" %str(anObj['ProcessedDatasetPath'])
+	print "         CreationDate: %s"
+	print "         CreatedBy: %s" %anObj['CreatedBy']
+	print "         Runs Included: %s" % str(anObj['RunsList'])
+	print "         RunRanges Included: %s" % str(anObj['RunRangeList'])
+	print "         Lumi Sections Included: %s" %str(anObj['LumiList'])
+	print "         LumiRanges Included: %s" %str(anObj['LumiRangeList'])
+	print "         Tiers Included: %s" %str(anObj['TierList'])
+	print "         Algorithms Included:"
+	for anAlgo in anObj['AlgoList']:
+		if anAlgo in ('', None):
+			continue
+		algo = anAlgo.split(';')	
+                print "                /"+ algo[2] \
+                                + "/" + algo[0]  \
+                                        +"/"+ algo[1] \
+                                                + "/" + algo[3]
+
+	return	
+	         
+
   def handleListPrimaryDatasets(self):
 	if self.optdict.has_key('want_help'):
 		_help_primarylist()
@@ -443,6 +494,7 @@ class ApiDispatcher:
           apiret = self.api.listPrimaryDatasets("*")
        	for anObj in apiret:
         	print anObj['Name']
+        return
 
   def handleListProcessedDatasets(self):
         if self.optdict.has_key('want_help'):
@@ -480,6 +532,7 @@ class ApiDispatcher:
                          #datasetPaths.append(aPath)
                          #Print on screen as well
                          print aPath
+        return
 
   def reportProcessedDatasets(self, anObj):
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
@@ -495,6 +548,7 @@ class ApiDispatcher:
 			report['lines'].append("        "+aPath)
 		#Print it
         	printReport(report)
+                return
 
   def getPath(self, inpath):
 
@@ -559,6 +613,7 @@ class ApiDispatcher:
 					+"/"+ anObj['ApplicationFamily'] \
 						+ "/" + anObj['ParameterSetID']['Hash']
         if (len(apiret) > 10): print "\nListed as:      /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n\n"  
+        return
 
 
   def handleListFiles(self):
@@ -586,6 +641,7 @@ class ApiDispatcher:
               for anObj in apiret:
                 print "          %s" %anObj['LogicalFileName']
          print "Total files listed: %s" %len(apiret)
+         return
 
   def reportFile(self, anObj):
               report = Report()
@@ -598,6 +654,7 @@ class ApiDispatcher:
               report.addLine("                         Block : %s"  %anObj['Block']['Name'])
               report.addLine("\n")
               printReport(report)
+              return
 
   def handlelistSECall(self):
        if self.optdict.has_key('want_help'):
@@ -609,6 +666,7 @@ class ApiDispatcher:
        print "Listing storage elements, please wait..." 
        for anObj in apiret:
            print anObj['Name']
+       return
 
   def handleBlockCall(self):
        if self.optdict.has_key('want_help'):
@@ -631,6 +689,7 @@ class ApiDispatcher:
          else :
                 for anObj in apiret:
                     print anObj['Name']
+       return
 
   def reportBlock(self, anObj):
                 sumry  = "\n     Block Name %s " %anObj['Name']
@@ -649,6 +708,7 @@ class ApiDispatcher:
                 #Print it
                 report.addLine("\n")
                 printReport(report)
+                return
 
   def handleSearchCall(self):
        if self.optdict.has_key('want_help'):
@@ -711,6 +771,7 @@ class ApiDispatcher:
 						self.reportFile(aFile)
 					else: 
 						print "                    %s" %aFile['LogicalFileName']
+       return
 				
 #
 # main
