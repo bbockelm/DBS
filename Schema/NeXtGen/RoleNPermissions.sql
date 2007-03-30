@@ -80,9 +80,8 @@ grant delete on Block to CMS_DBS_DLS_ROLE
 /
 grant delete on SEBlock to CMS_DBS_DLS_ROLE
 /
-
-
-
+grant delete on STORAGEELEMENT to CMS_DBS_DLS_ROLE
+/
 #
 #
 
