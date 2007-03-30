@@ -2009,6 +2009,8 @@ class DDHelper(DDLogger):
       blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
+  def getData_viaDLS(self,dataset,site="Any",userMode="user",idx=-1):
+# The backward compatible code to use DLS
       kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
       blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
       # blockInfoDict=[nEvts,blockStatus,nFiles,blockSize,list of se's]
@@ -2020,7 +2022,6 @@ class DDHelper(DDLogger):
           nFiles = item[2]
           bBytes = item[3]
           seList = item[4]
-#          evts,bStatus,nFiles,bBytes,seList  = blockInfoDict[blockName]
           if not evts:
              continue # this eliminates file blocks with no events
           # query DLS
