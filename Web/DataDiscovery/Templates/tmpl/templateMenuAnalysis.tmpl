@@ -1,0 +1,153 @@
+<!-- templateMenuAnalysis.tmpl -->
+<table class="table_box_white" border="0" width="100%">
+<tr valign="top">
+<td class="box_darkblue">
+DBS Discovery :: Analysis datasets search
+</td>
+</tr>
+</table>
+
+<form action="findAnalysisDS" >
+<input type="hidden" value="$userMode" name="userMode" />
+<table>
+<tr>
+<td align="right">
+<div id="an_nameDef">
+<b>
+Name:
+</b>
+</div>
+</td>
+<td align="left"><input type="text" size="60" id="an_name" name="an_name" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_lumiDef">
+<b>
+Lumi sections:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_lumi" name="an_lumi" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_runsDef">
+<b>
+Run ranges:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_runs" name="an_runs" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_relsDef">
+<b>
+Release:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_rels" name="an_rels" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_lfnsDef">
+<b>
+LFNs:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_lfns" name="an_lfns" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_prdsDef">
+<b>
+Dataset:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_prds" name="an_prds" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_tierDef">
+<b>
+Tiers:
+</b>
+</td>
+<td align="left">
+<select name="an_tier" id="an_tier">
+<option value="Any">Any</option>
+#for tier in $tierList
+<option value="$tier">$tier</option>
+#end for
+</select>
+</td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_andsDef">
+<b>
+Analysis dataset:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_ands" name="an_ands" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_cutsDef">
+<b>
+Cut:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_cuts" name="an_cuts" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="an_descDef">
+<b>
+Description:
+</b>
+</td>
+<td align="left"><input type="text" size="60" id="an_desc" name="an_desc" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<input type="submit" value="Find" />
+</td>
+<td></td>
+</tr>
+</table>
+</form>
+
+<script type="text/javascript">
+var tooltip;
+tooltip="<p>Analysis dataset name used to define the analysis dataset.</p>";
+MakeTooltip("t_an_nameDef","an_nameDef",tooltip);
+tooltip="<p>Lumi section range.</p>";
+MakeTooltip("t_an_lumiDef","an_lumiDef",tooltip);
+tooltip="<p>Run range.</p>";
+MakeTooltip("t_an_runsDef","an_runsDef",tooltip);
+tooltip="<p>Software releases.</p>";
+MakeTooltip("t_an_relsDef","an_relsDef",tooltip);
+tooltip="<p>Logical File Name.</p>";
+MakeTooltip("t_an_lfnsDef","an_lfnsDef",tooltip);
+tooltip="<p>Processed dataset.</p>";
+MakeTooltip("t_an_prdsDef","an_prdsDef",tooltip);
+tooltip="<p>Data tier.</p>";
+MakeTooltip("t_an_tierDef","an_tierDef",tooltip);
+tooltip="<p>Analysis dataset.</p>";
+MakeTooltip("t_an_andsDef","an_andsDef",tooltip);
+tooltip="<p>User cuts.</p>";
+MakeTooltip("t_an_cutsDef","an_cutsDef",tooltip);
+tooltip="<p>Analysis dataset description.</p>";
+MakeTooltip("t_an_descDef","an_descDef",tooltip);
+</script>
+<!-- end of templateMenuAnalysis.tmpl -->
