@@ -1182,6 +1182,8 @@ class DDHelper(DDLogger):
              sel = sqlalchemy.select(iList, from_obj=[tableName], limit=limit, offset=fromRow)
           else:
              sel = sqlalchemy.select(iList, from_obj=[tableName])
+          if len(iList)==1:
+             sel.order_by=[sqlalchemy.desc(iList[0])]
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
