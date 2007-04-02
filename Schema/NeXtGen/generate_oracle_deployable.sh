@@ -77,7 +77,9 @@ for atable in $table_list; do
    echo "CREATE OR REPLACE TRIGGER TRTS${atable} BEFORE INSERT OR UPDATE ON ${atable}" >> $stamp_trig
    echo "FOR EACH ROW declare" >> $stamp_trig
    echo "  unixtime integer" >> $stamp_trig
-   echo "     := 86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'));" >> $stamp_trig
+   echo "     :=  (86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'))) - (to_number(substr(tz_offset(sessiontimezone),1,3))) * 3600 ;" >> $stamp_trig
+#   echo "  unixtime integer" >> $stamp_trig
+#   echo "     := 86400 * (sysdate - to_date('01/01/1970 00:00:00', 'DD/MM/YYYY HH24:MI:SS'));" >> $stamp_trig
    echo "BEGIN" >> $stamp_trig
    echo "  :NEW.LASTMODIFICATIONDATE := unixtime;" >> $stamp_trig
    echo "END;" >> $stamp_trig
