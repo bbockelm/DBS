@@ -547,6 +547,21 @@ class DDServer(DDLogger):
             return str(t)
     _config.exposed=True
 
+    def _analysis(self,userMode="user"):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode)
+            tierList = self.helper.getDataTiers()
+            nameSearch={'tierList':tierList,'userMode':userMode}
+            t = templateMenuAnalysis(searchList=[nameSearch]).respond()
+            page+= str(t)
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in analysis init function")
+            pass
+            return str(t)
+    _analysis.exposed=True
+
     def _rss(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -674,7 +689,7 @@ class DDServer(DDLogger):
                     'groupList'   : self.helper.getPhysicsGroups,
                     'dataTypes'   : self.helper.getDataTiers(),
                     'softReleases': self.helper.getSoftwareReleases(),
-                    'primDatasets': self.helper.getPrimaryDatasets(),
+#                    'primDatasets': self.helper.getPrimaryDatasets(),
                     'siteList'    : self.helper.getSites(), 
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
@@ -1380,11 +1395,6 @@ class DDServer(DDLogger):
         return page
     getRuns.exposed = True 
 
-    def getAnalysisDS(self,dbsInst,dataset=""):
-        page="Here information about analysis dataset information will appear"
-        return page
-    getAnalysisDS.exposed=True
-
     def getParameterSet(self,dbsInst,dataset=""):
         page="Here information about paramterSet information will appear"
         return page
@@ -1627,6 +1637,45 @@ class DDServer(DDLogger):
 	page+=str(t)
         return page
         
+    def getAnalysisDS(self,dbsInst,dataset,ajax=0,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
+        _idx=int(_idx)
+        if  int(ajax):
+            # AJAX wants response as "text/xml" type
+            self.setContentType('xml')
+            page="""<ajax-response><response type="object" id="results">"""
+        else:
+            page=self.genTopHTML(userMode=userMode)
+            t = templateWhere(searchList=[{'where':'Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset}]).respond()
+            page+=str(t)
+        self.helper.setDBSDLS(dbsInst)
+        dList = self.helper.getAnalysisDS(dataset)
+        nameSpace = {'dList':dList}
+        t = templateAnalysisDS(searchList=[nameSpace]).respond()
+	page+=str(t)
+        if  int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getAnalysisDS.exposed=True
+
+    def findAnalysisDS(self,an_name,an_lumi,an_runs,an_lfns,an_rels,an_prds,an_tier,an_ands,an_cuts,an_desc,userMode):
+        page=self.genTopHTML(userMode=userMode)
+        t = templateWhere(searchList=[{'where':'Navigator :: Results :: Analysis datasets'}]).respond()
+        page+=str(t)
+        dList=[] # TODO: find out analysis DS out of input parameters
+        nameSpace = {
+                     'dList'   : dList,
+                     'userMode': userMode,
+                    }
+        t = templateAnalysisDS(searchList=[nameSpace]).respond()
+	page+=str(t)
+        page+=self.genBottomHTML()
+        return page       
+    findAnalysisDS.exposed=True
+
     def getFileBlocks(self,dbsInst,site,ajax=1,userMode='user',_idx=0,pagerStep=RES_PER_PAGE,**kwargs):
         _idx=int(_idx)
         if  int(ajax):
