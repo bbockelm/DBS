@@ -2046,6 +2046,62 @@ class DDHelper(DDLogger):
       siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
+  def getAnalysisDS(self,proc):
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tad  = self.alias('AnalysisDataset','tad')
+          tadt = self.alias('AnalysisDSType','tadt')
+          tads = self.alias('AnalysisDSStatus','tads')
+          tadd = self.alias('AnalysisDSDef','tadd')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
+
+          oSel = [self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
+                  self.col(tads,'Status'),self.col(tadd,'Name'),
+                  self.col(tadd,'LumiSections'),
+                  self.col(tadd,'LumiSectionRanges'),
+                  self.col(tadd,'Runs'),
+                  self.col(tadd,'RunsRanges'),
+                  self.col(tadd,'Algorithms'),
+                  self.col(tadd,'LFNs'),
+                  self.col(tadd,'AnalysisDatasets'),
+                  self.col(tadd,'UserCut'),
+                  self.col(tadd,'Description'),
+                  self.col(tp1,'DistinguishedName'),self.col(tad,'CreatedBy'),self.col(tad,'CreationDate'),
+                  self.col(tp2,'DistinguishedName'),self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate')]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                     tprd.outerjoin(tad,onclause=self.col(tad,'ProcessedDS')==self.col(tprd,'ID'))
+                     .outerjoin(tadt,onclause=self.col(tad,'Type')==self.col(tadt,'ID'))
+                     .outerjoin(tads,onclause=self.col(tad,'Status')==self.col(tads,'ID'))
+                     .outerjoin(tadd,onclause=self.col(tad,'Definition')==self.col(tadd,'ID'))
+                     .outerjoin(tp1,onclause=self.col(tad,'CreatedBy')==self.col(tp1,'ID'))
+                     .outerjoin(tp2,onclause=self.col(tad,'LastModifiedBy')==self.col(tp2,'ID'))
+                            ],distinct=True,order_by=oSel
+                                 )
+          if proc!="*":
+             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          sel.use_labels=True
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          printExcept()
+          raise "Fail in getAnalysisDS"
+      aList=[]
+      aDict={}
+      for item in result:
+          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate=item
+          cDate=timeGMT(cDate)
+          mDate=timeGMT(mDate)
+          aList.append(aDict)
+      if self.verbose:
+         self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return aList
+
   def getBlockInfoForSite(self,site,iLimit=25,iOffset=0):
       if site.lower()=='all' or site.lower()=='any': site="*"
       t1=time.time()
