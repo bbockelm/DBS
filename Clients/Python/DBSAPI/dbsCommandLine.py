@@ -31,9 +31,6 @@ from dbsApiException import *
 import threading
 import sys
 
-#import pdb
-
-
 class printDot ( threading.Thread ):
        def __init__(self):  
           threading.Thread.__init__(self)
@@ -53,19 +50,32 @@ class printDot ( threading.Thread ):
 
 #############################################################################
 ##Default URL for the Service
-#URL="http://cmssrv17.fnal.gov:8989/DBSANZAR/servlet/DBSServlet"
-#URL="http://cmssrv17.fnal.gov:8989/DBSTRTEST/servlet/DBSServlet"
-#URL="http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet"
-#URL="http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet"
-URL="https://cmsdbsprod.cern.ch:8443/DBS/servlet/DBSServlet"
-##Version of the Cleint API
-VERSION="v00_00_06"
+#
+# If NO URL is provided, URL from dbs.config will be used
+#
 #############################################################################
 
 saved_help="out.log"
 
 
 # help related funcs
+
+
+#Analysis Datasets
+def _help_andslist():
+                print "Lists Analysis Datasets know to this DBS"
+                print "   Arguments:"
+                print "         -c lsads, or --command=listAnalysisDataset or --command=lsads"
+                print "         optional: --pattern=<Analysis_Dataset_Name_Pattern>"
+		print "                   --path=<dataset path>"
+                print "                   --help, displays this message"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c lsads"
+                print "         python dbsCommandLine.py -c lsads --pattern=MyAnalysis*"
+                print "         python dbsCommandLine.py -c lsads --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/FEVT"
+                print "         python dbsCommandLine.py -c lsads --pattern=MyAnalysisDatasets4* --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-0006210/FEVT"
+
+#Analysis Dataset Definitions
 def _help_andsdeflist():
                 print "Lists Analysis Dataset Definitions know to this DBS"
                 print "   Arguments:"
@@ -201,20 +211,18 @@ class DbsOptionParser(optparse.OptionParser):
   def __init__(self):
       optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.1", conflict_handler="resolve")
 
-      self.add_option("--url",action="store", type="string", dest="url", default=URL,
-           help="specify URL, e.g. http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet")
+      self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
+           help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
       self.add_option("-v","--verbose", action="store", type="string", default="WARNING", dest="level",
            help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
 
-      #self.add_option("--apiver","--apiversion", action="store", type="string", default=VERSION, dest="version",
-      #     help="specify dbs client api version, e.g. --ver=v00_00_06, or --version=v00_00_06")
-
       self.add_option("--p","--path", action="store", type="string", dest="path",
            help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed, supports shell glob")
 
-      self.add_option("--pattern", action="store", type="string", dest="pattern",
-           help="some commands scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob for Primary Dataset Names")
+      self.add_option("--pattern", action="store", type="string", dest="pattern", default="*",
+           help="some commands scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob for Primary Dataset Names, "+ \
+						"Use --doc or individual commands wth --help")
 
       self.add_option("--algopattern", action="store", type="string", dest="algopattern",
            help="Algorithms can be specified as algopattern /appname/appversion/appfamily/pset_hash, supports shell glob")
@@ -293,6 +301,10 @@ class DbsOptionParser(optparse.OptionParser):
       print command_help
       print "\n" 	
       print "More Details on individual calls:" 	
+      _help_andslist()
+      print "\n"
+      _help_andsdeflist()
+      print "\n" 
       _help_primarylist()
       print "\n" 	
       _help_procdslist() 
@@ -389,8 +401,13 @@ class ApiDispatcher:
     #print args
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
+
+    # If NO URL is provided, URL from dbs.config will be used
+    print opts.__dict__['url']
+    if opts.__dict__['url'] == "BADURL":
+        del(opts.__dict__['url']) 
     self.api = DbsApi(opts.__dict__)
-    print "\nUsing DBS instance at: %s\n" %self.optdict.get('url', 'MISSING URL ?')
+    print "\nUsing DBS instance at: %s\n" %self.optdict.get('url', self.api.url())
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
@@ -427,6 +444,9 @@ class ApiDispatcher:
     elif apiCall in ('listAnalysisDatasetDefinition', 'lsadef'):
 	self.handlelistANDSDefCall()
 
+    elif apiCall in ('listAnalysisDataset', 'lsads'):
+        self.handlelistANDCall()
+
     ##Search data
     elif apiCall in ('search'):
 	self.handleSearchCall()
@@ -462,9 +482,9 @@ class ApiDispatcher:
         return
 
   def reportAnDSDef(self, anObj):
-	print "\nAnalysis Dataset Definition: %s" %anObj['Name']
+	print "\n  Analysis Dataset Definition: %s" %anObj['Name']
 	print "      Dataset Path: %s" %str(anObj['ProcessedDatasetPath'])
-	print "         CreationDate: %s"
+	print "         CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
 	print "         CreatedBy: %s" %anObj['CreatedBy']
 	print "         Runs Included: %s" % str(anObj['RunsList'])
 	print "         RunRanges Included: %s" % str(anObj['RunRangeList'])
@@ -483,7 +503,24 @@ class ApiDispatcher:
 
 	return	
 	         
+  def handlelistANDCall(self):
+        if self.optdict.has_key('want_help'):
+                _help_andslist()
+                return
+        print self.optdict.get('path') 
+	apiret = self.api.listAnalysisDataset(self.optdict.get('pattern'), self.optdict.get('path'))
+        for anObj in apiret:
+                #print anObj
+                self.reportAnDS(anObj)
+        return
 
+  def reportAnDS(self, anObj):
+        print "\n\nAnalysis Dataset: %s" %anObj['Name']
+        print "         CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+        print "         CreatedBy: %s" %anObj['CreatedBy']
+        #Lets print the definition too.
+        self.reportAnDSDef(anObj['Definition'])
+ 
   def handleListPrimaryDatasets(self):
 	if self.optdict.has_key('want_help'):
 		_help_primarylist()
@@ -493,7 +530,11 @@ class ApiDispatcher:
         else:
           apiret = self.api.listPrimaryDatasets("*")
        	for anObj in apiret:
+                print "\n"
         	print anObj['Name']
+		print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+                print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['LastModificationDate'])))
+
         return
 
   def handleListProcessedDatasets(self):
