@@ -2,8 +2,13 @@
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
-DBS Discovery :: $where
+$where
 </td>
+#if $userMode=='user'
+<td align="right" class="box_darkblue">Physicist</td>
+#else
+<td align="right" class="box_darkblue">Production</td>
+#end if
 </tr>
 </table>
 <p />

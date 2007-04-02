@@ -10,6 +10,11 @@ DBS Discovery :: Finder
 | <a href="$host/finderExample?userMode=$userMode">Demo</a>
 | <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">Command Line Interface</a>
 </td>
+#if $userMode=='user'
+<td align="right" class="box_darkblue">Physicist</td>
+#else
+<td align="right" class="box_darkblue">Production</td>
+#end if
 </tr>
 #*
 <tr valign="top">

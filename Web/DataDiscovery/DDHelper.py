@@ -1030,7 +1030,6 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
-          print sel,prim,proc,tier
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
               id,prim,proc,tier=item

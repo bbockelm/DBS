@@ -287,6 +287,7 @@ class DDServer(DDLogger):
 #            return self.init()
 #            page = self.genTopHTML(intro=False,userMode=userMode)
             page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
+            page+= self.whereMsg('Navigator',userMode)
             userNav = self.genUserNavigator(DBSGLOBAL,userMode)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
@@ -504,6 +505,7 @@ class DDServer(DDLogger):
     def _navigator(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
+            page+= self.whereMsg('Navigator',userMode)
             userNav = self.genUserNavigator(DBSGLOBAL,userMode)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
@@ -534,6 +536,7 @@ class DDServer(DDLogger):
     def _config(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="registerAjaxLucene();ajaxGetLuceneParams()")
+            page+=self.whereMsg('Config parameter search',userMode)
             t = templateSearchEngine(searchList=[{}]).respond()
             luceneForm=str(t)
             nameSearch={'host':self.dbsdd,'luceneForm':luceneForm}
@@ -550,6 +553,7 @@ class DDServer(DDLogger):
     def _analysis(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= self.whereMsg('Analysis dataset search',userMode)
             tierList = self.helper.getDataTiers()
             nameSearch={'tierList':tierList,'userMode':userMode}
             t = templateMenuAnalysis(searchList=[nameSearch]).respond()
@@ -565,6 +569,7 @@ class DDServer(DDLogger):
     def _rss(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= self.whereMsg('RSS feeds',userMode)
             t = templateMenuRss(searchList=[]).respond()
             page+= str(t)
             page+= self.getRss(ajax=0,userMode=userMode)
@@ -579,6 +584,7 @@ class DDServer(DDLogger):
     def _siteSearch(self,userMode="expert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= self.whereMsg('Site search',userMode)
             dbsInst,site=self.formDict['siteForm']
             siteForm=self.siteForm(dbsInst,site,userMode)
             nameSpace = {
@@ -600,6 +606,7 @@ class DDServer(DDLogger):
     def _history(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= self.whereMsg('History',userMode)
             t = templateMenuHistory(searchList=[]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -615,7 +622,7 @@ class DDServer(DDLogger):
             page = self.genTopHTML(intro=False,userMode=userMode)
             nameSpace = {
                          'host'         : self.dbsdd,
-                         'userMode'     : self.userMode,
+                         'userMode'     : userMode,
                          'glossary'     : self.glossary(),
                         }
             t = templateMenuHelp(searchList=[nameSpace]).respond()
@@ -631,6 +638,7 @@ class DDServer(DDLogger):
     def _contact(self,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= self.whereMsg('Contact information',userMode)
             nameSpace = {
                          'host'         : self.dbsdd,
                          'userMode'     : self.userMode,
@@ -648,6 +656,7 @@ class DDServer(DDLogger):
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
+            page+= self.whereMsg('DBS expert page',userMode)
             dbsTables = self.helper.dbManager.getTableNames(dbsInst)
             dbsTables.sort()
             nameSpace = {
@@ -665,6 +674,9 @@ class DDServer(DDLogger):
     _dbsExpert.exposed=True
 
     ################## END OF init methods
+    def whereMsg(self,msg,userMode):
+        t = templateWhere(searchList=[{'where':'DBS discovery :: '+msg,'userMode':userMode}]).respond()
+        return str(t)
 
     def searchHelper(self,keywords=""):
         """
@@ -940,8 +952,7 @@ class DDServer(DDLogger):
         try:
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: list of datasets'}]).respond()
-            page+=str(t)
+            page+= self.whereMsg('Navigator :: Results :: list of datasets',userMode)
             page+= self.genResultsHTML()
             page+= "<pre>"
             if  len(proc) and proc!="*":
@@ -1093,6 +1104,7 @@ class DDServer(DDLogger):
         bList=[]
         id=0
 
+        page+=self.whereMsg('Navigator :: Results',userMode)
         # I re-use this dict for different templates
         _nameSpace = {
                      'nDatasets': nDatasets,
@@ -1153,6 +1165,7 @@ class DDServer(DDLogger):
         
     def crabCfg(self,dataset,totEvt,userMode='userMode',**kwargs):
         page=self.genTopHTML(userMode=userMode)
+        page+=self.whereMsg('Navigator :: Results :: CRAB configuration file :: dataset=%s'%dataset,userMode)
         nameSpace = {
                      'dataset'  : dataset,
                      'totEvt'   : totEvt
@@ -1293,6 +1306,7 @@ class DDServer(DDLogger):
 #            if int(_idx)==0:
 #               className="show_inline"
 #            page+="""<div id="results_dbs_response_%s" class="%s">"""%(_idx,className)
+            page+= self.whereMsg('Navigator :: Results :: File block information',userMode)
             for idx in xrange(0,nDatasets):
                 tid = 't_dbs_'+str(idx)
                 dataset = dList[idx]
@@ -1365,6 +1379,7 @@ class DDServer(DDLogger):
 #            if int(_idx)==0:
 #               className="show_inline"
 #            page+="""<div id="runs_response_%s" class="%s">"""%(_idx,className)
+            page+=self.whereMsg('Navigator :: Results :: Run information',userMode)
             for idx in xrange(0,nDatasets):
                 tid = 't_runs_'+str(idx)
                 dataset = dList[idx]
@@ -1413,8 +1428,7 @@ class DDServer(DDLogger):
         try:
 #            self.htmlInit()
             page = self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: LFN list :: block %s'%blockName}]).respond()
-            page+=str(t)
+            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
 #            page+= self.genResultsHTML()
 #            page+="""<div id="_snapshot"></div><hr class="dbs" /><br />"""
 #            page+="""<script type="text/javascript">GetParentNavBar()</script>"""
@@ -1442,8 +1456,7 @@ class DDServer(DDLogger):
         try:
 #            self.htmlInit()
             page = self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: LFN list :: block %s'%blockName}]).respond()
-            page+=str(t)
+            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
             page+="""<pre>\n"""
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
             for item in lfnList:
@@ -1465,8 +1478,7 @@ class DDServer(DDLogger):
         try:
 #            self.htmlInit()
             page = self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: LFN list :: site %s'%site}]).respond()
-            page+=str(t)
+            page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
             page+="""<pre>\n"""
             bList=[]
             if  blockList:
@@ -1566,8 +1578,7 @@ class DDServer(DDLogger):
         try:
 #            self.htmlInit()
             page = self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: LFN list :: block %s'%blockName}]).respond()
-            page+=str(t)
+            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
             page+="""<pre>\n"""
             page+="replace PoolSource.fileNames = {\n"
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
@@ -1645,8 +1656,7 @@ class DDServer(DDLogger):
             page="""<ajax-response><response type="object" id="results">"""
         else:
             page=self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset}]).respond()
-            page+=str(t)
+            page+=self.whereMsg('Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset,userMode)
         self.helper.setDBSDLS(dbsInst)
         dList = self.helper.getAnalysisDS(dataset)
         nameSpace = {'dList':dList}
@@ -1663,8 +1673,7 @@ class DDServer(DDLogger):
 
     def findAnalysisDS(self,an_name,an_lumi,an_runs,an_lfns,an_rels,an_prds,an_tier,an_ands,an_cuts,an_desc,userMode):
         page=self.genTopHTML(userMode=userMode)
-        t = templateWhere(searchList=[{'where':'Navigator :: Results :: Analysis datasets'}]).respond()
-        page+=str(t)
+        page+=self.whereMsg('Navigator :: Results :: Analysis datasets',userMode)
         dList=[] # TODO: find out analysis DS out of input parameters
         nameSpace = {
                      'dList'   : dList,
@@ -1684,8 +1693,7 @@ class DDServer(DDLogger):
             page="""<ajax-response><response type="object" id="results">"""
         else:
             page=self.genTopHTML(userMode=userMode)
-            t = templateWhere(searchList=[{'where':'Navigator :: Results :: Blocks at site=%s'%site}]).respond()
-            page+=str(t)
+            page+=self.whereMsg('Navigator :: Results :: Blocks at site=%s'%site,userMode)
         limit=pagerStep
         offset=int(_idx)*int(pagerStep)
         dbsList=self.helper.getBlockInfoForSite(site,limit,offset)
@@ -2070,6 +2078,7 @@ class DDServer(DDLogger):
            @return: returns parents fro given datasets in HTML form 
         """
         try:
+            page = self.whereMsg('Navigator :: Results :: Provenance information',userMode)
             parents  = self.helper.getDatasetProvenance(dataset)
             nameSpace={
                        'host'      : self.dbsdd, 
@@ -2077,7 +2086,7 @@ class DDServer(DDLogger):
                        'parentList': parents
                       }
             t = templateProvenance(searchList=[nameSpace]).respond()
-            page= str(t)
+            page+= str(t)
         except:
             printExcept()
             page="No provenance information found at this time"
@@ -2420,8 +2429,7 @@ class DDServer(DDLogger):
            page="""<ajax-response><response type="object" id="appConfigs">"""
         else:
            page=self.genTopHTML(userMode=userMode)
-           t = templateWhere(searchList=[{'where':'Navigator :: Results :: Configuration file(s)'}]).respond()
-           page+=str(t)
+           page+=self.whereMsg('Navigator :: Results :: Configuration file(s)',userMode)
         for item in self.helper.listApplicationConfigsContent(appPath):
             name,content,ver,type,ann,cDate,cBy,mDate,mBy = item
             nameSpace={
@@ -2631,6 +2639,7 @@ class DDServer(DDLogger):
 #        self.setContentType('xml')
 #        page="""<ajax-response><response type="element" id="floatDataDescription">"""
         page=self.genTopHTML(userMode=userMode)
+        page+=self.whereMsg('Navigator :: Results :: Data description',userMode)
         description=""
         dList=self.helper.getDataDescription(processedDataset)
         # get formatted output of dataset details
@@ -2656,8 +2665,7 @@ class DDServer(DDLogger):
            page="""<ajax-response><response type="element" id="floatDataDescription">"""
         else:
            page=self.genTopHTML(userMode=userMode)
-           t = templateWhere(searchList=[{'where':'Navigator :: Results :: LFN list :: %s :: LFN=%s'%(msg,lfn)}]).respond()
-           page+=str(t)
+           page+=self.whereMsg('Navigator :: Results :: LFN list :: %s :: LFN=%s'%(msg,lfn),userMode)
         if  len(iList):
             try:
                 nameSpace={'branch':iList}
