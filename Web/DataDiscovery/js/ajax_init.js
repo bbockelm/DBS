@@ -443,6 +443,7 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetDbsSchema','getDbsSchema');
     ajaxEngine.registerRequest('ajaxExecuteQuery','executeSQLQuery');
     ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
+    ajaxEngine.registerRequest('ajaxFindDSFromFinder','findDSFromFinder');
     ajaxEngine.registerRequest('ajaxFinderStoreQuery','finderStoreQuery');
     ajaxEngine.registerRequest('ajaxFinderSearchQuery','finderSearchQuery');
     finderUpdater = new GetDataUpdater('results_finder','replace','noResultsMenu');
@@ -626,9 +627,9 @@ function ajaxExecuteQuery(iDbs,iQuery) {
 // This is how we add back button support.
 //  ajax_dhtmlHistory('ajaxGetDbsData',ajaxCall);
 }
-function ajaxFinderSearch(dbsInst,parameters,limit,offset) {
+function ajaxFinderSearch(userMode,dbsInst,parameters,limit,offset) {
     if (dbsInst && parameters) {
-        ajaxEngine.sendRequest('ajaxFinderSearch','dbsInst='+dbsInst,"limit="+limit,"offset="+offset,parameters);
+        ajaxEngine.sendRequest('ajaxFinderSearch','userMode='+userMode,'dbsInst='+dbsInst,'limit='+limit,'offset='+offset,parameters);
     } else {
         ShowTag('results_finder');
         var dbsInst=$('finder_dbsSelector').value;
@@ -662,8 +663,11 @@ function ajaxFinderSearch(dbsInst,parameters,limit,offset) {
                 parameters=parameters+'_newparam_'+str;
             }
         }
-        ajaxEngine.sendRequest('ajaxFinderSearch','dbsInst='+dbsInst,parameters);
+        ajaxEngine.sendRequest('ajaxFinderSearch','userMode='+userMode,'dbsInst='+dbsInst,parameters);
     }
+}
+function ajaxFindDSFromFinder(dbsInst,params,userMode) {
+    ajaxEngine.sendRequest('ajaxFindDSFromFinder','dbsInst='+dbsInst,'params='+params,'userMode='+userMode);
 }
 function ajaxFinderStoreQuery(iUser) {
     var dbsInst=$('finder_dbsSelector').value;
