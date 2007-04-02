@@ -9,7 +9,7 @@ savePWD=$PWD
 outFile=$savePWD/result.txt
 rm -f $outFile
 cd $BASE/lib
-CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.3-bin.jar
+CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
 CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=v00_00_05"
@@ -97,7 +97,7 @@ updateAnalDSStatus () {
 }
 
 updateFileStatus () {
-	message="Executing updateFileDSStatus API..."
+	message="Executing updateFileStatus API..."
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=updateFileStatus lfn=$lfn1 status=INVALID`
 	display "$out"
@@ -425,6 +425,13 @@ insertBlock () {
 	#echo "$out"
 }
 
+closeBlock () {
+	message="Executing closeBlock API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=closeBlock block_name=$block_name`
+	display "$out"
+}
+
 updateSEName () {
 	message="Executing updateSEName API ..."	
 	echo $message >> $outFile ; echo $message
@@ -630,6 +637,7 @@ updateFileStatus
 updateAnalDSType
 updateFileType
 updateSEName
+closeBlock
 ###
 #updateRun
 ##	

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.35 $"
- $Id: DBSApiBlockLogic.java,v 1.35 2007/03/20 18:37:09 sekhri Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApiBlockLogic.java,v 1.36 2007/03/21 21:33:22 sekhri Exp $"
  *
  */
 
@@ -353,6 +353,36 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
 	}
 
+	public void updateBlock(Connection conn, Writer out,  String blockID, String lmbUserID) throws Exception {
+		PreparedStatement ps = null;
+                ResultSet rs = null;
+		try {
+			ps = DBSSql.listBlockValues(conn, blockID);
+			rs =  ps.executeQuery();
+			if(rs.next()) {
+				updateBlock( conn, out, 
+						blockID, 
+						get(rs, "FILE_SIZE"), 
+						get(rs, "NUMBER_OF_FILES"), 
+						get(rs, "NUMBER_OF_EVENTS"),
+						lmbUserID);
+			} else throw new DBSException("Unavailable data", "1011", "No such Files : Block : " + blockID );
+		} finally { 
+                        if (rs != null) rs.close();
+			if (ps != null) ps.close();
+               	}
+	}
+
+	private void updateBlock(Connection conn, Writer out, String blockID, String blockSize, String numberOfFiles, String numberOfEvents, String lmbUserID) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.updateBlock(conn, blockID, blockSize, numberOfFiles, numberOfEvents, lmbUserID);
+			ps.executeUpdate();
+		} finally { 
+			if (ps != null) ps.close();
+               	}
+	}
+
 	//Get the details of a OPEN Block for certain procDSID, blockNamePattern (includes Tiers list), seVector
 	//Returns null if NO Block is found matching the criteria
 	//Return Vector with ID (Vector[0]) BlockSize (Vector[1]) and NumberOfFiles Vector[2].	
@@ -435,7 +465,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		id = (String)blockInfoVec.get(0);
 
 		if (mustOpenNewBlock(blockInfoVec)) {
-			closeBlock(conn, id);
+			closeBlock(conn, id, personApi.getUserID(conn, dbsUser));
                 	insertTimeLog(conn, "CloseBlock", "Close Block Condition Sensed",
                                     "Block Closed", "Auto Closing Block",
                                      dbsUser);
@@ -448,17 +478,17 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 	public void closeBlock(Connection conn, Writer out, String name, Hashtable dbsUser) throws Exception {
 
-		closeBlock(conn, getBlockID(conn, name, false, true));
+		closeBlock(conn, getBlockID(conn, name, false, true), personApi.getUserID(conn, dbsUser));
                 insertTimeLog(conn, "CloseBlock", "Close Block Called By User",
                                                   "Block Closed", "Block Name: "+name,
                                                    dbsUser);
 
 	}
 
-	private void closeBlock(Connection conn, String blockID) throws Exception {
+	private void closeBlock(Connection conn, String blockID, String lmbUserID) throws Exception {
 		PreparedStatement ps = null;
 		try {
-			ps = DBSSql.closeBlock(conn, blockID);
+			ps = DBSSql.closeBlock(conn, blockID, lmbUserID);
 			ps.executeUpdate();
 		} finally {
 			if (ps != null) ps.close();

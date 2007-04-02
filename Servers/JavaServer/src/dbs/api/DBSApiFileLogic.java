@@ -1,6 +1,6 @@
 /**
- $Revision: 1.46 $"
- $Id: DBSApiFileLogic.java,v 1.46 2007/03/27 16:58:57 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSApiFileLogic.java,v 1.47 2007/03/27 17:08:11 sekhri Exp $"
  *
  */
 
@@ -562,6 +562,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		String correctedPath = null;
 		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
+		DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
 		
 
 		if (!isNull(blockName) && !isNull(path))
@@ -573,7 +574,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			//Verify Block exists
 			//This also check is the tiers are in the database or not. 
 			//When the block was first inserted it did the tier check, so there is no need to do this again
-       	                blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, true, true);
+       	                blockID = blockApiObj.getBlockID(conn, blockName, true, true);
 
 			//Get the path portion of Block
 			String blockPath = blockName.split("#")[0];
@@ -716,13 +717,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 if( dbsBlockManagment ) {                       // && i % 10 ) {  //Every 10th file ???
 					//Either this is first time, OR we have reached the BlockSize/NumberOfFiles limit
 
-					if (blockInfoVec.size() <= 0 || (new DBSApiBlockLogic(this.data)).mustOpenNewBlock(blockInfoVec) ) {
-		                                        blockID = (new DBSApiBlockLogic(this.data)).dbsManagedBlockID(conn, out, 
+					if (blockInfoVec.size() <= 0 || blockApiObj.mustOpenNewBlock(blockInfoVec) ) {
+		                                        blockID = blockApiObj.dbsManagedBlockID(conn, out, 
 												procDSID, correctedPath, block, dbsUser);
 							//Grab this blocks details
 							//recycle vector	
 							blockInfoVec.removeAllElements();
-							blockInfoVec.addAll((new DBSApiBlockLogic(this.data)).getOpenBlockDetails(conn, 
+							blockInfoVec.addAll(blockApiObj.getOpenBlockDetails(conn, 
 												procDSID, correctedPath, block));
 					}
                                 }
@@ -853,16 +854,18 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}//For loop
 		//Update Block numberOfFiles and Size
 		if (newFileInserted) {
-			PreparedStatement ps = null;
+			blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
+			/*PreparedStatement ps = null;
 			try {
 				ps = DBSSql.updateBlock(conn, blockID);
 				ps.executeUpdate();
 			} finally { 
 				if (ps != null) ps.close();
-                	}
+                	}*/
 		}
 
 	}
+
 
 	/**
 	 * Insert a data tier in file. 
@@ -1050,8 +1053,20 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void updateFileStatus(Connection conn, Writer out, String lfn, String value, Hashtable dbsUser) throws Exception {
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		updateName(conn, out, "Files",  getFileID(conn, lfn, true),
 				                        "FileStatus", "FileStatus", "Status", value, personApi.getUserID(conn, dbsUser));
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listFiles(conn, lfn);
+			rs =  ps.executeQuery();
+			if(rs.next()) (new DBSApiBlockLogic(this.data)).updateBlock(conn, out, get(rs, "BLOCK_ID"), lmbUserID);
+			else throw new DBSException("Unavailable data", "1011", "No such Files : LogicalFileName : " + lfn );
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
 	}
 
 

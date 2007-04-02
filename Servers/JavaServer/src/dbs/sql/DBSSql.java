@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.87 $"
- $Id: DBSSql.java,v 1.87 2007/03/30 19:36:18 sekhri Exp $"
+ $Revision: 1.88 $"
+ $Id: DBSSql.java,v 1.88 2007/03/30 19:42:13 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -519,17 +519,42 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement updateBlock(Connection conn, String blockID) throws SQLException {
-		String sql = "UPDATE Block \n" +
-			"SET BlockSize = (SELECT SUM(FileSize) FROM Files f WHERE f.Block = ?) , \n" +
-			"NumberOfFiles = (SELECT COUNT(*) FROM Files f WHERE f.Block = ?) , \n" +
-			"NumberOfEvents= (SELECT SUM(NumberOfEvents) FROM Files f WHERE f.Block = ?) \n" +
-			"WHERE ID = ?" ;
+	public static PreparedStatement listBlockValues(Connection conn, String blockID) throws SQLException {
+		String sql = "SELECT count(*) AS NUMBER_OF_FILES, \n" +
+ 			"SUM(NumberOfEvents) AS NUMBER_OF_EVENTS, \n" +
+  			"SUM(FileSize) AS FILE_SIZE \n" + 
+			"FROM Files f \n" +
+			"JOIN FileStatus st \n" +
+				"ON st.id = f.FileStatus \n" +
+			"WHERE  st.Status <> 'INVALID' \n" +
+			"AND f.Block = ?";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, blockID);
-		ps.setString(columnIndx++, blockID);
-		ps.setString(columnIndx++, blockID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+
+	}
+
+	public static PreparedStatement updateBlock(Connection conn, String blockID, 
+			String blockSize, String numberOfFiles, 
+			String numberOfEvents, String lmbUserID) throws SQLException {
+		String sql = "UPDATE Block \n" +
+			"SET LastModifiedBy = ? ,\n" +
+			"BlockSize = ? , \n" +
+			"NumberOfFiles = ? , \n" +
+			"NumberOfEvents = ? \n" +
+			"WHERE ID = ?" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		//Do this when there are no files in the block. If this is done in the somgle query then Sum of NumberOfFiles can be Null
+		if(DBSUtil.isNull(blockSize)) blockSize = "0";
+		if(DBSUtil.isNull(numberOfEvents)) numberOfEvents = "0";
+		if(DBSUtil.isNull(numberOfFiles)) numberOfFiles = "0";
+                int columnIndx = 1;
+		ps.setString(columnIndx++, lmbUserID);
+		ps.setString(columnIndx++, blockSize);
+		ps.setString(columnIndx++, numberOfFiles);
+		ps.setString(columnIndx++, numberOfEvents);
 		ps.setString(columnIndx++, blockID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -537,12 +562,14 @@ public class DBSSql {
 
 
 
-	public static PreparedStatement closeBlock(Connection conn, String blockID) throws SQLException {
+	public static PreparedStatement closeBlock(Connection conn, String blockID, String lmbUserID) throws SQLException {
 		String sql = "UPDATE Block \n" +
-			"SET OpenForWriting=0 \n" +
+			"SET LastModifiedBy = ? , \n" +
+			"OpenForWriting = 0 \n" +
 			"WHERE ID = ?" ;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
+		ps.setString(columnIndx++, lmbUserID);
 		ps.setString(columnIndx++, blockID);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
@@ -667,6 +694,7 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
+	
 	
         public static PreparedStatement listRowsInTable(Connection conn, String tableName, String from, String rows) 
         throws SQLException
@@ -1184,6 +1212,46 @@ public class DBSSql {
 
 	}
 
+	public static PreparedStatement listFiles(Connection conn, String lfn) throws SQLException {
+
+                String sql = "SELECT DISTINCT f.ID as ID, \n " +
+                        "f.LogicalFileName as LFN, \n" +
+                        "f.Checksum as CHECKSUM, \n" +
+                        "f.FileSize as FILESIZE, \n" +
+                        "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+                        "f.CreationDate as CREATION_DATE, \n" +
+                        "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "vst.Status as VALIDATION_STATUS, \n" +
+                        "st.Status as STATUS, \n" +
+                        "ty.Type as TYPE, \n" +
+                        "b.Name as BLOCK_NAME, \n"+
+                        "b.ID as BLOCK_ID, \n"+
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM Files f \n" +
+                        "LEFT OUTER JOIN Block b \n" +
+                                "ON b.id = f.Block \n "+
+                        "LEFT OUTER JOIN FileType ty \n" +
+                                "ON ty.id = f.FileType \n" +
+                        "LEFT OUTER JOIN FileStatus st \n" +
+                                "ON st.id = f.FileStatus \n" +
+                        "LEFT OUTER JOIN FileValidStatus vst \n" +
+                                "ON vst.id = f.ValidationStatus \n" +
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = f.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = f.LastModifiedBy \n";
+                sql += "WHERE f.LogicalFileName = ?\n" ;
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, lfn);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+	}
+
 
 
 	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN) throws SQLException {
@@ -1212,7 +1280,8 @@ public class DBSSql {
 			"vst.Status as VALIDATION_STATUS, \n" +
 			"st.Status as STATUS, \n" +
 			"ty.Type as TYPE, \n" +
-                        "b.Name as BLOCK_NAME, \n"+ 
+			"b.Name as BLOCK_NAME, \n"+ 
+    			//"b.ID as BLOCK_ID, \n"+ 
 			//"dt.Name as DATA_TIER, \n"+ 
 			"percb.DistinguishedName as CREATED_BY, \n" +
 			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
