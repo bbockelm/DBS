@@ -454,7 +454,7 @@ class DDHelper(DDLogger):
       if app.lower()  =='any': app  ="*"
       if prim.lower() =='any': prim ="*"
       if tier.lower() =='any': tier ="*"
-      if proc.lower() =='any': proc ="*"
+      if type(proc) is not types.ListType and proc.lower() =='any': proc ="*"
       # TODO: add group to join when table is available
       if proc and proc!="*":
          if type(proc) is types.ListType:

@@ -709,7 +709,7 @@ class DDServer(DDLogger):
         """
 
         if self.ddConfig.iface()=='cgi': searchFunc="javascript:ajaxSearch()"
-        else: searchFunc="javascript:ResetAllResults();ajaxFinderSearch()"
+        else: searchFunc="javascript:ResetAllResults();ajaxFinderSearch('%s')"%userMode
 
         # FIXME, TODO: firstDBS should be passed here
         if not firstDBS: firstDBS=DBSGLOBAL
@@ -2873,25 +2873,17 @@ class DDServer(DDLogger):
         return page
     finderExample.exposed=True
 
-    def finderSearch(self,dbsInst,limit=0,offset=0,**kwargs):
-        self.helperInit(dbsInst)
-#        print "\n\n####finderSearch",kwargs
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results_finder">"""
+    def constructQueryParameters(self,dbsInst,kwargs):
         iDict={}
         iList=[]
         whereClause=[]
         parameters =""
+        print "kwargs",kwargs
         for key in kwargs.keys():
             if key=="_": continue
-#            page+="Key='%s' parameters='%s'"%(key,kwargs[key])
             parameters+=kwargs[key]
             pList = kwargs[key].split("_newparam_")
-#            print kwargs[key],pList
             for item in pList:
-#                table,col,op,where,out=string.split(item,"__")
-#                print "### '%s'-'%s'-'%s'-'%s'-'%s'"%(table,col,op,where,out)
                 table,col,op,where,limit=string.split(item,"__")
 #                print "### '%s'-'%s'-'%s'-'%s'-'%s'"%(table,col,op,where,limit)
                 if where:
@@ -2900,17 +2892,24 @@ class DDServer(DDLogger):
                 addToDict(iDict,table,col)
                 iList.append("%s.%s"%(self.helper.dbManager.getDBTableName(dbsInst,table),col))
 #        print "looking for",iDict,whereClause
-        
-        # TODO: for now I test how query will work
-#        res = self.helper.formSQLQuery(iDict)
-#        page+=res
+        return parameters,iList,whereClause
+
+    def finderSearch(self,dbsInst,limit=0,offset=0,userMode='user',**kwargs):
+        self.helperInit(dbsInst)
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results_finder">"""
+        parameters,iList,whereClause=self.constructQueryParameters(dbsInst,kwargs)
         query,oList = self.helper.queryMaker(iList,whereClause,limit,offset)
+#        page+="<p>Lookup datasets for this results <a href=\"ajaxFindDSFromFinder('%s','%s','%s')\">here</a></p>"%(dbsInst,parameters,userMode)
+        page+="<p>Lookup datasets for this results <a href=\"findDSFromFinder?dbsInst=%s&amp;params=%s&amp;userMode=%s\">here</a></p>"%(dbsInst,parameters,userMode)
 #        print "Constructed query",query,oList
         if  type(oList) is types.ListType:
             if  len(oList):
                 t = templateQueryOutput(searchList=[{'query':query,'iList':oList}]).respond()
                 page+=str(t)
-                page+="""<p><a href="javascript:ajaxFinderSearch('%s','%s','%s','%s')">Next %s</a> results</p>"""%(dbsInst,parameters,limit,int(limit)+int(offset)+1,limit)
+                if  int(limit):
+                    page+="""<p><a href="javascript:ajaxFinderSearch('%s','%s','%s','%s','%s')">Next %s</a> results</p>"""%(userMode,dbsInst,parameters,limit,int(limit)+int(offset)+1,limit)
             else:
                 page+="No more results"
         else:
@@ -2918,13 +2917,40 @@ class DDServer(DDLogger):
                page+="""<div class="box_red">%s</div>"""%oList.replace('<','&lt;').replace('>','&gt;')
             else:
                page+=oList
-#        page+="<pre>%s\n%s</pre>"%(writer.getvalue(),repr(oList))
-        
         page+="</response></ajax-response>"
         if self.verbose==2:
            self.writeLog(page)
         return page
     finderSearch.exposed=True
+
+    def findDSFromFinder(self,dbsInst,params,userMode,**kwargs):
+        self.helperInit(dbsInst)
+        parameters,iList,whereClause=self.constructQueryParameters(dbsInst,{'params':params})
+        try:
+            iList.remove('PrimaryDataset.Name')
+        except:
+            pass
+        try:
+            iList.remove('ProcessedDataset.Name')
+        except:
+            pass
+        try:
+            iList.remove('DataTier.Name')
+        except:
+            pass
+        iList.append('PrimaryDataset.Name')
+        iList.append('ProcessedDataset.Name')
+        iList.append('DataTier.Name')
+        query,oList = self.helper.queryMaker(iList,whereClause)
+        pList=[]
+        for item in oList:
+            if item==oList[0]: continue # we skip first row since it's column names
+            prim,proc,tier = item.values()[-3:] # get only three last items from results
+            path='/%s/%s/%s'%(prim,proc,tier)
+            if not pList.count(path): pList.append(path)
+        page=self.getData(dbsInst,proc=pList,ajax=0,userMode=userMode)
+        return page
+    findDSFromFinder.exposed=True
 
     def finderStoreQuery(self,dbsInst,userId,alias,**kwargs):
         iList=[]
