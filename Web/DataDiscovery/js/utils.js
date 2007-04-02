@@ -1,10 +1,15 @@
 // Global variables
 var GLOBAL_CELL='cell_1';
 //var GLOBAL_STEP=5;
-var DBSDD='http://cmsdbs.cern.ch/discovery/';
-var DBSDD_EXPERT=DBSDD+'expert';
+//var DBSDD='http://cmsdbs.cern.ch/discovery/';
+//var DBSDD_EXPERT=DBSDD+'expert';
 
-
+// See http://www.javascriptkit.com/javatutors/navigator.shtml
+function CheckBrowser() {
+  var browserName=navigator.appName; 
+  var browserVer=parseInt(navigator.appVersion); 
+  var browserAgent=navigator.userAgent;
+}
 
 function SetMain() {
   var id=document.getElementById("main");
