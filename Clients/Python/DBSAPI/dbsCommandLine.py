@@ -542,7 +542,8 @@ class ApiDispatcher:
                 return
 
 	datasetPaths = []
-        if self.optdict.get('pattern'):
+
+        if self.optdict.get('pattern') != '*':
           print "--pattern has no effect on listProcessedDataset, --path can be used for dataset patterns"
         
         paramDict = {}
@@ -557,7 +558,7 @@ class ApiDispatcher:
         if len(algoparam):
                 paramDict.update(algoparam)
 
-        print "listing datasets, please wiat...\n"
+        print "listing datasets, please wait...\n"
         apiret = self.api.listProcessedDatasets(**paramDict)
 
         if len(apiret) < 1 :

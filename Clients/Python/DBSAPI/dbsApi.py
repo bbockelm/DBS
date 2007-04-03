@@ -365,6 +365,8 @@ class DbsApi(DbsConfig):
 	    self.primName = str(attrs['primary_datatset_name'])	  
             self.currDataset = DbsProcessedDataset ( 
                                                 Name=self.procName,     
+						PhysicsGroup=str(attrs['physics_group_name']),
+						PhysicsGroupConverner=str(attrs['physics_group_convener']),
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
                                                 CreationDate=str(attrs['creation_date']),
@@ -1662,7 +1664,7 @@ class DbsApi(DbsConfig):
     xmlinput += " processed_datatset_name='"+dataset.get('Name', "")+"'"
     xmlinput += " open_for_writing='"+dataset.get('OpenForWriting', "")+"'"
     xmlinput += " physics_group_name='"+dataset.get('PhysicsGroup', "")+"'"
-    xmlinput += " physics_group_convener='"+dataset.get('Convener', "")+"'"
+    xmlinput += " physics_group_convener='"+dataset.get('PhysicsGroupConverner', "")+"'"
     xmlinput += " status='"+dataset.get('Status', "")+"'>" 
     
     for tier in dataset.get('TierList',[]):

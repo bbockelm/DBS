@@ -54,7 +54,8 @@ ValidationTable = {
           },
 "DbsProcessedDataset" : {
          "Name" : { "Comment" : "A required variable, UNIQUE", "Validator" : isStringType },
-         "PhysicsGroup" : { "Comment" : "A required variable", "Validator" : isStringType },
+         "PhysicsGroup" : { "Comment" : "An optional variable", "Validator" : isStringType },
+         "PhysicsGroupConverner" : { "Comment" : "A optional variable", "Validator" : isStringType },
          "Status" : { "Comment" : "A required variable", "Validator" : isStringType },
          "OpenForWriting" : { "Comment" : "Not required (Defalted to 'y' when new Dataset is created)", "Validator" : isStringType },
          "PrimaryDataset" : { "Comment" : "A required variable", "Validator" : isDictType },
