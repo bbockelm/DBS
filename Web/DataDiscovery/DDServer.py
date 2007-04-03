@@ -2909,12 +2909,22 @@ class DDServer(DDLogger):
         page="""<ajax-response><response type="object" id="results_finder">"""
         parameters,iList,whereClause=self.constructQueryParameters(dbsInst,kwargs)
         query,oList = self.helper.queryMaker(iList,whereClause,limit,offset)
-#        page+="<p>Lookup datasets for this results <a href=\"ajaxFindDSFromFinder('%s','%s','%s')\">here</a></p>"%(dbsInst,parameters,userMode)
-        page+="<p>Lookup datasets for this results <a href=\"findDSFromFinder?dbsInst=%s&amp;params=%s&amp;userMode=%s\">here</a></p>"%(dbsInst,parameters,userMode)
+        t=templateLookupFromFinder(searchList=[{'dbsInst':dbsInst,'params':parameters,'userMode':userMode}]).respond()
+        page+=str(t)
+        # retrieve actual column names from tables
+        tList=[]
+        for item in iList:
+            table,col=item.split(".")
+            if col.lower()!="*":
+               tList.append("%s<br />%s"%(table,col))
+            else:
+               cols=self.helper.getTableColumns(table)
+               for col in cols:
+                   tList.append("%s<br />%s"%(table,col))
 #        print "Constructed query",query,oList
         if  type(oList) is types.ListType:
             if  len(oList):
-                t = templateQueryOutput(searchList=[{'query':query,'iList':oList}]).respond()
+                t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'userMode':userMode}]).respond()
                 page+=str(t)
                 if  int(limit):
                     page+="""<p><a href="javascript:ajaxFinderSearch('%s','%s','%s','%s','%s')">Next %s</a> results</p>"""%(userMode,dbsInst,parameters,limit,int(limit)+int(offset)+1,limit)
@@ -2934,21 +2944,14 @@ class DDServer(DDLogger):
     def findDSFromFinder(self,dbsInst,params,userMode,**kwargs):
         self.helperInit(dbsInst)
         parameters,iList,whereClause=self.constructQueryParameters(dbsInst,{'params':params})
-        try:
-            iList.remove('PrimaryDataset.Name')
-        except:
-            pass
-        try:
-            iList.remove('ProcessedDataset.Name')
-        except:
-            pass
-        try:
-            iList.remove('DataTier.Name')
-        except:
-            pass
-        iList.append('PrimaryDataset.Name')
-        iList.append('ProcessedDataset.Name')
-        iList.append('DataTier.Name')
+        aList=['PrimaryDataset.Name','ProcessedDataset.Name','DataTier.Name']
+        for item in aList:
+            try:
+                iList.remove(item)
+            except:
+                pass
+        for item in aList:
+            iList.append(item)
         query,oList = self.helper.queryMaker(iList,whereClause)
         pList=[]
         for item in oList:
@@ -2959,6 +2962,21 @@ class DDServer(DDLogger):
         page=self.getData(dbsInst,proc=pList,ajax=0,userMode=userMode)
         return page
     findDSFromFinder.exposed=True
+
+    def findADSFromFinder(self,dbsInst,params,userMode,**kwargs):
+        self.helperInit(dbsInst)
+        parameters,iList,whereClause=self.constructQueryParameters(dbsInst,{'params':params})
+        aList=['AnalysisDataset.Name','PrimaryDataset.Name','ProcessedDataset.Name','DataTier.Name']
+        for item in aList:
+            try:
+                iList.remove(item)
+            except:
+                pass
+        for item in aList:
+            iList.append(item)
+        page="Test findADSFromFinder"
+        return page
+    findADSFromFinder.exposed=True
 
     def finderStoreQuery(self,dbsInst,userId,alias,**kwargs):
         iList=[]

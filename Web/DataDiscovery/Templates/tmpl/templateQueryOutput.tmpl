@@ -1,14 +1,22 @@
 <!-- templateQueryOutput.tmpl -->
-###<pre>$query</pre>
-#set thRow=$iList[0]
+#if $userMode=='dbsExpert'
+#set q=$query.replace(",",",\n")
+<pre>$q</pre>
+#end if
+####set thRow=$oList[0]
 <table class="dbs_table">
-<tr>
+#*
 #for item in $thRow
 <th>$item</th>
 #end for
+*#
+<tr>
+#for item in $iList
+<th class="center">$item</th>
+#end for
 </tr>
-#if len($iList)>0
-#for itemList in $iList[1:]
+#if len($oList)>0
+#for itemList in $oList[1:]
 <tr>
 #for elem in $itemList
 <td>$elem</td>
