@@ -38,13 +38,12 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 #
 # DLS instances are: https://twiki.cern.ch/twiki/bin/view/CMS/DLS#DLS_instances
 #
-DBSGLOBAL="cmslcgco01"
+#DBSGLOBAL="localhost"
+DBSGLOBAL="DBS2Global"
 DBS_DLS_INST= {
-   "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-   "cmslcgco01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"), 
-   "FNAL8989":("http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
+   "DBS2Global":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+   "DBS2GlobalIntTest":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
    "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-   "localhost17" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
 }
 
 #DBS_DLS_INST= {
@@ -153,7 +152,7 @@ class DBManager(DDLogger):
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
 #             tQuery= "select table_name from user_tables"
              tQuery= "select tname from tab"
-             tQuery="""SELECT table_name FROM all_tables WHERE owner='CMS_DBS_INT_GLOBAL'"""
+#             tQuery="""SELECT table_name FROM all_tables WHERE owner='CMS_DBS_INT_GLOBAL'"""
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
