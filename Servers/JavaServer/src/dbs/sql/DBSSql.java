@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.88 $"
- $Id: DBSSql.java,v 1.88 2007/03/30 19:42:13 sekhri Exp $"
+ $Revision: 1.89 $"
+ $Id: DBSSql.java,v 1.89 2007/04/02 18:30:42 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1015,6 +1015,45 @@ public class DBSSql {
 		ps.setString(columnIndx++, patternFam);
 		ps.setString(columnIndx++, patternExe);
 		ps.setString(columnIndx++, patternPS);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listAlgorithms(Connection conn, String procDSID) throws SQLException {
+		String sql = "SELECT algo.id as ID, \n" +
+			"av.Version as APP_VERSION, \n" +
+			"af.FamilyName as APP_FAMILY_NAME, \n" +
+			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
+			"ps.Name as PS_NAME, \n" +
+			"ps.Hash as PS_HASH, \n" +
+			"ps.Version as PS_VERSION, \n" +
+			"ps.Type as PS_TYPE, \n" +
+			"ps.Annotation as PS_ANNOTATION, \n" +
+			"ps.Content as PS_CONTENT, \n" +
+			"algo.CreationDate as CREATION_DATE, \n" +
+			"algo.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM AlgorithmConfig algo\n" +
+			"JOIN ProcAlgo pa \n" +
+				"ON pa.Algorithm = algo.id \n" +
+			"JOIN AppVersion av \n" +
+				"ON av.id = algo.ApplicationVersion \n" +
+			"JOIN AppFamily af \n" +
+				"ON af.id = algo.ApplicationFamily \n" +
+			"JOIN AppExecutable ae \n" +
+				"ON ae.id = algo.ExecutableName \n" +
+			"JOIN QueryableParameterSet ps \n" +
+				"ON ps.id = algo.ParameterSetID \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = algo.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = algo.LastModifiedBy \n" +
+			"WHERE pa.Dataset = ? \n" +
+			"ORDER BY APP_FAMILY_NAME, APP_EXECUTABLE_NAME, APP_VERSION, PS_NAME DESC";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, procDSID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
