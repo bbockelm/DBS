@@ -205,6 +205,14 @@ em.smallbold  {
 /*
  * Table settings
  */
+table.valign tr td {
+vertical-align:middle;
+}
+
+table.valign form {
+display:inline;
+} 
+
 table.dbs_table {
   font-size: 12px;
   font-weight: normal;
@@ -227,6 +235,9 @@ table.dbs_table th {
   background-color: #F0F0F0;
   vertical-align: top;
   text-align: right;
+}
+table.dbs_table th.center {
+  text-align: center;
 }
 table.dbs_table td {
   border-width: 1px 1px 1px 1px;
