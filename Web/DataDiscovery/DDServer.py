@@ -3068,15 +3068,31 @@ class DDServer(DDLogger):
            page+="You are attempted execute non select query, it's forbidden"
         else:
            # here we got back a list whose first entry is column names
-           iList = self.helper.executeSQLQuery(query)
-           if  type(iList) is not types.ListType:
-               page+=iList
+           oList = self.helper.executeSQLQuery(query)
+           # get list of table.col and get their actual names from DB
+           tList=[]
+           dateIdxList=[]
+           for item in query.split():
+               if item.find(".")!=-1:
+                  table,col=item.split(".")
+                  tList.append("%s<br />%s"%(table,col)) 
+                  if col.lower().find("date")!=-1:
+                     dateIdxList.append(len(tList)-1)
+           # proceed with query
+           if  type(oList) is not types.ListType:
+               page+=oList
            else:
-               nameSpace={'branch':iList[1:]}
-               t = templateTableBody(searchList=[nameSpace]).respond()
-               content=str(t)
-               nameSpace={'header':iList[0],'content':content}
-               t = templateTable(searchList=[nameSpace]).respond()
+               # if the query was used Table.Col form and we found all columns
+               print tList,oList
+               if  len(tList)==len(oList[0]):
+                   userMode='user'
+                   t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'dateIdxList':dateIdxList,'userMode':userMode}]).respond()
+               else:
+                   nameSpace={'branch':oList[1:]}
+                   t = templateTableBody(searchList=[nameSpace]).respond()
+                   content=str(t)
+                   nameSpace={'header':oList[0],'content':content}
+                   t = templateTable(searchList=[nameSpace]).respond()
                page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
