@@ -531,8 +531,8 @@ class ApiDispatcher:
        	for anObj in apiret:
                 print "\n"
         	print anObj['Name']
-		print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
-                print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['LastModificationDate'])))
+		#print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+                #print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['LastModificationDate'])))
 
         return
 
