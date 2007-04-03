@@ -9,6 +9,12 @@ from dbsExecHandler import DbsExecHandler
 
 import os, re, string, xml.sax, xml.sax.handler
 from xml.sax.saxutils import escape
+from xml.sax import SAXParseException
+try:
+  from socket import ssl, sslerror, error
+except:
+  print "Unable to support HTTPS"
+  pass
 
 import urlparse
 
@@ -53,7 +59,7 @@ class DbsHttpService:
    uid = os.getuid()
    proxy = '/tmp/x509up_u'+str(uid)
    if not os.path.exists(proxy):
-	raise DbsProxyNotFound(args="Required Proxy for Secure Call ("+self.Url+") not found for user %s" %os.getlogin(), code="9999")
+	raise DbsProxyNotFound(args="Required Proxy for Secure Call \n("+self.Url+") not found for user %s" %os.getlogin(), code="9999")
    return proxy, proxy
    
   def _call (self, args, typ):
@@ -115,8 +121,7 @@ class DbsHttpService:
          #statusDetail = response.read()
          #statusDetail = response.read().split('<body>')[1].split('</body>')[0].split('description')[1]  
          exmsg = "HTTP ERROR Status '%s', Status detail: '%s'" % (responseCode, statusDetail)
-         if responseCode == 200: raise DbsBadRequest (args=exmsg, code=responseCode)
-         elif responseCode == 300: raise DbsBadData (args=exmsg, code=responseCode)
+         if responseCode == 300: raise DbsBadData (args=exmsg, code=responseCode)
          elif responseCode == 302: raise DbsNoObject (args=exmsg, code=responseCode)
          elif responseCode == 400: raise DbsExecutionError (args=exmsg, code=responseCode)
          elif responseCode == 401: raise DbsConnectionError (args=exmsg, code=responseCode)
@@ -126,22 +131,35 @@ class DbsHttpService:
        data = response.read()
        logging.debug(data)
 
+    except sslerror, ex:
+	msg  = "HTTPS Error, Unable to make API call"
+	msg += "\nUnable to connect %s" % self.Url
+	msg += "\nMost probably your Proxy is not valid"
+        raise DbsConnectionError (args=msg, code="505")   
+
+    except error, ex:
+	msg  = "HTTP(S) Error, Unable to make API call"
+        msg += "\nUnable to connect %s" % self.Url
+        msg += "\nMost probably port specified is incorrect, or using http instead of https"
+        raise DbsConnectionError (args=msg, code="505")   
+  
     except (urllib2.URLError, httplib.HTTPException):
-      msg = "HTTP ERROR, Unable to make API call"
-      msg += "  Error Message: %s" % ex
-      msg += "  Verify URL %s" % self.Url
-      raise DbsConnectionError (args=msg, code="505")   
+        msg = "HTTP ERROR, Unable to make API call"
+        msg += "  Error Message: %s" % ex
+        msg += "  Verify URL %s" % self.Url
+        raise DbsConnectionError (args=msg, code="505")   
 
     except Exception, ex:
-      msg = "HTTP ERROR, Unable to make API call"
-      if str(ex) == "(-2, 'Name or service not known')":
-        msg += "\n   Error Message: %s" %ex.args[1]
-      	msg += "\n         Verify URL %s" % self.Url
-      else: msg += "\n     Error Message: %s" %ex
-      raise DbsConnectionError (args=msg, code="505")            
+	msg = "HTTP ERROR, Unable to make API call"
+	msg += "\n         Verify URL %s" % self.Url
+	if str(ex) == "(-2, 'Name or service not known')":
+		msg += "\n   Error Message: %s" %ex.args[1]
+	else: msg += "\n     Error Message: %s" %ex
+	raise DbsConnectionError (args=msg, code="505")            
 
-    # Error message would arrive in XML, if any
-    class Handler (xml.sax.handler.ContentHandler):
+    try:
+      # Error message would arrive in XML, if any
+      class Handler (xml.sax.handler.ContentHandler):
            def startElement(self, name, attrs):
              if name == 'exception':
                 statusCode = attrs['code']
@@ -172,8 +190,20 @@ class DbsHttpService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
 		logging.info(info)
 
-    xml.sax.parseString (data, Handler ())
-    # All is ok, return the data
-    return data
+      xml.sax.parseString (data, Handler ())
+      # All is ok, return the data
+      return data
+
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n   Verify URL %s" % self.Url
+      raise DbsBadXMLData (args=msg, code="5999")	
+
+    except Exception, ex:
+        msg = "HTTP ERROR, Unable to make API call"
+        msg += "\n   Verify URL %s" % self.Url
+        if self.Secure == True : 
+		msg += "\n   Make sure you have a Valid Proxy"
+        raise DbsConnectionError (args=msg, code="505")
 
 
