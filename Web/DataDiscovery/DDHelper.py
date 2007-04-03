@@ -1217,7 +1217,6 @@ class DDHelper(DDLogger):
           else:
              oSel.append(self.col(self.dbManager.getTable(self.dbsInstance,table),col))
       md     = self.dbManager.metaDict[self.dbsInstance]
-#      print "\n\nDDHelper:queryMaker",self.dbsInstance,self.dbManager.dbTables[self.dbsInstance].keys()
       sel    = sqlalchemy.select(oSel)
       qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
       query  = qb.BuildQuery(sel)

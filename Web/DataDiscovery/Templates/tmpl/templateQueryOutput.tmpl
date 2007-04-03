@@ -1,4 +1,5 @@
 <!-- templateQueryOutput.tmpl -->
+#import time
 #if $userMode=='dbsExpert'
 #set q=$query.replace(",",",\n")
 <pre>$q</pre>
@@ -18,8 +19,14 @@
 #if len($oList)>0
 #for itemList in $oList[1:]
 <tr>
-#for elem in $itemList
-<td>$elem</td>
+####for elem in $itemList
+#for idx in $xrange(0,len($itemList))
+#if $dateIdxList.count($idx)
+#set e=$time.strftime("%d %b %Y %H:%M:%S GMT",$time.gmtime($itemList[$idx]))
+#else
+#set e=$itemList[$idx]
+#end if
+<td>$e</td>
 #end for
 </tr>
 #end for

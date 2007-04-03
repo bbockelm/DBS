@@ -2913,18 +2913,23 @@ class DDServer(DDLogger):
         page+=str(t)
         # retrieve actual column names from tables
         tList=[]
+        dateIdxList=[]
         for item in iList:
             table,col=item.split(".")
             if col.lower()!="*":
                tList.append("%s<br />%s"%(table,col))
+               if col.lower().find("date")!=-1:
+                  dateIdxList.append(len(tList)-1)
             else:
                cols=self.helper.getTableColumns(table)
                for col in cols:
                    tList.append("%s<br />%s"%(table,col))
+                   if col.lower().find("date")!=-1:
+                      dateIdxList.append(len(tList)-1)
 #        print "Constructed query",query,oList
         if  type(oList) is types.ListType:
             if  len(oList):
-                t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'userMode':userMode}]).respond()
+                t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'dateIdxList':dateIdxList,'userMode':userMode}]).respond()
                 page+=str(t)
                 if  int(limit):
                     page+="""<p><a href="javascript:ajaxFinderSearch('%s','%s','%s','%s','%s')">Next %s</a> results</p>"""%(userMode,dbsInst,parameters,limit,int(limit)+int(offset)+1,limit)
