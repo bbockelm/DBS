@@ -199,11 +199,11 @@ class DbsHttpService:
       msg += "\n   Verify URL %s" % self.Url
       raise DbsBadXMLData (args=msg, code="5999")	
 
-    except Exception, ex:
-        msg = "HTTP ERROR, Unable to make API call"
-        msg += "\n   Verify URL %s" % self.Url
-        if self.Secure == True : 
-		msg += "\n   Make sure you have a Valid Proxy"
-        raise DbsConnectionError (args=msg, code="505")
+    #except Exception, ex:
+    #    msg = "HTTP ERROR, Unable to make API call"
+    #    msg += "\n   Verify URL %s" % self.Url
+    #    if self.Secure == True : 
+    #		msg += "\n   Make sure you have a Valid Proxy"
+    #    raise DbsConnectionError (args=msg, code="505")
 
 
