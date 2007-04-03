@@ -403,7 +403,6 @@ class ApiDispatcher:
     apiCall = self.optdict.get('command', '')
 
     # If NO URL is provided, URL from dbs.config will be used
-    print opts.__dict__['url']
     if opts.__dict__['url'] == "BADURL":
         del(opts.__dict__['url']) 
     self.api = DbsApi(opts.__dict__)
