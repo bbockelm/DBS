@@ -4,9 +4,9 @@
 -- === Build : 628
 -- ======================================================================
 
-drop database if exists dbs_new_era_v20;
-create database dbs_new_era_v20;
-use dbs_new_era_v20;
+drop database if exists dbs_new_era_v18;
+create database dbs_new_era_v18;
+use dbs_new_era_v18;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -332,7 +332,7 @@ CREATE TABLE QueryableParameterSet
     Version               varchar(100),
     Type                  varchar(100),
     Annotation            varchar(1000),
-    Content               TEXT,
+    Content               LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate          BIGINT,
