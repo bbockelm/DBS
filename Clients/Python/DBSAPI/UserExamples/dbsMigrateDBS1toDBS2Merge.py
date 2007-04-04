@@ -258,7 +258,7 @@ try:
 					tmpBlockFile.write(b)
 					tmpBlockFile.write("\n")
 					tmpBlockFile.close()
-					#api.closeBlock (b)
+					api.closeBlock (b)
 								
 	xml.sax.parseString (data, Handler ())
 except Exception, ex:
