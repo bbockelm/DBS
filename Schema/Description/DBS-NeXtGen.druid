@@ -2,8 +2,8 @@
 
 <project version="2">
 	<attribs>
-		<attrib name="build">631</attrib>
-		<attrib name="serial">362927</attrib>
+		<attrib name="build">635</attrib>
+		<attrib name="serial">363431</attrib>
 	</attribs>
 	<database>
 		<attribs>
@@ -69,6 +69,11 @@ use dbs_new_era_v17;
 					<elem>1.0</elem>
 					<elem>2007-03-08 10:36:12</elem>
 					<elem>Adding DataTierOrder Table</elem>
+				</row>
+				<row>
+					<elem>1.1</elem>
+					<elem>2007-04-05 13:51:20</elem>
+					<elem>TIMESTAMPs are replaced with NUMBERS</elem>
 				</row>
 			</list>
 		</revisions>
@@ -198,14 +203,14 @@ use dbs_new_era_v17;
 					<genSequences>N</genSequences>
 				</stdSql>
 				<oraSql>
-					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\DBS-NeXtGen-Oracle.sql</output>
-					<genComments>Y</genComments>
-					<genDropStmt>N</genDropStmt>
-					<genViews>Y</genViews>
 					<genFunctions>Y</genFunctions>
-					<genProcedures>Y</genProcedures>
-					<genInlineFKs>N</genInlineFKs>
+					<genViews>Y</genViews>
+					<output>C:\Documents and Settings\ANZAR\Desktop\DBS-NeXtGen.druid\DBS-NeXtGen-Oracle.sql</output>
 					<genSequences>N</genSequences>
+					<genDropStmt>N</genDropStmt>
+					<genInlineFKs>N</genInlineFKs>
+					<genProcedures>Y</genProcedures>
+					<genComments>Y</genComments>
 				</oraSql>
 			</SqlGenModule>
 		</modsConfig>
@@ -368,7 +373,7 @@ use dbs_new_era_v17;
 				</type>
 				<type>
 					<attribs>
-						<attrib name="name">TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</attrib>
+						<attrib name="name">BIGINT</attrib>
 						<attrib name="ddEquiv"/>
 						<attrib name="id">239351</attrib>
 					</attribs>
@@ -389,7 +394,7 @@ use dbs_new_era_v17;
 				</type>
 				<type>
 					<attribs>
-						<attrib name="name">TIMESTAMP DEFAULT 0</attrib>
+						<attrib name="name">BIGINT</attrib>
 						<attrib name="ddEquiv"/>
 						<attrib name="id">240057</attrib>
 					</attribs>
@@ -518,6 +523,27 @@ use dbs_new_era_v17;
 						<attrib name="name">varchar(700)</attrib>
 						<attrib name="ddEquiv">varchar(700)</attrib>
 						<attrib name="id">342287</attrib>
+					</attribs>
+					<domain>
+						<attribs>
+							<attrib name="minValue"/>
+							<attrib name="outRange">false</attrib>
+							<attrib name="maxValue"/>
+							<attrib name="type">none</attrib>
+						</attribs>
+						<list>
+							<header>
+								<elem>value</elem>
+							</header>
+						</list>
+					</domain>
+					<aliases/>
+				</type>
+				<type>
+					<attribs>
+						<attrib name="name">LONGTEXT</attrib>
+						<attrib name="ddEquiv"/>
+						<attrib name="id">362930</attrib>
 					</attribs>
 					<domain>
 						<attribs>
@@ -8822,7 +8848,7 @@ use dbs_new_era_v17;
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
 							<attrib name="refTable">0</attrib>
-							<attrib name="type">309958</attrib>
+							<attrib name="type">362930</attrib>
 						</attribs>
 						<modsConfig/>
 					</field>
@@ -14855,9 +14881,9 @@ use dbs_new_era_v17;
 						</fieldAttribs>
 						<attribs>
 							<attrib name="comment"/>
-							<attrib name="name">Path</attrib>
-							<attrib name="refField">0</attrib>
 							<attrib name="matchType">s</attrib>
+							<attrib name="refField">0</attrib>
+							<attrib name="name">Path</attrib>
 							<attrib name="id">362925</attrib>
 							<attrib name="onDelete">n</attrib>
 							<attrib name="onUpdate">n</attrib>
