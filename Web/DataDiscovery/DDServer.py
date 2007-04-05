@@ -28,8 +28,18 @@ from   DDHelper    import *
 from   Templates   import *
 from DDParamServer import *
 #from   DDLucene  import *
+# load DBS history tables module
+try:
+    from   DDTables  import *
+except:
+    print "WARNING! Cannot load DDTables, your persistent history will be turned off"
+    pass
 
-class DDServer(DDLogger): 
+# webtools framework
+from Framework import Controller
+from Framework.PluginManager import DeclarePlugin
+
+class DDServer(DDLogger,Controller): 
     """
        DBS Data discovery server class.
        It uses CherryPy web application framework 
@@ -55,7 +65,7 @@ class DDServer(DDLogger):
        All methods are wrapped in try/catch blocks. In the case of any error
        exception captured passed to L{sendErrorReport} method.
     """
-    def __init__(self,verbose=0,profile=0):
+    def __init__(self,context="",verbose=0,profile=0):
         """
            DDServer constructor. It takes only one optional argument.
            Initialize L{DBSHelper} with default DBS instance "MCGlobal/Writer".
@@ -66,6 +76,10 @@ class DDServer(DDLogger):
            @return: none 
         """
         DDLogger.__init__(self,"DDServer",verbose)
+        try:
+            Controller.__init__ (self, context, __file__)
+        except:
+            pass
         self.ddConfig  = DDConfig()
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(verbose)
@@ -3218,16 +3232,8 @@ class DDServer(DDLogger):
 if __name__ == "__main__":
     optManager  = DDOptions.DDOptionParser('DDServer')
     (opts,args) = optManager.getOpt()
-
-    # load DBS history tables module
-    try:
-        from   DDTables  import *
-    except:
-        if opts.verbose:
-           printExcept()
-        print "WARNING! Cannot load DDTables, your persistent history will be turned off"
-        pass
-    dbsManager = DDServer(opts.verbose,opts.profile)
+    context="" # we pass empty context here to be able to run in stand-alone mode
+    dbsManager = DDServer(context,opts.verbose,opts.profile)
     if opts.quiet:
        dbsManager.setQuiet()
     if  int(string.split(cherrypy.__version__,".")[0])==3:
@@ -3239,6 +3245,7 @@ if __name__ == "__main__":
                 '/js'       : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'js'},
                 '/WEBTOOLS' : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS'},
                 '/yui'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'yui'},
+                '/YUI'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'YUI'},
                }
 
 
