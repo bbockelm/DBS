@@ -2050,17 +2050,21 @@ class DDHelper(DDLogger):
       siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
-  def getAnalysisDS(self,proc):
+  def getAnalysisDS(self,dataset):
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
       oList  = []
       try:
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpds = self.alias('ProcDSTier','tpds')
+          tdt  = self.alias('DataTier','tdt')
           tprd = self.alias('ProcessedDataset','tprd')
           tad  = self.alias('AnalysisDataset','tad')
           tadt = self.alias('AnalysisDSType','tadt')
           tads = self.alias('AnalysisDSStatus','tads')
           tadd = self.alias('AnalysisDSDef','tadd')
+          tpg  = self.alias('PhysicsGroup','tpg')
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
 
@@ -2075,32 +2079,45 @@ class DDHelper(DDLogger):
                   self.col(tadd,'AnalysisDatasets'),
                   self.col(tadd,'UserCut'),
                   self.col(tadd,'Description'),
-                  self.col(tp1,'DistinguishedName'),self.col(tad,'CreatedBy'),self.col(tad,'CreationDate'),
-                  self.col(tp2,'DistinguishedName'),self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate')]
+                  self.col(tp1,'DistinguishedName'),
+                  self.col(tad,'CreatedBy'),self.col(tad,'CreationDate'),
+                  self.col(tp2,'DistinguishedName'),
+                  self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate'),
+                  self.col(tpg,'PhysicsGroupName') ]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                      tprd.outerjoin(tad,onclause=self.col(tad,'ProcessedDS')==self.col(tprd,'ID'))
+                     .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      .outerjoin(tadt,onclause=self.col(tad,'Type')==self.col(tadt,'ID'))
                      .outerjoin(tads,onclause=self.col(tad,'Status')==self.col(tads,'ID'))
                      .outerjoin(tadd,onclause=self.col(tad,'Definition')==self.col(tadd,'ID'))
+                     .outerjoin(tpg,onclause=self.col(tad,'PhysicsGroup')==self.col(tpg,'ID'))
                      .outerjoin(tp1,onclause=self.col(tad,'CreatedBy')==self.col(tp1,'ID'))
                      .outerjoin(tp2,onclause=self.col(tad,'LastModifiedBy')==self.col(tp2,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
+          empty,prim,proc,tier=dataset.split('/')
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
           if proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
+          if tier and tier!="*":
+             sel.append_whereclause(self.col(tdt,'Name')==tier)
           sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
           raise "Fail in getAnalysisDS"
       aList=[]
-      aDict={}
       for item in result:
-          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate=item
+          if not item[0]: continue
+          print item
+          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
-          aList.append(aDict)
+          aList.append((name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group))
       if self.verbose:
          self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
       self.closeConnection(con)

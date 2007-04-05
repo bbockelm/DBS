@@ -1673,7 +1673,7 @@ class DDServer(DDLogger,Controller):
             page+=self.whereMsg('Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset,userMode)
         self.helper.setDBSDLS(dbsInst)
         dList = self.helper.getAnalysisDS(dataset)
-        nameSpace = {'dList':dList}
+        nameSpace = {'dList':dList,'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*"}
         t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	page+=str(t)
         if  int(ajax):

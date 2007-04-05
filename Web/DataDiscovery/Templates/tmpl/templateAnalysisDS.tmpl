@@ -1,18 +1,22 @@
 <!-- templateAnalysisDS.tmpl -->
 #*
- [self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
-  self.col(tads,'Status'),self.col(tadd,'Name'),
-  self.col(tadd,'LumiSections'),
-  self.col(tadd,'LumiSectionRanges'),
-  self.col(tadd,'Runs'),
-  self.col(tadd,'RunRanges'),
-  self.col(tadd,'Algorithm'),
-  self.col(tadd,'LFNs'),
-  self.col(tadd,'AnalysisDatasets'),
-  self.col(tadd,'UserCuts'),
-  self.col(tadd,'Description'),
-  self.col(tp1,'DistinguishedName'),self.col(tad,'CreatedBy'),self.col(tad,'CreationDate'),
-  self.col(tp2,'DistinguishedName'),self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate')]
+oSel = [
+      self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
+      self.col(tads,'Status'),self.col(tadd,'Name'),
+      self.col(tadd,'LumiSections'),
+      self.col(tadd,'LumiSectionRanges'),
+      self.col(tadd,'Runs'),
+      self.col(tadd,'RunsRanges'),
+      self.col(tadd,'Algorithms'),
+      self.col(tadd,'LFNs'),
+      self.col(tadd,'AnalysisDatasets'),
+      self.col(tadd,'UserCut'),
+      self.col(tadd,'Description'),
+      self.col(tp1,'DistinguishedName'),                  
+      self.col(tad,'CreatedBy'),self.col(tad,'CreationDate'),
+      self.col(tp2,'DistinguishedName'),                  
+      self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate'),
+      self.col('tpg','PhysicsGroupName') ]
 *#
 <table>
 #for item in $dList
@@ -36,23 +40,32 @@
 #set mName       =item[17]
 #set mBy         =item[18]
 #set mDate       =item[19]
+#set group       =item[20]
+
+#set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
+#set histLoc="moreInfo"+$idPath
+#set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
+<tr>
+<td>
+<b>$name</b>
+</td>
+</tr>
 <tr>
 <td>
 
+<!-- begin of entry -->
 <table>
 <tr>
-<td align="right">
-$name
-</td>
-<td>
-</td>
 
 <td align="right">
 group: 
 </td>
 <td align="left">
-group $mDate
+$group, modified on $mDate
 </td>
+
+</tr>
+<tr>
 
 <td align="right">
 type: 
@@ -61,6 +74,9 @@ type:
 $type
 </td>
 
+</tr>
+<tr>
+
 <td align="right">
 status: 
 </td>
@@ -68,19 +84,28 @@ status:
 $status
 </td>
 
+</tr>
+<tr>
+
 <td align="right">
-analysis dataset path: 
+path: 
 </td>
 <td align="left">
 $dName
 </td>
 
+</tr>
+<tr>
+
 <td align="right">
 Luminosity:
 </td>
 <td align="left">
-L
+$dLumi
 </td>
+
+</tr>
+<tr>
 
 <td align="right">
 </td>
@@ -88,16 +113,36 @@ L
 crab.cfg
 </td>
 
+</tr>
+<tr>
+
 <td align="right">
 </td>
 <td align="left">
-$ann ...more
+
+<table>
+<tr>
+<td>$ann ...</td>
+<td>
+<div id="$idPath"></div>
+</td><td>
+<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">&#171; more &#187;</a>
+</td></tr></table>
+
 </td>
+
+</tr>
+</table>
+<!-- end of entry -->
 
 </td>
 </tr>
-
+<tr>
+<td>
+<hr class="dbs" />
+</td>
 </tr>
+
 #end for
 </table>
 <!-- end of templateAnalysisDS.tmpl -->
