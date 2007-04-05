@@ -112,7 +112,7 @@ try:
 				self.processed = DbsProcessedDataset (
 						PrimaryDataset = self.primary,
 						Name = path[3],
-						PhysicsGroup = "PRODUCTION",
+						PhysicsGroup = "Online Selection",
 						Status = "VALID",
 						TierList = self.tierList
 						)
