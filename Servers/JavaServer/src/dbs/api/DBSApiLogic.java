@@ -1,6 +1,6 @@
 /**
- $Revision: 1.96 $"
- $Id: DBSApiLogic.java,v 1.96 2007/03/29 22:00:40 sekhri Exp $"
+ $Revision: 1.97 $"
+ $Id: DBSApiLogic.java,v 1.97 2007/03/30 16:00:03 sekhri Exp $"
  *
  */
 
@@ -490,8 +490,8 @@ public class DBSApiLogic {
 	public void insertPhysicsGroup(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		insertPhysicsGroup(conn, out, 
-				get(table, "physics_group_name", true),
-				get(table, "physics_group_convener", true),
+				getStr(table, "physics_group_name", true),
+				getStr(table, "physics_group_convener", true),
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false)

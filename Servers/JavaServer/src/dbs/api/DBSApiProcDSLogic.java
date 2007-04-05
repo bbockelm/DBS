@@ -1,6 +1,6 @@
 /**
- $Revision: 1.35 $"
- $Id: DBSApiProcDSLogic.java,v 1.35 2007/03/20 16:27:51 sekhri Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApiProcDSLogic.java,v 1.36 2007/04/03 22:02:01 sekhri Exp $"
  *
  */
 
@@ -287,8 +287,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String creationDate = getTime(dataset, "creation_date", false);
 
 		String procDSName = get(dataset, "processed_datatset_name", true);
-		String phyGroupName = get(dataset, "physics_group_name", false);
-		String phyGroupCon = get(dataset, "physics_group_convener", false);
+		String phyGroupName = getStr(dataset, "physics_group_name", false);
+		String phyGroupCon = getStr(dataset, "physics_group_convener", false);
 		String status = get(dataset, "status", false).toUpperCase();
 		Vector tierVector = DBSUtil.getVector(dataset,"data_tier");
 		Vector parentVector = DBSUtil.getVector(dataset,"parent");
