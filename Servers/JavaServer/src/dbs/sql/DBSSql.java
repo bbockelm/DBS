@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.89 $"
- $Id: DBSSql.java,v 1.89 2007/04/02 18:30:42 sekhri Exp $"
+ $Revision: 1.90 $"
+ $Id: DBSSql.java,v 1.90 2007/04/03 22:02:02 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -514,7 +514,7 @@ public class DBSSql {
 		}
 		//if(!DBSUtil.isNull(adsList)) ps.setString(columnIndx++, adsList);
 		for(int i = 0 ; i != adsList.size(); ++i) ps.setString(columnIndx++, (String)adsList.get(i));
-		System.out.println("The SQL query is " + ps);
+		//System.out.println("The SQL query is " + ps);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
