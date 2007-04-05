@@ -1673,7 +1673,8 @@ class DDServer(DDLogger,Controller):
             page+=self.whereMsg('Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset,userMode)
         self.helper.setDBSDLS(dbsInst)
         dList = self.helper.getAnalysisDS(dataset)
-        nameSpace = {'dList':dList,'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*"}
+        print "\n\ngetAnalysisDS",dList
+        nameSpace = {'dList':dList,'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*",'full':0}
         t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	page+=str(t)
         if  int(ajax):
@@ -1684,6 +1685,24 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     getAnalysisDS.exposed=True
+
+    def getAnalysisDSFullInfo(self,dbsInst,dataset,ads,userMode):
+        page=self.genTopHTML(userMode=userMode)
+        page+=self.whereMsg('Navigator :: Results :: Full Info about analysis dataset \'%s\''%ads,userMode)
+        self.helper.setDBSDLS(dbsInst)
+        dList = self.helper.getAnalysisDS(dataset,ads)
+        print "\n\ngetAnalysisDSFullInfo",dList
+        for item in dList:
+            if item[0]==ads:
+                nameSpace={'dList':[item],'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*",'full':1}
+                t = templateAnalysisDS(searchList=[nameSpace]).respond()
+                page+=str(t)
+                break
+        page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getAnalysisDSFullInfo.exposed=True
 
     def findAnalysisDS(self,an_name,an_lumi,an_runs,an_lfns,an_rels,an_prds,an_tier,an_ands,an_cuts,an_desc,userMode):
         page=self.genTopHTML(userMode=userMode)

@@ -2050,7 +2050,7 @@ class DDHelper(DDLogger):
       siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
-  def getAnalysisDS(self,dataset):
+  def getAnalysisDS(self,dataset="*",an_dataset="*"):
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -2105,6 +2105,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if tier and tier!="*":
              sel.append_whereclause(self.col(tdt,'Name')==tier)
+          if an_dataset and an_dataset!="*":
+             sel.append_whereclause(self.col(tad,'Name')==an_dataset)
           # to avoid ORA-00932: inconsistent datatypes: expected - got CLOB, I don't need to
           # supply distinct and order while dealing with ORACLE
           # http://forums.bea.com/bea/message.jspa?messageID=202461255&tstart=0
