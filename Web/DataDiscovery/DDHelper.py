@@ -628,7 +628,9 @@ class DDHelper(DDLogger):
       return aDict,totEvt,totFiles,totSize,siteList
 
   def numberOfEvents(self,datasetPath):
-      prim=tier=proc=""
+      prim=""
+      tier=""
+      proc=""
       if datasetPath and datasetPath!="*":
          empty,prim,proc,tier=string.split(datasetPath,"/")
       con = self.connectToDB()
@@ -665,7 +667,9 @@ class DDHelper(DDLogger):
   ### END OF WRAPPER ###
 
   def getDataDescription(self,processedDataset):
-      prim=tier=proc=""
+      prim=""
+      tier=""
+      proc=""
       if processedDataset and processedDataset!="*":
          empty,prim,proc,tier=string.split(processedDataset,"/")
       con = self.connectToDB()
@@ -941,7 +945,9 @@ class DDHelper(DDLogger):
       
   def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
       t1=time.time()
-      prim=tier=proc=""
+      prim=""
+      tier=""
+      proc=""
       if datasetPath and datasetPath!="*":
          empty,prim,proc,tier=string.split(datasetPath,"/")
       con = self.connectToDB()
@@ -999,7 +1005,9 @@ class DDHelper(DDLogger):
 
 
       t1=time.time()
-      prim=tier=proc=""
+      prim=""
+      tier=""
+      proc=""
       if dataset and dataset!="*":
          empty,prim,proc,tier=string.split(dataset,"/")
       con = self.connectToDB()
@@ -1507,7 +1515,9 @@ class DDHelper(DDLogger):
       return content
 
   def getLFNs(self,dbsInst,blockName,dataset):
-      prim=tier=proc="*"
+      prim="*"
+      tier="*"
+      proc="*"
       if dataset and dataset!="*":
          empty,prim,proc,tier=string.split(dataset,"/")
       con = self.connectToDB()
@@ -2050,7 +2060,7 @@ class DDHelper(DDLogger):
       siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
-  def getAnalysisDS(self,dataset="*",an_dataset="*"):
+  def getAnalysisDS(self,dataset="*",an_dataset="*",cDict={}):
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -2083,7 +2093,8 @@ class DDHelper(DDLogger):
                   self.col(tad,'CreatedBy'),self.col(tad,'CreationDate'),
                   self.col(tp2,'DistinguishedName'),
                   self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate'),
-                  self.col(tpg,'PhysicsGroupName') ]
+                  self.col(tpg,'PhysicsGroupName'),
+                  self.col(tpm,'Name'),self.col(tprd,'Name'),self.col(tdt,'Name')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                      tprd.outerjoin(tad,onclause=self.col(tad,'ProcessedDS')==self.col(tprd,'ID'))
@@ -2098,15 +2109,33 @@ class DDHelper(DDLogger):
                      .outerjoin(tp2,onclause=self.col(tad,'LastModifiedBy')==self.col(tp2,'ID'))
                             ]
                                  )
-          empty,prim,proc,tier=dataset.split('/')
+          prim="*"
+          tier="*"
+          proc="*"
+          if dataset and dataset!="*":
+             empty,prim,proc,tier=dataset.split('/')
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if proc!="*":
+          if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if tier and tier!="*":
              sel.append_whereclause(self.col(tdt,'Name')==tier)
           if an_dataset and an_dataset!="*":
              sel.append_whereclause(self.col(tad,'Name')==an_dataset)
+          for key in cDict.keys():
+              op,val=cDict[key]
+              if not val: continue
+              tableName,col=key.split(".")
+              t=self.dbManager.getTable(self.dbsInstance,tableName)
+              lval=self.col(t,col)
+              if op=="=":
+                 sel.append_whereclause(lval==val)
+              elif op=="like":
+                 sel.append_whereclause(lval.like("%%%s%%"%str(val)))
+              elif op=="likeLeft":
+                 sel.append_whereclause(lval.like("%%%s"%str(val)))
+              elif op=="likeRight":
+                 sel.append_whereclause(lval.like("%s%%"%str(val)))
           # to avoid ORA-00932: inconsistent datatypes: expected - got CLOB, I don't need to
           # supply distinct and order while dealing with ORACLE
           # http://forums.bea.com/bea/message.jspa?messageID=202461255&tstart=0
@@ -2121,10 +2150,11 @@ class DDHelper(DDLogger):
       aList=[]
       for item in result:
           if not item[0]: continue
-          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group=item
+          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,prim,proc,tier=item
+          path="/%s/%s/%s"%(prim,proc,tier)
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
-          aList.append((name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group))
+          aList.append((name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,path))
       if self.verbose:
          self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
       self.closeConnection(con)

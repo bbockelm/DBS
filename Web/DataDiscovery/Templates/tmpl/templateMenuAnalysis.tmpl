@@ -2,145 +2,260 @@
 
 <form action="findAnalysisDS" >
 <input type="hidden" value="$userMode" name="userMode" />
-<table>
+<table cellpadding="2" cellspacing="2">
+#if $userMode!='user'
 <tr>
 <td align="right">
-<div id="an_nameDef">
+<div id="ans_dbsInst">
+<b>
+DBS instances:
+</b>
+</div>
+</td>
+<td>
+<select style="width:100px" id="dbsInst" name="dbsInst">
+#for dbs in $dbsList
+<option>$dbs</option>
+#end for
+</select>
+</td>
+<td></td>
+</tr>
+#else
+<input type="hidden" value="$dbsList[0]" name="dbsInst" />
+#end if
+
+<tr>
+<td align="right">
+<div id="ads_nameDef">
 <b>
 Name:
 </b>
 </div>
 </td>
-<td align="left"><input type="text" size="60" id="an_name" name="an_name" /></td>
+<td>
+<select style="width:100px" id="op_ads_name" name="op_ads_name">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+<option>=</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="ads_name" name="ads_name" /></td>
 </tr>
 
 <tr>
 <td align="right">
-<div id="an_lumiDef">
+<div id="adsd_nameDef">
 <b>
-Lumi sections:
+Definition Name:
+</b>
+</div>
+</td>
+<td>
+<select style="width:100px" id="op_adsd_name" name="op_adsd_name">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+<option>=</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_name" name="adsd_name" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="adsd_andsDef">
+<b>
+Annotation:
 </b>
 </td>
-<td align="left"><input type="text" size="60" id="an_lumi" name="an_lumi" /></td>
+<td>
+<select style="width:100px" id="op_adsd_anns" name="op_adsd_anns">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_anns" name="adsd_anns" /></td>
 </tr>
 
 <tr>
 <td align="right">
-<div id="an_runsDef">
+<div id="adsd_descDef">
 <b>
-Run ranges:
+Description:
 </b>
 </td>
-<td align="left"><input type="text" size="60" id="an_runs" name="an_runs" /></td>
+<td>
+<select style="width:100px" id="op_adsd_desc" name="op_adsd_desc">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_desc" name="adsd_desc" /></td>
 </tr>
 
 <tr>
 <td align="right">
-<div id="an_relsDef">
+<div id="adsd_relsDef">
 <b>
 Release:
 </b>
 </td>
-<td align="left"><input type="text" size="60" id="an_rels" name="an_rels" /></td>
-</tr>
-
-<tr>
-<td align="right">
-<div id="an_lfnsDef">
-<b>
-LFNs:
-</b>
+<td>
+<select style="width:100px" id="op_adsd_rels" name="op_adsd_rels">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+<option>=</option>
+</select>
 </td>
-<td align="left"><input type="text" size="60" id="an_lfns" name="an_lfns" /></td>
+<td align="left"><input type="text" size="60" id="adsd_rels" name="adsd_rels" /></td>
 </tr>
 
 <tr>
 <td align="right">
-<div id="an_prdsDef">
-<b>
-Dataset:
-</b>
-</td>
-<td align="left"><input type="text" size="60" id="an_prds" name="an_prds" /></td>
-</tr>
-
-<tr>
-<td align="right">
-<div id="an_tierDef">
+<input type="hidden" value="like" id="op_adsd_tier" name="op_adsd_tier" />
+<div id="adsd_tierDef">
 <b>
 Tiers:
 </b>
 </td>
 <td align="left">
-<select name="an_tier" id="an_tier">
-<option value="Any">Any</option>
+<select style="width:100px" name="adsd_tier" id="adsd_tier">
+<option value="">Any</option>
 #for tier in $tierList
 <option value="$tier">$tier</option>
 #end for
 </select>
 </td>
+<td></td>
 </tr>
 
 <tr>
 <td align="right">
-<div id="an_andsDef">
+<div id="adsd_prdsDef">
 <b>
-Analysis dataset:
+Dataset:
 </b>
 </td>
-<td align="left"><input type="text" size="60" id="an_ands" name="an_ands" /></td>
+<td>
+<select style="width:100px" id="op_adsd_prds" name="op_adsd_prds">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+<option>=</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_prds" name="adsd_prds" /></td>
 </tr>
 
 <tr>
 <td align="right">
-<div id="an_cutsDef">
+<div id="adsd_lfnsDef">
+<b>
+LFN:
+</b>
+</td>
+<td>
+<select style="width:100px" id="op_adsd_lfns" name="op_adsd_lfns">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+<option>=</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_lfns" name="adsd_lfns" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="adsd_runsDef">
+<b>
+Run ranges:
+</b>
+</td>
+<td>
+<select style="width:100px" id="op_adsd_runs" name="op_adsd_runs">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_runs" name="adsd_runs" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="adsd_lumiDef">
+<b>
+Lumi sections:
+</b>
+</td>
+<td>
+<select style="width:100px" id="op_adsd_lumi" name="op_adsd_lumi">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+</select>
+</td>
+<td align="left"><input type="text" size="60" id="adsd_lumi" name="adsd_lumi" /></td>
+</tr>
+
+<tr>
+<td align="right">
+<div id="adsd_cutsDef">
 <b>
 Cut:
 </b>
 </td>
-<td align="left"><input type="text" size="60" id="an_cuts" name="an_cuts" /></td>
-</tr>
-
-<tr>
-<td align="right">
-<div id="an_descDef">
-<b>
-Description:
-</b>
+<td>
+<select style="width:100px" id="op_adsd_cuts" name="op_adsd_cuts">
+<option>like</option>
+<option>likeLeft</option>
+<option>likeRight</option>
+</select>
 </td>
-<td align="left"><input type="text" size="60" id="an_desc" name="an_desc" /></td>
+<td align="left"><input type="text" size="60" id="adsd_cuts" name="adsd_cuts" /></td>
 </tr>
 
 <tr>
-<td align="right">
+<td></td>
+<td align="left">
+</td>
+<td align="left">
+<input type="reset" value="Reset" />
 <input type="submit" value="Find" />
 </td>
-<td></td>
 </tr>
 </table>
 </form>
 
 <script type="text/javascript">
 var tooltip;
-tooltip="<p>Analysis dataset name used to define the analysis dataset.</p>";
-MakeTooltip("t_an_nameDef","an_nameDef",tooltip);
+tooltip="<p>Analysis dataset name.</p>";
+MakeTooltip("t_ads_nameDef","ads_nameDef",tooltip);
+tooltip="<p>Analysis dataset definition name used to define the analysis dataset definition</p>";
+MakeTooltip("t_adsd_nameDef","adsd_nameDef",tooltip);
 tooltip="<p>Lumi section range.</p>";
-MakeTooltip("t_an_lumiDef","an_lumiDef",tooltip);
+MakeTooltip("t_adsd_lumiDef","adsd_lumiDef",tooltip);
 tooltip="<p>Run range.</p>";
-MakeTooltip("t_an_runsDef","an_runsDef",tooltip);
+MakeTooltip("t_adsd_runsDef","adsd_runsDef",tooltip);
 tooltip="<p>Software releases.</p>";
-MakeTooltip("t_an_relsDef","an_relsDef",tooltip);
+MakeTooltip("t_adsd_relsDef","adsd_relsDef",tooltip);
 tooltip="<p>Logical File Name.</p>";
-MakeTooltip("t_an_lfnsDef","an_lfnsDef",tooltip);
+MakeTooltip("t_adsd_lfnsDef","adsd_lfnsDef",tooltip);
 tooltip="<p>Processed dataset.</p>";
-MakeTooltip("t_an_prdsDef","an_prdsDef",tooltip);
+MakeTooltip("t_adsd_prdsDef","adsd_prdsDef",tooltip);
 tooltip="<p>Data tier.</p>";
-MakeTooltip("t_an_tierDef","an_tierDef",tooltip);
-tooltip="<p>Analysis dataset.</p>";
-MakeTooltip("t_an_andsDef","an_andsDef",tooltip);
+MakeTooltip("t_adsd_tierDef","adsd_tierDef",tooltip);
+tooltip="<p>Analysis dataset annotation</p>";
+MakeTooltip("t_adsd_andsDef","adsd_andsDef",tooltip);
 tooltip="<p>User cuts.</p>";
-MakeTooltip("t_an_cutsDef","an_cutsDef",tooltip);
+MakeTooltip("t_adsd_cutsDef","adsd_cutsDef",tooltip);
 tooltip="<p>Analysis dataset description.</p>";
-MakeTooltip("t_an_descDef","an_descDef",tooltip);
+MakeTooltip("t_adsd_descDef","adsd_descDef",tooltip);
 </script>
 <!-- end of templateMenuAnalysis.tmpl -->

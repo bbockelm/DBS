@@ -569,7 +569,7 @@ class DDServer(DDLogger,Controller):
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('Analysis dataset search',userMode)
             tierList = self.helper.getDataTiers()
-            nameSearch={'tierList':tierList,'userMode':userMode}
+            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':self.dbsList}
             t = templateMenuAnalysis(searchList=[nameSearch]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -1673,7 +1673,6 @@ class DDServer(DDLogger,Controller):
             page+=self.whereMsg('Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset,userMode)
         self.helper.setDBSDLS(dbsInst)
         dList = self.helper.getAnalysisDS(dataset)
-        print "\n\ngetAnalysisDS",dList
         nameSpace = {'dList':dList,'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*",'full':0}
         t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	page+=str(t)
@@ -1691,7 +1690,6 @@ class DDServer(DDLogger,Controller):
         page+=self.whereMsg('Navigator :: Results :: Full Info about analysis dataset \'%s\''%ads,userMode)
         self.helper.setDBSDLS(dbsInst)
         dList = self.helper.getAnalysisDS(dataset,ads)
-        print "\n\ngetAnalysisDSFullInfo",dList
         for item in dList:
             if item[0]==ads:
                 nameSpace={'dList':[item],'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*",'full':1}
@@ -1704,14 +1702,25 @@ class DDServer(DDLogger,Controller):
         return page
     getAnalysisDSFullInfo.exposed=True
 
-    def findAnalysisDS(self,an_name,an_lumi,an_runs,an_lfns,an_rels,an_prds,an_tier,an_ands,an_cuts,an_desc,userMode):
+    def findAnalysisDS(self,dbsInst,op_ads_name,ads_name,op_adsd_name,adsd_name,op_adsd_anns,adsd_anns,op_adsd_desc,adsd_desc,op_adsd_rels,adsd_rels,op_adsd_tier,adsd_tier,op_adsd_prds,adsd_prds,op_adsd_lfns,adsd_lfns,op_adsd_runs,adsd_runs,op_adsd_lumi,adsd_lumi,op_adsd_cuts,adsd_cuts,userMode):
         page=self.genTopHTML(userMode=userMode)
         page+=self.whereMsg('Navigator :: Results :: Analysis datasets',userMode)
-        dList=[] # TODO: find out analysis DS out of input parameters
-        nameSpace = {
-                     'dList'   : dList,
-                     'userMode': userMode,
-                    }
+        cDict = {
+                 'AnalysisDataset.Name'           : (op_ads_name,ads_name),
+                 'AnalysisDSDef.Name'             : (op_adsd_name,adsd_name),
+                 'AnalysisDSDef.LumiSections'     : (op_adsd_lumi,adsd_lumi),
+                 'AnalysisDSDef.Runs'             : (op_adsd_runs,adsd_runs),
+                 'AnalysisDSDef.LFNs'             : (op_adsd_lfns,adsd_lfns),
+                 'AnalysisDSDef.Algorithms'       : (op_adsd_rels,adsd_rels),
+                 'AnalysisDSDef.Path'             : (op_adsd_prds,adsd_prds),
+                 'AnalysisDSDef.Tiers'            : (op_adsd_tier,adsd_tier),
+                 'AnalysisDataset.Annotation'     : (op_adsd_anns,adsd_anns),
+                 'AnalysisDSDef.UserCut'          : (op_adsd_cuts,adsd_cuts),
+                 'AnalysisDSDef.Description'      : (op_adsd_desc,adsd_desc),
+                }
+        dList=self.helper.getAnalysisDS("*","*",cDict)
+#        print "#######",dList
+        nameSpace={'dList':dList,'dbsInst':dbsInst,'path':"*",'userMode':userMode,'appPath':"*",'full':0}
         t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	page+=str(t)
         page+=self.genBottomHTML()

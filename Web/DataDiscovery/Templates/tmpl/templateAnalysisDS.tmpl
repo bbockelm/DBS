@@ -41,6 +41,7 @@ oSel = [
 #set mBy         = item[18]
 #set mDate       = item[19]
 #set group       = item[20]
+#set dataset     = item[21]
 
 #set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
 #set histLoc="moreInfo"+$idPath
@@ -135,7 +136,7 @@ path:
 
 <table>
 <tr>
-<td>$path</td>
+<td>$dataset</td>
 <td>
 <div id="$idPath"></div>
 </td><td>
