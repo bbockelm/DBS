@@ -37,28 +37,66 @@
 #set mBy         =item[18]
 #set mDate       =item[19]
 <tr>
-<td>Analysis dataset:</td>
-<td>$name</td>
+<td>
 
-<td>Analysis annotation:</td>
-<td>$ann</td>
+<table>
+<tr>
+<td align="right">
+$name
+</td>
+<td>
+</td>
 
-<td>Analysis type:</td>
-<td>$type</td>
+<td align="right">
+group: 
+</td>
+<td align="left">
+group $mDate
+</td>
 
-<td>Analysis status:</td>
-<td>$status</td>
+<td align="right">
+type: 
+</td>
+<td align="left">
+$type
+</td>
 
-#*
-<td>Analysis :</td>
-<td>$</td>
+<td align="right">
+status: 
+</td>
+<td align="left">
+$status
+</td>
 
-<td>Analysis :</td>
-<td>$</td>
+<td align="right">
+analysis dataset path: 
+</td>
+<td align="left">
+$dName
+</td>
 
-<td>Analysis :</td>
-<td>$</td>
-*#
+<td align="right">
+Luminosity:
+</td>
+<td align="left">
+L
+</td>
+
+<td align="right">
+</td>
+<td align="left">
+crab.cfg
+</td>
+
+<td align="right">
+</td>
+<td align="left">
+$ann ...more
+</td>
+
+</td>
+</tr>
+
 </tr>
 #end for
 </table>
