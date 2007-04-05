@@ -91,6 +91,8 @@ try:
 				print "processed-dataset found %s " % str(attrs['path'])
 				self.datasetPath = str(attrs['path'])
 				path = self.datasetPath.split('/')
+				tier = path[2]
+				"""
 				pattren = '/' + path[1] + '/*/' + path[3]
 				print "Listing datasets from DBS1 with pattren " + pattren
 				datasetDBS1 = cgiApi.listProcessedDatasets (pattren)
@@ -100,19 +102,37 @@ try:
 					#if((tier != 'RECO') & (tier != 'RAW') & (tier != 'FEVT')):
 					if((tier != 'RECO') & (tier != 'RAW')):
 						self.tierList.append(tier)
+				"""
+				if( (tier == 'GEN') | (tier == 'SIM') ):
+					self.tierList.append('GEN')
+					self.tierList.append('SIM')
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'GEN-SIM'
+					
+				if( (tier == 'DIGI') | (tier == 'RECO') ):
+					self.tierList.append('DIGI')
+					self.tierList.append('RECO')
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'DIGI-RECO'
 
+				if( tier == 'FEVT' ):
+					self.tierList.append('FEVT')
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'FEVT'
+
+
+				"""
 				#self.tierList = [path[2]]
 				if('FEVT' in self.tierList) : 
 					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'FEVT'
 				else :
 					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + makeTierList(self.tierList)
-					
+				
+				"""
 				#import pdb
 				#pdb.set_trace()
 				self.processed = DbsProcessedDataset (
 						PrimaryDataset = self.primary,
 						Name = path[3],
-						PhysicsGroup = "Online Selection",
+						#PhysicsGroup = "Online Selection",
+						PhysicsGroup = "B-physics",
 						Status = "VALID",
 						TierList = self.tierList
 						)
@@ -258,7 +278,7 @@ try:
 					tmpBlockFile.write(b)
 					tmpBlockFile.write("\n")
 					tmpBlockFile.close()
-					api.closeBlock (b)
+					#api.closeBlock (b)
 								
 	xml.sax.parseString (data, Handler ())
 except Exception, ex:
