@@ -415,7 +415,7 @@ table.table_box td {
 table.table_box_white {
 /*  height: 330px;*/
   border-width: 0px 0px 0px 0px;
-  border-spacing: 1px;
+  border-spacing: 0px;
   /* border-style: top right bottom left */
   border-style: hidden hidden hidden hidden;
   border-color: gray gray gray gray;
