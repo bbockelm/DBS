@@ -2096,7 +2096,7 @@ class DDHelper(DDLogger):
                      .outerjoin(tpg,onclause=self.col(tad,'PhysicsGroup')==self.col(tpg,'ID'))
                      .outerjoin(tp1,onclause=self.col(tad,'CreatedBy')==self.col(tp1,'ID'))
                      .outerjoin(tp2,onclause=self.col(tad,'LastModifiedBy')==self.col(tp2,'ID'))
-                            ],distinct=True,order_by=oSel
+                            ]
                                  )
           empty,prim,proc,tier=dataset.split('/')
           if prim and prim!="*":
@@ -2105,6 +2105,12 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if tier and tier!="*":
              sel.append_whereclause(self.col(tdt,'Name')==tier)
+          # to avoid ORA-00932: inconsistent datatypes: expected - got CLOB, I don't need to
+          # supply distinct and order while dealing with ORACLE
+          # http://forums.bea.com/bea/message.jspa?messageID=202461255&tstart=0
+          if self.dbManager.dbType[self.dbsInstance]!='oracle':
+             sel.distinct=True
+             sel.order_by=oSel
           sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -2113,7 +2119,6 @@ class DDHelper(DDLogger):
       aList=[]
       for item in result:
           if not item[0]: continue
-          print item
           name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
