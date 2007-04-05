@@ -19,8 +19,11 @@ from   DBSInst   import * # defines DBS instances and schema
 from   DDUtil    import * # general utils
 
 # import DLS modules
-import dlsClient
-import dlsApi
+try:
+    import dlsClient
+    import dlsApi
+except:
+    pass
 
 # DREW code, need to remove try block once it's ready
 try:
@@ -290,12 +293,13 @@ class DDHelper(DDLogger):
          self.dbsApi[dbsInst]=self.api
       else:
          self.api = self.dbsApi[dbsInst]
-      if not self.dbsDLS.has_key(dbsInst):
-         url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
-         self.writeLog("DLS Instance: %s %s"%(dlsType,endpoint))
-         self.dlsApi = dlsClient.getDlsApi(dlsType, endpoint)
-      else:
-         self.dlsApi = self.dbsDLS[dbsInst]
+      # UNCOMMENT FOR DLS usage
+#      if not self.dbsDLS.has_key(dbsInst):
+#         url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
+#         self.writeLog("DLS Instance: %s %s"%(dlsType,endpoint))
+#         self.dlsApi = dlsClient.getDlsApi(dlsType, endpoint)
+#      else:
+#         self.dlsApi = self.dbsDLS[dbsInst]
  
   def setDLS_LFC(self):
       """
