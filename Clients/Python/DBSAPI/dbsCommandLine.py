@@ -214,7 +214,7 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
-      self.add_option("-v","--verbose", action="store", type="string", default="WARNING", dest="level",
+      self.add_option("-v","--verbose", action="store", type="string", default="DBSWARNING", dest="level",
            help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
 
       self.add_option("--p","--path", action="store", type="string", dest="path",

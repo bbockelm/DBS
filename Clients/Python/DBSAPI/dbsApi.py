@@ -42,8 +42,17 @@ import urllib2
 import logging
 import inspect
 
+from dbsLogger import *
+
 #DBS Api version
 __version__ = "v00_00_06"
+
+
+# DBS Defined Log Levels
+#DBSDEBUG=1
+#DBSINFO=2
+#DBSWARNING=3
+
 
 def getInt(value = None):
 	if (value == None ) :
@@ -97,42 +106,15 @@ class DbsApi(DbsConfig):
 	    self._server = DbsExecService(self.dbshome(), self.javahome(), self.version(), Args)
     else :
             self._server = DbsHttpService(self.url(), self.version(), Args)
-    #
-    # Setup Proper logging
-    #
-    # Default LOG Level is DEBUG
-    if not self.configDict.has_key('level'):
-      self.configDict['level'] = "DEBUG" 
-    if self.loglevel() in ("", None, "DEBUG"):
-       loglevel=logging.INFO
-    elif self.loglevel() == 'INFO':
-       loglevel=logging.INFO
-    elif self.loglevel() == 'CRITICAL':
-       loglevel=logging.CRITICAL
-    elif self.loglevel() == 'WARNING':
-       loglevel=logging.WARNING
-    elif self.loglevel() == 'ERROR':
-       loglevel=logging.ERROR
-    elif self.loglevel() == 'NOTSET':
-       loglevel=logging.NOTSET
-    else : loglevel=logging.INFO
 
-    # User want to write in a file ?
+    # Set up logging
+
     if not self.configDict.has_key('log'):
-	self.configDict['log'] = "STDOUT" 
-    if self.log() not in ("", None, "STDOUT"):
-            print "Writing log to ", self.log()
-            logging.basicConfig(level=loglevel,
-                    format='%(asctime)s %(levelname)s %(message)s',
-                    filename=self.log(),
-                    filemode='w')
-    # By default write it on stdout
-    else: 
-            logging.basicConfig(level=loglevel,
-                    format='%(asctime)s %(levelname)s %(message)s')
-          
-    logging.debug("DBS Api initialized")  
+        self.configDict['log'] = "STDOUT"
 
+    DbsLogger(self.loglevel(), self.log()) 
+    logging.log(DBSDEBUG, "DBS Api initialized")
+    
 
   def setApiVersion(self):
     """
@@ -269,12 +251,12 @@ class DbsApi(DbsConfig):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listPrimaryDatasets', 'pattern' : pattern  }, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     if self.verbose():
        print data
@@ -334,7 +316,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
 
     # Lets get all tiers no matter what, otherwise Server puts unnecessary checks on the DataTier
@@ -352,7 +334,7 @@ class DbsApi(DbsConfig):
 		    'GET')
 
 
-    logging.debug(data)  
+    logging.log(DBSDEBUG, data)  
 
     # Parse the resulting xml output.
     try:
@@ -426,7 +408,7 @@ class DbsApi(DbsConfig):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
 
     # Invoke Server.
@@ -436,7 +418,7 @@ class DbsApi(DbsConfig):
 		    'app_executable_name' : patternExe, 
 		    'ps_hash' : patternPS }, 
 		    'GET')
-    logging.debug(data) 
+    logging.log(DBSDEBUG, data) 
     # Parse the resulting xml output.
     try:
       result = []
@@ -504,12 +486,12 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = self._path(dataset)
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listRuns', 'path' : path }, 'GET')
-    logging.debug(data) 
+    logging.log(DBSDEBUG, data) 
 
     # Parse the resulting xml output.
     try:
@@ -582,12 +564,12 @@ class DbsApi(DbsConfig):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = self._path(dataset)
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listTiers', 'path' : path }, 'GET')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:
@@ -656,12 +638,12 @@ class DbsApi(DbsConfig):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     path = self._path(dataset)
     data = self._server._call ({ 'api' : 'listBlocks', 'path' : path, 'block_name' : block_name, 'storage_element_name' : storage_element_name }, 'GET')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
     # Parse the resulting xml output.
@@ -722,11 +704,11 @@ class DbsApi(DbsConfig):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listStorageElements', 'storage_element_name' : storage_element_name }, 'GET')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
     # Parse the resulting xml output.
@@ -800,7 +782,7 @@ class DbsApi(DbsConfig):
           etc etc.
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     #path = self._path(dataset)
     # Invoke Server.
@@ -823,7 +805,7 @@ class DbsApi(DbsConfig):
                                     'path' : path, 'block_name' : blockName, 
 		                    'analysis_dataset_name' : analysisDataset,
                                     'pattern_lfn' : patternLFN}, 'GET')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:
@@ -955,12 +937,12 @@ class DbsApi(DbsConfig):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listFileParents', 'lfn' : lfn  }, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:
@@ -1010,12 +992,12 @@ class DbsApi(DbsConfig):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listFileAlgorithms', 'lfn' : lfn  }, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:
@@ -1063,12 +1045,12 @@ class DbsApi(DbsConfig):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listFileTiers', 'lfn' : lfn  }, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:
@@ -1110,12 +1092,12 @@ class DbsApi(DbsConfig):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listFileBranches', 'lfn' : lfn  }, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
     try:
@@ -1160,12 +1142,12 @@ class DbsApi(DbsConfig):
              
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listFileLumis', 'lfn' : lfn  }, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
     try:
       result = []
@@ -1217,14 +1199,14 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     data = self._server._call ({ 'api' : 'listAnalysisDatasetDefinition',
 				 'pattern_analysis_dataset_definition_name' : pattern 
 				}, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
     try:
       result = []
@@ -1281,7 +1263,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = self._path(path)
 
@@ -1291,7 +1273,7 @@ class DbsApi(DbsConfig):
                                  'path' : path  
 				}, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
     try:
       result = []
@@ -1362,7 +1344,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = self._path(dataset)
 
@@ -1371,7 +1353,7 @@ class DbsApi(DbsConfig):
                                  'path' : path  
 				}, 'GET')
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
     try:
       result = []
@@ -1433,13 +1415,13 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     try:
        # Invoke Server.
        path = self._path(path)
        data = self._server._call ({ 'api' : 'listDatasetContents', 'path' : path, 'block_name' : block_name }, 'GET')
-       #logging.debug(data)
+       #logging.log(DBSDEBUG, data)
 
        return data
 
@@ -1480,12 +1462,12 @@ class DbsApi(DbsConfig):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     try:
        # Invoke Server.
        data = self._server._call ({ 'api' : 'insertDatasetContents', 'xmlinput' : xmlinput }, 'POST')
-       #logging.debug(data)
+       #logging.log(DBSDEBUG, data)
 
        return data
 
@@ -1513,7 +1495,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -1528,13 +1510,13 @@ class DbsApi(DbsConfig):
     xmlinput += " </primary_dataset>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
 
     if self.verbose():
        print "insertPrimaryDataset, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertPrimaryDataset',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
   def insertAlgorithm(self, algorithm):
@@ -1571,7 +1553,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
 
     # Prepare XML description of the input
@@ -1593,14 +1575,14 @@ class DbsApi(DbsConfig):
        xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
     xmlinput += "/>"
     xmlinput += "</dbs>"
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
 
     
     if self.verbose():
        print "insertAlgorithm, xmlinput",xmlinput
     data = self._server._call ({ 'api' : 'insertAlgorithm',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
 
@@ -1652,7 +1634,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>" 
     xmlinput += "<dbs>" 
@@ -1697,21 +1679,21 @@ class DbsApi(DbsConfig):
     xmlinput += "</processed_dataset>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertProcessedDataset, xmlinput",xmlinput
     
     # Call the method
     data = self._server._call ({ 'api' : 'insertProcessedDataset',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 # ------------------------------------------------------------
 
   def insertRun(self, run):
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     """
     Inserts a new run in the DBS databse. 
@@ -1753,13 +1735,13 @@ class DbsApi(DbsConfig):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertRun, xmlinput",xmlinput
        
     data = self._server._call ({ 'api' : 'insertRun',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
 # ------------------------------------------------------------
@@ -1773,7 +1755,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     data = self._server._call ({ 'api' : 'updateFileStatus',
                          'lfn' : self._file_name(lfn),
@@ -1791,7 +1773,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     data = self._server._call ({ 'api' : 'updateProcDSStatus',
                          'path' : self._path(dataset),
@@ -1828,7 +1810,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -1841,13 +1823,13 @@ class DbsApi(DbsConfig):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertRun, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'updateRun',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
 
@@ -1966,7 +1948,7 @@ class DbsApi(DbsConfig):
     # Prepare XML description of the input
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -2047,7 +2029,7 @@ class DbsApi(DbsConfig):
     xmlinput += "</processed_datatset>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
 
     if self.verbose():
        print "insertFiles, xmlinput",xmlinput
@@ -2063,7 +2045,7 @@ class DbsApi(DbsConfig):
         # Call the method
         data = self._server._call ({ 'api' : 'insertFiles',
                          'xmlinput' : xmlinput }, 'POST')
-        logging.debug(data)
+        logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
   def remapFiles_DEPRECATED(self, inFiles, outFile):
@@ -2089,7 +2071,7 @@ class DbsApi(DbsConfig):
     # Prepare XML description of the input
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -2100,14 +2082,14 @@ class DbsApi(DbsConfig):
     xmlinput += " <out_file lfn='" + outFile +"'/>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "remapFiles, xmlinput",xmlinput
 
     # Call the method
     data = self._server._call ({ 'api' : 'remapFiles',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
 
@@ -2156,7 +2138,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     path = self._path(dataset)
     name = self._name(block)
@@ -2182,13 +2164,13 @@ class DbsApi(DbsConfig):
     xmlinput += "</block>"  
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertBlock, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertBlock',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
     
@@ -2231,7 +2213,7 @@ class DbsApi(DbsConfig):
     """   
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     bname = self._name(block)
     sename = self._name(storage_element)
@@ -2241,13 +2223,13 @@ class DbsApi(DbsConfig):
     xmlinput += "<storage_element storage_element_name='"+ sename +"' block_name='"+ bname +"'/>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "deleteReplicaFromBlock, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'deleteSEFromBlock',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 
@@ -2269,7 +2251,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     seNameFrom = self._name(storage_element_from)
     seNameTo = self._name(storage_element_to)
@@ -2277,7 +2259,7 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'updateSEName',
 		    'storage_element_name_from' : seNameFrom,
 		    'storage_element_name_to' : seNameTo }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
    # ------------------------------------------------------------
 
@@ -2297,12 +2279,12 @@ class DbsApi(DbsConfig):
 
     """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     # Invoke Server.
     block_name = self._name(block)
     data = self._server._call ({ 'api' : 'closeBlock', 'block_name' : block_name }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
     
    # ------------------------------------------------------------
@@ -2331,7 +2313,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     bname = self._name(block)
     sename = self._name(storageElement)
@@ -2342,11 +2324,11 @@ class DbsApi(DbsConfig):
           xmlinput += " <storage_element block_name='" + bname + "' storage_element_name='"+ sename +"'/>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'insertStorageElement',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
   # ------------------------------------------------------------
@@ -2368,20 +2350,20 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
  
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<tier tier_name='"+ tier_name +"' />"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertTier, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertTier', 
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
   # ------------------------------------------------------------
@@ -2403,21 +2385,21 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     path = self._path(dataset)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
     xmlinput += "<processed_dataset path='" + path + "'/>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertTier, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertTierInPD', 
 		         'tier_name' : tier_name,
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
   # ------------------------------------------------------------
@@ -2439,7 +2421,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     path = self._path(dataset)
     parentPath = self._path(parentDS)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
@@ -2447,14 +2429,14 @@ class DbsApi(DbsConfig):
     xmlinput += "<processed_dataset path='" + path + "'/>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertParent, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertParentInPD', 
 		         'parent_path' : parentPath,
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
   # ------------------------------------------------------------
@@ -2476,7 +2458,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     path = self._path(dataset)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -2491,13 +2473,13 @@ class DbsApi(DbsConfig):
     xmlinput += "/>"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertParent, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertAlgoInPD', 
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
 
@@ -2520,7 +2502,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     path = self._path(dataset)
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -2528,14 +2510,14 @@ class DbsApi(DbsConfig):
     xmlinput += "</dbs>"
 
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertParent, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertRunInPD', 
 		         'run_number' : run,
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
 
@@ -2566,7 +2548,7 @@ class DbsApi(DbsConfig):
     """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
   
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -2580,13 +2562,13 @@ class DbsApi(DbsConfig):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertLumiSection, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertLumiSection',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
   def insertMergedDataset(self, dataset, merege_ds_name, merge_algo):
@@ -2605,13 +2587,13 @@ class DbsApi(DbsConfig):
     #print token
 
     proc = self.listProcessedDatasets(token[1], token[3], token[2])[0]
-    logging.debug("proc fetched from DBS %s" %proc)
+    logging.log(DBSDEBUG, "proc fetched from DBS %s" %proc)
 
     proc['Name'] = merege_ds_name
     if merge_algo not in (None, ''):
 	#raise DbsApiException(args="You must provide an Algorithm object for the merged dataset")
 	#return
-        #logging.debug("Algorithm object for the merged dataset is not provided")
+        #logging.log(DBSDEBUG, "Algorithm object for the merged dataset is not provided")
         self.insertAlgorithm(merge_algo)  
 
         proc['AlgoList'].append(merge_algo) 
@@ -2702,7 +2684,7 @@ class DbsApi(DbsConfig):
     """  
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
     
     if defName in ("", None):
        raise DbsApiException(args="You must provide AnalysisDatasetDefinition (second parameter of this API call)")
@@ -2720,7 +2702,7 @@ class DbsApi(DbsConfig):
     xmlinput += " />"
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     #print xmlinput
 
     if self.verbose(): 
@@ -2728,7 +2710,7 @@ class DbsApi(DbsConfig):
 
     data = self._server._call ({ 'api' : 'createAnalysisDataset',
                          'xmlinput' : xmlinput }, 'POST')
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
     #-----------------------------------------------------------------------------
@@ -2759,7 +2741,7 @@ class DbsApi(DbsConfig):
        return
     
     funcInfo = inspect.getframeinfo(inspect.currentframe())
-    logging.debug("Api call invoked %s" % str(funcInfo[2]))
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
@@ -2805,7 +2787,7 @@ class DbsApi(DbsConfig):
 
     xmlinput += "</dbs>"
 
-    logging.debug(xmlinput)
+    logging.log(DBSDEBUG, xmlinput)
     #print xmlinput
 
     if self.verbose():
@@ -2818,7 +2800,7 @@ class DbsApi(DbsConfig):
     #Just return the name of definition if everything went fine.  
     return defName
 
-    logging.debug(data)
+    logging.log(DBSDEBUG, data)
 
 
   # ------------------------------------------------------------
@@ -2826,7 +2808,7 @@ class DbsApi(DbsConfig):
   def remap_DEPRECATED(self, files, outFile):
 
    funcInfo = inspect.getframeinfo(inspect.currentframe())
-   logging.debug("Api call invoked %s" % str(funcInfo[2]))
+   logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
    input = "<dbs>"
    for f in files:
@@ -2834,11 +2816,11 @@ class DbsApi(DbsConfig):
    input += "<file lfn='%s'/>" % escape (outFile.get('logicalFileName'))
    input += "</dbs>"
     
-   logging.debug(input)
+   logging.log(DBSDEBUG, input)
    #print "calling _server._call remap inside dbsApi"
    data = self._server._call ({ 'api' : 'remap',
 		         'xmlinput' : input })
-   logging.debug(data)
+   logging.log(DBSDEBUG, data)
 
  
 #############################################################################
