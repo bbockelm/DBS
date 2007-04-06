@@ -117,15 +117,24 @@ class DbsHttpService:
        # See if HTTP call succeeded 
        responseCode = int(response.status)
        if responseCode != 200:
-         statusDetail = "Call to DBS Server ("+self.Url+") failed"
-         #statusDetail = response.read()
-         #statusDetail = response.read().split('<body>')[1].split('</body>')[0].split('description')[1]  
-         exmsg = "HTTP ERROR Status '%s', Status detail: '%s'" % (responseCode, statusDetail)
+         exmsg = "\nCall to DBS Server ("+self.Url+") failed"
+         statusResponse = response.read()
+         statusDetail = statusResponse.split('<body>')[1].split('</body>')[0].split('description')[1]  
+	 statusDetail = statusDetail.split('<u>')[1].split('</u>')[0]
+
+         exmsg += "\nHTTP ERROR Status '%s', \nStatus detail: '%s'" % (responseCode, statusDetail)
          if responseCode == 300: raise DbsBadData (args=exmsg, code=responseCode)
          elif responseCode == 302: raise DbsNoObject (args=exmsg, code=responseCode)
          elif responseCode == 400: raise DbsExecutionError (args=exmsg, code=responseCode)
-         elif responseCode == 401: raise DbsConnectionError (args=exmsg, code=responseCode)
-         else: raise DbsToolError (args=exmsg, code=responseCode)
+         elif responseCode == 401 or responseCode == 404: 
+		raise DbsConnectionError (args=exmsg, code=responseCode)
+         elif responseCode == 403: 
+			#statusDetail = response.read()
+			#if statusDetail.find("DN provided not found in grid-mapfile") != -1:
+			#	exmsg += "\nDN provided not found in grid-mapfile"	
+			raise DbsConnectionError (args=exmsg, code=responseCode)
+         else: 
+		raise DbsToolError (args=exmsg, code=responseCode)
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
@@ -133,14 +142,14 @@ class DbsHttpService:
 
     except sslerror, ex:
 	msg  = "HTTPS Error, Unable to make API call"
-	msg += "\nUnable to connect %s" % self.Url
+	msg += "\nUnable to connect %s (Please verify!)" % self.Url
 	msg += "\nMost probably your Proxy is not valid"
         raise DbsConnectionError (args=msg, code="505")   
 
     except error, ex:
 	msg  = "HTTP(S) Error, Unable to make API call"
-        msg += "\nUnable to connect %s" % self.Url
-        msg += "\nMost probably port specified is incorrect, or using http instead of https"
+        msg += "\nUnable to connect %s (Please verify!)" % self.Url
+        msg += "\nMost probably url (host, port) specified is incorrect, or using http instead of https"
         raise DbsConnectionError (args=msg, code="505")   
   
     except (urllib2.URLError, httplib.HTTPException):
@@ -150,6 +159,8 @@ class DbsHttpService:
         raise DbsConnectionError (args=msg, code="505")   
 
     except Exception, ex:
+        if (isinstance(ex,DbsApiException)):
+		raise ex
 	msg = "HTTP ERROR, Unable to make API call"
 	msg += "\n         Verify URL %s" % self.Url
 	if str(ex) == "(-2, 'Name or service not known')":
