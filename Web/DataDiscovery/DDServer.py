@@ -2013,6 +2013,7 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="kw_tier_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getDataTiers()
+        style=""
         nameSpace = {'name':'kw_tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
@@ -2059,6 +2060,7 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="kw_release_holder">"""
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getSoftwareReleases()
+        style =""
         nameSpace = {'name':'kw_release','iList': dList,'selTag':'kw_release','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
