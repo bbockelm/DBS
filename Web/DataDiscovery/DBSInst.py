@@ -171,7 +171,7 @@ class DBManager(DDLogger):
              eName = "%s://%s:%s@%s"%(eType,dbUser,dbPass,dbName)
 #             tQuery= "select table_name from user_tables"
              tQuery= "select tname from tab"
-#             tQuery="""SELECT table_name FROM all_tables WHERE owner='CMS_DBS_INT_GLOBAL'"""
+             tQuery="""SELECT table_name FROM all_tables WHERE owner='%s'"""%dbsInst.upper()
              engine= sqlalchemy.create_engine(eName,strategy='threadlocal',threaded=True)
           elif eType=='mysql':
              self.writeLog("Use MySQL instance '%s'"%dbsInst)
