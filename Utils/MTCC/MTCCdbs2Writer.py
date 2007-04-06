@@ -3,7 +3,7 @@
 # Yuyi Guo
 #
 # 
-#  @cvsid $Id: MTCCdbs2Writer.py,v 1.2 2007/03/19 18:13:44 yuyi Exp $
+#  @cvsid $Id: MTCCdbs2Writer.py,v 1.3 2007/03/20 15:13:23 yuyi Exp $
 #
 #
 import sys
@@ -27,8 +27,8 @@ sys.stdout = sys.stderr
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
-#files=['./MTCC1_files.txt']
-files=['./MTCC2_files_primaryDSchanged.txt']
+files=['./MTCC1_files.txt']
+#files=['./MTCC1_files.txt','./MTCC2_files_primaryDSchanged.txt']
 #Run dic use run number as key and number of event as value
 runDic={}
 #verDic
@@ -55,7 +55,7 @@ LFNTireDic = {}
 LFNChsmDic = {}
 
 for line in fileinput.input(files):
-    if(fileinput.lineno()>0):
+    if(fileinput.lineno()>=1000):
             #print '%5d %s' %(fileinput.lineno(), line)
             parts=line.split()
             primaryDS = parts[0]
@@ -206,7 +206,7 @@ for cmsswV in verDic.keys():
 #Create all the primary DS
 for primary in  priDSDic.keys():
     try:
-        api.insertPrimaryDataset (DbsPrimaryDataset (Name = primary, Type="MTCC"))
+        api.insertPrimaryDataset (DbsPrimaryDataset (Name = primary, Type="COSMIC"))
         print "##Inserted Primary: %s ##" % primary
 
     except DbsApiException, ex:
@@ -279,7 +279,7 @@ for LFN in LFNList:
                             FileSize= int(LFNSzDic[LFN]),
                             Status= 'VALID',
 	                    ValidationStatus = 'VALID',
-                            FileType= 'EVD',
+                            FileType= 'EDM',
                             #Dataset= LFNPsDic[LFN],
                             AlgoList=[DbsAlgorithm (ExecutableName="FUEventProcessor",
                                  ApplicationVersion=LFNVerDic[LFN] ,
@@ -304,7 +304,8 @@ for LFN in LFNList:
         block = DbsFileBlock (Name= "/"+ pNames[1]+ "/"+ pNames[3] + "/"+ pNames[2] + "#01") 
         #       
         try:
-            api.insertFiles(lastPsName, fileList, block)
+            #api.insertFiles(lastPsName, fileList, block)
+            api.insertFiles('', fileList, block)
             print "## Inserted File: %s ##" % fileList 
         except DbsApiException, ex:
                 print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
@@ -321,7 +322,7 @@ for LFN in LFNList:
                             FileSize= int(LFNSzDic[LFN]),
                             Status= 'VALID',
 	                    ValidationStatus = 'VALID',
-                            FileType= 'EVD',
+                            FileType= 'EDM',
                             #Dataset= LFNPsDic[LFN],
                             #Dataset = '/MTCC-070-os-DAQ-MTCC1/RAW/MTCC1',      
                             AlgoList=[DbsAlgorithm (ExecutableName="FUEventProcessor",
