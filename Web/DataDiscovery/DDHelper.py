@@ -18,17 +18,13 @@ from   DDConfig  import *
 from   DBSInst   import * # defines DBS instances and schema
 from   DDUtil    import * # general utils
 
+# QueryBuilder
+from QueryBuilder.Schema import Schema
+
 # import DLS modules
 try:
     import dlsClient
     import dlsApi
-except:
-    pass
-
-# DREW code, need to remove try block once it's ready
-try:
-    from QueryBuilder.Schema import Schema
-#    from QueryBuilder.QueryWriter import SqlQueryWriter, OracleQueryWriter
 except:
     pass
 
@@ -290,6 +286,7 @@ class DDHelper(DDLogger):
             self.api=""
             con = self.connectToDB()
             self.closeConnection(con)
+#            self.dbManager.writeGraph(dbsInst)
          self.dbsApi[dbsInst]=self.api
       else:
          self.api = self.dbsApi[dbsInst]
@@ -1122,10 +1119,11 @@ class DDHelper(DDLogger):
       con=""
       try:
           con = self.dbManager.connect(self.dbsInstance)
-      except Exception, ex:
+      except:
 	 try:
              # try second time, but sleep for 2 seconds before retry
              time.sleep(2)
+             self.dbManager.clear()
              con = self.dbManager.connect(self.dbsInstance)
          except Exception, ex:
              raise DbsDatabaseError(args=ex)

@@ -19,13 +19,12 @@ except:
    print "Fail to load sqlalchemy module, some functionality will be disabled"
    sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
    pass
-# Drew's modules, need to remove try block once it's ready
-try:
-#    import QueryBuilder
-    from QueryBuilder.Table import Column
-    from QueryBuilder.Table import Table
-except:
-    pass
+
+# QueryBuilder
+#from QueryBuilder.Table import Column
+#from QueryBuilder.Table import Table
+from QueryBuilder.WriteSqlAlchemyGraph import WriteSqlAlchemyGraph
+from QueryBuilder.DotGraph import DotGraph
 
 # DBS modules
 from DDUtil import *
@@ -37,21 +36,23 @@ from DDExceptions import *
 DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 #
 # DLS instances are: https://twiki.cern.ch/twiki/bin/view/CMS/DLS#DLS_instances
+# DBS2 instances are: https://twiki.cern.ch/twiki/bin/view/CMS/CMS-DMS-DBS-2-instances
 #
-#DBSGLOBAL="localhost"
-DBSGLOBAL="DBS2Global"
+DBSGLOBAL="cms_dbs_prod_global"
 DBS_DLS_INST= {
-   "DBS2Global":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-   "DBS2GlobalIntTest":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-   "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+   "cms_dbs_prod_global"   :("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+   "cms_dbs_int_global"    :("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_02":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_03":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_04":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_05":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_06":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_07":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_08":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
+    "cms_dbs_prod_local_09":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
 }
 
-#DBS_DLS_INST= {
-#   "localhost" :("http://localhost:8080/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-#   "FNAL8282":("http://cmssrv17.fnal.gov:8282/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-#   "cmslcgco01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"), 
-#   "FNAL8989":("http://cmssrv18.fnal.gov:8989/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-#}
 
 #   "MCLocal_1/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
 #   "MCLocal_2/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_2"), 
@@ -122,23 +123,41 @@ class DBManager(DDLogger):
          @return: none
       """
       DDLogger.__init__(self,"DBManager",verbose)
-      self.engine    = {}
-      self.tQuery    = {}
       self.iface     = iface
       self.verbose   = verbose
+      self.clear()
+      
+  def writeGraph(self,dbsInst):
+      print "writeGraph"
+      fileName="%s.dot"%dbsInst
+      dot=DotGraph(file(fileName,"w"))
+      tDict = self.dbTables[dbsInst]
+      for key in tDict.keys():
+          table=tDict[key]
+          tableName=key
+#          if tableName.lower()=='person': continue
+          foreignKeys=table.foreign_keys
+          for fk in foreignKeys:
+              right=fk.column.table.name
+              if right!='person': # exclude person table
+                 dot.AddEdge(tableName,right)
+      dot.Finish()
+
+  def clear(self):
+      self.engine    = {}
+      self.tQuery    = {}
       self.dbTables  = {}
       self.dbType    = {}
       self.lowTables = {}
       self.metaDict  = {}
-      
+        
   def connect(self,dbsInst):
       t_ini=time.time()
       if  not self.engine.has_key(dbsInst):
           dbAuth = DDAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass, host = dbAuth.dbInfo()
           eType  = string.lower(dbType)
-          if self.verbose:
-             print "DBManager:connect /%s/%s/%s"%(dbType,dbName,host)
+          print "DBManager:connect to %s@%s/%s"%(dbType,host,dbName)
 
           # Initialize SQLAlchemy engines
           eName=""
@@ -250,26 +269,26 @@ class DBManager(DDLogger):
           self.lowTables[dbsInst]=lowTableList
       return tList[self.lowTables[dbsInst].index(table.lower())]
       
-  def constructSchema(self,dbsInst):
-      # convert SQLAlchemy schema to Drew's one.
-      schema = {}
-      tList = self.dbTables[dbsInst].keys()
-      tList.sort()
-      for idx in xrange(0,len(tList)):
-          table = tList[idx]
-          tObj= self.dbTables[dbsInst][table]
-          d = {}
-          for col  in tObj.columns:
-              if col.primary_key:
-                 d[col.name]=Column(PrimaryKey=True)
-                 continue
-              if col.foreign_key: 
-                 fk=repr(col.foreign_key).split("'")[1].split('.')[0]
-                 d[col.name]=Column(ForeignKey=self.getDBTableName(dbsInst,fk))
-              else:
-                 d[col.name]=Column()
-          schema[tObj.fullname] = Table(d)
-      return schema
+  # convert SQLAlchemy schema to Drew's one.
+#  def constructSchema(self,dbsInst):
+#      schema = {}
+#      tList = self.dbTables[dbsInst].keys()
+#      tList.sort()
+#      for idx in xrange(0,len(tList)):
+#          table = tList[idx]
+#          tObj= self.dbTables[dbsInst][table]
+#          d = {}
+#          for col  in tObj.columns:
+#              if col.primary_key:
+#                 d[col.name]=Column(PrimaryKey=True)
+#                 continue
+#              if col.foreign_key: 
+#                 fk=repr(col.foreign_key).split("'")[1].split('.')[0]
+#                 d[col.name]=Column(ForeignKey=self.getDBTableName(dbsInst,fk))
+#              else:
+#                 d[col.name]=Column()
+#          schema[tObj.fullname] = Table(d)
+#      return schema
 
 #
 # main
