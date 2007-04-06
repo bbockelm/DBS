@@ -1121,12 +1121,16 @@ class DDHelper(DDLogger):
           con = self.dbManager.connect(self.dbsInstance)
       except:
 	 try:
-             # try second time, but sleep for 2 seconds before retry
-             time.sleep(2)
-             self.dbManager.clear()
              con = self.dbManager.connect(self.dbsInstance)
-         except Exception, ex:
-             raise DbsDatabaseError(args=ex)
+         except:
+             try:
+                 # try second time, but sleep for 2 seconds before retry
+                 time.sleep(2)
+                 self.dbManager.clear()
+                 con = self.dbManager.connect(self.dbsInstance)
+             except Exception, ex:
+                 raise DbsDatabaseError(args=ex)
+             pass
          pass
       return con
 
