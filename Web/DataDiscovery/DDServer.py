@@ -1055,11 +1055,12 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         pagerStep=int(pagerStep)
-        if string.lower(tier)=="all" or string.lower(tier)=="all": tier="*"
-        if string.lower(site)=="all" or string.lower(site)=="all": site="*"
-        if string.lower(site)=="any" or string.lower(site)=="any": site="*"
-        if string.lower(group)=="all" or string.lower(group)=="all": group="*"
-        if string.lower(group)=="any" or string.lower(group)=="any": group="*"
+        if string.lower(tier)=="all" or string.lower(tier)=="any": tier="*"
+        if string.lower(site)=="all" or string.lower(site)=="any": site="*"
+        if string.lower(app)=="any" or string.lower(app)=="any": app="*"
+        if string.lower(group)=="all" or string.lower(group)=="any": group="*"
+        if string.lower(primD)=="any" or string.lower(primD)=="any": primD="*"
+        if string.lower(proc)=="any" or string.lower(proc)=="any": proc="*"
         self.dbsTime=self.dlsTime=0
         page=""
         className="show_inline"
@@ -2042,7 +2043,7 @@ class DDServer(DDLogger,Controller):
 
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
 
-        nameSpace = {'name':'kw_prim','iList': dList,'selTag':'kw_prim','changeFunction':'','style':''}
+        nameSpace = {'name':'primD','iList': dList,'selTag':'kw_prim','changeFunction':'','style':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
