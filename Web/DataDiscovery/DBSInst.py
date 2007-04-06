@@ -157,7 +157,7 @@ class DBManager(DDLogger):
           dbAuth = DDAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass, host = dbAuth.dbInfo()
           eType  = string.lower(dbType)
-          print "DBManager:connect to %s@%s/%s"%(dbType,host,dbName)
+          print "DBManager:connect to %s@%s:%s/%s"%(dbType,dbsInst,host,dbName)
 
           # Initialize SQLAlchemy engines
           eName=""
