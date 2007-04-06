@@ -2156,6 +2156,11 @@ class DDHelper(DDLogger):
           path="/%s/%s/%s"%(prim,proc,tier)
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
+          # to avoid ProgrammingError: LOB variable no longer valid after subsequent fetch
+          dLumiRange=str(dLumiRange)
+          dRunRange=str(dRunRange) 
+          dCut=str(dCut)
+          dDesc=str(dDesc)
           aList.append((name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,path))
       if self.verbose:
          self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
