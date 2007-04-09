@@ -706,7 +706,7 @@ function ajaxGetKWFields() {
   showLoadingMessage('kw_prim_holder');
   ajaxGetTriggerLines();
   showLoadingMessage('kw_site_holder');
-  ajaxGetSites('','kw_dbsInstSelector','kw_site_holder','kw_site');
+  ajaxGetSites('','kw_dbsInstSelector','kw_site_holder','site');
 //  var rel = $('kw_release').value;
 //  var tier= $('kw_tier').value;
 //  var group=$('kw_group').value;
