@@ -726,15 +726,15 @@ function getDBS_kw(_dbs) {
   return dbs;
 }
 function ajaxGetReleases(_dbs) {
-  dbs=getDBS_kw(_dbs);
+  var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetReleases','dbsInst='+dbs);
 }
 function ajaxGetTriggerLines(_dbs) {
-  dbs=getDBS_kw(_dbs);
+  var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
 }
 function ajaxUpdatePrimaryDatasets(_dbs) {
-  dbs=getDBS_kw(_dbs);
+  var dbs=getDBS_kw(_dbs);
   var rel = $('kw_release').value;
   var tier= $('kw_tier').value;
   var group=$('kw_group').value;
@@ -743,7 +743,7 @@ function ajaxUpdatePrimaryDatasets(_dbs) {
   ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel);
 }
 function ajaxGetTiers(_dbs) {
-  dbs=getDBS_kw(_dbs);
+  var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetTiers','dbsInst='+dbs);
 }
 function ajaxGetSites(_dbs,dbsSel,siteSel,siteTag) {
@@ -762,7 +762,7 @@ function ajaxGetSites(_dbs,dbsSel,siteSel,siteTag) {
   }
 }
 function ajaxGetGroups(_dbs) {
-  dbs=getDBS_kw(_dbs);
+  var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetGroups','dbsInst='+dbs);
 }
 //function ajaxGetBranches(_dbs) {
