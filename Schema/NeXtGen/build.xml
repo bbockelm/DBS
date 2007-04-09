@@ -24,6 +24,7 @@
 	        	description="Run test via sqlplus. Note An sqlplus client is needed.">
 	        	<arg line="${build.schema.owner.name}_ADMIN/${build.dbpasswd_admin}@${build.dbname} @${workingdir}/privateSyn.sql"/>
         </exec> 
+
         
         <echo message="Create synonyms for ${build.schema.owner.name}_WRITER"/>
         <exec executable="sqlplus" dir="${workingdir}" output="synonymWriter.output"
@@ -37,4 +38,29 @@
 	        	<arg line="${build.schema.owner.name}_READER/${build.dbpasswd_reader}@${build.dbname} @${workingdir}/privateSyn.sql"/>
         </exec> 
   </target>
+
+  <target name="RolesNGrants" description="Create Roles and grant permissions.">
+        <property name="workingdir" location="." /> 
+        <echo message="Drop Roles for ${build.schema.owner.name}"/>
+  	<delete quiet="true" file="${workingdir}/Role-Cleanup.sql"/>
+    	<copy file="${workingdir}/Role-Cleanup-Template.sql" tofile="${workingdir}/Role-Cleanup.sql"/>
+	<replace file="${workingdir}/Role-Cleanup.sql" token="@SchemaNameAbbr@" value="${build.schema_name_abbr}"/>	
+        <exec executable="sqlplus" dir="${workingdir}" output="Role-Cleanup.output" 
+              description="Run test via sqlplus. Note An sqlplus client is needed.">
+        	<arg line="${build.schema.owner.name}/${build.schema.owner.passwd}@${build.dbname} @${workingdir}/Role-Cleanup.sql"/>
+        </exec> 
+
+        <echo message="Create Roles for ${build.schema.owner.name}"/>
+        <delete quiet="true" file="${workingdir}/RolesNGrants.sql"/>
+	<copy file="${workingdir}/RolesNGrants-Template.sql" tofile="${workingdir}/RolesNGrants.sql"/>         
+	<replace file="RolesNGrants.sql" token="@SchemaNameAbbr@" value="${build.schema_name_abbr}"/>
+        <replace file="RolesNGrants.sql" token="@Schema_Owner@" value="${build.schema.owner.name}"/>
+	<exec executable="sqlplus" dir="${workingdir}" output="RolesNGrants.output"
+        	description="Run test via sqlplus. Note An sqlplus client is needed.">
+        	<arg line="${build.schema.owner.name}/${build.schema.owner.passwd}@${build.dbname} @${workingdir}/RolesNGrants.sql"/>
+        </exec> 
+
+  </target>
+
+
 </project>
