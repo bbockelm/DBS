@@ -478,24 +478,24 @@ class DDHelper(DDLogger):
           tblk = self.alias('Block','tblk')
           tseb = self.alias('SEBlock','tseb')
           tse  = self.alias('StorageElement','tse')
-          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name'),self.col(tblk,'Path')],
+          oSel = [self.col(tblk,'Path')]
+          sel  = sqlalchemy.select(oSel,
                  from_obj=[
-                     tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                     .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
-                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-                     ],distinct=True,
-                 order_by=[sqlalchemy.desc(self.col(tpm,'Name')),sqlalchemy.desc(self.col(tdt,'Name')),sqlalchemy.desc(self.col(tprd,'Name'))] )
+                     ],distinct=True )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
-             self.joinTiers(sel,tpds,tier)
+             self.joinTiers(sel,tpds,tier,tprd)
           if app and app!="*":
              empty,ver,fam,exe=string.split(app,"/")
              if ver.lower()=="any" or ver.lower()=="all": ver="*"
@@ -511,17 +511,13 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tse,'SEName')==site)
           if userMode=="user":
                 sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
+          print sel,tier      
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
           raise "Fail in listProcessedDataset"
       for item in result:
-          prim = item[0]
-          tier = item[1]
-          proc = item[2]
-          path = item[3]
-#          print "\n\n/%s/%s/%s\n%s"%(prim,proc,tier,path)
-#          oList.append("/%s/%s/%s"%(prim,proc,tier))
+          path = item[0]
           if not path: continue
           if not oList.count(path): oList.append(path)
       self.closeConnection(con)
@@ -549,7 +545,7 @@ class DDHelper(DDLogger):
 #         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
          return res
 
-  def joinTiers(self,sel,tjoin,tier):
+  def joinTiers(self,sel,tjoin,tier,tprd):
       aList=[]
       bList=[]
       if tier and tier!="*":
@@ -560,6 +556,7 @@ class DDHelper(DDLogger):
              tierValue=tierList[idx]
              sel.append_from( sqlalchemy.outerjoin( aList[-1],bList[-1],self.col(bList[-1],'DataTier')==self.col(aList[-1],'ID') ) )
              sel.append_whereclause(self.col(aList[-1],'Name')==tierValue)
+             sel.append_whereclause(self.col(tprd,'ID')==self.col(bList[-1],'Dataset'))
 
   def listBlocks(self,kwargs):
       # {'blockName': (nEvt,blockStatus,nFiles,blockSize)}
@@ -600,7 +597,7 @@ class DDHelper(DDLogger):
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
              if tier and tier!="*":
-                self.joinTiers(sel,tpds,tier)
+                self.joinTiers(sel,tpds,tier,tprd)
 
           if kwargs.has_key('blockName') and kwargs['blockName']:
              sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
@@ -673,7 +670,7 @@ class DDHelper(DDLogger):
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
-             self.joinTiers(sel,tpds,tier)
+             self.joinTiers(sel,tpds,tier,tprd)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -933,7 +930,7 @@ class DDHelper(DDLogger):
               if group and group!="*":
                  sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
               if tier and tier!="*":
-                 self.joinTiers(sel,tpds,tier)
+                 self.joinTiers(sel,tpds,tier,tprd)
               if rel and rel!="*":
                  sel.append_whereclause(self.col(tapv,'Version')==rel)
               result = self.getSQLAlchemyResult(con,sel)
@@ -1553,7 +1550,7 @@ class DDHelper(DDLogger):
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
-             self.joinTiers(sel,tpds,tier)
+             self.joinTiers(sel,tpds,tier,tprd)
           if blockName and blockName!="*":
              sel.append_whereclause(self.col(tb,'Name')==blockName)
           result = self.getSQLAlchemyResult(con,sel)
@@ -1926,7 +1923,7 @@ class DDHelper(DDLogger):
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
              if tier and tier!="*":
-                self.joinTiers(sel,tpds,tier)
+                self.joinTiers(sel,tpds,tier,tprd)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -2070,7 +2067,7 @@ class DDHelper(DDLogger):
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if tier and tier!="*":
-             self.joinTiers(sel,tpds,tier)
+             self.joinTiers(sel,tpds,tier,tprd)
           if an_dataset and an_dataset!="*":
              sel.append_whereclause(self.col(tad,'Name')==an_dataset)
           for key in cDict.keys():
