@@ -1238,3 +1238,12 @@ function Disable2Enable(tag1,tag2) {
       $(tag1).disabled='disabled';
    }
 }
+function D2E_tiers() {
+   Disable2Engable('kw_tier','kw_cTier');
+}
+function resetUserNav() {
+   $('kw_tier').disabled='';
+   $('kw_cTier').disabled='disabled';
+   $('tierSelector').checked='';
+   ajaxGetKWFields();
+}
