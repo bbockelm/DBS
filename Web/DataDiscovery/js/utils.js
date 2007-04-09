@@ -1232,10 +1232,14 @@ function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx) {
 function Disable2Enable(tag1,tag2) {
    if($(tag1).disabled) {
       $(tag1).disabled='';
+      $(tag1).setAttribute("class","enabled");
       $(tag2).disabled='disabled';
+      $(tag2).setAttribute("class","disabled");
    } else {
       $(tag2).disabled='';
+      $(tag2).setAttribute("class","enabled");
       $(tag1).disabled='disabled';
+      $(tag1).setAttribute("class","disabled");
    }
 }
 function D2E_tiers() {

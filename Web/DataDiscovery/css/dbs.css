@@ -27,6 +27,15 @@
   text-decoration: none;
 }
 
+.enabled {
+  background: #ffffff;
+  color: #000000;
+}
+.disabled {
+  background:#eee none; 
+  color:#222; 
+/*  font-style: italic*/
+}
 .menu_title {
   font-weight:bold;
 }
