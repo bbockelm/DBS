@@ -1229,3 +1229,12 @@ function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx) {
    var url='getFileBlocks?dbsInst='+dbsInst+'&site='+site+'&ajax='+ajax+'&userMode='+userMode+'&idx='+idx+'&pagerStep='+pagerStep;
    load(url);
 }
+function Disable2Enable(tag1,tag2) {
+   if($(tag1).disabled) {
+      $(tag1).disabled='';
+      $(tag2).disabled='disabled';
+   } else {
+      $(tag2).disabled='';
+      $(tag1).disabled='disabled';
+   }
+}
