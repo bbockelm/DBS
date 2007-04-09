@@ -5,5 +5,6 @@ export ANT_OPTS='-Xmx128m -Xms128m'
 export LD_LIBRARY_PATH=/home/anzar/DBS-ORACLE/oracle-10.2.0.1/lib
 export TNS_ADMIN=/home/anzar/DBS-ORACLE/oracle-10.2.0.1/network/admin
 export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$ORACLE_HOME/bin:$PATH
-ant --noconfig -buildfile build.xml
+#ant --noconfig -buildfile build.xml
+ant --noconfig -buildfile build.xml RolesNGrants
 
