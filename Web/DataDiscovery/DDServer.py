@@ -300,9 +300,11 @@ class DDServer(DDLogger,Controller):
 #            self.userMode=True
 #            return self.init()
 #            page = self.genTopHTML(intro=False,userMode=userMode)
-            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
+#            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
-            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
+#            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
+            userNav = self.genEmptyUserNavigator(DBSGLOBAL,userMode)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -518,9 +520,11 @@ class DDServer(DDLogger,Controller):
     ################## Menu init methods
     def _navigator(self,userMode="user"):
         try:
-            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
+#            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
-            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
+#            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
+            userNav = self.genEmptyUserNavigator(DBSGLOBAL,userMode)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -703,6 +707,26 @@ class DDServer(DDLogger,Controller):
         oList = self.helper.search(keywords)
         return oList
         
+    def genEmptyUserNavigator(self,dbsInst,userMode="user",**kwargs):
+        page=""
+        emptyList=[]
+        nameSearch={
+                    'dbsInst'     : dbsInst,
+                    'userMode'    : userMode,
+                    'dbsList'     : self.dbsList,
+                    'groupList'   : emptyList,
+                    'dataTypes'   : emptyList,
+                    'softReleases': emptyList,
+                    'siteList'    : emptyList,
+                    'style'       : "width:200px",
+                   }
+        t = templateUserNav(searchList=[nameSearch]).respond()
+        page+= str(t)
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    genEmptyUserNavigator.exposed=True 
+    
     def genUserNavigator(self,dbsInst,userMode="user",ajax=0,**kwargs):
         page=""
         if  int(ajax)==1:
@@ -1978,7 +2002,9 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="kw_group_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getPhysicsGroups()
-        nameSpace = {'name':'group','iList': dList,'selTag':'kw_group','changeFunction':'','style':''}
+        style="width:200px"
+        if kwargs.has_key('style'): style=kwargs['style']
+        nameSpace = {'name':'group','iList': dList,'selTag':'kw_group','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1997,7 +2023,9 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="%s">"""%sel
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getSites()
-        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':''}
+        style="width:200px"
+        if kwargs.has_key('style'): style=kwargs['style']
+        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2015,7 +2043,8 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="kw_tier_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getDataTiers()
-        style=""
+        style="width:200px"
+        if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
@@ -2043,7 +2072,9 @@ class DDServer(DDLogger,Controller):
                rel=kwargs['rel']
 
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
-        nameSpace = {'name':'primD','iList': dList,'selTag':'kw_prim','changeFunction':'','style':'width:200px'}
+        style="width:200px"
+        if kwargs.has_key('style'): style=kwargs['style']
+        nameSpace = {'name':'primD','iList': dList,'selTag':'kw_prim','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2062,7 +2093,8 @@ class DDServer(DDLogger,Controller):
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getSoftwareReleases()
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
-        style =""
+        style="width:200px"
+        if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'app','iList': dList,'selTag':'kw_release','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
@@ -2299,7 +2331,8 @@ class DDServer(DDLogger,Controller):
         tFile     = open(tFileName,'w')
         tFile.write("From: %s\n"%userEmail+feedbackText)
         tFile.close()
-        os.system("""mail -s "response from DBS data discovery" cms-dbs-support@cern.ch < %s"""%tFileName)
+#        os.system("""mail -s "response from DBS data discovery" cms-dbs-support@cern.ch < %s"""%tFileName)
+        os.system("""mail -s "response from DBS data discovery" vk@mail.lns.cornell.edu < %s"""%tFileName)
         os.remove(tFileName)
         page = self.genTopHTML(userMode=userMode)
         page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to DBS support team.</p>"""
