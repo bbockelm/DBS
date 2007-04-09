@@ -301,7 +301,7 @@ class DDServer(DDLogger,Controller):
 #            return self.init()
 #            page = self.genTopHTML(intro=False,userMode=userMode)
 #            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
-            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');resetUserNav();")
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
 #            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
             userNav = self.genEmptyUserNavigator(DBSGLOBAL,userMode)
@@ -521,7 +521,7 @@ class DDServer(DDLogger,Controller):
     def _navigator(self,userMode="user"):
         try:
 #            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
-            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');resetUserNav();")
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
 #            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
             userNav = self.genEmptyUserNavigator(DBSGLOBAL,userMode)
