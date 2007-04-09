@@ -511,7 +511,6 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tse,'SEName')==site)
           if userMode=="user":
                 sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
-          print sel,tier      
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
