@@ -43,9 +43,11 @@ oSel = [
 #set group       = item[20]
 #set dataset     = item[21]
 
-#set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
+####set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
+####set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
+#set idPath=$dataset.replace("/","___")
 #set histLoc="moreInfo"+$idPath
-#set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
+#set action=$dbsInst+","+$dataset+","+$appPath+","+$idPath+","+$userMode
 <tr>
 <td>
 <b>$name</b>
@@ -140,7 +142,7 @@ path:
 <td>
 <div id="$idPath"></div>
 </td><td>
-<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">&#171; more &#187;</a>
+<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$dataset','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">&#171; more &#187;</a>
 </td></tr></table>
 
 </td>
