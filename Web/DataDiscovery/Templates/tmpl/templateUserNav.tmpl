@@ -10,7 +10,8 @@
 <input type="hidden" name="ajax" value="0" />
 <input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
 <!-- begin menu table -->
-<table class="small" cellspacing="5">
+###<table class="small" cellspacing="5">
+<table cellpadding="2" cellspacing="2">
 
 #if $userMode=='user'
 <input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
@@ -21,12 +22,8 @@
 <b>DBS instances</b>
 </div>
 </td>
-#*
 <td>
-<div class="yellow_box" onMouseOver="KeywordHelp('kw_dbs_tag','<p>List of known DBS instances.</p>')" onMouseOut="ClearTag('kw_dbs_tag')">?</div><span id="kw_dbs_tag"></span></td>
-*#
-<td>
-<select name="dbsInst" id="kw_dbsInstSelector" onchange="javascript:ajaxGetKWFields()">
+<select name="dbsInst" id="kw_dbsInstSelector" onchange="javascript:ajaxGetKWFields()" style="$style">
 #for dbs in $dbsList
 <option value="$dbs">$dbs</option>
 #end for
@@ -42,13 +39,10 @@
 <b>Physics groups</b>
 </div>
 </td>
-#*
-<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_groups_tag','<p>Here you select the physics group.</p> <p><b>Example:</b> Higgs, top group.</p>')" onMouseOut="ClearTag('kw_groups_tag')">?</div><span id="kw_groups_tag"></span></td>
-*#
 <td>
 
 <div id="kw_group_holder">
-<select name="group" id="kw_group">
+<select name="group" id="kw_group" style="$style">
 <option value="Any">Any</option>
 #for group in $groupList
 <option value="$group">$group</option>
@@ -66,18 +60,21 @@
 <b>Data tier</b>
 </div>
 </td>
-#*
-<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_tier_tag','<p>This menu shows all known in DBS data types.</p> <p><b>Example:</b> DIGI, RECO.</p>')" onMouseOut="ClearTag('kw_tier_tag')">?</div><span id="kw_tier_tag"></span></td>
-*#
 <td>
 
 <div id="kw_tier_holder">
-<select name="tier" id="kw_tier">
+<select name="tier" id="kw_tier" style="$style">
 <option value="Any">Any</option>
 #for tier in $dataTypes
 <option value="$tier">$tier</option>
 #end for
 </select>
+<div>
+<input name="composedTierSelector" id="tierSelector" type="checkbox" onChange="javascript:Disable2Enable('kw_tier','kw_cTier')" />
+<b>composed tier, e.g. GEN-SIM:</b>
+<input name="tier" id="kw_cTier" type="text" size="20" disabled="disabled" />
+</div>
+
 </div>
 
 </td>
@@ -89,13 +86,10 @@
 <b>Software releases</b>
 </div>
 </td>
-#*
-<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_rel_tag','<p>All known software releases.</p> <p><b>Example:</b> CMSSW_1_1_1</p>')" onMouseOut="ClearTag('kw_rel_tag')">?</div><span id="kw_rel_tag"></span></td>
-*#
 <td>
 
 <div id="kw_release_holder">
-<select name="app" id="kw_release" onchange="javascript:ajaxUpdatePrimaryDatasets();">
+<select name="app" id="kw_release" onchange="javascript:ajaxUpdatePrimaryDatasets();" style="$style">
 <option value="Any" selected="selected">Any</option>
 #for rel in $softReleases
 <option value="$rel">$rel</option>
@@ -112,13 +106,10 @@
 <b>Primary dataset/<br />MC generators</b>
 </div>
 </td>
-#*
-<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_prim_tag','<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>')" onMouseOut="ClearTag('kw_prim_tag')">?</div><span id="kw_prim_tag"></span></td>
-*#
 <td>
 
 <div id="kw_prim_holder">
-<select name="primD" id="kw_prim">
+<select name="primD" id="kw_prim" style="$style">
 <option value="Any" selected="selected">Any</option>
 #*
 #for prim in $primDatasets
@@ -140,13 +131,10 @@
 <b>Sites</b>
 </div>
 </td>
-#*
-<td><div class="yellow_box" onMouseOver="KeywordHelp('kw_site_tag','<p>List of know CMS sites</p> <p><b>Example: cmssrm.fnal.gov</b></p>')" onMouseOut="ClearTag('kw_site_tag')">?</div><span id="kw_site_tag"></span></td>
-*#
 <td>
 
 <div id="kw_site_holder">
-<select name="site" id="kw_site">
+<select name="site" id="kw_site" style="$style">
 <option selected="selected" value="All">Any</option>
 #for site in $siteList
 <option>$site</option>
@@ -165,6 +153,7 @@
 <td>
 ###<input type="submit" value="Find" onclick="javascript:checkNavSelection()" />
 <input type="submit" value="Find" />
+<input type="reset" value="Reset" onclick="$('kw_tier').disabled='';$('kw_cTier').disabled='disabled';$('tierSelector').checked=''" />
 </td>
 </tr>
 </table>
