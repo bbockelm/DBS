@@ -436,8 +436,10 @@ class DDHelper(DDLogger):
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
               name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
+              if not name: continue
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
-                 content=content.read() # since content is LOB object
+                 if content:
+                    content=content.read() # since content is LOB object
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               if name:
@@ -2105,6 +2107,7 @@ class DDHelper(DDLogger):
           # to avoid ProgrammingError: LOB variable no longer valid after subsequent fetch
           dLumiRange=str(dLumiRange)
           dRunRange=str(dRunRange) 
+          dRuns=str(dRuns)
           dCut=str(dCut)
           dDesc=str(dDesc)
           aList.append((name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,path))
