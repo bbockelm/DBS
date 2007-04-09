@@ -717,6 +717,7 @@ class DDServer(DDLogger,Controller):
                     'softReleases': self.helper.getSoftwareReleases(),
 #                    'primDatasets': self.helper.getPrimaryDatasets(),
                     'siteList'    : self.helper.getSites(), 
+                    'style'       : "width:200px",
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
         page+= str(t)
@@ -1030,12 +1031,12 @@ class DDServer(DDLogger,Controller):
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
         return page
 
-    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",userMode='user'):
+    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode='user'):
         """
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
         """
-        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,userMode)
+        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,userMode)
 
     def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
@@ -1055,12 +1056,12 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         pagerStep=int(pagerStep)
-        if string.lower(tier)=="all" or string.lower(tier)=="any": tier="*"
-        if string.lower(site)=="all" or string.lower(site)=="any": site="*"
-        if string.lower(app)=="any" or string.lower(app)=="any": app="*"
+        if string.lower(tier) =="all" or string.lower(tier)=="any": tier="*"
+        if string.lower(site) =="all" or string.lower(site)=="any": site="*"
+        if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
-        if string.lower(primD)=="any" or string.lower(primD)=="any": primD="*"
-        if string.lower(proc)=="any" or string.lower(proc)=="any": proc="*"
+        if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
+        if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
         self.dbsTime=self.dlsTime=0
         page=""
         className="show_inline"
@@ -1086,7 +1087,7 @@ class DDServer(DDLogger,Controller):
         id=0
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
-        datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,userMode=userMode)
+        datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode)
         nDatasets=len(datasetsList)
 
         # Construct result page
@@ -1223,6 +1224,7 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         _idx=int(_idx)
+        tier=tier.upper()
         if app!="*" and app[0]!="/":
            app="/%s/*/*"%app
         t1=time.time()
@@ -1315,7 +1317,7 @@ class DDServer(DDLogger,Controller):
 #            self.htmlInit()
             self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
 
-            dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc)
+            dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site)
             nDatasets=len(dList)
 #            className="hide"
 #            if int(_idx)==0:
@@ -1388,7 +1390,7 @@ class DDServer(DDLogger,Controller):
 #            self.htmlInit()
             self.formDict['menuForm']=("",dbsInst,"All",app,primD,tier)
 
-            dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc)
+            dList=self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site)
             nDatasets=len(dList)
 #            className="hide"
 #            if int(_idx)==0:
@@ -1674,7 +1676,7 @@ class DDServer(DDLogger,Controller):
             page+=self.whereMsg('Navigator :: Results :: Analysis datasets for processed dataset \'%s\''%dataset,userMode)
         self.helper.setDBSDLS(dbsInst)
         dList = self.helper.getAnalysisDS(dataset)
-        nameSpace = {'dList':dList,'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*",'full':0}
+        nameSpace = {'dList':dList,'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"/*/*/*",'full':0}
         t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	page+=str(t)
         if  int(ajax):
@@ -1693,7 +1695,7 @@ class DDServer(DDLogger,Controller):
         dList = self.helper.getAnalysisDS(dataset,ads)
         for item in dList:
             if item[0]==ads:
-                nameSpace={'dList':[item],'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"*",'full':1}
+                nameSpace={'dList':[item],'dbsInst':dbsInst,'path':dataset,'userMode':userMode,'appPath':"/*/*/*",'full':1}
                 t = templateAnalysisDS(searchList=[nameSpace]).respond()
                 page+=str(t)
                 break
@@ -1721,7 +1723,7 @@ class DDServer(DDLogger,Controller):
                 }
         dList=self.helper.getAnalysisDS("*","*",cDict)
 #        print "#######",dList
-        nameSpace={'dList':dList,'dbsInst':dbsInst,'path':"*",'userMode':userMode,'appPath':"*",'full':0}
+        nameSpace={'dList':dList,'dbsInst':dbsInst,'path':"*",'userMode':userMode,'appPath':"/*/*/*",'full':0}
         t = templateAnalysisDS(searchList=[nameSpace]).respond()
 	page+=str(t)
         page+=self.genBottomHTML()
@@ -1882,39 +1884,38 @@ class DDServer(DDLogger,Controller):
         return page
     getPrimaryDatasets.exposed=True
 
-    def getProcessedDatasetsHelper(self,dbsInst):
-        """
-           Get list of processed dataset for given DBS instances.
-           @type  dbsInst: string
-           @param dbsInst: DBS instances
-           @rtype : string
-           @return: returns HTML code
-        """
-        self.helperInit(dbsInst)
-        dList = self.helper.getProcessedDatasets(datasetPath="*",app=0,html=1)
-        nameSpace = {
-                     'msg'     : "%s: processed datasets"%dbsInst,
-                     'dbsInst' : dbsInst,
-                     'dList'   : dList
-                    }
-        t = templatePrintList(searchList=[nameSpace]).respond()
-        return str(t)
+#    def getProcessedDatasetsHelper(self,dbsInst):
+#        """
+#           Get list of processed dataset for given DBS instances.
+#           @type  dbsInst: string
+#           @param dbsInst: DBS instances
+#           @rtype : string
+#           @return: returns HTML code
+#        """
+#        self.helperInit(dbsInst)
+#        dList = self.helper.getProcessedDatasets(datasetPath="*",app=0,html=1)
+#        nameSpace = {
+#                     'msg'     : "%s: processed datasets"%dbsInst,
+#                     'dbsInst' : dbsInst,
+#                     'dList'   : dList
+#                    }
+#        t = templatePrintList(searchList=[nameSpace]).respond()
+#        return str(t)
 
-    def getProcessedDatasets(self,dbsInst,**kwargs):
-        """
-           Generates AJAX response to get processed datasets for given DBS instances
-        """
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="<ajax-response>"
-        page+="""<response type="object" id="dbs_proc">"""
-        page+="""<div class="div_scroll">"""+self.getProcessedDatasetsHelper(dbsInst)+"</div>"
-        page+="</response>\n"
-        page+="</ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getProcessedDatasets.exposed=True
+#    def getProcessedDatasets(self,dbsInst,**kwargs):
+#        """
+#           Generates AJAX response to get processed datasets for given DBS instances
+#        """
+#        self.setContentType('xml')
+#        page="<ajax-response>"
+#        page+="""<response type="object" id="dbs_proc">"""
+#        page+="""<div class="div_scroll">"""+self.getProcessedDatasetsHelper(dbsInst)+"</div>"
+#        page+="</response>\n"
+#        page+="</ajax-response>"
+#        if self.verbose==2:
+#           self.writeLog(page)
+#        return page
+#    getProcessedDatasets.exposed=True
 
     def getApplicationsHelper(self,dbsInst):
         """
@@ -1977,7 +1978,7 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="kw_group_holder">"""
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getPhysicsGroups()
-        nameSpace = {'name':'kw_group','iList': dList,'selTag':'kw_group','changeFunction':'','style':''}
+        nameSpace = {'name':'group','iList': dList,'selTag':'kw_group','changeFunction':'','style':''}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -1986,7 +1987,7 @@ class DDServer(DDLogger,Controller):
         return page
     getGroups.exposed=True
 
-    def getSites(self,dbsInst,sel="",tag="kw_site",**kwargs):
+    def getSites(self,dbsInst,sel="",tag="site",**kwargs):
         """
            Generates AJAX response to get sites for given DBS instances
         """
@@ -2015,7 +2016,7 @@ class DDServer(DDLogger,Controller):
         self.helperInit(dbsInst)
         dList=['Any']+self.helper.getDataTiers()
         style=""
-        nameSpace = {'name':'kw_tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
+        nameSpace = {'name':'tier','iList': dList,'selTag':'kw_tier','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2042,8 +2043,7 @@ class DDServer(DDLogger,Controller):
                rel=kwargs['rel']
 
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
-
-        nameSpace = {'name':'primD','iList': dList,'selTag':'kw_prim','changeFunction':'','style':''}
+        nameSpace = {'name':'primD','iList': dList,'selTag':'kw_prim','changeFunction':'','style':'width:200px'}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2061,8 +2061,9 @@ class DDServer(DDLogger,Controller):
         page="""<ajax-response><response type="element" id="kw_release_holder">"""
         self.helperInit(dbsInst)
         dList = ['Any']+self.helper.getSoftwareReleases()
+        cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
         style =""
-        nameSpace = {'name':'kw_release','iList': dList,'selTag':'kw_release','changeFunction':'','style':style}
+        nameSpace = {'name':'app','iList': dList,'selTag':'kw_release','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2186,7 +2187,7 @@ class DDServer(DDLogger,Controller):
         if string.lower(tier)=="all": tier="*"
         if string.lower(site)=="all": site="*"
         self.helperInit(dbsInst)
-        dList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc)
+        dList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site)
         nDatasets=len(dList)
         className="hide"
         if int(_idx)==0:
@@ -2994,7 +2995,8 @@ class DDServer(DDLogger,Controller):
     def findDSFromFinder(self,dbsInst,params,userMode,**kwargs):
         self.helperInit(dbsInst)
         parameters,iList,whereClause=self.constructQueryParameters(dbsInst,{'params':params})
-        aList=['PrimaryDataset.Name','ProcessedDataset.Name','DataTier.Name']
+#        aList=['PrimaryDataset.Name','ProcessedDataset.Name','DataTier.Name']
+        aList=['Block.Path']
         for item in aList:
             try:
                 iList.remove(item)
@@ -3006,8 +3008,9 @@ class DDServer(DDLogger,Controller):
         pList=[]
         for item in oList:
             if item==oList[0]: continue # we skip first row since it's column names
-            prim,proc,tier = item.values()[-3:] # get only three last items from results
-            path='/%s/%s/%s'%(prim,proc,tier)
+#            prim,proc,tier = item.values()[-3:] # get only three last items from results
+#            path='/%s/%s/%s'%(prim,proc,tier)
+            path=item.values()[-1] # get only last item from results which is Block.Path
             if not pList.count(path): pList.append(path)
         page=self.getData(dbsInst,proc=pList,ajax=0,userMode=userMode)
         return page

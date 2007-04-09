@@ -450,7 +450,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",userMode="user"):
+  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode="user"):
       if group.lower()=='any': group="*"
       if app.lower()  =='any': app  ="*"
       if prim.lower() =='any': prim ="*"
@@ -474,23 +474,26 @@ class DDHelper(DDLogger):
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
           tblk = self.alias('Block','tblk')
-          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
+          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name'),self.col(tblk,'Path')],
                  from_obj=[
                      tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
                      .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                      ],distinct=True,
                  order_by=[sqlalchemy.desc(self.col(tpm,'Name')),sqlalchemy.desc(self.col(tdt,'Name')),sqlalchemy.desc(self.col(tprd,'Name'))] )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
+             self.joinTiers(sel,tpds,tier)
           if app and app!="*":
              empty,ver,fam,exe=string.split(app,"/")
              if ver.lower()=="any" or ver.lower()=="all": ver="*"
@@ -502,6 +505,8 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tapf,'FamilyName')==fam)
              if exe and exe!="*":
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
+          if site and site!="*":
+                sel.append_whereclause(self.col(tse,'SEName')==site)
           if userMode=="user":
                 sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           result = self.getSQLAlchemyResult(con,sel)
@@ -512,7 +517,11 @@ class DDHelper(DDLogger):
           prim = item[0]
           tier = item[1]
           proc = item[2]
-          oList.append("/%s/%s/%s"%(prim,proc,tier))
+          path = item[3]
+#          print "\n\n/%s/%s/%s\n%s"%(prim,proc,tier,path)
+#          oList.append("/%s/%s/%s"%(prim,proc,tier))
+          if not path: continue
+          if not oList.count(path): oList.append(path)
       self.closeConnection(con)
       return oList
 
@@ -529,7 +538,6 @@ class DDHelper(DDLogger):
          aList.reverse()
          return aList
       else:
-#         print "#### listApplications",appPath
          if appPath=="*":
             ver=family=exe="*"
          else:
@@ -539,10 +547,23 @@ class DDHelper(DDLogger):
 #         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
          return res
 
+  def joinTiers(self,sel,tjoin,tier):
+      aList=[]
+      bList=[]
+      if tier and tier!="*":
+         tierList=tier.split("-")
+         for idx in xrange(0,len(tierList)):
+             aList.append(self.alias('DataTier','tdt%s'%idx))
+             bList.append(self.alias('ProcDSTier','tpds%s'%idx))
+             tierValue=tierList[idx]
+             sel.append_from( sqlalchemy.outerjoin( aList[-1],bList[-1],self.col(bList[-1],'DataTier')==self.col(aList[-1],'ID') ) )
+             sel.append_whereclause(self.col(aList[-1],'Name')==tierValue)
+
   def listBlocks(self,kwargs):
       # {'blockName': (nEvt,blockStatus,nFiles,blockSize)}
       # second output:
       # [{'Name':,'BlockSize':,'NumberOfFiles':,'NumberOfEvents':,'OpenForWriting':,'CreationDate','CreationDate':,'LastModificationDate':,'LastModifiedBy'}]
+#      print "\n\nlistBlocks",kwargs
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -563,7 +584,6 @@ class DDHelper(DDLogger):
                    from_obj=[
                           tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
@@ -578,7 +598,8 @@ class DDHelper(DDLogger):
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
              if tier and tier!="*":
-                sel.append_whereclause(self.col(tdt,'Name')==tier)
+                self.joinTiers(sel,tpds,tier)
+
           if kwargs.has_key('blockName') and kwargs['blockName']:
              sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
           if kwargs.has_key('site') and kwargs['site'] and kwargs['site']!="*" and string.lower(kwargs['site'])!='all':
@@ -587,6 +608,7 @@ class DDHelper(DDLogger):
           if kwargs.has_key('idx'): idx=kwargs['idx']
           if kwargs.has_key('userMode') and kwargs['userMode']=="user":
              sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
+#          print "\n\nblockList query\n",sel
           result = self.getSQLAlchemyResult(con,sel,idx)
       except:
           printExcept()
@@ -596,6 +618,7 @@ class DDHelper(DDLogger):
       siteList=[]
       totEvt=totFiles=totSize=0
       for item in result:
+#          print "blockList item result=",item
           if not item[0]: continue
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
           cDate=timeGMT(cDate)
@@ -641,7 +664,6 @@ class DDHelper(DDLogger):
                  from_obj=[
                      tprd.outerjoin(tf,onclause=self.col(tf,'Dataset')==self.col(tprd,'ID'))
                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      ] )
           if proc and proc!="*":
@@ -649,7 +671,7 @@ class DDHelper(DDLogger):
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
+             self.joinTiers(sel,tpds,tier)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -729,6 +751,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
+  # TODO: it's looks like it's used only in initJSDict, so may be I don't need it anymore
   def getDatasetsFromApplications(self):
       t1=time.time()
       aDict = {}
@@ -744,7 +767,8 @@ class DDHelper(DDLogger):
           tpal = self.alias('ProcAlgo','tpal')
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
-          sel  = sqlalchemy.select([self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
+          tblk = self.alias('Block','tblk')
+          sel  = sqlalchemy.select([self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name'),self.col(tblk,'Path')],
                    from_obj=[
                       tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                       .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
@@ -754,6 +778,7 @@ class DDHelper(DDLogger):
                       .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                       .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                       .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                      .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                             ],distinct=True,
                    order_by=[self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')]
                                  )
@@ -768,8 +793,10 @@ class DDHelper(DDLogger):
           prim = item[3]
           tier = item[4]
           proc = item[5]
+          path = item[6]
           if ver and fam and exe and prim and tier and proc:
-             addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,proc,tier))
+#             addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),"/%s/%s/%s"%(prim,proc,tier))
+             addToDict(aDict,"/%s/%s/%s"%(ver,fam,exe),path)
       if self.verbose:
          self.writeLog("time getDatasetsFromApplications: %s"%(time.time()-t1))
       self.closeConnection(con)
@@ -895,7 +922,6 @@ class DDHelper(DDLogger):
               sel  = sqlalchemy.select(oSel,
                      from_obj=[
                      tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
                      .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
@@ -905,7 +931,7 @@ class DDHelper(DDLogger):
               if group and group!="*":
                  sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
               if tier and tier!="*":
-                 sel.append_whereclause(self.col(tdt,'Name')==tier)
+                 self.joinTiers(sel,tpds,tier)
               if rel and rel!="*":
                  sel.append_whereclause(self.col(tapv,'Version')==rel)
               result = self.getSQLAlchemyResult(con,sel)
@@ -940,67 +966,55 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
       
-  def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
-      t1=time.time()
-      prim=""
-      tier=""
-      proc=""
-      if datasetPath and datasetPath!="*":
-         empty,prim,proc,tier=string.split(datasetPath,"/")
-      con = self.connectToDB()
-      oList  = []
-      try:
-          tprd = self.alias('ProcessedDataset','tprd')
-          tpm  = self.alias('PrimaryDataset','tpm')
-          tpds = self.alias('ProcDSTier','tpds')
-          tdt  = self.alias('DataTier','tdt')
-          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
-                 from_obj=[
-                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
-                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                     ],distinct=True,
-                 order_by=[self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')] )
-          if prim and prim!="*":
-             sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
-          if proc and proc!="*":
-             sel.append_whereclause(self.col(tprd,'Name')==proc)
-          result = self.getSQLAlchemyResult(con,sel)
-      except:
-          printExcept()
-          raise "Fail in getProcessedDataset"
-      for item in result:
-          if not item[0] or not item[1] or not item[2]: continue
-          name="/%s/%s/%s"%(item[0],item[1],item[2])
-          if html:
-             navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
-             dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-#             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-#             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
-             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
-          oList.append(name)
-      if self.verbose:
-         self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
-      self.closeConnection(con)
-      return oList
+#  def getProcessedDatasets(self,datasetPath="*",app=1,html=0):
+#      t1=time.time()
+#      prim=""
+#      tier=""
+#      proc=""
+#      if datasetPath and datasetPath!="*":
+#         empty,prim,proc,tier=string.split(datasetPath,"/")
+#      con = self.connectToDB()
+#      oList  = []
+#      try:
+#          tprd = self.alias('ProcessedDataset','tprd')
+#          tpm  = self.alias('PrimaryDataset','tpm')
+#          tpds = self.alias('ProcDSTier','tpds')
+#          tdt  = self.alias('DataTier','tdt')
+#          sel  = sqlalchemy.select([self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')],
+#                 from_obj=[
+#                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+#                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+#                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+#                     ],distinct=True,
+#                 order_by=[self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')] )
+#          if prim and prim!="*":
+#             sel.append_whereclause(self.col(tpm,'Name')==prim)
+#          if tier and tier!="*":
+#             sel.append_whereclause(self.col(tdt,'Name')==tier)
+#          if proc and proc!="*":
+#             sel.append_whereclause(self.col(tprd,'Name')==proc)
+#          result = self.getSQLAlchemyResult(con,sel)
+#      except:
+#          printExcept()
+#          raise "Fail in getProcessedDataset"
+#      for item in result:
+#          if not item[0] or not item[1] or not item[2]: continue
+#          name="/%s/%s/%s"%(item[0],item[1],item[2])
+#          if html:
+#             navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
+#             dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
+#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
+#          oList.append(name)
+#      if self.verbose:
+#         self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
+#      self.closeConnection(con)
+#      return oList
   
   def getDatasetContent(self,dataset):
       content = self.api.getDatasetContents(dataset)
       return content
 
   def getDatasetProvenance(self,dataset):
-#      pList=[]
-#      for parent in self.api.getDatasetProvenance(dataset):
-#          p=parent['parent']['datasetPathName']
-#          if not p: break
-#          pList.append(p)
-#          pList+=self.getDatasetProvenance(p)
-#      return pList
-
-
       t1=time.time()
       prim=""
       tier=""
@@ -1013,71 +1027,59 @@ class DDHelper(DDLogger):
 
           tprd = self.alias('ProcessedDataset','tprd')
           tprd2= self.alias('ProcessedDataset','tprd2')
-          tpm  = self.alias('PrimaryDataset','tpm')
-          tpm2 = self.alias('PrimaryDataset','tpm2')
-          tpds = self.alias('ProcDSTier','tpds')
-          tpds2= self.alias('ProcDSTier','tpds2')
-          tdt  = self.alias('DataTier','tdt')
-          tdt2 = self.alias('DataTier','tdt2')
+#          tpm  = self.alias('PrimaryDataset','tpm')
+#          tpm2 = self.alias('PrimaryDataset','tpm2')
+#          tpds = self.alias('ProcDSTier','tpds')
+#          tpds2= self.alias('ProcDSTier','tpds2')
+#          tdt  = self.alias('DataTier','tdt')
+#          tdt2 = self.alias('DataTier','tdt2')
           tpdp = self.alias('ProcDSParent','tpdp')
 
-          oSel = [self.col(tpdp,'ItsParent'),self.col(tpm2,'Name'),self.col(tprd2,'Name'),self.col(tdt2,'Name')]
+          tblk = self.alias('Block','tblk')
+          tblk2= self.alias('Block','tblk2')
+          oSel = [self.col(tpdp,'ItsParent'),self.col(tblk2,'Path')]
+
+#          oSel = [self.col(tpdp,'ItsParent'),self.col(tpm2,'Name'),self.col(tprd2,'Name'),self.col(tdt2,'Name')]
+#          sel  = sqlalchemy.select(oSel,
+#                 from_obj=[
+#                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+#                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+#                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+#                     .outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
+#                     .outerjoin(tprd2,onclause=self.col(tpdp,'ItsParent')==self.col(tprd2,'ID'))
+#                     .outerjoin(tpds2,onclause=self.col(tpds2,'Dataset')==self.col(tprd2,'ID'))
+#                     .outerjoin(tdt2,onclause=self.col(tpds2,'DataTier')==self.col(tdt2,'ID'))
+#                     .outerjoin(tpm2,onclause=self.col(tprd2,'PrimaryDataset')==self.col(tpm2,'ID'))
+#                     ],distinct=True,order_by=oSel )
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
-                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
-                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                     .outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
+                     tprd.outerjoin(tpdp,onclause=self.col(tpdp,'ThisDataset')==self.col(tprd,'ID'))
+                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tprd2,onclause=self.col(tpdp,'ItsParent')==self.col(tprd2,'ID'))
-                     .outerjoin(tpds2,onclause=self.col(tpds2,'Dataset')==self.col(tprd2,'ID'))
-                     .outerjoin(tdt2,onclause=self.col(tpds2,'DataTier')==self.col(tdt2,'ID'))
-                     .outerjoin(tpm2,onclause=self.col(tprd2,'PrimaryDataset')==self.col(tpm2,'ID'))
+                     .outerjoin(tblk2,onclause=self.col(tblk2,'Dataset')==self.col(tprd2,'ID'))
                      ],distinct=True,order_by=oSel )
-          if prim and prim!="*":
-             sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
-          if proc and proc!="*":
-             sel.append_whereclause(self.col(tprd,'Name')==proc)
+          if dataset and dataset!="*":
+             sel.append_whereclause(self.col(tblk,'Path')==dataset)
+#          if prim and prim!="*":
+#             sel.append_whereclause(self.col(tpm,'Name')==prim)
+#          if proc and proc!="*":
+#             sel.append_whereclause(self.col(tprd,'Name')==proc)
+#          if tier and tier!="*":
+#             sel.append_whereclause(self.col(tdt,'Name')==tier)
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
-              id,prim,proc,tier=item
-              if not id and not prim: continue
-              name="/%s/%s/%s"%(prim,proc,tier)
-              oList.append(name)
+#              id,prim,proc,tier=item
+#              if not id and not prim: continue
+#              name="/%s/%s/%s"%(prim,proc,tier)
+#              oList.append(name)
+              print item
+              id,path=item
+              if not id and not path: continue
+              oList.append(path)
 
-#          if  len(pList):
-#              oSel = [self.col(tpm,'Name'),self.col(tprd,'Name'),self.col(tdt,'Name')]
-#              w_or = sqlalchemy.or_( map( lambda x: getattr(self.col(tprd,'ID'),x),pList ) )
-#              sel  = sqlalchemy.select(oSel,w_or,
-#                     from_obj=[
-#                         tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-#                         .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
-#                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-#                         ],distinct=True,order_by=oSel )
-#              result = self.getSQLAlchemyResult(con,sel)
-#              for item in result:
-#                  print item
-#                  if not item[0] or not item[1] or not item[2]: continue
-#                  name="/%s/%s/%s"%(item[0],item[1],item[2])
-#                  oList.append(name)
-          
       except:
           printExcept()
           raise "Fail in getDatasetProvenance"
-#      for item in result:
-#          print item
-#          if not item[0] or not item[1] or not item[2]: continue
-#          name="/%s/%s/%s"%(item[0],item[1],item[2])
-
-#          if html:
-#             navBar   ="MakeNavBarProcDS('%s','%s')"%(self.dbsInstance,name)
-#             dataInfo ="ajaxGetData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-#             blockInfo="ajaxGetDbsData('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-#             runInfo  ="ajaxGetRuns('%s','all','*','*','*','*','%s')"%(self.dbsInstance,name)
-#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
-
-#          oList.append(name)
       if self.verbose:
          self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
       self.closeConnection(con)
@@ -1537,7 +1539,6 @@ class DDHelper(DDLogger):
                  from_obj=[
                      tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                          .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
                          .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
@@ -1550,7 +1551,7 @@ class DDHelper(DDLogger):
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
+             self.joinTiers(sel,tpds,tier)
           if blockName and blockName!="*":
              sel.append_whereclause(self.col(tb,'Name')==blockName)
           result = self.getSQLAlchemyResult(con,sel)
@@ -1708,7 +1709,7 @@ class DDHelper(DDLogger):
 #      res = self.api.listFileParents(lfn)
 #      return res
 
-  def alias(self,tableName,aliasName):
+  def alias(self,tableName,aliasName=""):
       """
          Helper function to get table alias from SQLAlchemy for current DBS instance
          @type  tableName: string 
@@ -1910,7 +1911,6 @@ class DDHelper(DDLogger):
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
                           .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
@@ -1924,7 +1924,7 @@ class DDHelper(DDLogger):
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
              if tier and tier!="*":
-                sel.append_whereclause(self.col(tdt,'Name')==tier)
+                self.joinTiers(sel,tpds,tier)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -1949,60 +1949,6 @@ class DDHelper(DDLogger):
   def getDbsBlockData(self,blockName):
       kwargs={'blockName':blockName,'fullOutput':1}
       return self.listBlocks(kwargs)
-
-  def getUserData(self,group,tier,rel,prim,site):
-      # TODO: I need to add physics group table when it's available
-      # if site is provided add DLS calls to filter results based on site search.
-
-      t1=time.time()
-      aDict = {}
-      con = self.connectToDB()
-      oList  = []
-      try:
-#          tphg = self.alias('PhysicsGroup','tphg')
-          talc = self.alias('AlgorithmConfig','talc') 
-          tpal = self.alias('ProcAlgo','tpal')
-          tver = self.alias('AppVersion','tver')
-          tprd = self.alias('ProcessedDataset','tprd')
-          tpm  = self.alias('PrimaryDataset','tpm')
-          tpds = self.alias('ProcDSTier','tpds')
-          tdt  = self.alias('DataTier','tdt')
-          tp1   = self.alias('Person','tp1')
-          tp2   = self.alias('Person','tp2')
-
-          sel  = sqlalchemy.select([self.col(tprd,'Name')],
-                   from_obj=[
-                      tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                      .outerjoin(tver,onclause=self.col(talc,'ApplicationVersion')==self.col(tver,'ID'))
-                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                      .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
-                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                            ],distinct=True,
-                   order_by=[self.col(tprd,'Name')]
-                             )
-#          if group and group!="*":
-#             sel.append_whereclause(self.col(tphg,'Name')==rel)
-          if rel and rel!="*":
-             sel.append_whereclause(self.col(tver,'Version')==rel)
-          if prim and prim!="*":
-             sel.append_whereclause(self.col(tpm,'Name')==prim)
-          if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
-          print str(sel)
-          result = self.getSQLAlchemyResult(con,sel)
-      except:
-          printExcept()
-          raise "Fail in getUserData"
-      oList=[]
-      for item in result:
-          pset = item[0]
-          if not pset: continue
-          oList.append("/%s/%s/%s"%(prim,pset,tier))
-      if self.verbose:
-         self.writeLog("time in getUserData: %s"%(time.time()-t1))
-      self.closeConnection(con)
-      return oList
 
   def getData(self,dataset,site="Any",userMode="user",idx=-1):
       """
@@ -2077,6 +2023,7 @@ class DDHelper(DDLogger):
           tads = self.alias('AnalysisDSStatus','tads')
           tadd = self.alias('AnalysisDSDef','tadd')
           tpg  = self.alias('PhysicsGroup','tpg')
+          tblk = self.alias('Block','tblk')
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
 
@@ -2096,13 +2043,13 @@ class DDHelper(DDLogger):
                   self.col(tp2,'DistinguishedName'),
                   self.col(tad,'LastModifiedBy'),self.col(tad,'LastModificationDate'),
                   self.col(tpg,'PhysicsGroupName'),
-                  self.col(tpm,'Name'),self.col(tprd,'Name'),self.col(tdt,'Name')]
+                  self.col(tblk,'Path') ]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                      tprd.outerjoin(tad,onclause=self.col(tad,'ProcessedDS')==self.col(tprd,'ID'))
                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tadt,onclause=self.col(tad,'Type')==self.col(tadt,'ID'))
                      .outerjoin(tads,onclause=self.col(tad,'Status')==self.col(tads,'ID'))
                      .outerjoin(tadd,onclause=self.col(tad,'Definition')==self.col(tadd,'ID'))
@@ -2121,7 +2068,7 @@ class DDHelper(DDLogger):
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
           if tier and tier!="*":
-             sel.append_whereclause(self.col(tdt,'Name')==tier)
+             self.joinTiers(sel,tpds,tier)
           if an_dataset and an_dataset!="*":
              sel.append_whereclause(self.col(tad,'Name')==an_dataset)
           for key in cDict.keys():
@@ -2152,8 +2099,7 @@ class DDHelper(DDLogger):
       aList=[]
       for item in result:
           if not item[0]: continue
-          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,prim,proc,tier=item
-          path="/%s/%s/%s"%(prim,proc,tier)
+          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,path=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
           # to avoid ProgrammingError: LOB variable no longer valid after subsequent fetch
