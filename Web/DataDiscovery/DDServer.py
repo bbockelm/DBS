@@ -582,7 +582,10 @@ class DDServer(DDLogger,Controller):
             adsDefName=str(t)
 
             tierList = self.helper.getDataTiers()
-            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':self.dbsList,'adsName':adsName,'adsDefName':adsDefName,'host':self.dbsdd}
+            dbsList=self.dbsList
+            dbsList.remove(dbsInst)
+            dbsList=[dbsInst]+dbsList
+            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':dbsList,'adsName':adsName,'adsDefName':adsDefName,'host':self.dbsdd}
             t = templateMenuAnalysis(searchList=[nameSearch]).respond()
             page+= str(t)
 

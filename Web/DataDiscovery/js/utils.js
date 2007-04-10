@@ -1264,5 +1264,6 @@ function CollapseADSOpts() {
 function CallAnalysis(host,userMode) {
    var dbsInst=$('dbsInst').value;
    var url=host+'/_analysis?dbsInst='+dbsInst+'&userMode='+userMode;
-   window.open(url);
+   window.location.href=url;
+//   window.location.reload();
 }
