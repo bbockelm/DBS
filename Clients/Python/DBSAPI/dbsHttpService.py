@@ -19,6 +19,7 @@ except:
 import urlparse
 
 import logging
+from dbsLogger import *
 
 class DbsHttpService:
 
@@ -80,7 +81,6 @@ class DbsHttpService:
     """
 
     try:
-
        request_string = self.Servlet+'?apiversion='+self.ApiVersion
 
        for key, value in args.items():
@@ -98,19 +98,18 @@ class DbsHttpService:
 		key, cert = self.getKeyCert()
 		self.conn = httplib.HTTPSConnection(self.Host, int(self.Port), key, cert)
 
-       logging.info(self.conto)
+       logging.log(DBSINFO, self.conto)	
  
        params = urllib.urlencode(args)
        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
-       logging.info(request_string)
 
        if typ == 'POST':
           result = self.conn.request(typ, request_string, params, headers)  
        else:
           result = self.conn.request(typ, request_string )
 
-       logging.debug(request_string)
+       logging.log(DBSINFO, request_string)
 
        response = self.conn.getresponse() 
 
@@ -119,8 +118,11 @@ class DbsHttpService:
        if responseCode != 200:
          exmsg = "\nCall to DBS Server ("+self.Url+") failed"
          statusResponse = response.read()
-         statusDetail = statusResponse.split('<body>')[1].split('</body>')[0].split('description')[1]  
-	 statusDetail = statusDetail.split('<u>')[1].split('</u>')[0]
+         try:
+           statusDetail = statusResponse.split('<body>')[1].split('</body>')[0].split('description')[1]  
+	   statusDetail = statusDetail.split('<u>')[1].split('</u>')[0]
+         except:
+           statusDetail=statusResponse
 
          exmsg += "\nHTTP ERROR Status '%s', \nStatus detail: '%s'" % (responseCode, statusDetail)
          if responseCode == 300: raise DbsBadData (args=exmsg, code=responseCode)
@@ -138,7 +140,7 @@ class DbsHttpService:
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
-       logging.debug(data)
+       logging.log(DBSDEBUG, data)
 
     except sslerror, ex:
 	msg  = "HTTPS Error, Unable to make API call"
@@ -150,12 +152,13 @@ class DbsHttpService:
 	msg  = "HTTP(S) Error, Unable to make API call"
         msg += "\nUnable to connect %s (Please verify!)" % self.Url
         msg += "\nMost probably url (host, port) specified is incorrect, or using http instead of https"
+        msg += "\nError Message: %s" % ex
         raise DbsConnectionError (args=msg, code="505")   
   
-    except (urllib2.URLError, httplib.HTTPException):
+    except (urllib2.URLError, httplib.HTTPException), ex:
         msg = "HTTP ERROR, Unable to make API call"
-        msg += "  Error Message: %s" % ex
-        msg += "  Verify URL %s" % self.Url
+        msg += "  \nVerify URL %s" % self.Url
+        msg += "  \nError Message: %s" % ex
         raise DbsConnectionError (args=msg, code="505")   
 
     except Exception, ex:
@@ -192,14 +195,13 @@ class DbsHttpService:
                 warn  = "\n DBS Raised a warning message"
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
-                #logging.warning(warn)
-                logging.debug(warn)
+                logging.log(DBSWARNING, warn)
 
 
 	     if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
 		info += "\n Detail: %s " %attrs['detail']+"\n"
-		logging.info(info)
+                logging.log(DBSINFO, info)
 
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data
