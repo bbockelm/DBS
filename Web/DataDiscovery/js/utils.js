@@ -1251,3 +1251,13 @@ function resetUserNav() {
    $('tierSelector').checked='';
    ajaxGetKWFields();
 }
+function ExpandADSOpts() {
+   ChangeNameTags('adsOpts','show_row');
+   $('adsExpander').innerHTML='<a href="javascript:CollapseADSOpts()"><img src="images/downTriangle.png" alt="expand" style="border:none" /></a>';
+   $('adsExpanderText').innerHTML='collapse options';
+}
+function CollapseADSOpts() {
+   ChangeNameTags('adsOpts','hide');
+   $('adsExpander').innerHTML='<a href="javascript:ExpandADSOpts()"><img src="images/leftTriangle.png" alt="expand" style="border:none" /></a>';
+   $('adsExpanderText').innerHTML='expand options';
+}
