@@ -2100,8 +2100,6 @@ class DDHelper(DDLogger):
              sel.distinct=True
              sel.order_by=oSel
           sel.use_labels=True
-          print sel
-          print cDict
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
