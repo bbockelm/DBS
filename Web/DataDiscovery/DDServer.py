@@ -582,7 +582,7 @@ class DDServer(DDLogger,Controller):
             adsDefName=str(t)
 
             tierList = self.helper.getDataTiers()
-            dbsList=self.dbsList
+            dbsList=list(self.dbsList)
             dbsList.remove(dbsInst)
             dbsList=[dbsInst]+dbsList
             nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':dbsList,'adsName':adsName,'adsDefName':adsDefName,'host':self.dbsdd}
