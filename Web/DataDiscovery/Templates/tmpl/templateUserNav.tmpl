@@ -9,13 +9,13 @@
 
 <input type="hidden" name="ajax" value="0" />
 <input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
-<!-- begin menu table -->
-###<table class="small" cellspacing="5">
-<table cellpadding="2" cellspacing="2">
-
 #if $userMode=='user'
 <input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+<!-- begin menu table -->
+<table cellpadding="2" cellspacing="2">
 #else
+<!-- begin menu table -->
+<table cellpadding="2" cellspacing="2">
 <tr>
 <td align="right">
 <div id="dbsInstDef">
@@ -165,6 +165,80 @@
 </table>
 <!-- end of outer most table -->
 
+<hr class="dbs" />
+
+<!-- auto-completion form for processed datasets -->
+#*
+<table class="lfn" width="100%">
+<tr valign="top">
+<td valign="top">
+*#
+
+<div align="left">
+<form action="getData" method="get">
+<input type="hidden" name="ajax" value="0" />
+<input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
+<input type="hidden" name="group" value="*" />
+<input type="hidden" name="tier" value="*" />
+<input type="hidden" name="app" value="*" />
+<input type="hidden" name="primD" value="*" />
+<input type="hidden" name="site" value="*" />
+<!-- begin menu table -->
+
+#if $userMode=='user'
+<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+<table cellpadding="2" cellspacing="2" width="100%">
+#else
+<table cellpadding="2" cellspacing="2" width="100%">
+<tr>
+<td align="right">
+<div id="dbsInstDef">
+<b>DBS instances</b>
+</div>
+</td>
+<td>
+<select name="dbsInst" id="dbsInst" onchange="javascript:ReloadMethod('$host','_navigator','$userMode')" style="$style">
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+</tr>
+#end if
+
+<tr>
+<td align="right">
+<div id="procDef">
+<b>
+Processed dataset:
+</b>
+</div>
+</td>
+<td align="left">
+$prdForm
+</td>
+</tr>
+
+<tr>
+<td>
+</td>
+<td>
+<input type="reset" value="Reset" />
+<input type="submit" value="Find" id='userNavId2' />
+</td>
+</tr>
+</table>
+
+</form>
+
+#*
+</td>
+</tr>
+</table>
+*#
+</div>
+
+
 <script type="text/javascript">
 var tooltip;
 tooltip="<p>List of known DBS instances.</p>";
@@ -179,6 +253,8 @@ tooltip="<p>This is a list of primary datasets known in DBS. In a case of real d
 MakeTooltip("t_primDef","primDef",tooltip);
 tooltip="<p>List of know CMS sites</p> <p><b>Example: cmssrm.fnal.gov</b></p>";
 MakeTooltip("t_site","siteDef",tooltip);
+tooltip="<p>Use this form to perform wild card search for processed dataset name</p>";
+MakeTooltip("t_proc","procDef",tooltip);
 </script>
 
 <!-- end of templateUserNav.tmpl -->

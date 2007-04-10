@@ -11,7 +11,7 @@ DBS instances:
 </div>
 </td>
 <td>
-<select style="width:100px" id="dbsInst" name="dbsInst" onChange="javascript:CallAnalysis('$host','$userMode')">
+<select id="dbsInst" name="dbsInst" onChange="javascript:ReloadMethod('$host','_analysis','$userMode')">
 #for dbs in $dbsList
 <option>$dbs</option>
 #end for

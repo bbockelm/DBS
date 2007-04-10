@@ -288,7 +288,7 @@ class DDServer(DDLogger,Controller):
         t = templateBottom(searchList=[nameSpace]).respond()
         return str(t)
 
-    def index(self,userMode='user'): 
+    def index(self,dbsInst=DBSGLOBAL,userMode='user'): 
         """
            Construct start up page by invoking L{init} call.
            @type  self: class object
@@ -297,14 +297,9 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         try:
-#            self.userMode=True
-#            return self.init()
-#            page = self.genTopHTML(intro=False,userMode=userMode)
-#            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
-#            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
-            userNav = self.genEmptyUserNavigator(DBSGLOBAL,userMode)
+            userNav = self.genEmptyUserNavigator(dbsInst,userMode)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -518,13 +513,11 @@ class DDServer(DDLogger,Controller):
 #    dbsExpert.exposed = True
 
     ################## Menu init methods
-    def _navigator(self,userMode="user"):
+    def _navigator(self,dbsInst=DBSGLOBAL,userMode="user"):
         try:
-#            page = self.genTopHTML(intro=False,userMode=userMode,onload="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();")
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
-#            userNav = self.genUserNavigator(DBSGLOBAL,userMode)
-            userNav = self.genEmptyUserNavigator(DBSGLOBAL,userMode)
+            userNav = self.genEmptyUserNavigator(dbsInst,userMode)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -574,10 +567,10 @@ class DDServer(DDLogger,Controller):
             page+= self.whereMsg('Analysis dataset search',userMode)
 
             # make auto-completion forms for ads name and def name
-            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name','zIndex':9000}
+            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name:','zIndex':9000}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsName=str(t)
-            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name','zIndex':8000}
+            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name:','zIndex':8000}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsDefName=str(t)
 
@@ -721,17 +714,28 @@ class DDServer(DDLogger,Controller):
         return oList
         
     def genEmptyUserNavigator(self,dbsInst,userMode="user",**kwargs):
+
+        # auto-competion form for processed datasets
+        nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000}
+        t = templateAutoComplete(searchList=[nameSearch]).respond()
+        prdForm=str(t)
+
         page=""
         emptyList=[]
+        dbsList=list(self.dbsList)
+        dbsList.remove(dbsInst)
+        dbsList=[dbsInst]+dbsList
         nameSearch={
                     'dbsInst'     : dbsInst,
+                    'host'        : self.dbsdd,
                     'userMode'    : userMode,
-                    'dbsList'     : self.dbsList,
+                    'dbsList'     : dbsList,
                     'groupList'   : emptyList,
                     'dataTypes'   : emptyList,
                     'softReleases': emptyList,
                     'siteList'    : emptyList,
                     'style'       : "width:200px",
+                    'prdForm'     : prdForm,
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
         page+= str(t)

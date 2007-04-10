@@ -1261,9 +1261,8 @@ function CollapseADSOpts() {
    $('adsExpander').innerHTML='<a href="javascript:ExpandADSOpts()"><img src="images/leftTriangle.png" alt="expand" style="border:none" /></a>';
    $('adsExpanderText').innerHTML='expand options';
 }
-function CallAnalysis(host,userMode) {
+function ReloadMethod(host,method,userMode) {
    var dbsInst=$('dbsInst').value;
-   var url=host+'/_analysis?dbsInst='+dbsInst+'&userMode='+userMode;
+   var url=host+'/'+method+'?dbsInst='+dbsInst+'&userMode='+userMode;
    window.location.href=url;
-//   window.location.reload();
 }
