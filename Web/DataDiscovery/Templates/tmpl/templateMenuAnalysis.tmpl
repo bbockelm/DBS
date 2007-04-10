@@ -3,14 +3,7 @@
 <form action="findAnalysisDS" >
 <input type="hidden" value="$userMode" name="userMode" />
 
-$adsName
-$adsDefName
-
-
-<table cellpadding="2" cellspacing="2" class="valign">
 #if $userMode!='user'
-<tr>
-<td align="right">
 <div id="ans_dbsInst">
 <b>
 DBS instances:
@@ -18,7 +11,7 @@ DBS instances:
 </div>
 </td>
 <td>
-<select style="width:100px" id="dbsInst" name="dbsInst">
+<select style="width:100px" id="dbsInst" name="dbsInst" onChange="javascript:CallAnalysis('$host','$userMode')">
 #for dbs in $dbsList
 <option>$dbs</option>
 #end for
@@ -29,6 +22,14 @@ DBS instances:
 #else
 <input type="hidden" value="$dbsList[0]" name="dbsInst" />
 #end if
+<p />
+<div>
+$adsName
+$adsDefName
+</div>
+
+
+<table cellpadding="2" cellspacing="2" class="valign">
 
 #*
 <tr>

@@ -1261,3 +1261,8 @@ function CollapseADSOpts() {
    $('adsExpander').innerHTML='<a href="javascript:ExpandADSOpts()"><img src="images/leftTriangle.png" alt="expand" style="border:none" /></a>';
    $('adsExpanderText').innerHTML='expand options';
 }
+function CallAnalysis(host,userMode) {
+   var dbsInst=$('dbsInst').value;
+   var url=host+'/_analysis?dbsInst='+dbsInst+'&userMode='+userMode;
+   window.open(url);
+}

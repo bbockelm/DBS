@@ -568,21 +568,21 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _config.exposed=True
 
-    def _analysis(self,userMode="user"):
+    def _analysis(self,dbsInst=DBSGLOBAL,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('Analysis dataset search',userMode)
 
             # make auto-completion forms for ads name and def name
-            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':DBSGLOBAL,'table':'AnalysisDataset','column':'Name','label':'Name','zIndex':9000}
+            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name','zIndex':9000}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsName=str(t)
-            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':DBSGLOBAL,'table':'AnalysisDSDef','column':'Name','label':'Definition name','zIndex':8000}
+            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name','zIndex':8000}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsDefName=str(t)
 
             tierList = self.helper.getDataTiers()
-            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':self.dbsList,'adsName':adsName,'adsDefName':adsDefName}
+            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':self.dbsList,'adsName':adsName,'adsDefName':adsDefName,'host':self.dbsdd}
             t = templateMenuAnalysis(searchList=[nameSearch]).respond()
             page+= str(t)
 
