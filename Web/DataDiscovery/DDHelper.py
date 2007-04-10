@@ -331,12 +331,12 @@ class DDHelper(DDLogger):
          self.dls_iface = self.dlsInst[(dlsType,endpoint)]
 
   ### HELPER functions ###
-  def getTableColumn(self,table,column,iRow=1,iLimit=0):
+  def getTableColumn(self,table,column,iRow=1,iLimit=0,whereDict={}):
       t1=time.time()
       con = self.connectToDB()
       oList  = []
       try:
-          content = self.getTableContent(con,table,iList=[column],fromRow=iRow,limit=iLimit)
+          content = self.getTableContent(con,table,iList=[column],fromRow=iRow,limit=iLimit,whereDict=whereDict)
       except:
           printExcept()
           raise "Fail in getTableColumn"
@@ -1189,12 +1189,21 @@ class DDHelper(DDLogger):
          pass
       return res
 
-  def getTableContent(self,con,tableName,iList=['*'],fromRow=1,limit=0):
+  def getTableContent(self,con,tableName,iList=['*'],fromRow=1,limit=0,whereDict={}):
       try:
+          tableObj=self.dbManager.getTable(self.dbsInstance,tableName)
           if limit:
-             sel = sqlalchemy.select(iList, from_obj=[tableName], limit=limit, offset=fromRow)
+             sel = sqlalchemy.select(iList, from_obj=[tableObj], limit=limit, offset=fromRow)
           else:
-             sel = sqlalchemy.select(iList, from_obj=[tableName])
+             sel = sqlalchemy.select(iList, from_obj=[tableObj])
+          t=self.dbManager.getTable(self.dbsInstance,tableName)
+          # all where clauses should be provided as whereDict['Table.Col']=value
+          for key in whereDict.keys():
+              tName,col = key.split('.')
+              t=self.dbManager.getTable(self.dbsInstance,tName)
+              val = whereDict[key]
+              lval=self.col(t,col)
+              sel.append_whereclause(lval.like("%s%%"%str(val)))
           if len(iList)==1:
              sel.order_by=[sqlalchemy.desc(iList[0])]
           result = self.getSQLAlchemyResult(con,sel)
@@ -2009,19 +2018,20 @@ class DDHelper(DDLogger):
   def getAnalysisDS(self,dataset="*",an_dataset="*",cDict={}):
       t1=time.time()
       aDict = {}
+      tDict = {}
       con = self.connectToDB()
       oList  = []
       try:
-          tpm  = self.alias('PrimaryDataset','tpm')
-          tpds = self.alias('ProcDSTier','tpds')
-          tdt  = self.alias('DataTier','tdt')
-          tprd = self.alias('ProcessedDataset','tprd')
-          tad  = self.alias('AnalysisDataset','tad')
-          tadt = self.alias('AnalysisDSType','tadt')
-          tads = self.alias('AnalysisDSStatus','tads')
-          tadd = self.alias('AnalysisDSDef','tadd')
-          tpg  = self.alias('PhysicsGroup','tpg')
-          tblk = self.alias('Block','tblk')
+          tpm  = tDict['PrimaryDatset']    = self.alias('PrimaryDataset','tpm')
+          tpds = tDict['ProcDSTier']       = self.alias('ProcDSTier','tpds')
+          tdt  = tDict['DataTier']         = self.alias('DataTier','tdt')
+          tprd = tDict['ProcessedDataset'] = self.alias('ProcessedDataset','tprd')
+          tad  = tDict['AnalysisDataset']  = self.alias('AnalysisDataset','tad')
+          tadt = tDict['AnalysisDSType']   = self.alias('AnalysisDSType','tadt')
+          tads = tDict['AnalysisDSStatus'] = self.alias('AnalysisDSStatus','tads')
+          tadd = tDict['AnalysisDSDef']    = self.alias('AnalysisDSDef','tadd')
+          tpg  = tDict['PhysicsGroup']     = self.alias('PhysicsGroup','tpg')
+          tblk = tDict['Block']            = self.alias('Block','tblk')
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
 
@@ -2073,8 +2083,8 @@ class DDHelper(DDLogger):
               op,val=cDict[key]
               if not val: continue
               tableName,col=key.split(".")
-              t=self.dbManager.getTable(self.dbsInstance,tableName)
-              lval=self.col(t,col)
+#              t=self.dbManager.getTable(self.dbsInstance,tableName)
+              lval=self.col(tDict[tableName],col)
               if op=="=":
                  sel.append_whereclause(lval==val)
               elif op=="like":
@@ -2090,6 +2100,8 @@ class DDHelper(DDLogger):
              sel.distinct=True
              sel.order_by=oSel
           sel.use_labels=True
+          print sel
+          print cDict
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()

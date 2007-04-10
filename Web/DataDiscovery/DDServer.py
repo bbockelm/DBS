@@ -572,10 +572,20 @@ class DDServer(DDLogger,Controller):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('Analysis dataset search',userMode)
+
+            # make auto-completion forms for ads name and def name
+            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':DBSGLOBAL,'table':'AnalysisDataset','column':'Name','label':'Name','zIndex':9000}
+            t = templateAutoComplete(searchList=[nameSearch]).respond()
+            adsName=str(t)
+            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':DBSGLOBAL,'table':'AnalysisDSDef','column':'Name','label':'Definition name','zIndex':8000}
+            t = templateAutoComplete(searchList=[nameSearch]).respond()
+            adsDefName=str(t)
+
             tierList = self.helper.getDataTiers()
-            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':self.dbsList}
+            nameSearch={'tierList':tierList,'userMode':userMode,'dbsList':self.dbsList,'adsName':adsName,'adsDefName':adsDefName}
             t = templateMenuAnalysis(searchList=[nameSearch]).respond()
             page+= str(t)
+
             page+= self.genBottomHTML()
             return page
         except:
@@ -1729,7 +1739,36 @@ class DDServer(DDLogger,Controller):
         return page
     getAnalysisDSFullInfo.exposed=True
 
-    def findAnalysisDS(self,dbsInst,op_ads_name,ads_name,op_adsd_name,adsd_name,op_adsd_anns,adsd_anns,op_adsd_desc,adsd_desc,op_adsd_rels,adsd_rels,op_adsd_tier,adsd_tier,op_adsd_prds,adsd_prds,op_adsd_lfns,adsd_lfns,op_adsd_runs,adsd_runs,op_adsd_lumi,adsd_lumi,op_adsd_cuts,adsd_cuts,userMode):
+#    def findAnalysisDS(self,dbsInst,op_ads_name,ads_name,op_adsd_name,adsd_name,op_adsd_anns,adsd_anns,op_adsd_desc,adsd_desc,op_adsd_rels,adsd_rels,op_adsd_tier,adsd_tier,op_adsd_prds,adsd_prds,op_adsd_lfns,adsd_lfns,op_adsd_runs,adsd_runs,op_adsd_lumi,adsd_lumi,op_adsd_cuts,adsd_cuts,userMode):
+    def findAnalysisDS(self,dbsInst,userMode='user',**kwargs):
+        ads_name=adsd_name=adsd_anns=adsd_desc=adsd_rels=adsd_tier=adsd_prds=adsd_lfns=adsd_runs=adsd_lumi=adsd_cuts=""
+        op_adsd_anns=op_adsd_desc=op_adsd_rels=op_adsd_tier=op_adsd_prds=op_adsd_lfns=op_adsd_runs=op_adsd_lumi=op_adsd_cuts="like"
+        op_ads_name="="
+        op_adsd_name="="
+        if kwargs.has_key('ads_name'):   ads_name=kwargs['ads_name']
+        if kwargs.has_key('adsd_name'): adsd_name=kwargs['adsd_name']
+        if kwargs.has_key('adsd_anns'): adsd_name=kwargs['adsd_anns']
+        if kwargs.has_key('adsd_desc'): adsd_name=kwargs['adsd_desc']
+        if kwargs.has_key('adsd_rels'): adsd_name=kwargs['adsd_rels']
+        if kwargs.has_key('adsd_tier'): adsd_name=kwargs['adsd_tier']
+        if kwargs.has_key('adsd_prds'): adsd_name=kwargs['adsd_prds']
+        if kwargs.has_key('adsd_lfns'): adsd_name=kwargs['adsd_lfns']
+        if kwargs.has_key('adsd_runs'): adsd_name=kwargs['adsd_runs']
+        if kwargs.has_key('adsd_lumi'): adsd_name=kwargs['adsd_lumi']
+        if kwargs.has_key('adsd_cuts'): adsd_name=kwargs['adsd_cuts']
+
+        if kwargs.has_key('op_ads_name'):   op_ads_name=kwargs['op_ads_name']
+        if kwargs.has_key('op_adsd_name'): op_adsd_name=kwargs['op_adsd_name']
+        if kwargs.has_key('op_adsd_anns'): op_adsd_name=kwargs['op_adsd_anns']
+        if kwargs.has_key('op_adsd_desc'): op_adsd_name=kwargs['op_adsd_desc']
+        if kwargs.has_key('op_adsd_rels'): op_adsd_name=kwargs['op_adsd_rels']
+        if kwargs.has_key('op_adsd_tier'): op_adsd_name=kwargs['op_adsd_tier']
+        if kwargs.has_key('op_adsd_prds'): op_adsd_name=kwargs['op_adsd_prds']
+        if kwargs.has_key('op_adsd_lfns'): op_adsd_name=kwargs['op_adsd_lfns']
+        if kwargs.has_key('op_adsd_runs'): op_adsd_name=kwargs['op_adsd_runs']
+        if kwargs.has_key('op_adsd_lumi'): op_adsd_name=kwargs['op_adsd_lumi']
+        if kwargs.has_key('op_adsd_cuts'): op_adsd_name=kwargs['op_adsd_cuts']
+
         page=self.genTopHTML(userMode=userMode)
         page+=self.whereMsg('Navigator :: Results :: Analysis datasets',userMode)
         cDict = {
@@ -2915,6 +2954,23 @@ class DDServer(DDLogger,Controller):
         changeFunction="ChangeCols(%s)"%id
         return self.makeSelect(tList,"divSectionTables_%s"%id,"sectionTables",changeFunction,"sectionTables_%s"%id,"width:160px")
     getSectionTables.exposed=True
+
+    # this method can be used for auto-completion forms, it returns a string of columns
+    # see YUI, http://developer.yahoo.com/yui/autocomplete/
+    def getTableColumn(self,dbsInst,table,column,**kwargs):
+        self.helperInit(dbsInst)
+        page=""
+        whereDict={}
+        if  kwargs.has_key('query'):
+            key='%s.%s'%(table,column)
+            val=kwargs['query']
+            whereDict[key]=val
+        row=1
+        limit=0
+        for item in self.helper.getTableColumn(table,column,row,limit,whereDict):
+            page+="%s\n"%item
+        return page
+    getTableColumn.exposed=True
 
     def getTableColumns(self,dbsInst,tableName,id,**kwargs):
         self.helperInit(dbsInst)

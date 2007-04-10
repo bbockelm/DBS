@@ -2,7 +2,12 @@
 
 <form action="findAnalysisDS" >
 <input type="hidden" value="$userMode" name="userMode" />
-<table cellpadding="2" cellspacing="2">
+
+$adsName
+$adsDefName
+
+
+<table cellpadding="2" cellspacing="2" class="valign">
 #if $userMode!='user'
 <tr>
 <td align="right">
@@ -25,6 +30,7 @@ DBS instances:
 <input type="hidden" value="$dbsList[0]" name="dbsInst" />
 #end if
 
+#*
 <tr>
 <td align="right">
 <div id="ads_nameDef">
@@ -33,7 +39,7 @@ Name:
 </b>
 </div>
 </td>
-<td>
+<td align="center">
 <select style="width:100px" id="op_ads_name" name="op_ads_name">
 <option>like</option>
 <option>likeLeft</option>
@@ -41,7 +47,9 @@ Name:
 <option>=</option>
 </select>
 </td>
-<td align="left"><input type="text" size="60" id="ads_name" name="ads_name" /></td>
+<td align="left">
+<input type="text" size="60" id="ads_name" name="ads_name" />
+</td>
 </tr>
 
 <tr>
@@ -52,7 +60,7 @@ Definition Name:
 </b>
 </div>
 </td>
-<td>
+<td align="center">
 <select style="width:100px" id="op_adsd_name" name="op_adsd_name">
 <option>like</option>
 <option>likeLeft</option>
@@ -60,10 +68,29 @@ Definition Name:
 <option>=</option>
 </select>
 </td>
-<td align="left"><input type="text" size="60" id="adsd_name" name="adsd_name" /></td>
+<td align="left">
+<input type="text" size="60" id="adsd_name" name="adsd_name" />
+</td>
 </tr>
+*#
 
 <tr>
+<td align="right">
+<div id="adsExpander">
+<a href="javascript:ExpandADSOpts()">
+<img src="images/leftTriangle.png" alt='expand' style="border:none" /></a>
+</div>
+</td>
+<td>
+<div id="adsExpanderText">
+more options
+</div>
+</td>
+<td></td>
+</tr>
+
+
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_andsDef">
 <b>
@@ -80,7 +107,7 @@ Annotation:
 <td align="left"><input type="text" size="60" id="adsd_anns" name="adsd_anns" /></td>
 </tr>
 
-<tr>
+<tr  name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_descDef">
 <b>
@@ -97,7 +124,7 @@ Description:
 <td align="left"><input type="text" size="60" id="adsd_desc" name="adsd_desc" /></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_relsDef">
 <b>
@@ -115,7 +142,7 @@ Release:
 <td align="left"><input type="text" size="60" id="adsd_rels" name="adsd_rels" /></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <input type="hidden" value="like" id="op_adsd_tier" name="op_adsd_tier" />
 <div id="adsd_tierDef">
@@ -134,7 +161,7 @@ Tiers:
 <td></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_prdsDef">
 <b>
@@ -152,7 +179,7 @@ Dataset:
 <td align="left"><input type="text" size="60" id="adsd_prds" name="adsd_prds" /></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_lfnsDef">
 <b>
@@ -170,7 +197,7 @@ LFN:
 <td align="left"><input type="text" size="60" id="adsd_lfns" name="adsd_lfns" /></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_runsDef">
 <b>
@@ -187,7 +214,7 @@ Run ranges:
 <td align="left"><input type="text" size="60" id="adsd_runs" name="adsd_runs" /></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_lumiDef">
 <b>
@@ -204,7 +231,7 @@ Lumi sections:
 <td align="left"><input type="text" size="60" id="adsd_lumi" name="adsd_lumi" /></td>
 </tr>
 
-<tr>
+<tr name="adsOpts" class="hide">
 <td align="right">
 <div id="adsd_cutsDef">
 <b>
