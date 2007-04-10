@@ -121,6 +121,9 @@ try:
 						)
 				print "Inserting algorithm  %s " % self.algo
 				api.insertAlgorithm (self.algo)
+				if(self.first == False):
+					api.insertAlgoInPD(self.processed, self.algo)
+
 
 				
 			if name == 'block':

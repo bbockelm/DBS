@@ -79,6 +79,7 @@ try:
 			self.first = True
 			self.fileList = []
 			self.blockList = []
+			#self.algoList = []
 			self.block = None
 			self.datasetPath = None
 			print "Initilized"
@@ -187,6 +188,8 @@ try:
 						)
 				print "Inserting algorithm  %s " % self.algo
 				api.insertAlgorithm (self.algo)
+				if(self.first == False):
+					api.insertAlgoInPD(self.processed, self.algo)
 
 				
 			if name == 'block':

@@ -52,7 +52,8 @@ try:
 
 	print path
 	#name = argsSrc['url'].replace('/','_') + "_" + argsTar['url'].replace('/', '_') + path.replace('/', '_')
-	name = argsSrc['url'].replace('/','_').replace(':', '_') + "_" + argsTar['url'].replace('/', '_').replace(':', '_') 
+	#name = argsSrc['url'].replace('/','_').replace(':', '_') + "_" + argsTar['url'].replace('/', '_').replace(':', '_') 
+	name = "Transfer_"
 
 	blocks = apiSrc.listBlocks(path)
 	if ((op == "both") | (op == "get")) :
