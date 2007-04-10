@@ -2539,7 +2539,7 @@ class DDServer(DDLogger,Controller):
         return self.index()
     register.exposed=True
 
-    def getAppConfigs(self,dbsInst,appPath,ajax=1,userMode="user",**kwargs):
+    def getAppConfigs(self,dbsInst,appPath,procPath,ajax=1,userMode="user",**kwargs):
         """
             Application configs retriever
         """
@@ -2551,7 +2551,7 @@ class DDServer(DDLogger,Controller):
         else:
            page=self.genTopHTML(userMode=userMode)
            page+=self.whereMsg('Navigator :: Results :: Configuration file(s)',userMode)
-        for item in self.helper.listApplicationConfigsContent(appPath):
+        for item in self.helper.listApplicationConfigsContent(appPath,procPath):
             name,content,ver,type,ann,cDate,cBy,mDate,mBy = item
             nameSpace={
                        'appPath'   : appPath,

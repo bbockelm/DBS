@@ -392,11 +392,14 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def listApplicationConfigsContent(self,appPath):
+  def listApplicationConfigsContent(self,appPath,procPath):
       t1=time.time()
       con = self.connectToDB()
       oList  = []
       try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tblk = self.alias('Block','tblk')
+          tpal = self.alias('ProcAlgo','tpal')
           tape = self.alias('AppExecutable','tape')
           tapv = self.alias('AppVersion','tapv')
           tapf = self.alias('AppFamily','tapf')
@@ -412,6 +415,9 @@ class DDHelper(DDLogger):
                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     .outerjoin(tpal,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .outerjoin(tprd,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tp1,onclause=self.col(tqps,'CreatedBy')==self.col(tp1,'ID'))
                      .outerjoin(tp2,onclause=self.col(tqps,'LastModifiedBy')==self.col(tp2,'ID'))
                             ]
@@ -422,6 +428,8 @@ class DDHelper(DDLogger):
           if self.dbManager.dbType[self.dbsInstance]!='oracle':
              sel.distinct=True
              sel.order_by=oSel
+          if procPath and procPath!="*":
+             sel.append_whereclause(self.col(tblk,'Path')==procPath)
           if appPath and appPath!="*":
              empty,ver,fam,exe=string.split(appPath,"/")
              if ver.lower()=='any': ver="*"
@@ -442,7 +450,7 @@ class DDHelper(DDLogger):
                     content=content.read() # since content is LOB object
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
-              if name:
+              if name and not oList.count((name,content,ver,type,ann,cDate,cBy,mDate,mBy)):
                  oList.append((name,content,ver,type,ann,cDate,cBy,mDate,mBy))
       except:
           printExcept()
