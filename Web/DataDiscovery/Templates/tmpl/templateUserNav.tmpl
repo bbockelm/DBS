@@ -1,8 +1,8 @@
 <!-- templateUserNav.tmpl -->
 <!-- begin outer most table -->
-<table class="lfn">
+<table class="lfn" width="90%">
 <tr valign="top">
-<td valign="top">
+<td valign="top" align="left">
 
 <form action="getData" method="get">
 ###<form action="javascript:ResetAllResults();MakeUserNavBar();showResMenu('results');ajaxGetUserData()" method="get">
@@ -162,19 +162,24 @@
 </form>
 </td>
 </tr>
-</table>
+###</table>
 <!-- end of outer most table -->
 
+<tr>
+<td align="left">
 <hr class="dbs" />
+</td>
+</tr>
 
 <!-- auto-completion form for processed datasets -->
 #*
 <table class="lfn" width="100%">
-<tr valign="top">
-<td valign="top">
 *#
+<tr valign="top">
+<td valign="top" align="left">
 
-<div align="left">
+<div style="margin-left:-35px" id="userNavForm2">
+
 <form action="getData" method="get">
 <input type="hidden" name="ajax" value="0" />
 <input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
@@ -183,6 +188,7 @@
 <input type="hidden" name="app" value="*" />
 <input type="hidden" name="primD" value="*" />
 <input type="hidden" name="site" value="*" />
+<br />
 <!-- begin menu table -->
 
 #if $userMode=='user'
@@ -230,13 +236,11 @@ $prdForm
 </table>
 
 </form>
+</div>
 
-#*
 </td>
 </tr>
 </table>
-*#
-</div>
 
 
 <script type="text/javascript">
