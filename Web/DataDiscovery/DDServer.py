@@ -3127,6 +3127,27 @@ class DDServer(DDLogger,Controller):
         return page
     findADSFromFinder.exposed=True
 
+    def finderStoreQueryInXML(self,dbsInst,userId,alias,**kwargs):
+        xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
+        for key in kwargs.keys():
+            if key=="_": continue
+            pList = kwargs[key].split("_newparam_")
+            print kwargs[key],pList
+            for item in pList:
+                table,col,op,where=string.split(item,"__")
+                tableName=self.helper.dbManager.getDBTableName(dbsInst,table)
+                if col.lower()=='all':
+                   cols=self.helper.getTableColumns(tableName)
+                   for column in cols:
+                       xmlOutput+="""<select column='%s.%s' />\n"""%(tableName,column)
+                else:
+                   xmlOutput+="""<select column='%s.%s' />\n"""%(tableName,col)
+                if where:
+                   xmlOutput+="""<where column="%s.%s" operator="%s" value="%s" />\n"""%(tableName,col,str(op),str(where))
+        xmlOutput+="""</ddRequest>"""
+        return urllib.quote(xmlOutput.strip())
+    finderStoreQueryInXML.exposed=True
+
     def finderStoreQuery(self,dbsInst,userId,alias,**kwargs):
         iList=[]
         for key in kwargs.keys():
@@ -3293,7 +3314,7 @@ class DDServer(DDLogger,Controller):
         return page
     addTreeElement.exposed=True
 
-    def cliHandler(self,dbsInst,input):
+    def cliHandler(self,dbsInst,input,xmlOutput=1):
         data=urllib.unquote(input)
         if self.verbose==1:
            self.writeLog(data)
@@ -3344,6 +3365,8 @@ class DDServer(DDLogger,Controller):
         if conDict.has_key('limit'):  limit  = conDict['limit']
         if conDict.has_key('offset'): offset = conDict['offset']
         query,oList = self.helper.queryMaker(selList,whereList,limit,offset)
+        if not xmlOutput:
+           return query,oList
         if self.verbose==2:
            self.writeLog(query)
            self.writeLog(str(oList))
