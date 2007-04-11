@@ -692,6 +692,8 @@ function ajaxFinderStoreQuery(iUser) {
         }
     }
     ajaxEngine.sendRequest('ajaxFinderStoreQuery','dbsInst='+dbsInst,'userId='+getUserName(iUser),'alias='+aName,parameters);
+    $('results_finder').innerHTML='Your query "'+aName+'" has been saved.';
+    $('kw_alias').innerHTML='';
 }
 function ajaxFinderSearchQuery(iUser) {
     ajaxEngine.sendRequest('ajaxFinderSearchQuery','userId='+getUserName(iUser),'alias='+$('kw_alias_lookup').value);
