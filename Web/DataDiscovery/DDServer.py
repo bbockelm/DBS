@@ -567,10 +567,10 @@ class DDServer(DDLogger,Controller):
             page+= self.whereMsg('Analysis dataset search',userMode)
 
             # make auto-completion forms for ads name and def name
-            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name:','zIndex':9000}
+            nameSearch={'tag':'ads_name','inputId':'ads_name','inputName':'ads_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDataset','column':'Name','label':'Name:','zIndex':9000,'method':'getTableColumn'}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsName=str(t)
-            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name:','zIndex':8000}
+            nameSearch={'tag':'adsd_name','inputId':'adsd_name','inputName':'adsd_name','size':100,'userMode':userMode,'dbsInst':dbsInst,'table':'AnalysisDSDef','column':'Name','label':'Definition name:','zIndex':8000,'method':'getTableColumn'}
             t = templateAutoComplete(searchList=[nameSearch]).respond()
             adsDefName=str(t)
 
@@ -716,7 +716,7 @@ class DDServer(DDLogger,Controller):
     def genEmptyUserNavigator(self,dbsInst,userMode="user",**kwargs):
 
         # auto-competion form for processed datasets
-        nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000}
+        nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
         t = templateAutoComplete(searchList=[nameSearch]).respond()
         prdForm=str(t)
 
@@ -791,6 +791,12 @@ class DDServer(DDLogger,Controller):
         t = templateSelectLine(searchList=[nameSpace]).respond()
         selectLine = str(t)
 
+        # make auto-completion forms for alias lookup
+        tag="kw_alias_lookup"
+        nameSearch={'tag':tag,'inputId':tag,'inputName':tag,'size':50,'userMode':userMode,'dbsInst':'','table':'','column':'','label':'My query alias:','zIndex':9000,'method':'getAliasesFromHistoryDB'}
+        t = templateAutoComplete(searchList=[nameSearch]).respond()
+        myAlias=str(t)
+
         nameSpace = {
                      'firstDBS'       : firstDBS,
                      'userMode'       : userMode,
@@ -798,6 +804,7 @@ class DDServer(DDLogger,Controller):
                      'searchFunction' : searchFunc,
                      'selectLine'     : selectLine,
                      'dbsGlobal'      : DBSGLOBAL,
+                     'myAlias'        : myAlias,
                     }
         t = templateSearchTable(searchList=[nameSpace]).respond()
         page = str(t)
@@ -2970,7 +2977,7 @@ class DDServer(DDLogger,Controller):
         whereDict={}
         if  kwargs.has_key('query'):
             key='%s.%s'%(table,column)
-            val=kwargs['query']
+            val=kwargs['query'].replace('*','').replace('%','') # remove wildcard
             whereDict[key]=val
         row=1
         limit=0
@@ -3127,6 +3134,25 @@ class DDServer(DDLogger,Controller):
         return page
     findADSFromFinder.exposed=True
 
+    # this method can be used for auto-completion forms, it returns a string of columns
+    # see YUI, http://developer.yahoo.com/yui/autocomplete/
+    def getAliasesFromHistoryDB(self,query,**kwargs):
+        cList=[]
+        try:
+            query=query.replace('*','').replace('%','')
+            sel = select([DD_COMMAND.c.alias],DD_COMMAND.c.alias.like('%%%s%%'%query),
+                        use_labels=True,distinct=True )
+            c=sel.execute()
+            cList=c.fetchall()
+        except:
+            printExcept()
+            pass
+        page=""
+        for item in cList:
+            page+="%s\n"%item[0]
+        return page
+    getAliasesFromHistoryDB.exposed=True
+
     def finderStoreQueryInXML(self,dbsInst,userId,alias,**kwargs):
         xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
         for key in kwargs.keys():
@@ -3201,15 +3227,14 @@ class DDServer(DDLogger,Controller):
             oDate,oTime,oCmd,oName,dbsInst=item
             # in order to make AJAX works I strip off <?xml...> from query stored in DB
             # and pass around for another ajax call stripped XML request
+            xml=oCmd
             oCmd=oCmd.replace("""<?xml version="1.0" encoding="utf-8"?>""","")
             oCmd=urllib.quote(oCmd)
             if  oName:
                 # TODO: I need to query DB which dbs instance were used and pass it here.
                 cmd="""<a href="javascript:ajaxExecuteQuery('%s','%s')">%s</a>"""%(dbsInst,oCmd,oName)
-                nameSpace={
-                           'date'      : str(oDate),
-                           'action'    : str(cmd)
-                          }
+                xmlRef="""<a href="printXML?input=%s"><img src="images/xml.png" alt="xml" style="border:none" /></a>"""%oCmd
+                nameSpace={'date':str(oDate),'action':str(cmd),'xml':xmlRef}
                 t = templateHistory(searchList=[nameSpace]).respond()
                 p+=str(t)
                 count+=1
@@ -3222,6 +3247,17 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     finderSearchQuery.exposed=True
+
+    def printXML(self,input):
+        xml="""<?xml version="1.0" encoding="utf-8"?><br/>"""+urllib.unquote(input).replace("><","><br/><")
+        xmlOutput=xml.replace("<","&lt;").replace(">","&gt;").replace("&lt;br/&gt;","<br />")
+        page=self.genTopHTML()
+        page+=xmlOutput
+#        page+="<code>"+xmlOutput+"</code>"
+        page+="""<p/><div>You may use this XML snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
+        page+=self.genBottomHTML()
+        return page
+    printXML.exposed=True
 
     def executeSQLQuery(self,dbsInst,query,**kwargs):
         self.helperInit(dbsInst)

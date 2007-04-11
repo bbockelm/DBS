@@ -29,7 +29,8 @@
 
 <script type="text/javascript">
 var schema=['\n','\t'];
-myXHRDataSource = new YAHOO.widget.DS_XHR('./getTableColumn', schema);
+myXHRDataSource = new YAHOO.widget.DS_XHR('./$method', schema);
+//myXHRDataSource = new YAHOO.widget.DS_XHR('./getTableColumn', schema);
 //myXHRDataSource.scriptQueryParam = "name"; // name replace default 'query' 
 myXHRDataSource.scriptQueryAppend = "dbsInst=$dbsInst&table=$table&column=$column";
 myXHRDataSource.connTimeout = 3000; 
