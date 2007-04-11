@@ -3139,13 +3139,19 @@ class DDServer(DDLogger,Controller):
                 if col.lower()=='all':
                    cols=self.helper.getTableColumns(tableName)
                    for column in cols:
-                       xmlOutput+="""<select column='%s.%s' />\n"""%(tableName,column)
+                       xmlOutput+="""<select column="%s.%s" />"""%(tableName,column)
                 else:
-                   xmlOutput+="""<select column='%s.%s' />\n"""%(tableName,col)
+                   xmlOutput+="""<select column="%s.%s" />"""%(tableName,col)
                 if where:
-                   xmlOutput+="""<where column="%s.%s" operator="%s" value="%s" />\n"""%(tableName,col,str(op),str(where))
+                   xmlOutput+="""<where column="%s.%s" operator="%s" value="%s" />"""%(tableName,col,str(op),str(where))
         xmlOutput+="""</ddRequest>"""
-        return urllib.quote(xmlOutput.strip())
+#        queryInXML=urllib.quote(xmlOutput.strip())
+        queryInXML=xmlOutput.strip()
+        try:
+            self.storeHistory(dbsInst,userId,queryInXML,alias)
+        except:
+            printExcept()
+            pass
     finderStoreQueryInXML.exposed=True
 
     def finderStoreQuery(self,dbsInst,userId,alias,**kwargs):
@@ -3171,7 +3177,7 @@ class DDServer(DDLogger,Controller):
         try:
 #            c = select([DD_COMMAND.c.command,DD_COMMAND.c.alias],
             oSel = [DD_HISTORY.c.history_date,DD_HISTORY.c.history_time,DD_COMMAND.c.command,DD_COMMAND.c.alias,DD_INSTANCE.c.dbsinstance]
-            c = select(oSel,
+            sel = select(oSel,
                         and_(
                              DD_HISTORY.c.userid==DD_USER.c.id,
                              DD_HISTORY.c.cmdid==DD_COMMAND.c.id,
@@ -3180,7 +3186,8 @@ class DDServer(DDLogger,Controller):
                             ),
                         use_labels=True,distinct=True,
                         order_by=[desc(DD_HISTORY.c.history_date),desc(DD_HISTORY.c.history_time)]
-                      ).execute()
+                      )
+            c=sel.execute()
             cList=c.fetchall()
         except:
             printExcept()
@@ -3192,20 +3199,13 @@ class DDServer(DDLogger,Controller):
         count=0
         for item in cList:
             oDate,oTime,oCmd,oName,dbsInst=item
+            # in order to make AJAX works I strip off <?xml...> from query stored in DB
+            # and pass around for another ajax call stripped XML request
+            oCmd=oCmd.replace("""<?xml version="1.0" encoding="utf-8"?>""","")
+            oCmd=urllib.quote(oCmd)
             if  oName:
                 # TODO: I need to query DB which dbs instance were used and pass it here.
                 cmd="""<a href="javascript:ajaxExecuteQuery('%s','%s')">%s</a>"""%(dbsInst,oCmd,oName)
-#                iDate="N/A"
-#                if oDate:
-#                   iDate=str(oDate).split()[0]
-#                iTime="N/A"
-#                if oTime:
-#                   iTime=str(oTime)
-#                nameSpace={
-#                           'date'      : iDate,
-#                           'time'      : iTime,
-#                           'action'    : str(cmd)
-#                          }
                 nameSpace={
                            'date'      : str(oDate),
                            'action'    : str(cmd)
@@ -3225,40 +3225,48 @@ class DDServer(DDLogger,Controller):
 
     def executeSQLQuery(self,dbsInst,query,**kwargs):
         self.helperInit(dbsInst)
-        q = string.lower(query.strip())
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
         page="""<ajax-response><response type="object" id="results_finder">"""
-        if q.find("select")==-1:
-           page+="You are attempted execute non select query, it's forbidden"
+        if  query.find("<ddRequest>")!=-1:
+            # in order to make AJAX works I strip off <?xml...> from query stored in DB
+            # let's check that input doesn't have it
+            xml="""<?xml version="1.0" encoding="utf-8"?>"""
+            if  query.find(xml)!=-1:
+                query+=xml
+            query,oList=self.cliHandler(dbsInst,query,xmlOutput=0) 
         else:
-           # here we got back a list whose first entry is column names
-           oList = self.helper.executeSQLQuery(query)
-           # get list of table.col and get their actual names from DB
-           tList=[]
-           dateIdxList=[]
-           for item in query.split():
-               if item.find(".")!=-1:
-                  table,col=item.split(".")
-                  tList.append("%s<br />%s"%(table,col)) 
-                  if col.lower().find("date")!=-1:
-                     dateIdxList.append(len(tList)-1)
-           # proceed with query
-           if  type(oList) is not types.ListType:
-               page+=oList
-           else:
-               # if the query was used Table.Col form and we found all columns
-               print tList,oList
-               if  len(tList)==len(oList[0]):
-                   userMode='user'
-                   t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'dateIdxList':dateIdxList,'userMode':userMode}]).respond()
-               else:
-                   nameSpace={'branch':oList[1:]}
-                   t = templateTableBody(searchList=[nameSpace]).respond()
-                   content=str(t)
-                   nameSpace={'header':oList[0],'content':content}
-                   t = templateTable(searchList=[nameSpace]).respond()
-               page+=str(t)
+            q = string.lower(query.strip())
+            if  q.find("select")==-1:
+                page+="You are attempted execute non select query, it's forbidden"
+                page+="</response></ajax-response>"
+                return page
+            oList = self.helper.executeSQLQuery(query)
+        # get list of table.col and get their actual names from DB
+        tList=[]
+        dateIdxList=[]
+        for item in query.split():
+            if item.find(".")!=-1:
+               table,col=item.split(".")
+               tList.append("%s<br />%s"%(table,col)) 
+               if col.lower().find("date")!=-1:
+                  dateIdxList.append(len(tList)-1)
+        # proceed with query
+        if  type(oList) is not types.ListType:
+            page+=oList
+        else:
+            # if the query was used Table.Col form and we found all columns
+#            print tList,oList
+            if  len(tList)==len(oList[0]):
+                userMode='user'
+                t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'dateIdxList':dateIdxList,'userMode':userMode}]).respond()
+            else:
+                nameSpace={'branch':oList[1:]}
+                t = templateTableBody(searchList=[nameSpace]).respond()
+                content=str(t)
+                nameSpace={'header':oList[0],'content':content}
+                t = templateTable(searchList=[nameSpace]).respond()
+            page+=str(t)
         page+="</response></ajax-response>"
         if self.verbose==2:
            self.writeLog(page)

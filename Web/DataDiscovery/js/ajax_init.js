@@ -444,7 +444,7 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxExecuteQuery','executeSQLQuery');
     ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
     ajaxEngine.registerRequest('ajaxFindDSFromFinder','findDSFromFinder');
-    ajaxEngine.registerRequest('ajaxFinderStoreQuery','finderStoreQuery');
+    ajaxEngine.registerRequest('ajaxFinderStoreQuery','finderStoreQueryInXML');
     ajaxEngine.registerRequest('ajaxFinderSearchQuery','finderSearchQuery');
     finderUpdater = new GetDataUpdater('results_finder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('results_finder',finderUpdater);
@@ -693,7 +693,7 @@ function ajaxFinderStoreQuery(iUser) {
     }
     ajaxEngine.sendRequest('ajaxFinderStoreQuery','dbsInst='+dbsInst,'userId='+getUserName(iUser),'alias='+aName,parameters);
     $('results_finder').innerHTML='Your query "'+aName+'" has been saved.';
-    $('kw_alias').innerHTML='';
+    $('kw_alias').value='';
 }
 function ajaxFinderSearchQuery(iUser) {
     ajaxEngine.sendRequest('ajaxFinderSearchQuery','userId='+getUserName(iUser),'alias='+$('kw_alias_lookup').value);
