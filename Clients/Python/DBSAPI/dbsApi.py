@@ -2595,9 +2595,9 @@ class DbsApi(DbsConfig):
 	#return
         #logging.log(DBSDEBUG, "Algorithm object for the merged dataset is not provided")
         self.insertAlgorithm(merge_algo)  
-
         proc['AlgoList'].append(merge_algo) 
 
+    proc['ParentList'] = listParentDataset(path)
     self.insertProcessedDataset (proc)
     return proc
 
