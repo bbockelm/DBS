@@ -9,12 +9,12 @@ Drop table if exists DD_INSTANCE;
 Drop table if exists DD_USER;
 CREATE TABLE DD_USER (
 	id BIGINT UNSIGNED NOT NULL auto_increment, 
-	userid VARCHAR(60) NOT NULL, 
+	userid VARCHAR(60) UNIQUE NOT NULL, 
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 CREATE TABLE DD_INSTANCE (
 	id BIGINT UNSIGNED NOT NULL auto_increment, 
-	dbsinstance VARCHAR(60) NOT NULL, 
+	dbsinstance VARCHAR(60) UNIQUE NOT NULL, 
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 CREATE TABLE DD_COMMAND (
