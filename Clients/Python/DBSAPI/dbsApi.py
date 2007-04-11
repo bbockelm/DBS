@@ -159,10 +159,12 @@ class DbsApi(DbsConfig):
          primary = dataset.get('PrimaryDataset')
          if primary != None:
             tier= dataset.get('TierList', [])
-            if tier != []:
-	       #return "/" + primary.get('Name') \
+            
+            if tier in (None, []):
+               tier = ['NOTIER']
+	    #return "/" + primary.get('Name') \
 			#+ "/" + dataset.get('Name') + "/" + tier[0] 	
-	       return "/" + primary.get('Name') \
+	    return "/" + primary.get('Name') \
 			+ "/" + dataset.get('Name') + "/" + string.join(tier, "-")
                #return "/" + primary.get('Name') \
                #      + "/" + tier[0] + "/" + dataset.get('Name')
@@ -1651,7 +1653,7 @@ class DbsApi(DbsConfig):
     
     for tier in dataset.get('TierList',[]):
         xmlinput += "<data_tier name='"+tier+"'/>"
- 
+
     # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
     for parentPath in dataset.get('ParentList',[]):
         xmlinput += "<parent path='"+self._path(parentPath)+"'/>"
@@ -2509,7 +2511,6 @@ class DbsApi(DbsConfig):
     xmlinput += "<processed_dataset path='" + path + "'/>"
     xmlinput += "</dbs>"
 
-
     logging.log(DBSDEBUG, xmlinput)
     if self.verbose():
        print "insertParent, xmlinput",xmlinput
@@ -2597,7 +2598,13 @@ class DbsApi(DbsConfig):
         self.insertAlgorithm(merge_algo)  
         proc['AlgoList'].append(merge_algo) 
 
-    proc['ParentList'] = listParentDataset(path)
+    proc['ParentList'] = self.listDatasetParents(path)
+
+    #Lets grab the Runs as well
+    ds_runs = self.listRuns(path)
+    for aRun in ds_runs: 
+	self.insertRunInPD(path, aRun['RunNumber']) 
+
     self.insertProcessedDataset (proc)
     return proc
 
