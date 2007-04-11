@@ -1654,7 +1654,7 @@ class DbsApi(DbsConfig):
  
     # Path of the Parent Dataset(s) must be specified, sever expects a "Path"
     for parentPath in dataset.get('ParentList',[]):
-        xmlinput += "<parent path='"+parentPath+"'/>"
+        xmlinput += "<parent path='"+self._path(parentPath)+"'/>"
 
     for algorithm in dataset.get('AlgoList',[]):
         xmlinput += "<algorithm app_version='"+algorithm.get('ApplicationVersion', "")+"'"
