@@ -3,6 +3,7 @@
 #set ysearchautocomplete=$tag+"autocomplete"
 #set ysearchinput=$tag+"input"
 #set ysearchcontainer=$tag+"container"
+#*
 <style type="text/css">
 #$ysearchmod {position:relative;}
 #$ysearchautocomplete {position:relative;margin-bottom:0.5em;width:80%;}/* set width of widget here*/
@@ -15,17 +16,31 @@
 #$ysearchcontainer .yui-ac-shadow {position:absolute;margin:.3em;width:100%;background:#a0a0a0;z-index:9049;}
 #$ysearchcontainer ul {padding:5px 0;width:100%; list-style-type: none;}
 #$ysearchcontainer li {padding:3px 0px 3px 3px;margin: 1px 0;}
-#####$ysearchcontainer li {padding:0 5px;cursor:default;white-space:nowrap;}
+#$ysearchcontainer li.yui-ac-highlight {background:#E0E0E0;padding:3px 0px 3px 3px}
+</style>
+*#
+<style type="text/css">
+#$ysearchmod {position:relative;}
+#$ysearchautocomplete {position:relative;margin-bottom:0.5em;width:80%;}/* set width of widget here*/
+#$ysearchautocomplete {z-index:$zIndex;} /* for IE z-index of absolute divs inside relative divs issue */
+#$ysearchinput {width:100%;height:1.4em;z-index:0} /* abs for ie quirks */
+#$inputId {height:1.4em;z-index:0} /* abs for ie quirks */
+#$ysearchcontainer {width:100%;z-index:9050;}
+#$ysearchcontainer .yui-ac-content {position:absolute;width:100%;border:1px solid #404040;background:#fff;overflow:hidden;z-index:9050;}
+#$ysearchcontainer .ysearchquery {position:absolute;right:10px;color:#808080;z-index:10;}
+#$ysearchcontainer .yui-ac-shadow {position:absolute;margin:.3em;width:100%;background:#a0a0a0;z-index:9049;}
+#$ysearchcontainer ul {padding:5px 0;width:100%; list-style-type: none;}
+#$ysearchcontainer li {padding:3px 0px 3px 3px;margin: 1px 0;}
 #$ysearchcontainer li.yui-ac-highlight {background:#E0E0E0;padding:3px 0px 3px 3px}
 </style>
 
-##<div id="$ysearchmod">
+###<div id="$ysearchmod">
 <b>$label</b> 
 <div id="$ysearchautocomplete">
 <input type="text" name="$inputName" id="$inputId" size="$size">
 <div id="$ysearchcontainer"></div>
+###</div>
 </div>
-##</div>
 
 <script type="text/javascript">
 var schema=['\n','\t'];
