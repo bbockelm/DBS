@@ -222,6 +222,10 @@ table.valign form {
 display:inline;
 } 
 
+table.valign_top tr td {
+vertical-align:top;
+}
+
 table.dbs_table {
   font-size: 12px;
   font-weight: normal;
