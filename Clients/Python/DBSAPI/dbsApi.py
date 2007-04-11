@@ -2598,14 +2598,18 @@ class DbsApi(DbsConfig):
         self.insertAlgorithm(merge_algo)  
         proc['AlgoList'].append(merge_algo) 
 
+    #Grab the parents as well.
     proc['ParentList'] = self.listDatasetParents(path)
+
+    #Create the dataset
+    self.insertProcessedDataset (proc)
 
     #Lets grab the Runs as well
     ds_runs = self.listRuns(path)
-    for aRun in ds_runs: 
-	self.insertRunInPD(path, aRun['RunNumber']) 
+    #And add the to newly created dataset
+    for aRun in ds_runs:
+        self.insertRunInPD(proc, aRun['RunNumber'])
 
-    self.insertProcessedDataset (proc)
     return proc
 
   # ------------------------------------------------------------
