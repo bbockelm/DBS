@@ -45,12 +45,15 @@ def parseBLOBdata(data):
 
 def parseCreatedBy(input):
     if input and input.find('/CN'):
-       name_id=input.split('/CN=')[1]
-       nameList=[]
-       for item in name_id.split():
-           if re.match('[0-9]',item): continue
-           nameList.append(item)
-       return ' '.join(nameList)
+       try:
+           name_id=input.split('/CN=')[1]
+           nameList=[]
+           for item in name_id.split():
+               if re.match('[0-9]',item): continue
+               nameList.append(item)
+           return ' '.join(nameList)
+       except:
+           pass
     return input
 
 def encode(dataset):
