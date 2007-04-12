@@ -626,7 +626,11 @@ class DDHelper(DDLogger):
       aDict={}
       aList=[]
       siteList=[]
-      totEvt=totFiles=totSize=0
+      totEvt=0
+      totFiles=0
+      totSize=0
+      oldse=""
+      oldBlk=""
       for item in result:
 #          print "blockList item result=",item
           if not item[0]: continue
@@ -635,10 +639,12 @@ class DDHelper(DDLogger):
           mDate=timeGMT(mDate)
           cBy=parseCreatedBy(cBy)
           mBy=parseCreatedBy(mBy)
-          totEvt+=nEvts
-          totFiles+=nFiles
-          totSize+=blockSize
           if not sename: sename='N/A'
+          if oldBlk!=blockName:
+             totEvt+=nEvts
+             totFiles+=nFiles
+             totSize+=blockSize
+             oldBlk=blockName
 
           if not siteList.count(sename): siteList.append(sename)
 
