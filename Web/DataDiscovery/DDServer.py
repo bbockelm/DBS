@@ -3395,13 +3395,13 @@ class DDServer(DDLogger,Controller):
            self.writeLog("Where clause list:")
            self.writeLog(str(whereList))
         if not len(selList):
-           return """<?xml version="1.0" encoding="utf-8"?><ddResponse></ddResponse>"""
+           return """<?xml version="1.0" encoding="utf-8"?><ddresponse></ddresponse>"""
         if len(selList)==1 and selList[0]==1:
            oList=self.helper.getAllTableColumns()
-           res="""<?xml version="1.0" encoding="utf-8"?><ddResponse>"""
+           res="""<?xml version="1.0" encoding="utf-8"?><ddresponse>"""
            for item in oList:
                 res+="""<row><column name='Table.colName' value='%s' /></row>"""%item
-           res+="""</ddResponse>"""
+           res+="""</ddresponse>"""
            return res
 
         # setup limits for query
@@ -3414,13 +3414,13 @@ class DDServer(DDLogger,Controller):
         if self.verbose==2:
            self.writeLog(query)
            self.writeLog(str(oList))
-        res="""<?xml version="1.0" encoding="utf-8"?><ddResponse>"""
+        res="""<?xml version="1.0" encoding="utf-8"?><ddresponse>"""
         for iList in oList[1:]: # here first element in a list is column names
             res+="<row>"
             for idx in xrange(0,len(iList)):
                 res+="""<column name='%s' value='%s' />"""%(oList[0][idx],iList[idx])
             res+="</row>"
-        res+="""</ddResponse>"""
+        res+="""</ddresponse>"""
         return res
     cliHandler.exposed=True
 #

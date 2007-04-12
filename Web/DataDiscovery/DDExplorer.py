@@ -21,12 +21,12 @@ This tool support a three input formats: xml string, xml file, txt file.
 
 The XML structure:
 <?xml version="1.0" encoding="utf-8"?>
-<ddRequest>
+<ddrequest>
 <select column='PrimaryDataset.Name' />
 <select column='ProcessedDataset.Name' />
 <output limit="5" offset="2" />
 <where column="PrimaryDataset.Name" operator="like" value="MTCC" />
-</ddRequest>
+</ddrequest>
 
 The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
 
@@ -46,9 +46,9 @@ offset=10
 
 To list all known TableName.colName's please use the following XML
 <?xml version="1.0" encoding="utf-8"?>
-<ddRequest>
+<ddrequest>
 <list />
-</ddRequest>
+</ddrequest>
 
 
 """
@@ -93,7 +93,10 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
     if debug:
        httplib.HTTPConnection.debuglevel = 1
        print "Contact",host,port
-    http_conn = httplib.HTTP(host,port)
+    if port:
+       http_conn = httplib.HTTP(host,port)
+    else:
+       http_conn = httplib.HTTP(host)
     http_conn.putrequest('POST','/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope))
     http_conn.putheader('Host',host)
     http_conn.putheader('Content-Type','text/xml; charset=utf-8')
@@ -160,7 +163,7 @@ def parseInput(input,verbose=0):
            if string.find(input,"""<?xml version="1.0" encoding="utf-8"?>""")!=-1:
               # I need to check if my XML input contains a limit/offset
               if input.find("output")==-1 and input.find("limit")==-1:
-                 input=input.replace("</ddRequest>","""<output limit="100" offset="0" /></ddRequest>""")
+                 input=input.replace("</ddrequest>","""<output limit="100" offset="0" /></ddrequest>""")
               return input
            else:
               msg="Provided input '%s' is neither valid XML or existing file, see --help for more options"%input
@@ -170,7 +173,7 @@ def parseInput(input,verbose=0):
        outFlag=0
        inputXML=string.join(lines)
        if inputXML.find("output")==-1 and inputXML.find("limit")==-1:
-          inputXML=inputXML.replace("</ddRequest>","""<output limit="100" offset="0" /></ddRequest>""")
+          inputXML=inputXML.replace("</ddrequest>","""<output limit="100" offset="0" /></ddrequest>""")
        return inputXML
     select=where=0
     oDict={}
@@ -192,7 +195,7 @@ def parseInput(input,verbose=0):
     return formXMLInput(oDict,verbose)
 
 def formXMLInput(iDict,verbose=0):
-    xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>\n"""
+    xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddrequest>\n"""
     for item in iDict['select']:
         xmlOutput+="""<select column='%s' />\n"""%str(item)
     if  iDict.has_key('output'):
@@ -208,7 +211,7 @@ def formXMLInput(iDict,verbose=0):
             if val[0]=="\"" and val[-1]=="\"":
                val=val[1:-2]
             xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(str(col),str(op),str(val))
-    xmlOutput+="</ddRequest>"
+    xmlOutput+="</ddrequest>"
     if verbose:
        print "\n\nformed outputXML\n",xmlOutput
     return xmlOutput
@@ -226,11 +229,11 @@ def queryDBS(host,port,dbsInst,input,output="list",verbose=0):
 if __name__ == "__main__":
 #    host= "localhost"
 #    port= 8001
-#    dbsInst="localhost"
+#    dbsInst="cms_dbs_prod_global"
 
-    host= "cmslcgco01.cern.ch"
-    port= 8003
-    dbsInst="cmslcgco01"
+    host= "cmsdbs.cern.ch/DBS2_discovery/"
+    port= ""
+    dbsInst="cms_dbs_prod_global"
 
     optManager  = DDOptionParser()
     (opts,args) = optManager.getOpt()
@@ -252,7 +255,7 @@ if __name__ == "__main__":
         inputXML=opts.input
     else:
         # input examples
-        inputXML="""<?xml version="1.0" encoding="utf-8"?><ddRequest><list /></ddRequest>"""
+        inputXML="""<?xml version="1.0" encoding="utf-8"?><ddrequest><list /></ddrequest>"""
     if  not opts.input and not opts.list:
         print "\nUsage: DDExplorer.py --help"
     else:
