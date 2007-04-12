@@ -13,12 +13,7 @@ SQLAlchemy module.
 # system modules
 import sys, string, types
 
-try:
-   import sqlalchemy
-except:
-   print "Fail to load sqlalchemy module, some functionality will be disabled"
-   sys.excepthook(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
-   pass
+import sqlalchemy
 
 # QueryBuilder
 #from QueryBuilder.Table import Column
@@ -27,8 +22,9 @@ from QueryBuilder.WriteSqlAlchemyGraph import WriteSqlAlchemyGraph
 from QueryBuilder.DotGraph import DotGraph
 
 # DBS modules
-from DDUtil import *
-from DDAuth import *
+from DDUtil       import *
+from DDAuth       import *
+from DDConfig     import *
 from DDExceptions import *
 
 ################################################################################################
@@ -122,7 +118,8 @@ class DBManager(DDLogger):
          @rtype : none
          @return: none
       """
-      DDLogger.__init__(self,"DBManager",verbose)
+      config = DDConfig()
+      DDLogger.__init__(self,config.loggerDir(),"DBManager",verbose)
       self.iface     = iface
       self.verbose   = verbose
       self.clear()

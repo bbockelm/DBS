@@ -19,8 +19,8 @@ from   DDConfig import *
 
 class DDLucene(DDLogger): 
     def __init__(self,verbose=0):
-        DDLogger.__init__(self,"DDLucene",verbose)
-#        self.ddConfig   = DDConfig()
+        self.ddConfig   = DDConfig()
+        DDLogger.__init__(self,self.ddConfig,"DDLucene",verbose)
 #        self.luceneHost = self.ddConfig.luceneHost()
 #        self.lucenePort = self.ddConfig.lucenePort()
         self.verbose = verbose

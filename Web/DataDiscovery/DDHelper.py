@@ -43,7 +43,8 @@ class DDHelper(DDLogger):
          @rtype : none
          @return: none
       """
-      DDLogger.__init__(self,"DDHelper",verbose)
+      self.ddConfig  = DDConfig()
+      DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDHelper",verbose)
       self.iface       = string.lower(iface)
       self.dbsInstance = dbsInst
       self.dbsdls      = DBS_DLS_INST
@@ -72,7 +73,6 @@ class DDHelper(DDLogger):
       # set DBS/DLS 
       self.setDBSDLS(dbsInst)
       self.quiet       = 0
-      self.ddConfig  = DDConfig()
 
   def col(self,table,col):
       return self.dbManager.col(self.dbsInstance,table,col)

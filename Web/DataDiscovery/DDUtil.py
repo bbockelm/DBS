@@ -9,15 +9,8 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import os, string, sys, time, types, logging, traceback, random, difflib, urllib
-
-logging.basicConfig(level=logging.DEBUG,
-                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                filename='/tmp/DataDiscovery_debug.log',
-                filemode='w')
-logging.getLogger('sqlalchemy.engine').setLevel(logging.NOTSET)
-logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.NOTSET)
-logging.getLogger('sqlalchemy.pool').setLevel(logging.NOTSET)
+import os, string, sys, time, types, traceback, random, difflib, urllib
+import logging, logging.handlers
 
 # import DBS modules
 import DDOptions
@@ -470,7 +463,7 @@ class DDLogger:
   """
      DDLogger class
   """
-  def __init__(self,name="Logger",verbose=0):
+  def __init__(self,dir='/tmp',name="Logger",verbose=0):
       """
          Logger constructor. 
          @type  name: string
@@ -487,6 +480,18 @@ class DDLogger:
       else:
          self.logLevel = logging.NOTSET
       self.name = name
+      self.dir = dir
+      self.logName = os.path.join(dir,'DDServer.log') 
+      try:
+         if not os.path.isdir(self.dir):
+            os.mkdirs(self.dir)
+         # check if we can create log file over there
+         if not os.path.isfile(self.logName):
+            f=open(self.logName,'a')
+            f.close()
+      except:
+         msg="Not enough permissions to create a DDServer log file in '%s'"%self.dir
+         raise msg
       self.setLogger()
 
   def setLevel(self,level):
@@ -515,19 +520,22 @@ class DDLogger:
          @rtype : none
          @return: none
       """
-      # set up logging to file
+      # Set up the logger with a suitable format
+      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'D', 1, 7 )
+      formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
+      hdlr.setFormatter( formatter )
+      self.logger = logging.getLogger(self.name)
+      self.logger.setLevel(self.logLevel)
+      self.logger.addHandler(hdlr)
+
+      # set up logging for SQLAlchemy
       logging.getLogger('sqlalchemy.engine').setLevel(self.logLevel)
       logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(self.logLevel)
       logging.getLogger('sqlalchemy.pool').setLevel(self.logLevel)
 
-      self.logger = logging.getLogger(self.name)
-      self.logger.setLevel(self.logLevel)
-      ch = logging.StreamHandler()
-      ch.setLevel(logging.INFO)
-      formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-      ch.setFormatter(formatter)
-      self.logger.addHandler(ch)
-
+      logging.getLogger('sqlalchemy.engine').addHandler(hdlr)
+      logging.getLogger('sqlalchemy.orm.unitofwork').addHandler(hdlr)
+      logging.getLogger('sqlalchemy.pool').addHandler(hdlr)
 
 def removeEmptyLines(s):
     return ''.join(line for line in s.splitlines(1) if not line.isspace())

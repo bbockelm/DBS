@@ -20,13 +20,13 @@ password  = ddConfig.password()
 dbname    = ddConfig.dbname()
 
 if useEngine=='sqlite':
-   print "Use SQLite engine"
+   print "Use SQLite engine for Data Discovery history"
    engine = create_engine('sqlite:///sqlite.db')
 elif useEngine=='oracle':
-   print "Use ORACLE engine"
+   print "Use ORACLE engine for Data Discovery history"
    engine = create_engine('oracle://%s:%s@cms_dbs'%(user,password),strategy='threadlocal',threaded=True)
 elif useEngine=='mysql':
-   print "Use MySQL engine"
+   print "Use MySQL engine for Data Discovery history"
    engine = create_engine('mysql://%s:%s@localhost/%s'%(user,password,dbname),strategy='threadlocal',echo=True)
 else:
    raise "Unsupported DB engine backend"

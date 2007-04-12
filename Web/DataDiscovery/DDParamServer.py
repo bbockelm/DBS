@@ -19,8 +19,8 @@ from   DDConfig import *
 
 class DDParamServer(DDLogger): 
     def __init__(self,verbose=0):
-        DDLogger.__init__(self,"DDParamServer",verbose)
-#        self.ddConfig   = DDConfig()
+        self.ddConfig   = DDConfig()
+        DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDParamServer",verbose)
 #        self.serverHost = self.ddConfig.serverHost()
 #        self.serverPort = self.ddConfig.serverPort()
         self.verbose = verbose

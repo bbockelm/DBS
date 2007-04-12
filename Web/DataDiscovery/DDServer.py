@@ -75,12 +75,12 @@ class DDServer(DDLogger,Controller):
            @rtype : none
            @return: none 
         """
-        DDLogger.__init__(self,"DDServer",verbose)
+        self.ddConfig  = DDConfig()
+        DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDServer",verbose)
         try:
             Controller.__init__ (self, context, __file__)
         except:
             pass
-        self.ddConfig  = DDConfig()
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(verbose)
         self.dbs  = DBSGLOBAL
@@ -88,10 +88,7 @@ class DDServer(DDLogger,Controller):
         self.app  = ""
         self.primD= ""
         self.tier = ""
-        if self.ddConfig.iface()=='sqlalchemy':
-           self.helper     =  DDHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
-        else:
-           self.helper     = DBSHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
+        self.helper     = DDHelper(self.dbs,self.ddConfig.iface(),verbose,html=1)
         self.dbsdls     = self.helper.getDbsDls()
         self.dbsList    = self.dbsdls.keys()
         self.dbsList.sort()
@@ -136,7 +133,7 @@ class DDServer(DDLogger,Controller):
             print "Read from hostname and port"
         if os.environ.has_key('DBSDD'):
            self.dbsdd = os.environ['DBSDD']
-        print "DDServer '%s'"%self.dbsdd
+        print "DDServer URL '%s'"%self.dbsdd
         self.formDict   = {
                            'menuForm': ("","","","","",""), # (msg,dbsInst,site,app,primD,tier)
                            'siteForm': ("",""), # (dbsInst,site)
