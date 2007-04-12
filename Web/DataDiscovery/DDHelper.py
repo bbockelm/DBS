@@ -650,7 +650,8 @@ class DDHelper(DDLogger):
 
           if kwargs.has_key('fullOutput'):
              aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModifiedBy':mBy,'LastModificationDate':mDate}
-             aList.append(aDict)
+             if not aList.count(aDict):
+                aList.append(aDict)
           else:
              if aDict.has_key(blockName):
                 if not aDict[blockName].count(sename):
