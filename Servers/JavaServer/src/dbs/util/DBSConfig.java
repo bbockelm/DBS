@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.12 $"
- $Id: DBSConfig.java,v 1.12 2007/02/27 22:12:20 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSConfig.java,v 1.13 2007/03/01 20:44:26 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -35,8 +35,8 @@ public class DBSConfig {
         private String dbURL;
         private String supportedSchemaVersion;
         private String supportedClientVersions;
-        private int maxBlockSize = 100000;
-        private int maxBlockFiles = 100;
+        private long maxBlockSize = 100000;
+        private long maxBlockFiles = 100;
 
         private static DBSConfig ref;
 
@@ -223,11 +223,11 @@ public class DBSConfig {
             return supportedClientVersions;
         }
 
-        public int getMaxBlockSize() {
+        public long getMaxBlockSize() {
             return maxBlockSize;
         }
         
-        public int getMaxBlockFiles() {
+        public long getMaxBlockFiles() {
             return maxBlockFiles; 
         }
 

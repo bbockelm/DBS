@@ -1,6 +1,6 @@
 /**
- $Revision: 1.7 $"
- $Id: DBSApiPersonLogic.java,v 1.7 2007/02/09 19:29:39 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSApiPersonLogic.java,v 1.8 2007/02/09 20:09:47 sekhri Exp $"
  *
  */
 
@@ -24,10 +24,10 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	* Constructs a DBSApiLogic object that can be used to invoke several APIs. The constructor does nothing.
 	*/
 	
-	DBSApiData data = null;
+	//DBSApiData data = null;
 	public DBSApiPersonLogic(DBSApiData data) {
 		super(data);
-		this.data = data;
+		//this.data = data;
 	}
 
 

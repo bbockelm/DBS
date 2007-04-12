@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApiFileLogic.java,v 1.47 2007/03/27 17:08:11 sekhri Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApiFileLogic.java,v 1.48 2007/04/02 18:30:41 sekhri Exp $"
  *
  */
 
@@ -746,9 +746,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 					//Update the Block stats in case it is dbsManaged Block
 					if ( blockInfoVec.size() > 0 ) {
-						blockInfoVec.set(1, (Integer)blockInfoVec.get(1) + 
-									Integer.parseInt((String)get(file, "size", false)));
-						blockInfoVec.set(2, (Integer)blockInfoVec.get(2) + 1 );
+						blockInfoVec.set(1, (Long)blockInfoVec.get(1) + 
+									Long.parseLong((String)get(file, "size", false)));
+						blockInfoVec.set(2, (Long)blockInfoVec.get(2) + 1 );
 					}
  
 				} finally { 

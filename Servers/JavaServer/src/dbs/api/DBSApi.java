@@ -1,6 +1,6 @@
 /**
- $Revision: 1.83 $"
- $Id: DBSApi.java,v 1.83 2007/03/15 20:21:40 sekhri Exp $"
+ $Revision: 1.84 $"
+ $Id: DBSApi.java,v 1.84 2007/03/16 18:42:51 sekhri Exp $"
  *
 */
 
@@ -562,7 +562,7 @@ public class DBSApi {
 				writeException(out, "Unexpected execution exception", "4001", "NULL POINTER Exception");
 				return;
 			}
-			//writeException(out, "Unexpected execution exception", "4000", ex.getMessage());
+			writeException(out, "Unexpected execution exception", "4000", ex.getMessage());
 			return;
 		} finally {
 			if(conn != null) {

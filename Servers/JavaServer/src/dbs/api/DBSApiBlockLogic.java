@@ -1,6 +1,6 @@
 /**
- $Revision: 1.36 $"
- $Id: DBSApiBlockLogic.java,v 1.36 2007/03/21 21:33:22 sekhri Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSApiBlockLogic.java,v 1.37 2007/04/02 18:30:41 sekhri Exp $"
  *
  */
 
@@ -409,8 +409,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 				return blockInfoVec;
 			}
 			blockInfoVec.add(get(rs, "ID"));
-			blockInfoVec.add(Integer.parseInt((String)get(rs, "BLOCKSIZE")));
-			blockInfoVec.add(Integer.parseInt((String)get(rs, "NUMBER_OF_FILES")));
+			blockInfoVec.add(Long.parseLong((String)get(rs, "BLOCKSIZE")));
+			blockInfoVec.add(Long.parseLong((String)get(rs, "NUMBER_OF_FILES")));
                 } finally {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
@@ -424,16 +424,16 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
                 DBSConfig config = DBSConfig.getInstance();
 
-                int configuredBlkSize = config.getMaxBlockSize();
-                int configuredNumFiles = config.getMaxBlockFiles();
+                long configuredBlkSize = config.getMaxBlockSize();
+                long configuredNumFiles = config.getMaxBlockFiles();
                 //DBSUtil.writeLog("*********************TEST BLOCK****************");  
                 //DBSUtil.writeLog("configuredBlkSize: "+configuredBlkSize);
                 //DBSUtil.writeLog("configuredNumFiles: "+configuredNumFiles);
 
-                //int blockSize = Integer.parseInt((String)blockInfoVec.get(1));
-                //int numberOfFiles = Integer.parseInt((String)blockInfoVec.get(2));
-		int blockSize = (Integer)(blockInfoVec.get(1));
-		int numberOfFiles = (Integer)(blockInfoVec.get(2));
+                //int blockSize = Long.parseLong((String)blockInfoVec.get(1));
+                //int numberOfFiles = Long.parseLong((String)blockInfoVec.get(2));
+		long blockSize = (Long)(blockInfoVec.get(1));
+		long numberOfFiles = (Long)(blockInfoVec.get(2));
                 //DBSUtil.writeLog("blockSize: "+blockSize);
                 //DBSUtil.writeLog("numberOfFiles: "+numberOfFiles);
                 if (blockSize >= configuredBlkSize || numberOfFiles >= configuredNumFiles ) {
