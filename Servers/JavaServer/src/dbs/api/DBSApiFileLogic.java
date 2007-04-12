@@ -1,6 +1,6 @@
 /**
- $Revision: 1.48 $"
- $Id: DBSApiFileLogic.java,v 1.48 2007/04/02 18:30:41 sekhri Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSApiFileLogic.java,v 1.49 2007/04/12 19:27:05 sekhri Exp $"
  *
  */
 
@@ -718,6 +718,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					//Either this is first time, OR we have reached the BlockSize/NumberOfFiles limit
 
 					if (blockInfoVec.size() <= 0 || blockApiObj.mustOpenNewBlock(blockInfoVec) ) {
+							//Must update Block Statistics, if anything is changed and a Block is Open.
+							if (!isNull(blockID)) {
+								//If there is an Open block lets update its statistics
+								blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
+							}
 		                                        blockID = blockApiObj.dbsManagedBlockID(conn, out, 
 												procDSID, correctedPath, block, dbsUser);
 							//Grab this blocks details
