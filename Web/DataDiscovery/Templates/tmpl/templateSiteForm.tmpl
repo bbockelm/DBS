@@ -11,7 +11,7 @@ Use this form to show detailed information about particular site.
 <td>Choose DBS instance</td>
 <td>
 ###<select name="dbsInst" onchange="updateSites(this)" id="form2_dbsSelector">
-<select name="dbsInst" onchange="ajaxGetSites('','form2_dbsSelector','form2_siteHolder','form2_siteSelector')" id="form2_dbsSelector">
+<select name="dbsInst" onchange="showLoadingMessage('form2_siteHolder');ajaxGetSites('','form2_dbsSelector','form2_siteHolder','site')" id="form2_dbsSelector">
 #for dbs in $dbsList
 #if $dbs==$firstDBS
 <option value="$dbs" selected="selected">$dbs</option>
