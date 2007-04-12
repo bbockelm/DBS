@@ -470,7 +470,6 @@ class DDHelper(DDLogger):
       if prim.lower() =='any': prim ="*"
       if tier.lower() =='any': tier ="*"
       if type(proc) is not types.ListType and proc.lower() =='any': proc ="*"
-      # TODO: add group to join when table is available
       if proc and proc!="*":
          if type(proc) is types.ListType:
             return proc
@@ -490,6 +489,8 @@ class DDHelper(DDLogger):
           tblk = self.alias('Block','tblk')
           tseb = self.alias('SEBlock','tseb')
           tse  = self.alias('StorageElement','tse')
+          tpg  = self.alias('PhysicsGroup','tpg')
+
           oSel = [self.col(tblk,'Path')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
@@ -503,6 +504,7 @@ class DDHelper(DDLogger):
                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
                      ],distinct=True )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
@@ -521,6 +523,8 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
           if site and site!="*":
                 sel.append_whereclause(self.col(tse,'SEName')==site)
+          if group and group!="*":
+             sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
           if userMode=="user":
                 sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           result = self.getSQLAlchemyResult(con,sel)
