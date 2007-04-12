@@ -44,7 +44,7 @@ def parseBLOBdata(data):
     return str(data).replace(",",", ").replace(";","; ")
 
 def parseCreatedBy(input):
-    if input and input.find('/CN'):
+    if input and type(input) is types.StringType and input.find('/CN'):
        try:
            dnList=input.split('/')
            print dnList
