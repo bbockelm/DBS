@@ -93,11 +93,17 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
     if debug:
        httplib.HTTPConnection.debuglevel = 1
        print "Contact",host,port
-    if port:
-       http_conn = httplib.HTTP(host,port)
-    else:
-       http_conn = httplib.HTTP(host)
-    http_conn.putrequest('POST','/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope))
+    host.replace("http://","")
+    prefix_path=""
+    if host.find("/")!=-1:
+       hs=host.split("/")
+       host=hs[0]
+       prefix_path='/'.join(hs[1:])
+    http_conn = httplib.HTTP(host,port)
+    path='/cliHandler?dbsInst=%s&input=%s'%(dbsInst,xmlEnvelope)
+    if prefix_path:
+       path="/"+prefix_path+path[1:]
+    http_conn.putrequest('POST',path)
     http_conn.putheader('Host',host)
     http_conn.putheader('Content-Type','text/xml; charset=utf-8')
     http_conn.putheader('Content-Length',str(len(xmlEnvelope)))
@@ -232,7 +238,7 @@ if __name__ == "__main__":
 #    dbsInst="cms_dbs_prod_global"
 
     host= "cmsdbs.cern.ch/DBS2_discovery/"
-    port= ""
+    port= 80
     dbsInst="cms_dbs_prod_global"
 
     optManager  = DDOptionParser()
