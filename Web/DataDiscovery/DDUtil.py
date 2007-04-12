@@ -9,7 +9,7 @@ Common utilities module used by DBS data discovery.
 """
 
 # import system modules
-import os, string, sys, time, types, traceback, random, difflib, urllib
+import os, string, sys, time, types, traceback, random, difflib, urllib, re
 import logging, logging.handlers
 
 # import DBS modules
@@ -42,6 +42,16 @@ def timeGMT(iTime):
 
 def parseBLOBdata(data):
     return str(data).replace(",",", ").replace(";","; ")
+
+def parseCreatedBy(input):
+    if input and input.find('/CN'):
+       name_id=input.split('/CN=')[1]
+       nameList=[]
+       for item in name_id.split():
+           if re.match('[0-9]',item): continue
+           nameList.append(item)
+       return ' '.join(nameList)
+    return input
 
 def encode(dataset):
     for s in SYMBOLS_LIST:

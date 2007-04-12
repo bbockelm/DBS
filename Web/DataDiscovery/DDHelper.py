@@ -382,6 +382,8 @@ class DDHelper(DDLogger):
               id,name,ver,type,ann,cDate,cBy,mDate,mBy=item
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
+              cBy=parseCreatedBy(cBy)
+              mBy=parseCreatedBy(mBy)
               if id and name:
                   oList.append((id,name,ver,type,ann,cDate,cBy,mDate,mBy))
       except:
@@ -450,6 +452,8 @@ class DDHelper(DDLogger):
                     content=content.read() # since content is LOB object
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
+              cBy=parseCreatedBy(cBy)
+              mBy=parseCreatedBy(mBy)
               if name and not oList.count((name,content,ver,type,ann,cDate,cBy,mDate,mBy)):
                  oList.append((name,content,ver,type,ann,cDate,cBy,mDate,mBy))
       except:
@@ -629,6 +633,8 @@ class DDHelper(DDLogger):
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
+          cBy=parseCreatedBy(cBy)
+          mBy=parseCreatedBy(mBy)
           totEvt+=nEvts
           totFiles+=nFiles
           totSize+=blockSize
@@ -1623,6 +1629,8 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           name,dn1,cDate,dn2,mDate=item
+          dn1=parseCreatedBy(dn1)
+          dn2=parseCreatedBy(dn2)
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
 #          oList.append(item)
@@ -1671,6 +1679,8 @@ class DDHelper(DDLogger):
           lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
+          dn1=parseCreatedBy(dn1)
+          dn2=parseCreatedBy(dn2)
 #          oList.append(item)
           oList.append(lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate)
       self.closeConnection(con)
@@ -1714,6 +1724,8 @@ class DDHelper(DDLogger):
       for item in result:
           if not item[0]: continue
           name,cBy,cDate,mBy,mDate=item
+          cBy=parseCreatedBy(cBy)
+          mBy=parseCreatedBy(mBy)
 #          oList.append(item)
           oList.append(name,cBy,cDate,mBy,mDate)
       self.closeConnection(con)
@@ -1949,6 +1961,8 @@ class DDHelper(DDLogger):
           run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,type=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
+          cBy=parseCreatedBy(cBy)
+          mBy=parseCreatedBy(mBy)
           if not run: continue
           aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':type}
           oList.append(aDict)
@@ -2118,6 +2132,8 @@ class DDHelper(DDLogger):
           name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,dn1,cBy,cDate,dn2,mBy,mDate,group,path=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
+          cBy=parseCreatedBy(cBy)
+          mBy=parseCreatedBy(mBy)
           # to avoid ProgrammingError: LOB variable no longer valid after subsequent fetch
           dLumi      = parseBLOBdata(dLumi)
           dLumiRange = parseBLOBdata(dLumiRange)
@@ -2173,6 +2189,8 @@ class DDHelper(DDLogger):
           blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
+          cBy=parseCreatedBy(cBy)
+          mBy=parseCreatedBy(mBy)
           if not blockName: continue
           aDict={'Name':blockName,'BlockSize':blockSize,'NumberOfFiles':nFiles,'NumberOfEvents':nEvts,'OpenForWriting':blockStatus,'CreatedBy':cBy,'CreationDate':cDate,'LastModifiedBy':mBy,'LastModificationDate':mDate}
           aList.append(aDict)
