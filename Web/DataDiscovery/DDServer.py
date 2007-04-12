@@ -3359,6 +3359,7 @@ class DDServer(DDLogger,Controller):
     addTreeElement.exposed=True
 
     def cliHandler(self,dbsInst,input,xmlOutput=1):
+        self.helperInit(dbsInst)
         data=urllib.unquote(input)
         if self.verbose==1:
            self.writeLog(data)
