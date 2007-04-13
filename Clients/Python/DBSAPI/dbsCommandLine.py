@@ -214,8 +214,8 @@ class DbsOptionParser(optparse.OptionParser):
       self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
 
-      self.add_option("-v","--verbose", action="store", type="string", default="DBSWARNING", dest="level",
-           help="specify verbose level, e.g. --verbose=1, or higher --verbose=2")
+      self.add_option("-v","--verbose", action="store", type="string", default="ERROR", dest="level",
+           help="specify verbose level, e.g. --verbose=DBSDEBUG, The possible values are, CRITICAL, ERROR, DBSWARNING, DBSDEBUG, DBSINFO, where DBSINFO is most verbose, and ERROR is default")
 
       self.add_option("--p","--path", action="store", type="string", dest="path",
            help="specify dataset path, e.g. -p=/primary/tier/processed, or --path=/primary/tier/processed, supports shell glob")
@@ -405,6 +405,7 @@ class ApiDispatcher:
     # If NO URL is provided, URL from dbs.config will be used
     if opts.__dict__['url'] == "BADURL":
         del(opts.__dict__['url']) 
+
     self.api = DbsApi(opts.__dict__)
     print "\nUsing DBS instance at: %s\n" %self.optdict.get('url', self.api.url())
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
@@ -529,7 +530,6 @@ class ApiDispatcher:
         else:
           apiret = self.api.listPrimaryDatasets("*")
        	for anObj in apiret:
-                print "\n"
         	print anObj['Name']
 		#print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
                 #print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['LastModificationDate'])))
@@ -680,6 +680,7 @@ class ApiDispatcher:
 		self.reportFile(anObj)
          else:
               for anObj in apiret:
+		print anObj
                 print "          %s" %anObj['LogicalFileName']
          print "Total files listed: %s" %len(apiret)
          return
@@ -720,8 +721,8 @@ class ApiDispatcher:
 
        if path in ['/*/*/*', ''] and blockpattern in ['*', ''] and sepattern in ['*', '']:
          print "Can not list ALL Blocks of ALL datasets, specify a dataset path (--path=) and/or a block name (--blockpattern=) and/or storage element (--sepattern)"
-	 return
-       else:
+	 #return
+       #else:
          print "Listing block, please wait..." 
          apiret = self.api.listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
          if self.optdict.get('report') :
