@@ -1,6 +1,6 @@
 /**
- $Revision: 1.18 $"
- $Id: DBSApiPrimDSLogic.java,v 1.18 2007/03/28 21:50:19 afaq Exp $"
+ $Revision: 1.19 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.19 2007/03/28 21:59:33 afaq Exp $"
  *
  */
 
@@ -92,7 +92,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 		String creationDate = getTime(dataset, "creation_date", false);
 
 		String name = get(dataset, "primary_name", true);
-		String type = get(dataset, "type", false);
+		String type = get(dataset, "type", true);
                 String annotation = getStr(dataset, "annotation", false);
                 String start_date = getStr(dataset, "start_date", false);
                 String end_date = getStr(dataset, "end_date", false);
@@ -100,7 +100,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
                 if (isNull(annotation)) annotation = "NO ANNOTATION PROVIDED";
                 if (isNull(start_date)) start_date = "NO START_DATE PROVIDED";
                 if (isNull(end_date)) start_date = "NO_END_DATE PROVIDED";
-                if (isNull(type)) type = "TEST";
+                //if (isNull(type)) type = "test";
 		//System.out.println("creation_date " + creationDate);		
 		//Insert a Dataset Type if it does not exists
 		//insertName(conn, out, "PrimaryDSType", "Type", type , cbUserID, lmbUserID, creationDate);
