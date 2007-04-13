@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.13 $"
- $Id: DBSConfig.java,v 1.13 2007/03/01 20:44:26 afaq Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSConfig.java,v 1.14 2007/04/12 19:27:06 sekhri Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -136,14 +136,14 @@ public class DBSConfig {
                              throw new DBSException("Configuration Error", "1058", "maxBlockSize not found in Config File");
                           }
                           DBSUtil.writeLog("maxBlockSize: "+maxBlkSize);
-                          maxBlockSize = Integer.parseInt(maxBlkSize);
+                          maxBlockSize = Long.parseLong(maxBlkSize);
 
                           String maxBlkFiles = (String)atribs.get("maxBlockFiles");
                           if (maxBlkFiles == null ) {
                           throw new DBSException("Configuration Error", "1059", "maxBlockFiles not found in Config File");
                           }
                           DBSUtil.writeLog("maxBlkFiles: "+maxBlkFiles);
-                          maxBlockFiles = Integer.parseInt(maxBlkFiles);
+                          maxBlockFiles = Long.parseLong(maxBlkFiles);
 
                        }
 
