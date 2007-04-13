@@ -112,11 +112,11 @@ try:
 				if( (tier == 'DIGI') | (tier == 'RECO') ):
 					self.tierList.append('DIGI')
 					self.tierList.append('RECO')
-					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'DIGI-RECO'
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'GEN-SIM-DIGI-RECO'
 
 				if( tier == 'FEVT' ):
 					self.tierList.append('FEVT')
-					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'FEVT'
+					self.datasetPath = '/' + self.primary['Name'] + '/' + path[3] + '/' + 'GEN-SIM-DIGI-RECO'
 
 
 				"""
