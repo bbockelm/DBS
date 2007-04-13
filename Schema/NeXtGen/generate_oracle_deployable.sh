@@ -143,12 +143,13 @@ echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', ${unix
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', ${unix_time});" >> $ddl_file
 echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', ${unix_time}) ;" >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', ${unix_time});" >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', ${unix_time});" >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('MC', ${unix_time});"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('COSMIC', ${unix_time});"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('ALIGN', ${unix_time});"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('CALIB', ${unix_time});"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('RAW', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', ${unix_time});" >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('mc', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('cosmic', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('align', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('calib', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('raw', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('data', ${unix_time});"  >> $ddl_file
 
 echo "INSERT INTO Person(Name, DistinguishedName, ContactInfo, CreationDate) Values ('DBSUSER', 'NODN', 'WH', ${unix_time});" >> $ddl_file
 echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', ${unix_time});"  >> $ddl_file

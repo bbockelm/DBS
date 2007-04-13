@@ -4,9 +4,9 @@
 -- === Build : 628
 -- ======================================================================
 
-drop database if exists dbs_new_era_v18;
-create database dbs_new_era_v18;
-use dbs_new_era_v18;
+drop database if exists dbs_new_era_v019;
+create database dbs_new_era_v019;
+use dbs_new_era_v019;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -1524,7 +1524,7 @@ INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP())
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());
 INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());
-INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP()), ('RAW', UNIX_TIMESTAMP()) , ('MC', UNIX_TIMESTAMP()), ('COSMIC', UNIX_TIMESTAMP()), ('ALIGN', UNIX_TIMESTAMP()), ('CALIB', UNIX_TIMESTAMP());
+INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', UNIX_TIMESTAMP()), ('raw', UNIX_TIMESTAMP()) , ('mc', UNIX_TIMESTAMP()), ('cosmic', UNIX_TIMESTAMP()), ('align', UNIX_TIMESTAMP()), ('calib', UNIX_TIMESTAMP()), ('data', UNIX_TIMESTAMP());
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');

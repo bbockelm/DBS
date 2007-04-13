@@ -78,7 +78,7 @@ echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMEST
 echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;"  >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());"  >> $ddl_file
-echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP()), ('RAW', UNIX_TIMESTAMP()) , ('MC', UNIX_TIMESTAMP()), ('COSMIC', UNIX_TIMESTAMP()), ('ALIGN', UNIX_TIMESTAMP()), ('CALIB', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', UNIX_TIMESTAMP()), ('data',  UNIX_TIMESTAMP()), ('raw', UNIX_TIMESTAMP()) , ('mc', UNIX_TIMESTAMP()), ('cosmic', UNIX_TIMESTAMP()), ('align', UNIX_TIMESTAMP()), ('calib', UNIX_TIMESTAMP());"  >> $ddl_file
 #
 #
 #
