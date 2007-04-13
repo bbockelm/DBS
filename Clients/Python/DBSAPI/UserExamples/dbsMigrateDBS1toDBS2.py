@@ -58,7 +58,7 @@ try:
 		def startElement(self, name, attrs):
 			if name == 'primary-dataset':
 				print "primary-dataset found %s " % str(attrs['name'])
-				self.primary = DbsPrimaryDataset (Name = str(attrs['name']))
+				self.primary = DbsPrimaryDataset (Name = str(attrs['name']), Type = "MC")
 			if name == 'processed-dataset':
 				print "processed-dataset found %s " % str(attrs['path'])
 				path = str(attrs['path']).split('/')
