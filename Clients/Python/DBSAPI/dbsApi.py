@@ -271,6 +271,7 @@ class DbsApi(DbsConfig):
 	  if name == 'primary_dataset':
 	    result.append(DbsPrimaryDataset (
                                              Name=str(attrs['primary_name']),
+					     Type=str(attrs['type']),
                                              CreationDate=str(attrs['creation_date']),
                                              CreatedBy=str(attrs['created_by']),
                                              LastModificationDate=str(attrs['last_modification_date']),
