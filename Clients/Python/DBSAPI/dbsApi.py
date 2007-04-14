@@ -109,6 +109,8 @@ class DbsApi(DbsConfig):
 
     # Set up logging
 
+    if not self.configDict.has_key('level'):
+	self.configDict['level'] = "ERROR"
     if not self.configDict.has_key('log'):
         self.configDict['log'] = "STDOUT"
 
