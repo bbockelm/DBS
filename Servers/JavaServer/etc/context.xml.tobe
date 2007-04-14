@@ -79,6 +79,6 @@
 
 <SupportedSchemaVersion schemaversion="v00_00_06" />
 <SupportedClientVersions clientversions="v00_00_05, v00_00_06" />
-<DBSBlockConfig maxBlockSize="20000000" maxBlockFiles="100" />
+<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
 </Context>
 					       
