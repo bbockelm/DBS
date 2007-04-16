@@ -47,11 +47,12 @@ def parseCreatedBy(input):
     if input and type(input) is types.StringType and input.find('/CN'):
        try:
            dnList=input.split('/')
-           print dnList
            nameList=[]
            for item in dnList:
                if item[:2]=="CN":
-                  nameList.append(item[3:])
+                  for elem in item[3:].split():
+                      if not re.match('[0-9]',elem):
+                         nameList.append(elem)
            return ' '.join(nameList)
        except:
            pass
