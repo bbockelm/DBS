@@ -2273,7 +2273,7 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('EWK', (select
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Top', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('QCD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Diffraction', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Online Selection', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('onsel', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-physics', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Muons', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Egamma', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2281,4 +2281,6 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('JetMet', (sel
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('E-flow', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('tau', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-tagging', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('phyval', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('relval', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 commit;
