@@ -1548,12 +1548,14 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', UNIX_T
 ('Top', UNIX_TIMESTAMP()), 
 ('QCD', UNIX_TIMESTAMP()), 
 ('Diffraction', UNIX_TIMESTAMP()), 
-('Online Selection', UNIX_TIMESTAMP()), 
+('onsel', UNIX_TIMESTAMP()), 
 ('B-physics', UNIX_TIMESTAMP()), 
 ('Muons', UNIX_TIMESTAMP()), 
 ('Egamma', UNIX_TIMESTAMP()), 
 ('JetMet', UNIX_TIMESTAMP()), 
 ('E-flow', UNIX_TIMESTAMP()), 
 ('tau', UNIX_TIMESTAMP()), 
+('phyval', UNIX_TIMESTAMP()), 
+('relval', UNIX_TIMESTAMP()), 
 ('B-tagging', UNIX_TIMESTAMP());
 commit;

@@ -189,7 +189,7 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('EWK', $
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Top', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('QCD', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Diffraction', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Online Selection', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('onsel', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-physics', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Muons', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Egamma', ${unix_time});">> $ddl_file
@@ -197,6 +197,8 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('JetMet'
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('E-flow', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('tau', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-tagging', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('phyval', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('relval', ${unix_time});">> $ddl_file
 #
 echo "commit;" >> $ddl_file
 #
