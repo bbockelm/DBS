@@ -34,14 +34,12 @@ oSel = [
 #set dADS        = item[11]
 #set dCut        = item[12]
 #set dDesc       = item[13]
-#set cName       = item[14]
-#set cBy         = item[15]
-#set cDate       = item[16]
-#set mName       = item[17]
-#set mBy         = item[18]
-#set mDate       = item[19]
-#set group       = item[20]
-#set dataset     = item[21]
+#set cBy         = item[14]
+#set cDate       = item[15]
+#set mBy         = item[16]
+#set mDate       = item[17]
+#set group       = item[18]
+#set dataset     = item[19]
 
 ####set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
 ####set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
@@ -74,7 +72,7 @@ $group
 created:
 </td>
 <td align="left">
-$cName, $cDate
+$cBy, $cDate
 <td>
 </tr>
 
@@ -83,7 +81,7 @@ $cName, $cDate
 modified:
 </td>
 <td align="left">
-$mName, $mDate
+$mBy, $mDate
 <td>
 </tr>
 
@@ -93,7 +91,7 @@ $mName, $mDate
 group: 
 </td>
 <td align="left">
-$group, $mName, $mDate
+$group, $mBy, $mDate
 </td>
 
 </tr>
