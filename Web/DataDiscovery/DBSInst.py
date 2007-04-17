@@ -14,6 +14,9 @@ SQLAlchemy module.
 import sys, string, types
 
 import sqlalchemy
+from sqlalchemy.databases import oracle
+from sqlalchemy.databases import mysql
+from sqlalchemy.databases import sqlite
 
 # QueryBuilder
 #from QueryBuilder.Table import Column
@@ -225,6 +228,16 @@ class DBManager(DDLogger):
          @return: not implemented yet, should return list
       """
       return self.dbTables[dbsInst].keys()
+
+  def printQuery(self,dbsInst,sel):
+      if  type(sel) is types.StringType:
+          return sel
+      if  self.dbType[dbsInst]=='oracle':
+          return str(sel.compile(dialect=oracle.dialect())) 
+      if  self.dbType[dbsInst]=='mysql':
+          return str(sel.compile(dialect=mysql.dialect())) 
+      if  self.dbType[dbsInst]=='sqlite':
+          return str(sel.compile(dialect=sqlite.dialect())) 
 
   def getForeignKeys(self,dbsInst,table):
       tDict = self.dbTables[dbsInst]
