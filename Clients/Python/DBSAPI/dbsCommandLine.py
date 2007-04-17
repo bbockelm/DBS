@@ -721,8 +721,8 @@ class ApiDispatcher:
 
        if path in ['/*/*/*', ''] and blockpattern in ['*', ''] and sepattern in ['*', '']:
          print "Can not list ALL Blocks of ALL datasets, specify a dataset path (--path=) and/or a block name (--blockpattern=) and/or storage element (--sepattern)"
-	 #return
-       #else:
+	 return
+       else:
          print "Listing block, please wait..." 
          apiret = self.api.listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
          if self.optdict.get('report') :
