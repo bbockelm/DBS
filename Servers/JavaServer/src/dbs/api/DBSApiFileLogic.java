@@ -1,6 +1,6 @@
 /**
- $Revision: 1.49 $"
- $Id: DBSApiFileLogic.java,v 1.49 2007/04/12 19:27:05 sekhri Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApiFileLogic.java,v 1.50 2007/04/12 20:45:44 afaq Exp $"
  *
  */
 
@@ -583,7 +583,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if(blockPathTokens.length == 4) matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
 			else blockPath += "/nothing";//In case block come from DBS1 it does not have tier
 						
-			procDSID = procDSApiObj.getProcessedDSID(conn, blockPath, true);
+ 			//THIS is ONE BIG Crazy Hack,, for Pete's will....Must be reverted as soon as possible.
+			procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
+			//procDSID = procDSApiObj.getProcessedDSID(conn, blockPath, true);
 
 		}
 

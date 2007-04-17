@@ -1958,10 +1958,15 @@ class DbsApi(DbsConfig):
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
 
-    if (isinstance(dataset, DbsProcessedDataset)):
-        xmlinput += " <processed_datatset path=''>"
-    else :
-       xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
+    # Anzar Afaq
+    # This comment-out is part of the HACK to allow inconsistent Block names
+    #
+    #if (isinstance(dataset, DbsProcessedDataset)):
+    #    xmlinput += " <processed_datatset path=''>"
+    #else :
+    #   xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
+    xmlinput += " <processed_datatset path='"+self._path(dataset)+"'>"
+
     if block not in (None, ""):
        xmlinput += "<block block_name='"+ block.get("Name", "") +"'>"
        #xmlinput += " open_for_writing='"+block.get('OpenForWriting', "")+"'"

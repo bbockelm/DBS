@@ -1,6 +1,6 @@
 /**
- $Revision: 1.37 $"
- $Id: DBSApiBlockLogic.java,v 1.37 2007/04/02 18:30:41 sekhri Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSApiBlockLogic.java,v 1.38 2007/04/12 19:27:05 sekhri Exp $"
  *
  */
 
@@ -164,18 +164,20 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
                                                                 + "/"+ makeOrderedTierList(conn, pathTierVec);
 
-
 		if (!isNull(name)) {
 			checkBlock(name);
 			String[] data = name.split("#");
 			String[] blockPath = data[0].split("/");
 			
 			String[] pathToks = path.split("/");
-			if ( ! pathToks[1].equals(blockPath[1])  ||
-					! pathToks[2].equals(blockPath[2]) ) {
-				throw new DBSException("Path mismatch", "1045", 
-						"Block path portion "  + data[0] + " does not match with Path " + path);
-			}
+			//Anzar Afaq: 04/17/2007
+                        // This check is NOT required for the period when WE WANT
+			// DATA Inconsistencies in DBS
+			//if ( ! pathToks[1].equals(blockPath[1])  ||
+			//		! pathToks[2].equals(blockPath[2]) ) {
+				//throw new DBSException("Path mismatch", "1045", 
+				//		"Block path portion "  + data[0] + " does not match with Path " + path);
+			//}
 
 			//Check the Order of Tier list	
 			if(blockPath.length == 4) {
