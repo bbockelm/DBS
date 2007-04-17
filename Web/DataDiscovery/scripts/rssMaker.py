@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if opts.dbsInst:
        if not DBSInst.DBS_DLS_INST.has_key(opts.dbsInst):
           print "Wrong DBS instances '%s'"%opts.dbsInst
-          DBSUtil.printListElements(DBSInst.DBS_DLS_INST.keys(),"Known DBS instances")
+          DDUtil.printListElements(DBSInst.DBS_DLS_INST.keys(),"Known DBS instances")
           sys.exit(1)
     for dbsInst in DBSInst.DBS_DLS_INST.keys():
         if opts.dbsInst:
