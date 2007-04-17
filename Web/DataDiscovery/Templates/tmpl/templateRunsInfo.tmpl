@@ -15,6 +15,7 @@ contains $nRun run(s)
 <table id="$tableId" cellspacing="0" cellpadding="0" border="1">
 <tr valign="top" align="center" id="tr$tableId" name="tr$tableId" class="sortable_gray">
 <td>Run</td>
+<td>Type</td>
 <td>Events</td>
 <td>Lumi sec.</td>
 <td>Total L</td>
@@ -32,7 +33,7 @@ contains $nRun run(s)
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
 <td align="center">
-#if $dbsDict['Type'].lower()=='raw'
+#if $dbsDict['Type'].lower()!='mc'
 <a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$dbsDict['RunNumber']">
 $dbsDict['RunNumber']
 </a>
@@ -40,6 +41,7 @@ $dbsDict['RunNumber']
 $dbsDict['RunNumber']
 #end if
 </td>
+<td align="right">$dbsDict['Type']</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfLumiSections']</td>
 <td align="right">$dbsDict['TotalLuminosity']</td>
