@@ -890,7 +890,7 @@ class DDServer(DDLogger,Controller):
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
         return page
 
-    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode='user',fromRow=1,limit=0,count=0):
+    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode='user',fromRow=0,limit=0,count=0):
         """
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
@@ -2398,9 +2398,10 @@ class DDServer(DDLogger,Controller):
            page=self.genTopHTML(userMode=userMode)
            page+=self.whereMsg('Navigator :: Results :: Configuration file(s)',userMode)
         for item in self.helper.listApplicationConfigsContent(appPath,procPath):
-            name,content,ver,type,ann,cDate,cBy,mDate,mBy = item
+            softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy = item
             nameSpace={
                        'appPath'   : appPath,
+                       'rel'       : softRel,
                        'dbsInst'   : dbsInst,
                        'host'      : self.dbsdd,
                        'name'      : name, 
@@ -2814,8 +2815,9 @@ class DDServer(DDLogger,Controller):
             key='%s.%s'%(table,column)
             val=kwargs['query'].replace('*','').replace('%','') # remove wildcard
             whereDict[key]='%'+val # we will do where like '%s%', see helper.getTableContent
-        row=1
-        limit=0
+        # since this method is used only in auto-completion forms, restrict output to 10 results
+        row=0
+        limit=10
         for item in self.helper.getTableColumn(table,column,row,limit,whereDict):
             page+="%s\n"%item
         return page

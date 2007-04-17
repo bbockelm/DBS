@@ -335,7 +335,7 @@ class DDHelper(DDLogger):
          self.dls_iface = self.dlsInst[(dlsType,endpoint)]
 
   ### HELPER functions ###
-  def getTableColumn(self,table,column,iRow=1,iLimit=0,whereDict={}):
+  def getTableColumn(self,table,column,iRow=0,iLimit=0,whereDict={}):
       t1=time.time()
       con = self.connectToDB()
       oList  = []
@@ -414,7 +414,7 @@ class DDHelper(DDLogger):
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
 
-          oSel = [self.col(tqps,'Name'),self.col(tqps,'Content'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
+          oSel = [self.col(tapv,'Version'),self.col(tqps,'Name'),self.col(tqps,'Content'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                      tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
@@ -449,7 +449,7 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
-              name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
+              softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
               if not name: continue
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
                  if content:
@@ -458,8 +458,8 @@ class DDHelper(DDLogger):
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
-              if name and not oList.count((name,content,ver,type,ann,cDate,cBy,mDate,mBy)):
-                 oList.append((name,content,ver,type,ann,cDate,cBy,mDate,mBy))
+              if name and not oList.count((softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy)):
+                 oList.append((softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy))
       except:
           printExcept()
           raise "Fail in listApplicationsConfigsContent"
@@ -468,7 +468,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode="user",fromRow=1,limit=0,count=0):
+  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode="user",fromRow=0,limit=0,count=0):
       if group.lower()=='any': group="*"
       if app.lower()  =='any': app  ="*"
       if prim.lower() =='any': prim ="*"
@@ -537,7 +537,7 @@ class DDHelper(DDLogger):
           if userMode=="user":
                 sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           sel.append_whereclause(self.col(tblk,'Path')!=sqlalchemy.null())
-          if not count:
+          if not count and limit:
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  # on ORACLE there is no LIMIT/OFFSET and in order to make it with column who may
                  # have the same values we need to do
@@ -937,7 +937,7 @@ class DDHelper(DDLogger):
       if tier.lower()=="any": tier="*"
       if rel.lower()=="any": rel="*"
       if  group=="*" and tier=="*" and rel=="*":
-          content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=1,limit=0)
+          content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=0,limit=0)
           for entry in content:
               name=entry[0]
               if html:
@@ -990,7 +990,7 @@ class DDHelper(DDLogger):
   def getPrimaryDatasets_old(self,datasetPath="*",html=0):
       t1=time.time()
       con = self.connectToDB()
-      content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=1,limit=0)
+      content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=0,limit=0)
       oList   = []
       for entry in content:
           name=entry[0]
@@ -1159,7 +1159,7 @@ class DDHelper(DDLogger):
          pass
       return res
 
-  def getTableContent(self,con,tableName,iList=['*'],fromRow=1,limit=0,whereDict={}):
+  def getTableContent(self,con,tableName,iList=['*'],fromRow=0,limit=0,whereDict={}):
       try:
           tableObj=self.dbManager.getTable(self.dbsInstance,tableName)
           if limit:
@@ -1237,7 +1237,6 @@ class DDHelper(DDLogger):
              query.append_whereclause(lval.like("%s%%"%str(val)))
       if long(limit):
          query.limit=long(limit)
-      if long(offset):
          query.offset=long(offset)
       query.Distinct=True
 #      print oSel,str(query)
@@ -1760,7 +1759,7 @@ class DDHelper(DDLogger):
       siteList.sort()
       return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
-  def getAnalysisDS(self,dataset="*",an_dataset="*",cDict={},fromRow=1,limit=0):
+  def getAnalysisDS(self,dataset="*",an_dataset="*",cDict={},fromRow=0,limit=0):
       t1=time.time()
       aDict = {}
       tDict = {}
@@ -1848,8 +1847,9 @@ class DDHelper(DDLogger):
              sel.order_by=[sqlalchemy.desc(self.col(tp2,'LastModifiedBy'))]
           if not cDict.has_key('max'):
              sel.use_labels=True
-             sel.limit=limit
-             sel.offset=fromRow
+             if limit:
+                sel.limit=limit
+                sel.offset=fromRow
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -1909,8 +1909,9 @@ class DDHelper(DDLogger):
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
-          sel.limit=int(iLimit)
-          sel.offset=int(iOffset)
+          if int(iLimit):
+             sel.limit=int(iLimit)
+             sel.offset=int(iOffset)
           sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:
