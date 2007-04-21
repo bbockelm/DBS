@@ -1221,7 +1221,11 @@ function historyChange(newLocation, historyData) {
    }
 }
 function ajax_dhtmlHistory(id,action) {
-    dhtmlHistory.add(id,action);
+   browser=CheckBrowser();
+   // DHTML framework doesn't work on Safari.
+   if(!browser.match('Safari')) {
+      dhtmlHistory.add(id,action);
+   }
 }
 function registerAjaxGetMoreInfoCalls() {
     ajaxEngine.registerRequest('ajaxMoreInfo','getMoreInfo');

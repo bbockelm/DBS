@@ -9,6 +9,7 @@ function CheckBrowser() {
   var browserName=navigator.appName; 
   var browserVer=parseInt(navigator.appVersion); 
   var browserAgent=navigator.userAgent;
+  return browserName+' '+browserVer+' '+browserAgent;
 }
 
 function SetMain() {
