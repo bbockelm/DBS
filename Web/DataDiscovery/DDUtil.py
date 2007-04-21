@@ -43,12 +43,33 @@ def timeGMT(iTime):
 def parseBLOBdata(data):
     return str(data).replace(",",", ").replace(";","; ")
 
+### Natural sorting, taken from,http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/285264
+digitsre=re.compile(r'\d+')         # finds groups of digits
+D_LEN=3
+
+def _decor(s):
+    '''decorate function for sorting alphanumeric strings naturally'''
+    return digitsre.sub(lambda s: str(len(s.group())).zfill(D_LEN)+s.group(),s)
+
+def _rem_len(s):
+    '''sub function for undecor - removes leading length digits'''
+    return s.group()[D_LEN:]
+
+def _undecor(s):
+    '''undecorate function for sorting alpha strings naturally'''
+    return digitsre.sub(_rem_len,s)
+
 def natsort(list_):
-    # decorate
-    tmp = [ (int(re.search('\d+', i).group(0)), i) for i in list_ ]
+    '''sort a list in natural order'''
+    tmp=[_decor(s) for s in list_]
     tmp.sort()
-    # undecorate
-    return [ i[1] for i in tmp ]
+    return [_undecor(s) for s in tmp]
+
+def natsort24(list_):
+    '''Python 2.4 version'''
+    return [_undecor(s) for s in sorted([_decor(s) for s in list_])]
+
+###
 
 def parseCreatedBy(input):
     if input and type(input) is types.StringType and input.find('/CN'):
