@@ -148,6 +148,15 @@ class DDServer(DDLogger,Controller):
                'Tier'     : ['DataTier'],
                'Description' : ['MCDescription','TriggerPathDescription','PrimaryDatasetDescription'],
               }
+        self.sectionDict2={ 
+               'algo'    : ['AppExecutable','AppVersion','AppFamily'],
+               'runLumi' : ['Runs','LumiSection'],
+               'files'   : ['Files','Branch'],
+               'dataset' : ['PrimaryDataset','ProcessedDataset','AnalysisDataset'],
+               'storage' : ['StorageElement','Block'],
+               'tier'    : ['DataTier'],
+               'desc'    : ['MCDescription','TriggerPathDescription','PrimaryDatasetDescription'],
+              }
         self.writeLog("DDServer init")
 
     def setQuiet(self):
@@ -525,10 +534,41 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _navigator.exposed=True
 
+    def makeSectionDict(self,dbsInst):
+        self.helperInit(dbsInst)
+        out=""
+        for section in self.sectionDict2.keys():
+            tabOut=str(self.sectionDict2[section])
+            colOut=""
+            for tableName in self.sectionDict2[section]:
+                cols = self.helper.getTableColumns(tableName)
+                if cols.count('ID'): cols.remove('ID')
+                if cols.count('id'): cols.remove('id')
+                colOut+=str(cols)+","
+            colOut+=colOut[:-1]
+            out+="""var %sList={'tableNames':%s,'columnNames':[%s]};\n"""%(section,tabOut,colOut)
+        return out
+
     def _finder(self,userMode="user"):
         try:
+            page        = self.genTopHTML(intro=False,userMode=userMode)
+            dbsList     = list(self.dbsList)
+            dbsInst     = DBSGLOBAL
+            sectionDicts= self.makeSectionDict(dbsInst)
+            nameSearch={'host':self.dbsdd,'dbsList':dbsList,'dbsInst':DBSGLOBAL,'userMode':userMode,'sectionDicts':sectionDicts}
+            t = templateMenuFinder2(searchList=[nameSearch]).respond()
+            page+= str(t)
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in finder init function")
+            pass
+            return str(t)
+    _finder.exposed=True
+
+    def _finder_v1(self,userMode="user"):
+        try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="ResetFinder('%s')"%DBSGLOBAL)
-#            page = self.genTopHTML(intro=False,userMode=userMode)
             searchForm=self.searchForm(DBSGLOBAL,userMode)
             nameSearch={'host':self.dbsdd,'searchForm':searchForm,'userMode':userMode}
             t = templateMenuFinder(searchList=[nameSearch]).respond()
@@ -897,6 +937,15 @@ class DDServer(DDLogger,Controller):
         """
         return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,userMode,fromRow,limit,count)
 
+    def getMatch(self,table,column,val):
+        row=limit=0
+        pList=[]
+        whereDict={}
+        whereDict['%s.%s'%(table,column)]="%"+val.replace('*','').replace('%','')
+        for item in self.helper.getTableColumn(table,column,row,limit,whereDict):
+            pList.append(item)
+        return pList
+
     def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
@@ -921,6 +970,10 @@ class DDServer(DDLogger,Controller):
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
         if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
+        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
+           # we got a pattern
+           proc=self.getMatch("Block","Path",proc)
+           
         self.dbsTime=self.dlsTime=0
         page=""
         className="show_inline"
@@ -1580,6 +1633,13 @@ class DDServer(DDLogger,Controller):
         if kwargs.has_key('op_adsd_cuts'): op_adsd_name=kwargs['op_adsd_cuts']
 
         page=self.genTopHTML(userMode=userMode)
+
+#        aList=[]
+        if type(ads_name) is types.StringType and len(ads_name)>1 and (ads_name[0]=="*" or ads_name[0]=="%"):
+           # we got a pattern
+#           aList=self.getMatch("AnalysisDataset","Name",ads_name)
+           op_ads_name="like"
+           ads_name="%"+ads_name.replace("*","").replace("%","")+"%"
         page+=self.whereMsg('Navigator :: Results :: Analysis datasets',userMode)
         cDict = {
                  'AnalysisDataset.Name'           : (op_ads_name,ads_name),
@@ -1967,7 +2027,7 @@ class DDServer(DDLogger,Controller):
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
-        nameSpace = {'name':'primD','iList': dList,'selTag':'kw_prim','changeFunction':'','style':style}
+        nameSpace = {'name':'primD','iList': natsort(dList),'selTag':'kw_prim','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2813,12 +2873,15 @@ class DDServer(DDLogger,Controller):
         whereDict={}
         if  kwargs.has_key('query'):
             key='%s.%s'%(table,column)
-            val=kwargs['query'].replace('*','').replace('%','') # remove wildcard
-            whereDict[key]='%'+val # we will do where like '%s%', see helper.getTableContent
+#            val=kwargs['query'].replace('*','').replace('%','') # remove wildcard
+#            whereDict[key]='%'+val # we will do where like '%s%', see helper.getTableContent
+            whereDict[key]='%'+kwargs['query'] # we will do "where like '%s%'"
         # since this method is used only in auto-completion forms, restrict output to 10 results
         row=0
         limit=10
-        for item in self.helper.getTableColumn(table,column,row,limit,whereDict):
+        natList = natsort24(list(self.helper.getTableColumn(table,column,row,limit,whereDict) ))
+        print natList,type(natList)
+        for item in natList:
             page+="%s\n"%item
         return page
     getTableColumn.exposed=True
@@ -2867,7 +2930,7 @@ class DDServer(DDLogger,Controller):
         return page
     finderExample.exposed=True
 
-    def constructQueryParameters(self,dbsInst,kwargs):
+    def constructQueryParameters_v1(self,dbsInst,kwargs):
         iDict={}
         iList=[]
         whereClause=[]
@@ -2888,15 +2951,58 @@ class DDServer(DDLogger,Controller):
 #        print "looking for",iDict,whereClause
         return parameters,iList,whereClause
 
-    def finderSearch(self,dbsInst,limit=0,offset=0,userMode='user',**kwargs):
-        self.helperInit(dbsInst)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results_finder">"""
-        parameters,iList,whereClause=self.constructQueryParameters(dbsInst,kwargs)
-        query,oList = self.helper.queryMaker(iList,whereClause,limit,offset)
-        t=templateLookupFromFinder(searchList=[{'dbsInst':dbsInst,'params':parameters,'userMode':userMode}]).respond()
-        page+=str(t)
+    def constructQueryParameters(self,kwargs):
+        whereClause=""
+        iList=[]
+        if kwargs.has_key('tableColumnList'):
+           _list=kwargs['tableColumnList']
+           if type(_list) is types.ListType:
+              iList=list(_list)
+           else:
+              iList.append(_list)
+        if kwargs.has_key('where') and kwargs['where']:
+           where="( "+kwargs['where']+" )"
+           whereClause=where
+        
+        parameters=""
+        keyList=kwargs.keys()
+        for key in keyList:
+            if key!=keyList[0]:
+               parameters+="&amp;"
+            parameters+="%s=%s"%(key,kwargs[key])
+#        parameters=urllib.quote(parameters)
+        return parameters,iList,whereClause
+
+    def finderSearch(self,dbsInst,limit=0,offset=0,userMode='user',ajax=0,**kwargs):
+        limit=int(limit)
+        offset=int(offset)
+        if  int(ajax):
+            # AJAX wants response as "text/xml" type
+            self.setContentType('xml')
+            page="""<ajax-response><response type="object" id="results_finder">"""
+        else:
+            page=self.genTopHTML()
+
+        page+=self.whereMsg('Finder :: Results',userMode)
+        parameters,iList,whereClause=self.constructQueryParameters(kwargs)
+        if not validator(whereClause):
+           page+="Wrong where clause expression '%s'"%whereClause
+           page+=self.genBottomHTML()
+           return page
+        try:
+            query,oList = self.helper.queryMaker(iList,whereClause,limit,offset)
+        except:
+            page+=getExceptionInHTML()
+            if  int(ajax):
+                page+="</response></ajax-response>"
+            else:
+                page+=self.genBottomHTML()
+            pass
+            return page
+            
+#        t=templateLookupFromFinder(searchList=[{'dbsInst':dbsInst,'params':parameters,'userMode':userMode}]).respond()
+#        page+=str(t)
+        lookup="""Lookup <a href="findDSFromFinder?dbsInst=%s&userMode=%s&%s">processed</a> or <a href="findADSFromFinder?dbsInst=%s&userMode=%s&%s">analysis</a> datasets from this results"""%(dbsInst,userMode,parameters,dbsInst,userMode,parameters)
         # retrieve actual column names from tables
         tList=[]
         dateIdxList=[]
@@ -2912,13 +3018,16 @@ class DDServer(DDLogger,Controller):
                    tList.append("%s<br />%s"%(table,col))
                    if col.lower().find("date")!=-1:
                       dateIdxList.append(len(tList)-1)
-#        print "Constructed query",query,oList
         if  type(oList) is types.ListType:
             if  len(oList):
+                next=""
+                if  limit and len(oList)>limit:
+                    next="""<p><a href="finderSearch?userMode=%s&dbsInst=%s&limit=%s&offset=%s&%s">Next %s</a> results</p>"""%(userMode,dbsInst,limit,limit+offset,parameters,limit)
+                pager="""<table width="100%%"><tr><td align="left">%s</td><td align="right">%s</td></tr></table>"""%(lookup,next)
+                page+=pager+"""<hr class="dbs" />"""
                 t = templateQueryOutput(searchList=[{'query':query,'iList':tList,'oList':oList,'dateIdxList':dateIdxList,'userMode':userMode}]).respond()
                 page+=str(t)
-                if  int(limit):
-                    page+="""<p><a href="javascript:ajaxFinderSearch('%s','%s','%s','%s','%s')">Next %s</a> results</p>"""%(userMode,dbsInst,parameters,limit,int(limit)+int(offset)+1,limit)
+                page+="""<hr class="dbs" />"""+pager
             else:
                 page+="No more results"
         else:
@@ -2926,16 +3035,18 @@ class DDServer(DDLogger,Controller):
                page+="""<div class="box_red">%s</div>"""%oList.replace('<','&lt;').replace('>','&gt;')
             else:
                page+=oList
-        page+="</response></ajax-response>"
+        if  int(ajax):
+            page+="</response></ajax-response>"
+        else:
+            page+=self.genBottomHTML()
         if self.verbose==2:
            self.writeLog(page)
         return page
     finderSearch.exposed=True
 
-    def findDSFromFinder(self,dbsInst,params,userMode,**kwargs):
+    def findDSFromFinder(self,dbsInst,userMode,**kwargs):
         self.helperInit(dbsInst)
-        parameters,iList,whereClause=self.constructQueryParameters(dbsInst,{'params':params})
-#        aList=['PrimaryDataset.Name','ProcessedDataset.Name','DataTier.Name']
+        parameters,iList,whereClause=self.constructQueryParameters(kwargs)
         aList=['Block.Path']
         for item in aList:
             try:
@@ -2948,27 +3059,34 @@ class DDServer(DDLogger,Controller):
         pList=[]
         for item in oList:
             if item==oList[0]: continue # we skip first row since it's column names
-#            prim,proc,tier = item.values()[-3:] # get only three last items from results
-#            path='/%s/%s/%s'%(prim,proc,tier)
             path=item.values()[-1] # get only last item from results which is Block.Path
             if not pList.count(path): pList.append(path)
         page=self.getData(dbsInst,proc=pList,ajax=0,userMode=userMode)
         return page
     findDSFromFinder.exposed=True
 
-    def findADSFromFinder(self,dbsInst,params,userMode,**kwargs):
+    def findADSFromFinder(self,dbsInst,userMode,**kwargs):
         self.helperInit(dbsInst)
-        parameters,iList,whereClause=self.constructQueryParameters(dbsInst,{'params':params})
-        aList=['AnalysisDataset.Name','PrimaryDataset.Name','ProcessedDataset.Name','DataTier.Name']
-        for item in aList:
-            try:
-                iList.remove(item)
-            except:
-                pass
-        for item in aList:
-            iList.append(item)
-        page="Test findADSFromFinder"
-        return page
+        parameters,iList,whereClause=self.constructQueryParameters(kwargs)
+        if not iList.count('AnalysisDataset.Name'):
+           iList.append('AnalysisDataset.Name')
+        query,oList = self.helper.queryMaker(iList,whereClause)
+        bindparams=[]
+        wClause=""
+        idx=0
+        for item in oList:
+            if item==oList[0]: continue # we skip first row since it's column names
+            path=item.values()[-1] # get only last item from results which is Block.Path
+            bind_param="AnalysisDataset_Name_%s"%idx
+            if not wClause:
+               wClause="( tad.Name = :%s"%bind_param
+            else:
+               wClause+=" OR tad.Name = :%s"%bind_param
+            bindparams.append(sqlalchemy.bindparam(key=bind_param,value=path))
+            idx+=1
+        wClause+=" )"
+        whereClause = sqlalchemy.text(text=wClause,engine=self.helper.dbManager.engine[dbsInst],bindparams=bindparams)
+        return self.findAnalysisDS(dbsInst=dbsInst,userMode=userMode,_idx=0,pagerStep=RES_PER_PAGE,ads_name=whereClause,op_ads_name='whereClause')
     findADSFromFinder.exposed=True
 
     # this method can be used for auto-completion forms, it returns a string of columns

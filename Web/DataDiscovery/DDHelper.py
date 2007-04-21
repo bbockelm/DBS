@@ -27,6 +27,7 @@ try:
     import dlsApi
 except:
     pass
+import __builtin__
 
 class DDHelper(DDLogger): 
   """
@@ -78,7 +79,7 @@ class DDHelper(DDLogger):
       return self.dbManager.col(self.dbsInstance,table,col)
 
   def printQuery(self,sel):
-      return self.dbManager.printQuery(self.dbsInstance,sel)
+      return self.dbManager.printQuery(self.dbsInstance,sel).replace("\n","")
   
   def setQuiet(self):
       self.quiet=1
@@ -1177,6 +1178,8 @@ class DDHelper(DDLogger):
           if len(iList)==1:
              sel.order_by=[sqlalchemy.desc(iList[0])]
           sel.distinct=True
+          # Due to bug in SQLAlchemy, I need to make a print statement, otherwise I'm not getting results.
+          print "### getTableContent",self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
@@ -1196,6 +1199,54 @@ class DDHelper(DDLogger):
           res=msg
       return res
 
+  def bindWhereClause(self,whereClause):
+      # replace (,) with ___ to enable proper splitting
+      whereList=whereClause.replace("(","___ ( ___").replace(")","___ ) ___").split("___")
+      print "whereList",whereClause,whereList
+#      whereList=whereClause.split()
+      # loop over whereList and search for pattern Table.Column which should follow by 
+      # one opearator and left value
+      knownOperators=["like","=",">",">=","<","<="]
+      bindparams = []
+      for idx in xrange(0,len(whereList)):
+          item=whereList[idx]
+          if item.find(".")!=-1:
+             bind_param=""
+             try:
+                 condList=item.strip().split()
+                 tableColumn=condList[0]
+                 op=condList[1]
+                 value=' '.join(condList[2:])
+                 if not knownOperators.count(op):
+                    raise DDException(args="Unknown operator found in where clause experession")
+                 rval=value.strip().replace("'","")
+                 tableName,col=tableColumn.split(".")
+                 bind_param="%s_%s_%s"%(tableName,col,idx)
+                 whereList[idx]=whereList[idx].replace(value,":"+bind_param)
+             except:
+                 printExcept()
+                 raise DDException(args="Your condition %s should be in a form: Table.Column <operator> '<value>'. Please note, spaces should be presented in order to make it work"%item)
+             print tableName,col,op,bind_param
+
+
+
+#             op=whereList[idx+1]
+#             if not knownOperators.count(op):
+#                raise DDException(args="Unknown operator found in where clause experession")
+#             rval=whereList[idx+2].replace("'","")
+#             tableName,col=item.split(".")
+#             try:
+#                 t=self.dbManager.getTable(self.dbsInstance,tableName)
+#             except:
+#                 msg="Unkown table '%s'\n"%tableName
+#                 raise DDException(args=printExcept(msg))
+#             lval=self.col(t,col)
+#             bind_param="%s_%s_%s"%(tableName,col,idx)
+#             whereList[idx+2]=":"+bind_param
+             bindparams.append(sqlalchemy.bindparam(key=bind_param,value=rval))
+      textClause = sqlalchemy.text(text=' '.join(whereList),engine=self.dbManager.engine[self.dbsInstance],bindparams=bindparams)
+      return textClause
+
   def queryMaker(self,iList,whereClause=[],limit=0,offset=0,execute=1):
       """ 
          Build a query out of input iList=['TableName.ColumnName',]
@@ -1214,32 +1265,16 @@ class DDHelper(DDLogger):
       sel    = sqlalchemy.select(oSel)
       qb     = Schema(self.dbManager.dbTables[self.dbsInstance])
       query  = qb.BuildQuery(sel)
-      for tableName,col,op,val in whereClause:
-          if col=='All':
-             return query,"Incorrect query, Column All %s %s is invalid statement"%(op,val)
-          t=self.dbManager.getTable(self.dbsInstance,tableName)
-          lval=self.col(t,col)
-          if op=="=":
-             query.append_whereclause(lval==val)
-          elif op=="<":
-             query.append_whereclause(lval<val)
-          elif op=="<=":
-             query.append_whereclause(lval<=val)
-          elif op==">":
-             query.append_whereclause(lval>val)
-          elif op==">=":
-             query.append_whereclause(lval>=val)
-          elif op=="like":
-             query.append_whereclause(lval.like("%%%s%%"%str(val)))
-          elif op=="likeLeft":
-             query.append_whereclause(lval.like("%%%s"%str(val)))
-          elif op=="likeRight":
-             query.append_whereclause(lval.like("%s%%"%str(val)))
+      if  whereClause:
+          if not self.checkWhereClause(whereClause):
+             raise DDException(args="Invalid where clause found")
+          textClause=self.bindWhereClause(whereClause)
+          query.append_whereclause(textClause)
+
       if long(limit):
          query.limit=long(limit)
          query.offset=long(offset)
       query.Distinct=True
-#      print oSel,str(query)
       if  execute:
           res = self.executeSQLQuery(query)
       return str(query),res
@@ -1284,6 +1319,16 @@ class DDHelper(DDLogger):
           res+="\n\n"
       return res
           
+  def checkWhereClause(self,whereClause):
+      if string.find(whereClause.lower(),"insert")!=-1:
+         return False
+      if string.find(whereClause.lower(),"update")!=-1:
+         return False
+      if string.find(whereClause.lower(),"alter")!=-1:
+         return False
+      if whereClause.lower().find("select")!=-1:
+         return False
+      return True
 
   def checkQuery(self,query):
       if type(query) is sqlalchemy.sql.Select: return True
@@ -1306,6 +1351,8 @@ class DDHelper(DDLogger):
   def executeSQLQuery(self,query):
       if not self.checkQuery(query):
          return "Your query is not valid, you either specified unkonwn table or tried to perform insert/update operation, which are forbidden."
+      if self.verbose==2:
+         print "Execute SQL query:\n",query
 
       con = self.connectToDB()
       res = ""
@@ -1838,6 +1885,8 @@ class DDHelper(DDLogger):
                  sel.append_whereclause(lval.like("%%%s"%str(val)))
               elif op=="likeRight":
                  sel.append_whereclause(lval.like("%s%%"%str(val)))
+              elif op=="whereClause":
+                 sel.append_whereclause(val)
           sel.append_whereclause(self.col(tad,'Name')!=sqlalchemy.null())
           # to avoid ORA-00932: inconsistent datatypes: expected - got CLOB, I don't need to
           # supply distinct and order while dealing with ORACLE
@@ -1851,6 +1900,7 @@ class DDHelper(DDLogger):
                 sel.limit=limit
                 sel.offset=fromRow
 #          print self.printQuery(sel)
+#          print str(sel).replace("\n","")
           result = self.getSQLAlchemyResult(con,sel)
       except:
           printExcept()
