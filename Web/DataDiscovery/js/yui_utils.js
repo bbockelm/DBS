@@ -1,5 +1,9 @@
-function MakeTooltip(_tag,_ctx,_text) {
-  t = new YAHOO.widget.Tooltip(_tag, { context: _ctx, text: '<div class="tiny">'+_text+'</div>', width:'400px' } );
+function MakeTooltip(_tag,_ctx,_text,autodismissdelay) {
+  var delay=5000;
+  if(autodismissdelay) {
+     delay=autodismissdelay;
+  }
+  t = new YAHOO.widget.Tooltip(_tag, { context: _ctx, text: '<div class="tiny">'+_text+'</div>', width:'400px', autodismissdelay:delay } );
 }
 
 function PanelInit(myvar,tagName) {
