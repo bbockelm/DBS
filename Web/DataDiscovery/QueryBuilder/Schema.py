@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# $Id: $
+# $Id: Schema.py,v 1.1 2007/03/22 15:15:04 valya Exp $
 """
 This class reads sqlalchemy schema metadata in order to construct joins
 for an arbitrary query.
 """
 __author__ = "Andrew J. Dolgert <ajd27@cornell.edu>"
-__revision__ = "$Revision$"
+__revision__ = "$Revision: 1.1 $"
 
 
 import unittest
@@ -14,7 +14,10 @@ from StringIO import StringIO
 from sqlalchemy import *
 import os
 
-from UnittestDB import LoadFromFile, UnittestDB
+try:
+    from UnittestDB import LoadFromFile, UnittestDB
+except:
+    pass
 import constructquery
 from DotGraph import DotGraph
 
