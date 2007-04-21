@@ -43,6 +43,13 @@ def timeGMT(iTime):
 def parseBLOBdata(data):
     return str(data).replace(",",", ").replace(";","; ")
 
+def natsort(list_):
+    # decorate
+    tmp = [ (int(re.search('\d+', i).group(0)), i) for i in list_ ]
+    tmp.sort()
+    # undecorate
+    return [ i[1] for i in tmp ]
+
 def parseCreatedBy(input):
     if input and type(input) is types.StringType and input.find('/CN'):
        try:
