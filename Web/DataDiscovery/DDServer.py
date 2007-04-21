@@ -2027,7 +2027,7 @@ class DDServer(DDLogger,Controller):
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
-        nameSpace = {'name':'primD','iList': natsort(dList),'selTag':'kw_prim','changeFunction':'','style':style}
+        nameSpace = {'name':'primD','iList': natsort24(dList),'selTag':'kw_prim','changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
