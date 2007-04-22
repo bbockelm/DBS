@@ -535,10 +535,21 @@ class DDLogger:
       except:
          msg="Not enough permissions to create a DDServer log file in '%s'"%self.dir
          raise msg
+      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'midnight', 1, 7 )
+#      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'M', 1, 7 )
+      formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
+      hdlr.setFormatter( formatter )
+      self.loggerHandler=hdlr
       self.setLogger()
 
   def setLevel(self,level):
       self.logLevel=level
+
+  def getHandler(self):
+      return self.loggerHandler
+
+  def getLogLevel(self):
+      return self.logLevel
 
   def writeLog(self,msg):
       """
@@ -564,22 +575,19 @@ class DDLogger:
          @return: none
       """
       # Set up the logger with a suitable format
-      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'midnight', 1, 7 )
-#      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'M', 1, 7 )
-      formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
-      hdlr.setFormatter( formatter )
       self.logger = logging.getLogger(self.name)
       self.logger.setLevel(self.logLevel)
-      self.logger.addHandler(hdlr)
+      self.logger.addHandler(self.loggerHandler)
 
-      # set up logging for SQLAlchemy
-      logging.getLogger('sqlalchemy.engine').setLevel(self.logLevel)
-      logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(self.logLevel)
-      logging.getLogger('sqlalchemy.pool').setLevel(self.logLevel)
+def setSQLAlchemyLogger(hdlr,logLevel):
+    # set up logging for SQLAlchemy
+    logging.getLogger('sqlalchemy.engine').setLevel(logLevel)
+    logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logLevel)
+    logging.getLogger('sqlalchemy.pool').setLevel(logLevel)
 
-      logging.getLogger('sqlalchemy.engine').addHandler(hdlr)
-      logging.getLogger('sqlalchemy.orm.unitofwork').addHandler(hdlr)
-      logging.getLogger('sqlalchemy.pool').addHandler(hdlr)
+    logging.getLogger('sqlalchemy.engine').addHandler(hdlr)
+    logging.getLogger('sqlalchemy.orm.unitofwork').addHandler(hdlr)
+    logging.getLogger('sqlalchemy.pool').addHandler(hdlr)
 
 def removeEmptyLines(s):
     return ''.join(line for line in s.splitlines(1) if not line.isspace())
