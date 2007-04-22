@@ -2258,28 +2258,28 @@ class DDServer(DDLogger,Controller):
         page = str(t)
         return page
 
-    def sendFeedback_v1(self,userEmail,feedbackText,userMode='user'):
+    def sendFeedback(self,userEmail,feedbackText,userMode='user'):
         """
            Generates feedback form.
         """
         p = os.popen("%s -t" % SENDMAIL, "w")
-#        p.write("To: cms-dbs-support@cern.ch\n")
-        p.write("To: vk@mail.lns.cornell.edu\n")
+        p.write("To: cms-dbs-support@cern.ch\n")
+#        p.write("To: vk@mail.lns.cornell.edu\n")
         p.write("Subject: response from DBS data discovery\n")
         p.write("\n") # blank line separating headers from body
-        p.write("From: %s\n"%userEmail)
+#        p.write("From: %s\n"%userEmail)
+        p.write("Message send from DBS discovery page by %s\n"%userEmail)
         p.write("\n") # blank line separating headers from body
         p.write(feedbackText)
         sts = p.close()
         print "Status from sendFeedback",sts
         page = self.genTopHTML(userMode=userMode)
         page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to DBS support team.</p>"""
-#        page+= self.genVisiblePanel('Resources')
         page+= self.genBottomHTML()
         return page
-#    sendFeedback.exposed=True
+    sendFeedback.exposed=True
 
-    def sendFeedback(self,userEmail,feedbackText,userMode='user'):
+    def sendFeedback_v1(self,userEmail,feedbackText,userMode='user'):
         """
            Generates feedback form.
         """
@@ -2287,14 +2287,14 @@ class DDServer(DDLogger,Controller):
         tFile     = open(tFileName,'w')
         tFile.write("From: %s\n"%userEmail+feedbackText)
         tFile.close()
-#        os.system("""mail -s "response from DBS data discovery" cms-dbs-support@cern.ch < %s"""%tFileName)
-        os.system("""mail -s "response from DBS data discovery" vk@mail.lns.cornell.edu < %s"""%tFileName)
+        os.system("""mail -s "response from DBS data discovery" cms-dbs-support@cern.ch < %s"""%tFileName)
+#        os.system("""mail -s "response from DBS data discovery" vk@mail.lns.cornell.edu < %s"""%tFileName)
         os.remove(tFileName)
         page = self.genTopHTML(userMode=userMode)
         page+= """<p class="sectionhead_tight">Your feedback is greatly appreciated and has been send to DBS support team.</p>"""
         page+= self.genBottomHTML()
         return page
-    sendFeedback.exposed=True
+#    sendFeedback.exposed=True
 
     def storeHistory(self,dbsInst,userId,actionString,alias=''):
         # update DB history
