@@ -555,7 +555,14 @@ class DDServer(DDLogger,Controller):
             dbsList     = list(self.dbsList)
             dbsInst     = DBSGLOBAL
             sectionDicts= self.makeSectionDict(dbsInst)
-            nameSearch={'host':self.dbsdd,'dbsList':dbsList,'dbsInst':DBSGLOBAL,'userMode':userMode,'sectionDicts':sectionDicts}
+
+            # make auto-completion forms for alias lookup
+            tag="kw_alias_lookup"
+            nameSearch={'tag':tag,'inputId':tag,'inputName':tag,'size':50,'userMode':userMode,'dbsInst':'','table':'','column':'','label':'My query alias:','zIndex':9000,'method':'getAliasesFromHistoryDB'}
+            t = templateAutoComplete(searchList=[nameSearch]).respond()
+            myAlias=str(t)
+
+            nameSearch={'host':self.dbsdd,'dbsList':dbsList,'dbsInst':DBSGLOBAL,'userMode':userMode,'sectionDicts':sectionDicts,'myAlias':myAlias}
             t = templateMenuFinder2(searchList=[nameSearch]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -3175,11 +3182,14 @@ class DDServer(DDLogger,Controller):
             pass
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="myQueries">"""
-        p ="""<div class="sectionhead_tight">Upon your request the following query aliases were found:</div>"""
+        page ="""<ajax-response><response type="object" id="myQueries">"""
+        page+="""<div class="sectionhead_tight">Upon your request the following query aliases were found:</div>"""
+        page+="""<table cellspacing="0" cellpadding="0">"""
+        p = ""
         count=0
         for item in cList:
             oDate,oTime,oCmd,oName,dbsInst=item
+            id="myQuery_%s"%count
             # in order to make AJAX works I strip off <?xml...> from query stored in DB
             # and pass around for another ajax call stripped XML request
             xml=oCmd
@@ -3188,29 +3198,48 @@ class DDServer(DDLogger,Controller):
             if  oName:
                 # TODO: I need to query DB which dbs instance were used and pass it here.
                 cmd="""<a href="javascript:ajaxExecuteQuery('%s','%s')">%s</a>"""%(dbsInst,oCmd,oName)
-                xmlRef="""<a href="printXML?input=%s"><img src="images/xml.png" alt="xml" style="border:none" /></a>"""%oCmd
-                nameSpace={'date':str(oDate),'action':str(cmd),'xml':xmlRef}
+#                xmlRef="""<a href="printXML?input=%s"><img src="images/xml.png" alt="xml" style="border:none" /></a>"""%oCmd
+#                txtRef="""<a href="convertXMLTOTXT?input=%s&html=1&ajax=0"><img src="images/txt.png" alt="txt" style="border:none" /></a>"""%oCmd
+                xmlRef="""<a href="javascript:ajaxPrintXML('%s','%s')"><img src="images/xml.png" alt="xml" style="border:none" /></a>"""%(oCmd,id)
+                txtRef="""<a href="javascript:ajaxConvertXMLTOTXT('%s','%s')"><img src="images/txt.png" alt="txt" style="border:none" /></a>"""%(oCmd,id)
+                nameSpace={'date':str(oDate),'action':str(cmd),'xml':xmlRef,'txt':txtRef,'id':id}
                 t = templateHistory(searchList=[nameSpace]).respond()
                 p+=str(t)
                 count+=1
         if not count:
-           page+="""<div class="sectionhead_tight">No queries were found for provided alias name: '%s'</div>"""%alias
+           page+="""<tr><td><div class="sectionhead_tight">No queries were found for provided alias name: '%s'</div></td></tr>"""%alias
         else:
            page+=p
+        page+="</table>"
         page+="</response></ajax-response>"
         if self.verbose==2:
            self.writeLog(page)
         return page
     finderSearchQuery.exposed=True
 
-    def printXML(self,input):
+    def printXML(self,input,id,ajax=0,**kwargs):
         xml="""<?xml version="1.0" encoding="utf-8"?><br/>"""+urllib.unquote(input).replace("><","><br/><")
         xmlOutput=xml.replace("<","&lt;").replace(">","&gt;").replace("&lt;br/&gt;","<br />")
-        page=self.genTopHTML()
+        if int(ajax):
+            # AJAX wants response as "text/xml" type
+            self.setContentType('xml')
+            page ="""<ajax-response><response type="element" id="%s">"""%id
+            page+="""<div class="float_snippet">"""
+        else:
+            page = self.genTopHTML()
+        if int(ajax):
+           page+="""<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div> """%id
         page+=xmlOutput
 #        page+="<code>"+xmlOutput+"</code>"
         page+="""<p/><div>You may use this XML snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
-        page+=self.genBottomHTML()
+        if int(ajax):
+           page+="</div>"
+           page+="""</response></ajax-response>"""
+        else:
+           page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        print page
         return page
     printXML.exposed=True
 
@@ -3329,6 +3358,132 @@ class DDServer(DDLogger,Controller):
                        table,col=attrs['column'].split(".")
                        entry="%s.%s"%(helper.dbManager.getDBTableName(dbsInst,str(table)),str(col))
                        selList.append(entry)
+                    if name=='list':
+                       selList.append(1)
+                    if name=='where':
+                       clause=str(attrs['clause'])
+                       whereList.append(clause)
+                    if name=='output':
+                       if attrs.has_key('limit'):
+                          conDict['limit']=long(attrs['limit'])
+                       if attrs.has_key('offset'):
+                          conDict['offset']=long(attrs['offset'])
+            xml.sax.parseString (data, Handler ())
+        except:
+            printExcept()
+        if self.verbose==2:
+           self.writeLog("Selection list:")
+           self.writeLog(str(selList))
+           self.writeLog("Condition list:")
+           self.writeLog(str(conDict))
+           self.writeLog("Where clause list:")
+           self.writeLog(str(whereList))
+        if not len(selList):
+           return """<?xml version="1.0" encoding="utf-8"?><ddresponse></ddresponse>"""
+        if len(selList)==1 and selList[0]==1:
+           oList=self.helper.getAllTableColumns()
+           res="""<?xml version="1.0" encoding="utf-8"?><ddresponse>"""
+           for item in oList:
+                res+="""<row><column name='Table.colName' value='%s' /></row>"""%item
+           res+="""</ddresponse>"""
+           return res
+
+        # setup limits for query
+        limit=offset=0
+        if conDict.has_key('limit'):  limit  = conDict['limit']
+        if conDict.has_key('offset'): offset = conDict['offset']
+        whereClause=' AND '.join(["("+x+")" for x in whereList])
+        query,oList = self.helper.queryMaker(selList,whereClause,limit,offset)
+        if not xmlOutput:
+           return query,oList
+        if self.verbose==2:
+           self.writeLog(query)
+           self.writeLog(str(oList))
+        res="""<?xml version="1.0" encoding="utf-8"?><ddresponse>"""
+        for iList in oList[1:]: # here first element in a list is column names
+            res+="<row>"
+            for idx in xrange(0,len(iList)):
+                res+="""<column name='%s' value='%s' />"""%(oList[0][idx],iList[idx])
+            res+="</row>"
+        res+="""</ddresponse>"""
+        return res
+    cliHandler.exposed=True
+
+    def convertXMLTOTXT(self,input,id,html=0,ajax=0,**kwargs):
+        if int(ajax):
+            # AJAX wants response as "text/xml" type
+            self.setContentType('xml')
+            page ="""<ajax-response><response type="element" id="%s">"""%id
+            page+="""<div class="float_snippet">"""
+            page+="""<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div> """%id
+        else:
+            page = self.genTopHTML()
+        data=urllib.unquote(input)
+        try:
+            selList  = []
+            conDict  = {}
+            whereList= []
+            dbsInst=DBSGLOBAL
+            helper=self.helper
+            class Handler (xml.sax.handler.ContentHandler):
+                def startElement(self, name, attrs):
+                    if name=='select':
+                       table,col=attrs['column'].split(".")
+                       entry="%s.%s"%(helper.dbManager.getDBTableName(dbsInst,str(table)),str(col))
+                       selList.append(entry)
+                    if name=='list':
+                       selList.append(1)
+                    if name=='where':
+                       clause=str(attrs['clause'])
+                       whereList.append(clause)
+                    if name=='output':
+                       if attrs.has_key('limit'):
+                          conDict['limit']=long(attrs['limit'])
+                       if attrs.has_key('offset'):
+                          conDict['offset']=long(attrs['offset'])
+            xml.sax.parseString (data, Handler ())
+        except:
+            printExcept()
+        out="\n[select]\n"
+        for item in selList:
+            out+=item+"\n"
+        if  whereList:
+            whereClause=' AND '.join(["("+x+")" for x in whereList])
+            out+="\n[where]\n"+whereClause+"\n"
+        if conDict:
+            out+="\n[output]\n"
+            for key in conDict.keys():
+                out+="%s=%s\n"%(key,conDict[key])
+        if html:
+           page+="<pre>"+out+"</pre>"
+        else:
+           page+=out
+        if int(ajax):
+           page+="</div>"
+           page+="""</response></ajax-response>"""
+        else:
+           page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    convertXMLTOTXT.exposed=True
+    
+    def cliHandler_v1(self,dbsInst,input,xmlOutput=1):
+        self.helperInit(dbsInst)
+        data=urllib.unquote(input)
+        if self.verbose==1:
+           self.writeLog(data)
+        try:
+            selList  = []
+            conDict  = {}
+            whereList= []
+            helper=self.helper
+            class Handler (xml.sax.handler.ContentHandler):
+                def startElement(self, name, attrs):
+                    if name=='select':
+                       table,col=attrs['column'].split(".")
+                       entry="%s.%s"%(helper.dbManager.getDBTableName(dbsInst,str(table)),str(col))
+                       selList.append(entry)
 #                       selList.append(str(attrs['column']))
                     if name=='list':
                        selList.append(1)
@@ -3378,7 +3533,7 @@ class DDServer(DDLogger,Controller):
             res+="</row>"
         res+="""</ddresponse>"""
         return res
-    cliHandler.exposed=True
+    cliHandler_v1.exposed=True
 #
 # main
 #

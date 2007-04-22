@@ -25,7 +25,7 @@ The XML structure:
 <select column='PrimaryDataset.Name' />
 <select column='ProcessedDataset.Name' />
 <output limit="5" offset="2" />
-<where column="PrimaryDataset.Name" operator="like" value="MTCC" />
+<where cluse="PrimaryDataset.Name like 'MTCC%'" />
 </ddrequest>
 
 The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
@@ -38,7 +38,7 @@ PrimaryDataset.Name
 ProcessedDataset.Name
 
 [where]
-PrimaryDataset.Name like 'MTCC'
+PrimaryDataset.Name like 'MTCC%'
 
 [output]
 limit=5
@@ -210,13 +210,7 @@ def formXMLInput(iDict,verbose=0):
     else:
         xmlOutput+="""<option limit="100" offset="0" />"""
     if  iDict.has_key('where'):
-        for item in iDict['where']:
-            col,op,val=item.split()
-            if val[0]=="'" and val[-1]=="'":
-               val=val[1:-2]
-            if val[0]=="\"" and val[-1]=="\"":
-               val=val[1:-2]
-            xmlOutput+="""<where column="%s" operator="%s" value="%s" />\n"""%(str(col),str(op),str(val))
+        xmlOutput+="""<where clause="%s" />\n"""%' AND '.join(["("+x+")" for x in iDict['where']])
     xmlOutput+="</ddrequest>"
     if verbose:
        print "\n\nformed outputXML\n",xmlOutput
@@ -269,6 +263,6 @@ if __name__ == "__main__":
         if opts.output!="txt":
            print "### RESULT:",result
     # Test input as dictionary
-#    iDict={'select':['PrimaryDataset.Name'],'output':['limit="5" offset="1"'],'where':['PrimaryDataset.Name like MTCC']}
+#    iDict={'select':['PrimaryDataset.Name'],'output':['limit="5" offset="0"'],'where':["PrimaryDataset.Name like 'Test%'","PrimaryDataset.ID = 1"]}
 #    result=queryDBS(host,port,dbsInst,iDict,"list")
 #    print "\n###",iDict,result

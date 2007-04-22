@@ -8,7 +8,7 @@ DBS Discovery :: Finder
 - <a href="javascript:ShowTag('builderFinder');HideTag('queriesFinder');ClearTag('results_finder')">Builder</a>
 | <a href="javascript:HideTag('builderFinder');ShowTag('queriesFinder');ClearTag('results_finder')">My queries</a>
 | <a href="$host/finderExample?userMode=$userMode">Demo</a>
-| <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">Command Line Interface</a>
+###| <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">Command Line Interface</a>
 </td>
 #if $userMode=='user'
 <td align="right" class="box_darkblue">Physicist</td>
@@ -19,6 +19,9 @@ DBS Discovery :: Finder
 </table>
 
 <p/>
+
+<div id="builderFinder" class="show_inline">
+
 <!-- finder form -->
 <form action="finderSearch" type="get">
 
@@ -178,7 +181,18 @@ function AddToWhere(node) {
 <!-- end of finder form -->
 
 
-###<div id="results_finder"></div>
+</div> <!-- end of div id="_builderFinder" -->
+
+<div id="queriesFinder" class="hide">
+$myAlias
+###<input type="submit" value="Search" id="sButton-searchQueries" onclick="javascript:ajaxFinderSearchQuery()"  />
+<input type="submit" value="Search" id="sButton-searchQueries" onclick="javascript:ajaxFinderSearchQuery()" disabled="disabled" />
+<p>
+<div id="myQueries"></div>
+</p>
+</div>
+
+<div id="results_finder"></div>
 <script type="text/javascript">
 var tooltip="<p>Finder is arbitrary search of data based on user selection of data objects.\
     <ul><li>Group task: a list of common search tasks\

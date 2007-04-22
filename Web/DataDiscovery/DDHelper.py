@@ -1202,7 +1202,6 @@ class DDHelper(DDLogger):
   def bindWhereClause(self,whereClause):
       # replace (,) with ___ to enable proper splitting
       whereList=whereClause.replace("(","___ ( ___").replace(")","___ ) ___").split("___")
-      print "whereList",whereClause,whereList
 #      whereList=whereClause.split()
       # loop over whereList and search for pattern Table.Column which should follow by 
       # one opearator and left value
@@ -1226,9 +1225,6 @@ class DDHelper(DDLogger):
              except:
                  printExcept()
                  raise DDException(args="Your condition %s should be in a form: Table.Column <operator> '<value>'. Please note, spaces should be presented in order to make it work"%item)
-             print tableName,col,op,bind_param
-
-
 
 #             op=whereList[idx+1]
 #             if not knownOperators.count(op):
@@ -1247,7 +1243,7 @@ class DDHelper(DDLogger):
       textClause = sqlalchemy.text(text=' '.join(whereList),engine=self.dbManager.engine[self.dbsInstance],bindparams=bindparams)
       return textClause
 
-  def queryMaker(self,iList,whereClause=[],limit=0,offset=0,execute=1):
+  def queryMaker(self,iList,whereClause="",limit=0,offset=0,execute=1):
       """ 
          Build a query out of input iList=['TableName.ColumnName',]
          whereClause is a list of (table,col,operator,value)
@@ -1275,6 +1271,8 @@ class DDHelper(DDLogger):
          query.limit=long(limit)
          query.offset=long(offset)
       query.Distinct=True
+#      print "\n\n###queryMaker",self.printQuery(query)
+#      print str(query)
       if  execute:
           res = self.executeSQLQuery(query)
       return str(query),res

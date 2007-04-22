@@ -1243,3 +1243,16 @@ function ajaxWriteUserQuery() {
 //    var dbsInst=$('kw_dbsSelector').value;
 //    ajaxEngine.sendRequest('ajaxGetUserNav','dbsInst='+dbsInst,'ajax=1');
 //}
+function ajaxPrintXML(input,id) {
+    ajaxEngine.registerRequest('ajaxPrintXML','printXML');
+    ajaxEngine.registerAjaxElement(id);
+    ajaxEngine.sendRequest('ajaxPrintXML','input='+input,'id='+id,'ajax=1');
+    ShowTag(id);
+}
+function ajaxConvertXMLTOTXT(input,id) {
+    ajaxEngine.registerRequest('ajaxConvertXMLTOTXT','convertXMLTOTXT');
+    ajaxEngine.registerAjaxElement(id);
+    ajaxEngine.sendRequest('ajaxConvertXMLTOTXT','input='+input,'id='+id,'ajax=1','html=1');
+    ShowTag(id);
+}
+
