@@ -564,7 +564,8 @@ class DDLogger:
          @return: none
       """
       # Set up the logger with a suitable format
-      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'D', 1, 7 )
+      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'midnight', 1, 7 )
+#      hdlr = logging.handlers.TimedRotatingFileHandler( self.logName, 'M', 1, 7 )
       formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
       hdlr.setFormatter( formatter )
       self.logger = logging.getLogger(self.name)
