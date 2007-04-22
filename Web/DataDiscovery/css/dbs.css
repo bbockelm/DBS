@@ -1135,6 +1135,29 @@ table.sortable span.sortarrow {
 /*  -moz-opacity:0.9;           |+ Mozilla 1.6 and below   +|*/
 /*  opacity: 0.9;               |+ newer Mozilla and CSS-3 +|*/
 }
+.float_snippet {
+  position: absolute; 
+
+  padding: 1px 1px 1px 1px;
+  margin-top: 10px;
+/*  width: 240px;*/
+/*  height: 190px; */
+  overflow:auto;
+
+  color: #000000;
+  background-color: #FFFFCC;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+
+  z-index: 3; /* to make visible a new window above all others CSS, for more details see http://www.devx.com/projectcool/Article/19918/1954?pf=true */
+  font-size: 12px;
+  font-weight: normal;
+  font-family: helvetica, arial, verdana, sans-serif;
+  vertical-align: top;
+  text-align: left;
+}
 
 .float_help_box {
   position: absolute; 
