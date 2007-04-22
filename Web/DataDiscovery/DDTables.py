@@ -27,7 +27,7 @@ elif useEngine=='oracle':
    engine = create_engine('oracle://%s:%s@cms_dbs'%(user,password),strategy='threadlocal',threaded=True)
 elif useEngine=='mysql':
    print "Use MySQL engine for Data Discovery history"
-   engine = create_engine('mysql://%s:%s@localhost/%s'%(user,password,dbname),strategy='threadlocal',echo=True)
+   engine = create_engine('mysql://%s:%s@localhost/%s'%(user,password,dbname),strategy='threadlocal')
 else:
    raise "Unsupported DB engine backend"
 
