@@ -2918,11 +2918,19 @@ class DDServer(DDLogger,Controller):
         page = self.genTopHTML(intro=False,userMode=userMode)
         page+= """
 <object width='800' height='600'>
-<param name='movie' value='images/DataDiscoveryFinder.swf'>
-<embed src='images/DataDiscoveryFinder.swf' width='800' height='600'>
+<param name='movie' value='images/DBS2_Finder_demo.swf'>
+<embed src='images/DBS2_Finder_demo.swf' width='800' height='600'>
 </embed>
 </object>
 """
+#        page+= """
+#<object width='800' height='600'>
+#<param name='movie' value='images/DataDiscoveryFinder.swf'>
+#<embed src='images/DataDiscoveryFinder.swf' width='800' height='600'>
+#</embed>
+#</object>
+#"""
+
 #        page+= """Here you can find a few examples demonstrating usage of Finder on discovery page.
 
 #        <p />
