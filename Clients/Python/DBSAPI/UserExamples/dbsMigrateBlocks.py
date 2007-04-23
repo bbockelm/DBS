@@ -2,6 +2,7 @@
 #
 # Unit tests for the DBS CGI implementation.
 import sys
+import os
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
@@ -61,30 +62,35 @@ try:
 		for i in blocks:
 			blockName = i['Name']
 			fileName = blockName.replace('/', '_').replace('#', '_') + ".xml"
-			print "Fetching information for Block %s " %  blockName
-			xmlinput = apiSrc.listDatasetContents(path,  blockName)
-			f = open(name + fileName, "w");
-			f.write(xmlinput)
-			f.close()
-			print "Dataset information fetched from " + argsSrc['url'] + " in XML format is saved in " + name +  fileName
+			if os.path.exists(name + fileName):
+				print "WARNNING The XML file " + name + fileName + " exists already and will be used. The information will not be fetched again"
+			else:
+				print "Fetching information for Block %s " %  blockName
+				xmlinput = apiSrc.listDatasetContents(path,  blockName)
+				f = open(name + fileName, "w");
+				f.write(xmlinput)
+				f.close()
+				print "Dataset information fetched from " + argsSrc['url'] + " in XML format is saved in " + name +  fileName
 
 	if ((op == "both") | (op == "set")) :
 		#Insert the saved contents into another DBS instance
 		for i in blocks:
-			blockName = i['Name']
-			fileName = blockName.replace('/', '_').replace('#', '_') + ".xml"
-			print "Inserting information for Block %s " %  blockName
-			f = open(name + fileName, "r");
-			xmlinput = f.read()
-			f.close()
+			print "blocks number of Files %s ", i['NumberOfFiles']
+			if(i['NumberOfFiles'] > 0):
+				blockName = i['Name']
+				fileName = blockName.replace('/', '_').replace('#', '_') + ".xml"
+				print "Inserting information for Block %s " %  blockName
+				f = open(name + fileName, "r");
+				xmlinput = f.read()
+				f.close()
 
-			flog =  open(name + fileName + ".log", "w");
-			#flog.write(api1.insertDatasetInfo(xmlinput))
-			flog.write(apiTar.insertDatasetContents(xmlinput))
-			flog.close()
-			print "The transfer log for " + argsTar['url'] + " in XML format is saved in " + name + fileName + ".log"
-		#FIXME Check if the apiSrc is not Global DBS
-		apiSrc.updateProcDSStatus(path, "EXPORTED")
+				flog =  open(name + fileName + ".log", "w");
+				#flog.write(api1.insertDatasetInfo(xmlinput))
+				flog.write(apiTar.insertDatasetContents(xmlinput))
+				flog.close()
+				print "The transfer log for " + argsTar['url'] + " in XML format is saved in " + name + fileName + ".log"
+			#FIXME Check if the apiSrc is not Global DBS
+			apiSrc.updateProcDSStatus(path, "EXPORTED")
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
