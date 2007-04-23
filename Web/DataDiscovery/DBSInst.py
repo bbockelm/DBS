@@ -49,7 +49,6 @@ DBS_DLS_INST= {
     "cms_dbs_prod_local_06":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
     "cms_dbs_prod_local_07":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
     "cms_dbs_prod_local_08":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_09":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
 }
 
 
