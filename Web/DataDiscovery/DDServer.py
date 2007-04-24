@@ -884,7 +884,7 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
         
-    def showProcDatasets(self,dbsInst,site="All",app="*",primD="*",tier="*",proc="*",userMode='user'):
+    def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",userMode='user'):
         """
            Get all processed datasets for given set of input parameters
            @type  dbsInst: string
