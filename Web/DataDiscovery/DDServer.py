@@ -2894,7 +2894,7 @@ class DDServer(DDLogger,Controller):
         row=0
         limit=10
         natList = natsort24(list(self.helper.getTableColumn(table,column,row,limit,whereDict) ))
-        print natList,type(natList)
+#        print natList,type(natList)
         for item in natList:
             page+="%s\n"%item
         return page
@@ -3254,7 +3254,7 @@ class DDServer(DDLogger,Controller):
            page+=self.genBottomHTML()
         if self.verbose==2:
            self.writeLog(page)
-        print page
+#        print page
         return page
     printXML.exposed=True
 

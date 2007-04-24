@@ -477,6 +477,8 @@ class DDHelper(DDLogger):
       if type(proc) is not types.ListType and proc.lower() =='any': proc ="*"
       if proc and proc!="*":
          if count:
+            if type(proc) is types.ListType:
+               return len(proc)
             return 1
          if type(proc) is types.ListType:
             return proc
