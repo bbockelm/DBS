@@ -452,9 +452,10 @@ class DDHelper(DDLogger):
           for item in result:
               softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
               if not name: continue
-              if self.dbManager.dbType[self.dbsInstance]=='oracle':
-                 if content:
-                    content=content.read() # since content is LOB object
+#              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+#                 if content and type(content) is types.StringType:
+#                    content=content.read() # since content is LOB object
+              content=str(content) # since content is LOB object
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
