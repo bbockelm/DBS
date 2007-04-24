@@ -909,7 +909,8 @@ class DDServer(DDLogger,Controller):
             if  len(proc) and proc!="*":
                 page+=proc+"\n"
             else:
-                procList = self.helper.getDatasetsFromApp(app,primD,tier)
+                procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=0,limit=0,count=0)
+#                procList = self.helper.getDatasetsFromApp(app,primD,tier)
                 for procD in procList:
                     page+=procD+"\n"
             page+= "</pre>"
@@ -943,6 +944,11 @@ class DDServer(DDLogger,Controller):
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
         """
+        if string.lower(tier) =="all" or string.lower(tier)=="any": tier="*"
+        if string.lower(site) =="all" or string.lower(site)=="any": site="*"
+        if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
+        if string.lower(group)=="all" or string.lower(group)=="any": group="*"
+        if string.lower(prim) =="all" or string.lower(prim)=="any": prim="*"
         return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,userMode,fromRow,limit,count)
 
     def getMatch(self,table,column,val):

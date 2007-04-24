@@ -563,7 +563,7 @@ class DDHelper(DDLogger):
       for item in result:
 #          print item
           # since we queried oracle in different way we will retrieve results differently
-          if  self.dbManager.dbType[self.dbsInstance]=='oracle':
+          if  self.dbManager.dbType[self.dbsInstance]=='oracle' and limit:
               rownum,path = item
           else:
               path = item[0]
