@@ -56,9 +56,12 @@ class DbsHttpService:
    """
    Gets the User Proxy if it exists otherwise THROWs an exception
    """
-   
-   uid = os.getuid()
-   proxy = '/tmp/x509up_u'+str(uid)
+
+   if os.environ.has_key('X509_USER_PROXY'):
+	proxy = os.environ['X509_USER_PROXY']
+   else :
+	uid = os.getuid()
+   	proxy = '/tmp/x509up_u'+str(uid)
    if not os.path.exists(proxy):
 	raise DbsProxyNotFound(args="Required Proxy for Secure Call \n("+self.Url+") not found for user %s" %os.getlogin(), code="9999")
    return proxy, proxy
