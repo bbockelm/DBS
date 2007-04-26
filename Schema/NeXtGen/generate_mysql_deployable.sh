@@ -117,25 +117,22 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP())
 #('tau', '', UNIX_TIMESTAMP()), 
 #('B-tagging', '', UNIX_TIMESTAMP());" >> $ddl_file
 #
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', UNIX_TIMESTAMP()), 
-('Individual', UNIX_TIMESTAMP()), 
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
-('SUSY', UNIX_TIMESTAMP()), 
-('BSM', UNIX_TIMESTAMP()), 
+('SUSYBSM', UNIX_TIMESTAMP()), 
 ('EWK', UNIX_TIMESTAMP()), 
 ('Top', UNIX_TIMESTAMP()), 
 ('QCD', UNIX_TIMESTAMP()), 
 ('Diffraction', UNIX_TIMESTAMP()), 
-('onsel', UNIX_TIMESTAMP()), 
-('B-physics', UNIX_TIMESTAMP()), 
+('OnSel', UNIX_TIMESTAMP()), 
+('Bphys', UNIX_TIMESTAMP()), 
 ('Muons', UNIX_TIMESTAMP()), 
 ('Egamma', UNIX_TIMESTAMP()), 
 ('JetMet', UNIX_TIMESTAMP()), 
-('E-flow', UNIX_TIMESTAMP()), 
-('tau', UNIX_TIMESTAMP()), 
-('relval', UNIX_TIMESTAMP()), 
-('phyval', UNIX_TIMESTAMP()), 
-('B-tagging', UNIX_TIMESTAMP());" >> $ddl_file
+('PFlowTau', UNIX_TIMESTAMP()), 
+('Btag', UNIX_TIMESTAMP()), 
+('RelVal', UNIX_TIMESTAMP()), 
+('PhysVal', UNIX_TIMESTAMP());" >> $ddl_file
 #
 #
 echo "commit;"  >> $ddl_file

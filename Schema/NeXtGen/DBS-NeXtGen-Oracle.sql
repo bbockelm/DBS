@@ -1170,7 +1170,7 @@ ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT
 /
 
 ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID) ON DELETE CASCADE
 /
 ALTER TABLE SEBlock ADD CONSTRAINT 
     SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)

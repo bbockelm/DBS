@@ -179,26 +179,23 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', ${unix_time});" 
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', ${unix_time});" >> $ddl_file
-#
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', ${unix_time});">> $ddl_file
+ggs#
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSY', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('BSM', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSYBSM', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('EWK', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Top', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('QCD', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Diffraction', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('onsel', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-physics', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('OnSel', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Bphys', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Muons', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Egamma', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('JetMet', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('E-flow', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('tau', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('B-tagging', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('phyval', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('relval', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PFlowTau', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Btag', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('RelVal', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PhysVal', ${unix_time});">> $ddl_file
 #
 echo "commit;" >> $ddl_file
 #

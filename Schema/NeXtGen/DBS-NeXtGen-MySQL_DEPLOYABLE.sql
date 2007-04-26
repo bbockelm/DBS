@@ -4,9 +4,9 @@
 -- === Build : 628
 -- ======================================================================
 
-drop database if exists dbs_new_era_v019;
-create database dbs_new_era_v019;
-use dbs_new_era_v019;
+drop database if exists dbs_new_era_v25;
+create database dbs_new_era_v25;
+use dbs_new_era_v25;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -1190,7 +1190,7 @@ ALTER TABLE AnalysisDSDef ADD CONSTRAINT
 ;
 
 ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID)
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID) ON DELETE CASCADE
 ;
 ALTER TABLE SEBlock ADD CONSTRAINT 
     SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
@@ -1524,7 +1524,7 @@ INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP())
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());
 INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;
 INSERT INTO AnalysisDSType(Type, CreationDate) VALUES ('TEST', UNIX_TIMESTAMP());
-INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', UNIX_TIMESTAMP()), ('raw', UNIX_TIMESTAMP()) , ('mc', UNIX_TIMESTAMP()), ('cosmic', UNIX_TIMESTAMP()), ('align', UNIX_TIMESTAMP()), ('calib', UNIX_TIMESTAMP()), ('data', UNIX_TIMESTAMP());
+INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', UNIX_TIMESTAMP()), ('data',  UNIX_TIMESTAMP()), ('raw', UNIX_TIMESTAMP()) , ('mc', UNIX_TIMESTAMP()), ('cosmic', UNIX_TIMESTAMP()), ('align', UNIX_TIMESTAMP()), ('calib', UNIX_TIMESTAMP());
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simulated output from GEANT/OSCAR processing of GEN data  PSimHitContainer, EmbdSimVertexContainer, PCaloHitContainer, CrossingFrame');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');
@@ -1539,23 +1539,20 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'G
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP());
-INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('None', UNIX_TIMESTAMP()), 
-('Individual', UNIX_TIMESTAMP()), 
+INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
-('SUSY', UNIX_TIMESTAMP()), 
-('BSM', UNIX_TIMESTAMP()), 
+('SUSYBSM', UNIX_TIMESTAMP()), 
 ('EWK', UNIX_TIMESTAMP()), 
 ('Top', UNIX_TIMESTAMP()), 
 ('QCD', UNIX_TIMESTAMP()), 
 ('Diffraction', UNIX_TIMESTAMP()), 
-('onsel', UNIX_TIMESTAMP()), 
-('B-physics', UNIX_TIMESTAMP()), 
+('OnSel', UNIX_TIMESTAMP()), 
+('Bphys', UNIX_TIMESTAMP()), 
 ('Muons', UNIX_TIMESTAMP()), 
 ('Egamma', UNIX_TIMESTAMP()), 
 ('JetMet', UNIX_TIMESTAMP()), 
-('E-flow', UNIX_TIMESTAMP()), 
-('tau', UNIX_TIMESTAMP()), 
-('phyval', UNIX_TIMESTAMP()), 
-('relval', UNIX_TIMESTAMP()), 
-('B-tagging', UNIX_TIMESTAMP());
+('PFlowTau', UNIX_TIMESTAMP()), 
+('Btag', UNIX_TIMESTAMP()), 
+('RelVal', UNIX_TIMESTAMP()), 
+('PhysVal', UNIX_TIMESTAMP());
 commit;
