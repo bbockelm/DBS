@@ -476,7 +476,8 @@ class DDHelper(DDLogger):
       if prim.lower() =='any': prim ="*"
       if tier.lower() =='any': tier ="*"
       if type(proc) is not types.ListType and proc.lower() =='any': proc ="*"
-      if proc and proc!="*":
+#      if proc and proc!="*":
+      if proc!="*":
          if count:
             if type(proc) is types.ListType:
                return len(proc)
