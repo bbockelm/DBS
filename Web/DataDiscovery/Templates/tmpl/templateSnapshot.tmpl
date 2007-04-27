@@ -66,20 +66,58 @@
 </td>
 <td>
 
-Found $nDatasets
 #if $nDatasets
-datasets.<br />
-Get full dataset<a href="$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;group=$group&amp;app=$app&amp;primD=$primD&amp;tier=$tier&amp;userMode=$userMode">
-list</a>.<br />
-#else
-datasets.<br />
-#end if
-###</p>
-<span id="expandHolder">
-Expand all datasets table 
-<a href="javascript:ExpandDetails()">Details</a>.
-</span>
+<table>
+<tr>
+<td>
+Number of found datasets:
+</td>
+<td>
+$nDatasets
+</td>
+</tr>
 
+<tr>
+<td>
+Full list of datasets:
+</td>
+<td>
+<a href="$host/showProcDatasets?dbsInst=$dbsInst&amp;site=$site&amp;group=$group&amp;app=$app&amp;primD=$primD&amp;tier=$tier&amp;userMode=$userMode">
+here</a>
+</td>
+</tr>
+
+<tr>
+<td>
+Datasets table details:
+</td>
+<td>
+<span id="showProcDatasetDetails">
+<a href="javascript:ShowProcDetails()">show</a>
+</span> |
+<span id="hideProcDatasetDetails">
+<a href="javascript:HideProcDetails()">hide</a>
+</span>
+</td>
+</tr>
+<tr>
+<td>
+ProdRequest status for all datasets:
+</td>
+<td>
+<span id="showProdRequest">
+<a href="javascript:ShowProdRequestOutput()">show</a>
+</span> |
+<span id="hideProdRequest">
+<a href="javascript:HideProdRequestOutput()">hide</a>
+</span>
+</td>
+</tr>
+</table>
+
+#else
+Found 0 datasets.<br />
+#end if
 
 </td>
 </tr>
