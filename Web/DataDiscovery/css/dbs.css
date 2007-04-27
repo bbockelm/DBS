@@ -114,6 +114,11 @@ b { font-weight: bold; text-decoration : none; }
   font-family: helvetica, arial, verdana, sans-serif;
   text-decoration: none;
 }
+.tooltip  {
+  font-size: 12px;
+  font-family: helvetica, arial, verdana, sans-serif;
+  text-decoration: none;
+}
 
 .sbg  {
   font-size: 11px;
@@ -1158,6 +1163,28 @@ table.sortable span.sortarrow {
   vertical-align: top;
   text-align: left;
 }
+.float_ProdRequest {
+  position: absolute; 
+
+  padding: 1px 1px 1px 1px;
+  margin-top: 10px;
+  overflow:auto;
+
+  color: #000000;
+  background-color: #E0E0E0;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  border-color: gray gray gray gray; 
+
+  z-index: 5; /* z-index of MoreInfo is 3, this one should go above more info menu*/
+  font-size: 12px;
+  font-weight: normal;
+  font-family: helvetica, arial, verdana, sans-serif;
+  vertical-align: top;
+  text-align: left;
+}
+
 
 .float_help_box {
   position: absolute; 
