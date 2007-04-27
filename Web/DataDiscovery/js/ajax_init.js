@@ -953,12 +953,21 @@ function ajaxInit(_dbs) {
 //  registerAjaxGenNavigatorMenuDictCalls();
   registerAjaxGetFloatBoxCalls();
   registerAjaxGetLumisCalls();
+  registerAjaxProdRequestCalls();
 
 //  ajaxGenNavigatorMenuDict(_dbs);
   registerAjaxLucene();
   registerAjaxUserMenuCalls();
   initialize_dhtmlHistory();
   registerAjaxGetMoreInfoCalls();
+}
+
+function registerAjaxProdRequestCalls() {
+    ajaxEngine.registerRequest('ajaxGetProdRequest','getProdRequest');
+//    ajaxEngine.registerAjaxElement('id_ProdRequest');
+}
+function ajaxGetProdRequest(prim,id) {
+  ajaxEngine.sendRequest('ajaxGetProdRequest','prim='+prim,'id='+id);
 }
 
 // Class which capture ajax response and handle it. 
