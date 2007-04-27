@@ -83,7 +83,8 @@ class DDServer(DDLogger,Controller):
         except:
             pass
 #        self.lucene = DDLucene(verbose)
-        self.pServer= DDParamServer(verbose)
+        self.pServer= DDParamServer(verbose=verbose)
+        self.prodRequestServer= DDParamServer(server="iguana3.cern.ch:8030",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.site = ""
         self.app  = ""
@@ -2823,6 +2824,35 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     getRss.exposed=True
+
+    def getProdRequestPage(self,**kwargs):
+#        data = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=this+is+a+test",{},debug=1)
+#        print data
+        page=self.genTopHTML(onload="registerAjaxProdRequestCalls();")
+        page+="Response from ProdRequest<br/ >"
+        page+="""<a href="javascript:ajaxGetProdRequest()">get</a>"""
+        page+="""<div id="id_ProdRequest"></div>"""
+        page+=self.genBottomHTML()
+        return page
+    getProdRequestPage.exposed=True
+
+    def getProdRequest(self,prim,id,**kwargs):
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+#        page = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=%s&id="%(prim,id),{},debug=1)
+        page = """
+<ajax-response><response type="element" id="%s">
+<div class="float_ProdRequest">
+<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div>
+Response from ProdRequest will be placed here<br />
+primaryDataset='%s'
+</div>
+</response></ajax-response>
+"""%(id,id,prim)
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getProdRequest.exposed=True
 
     def getLucene(self,method,params="",**kwargs):
 #        print "\n\ngetLucene",params,kwargs
