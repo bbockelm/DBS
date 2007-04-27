@@ -2,6 +2,7 @@
 <hr class="dbs" />
 Dataset:
 <table class="offset_left">
+#set empty,prim,proc,tier=$path.split("/")
 #set idPath=$path.replace("/","___")
 <tr>
 <td align="left">
@@ -16,6 +17,12 @@ Dataset:
 ####set action="ajaxMoreInfo&#40;&#34;"+$dbsInst+"&#34;,&#34;"+$path+"&#34;,&#34;"+$appPath+"&#34;,&#34;"+$idPath+"&#34;,&#34;"+$userMode+"&#34;&#41;"
 #set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
 <a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">&#171; more &#187;</a>
+#*
+&nbsp;
+<a href="javascript:ajaxEngine.registerAjaxElement('ProdRequest_$idPath');ajaxGetProdRequest('$prim','ProdRequest_$idPath')">ProdRequest</a>
+*#
+<div name="ProdRequestOutput" id="ProdRequest_$idPath"></div>
+
 </td>
 </tr>
 </table>
