@@ -18,7 +18,7 @@ from   DDUtil   import *
 from   DDConfig import *
 
 class DDParamServer(DDLogger): 
-    def __init__(self,verbose=0):
+    def __init__(self,server="",verbose=0):
         self.ddConfig   = DDConfig()
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDParamServer",verbose)
 #        self.serverHost = self.ddConfig.serverHost()
@@ -28,7 +28,10 @@ class DDParamServer(DDLogger):
         self.serverPort = 8080
         self.serverHost = "http://www.google.com"
         self.serverPort = 80
-        self.server     = "edge.fnal.gov:8888"
+        if  not server:
+            self.server     = "edge.fnal.gov:8888"
+        else:
+            self.server     = server
 
     def sendGetMessage(self,file="index.html",debug=0):
         if debug:
