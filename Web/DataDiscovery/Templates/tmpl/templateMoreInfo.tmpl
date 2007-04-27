@@ -68,6 +68,14 @@ Analysis dataset(s)
 <li class="moreInfo">
 <a href="$host/crabCfg?dataset=$path&amp;totEvt=-1&amp;userMode=$userMode">crab.cfg</a>
 </li>
+
+<li class="moreInfo">
+#set empty,prim,proc,tier=$path.split("/")
+#set idPath=$path.replace("/","___")
+###<a href="javascript:ajaxEngine.registerAjaxElement('ProdRequest_$idPath');ajaxGetProdRequest('$prim','ProdRequest_$idPath')">ProdRequest</a>
+<a href="javascript:GetProdRequestOutput('ProdRequest_$idPath','$prim')">ProdRequest</a>
+</li>
+
 </ul>
 </div>
 
