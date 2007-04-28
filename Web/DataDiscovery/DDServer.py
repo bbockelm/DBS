@@ -779,6 +779,7 @@ class DDServer(DDLogger,Controller):
                     'groupList'   : emptyList,
                     'dataTypes'   : emptyList,
                     'softReleases': emptyList,
+                    'primTypes'   : emptyList,
                     'siteList'    : emptyList,
                     'style'       : "width:200px",
                     'prdForm'     : prdForm,
@@ -2030,7 +2031,7 @@ class DDServer(DDLogger,Controller):
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="kw_prim_holder">"""
         self.helperInit(dbsInst)
-        group=tier=rel="*"
+        group=tier=rel=dsType="*"
         for key in kwargs:
             if key=='group':
                group=kwargs['group']
@@ -2038,8 +2039,10 @@ class DDServer(DDLogger,Controller):
                tier=kwargs['tier']
             if key=='rel':
                rel=kwargs['rel']
+            if key=='dsType':
+               dsType=kwargs['dsType']
 
-        dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel)
+        dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel,dsType)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         nameSpace = {'name':'primD','iList': natsort24(dList),'selTag':'kw_prim','changeFunction':'','style':style}
@@ -2071,6 +2074,27 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     getSoftwareReleases.exposed=True
+
+    def getPrimaryDSTypes(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get primary DS types for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_primType_holder">"""
+        self.helperInit(dbsInst)
+        dList = ['Any']+self.helper.getPrimaryDSTypes()
+        cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
+        style="width:200px"
+        if kwargs.has_key('style'): style=kwargs['style']
+        nameSpace = {'name':'primType','iList': dList,'selTag':'kw_primType','changeFunction':cFunc,'style':style}
+        t = templateSelect(searchList=[nameSpace]).respond()
+        page+=str(t)
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getPrimaryDSTypes.exposed=True
 
 #    def getDatasets(self):
 #        """
