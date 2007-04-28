@@ -384,13 +384,13 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
-              id,name,ver,type,ann,cDate,cBy,mDate,mBy=item
+              id,name,ver,psType,ann,cDate,cBy,mDate,mBy=item
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
               if id and name:
-                  oList.append((id,name,ver,type,ann,cDate,cBy,mDate,mBy))
+                  oList.append((id,name,ver,psType,ann,cDate,cBy,mDate,mBy))
       except:
           printExcept()
           raise "Fail in listApplicationsConfigs"
@@ -450,7 +450,7 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
-              softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy=item
+              softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy=item
               if not name: continue
 #              if self.dbManager.dbType[self.dbsInstance]=='oracle':
 #                 if content and type(content) is types.StringType:
@@ -460,8 +460,8 @@ class DDHelper(DDLogger):
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
-              if name and not oList.count((softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy)):
-                 oList.append((softRel,name,content,ver,type,ann,cDate,cBy,mDate,mBy))
+              if name and not oList.count((softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy)):
+                 oList.append((softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy))
       except:
           printExcept()
           raise "Fail in listApplicationsConfigsContent"
@@ -934,25 +934,43 @@ class DDHelper(DDLogger):
       oList.reverse()
       return oList
       
-  def getPrimaryDatasets(self,group="*",tier="*",rel="*",html=0):
+  def getPrimaryDSTypes(self):
+      return self.getTableColumn('PrimaryDSType','Type')
+
+  def getPrimaryDatasets(self,group="*",tier="*",rel="*",dsType="mc",html=0):
       t1=time.time()
       con = self.connectToDB()
       oList   = []
       if group.lower()=="any": group="*"
       if tier.lower()=="any": tier="*"
       if rel.lower()=="any": rel="*"
+      if dsType.lower()=="any": dsType="*"
       if  group=="*" and tier=="*" and rel=="*":
-          content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=0,limit=0)
-          for entry in content:
-              name=entry[0]
-              if html:
-                 navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
-                 dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-    #             blockInfo="ajaxGetDbsData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-    #             runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-    #             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
-                 name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
-              oList.append(name)
+#          content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=0,limit=0)
+          try:
+              tpm  = self.alias('PrimaryDataset','tpm')
+              tpmt = self.alias('PrimaryDSType','tpmt')
+              oSel = [self.col(tpm,'Name')]
+              sel  = sqlalchemy.select(oSel,
+                     from_obj=[
+                     tpm.outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                         ],distinct=True,order_by=oSel )
+              if dsType and dsType!="*":
+                 sel.append_whereclause(self.col(tpmt,'Type')==dsType)
+              result = self.getSQLAlchemyResult(con,sel)
+              for item in result:
+                  if item[0]:
+                     oList.append(item[0])
+          except:
+              printExcept()
+              raise "Fail in getPrimaryDatasets"
+#          for entry in content:
+#              name=entry[0]
+#              if html:
+#                 navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
+#                 dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
+#                 name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
+#              oList.append(name)
       else: # I need to make a full query
 
           try:
@@ -961,6 +979,7 @@ class DDHelper(DDLogger):
               talc = self.alias('AlgorithmConfig','talc')
               tprd = self.alias('ProcessedDataset','tprd')
               tpm  = self.alias('PrimaryDataset','tpm')
+              tpmt = self.alias('PrimaryDSType','tpmt')
               tpds = self.alias('ProcDSTier','tpds')
               tdt  = self.alias('DataTier','tdt')
               tpal = self.alias('ProcAlgo','tpal')
@@ -969,6 +988,7 @@ class DDHelper(DDLogger):
                      from_obj=[
                      tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
                      .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
                      .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
@@ -980,6 +1000,8 @@ class DDHelper(DDLogger):
                  self.joinTiers(sel,tpds,tier,tprd)
               if rel and rel!="*":
                  sel.append_whereclause(self.col(tapv,'Version')==rel)
+              if dsType and dsType!="*":
+                 sel.append_whereclause(self.col(tpmt,'Type')==dsType)
               result = self.getSQLAlchemyResult(con,sel)
               for item in result:
                   if item[0]:
@@ -992,26 +1014,6 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def getPrimaryDatasets_old(self,datasetPath="*",html=0):
-      t1=time.time()
-      con = self.connectToDB()
-      content = self.getTableContent(con,'PrimaryDataset',iList=['Name'],fromRow=0,limit=0)
-      oList   = []
-      for entry in content:
-          name=entry[0]
-          if html:
-             navBar   ="MakeNavBarPrimDS('%s','%s')"%(self.dbsInstance,name)
-             dataInfo ="ajaxGetData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-#             blockInfo="ajaxGetDbsData('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-#             runInfo  ="ajaxGetRuns('%s','all','*','*','%s','*','*')"%(self.dbsInstance,name)
-#             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;%s;%s">%s</a>"""%(navBar,dataInfo,blockInfo,runInfo,name)
-             name="""<a href="javascript:showWaitingMessage();ResetAllResults();%s;%s;">%s</a>"""%(navBar,dataInfo,name)
-          oList.append(name)
-      if self.verbose:
-         self.writeLog("time getPrimaryDatasets: %s"%(time.time()-t1))
-      self.closeConnection(con)
-      return oList
-      
   def getDatasetContent(self,dataset):
       content = self.api.getDatasetContents(dataset)
       return content
@@ -1729,13 +1731,13 @@ class DDHelper(DDLogger):
           raise "Fail in getRuns"
       oList=[]
       for item in result:
-          run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,type=item
+          run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
           cBy=parseCreatedBy(cBy)
           mBy=parseCreatedBy(mBy)
           if not run: continue
-          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':type}
+          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType}
           oList.append(aDict)
       if self.verbose:
          self.writeLog("time in getRuns: %s"%(time.time()-t1))
@@ -1914,7 +1916,7 @@ class DDHelper(DDLogger):
       aList=[]
       for item in result:
           if not item[0]: continue
-          name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate,group,path=item
+          name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate,group,path=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
           cBy=parseCreatedBy(cBy)
@@ -1930,7 +1932,7 @@ class DDHelper(DDLogger):
           dLFN       = parseBLOBdata(dLFN)
           dCut       = parseBLOBdata(dCut)
           dDesc      = parseBLOBdata(dDesc)
-          aList.append((name,ann,type,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate,group,path))
+          aList.append((name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate,group,path))
       if self.verbose:
          self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
       self.closeConnection(con)
