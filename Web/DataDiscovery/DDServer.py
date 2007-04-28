@@ -83,7 +83,7 @@ class DDServer(DDLogger,Controller):
         except:
             pass
 #        self.lucene = DDLucene(verbose)
-        self.pServer= DDParamServer(verbose=verbose)
+        self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
         self.prodRequestServer= DDParamServer(server="iguana3.cern.ch:8030",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.site = ""
