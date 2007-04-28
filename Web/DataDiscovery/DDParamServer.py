@@ -18,20 +18,11 @@ from   DDUtil   import *
 from   DDConfig import *
 
 class DDParamServer(DDLogger): 
-    def __init__(self,server="",verbose=0):
+    def __init__(self,server,verbose=0):
         self.ddConfig   = DDConfig()
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDParamServer",verbose)
-#        self.serverHost = self.ddConfig.serverHost()
-#        self.serverPort = self.ddConfig.serverPort()
         self.verbose = verbose
-        self.serverHost = "http://kusanagi.rcac.purdue.edu"
-        self.serverPort = 8080
-        self.serverHost = "http://www.google.com"
-        self.serverPort = 80
-        if  not server:
-            self.server     = "edge.fnal.gov:8888"
-        else:
-            self.server     = server
+        self.server     = server
 
     def sendGetMessage(self,file="index.html",debug=0):
         if debug:
@@ -72,7 +63,7 @@ class DDParamServer(DDLogger):
 if __name__ == "__main__":
     optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
-    server = DDParamServer()
+    server = DDParamServer(server="edge.fnal.gov:8888")
     data = server.sendGetMessage(debug=1)
     print data
 
@@ -94,3 +85,4 @@ if __name__ == "__main__":
     
     data = server.sendPostMessage("/DBSSearch/query.jsp",param,debug=1)
     print data
+
