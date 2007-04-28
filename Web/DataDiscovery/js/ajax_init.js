@@ -455,6 +455,8 @@ function registerAjaxObjectCalls() {
 //    ajaxEngine.registerAjaxElement('kw_userNavigator');
 }
 function registerAjaxUserMenuCalls() {
+    ajaxEngine.registerRequest('ajaxGetPrimDSTypes','getPrimaryDSTypes');
+    ajaxEngine.registerAjaxElement('kw_primType_holder');
     ajaxEngine.registerRequest('ajaxGetReleases','getSoftwareReleases');
     ajaxEngine.registerAjaxElement('kw_release_holder');
     ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');
@@ -708,6 +710,8 @@ function ajaxGetKWFields() {
   showLoadingMessage('kw_prim_holder');
   ajaxGetTriggerLines();
   showLoadingMessage('kw_site_holder');
+  ajaxGetPrimDSTypes();
+  showLoadingMessage('kw_primType_holder');
   ajaxGetSites('','kw_dbsInstSelector','kw_site_holder','site');
 //  var rel = $('kw_release').value;
 //  var tier= $('kw_tier').value;
@@ -735,14 +739,19 @@ function ajaxGetTriggerLines(_dbs) {
   var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
 }
+function ajaxGetPrimDSTypes(_dbs) {
+  var dbs=getDBS_kw(_dbs);
+  ajaxEngine.sendRequest('ajaxGetPrimDSTypes','dbsInst='+dbs);
+}
 function ajaxUpdatePrimaryDatasets(_dbs) {
   var dbs=getDBS_kw(_dbs);
   var rel = $('kw_release').value;
   var tier= $('kw_tier').value;
   var group=$('kw_group').value;
+  var dsType=$('kw_primType').value;
 //  showLoadingMessage('kw_prim_holder');
   $('kw_prim').disabled="disabled";
-  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel);
+  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel,'dsType='+dsType);
 }
 function ajaxGetTiers(_dbs) {
   var dbs=getDBS_kw(_dbs);
