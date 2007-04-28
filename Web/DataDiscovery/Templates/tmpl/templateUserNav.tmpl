@@ -105,6 +105,26 @@
 
 <tr>
 <td valign="top" align="right">
+<div id="primDSTypeDef">
+<b>Data types</b>
+</div>
+</td>
+<td>
+
+<div id="kw_primType_holder">
+<select name="primType" id="kw_primType" onchange="javascript:ajaxUpdatePrimaryDatasets();" style="$style">
+<option value="Any" selected="selected">Any</option>
+#for primType in $primTypes
+<option value="$primtType">$primType</option>
+#end for
+</select>
+</div>
+
+</td>
+</tr>
+
+<tr>
+<td valign="top" align="right">
 <div id="primDef">
 <b>Primary dataset/<br />MC generators</b>
 </div>
@@ -170,7 +190,10 @@
 
 <tr>
 <td align="left">
+<br />
+<br />
 <hr class="dbs" />
+<br />
 </td>
 </tr>
 
@@ -264,6 +287,8 @@ tooltip="<p>Use this form to search for processed dataset, the input field suppo
 MakeTooltip("t_proc","procDef",tooltip);
 tooltip="<p>The processed dataset path contains a three component: primary, processed datasets and data tier. Composed tier indicates a list of tiers included in processed dataset. Example: GEN-SIM. Please note, the dashes are required separator, but tier order is arbitrary.</p>";
 MakeTooltip("t_compTier","composedTierDef",tooltip);
+tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic for cosmic data, raw for raw data, data for real processed data.</p>";
+MakeTooltip("t_primType","primDSTypeDef",tooltip);
 </script>
 
 <!-- end of templateUserNav.tmpl -->
