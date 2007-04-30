@@ -120,6 +120,17 @@ def convertListToString(iList):
     s=s[:-1]+"]"
     return s
 
+def sortSitesByDomain(siteList):
+    siteDict={}
+    for site in siteList:
+        components=site.split(".")
+        domain=components[-1]
+        if siteDict.has_key(domain):
+           siteDict[domain]+=[site]
+        else:
+           siteDict[domain]=[site]
+    return siteDict
+
 def getListOfSites(dbsInst='all'):
     """
        Generats list of DLS sites out given DBS instance and DLS_INFO (dls.all) file.
