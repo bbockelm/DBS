@@ -130,6 +130,8 @@ class DDServer(DDLogger,Controller):
             if self.verbose:
                print "Read from config"
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             self.dbsdd = 'http://'+self.hostname+":"+str(self.port)
             print "Read from hostname and port"
@@ -1415,6 +1417,8 @@ class DDServer(DDLogger,Controller):
                 try:
                     bList=self.helper.getBlocksFromSite(site)
                 except:
+                    if self.verbose:
+                       self.writeLog(getExcept())
                     printExcept()
                     page+="No LFNs found for site '%s'\n"%site
                     pass
@@ -1427,7 +1431,7 @@ class DDServer(DDLogger,Controller):
                     for item in lfnList:
                         if  what=="cff":
                             lfn=item[0]
-                            if lfn==lfnList[-1][0]:
+                            if lfn==lfnList[-1][0] and blockName==bList[-1]:
                                page+="'%s'\n"%lfn
                             else:
                                page+="'%s',\n"%lfn
@@ -1435,6 +1439,8 @@ class DDServer(DDLogger,Controller):
                             lfn=item[0]
                             page+="%s\n"%lfn
                 except:
+                    if self.verbose:
+                       self.writeLog(getExcept())
                     printExcept()
                     page+="No LFNs found int DBS for block='%s'\n"%blockName
                     pass
@@ -2158,6 +2164,8 @@ class DDServer(DDLogger,Controller):
             t = templateProvenance(searchList=[nameSpace]).respond()
             page+= str(t)
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             page="No provenance information found at this time"
         return page
@@ -2335,6 +2343,8 @@ class DDServer(DDLogger,Controller):
            res=DD_INSTANCE.insert().execute(dbsinstance=dbsInst)
            dbsid=res.last_inserted_ids()[0]
         except:
+           if self.verbose:
+              self.writeLog(getExcept())
            printExcept()
            c = DD_USER.select(and_(DD_INSTANCE.c.dbsinstance==dbsInst)).execute()
            r = c.fetchone()
@@ -2387,6 +2397,8 @@ class DDServer(DDLogger,Controller):
                         order_by=[desc(DD_HISTORY.c.history_date),desc(DD_HISTORY.c.history_time)]).execute()
             cList=c.fetchall()
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             if not self.quiet:
                printExcept()
             pass
@@ -2424,6 +2436,8 @@ class DDServer(DDLogger,Controller):
                         order_by=[desc(DD_HISTORY.c.history_date),desc(DD_HISTORY.c.history_time)]).execute()
             cList=c.fetchall()
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             if not self.quiet:
                printExcept()
             pass
@@ -2457,6 +2471,8 @@ class DDServer(DDLogger,Controller):
         try:
             self.storeHistory(dbsInst,userId,actionString,alias)
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             pass
         # AJAX wants response as "text/xml" type
@@ -2742,6 +2758,8 @@ class DDServer(DDLogger,Controller):
                 t = templateTable(searchList=[nameSpace]).respond()
                 p=str(t)
             except:
+                if self.verbose:
+                   self.writeLog(getExcept())
                 printExcept()
                 p="No information about '%s' found for\nDBS='%s'\nLFN='%s'"%(msg,dbsInst,lfn)
         else:
@@ -3176,6 +3194,8 @@ primaryDataset='%s'
             c=sel.execute()
             cList=c.fetchall()
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             pass
         page=""
@@ -3207,6 +3227,8 @@ primaryDataset='%s'
         try:
             self.storeHistory(dbsInst,userId,queryInXML,alias)
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             pass
     finderStoreQueryInXML.exposed=True
@@ -3225,6 +3247,8 @@ primaryDataset='%s'
         try:
             self.storeHistory(dbsInst,userId,query,alias)
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             pass
     finderStoreQuery.exposed=True
@@ -3247,6 +3271,8 @@ primaryDataset='%s'
             c=sel.execute()
             cList=c.fetchall()
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             pass
         # AJAX wants response as "text/xml" type
@@ -3439,6 +3465,8 @@ primaryDataset='%s'
                           conDict['offset']=long(attrs['offset'])
             xml.sax.parseString (data, Handler ())
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
         if self.verbose==2:
            self.writeLog("Selection list:")
@@ -3512,6 +3540,8 @@ primaryDataset='%s'
                           conDict['offset']=long(attrs['offset'])
             xml.sax.parseString (data, Handler ())
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
         out="\n[select]\n"
         for item in selList:
@@ -3566,6 +3596,8 @@ primaryDataset='%s'
                           conDict['offset']=long(attrs['offset'])
             xml.sax.parseString (data, Handler ())
         except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
         if self.verbose==2:
            self.writeLog("Selection list:")

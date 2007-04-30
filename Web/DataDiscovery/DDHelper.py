@@ -59,6 +59,7 @@ class DDHelper(DDLogger):
       except:
          if self.verbose:
             print "WARNING! some of the functionality will be disable due to missing authentication"
+            self.writeLog(getExcept())
             printExcept()
          pass
       self.dbsTime     = 0
@@ -343,6 +344,8 @@ class DDHelper(DDLogger):
       try:
           content = self.getTableContent(con,table,iList=[column],fromRow=iRow,limit=iLimit,whereDict=whereDict)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getTableColumn"
       for item in content:
@@ -392,6 +395,8 @@ class DDHelper(DDLogger):
               if id and name:
                   oList.append((id,name,ver,psType,ann,cDate,cBy,mDate,mBy))
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listApplicationsConfigs"
       if self.verbose:
@@ -463,6 +468,8 @@ class DDHelper(DDLogger):
               if name and not oList.count((softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy)):
                  oList.append((softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy))
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listApplicationsConfigsContent"
       if self.verbose:
@@ -558,6 +565,8 @@ class DDHelper(DDLogger):
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listProcessedDataset"
       if count:
@@ -663,6 +672,8 @@ class DDHelper(DDLogger):
 #          print "\n\nblockList query\n",sel
           result = self.getSQLAlchemyResult(con,sel,idx)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listBlocks"
       aDict={}
@@ -735,6 +746,8 @@ class DDHelper(DDLogger):
              self.joinTiers(sel,tpds,tier,tprd)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in numberOfEvents"
       evts=0
@@ -802,6 +815,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getDataDescription"
 #      oList = result.fetchall()
@@ -845,6 +860,8 @@ class DDHelper(DDLogger):
                                  )
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listProcessedDataset"
       for item in result:
@@ -882,6 +899,8 @@ class DDHelper(DDLogger):
                                  )
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getApplications"
       oList   = []
@@ -962,6 +981,8 @@ class DDHelper(DDLogger):
                   if item[0]:
                      oList.append(item[0])
           except:
+              if self.verbose:
+                 self.writeLog(getExcept())
               printExcept()
               raise "Fail in getPrimaryDatasets"
 #          for entry in content:
@@ -1007,6 +1028,8 @@ class DDHelper(DDLogger):
                   if item[0]:
                      oList.append(item[0])
           except:
+              if self.verbose:
+                 self.writeLog(getExcept())
               printExcept()
               raise "Fail in getPrimaryDatasets"
       if self.verbose:
@@ -1053,6 +1076,8 @@ class DDHelper(DDLogger):
               oList.append(path)
 
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getDatasetProvenance"
       if self.verbose:
@@ -1079,6 +1104,8 @@ class DDHelper(DDLogger):
             self.setDBSDLS(self.dbsInstance)
 	    result= self.dbManager.engine[self.dbsInstance].execute(q)
 	 except:
+            if self.verbose:
+               self.writeLog(getExcept())
             printExcept()
             raise "Fail to execute \n\n%s\n\n"%q
 	 pass
@@ -1188,6 +1215,8 @@ class DDHelper(DDLogger):
           print "### getTableContent",self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail to get content for table='%s'"%tableName
       return result
@@ -1229,6 +1258,8 @@ class DDHelper(DDLogger):
                  bind_param="%s_%s_%s"%(tableName,col,idx)
                  whereList[idx]=whereList[idx].replace(value,":"+bind_param)
              except:
+                 if self.verbose:
+                    self.writeLog(getExcept())
                  printExcept()
                  raise DDException(args="Your condition %s should be in a form: Table.Column <operator> '<value>'. Please note, spaces should be presented in order to make it work"%item)
 
@@ -1386,6 +1417,8 @@ class DDHelper(DDLogger):
           sel  = sqlalchemy.select([self.col(tqps,'Content')],self.col(tqps,'ID')==id)
           res  = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getConfigContent"
       content=""
@@ -1415,6 +1448,8 @@ class DDHelper(DDLogger):
           for item in result:
               content=item[0]
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getConfigContentByName"
       if self.verbose:
@@ -1460,6 +1495,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tb,'Name')==blockName)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getLFNs"
       oList=[]
@@ -1502,6 +1539,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getLFN_Branches"
       if userMode!='user':
@@ -1550,6 +1589,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getLFN_Lumis"
       if userMode!='user':
@@ -1600,6 +1641,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getLFN_Tiers"
       tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
@@ -1727,6 +1770,8 @@ class DDHelper(DDLogger):
                 self.joinTiers(sel,tpds,tier,tprd)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getRuns"
       oList=[]
@@ -1800,6 +1845,8 @@ class DDHelper(DDLogger):
                       if not siteList.count(dlsHost): siteList.append(dlsHost)
           except:
               if not self.quiet:
+                 if self.verbose:
+                    self.writeLog(getExcept())
                  printExcept()
               if site=="*":
                  hostList.append('N/A')
@@ -1907,6 +1954,8 @@ class DDHelper(DDLogger):
 #          print str(sel).replace("\n","")
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in getAnalysisDS"
       if cDict.has_key('max') and cDict['max']==1:
@@ -1969,6 +2018,8 @@ class DDHelper(DDLogger):
           sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listBlocksFromSite"
       aList=[]
@@ -2009,6 +2060,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tse,'SEName')==site)
           result = self.getSQLAlchemyResult(con,sel)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           raise "Fail in listBlocksFromSite"
       aList=[]
@@ -2035,6 +2088,8 @@ class DDHelper(DDLogger):
           for entry in blockList:
               bList.append(entry.fileBlock.name)
       except:
+          if self.verbose:
+             self.writeLog(getExcept())
           printExcept()
           pass
       return bList
