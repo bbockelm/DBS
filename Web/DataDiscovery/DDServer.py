@@ -782,7 +782,8 @@ class DDServer(DDLogger,Controller):
                     'dataTypes'   : emptyList,
                     'softReleases': emptyList,
                     'primTypes'   : emptyList,
-                    'siteList'    : emptyList,
+#                    'siteList'    : emptyList,
+                    'siteDict'    : {},
                     'style'       : "width:200px",
                     'prdForm'     : prdForm,
                    }
@@ -806,7 +807,8 @@ class DDServer(DDLogger,Controller):
                     'dataTypes'   : self.helper.getDataTiers(),
                     'softReleases': self.helper.getSoftwareReleases(),
 #                    'primDatasets': self.helper.getPrimaryDatasets(),
-                    'siteList'    : self.helper.getSites(), 
+#                    'siteList'    : self.helper.getSites(), 
+                    'siteDict'    : sortSitesByDomain(self.helper.getSites()), 
                     'style'       : "width:200px",
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
@@ -1997,10 +1999,12 @@ class DDServer(DDLogger,Controller):
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="%s">"""%sel
         self.helperInit(dbsInst)
-        dList=['Any']+self.helper.getSites()
+#        dList=['Any']+self.helper.getSites()
+        siteDict=sortSitesByDomain(self.helper.getSites())
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
-        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':style}
+#        nameSpace = {'name':tag,'iList': dList,'selTag':tag,'changeFunction':'','style':style}
+        nameSpace = {'name':tag,'iList': siteDict,'selTag':tag,'changeFunction':'','style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2285,12 +2289,15 @@ class DDServer(DDLogger,Controller):
         """
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
-        siteList=['Any']+self.helper.getSites()
+#        siteList=['Any']+self.helper.getSites()
+        siteList=self.helper.getSites()
+        siteDict=sortSitesByDomain(siteList)
         nameSpace = {
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
                      'dbsList'  : self.dbsList,
-                     'siteList' : siteList,
+#                     'siteList' : siteList,
+                     'siteDict' : siteDict,
                      'userMode' : userMode
                     }
         t = templateSiteForm(searchList=[nameSpace]).respond()

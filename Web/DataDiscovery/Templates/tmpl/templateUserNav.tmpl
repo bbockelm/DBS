@@ -158,9 +158,21 @@
 
 <div id="kw_site_holder">
 <select name="site" id="kw_site" style="$style">
+#*
 <option selected="selected" value="All">Any</option>
 #for site in $siteList
 <option>$site</option>
+#end for
+*#
+<option value="any" selected="selected">Any</option>
+#set inputList=$siteDict.keys()
+#silent $inputList.sort()
+#for domain in $inputList
+<optgroup label="$domain domain">
+#for site in $siteDict[$domain]
+<option value="$site">$site</option>
+#end for
+</optgroup>
 #end for
 </select>
 </div>

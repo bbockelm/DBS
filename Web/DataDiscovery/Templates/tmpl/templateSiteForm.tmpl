@@ -31,8 +31,20 @@ Use this form to show detailed information about particular site.
 
 <div id="form2_siteHolder">
 <select id="form2_siteSelector" name="site">
+#*
 #for site in $siteList
 <option value="$site">$site</option>
+#end for
+*#
+<option value="any" selected="selected">Any</option>
+#set iList=$siteDict.keys()
+#silent $iList.sort()
+#for domain in $iList
+<optgroup label="$domain domain">
+#for site in $siteDict[$domain]
+<option value="$site">$site</option>
+#end for
+</optgroup>
 #end for
 </select>
 </div>
