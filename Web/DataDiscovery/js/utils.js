@@ -45,18 +45,62 @@ function ChangeNameTags(tag,className) {
   }
 }
 function ShowProcDetails()  {
-  ChangeNameTags('detailsTables','show_inline');
-  ChangeNameTags('summaryTables','hide');
-  ChangeNameTags('_summaryTable','td_plain');
-  ChangeNameTags('_detailsTable','td_underline');
-//  $('expandHolder').innerHTML='<span id="expandHolder">Collapse all datasets table <a href="javascript:HideDetails()">Details</a>.</span>';
+   browser=CheckBrowser();
+   var procNames=new Array;
+   if(browser.match('IE')) {
+      var tags=document.getElementsByTagName('div');
+      for(i=0;i<tags.length;i++) {
+          if(tags[i].name=='detailsTables') {
+             tags[i].className='show_inline';
+          }
+          if(tags[i].name=='summaryTables') {
+             tags[i].className='hide';
+          }
+      }
+      var tags=document.getElementsByTagName('table');
+      for(i=0;i<tags.length;i++) {
+          if(tags[i].name=='_detailsTables') {
+             tags[i].className='td_underline';
+          }
+          if(tags[i].name=='_summaryTables') {
+             tags[i].className='td_plain';
+          }
+      }
+   }  else {
+      ChangeNameTags('detailsTables','show_inline');
+      ChangeNameTags('summaryTables','hide');
+      ChangeNameTags('_summaryTable','td_plain');
+      ChangeNameTags('_detailsTable','td_underline');
+   }
 }
 function HideProcDetails()  {
-  ChangeNameTags('detailsTables','hide');
-  ChangeNameTags('summaryTables','show_inline');
-  ChangeNameTags('_summaryTable','td_underline');
-  ChangeNameTags('_detailsTable','td_plain');
-//  $('expandHolder').innerHTML='<span id="expandHolder">Expand all datasets table <a href="javascript:ExpandDetails()">Details</a>.</span>';
+   browser=CheckBrowser();
+   var procNames=new Array;
+   if(browser.match('IE')) {
+      var tags=document.getElementsByTagName('div');
+      for(i=0;i<tags.length;i++) {
+          if(tags[i].name=='detailsTables') {
+             tags[i].className='hide';
+          }
+          if(tags[i].name=='summaryTables') {
+             tags[i].className='show_inline';
+          }
+      }
+      var tags=document.getElementsByTagName('table');
+      for(i=0;i<tags.length;i++) {
+          if(tags[i].name=='_detailsTables') {
+             tags[i].className='td_plain';
+          }
+          if(tags[i].name=='_summaryTables') {
+             tags[i].className='td_underline';
+          }
+      }
+   }  else {
+      ChangeNameTags('detailsTables','hide');
+      ChangeNameTags('summaryTables','show_inline');
+      ChangeNameTags('_summaryTable','td_underline');
+      ChangeNameTags('_detailsTable','td_plain');
+   }
 }
 function ResetTag(tag) {
   ClearTag(tag);
@@ -1280,21 +1324,50 @@ function GetProdRequestOutput(id,prim)  {
    }
 }
 function ShowProdRequestOutput()  {
-   var procNames=document.getElementsByName('ProdRequestOutput');
-   for(i=0;i<procNames.length;i++) {
-       procNames[i].className="show_inline";
-       if(!procNames[i].innerHTML) {
-           var id=procNames[i].id;
-           var arr=id.split("___");
-           var prim=arr[1]; // PrimaryDataset name
-           ajaxEngine.registerAjaxElement(id);
-           ajaxGetProdRequest(prim,id);
+   browser=CheckBrowser();
+   var procNames=new Array;
+   if(browser.match('IE')) {
+       var tags=document.getElementsByTagName('div');
+       for(i=0;i<tags.length;i++) {
+           if(tags[i].name=='ProdRequestOutput') {
+              tags[i].className="show_inline";
+               if(!tags[i].innerHTML) {
+                   var id=tags[i].id;
+                   var arr=id.split("___");
+                   var prim=arr[1]; // PrimaryDataset name
+                   ajaxEngine.registerAjaxElement(id);
+                   ajaxGetProdRequest(prim,id);
+               }
+           }
+       }
+   } else {
+       procNames=document.getElementsByName('ProdRequestOutput');
+       for(i=0;i<procNames.length;i++) {
+           procNames[i].className="show_inline";
+           if(!procNames[i].innerHTML) {
+               var id=procNames[i].id;
+               var arr=id.split("___");
+               var prim=arr[1]; // PrimaryDataset name
+               ajaxEngine.registerAjaxElement(id);
+               ajaxGetProdRequest(prim,id);
+           }
        }
    }
 }
 function HideProdRequestOutput()  {
-   var procNames=document.getElementsByName('ProdRequestOutput');
-   for(i=0;i<procNames.length;i++) {
-       procNames[i].className="hide";
+   browser=CheckBrowser();
+   var procNames=new Array;
+   if(browser.match('IE')) {
+       var tags=document.getElementsByTagName('div');
+       for(i=0;i<tags.length;i++) {
+           if(tags[i].name=='ProdRequestOutput') {
+              tags[i].className="hide";
+           }
+       }
+   } else {
+       var procNames=document.getElementsByName('ProdRequestOutput');
+       for(i=0;i<procNames.length;i++) {
+           procNames[i].className="hide";
+       }
    }
 }
