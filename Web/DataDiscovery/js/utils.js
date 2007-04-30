@@ -59,10 +59,10 @@ function ShowProcDetails()  {
       }
       var tags=document.getElementsByTagName('table');
       for(i=0;i<tags.length;i++) {
-          if(tags[i].name=='_detailsTables') {
+          if(tags[i].name=='_detailsTable') {
              tags[i].className='td_underline';
           }
-          if(tags[i].name=='_summaryTables') {
+          if(tags[i].name=='_summaryTable') {
              tags[i].className='td_plain';
           }
       }
@@ -88,10 +88,10 @@ function HideProcDetails()  {
       }
       var tags=document.getElementsByTagName('table');
       for(i=0;i<tags.length;i++) {
-          if(tags[i].name=='_detailsTables') {
+          if(tags[i].name=='_detailsTable') {
              tags[i].className='td_plain';
           }
-          if(tags[i].name=='_summaryTables') {
+          if(tags[i].name=='_summaryTable') {
              tags[i].className='td_underline';
           }
       }
