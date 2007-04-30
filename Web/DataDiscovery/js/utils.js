@@ -466,6 +466,16 @@ function switchLink(tag,tableId) {
       id.className="td_plain";
   }
 }
+function SwitchToSummary(id) {
+   HideTag('det_table_'+id);
+   ShowTag('sum_table_'+id);
+   switchLink('_sum','table_'+id);
+}
+function SwitchToDetails(id) {
+   ShowTag('det_table_'+id);
+   HideTag('sum_table_'+id);
+   switchLink('_det','table_'+id);
+}
 function whereUsers() {
   var tagArr = new Array('homeUser','homeExpert','homeDBS');
   href=window.location.href;

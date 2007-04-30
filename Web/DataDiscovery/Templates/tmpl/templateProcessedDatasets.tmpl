@@ -51,7 +51,9 @@ contains $nEvents events, $totFiles files, $totSize.
 <table id="_sum_$tableId" name="_summaryTable" class="td_underline">
 <tr>
 <td>
-<a href="javascript:HideTag('det_$tableId');ShowTag('sum_$tableId');switchLink('_sum','$tableId')">
+###<a href="javascript:HideTag('det_$tableId');ShowTag('sum_$tableId');switchLink('_sum','$tableId')">
+###<a href="javascript:SwitchToSummary('$tid')">
+<a href="javascript:SwitchToSummary('$tid');ajax_dhtmlHistory('_switchToSum_$tableId','SwitchToSummary($tid)')">
 Summary
 </a>
 </td>
@@ -64,7 +66,9 @@ Summary
 <table id="_det_$tableId" name="_detailsTable" class="td_plain">
 <tr>
 <td>
-<a href="javascript:ShowTag('det_$tableId');HideTag('sum_$tableId');switchLink('_det','$tableId')">
+###<a href="javascript:ShowTag('det_$tableId');HideTag('sum_$tableId');switchLink('_det','$tableId')">
+###<a href="javascript:SwitchToDetails('$tid')">
+<a href="javascript:SwitchToDetails('$tid');ajax_dhtmlHistory('_switchToDet_$tableId','SwitchToDetails($tid)')">
 Details
 </a>
 </td>
