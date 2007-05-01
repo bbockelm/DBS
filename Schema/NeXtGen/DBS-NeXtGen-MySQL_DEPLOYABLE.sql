@@ -4,9 +4,9 @@
 -- === Build : 628
 -- ======================================================================
 
-drop database if exists dbs_new_era_v25;
-create database dbs_new_era_v25;
-use dbs_new_era_v25;
+drop database if exists dbs_new_era_v17_PA05012007;
+create database dbs_new_era_v17_PA05012007;
+use dbs_new_era_v17_PA05012007;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -1537,8 +1537,10 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things th
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('STREAMER', 'Streamer File');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('INDEX', 'Index File for Streamer Files');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP());
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('STREAMER', UNIX_TIMESTAMP()), ('INDEX', UNIX_TIMESTAMP());
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
 ('SUSYBSM', UNIX_TIMESTAMP()), 
