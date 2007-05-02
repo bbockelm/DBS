@@ -4,7 +4,7 @@ function footerMenuText(){
 {label: "Finder", link: "_finder?userMode=expert", title: "Finder: query-driven search"},
 {label: "Config", link: "_config?userMode=expert", title: "Config search: parameter set search"},
 {label: "Analysis", link: "_analysis?userMode=expert", title: "Search analysis datasets"},
-//{label: "RSS", link: "_rss?userMode=expert", title: "RSS Feeds publish frequently updates about your data"},
+{label: "RSS", link: "_rss?userMode=expert", title: "RSS Feeds publish frequently updates about your data"},
 {label: "Site Search", link: "_siteSearch?userMode=expert", title: "Site search: site-based search"},
 //    {label: "History", link: "_history?userMode=expert", title: "History: persistent history of user queries"},
 {label: "Help", link: "_help?userMode=expert", title: "Help: DBS glossary, terms, feedback form"},
