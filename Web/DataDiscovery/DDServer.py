@@ -2345,6 +2345,7 @@ class DDServer(DDLogger,Controller):
                      'firstDBS' : firstDBS,
                      'firstSite': firstSite,
                      'dbsList'  : self.dbsList,
+                     'dbsGlobal': DBSGLOBAL,
 #                     'siteList' : siteList,
                      'siteDict' : siteDict,
                      'userMode' : userMode

@@ -7,6 +7,7 @@ Use this form to show detailed information about particular site.
 -->
 <form action="getFileBlocks" method="get">
 <table>
+#if $userMode!='user'
 <tr>
 <td>Choose DBS instance</td>
 <td>
@@ -24,6 +25,11 @@ Use this form to show detailed information about particular site.
 <td>
 </td>
 </tr>
+#else
+<input type="hidden" name="dbsInst" value="$dbsGlobal" />
+#end if
+
+
 <tr valign="top">
 <td align="right">Please select a site:
 </td>
