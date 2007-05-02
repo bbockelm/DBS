@@ -600,6 +600,8 @@ class DDHelper(DDLogger):
              self.writeLog(getExcept())
           printExcept()
           raise "Fail in getPrimDetailsForRSS"
+      cDate=""
+      annotation=""
       for item in result:
           cDate,annotation=item
           cDate=timeGMT(cDate)
