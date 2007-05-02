@@ -84,6 +84,7 @@ class DDServer(DDLogger,Controller):
             pass
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
+# ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="iguana3.cern.ch:8030",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.site = ""
@@ -642,9 +643,23 @@ class DDServer(DDLogger,Controller):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('RSS feeds',userMode)
-            t = templateMenuRss(searchList=[]).respond()
+            primDS=self.helper.getPrimaryDatasets()
+
+            nameSearch= {
+                          'dbsInst'     : DBSGLOBAL,
+                          'userMode'    : userMode,
+                          'dbsList'     : self.dbsList,
+                          'softReleases': self.helper.getSoftwareReleases(),
+                          'primTypes'   : self.helper.getPrimaryDSTypes(),
+                          'primDatasets': self.helper.getPrimaryDatasets(dsType="*"),
+                          'style'       : "width:200px",
+                        }
+            t = templateMenuRss(searchList=[nameSearch]).respond()
             page+= str(t)
-            page+= self.getRss(ajax=0,userMode=userMode)
+
+#            t = templateMenuRss(searchList=[]).respond()
+#            page+= str(t)
+#            page+= self.getRss(ajax=0,userMode=userMode)
             page+= self.genBottomHTML()
             return page
         except:
@@ -652,6 +667,40 @@ class DDServer(DDLogger,Controller):
             pass
             return str(t)
     _rss.exposed=True
+
+    def rssGenerator(self,primD,release="Any",dbsInst=DBSGLOBAL,userMode="user",**kwargs):
+        if string.lower(release) =="all" or string.lower(release)=="any": release="*"
+        if string.lower(primD)   =="all" or string.lower(primD)  =="any": primD="*"
+        try:
+            if primD=="*" and release=="*":
+               p="In order to subscribe to RSS feeds you must choose either Primary dataset or Release"
+               return self.genTopHTML()+p+self.genBottomHTML()
+        
+            # get primDesc and creation date
+            primPubDate,primDesc=self.helper.getPrimDetailsForRSS(prim=primD)
+            # for given primary, generate procList
+            procList = self.helper.getProcDSForRss(prim=primD,rel=release)
+            nameSearch={
+                        'host'       : self.dbsdd,
+                        'prim'       : primD,
+                        'release'    : release,
+                        'primDesc'   : primDesc,
+                        'dbsInst'    : dbsInst,
+                        'primPubDate': primPubDate,
+                        'buildDate'  : time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime()),
+                        'procList'   : procList,
+                        'userMode'   : userMode
+                       }
+            t = templateRSS(searchList=[nameSearch]).respond()
+            page=str(t)
+        except:
+            t=self.errorReport("Fail in rss init function")
+            page=str(t)
+            pass
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    rssGenerator.exposed=True
 
     def _siteSearch(self,userMode="expert"):
         try:

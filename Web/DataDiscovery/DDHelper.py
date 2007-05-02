@@ -585,6 +585,89 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
+  def getPrimDetailsForRSS(self,prim="*"):
+      if prim.lower() =='any': prim ="*"
+      con = self.connectToDB()
+      try:
+          tpm  = self.alias('PrimaryDataset','tpm')
+          oSel = [self.col(tpm,'CreationDate'),self.col(tpm,'Annotation')]
+          sel = sqlalchemy.select(oSel,from_obj=[tpm],distinct=True )
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          if self.verbose:
+             self.writeLog(getExcept())
+          printExcept()
+          raise "Fail in getPrimDetailsForRSS"
+      for item in result:
+          cDate,annotation=item
+          cDate=timeGMT(cDate)
+      self.closeConnection(con)
+      return cDate,annotation
+
+  def getProcDSForRss(self,prim="*",rel="*",fromRow=0,limit=0):
+      if rel.lower()  =='any': rel  ="*"
+      if prim.lower() =='any': prim ="*"
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tapv = self.alias('AppVersion','tapv')
+          talc = self.alias('AlgorithmConfig','talc')
+          tpal = self.alias('ProcAlgo','tpal')
+          tblk = self.alias('Block','tblk')
+          tpmd = self.alias('PrimaryDatasetDescription','tpmd')
+          tmcd = self.alias('MCDescription','tmcd')
+          ttrd = self.alias('TriggerPathDescription','ttrd')
+
+          oSel = [self.col(tblk,'Path'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tprd,'CreationDate'),self.col(ttrd,'TriggerPathDescription'),self.col(tmcd,'MCChannelDescription'),self.col(tmcd,'MCProduction'),self.col(tmcd,'MCDecayChain')]
+          sel = sqlalchemy.select(oSel,
+                 from_obj=[
+                     tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .outerjoin(tpmd,onclause=self.col(tpm,'Description')==self.col(tpmd,'ID'))
+                     .outerjoin(tmcd,onclause=self.col(tpmd,'MCChannelDescriptionID')==self.col(tmcd,'ID'))
+                     .outerjoin(ttrd,onclause=self.col(tpmd,'TriggerDescriptionID')==self.col(ttrd,'ID'))
+                     ],distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
+          if prim and prim!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if rel and rel!="*":
+             sel.append_whereclause(self.col(tapv,'Version')==rel)
+          if limit:
+             sel.limit=limit
+             sel.offset=fromRow
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          if self.verbose:
+             self.writeLog(getExcept())
+          printExcept()
+          raise "Fail in getProcDSForRss"
+      for item in result:
+          path,bSize,nFiles,nEvents,status,cDate,trigDesc,mcChannelDesc,mcProd,mcDecay=item
+          if not path: continue
+          cDate=timeGMT(cDate)
+          if status:
+             status="OPEN"
+          else:
+             status="CLOSED"
+          desc="""
+<b>Block size:         </b>%s
+<b>Number of files:    </b>%s
+<b>Number of events:   </b>%s
+<b>Status:             </b>%s
+<b>TriggerDescription: </b>%s
+<b>MCDescription:      </b>%s
+"""%(colorSizeHTMLFormat(bSize),nFiles,nEvents,status,trigDesc,mcChannelDesc)
+          elem=(path,desc,cDate)
+          if not oList.count(elem): oList.append(elem)
+      self.closeConnection(con)
+      return oList
+
   def listDatasetsFromApp(self,appPath="*"):
       return self.listProcessedDatasets(app=appPath)
 

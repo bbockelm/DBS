@@ -1,39 +1,40 @@
-<!-- templateRSS.tmpl -->
-#import time
 <?xml version="1.0" ?>
 <rss version="2.0">
-
 <channel>
+#set title=""
 
+#if $prim!="Any"
+#set title=$title+$prim
+#end if
+
+#if $release!="Any"
+#set title=$title+"|"+$release
+#end if
+
+#if $userMode!='user'
+#set title=$dbsInst+"|"+$title
+#end if
 <title>$title</title>
-<description>$title_description</description>
-<link>$title_link</link>
+<description>$primDesc</description>
+<link>$host/getData?dbsInst=$dbsInst&amp;site=*&amp;app=$release&amp;primD=$prim&amp;tier=*&amp;proc=*&amp;ajax=0&amp;userMode=$userMode</link>
 <language>en-us</language>
-<pubDate>$time.strftime("%a, %d %b %Y %H:%M:%S GMT",$time.gmtime())</pubDate>
-<lastBuildDate>$time.strftime("%a, %d %b %Y %H:%M:%S GMT",$time.gmtime())</lastBuildDate>
+<pubDate>$primPubDate</pubDate>
+<lastBuildDate>$buildDate</lastBuildDate>
 <docs>http://en.wikipedia.org/wiki/RSS_(file_format)</docs>
 <generator>DBS discovery page</generator>
-<managingEditor>vk@mail.lns.cornell.edu</managingEditor>
-<webMaster>vk@mail.lns.cornell.edu</webMaster>
-
-#for item in $pList
-#set path=item
-#set evt=0
-#set link='http://localhost'
-#*
-#set path=$item[0]
-#set evt=$item[1]
-#set link=$item[2]
-*#
+<managingEditor>vkuznet@gmail.com</managingEditor>
+<webMaster>vkuznet@gmail.com</webMaster>
+#for item in $procList
+#set proc=item[0]
+#set procDesc=item[1]
+#set procPubDate=item[2]
 <item>
-<title>$path</title>
-<description>Number of events: $evt</description>
-<link>$link</link>
-<pubDate>$time.strftime("%a, %d %b %Y %H:%M:%S GMT",$time.gmtime())</pubDate>
-<guid>$link</guid>
+<title>$proc</title>
+<description>$procDesc</description>
+<link>$host/getData?dbsInst=cms_dbs_prod_global&amp;site=*&amp;app=$release&amp;primD=*&amp;tier=*&amp;proc=$proc&amp;ajax=0&amp;userMode=$userMode</link>
+<pubDate>$procPubDate</pubDate>
+<guid>$host/getData?dbsInst=cms_dbs_prod_global&amp;site=*&amp;app=$release&amp;primD=*&amp;tier=*&amp;proc=$proc&amp;ajax=0&amp;userMode=$userMode</guid>
 </item>
 #end for
+</channel></rss>
 
-</channel>
-</rss>
-<!-- end of templateRSS.tmpl -->
