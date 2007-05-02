@@ -1307,8 +1307,12 @@ function D2E_tiers() {
 }
 function resetUserNav() {
    $('kw_tier').disabled='';
-   $('kw_cTier').disabled='disabled';
-   $('tierSelector').checked='';
+   if($('kw_cTier')) {
+      $('kw_cTier').disabled='disabled';
+   }
+   if($('tierSelector')) {
+      $('tierSelector').checked='';
+   }
    ajaxGetKWFields();
 }
 function ExpandADSOpts() {
