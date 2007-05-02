@@ -641,17 +641,16 @@ class DDServer(DDLogger,Controller):
 
     def _rss(self,userMode="user"):
         try:
-            page = self.genTopHTML(intro=False,userMode=userMode)
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('RSS feeds',userMode)
-            primDS=self.helper.getPrimaryDatasets()
-
+            emptyList=[]    
             nameSearch= {
                           'dbsInst'     : DBSGLOBAL,
                           'userMode'    : userMode,
                           'dbsList'     : self.dbsList,
-                          'softReleases': self.helper.getSoftwareReleases(),
-                          'primTypes'   : self.helper.getPrimaryDSTypes(),
-                          'primDatasets': self.helper.getPrimaryDatasets(dsType="*"),
+                          'softReleases': emptyList,
+                          'primTypes'   : emptyList,
+                          'primDatasets': emptyList,
                           'style'       : "width:200px",
                         }
             t = templateMenuRss(searchList=[nameSearch]).respond()
@@ -668,9 +667,9 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _rss.exposed=True
 
-    def rssGenerator(self,primD,release="Any",dbsInst=DBSGLOBAL,userMode="user",**kwargs):
-        if string.lower(release) =="all" or string.lower(release)=="any": release="*"
-        if string.lower(primD)   =="all" or string.lower(primD)  =="any": primD="*"
+    def rssGenerator(self,primD,app="Any",dbsInst=DBSGLOBAL,userMode="user",**kwargs):
+        if string.lower(app)   =="all" or string.lower(app)   =="any": app="*"
+        if string.lower(primD) =="all" or string.lower(primD) =="any": primD="*"
         try:
             if primD=="*" and release=="*":
                p="In order to subscribe to RSS feeds you must choose either Primary dataset or Release"
@@ -679,11 +678,12 @@ class DDServer(DDLogger,Controller):
             # get primDesc and creation date
             primPubDate,primDesc=self.helper.getPrimDetailsForRSS(prim=primD)
             # for given primary, generate procList
-            procList = self.helper.getProcDSForRss(prim=primD,rel=release)
+            self.helperInit(dbsInst)
+            procList = self.helper.getProcDSForRss(prim=primD,rel=app)
             nameSearch={
                         'host'       : self.dbsdd,
                         'prim'       : primD,
-                        'release'    : release,
+                        'release'    : app,
                         'primDesc'   : primDesc,
                         'dbsInst'    : dbsInst,
                         'primPubDate': primPubDate,
