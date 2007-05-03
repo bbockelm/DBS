@@ -1,23 +1,23 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 628
+-- === Build : 648
 -- ======================================================================
 
-drop database if exists dbs_new_era_v17_PA05012007;
-create database dbs_new_era_v17_PA05012007;
-use dbs_new_era_v17_PA05012007;
+drop database if exists dbs_new_era_v25;
+create database dbs_new_era_v25;
+use dbs_new_era_v25;
 -- ======================================================================
 
 CREATE TABLE Person
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(100),
-    DistinguishedName     varchar(500)                                                      unique not null,
+    DistinguishedName     varchar(500)      unique not null,
     ContactInfo           varchar(250),
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -28,11 +28,11 @@ CREATE TABLE Person
 CREATE TABLE Role
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    RoleName              varchar(100)                                                      unique not null,
-    RoleDescription       varchar(500)                                                      not null,
+    RoleName              varchar(100)      unique not null,
+    RoleDescription       varchar(500)      not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -43,11 +43,11 @@ CREATE TABLE Role
 CREATE TABLE AssignedRole
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    PersonID              BIGINT UNSIGNED                                                   not null,
-    RoleID                BIGINT UNSIGNED                                                   not null,
+    PersonID              BIGINT UNSIGNED   not null,
+    RoleID                BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -58,11 +58,11 @@ CREATE TABLE AssignedRole
 CREATE TABLE PhysicsGroup
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    PhysicsGroupName      varchar(500)                                                      unique not null,
+    PhysicsGroupName      varchar(500)      unique not null,
     PhysicsGroupConvener  BIGINT UNSIGNED,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -73,10 +73,10 @@ CREATE TABLE PhysicsGroup
 CREATE TABLE SchemaVersion
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    SchemaVersion         varchar(100)                                                      unique not null,
+    SchemaVersion         varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -87,15 +87,15 @@ CREATE TABLE SchemaVersion
 CREATE TABLE PrimaryDataset
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(100)                                                      unique not null,
-    Annotation            varchar(1000)                                                     not null,
+    Name                  varchar(100)      unique not null,
+    Annotation            varchar(1000)     not null,
     Description           BIGINT UNSIGNED,
     StartDate             varchar(100),
     EndDate               varchar(100),
-    Type                  BIGINT UNSIGNED                                                   not null,
+    Type                  BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -106,14 +106,14 @@ CREATE TABLE PrimaryDataset
 CREATE TABLE ProcessedDataset
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)                                                      not null,
-    PrimaryDataset        BIGINT UNSIGNED                                                   not null,
-    PhysicsGroup          BIGINT UNSIGNED                                                   not null,
-    Status                BIGINT UNSIGNED                                                   not null,
+    Name                  varchar(500)      not null,
+    PrimaryDataset        BIGINT UNSIGNED   not null,
+    PhysicsGroup          BIGINT UNSIGNED   not null,
+    Status                BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID),
     unique(Name,PrimaryDataset)
@@ -124,17 +124,17 @@ CREATE TABLE ProcessedDataset
 CREATE TABLE Runs
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    RunNumber             BIGINT UNSIGNED                                                   unique not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    NumberOfLumiSections  BIGINT UNSIGNED                                                   not null,
-    TotalLuminosity       BIGINT UNSIGNED                                                   not null,
-    StoreNumber           BIGINT UNSIGNED                                                   not null,
+    RunNumber             BIGINT UNSIGNED   unique not null,
+    NumberOfEvents        BIGINT UNSIGNED   not null,
+    NumberOfLumiSections  BIGINT UNSIGNED   not null,
+    TotalLuminosity       BIGINT UNSIGNED   not null,
+    StoreNumber           BIGINT UNSIGNED   not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -144,18 +144,18 @@ CREATE TABLE Runs
 CREATE TABLE AnalysisDataset
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)                                                      unique not null,
-    Annotation            varchar(1000)                                                     not null,
-    ProcessedDS           BIGINT UNSIGNED                                                   not null,
-    Definition            BIGINT UNSIGNED                                                   not null,
-    Type                  BIGINT UNSIGNED                                                   not null,
-    Status                BIGINT UNSIGNED                                                   not null,
+    Name                  varchar(500)      unique not null,
+    Annotation            varchar(1000)     not null,
+    ProcessedDS           BIGINT UNSIGNED   not null,
+    Definition            BIGINT UNSIGNED   not null,
+    Type                  BIGINT UNSIGNED   not null,
+    Status                BIGINT UNSIGNED   not null,
     Parent                BIGINT UNSIGNED,
-    PhysicsGroup          BIGINT UNSIGNED                                                   not null,
+    PhysicsGroup          BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -165,20 +165,20 @@ CREATE TABLE AnalysisDataset
 CREATE TABLE Files
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    LogicalFileName       varchar(500)                                                      unique not null,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Block                 BIGINT UNSIGNED                                                   not null,
-    Checksum              varchar(100)                                                      not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    FileSize              BIGINT UNSIGNED                                                   not null,
-    FileStatus            BIGINT UNSIGNED                                                   not null,
-    FileType              BIGINT UNSIGNED                                                   not null,
+    LogicalFileName       varchar(500)      unique not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    Block                 BIGINT UNSIGNED   not null,
+    Checksum              varchar(100)      not null,
+    NumberOfEvents        BIGINT UNSIGNED   not null,
+    FileSize              BIGINT UNSIGNED   not null,
+    FileStatus            BIGINT UNSIGNED   not null,
+    FileType              BIGINT UNSIGNED   not null,
     ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -188,9 +188,9 @@ CREATE TABLE Files
 CREATE TABLE DataTier
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(100)                                                      unique not null,
+    Name                  varchar(100)      unique not null,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
 
@@ -202,16 +202,16 @@ CREATE TABLE DataTier
 CREATE TABLE LumiSection
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    LumiSectionNumber     BIGINT UNSIGNED                                                   not null,
-    RunNumber             BIGINT UNSIGNED                                                   not null,
-    StartEventNumber      BIGINT UNSIGNED                                                   not null,
-    EndEventNumber        BIGINT UNSIGNED                                                   not null,
+    LumiSectionNumber     BIGINT UNSIGNED   not null,
+    RunNumber             BIGINT UNSIGNED   not null,
+    StartEventNumber      BIGINT UNSIGNED   not null,
+    EndEventNumber        BIGINT UNSIGNED   not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
@@ -222,9 +222,9 @@ CREATE TABLE LumiSection
 CREATE TABLE Branch
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)                                                      unique not null,
+    Name                  varchar(500)      unique not null,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
 
@@ -236,13 +236,14 @@ CREATE TABLE Branch
 CREATE TABLE TimeLog
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Action        varchar(100)          not null,
-    Cause         varchar(100)          not null,
-    Effect        varchar(100)          not null,
-    Description   varchar(500)          not null,
-    LastModificationDate          BIGINT,
-    CreationDate  BIGINT,
-    CreatedBy     BIGINT UNSIGNED,
+    Action                varchar(100)      not null,
+    Cause                 varchar(100)      not null,
+    Effect                varchar(100)      not null,
+    Description           varchar(500)      not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -252,11 +253,11 @@ CREATE TABLE TimeLog
 CREATE TABLE DataTierOrder
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    DataTierOrder varchar(250)          unique not null,
-    Description   varchar(1000),
-    CreationDate  BIGINT,
-    CreatedBy     BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    DataTierOrder         varchar(250)      unique not null,
+    Description           varchar(1000),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -267,13 +268,13 @@ CREATE TABLE DataTierOrder
 CREATE TABLE AlgorithmConfig
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    ExecutableName        BIGINT UNSIGNED                                                   not null,
-    ApplicationVersion    BIGINT UNSIGNED                                                   not null,
-    ApplicationFamily     BIGINT UNSIGNED                                                   not null,
-    ParameterSetID        BIGINT UNSIGNED                                                   not null,
+    ExecutableName        BIGINT UNSIGNED   not null,
+    ApplicationVersion    BIGINT UNSIGNED   not null,
+    ApplicationFamily     BIGINT UNSIGNED   not null,
+    ParameterSetID        BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -285,11 +286,11 @@ CREATE TABLE AlgorithmConfig
 CREATE TABLE AppFamily
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    FamilyName            varchar(100)                                                      unique not null,
+    FamilyName            varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -299,11 +300,11 @@ CREATE TABLE AppFamily
 CREATE TABLE AppVersion
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Version               varchar(100)                                                      unique not null,
+    Version               varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -313,11 +314,11 @@ CREATE TABLE AppVersion
 CREATE TABLE AppExecutable
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    ExecutableName        varchar(100)                                                      unique not null,
+    ExecutableName        varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -327,7 +328,7 @@ CREATE TABLE AppExecutable
 CREATE TABLE QueryableParameterSet
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Hash                  varchar(700)                                                      unique not null,
+    Hash                  varchar(700)      unique not null,
     Name                  varchar(1000),
     Version               varchar(100),
     Type                  varchar(100),
@@ -335,7 +336,7 @@ CREATE TABLE QueryableParameterSet
     Content               LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -346,12 +347,12 @@ CREATE TABLE QueryableParameterSet
 CREATE TABLE ParameterBinding
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Self                  BIGINT UNSIGNED                                                   not null,
-    Contains              BIGINT UNSIGNED                                                   not null,
+    Self                  BIGINT UNSIGNED   not null,
+    Contains              BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -378,7 +379,7 @@ CREATE TABLE PrimaryDatasetDescription
 CREATE TABLE TriggerPathDescription
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    TriggerPathDescription  varchar(100)                                                      unique not null,
+    TriggerPathDescription  varchar(100)      unique not null,
     CreatedBy               BIGINT UNSIGNED,
     CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
@@ -392,13 +393,13 @@ CREATE TABLE TriggerPathDescription
 CREATE TABLE MCDescription
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    MCChannelDescription  varchar(100)                                                      not null,
+    MCChannelDescription  varchar(100)      not null,
     MCProduction          varchar(100),
     MCDecayChain          varchar(100),
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID),
     unique(MCChannelDescription,MCProduction,MCDecayChain)
@@ -409,11 +410,11 @@ CREATE TABLE MCDescription
 CREATE TABLE OtherDescription
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Description           varchar(100)                                                      unique not null,
+    Description           varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -423,11 +424,11 @@ CREATE TABLE OtherDescription
 CREATE TABLE FileTier
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    DataTier              BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED   not null,
+    DataTier              BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -439,12 +440,12 @@ CREATE TABLE FileTier
 CREATE TABLE FileParentage
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    ThisFile              BIGINT UNSIGNED                                                   not null,
-    ItsParent             BIGINT UNSIGNED                                                   not null,
+    ThisFile              BIGINT UNSIGNED   not null,
+    ItsParent             BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID),
     unique(ThisFile,ItsParent)
@@ -455,12 +456,12 @@ CREATE TABLE FileParentage
 CREATE TABLE FileRunLumi
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
-    Run                   BIGINT UNSIGNED                                                   not null,
+    Run                   BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -472,11 +473,11 @@ CREATE TABLE FileRunLumi
 CREATE TABLE FileAlgo
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    Algorithm             BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED   not null,
+    Algorithm             BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -488,10 +489,10 @@ CREATE TABLE FileAlgo
 CREATE TABLE FileStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
+    Status                varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -502,10 +503,10 @@ CREATE TABLE FileStatus
 CREATE TABLE FileType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Type                  varchar(100)                                                      unique not null,
+    Type                  varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -516,11 +517,11 @@ CREATE TABLE FileType
 CREATE TABLE FileBranch
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    Branch                BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED   not null,
+    Branch                BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -532,10 +533,10 @@ CREATE TABLE FileBranch
 CREATE TABLE FileValidStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
+    Status                varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -543,14 +544,47 @@ CREATE TABLE FileValidStatus
 
 -- ======================================================================
 
+CREATE TABLE FileTriggerTag
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Fileid                BIGINT UNSIGNED   not null,
+    TriggerTag            varchar(500)      not null,
+    NumberOfEvents        BIGINT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Fileid,TriggerTag)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE FileAssoc
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ThisFile              BIGINT UNSIGNED   not null,
+    ItsAssoc              BIGINT UNSIGNED   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID),
+    unique(ThisFile,ItsAssoc)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE ProcDSRuns
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Run                   BIGINT UNSIGNED                                                   not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    Run                   BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -562,11 +596,11 @@ CREATE TABLE ProcDSRuns
 CREATE TABLE ProcDSTier
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    DataTier              BIGINT UNSIGNED                                                   not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    DataTier              BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -578,12 +612,12 @@ CREATE TABLE ProcDSTier
 CREATE TABLE ProcDSParent
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    ThisDataset           BIGINT UNSIGNED                                                   not null,
-    ItsParent             BIGINT UNSIGNED                                                   not null,
+    ThisDataset           BIGINT UNSIGNED   not null,
+    ItsParent             BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID),
     unique(ThisDataset,ItsParent)
@@ -594,11 +628,11 @@ CREATE TABLE ProcDSParent
 CREATE TABLE ProcAlgo
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Algorithm             BIGINT UNSIGNED                                                   not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    Algorithm             BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -610,10 +644,10 @@ CREATE TABLE ProcAlgo
 CREATE TABLE AnalysisDSType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Type                  varchar(100)                                                      unique not null,
+    Type                  varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -624,10 +658,10 @@ CREATE TABLE AnalysisDSType
 CREATE TABLE AnalysisDSStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
+    Status                varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -638,12 +672,12 @@ CREATE TABLE AnalysisDSStatus
 CREATE TABLE AnalysisDSFileLumi
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    AnalysisDataset       BIGINT UNSIGNED                                                   not null,
+    AnalysisDataset       BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -655,7 +689,7 @@ CREATE TABLE AnalysisDSFileLumi
 CREATE TABLE AnalysisDSDef
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(700)                                                      unique not null,
+    Name                  varchar(700)      unique not null,
     LumiSections          TEXT,
     LumiSectionRanges     TEXT,
     Runs                  TEXT,
@@ -669,7 +703,7 @@ CREATE TABLE AnalysisDSDef
     Description           TEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -680,11 +714,11 @@ CREATE TABLE AnalysisDSDef
 CREATE TABLE SEBlock
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    SEID                  BIGINT UNSIGNED                                                   not null,
-    BlockID               BIGINT UNSIGNED                                                   not null,
+    SEID                  BIGINT UNSIGNED   not null,
+    BlockID               BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
@@ -696,11 +730,11 @@ CREATE TABLE SEBlock
 CREATE TABLE StorageElement
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    SEName                varchar(500)                                                      unique not null,
+    SEName                varchar(500)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -710,17 +744,17 @@ CREATE TABLE StorageElement
 CREATE TABLE Block
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)                                                      unique not null,
-    Path                  varchar(500)                                                      not null,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    BlockSize             BIGINT UNSIGNED                                                   not null,
-    NumberOfFiles         BIGINT UNSIGNED                                                   not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    OpenForWriting        int                                                               not null,
+    Name                  varchar(500)      unique not null,
+    Path                  varchar(500)      not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    BlockSize             BIGINT UNSIGNED   not null,
+    NumberOfFiles         BIGINT UNSIGNED   not null,
+    NumberOfEvents        BIGINT UNSIGNED   not null,
+    OpenForWriting        int               not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
 
     primary key(ID)
   ) ENGINE = InnoDB ;
@@ -730,10 +764,10 @@ CREATE TABLE Block
 CREATE TABLE ProcDSStatus
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Status                varchar(100)                                                      unique not null,
+    Status                varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -744,10 +778,10 @@ CREATE TABLE ProcDSStatus
 CREATE TABLE PrimaryDSType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Type                  varchar(100)                                                      unique not null,
+    Type                  varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
@@ -909,9 +943,15 @@ ALTER TABLE Branch ADD CONSTRAINT
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
+ALTER TABLE TimeLog ADD CONSTRAINT 
+    TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
 
 ALTER TABLE DataTierOrder ADD CONSTRAINT 
     DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE DataTierOrder ADD CONSTRAINT 
+    DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1100,6 +1140,29 @@ ALTER TABLE FileValidStatus ADD CONSTRAINT
     FileValidStatusLastModified_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE FileTriggerTag ADD CONSTRAINT 
+    FileTriggerTag_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
+;
+ALTER TABLE FileTriggerTag ADD CONSTRAINT 
+    FileTriggerTag_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE FileTriggerTag ADD CONSTRAINT 
+    FileTriggerTagLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_ThisFile_FK foreign key(ThisFile) references Files(ID) on delete CASCADE
+;
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_ItsAssoc_FK foreign key(ItsAssoc) references Files(ID) on delete CASCADE
+;
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 ;
@@ -1190,10 +1253,10 @@ ALTER TABLE AnalysisDSDef ADD CONSTRAINT
 ;
 
 ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID) ON DELETE CASCADE
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID) on delete CASCADE
 ;
 ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID) on delete CASCADE
 ;
 ALTER TABLE SEBlock ADD CONSTRAINT 
     SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1332,6 +1395,12 @@ CREATE TRIGGER TR_FileBranch BEFORE INSERT ON FileBranch
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_FileValidStatus BEFORE INSERT ON FileValidStatus
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileTriggerTag BEFORE INSERT ON FileTriggerTag
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_FileAssoc BEFORE INSERT ON FileAssoc
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_ProcDSRuns BEFORE INSERT ON ProcDSRuns
@@ -1474,6 +1543,12 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_FileValidStatus BEFORE UPDATE ON FileValidStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_FileTriggerTag BEFORE UPDATE ON FileTriggerTag
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_FileAssoc BEFORE UPDATE ON FileAssoc
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER UTR_ProcDSRuns BEFORE UPDATE ON ProcDSRuns
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1517,7 +1592,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('v00_00_06', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('DBS_1_0_3', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
@@ -1537,10 +1612,8 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things th
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('STREAMER', 'Streamer File');
-INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('INDEX', 'Index File for Streamer Files');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('STREAMER', UNIX_TIMESTAMP()), ('INDEX', UNIX_TIMESTAMP());
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()) ;
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
 ('SUSYBSM', UNIX_TIMESTAMP()), 

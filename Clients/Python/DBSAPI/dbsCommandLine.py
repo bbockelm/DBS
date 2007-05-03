@@ -680,7 +680,7 @@ class ApiDispatcher:
 		self.reportFile(anObj)
          else:
               for anObj in apiret:
-		print anObj
+		#print anObj
                 print "          %s" %anObj['LogicalFileName']
          print "Total files listed: %s" %len(apiret)
          return

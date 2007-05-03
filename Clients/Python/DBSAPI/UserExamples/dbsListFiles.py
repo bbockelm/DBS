@@ -18,15 +18,18 @@ try:
   (opts,args) = optManager.getOpt()
   api = DbsApi(opts.__dict__)
   
+  #print api.listFiles(patternLFN="TRIG_TEST_FILE", details=True)
+  #for aFile in api.listFiles(patternLFN="TRIG_TEST_FILE_with_assoc", details=True):
+	#print aFile['LogicalFileName'], "Assocciated: ", aFile['FileAssoc']['LogicalFileName']
+
   # List all parameter sets
-  print ""
   #def listFiles(self, path, pri="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None)
   
   #for afile in api.listFiles(""):
-  for afile in api.listFiles("/test_primary_001/TestProcessedDS001/GEN-SIM"):
+  for afile in api.listFiles(path="/test_primary_001/TestProcessedDS001/GEN-SIM"):
   #for afile in api.listFiles("", "test_primary_001", "TestProcessedDS001", ['GEN', 'SIM'], "", "", "", False):
-     print "  %s" % afile
-     #print "  %s" % afile['LogicalFileName']
+     #print "  %s" % afile
+     print "  %s" % afile['LogicalFileName']
      	
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

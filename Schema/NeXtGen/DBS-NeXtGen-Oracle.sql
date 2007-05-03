@@ -1,18 +1,18 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 628
+REM === Build : 649
 REM ======================================================================
 
 CREATE TABLE Person
   (
     ID                    BIGINT UNSIGNED,
     Name                  varchar(100),
-    DistinguishedName     varchar(500)                                                      unique not null,
+    DistinguishedName     varchar(500)      unique not null,
     ContactInfo           varchar(250),
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -22,11 +22,11 @@ REM ======================================================================
 CREATE TABLE Role
   (
     ID                    BIGINT UNSIGNED,
-    RoleName              varchar(100)                                                      unique not null,
-    RoleDescription       varchar(500)                                                      not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    RoleName              varchar(100)      unique not null,
+    RoleDescription       varchar(500)      not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -36,11 +36,11 @@ REM ======================================================================
 CREATE TABLE AssignedRole
   (
     ID                    BIGINT UNSIGNED,
-    PersonID              BIGINT UNSIGNED                                                   not null,
-    RoleID                BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    PersonID              BIGINT UNSIGNED   not null,
+    RoleID                BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -50,11 +50,11 @@ REM ======================================================================
 CREATE TABLE PhysicsGroup
   (
     ID                    BIGINT UNSIGNED,
-    PhysicsGroupName      varchar(500)                                                      unique not null,
+    PhysicsGroupName      varchar(500)      unique not null,
     PhysicsGroupConvener  BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -64,10 +64,10 @@ REM ======================================================================
 CREATE TABLE SchemaVersion
   (
     ID                    BIGINT UNSIGNED,
-    SchemaVersion         varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    SchemaVersion         varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -77,17 +77,17 @@ REM ======================================================================
 CREATE TABLE Runs
   (
     ID                    BIGINT UNSIGNED,
-    RunNumber             BIGINT UNSIGNED                                                   unique not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    NumberOfLumiSections  BIGINT UNSIGNED                                                   not null,
-    TotalLuminosity       BIGINT UNSIGNED                                                   not null,
-    StoreNumber           BIGINT UNSIGNED                                                   not null,
+    RunNumber             BIGINT UNSIGNED   unique not null,
+    NumberOfEvents        BIGINT UNSIGNED   not null,
+    NumberOfLumiSections  BIGINT UNSIGNED   not null,
+    TotalLuminosity       BIGINT UNSIGNED   not null,
+    StoreNumber           BIGINT UNSIGNED   not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -96,10 +96,10 @@ REM ======================================================================
 CREATE TABLE DataTier
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(100)                                                      unique not null,
+    Name                  varchar(100)      unique not null,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModificationDate  BIGINT,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -109,16 +109,16 @@ REM ======================================================================
 CREATE TABLE LumiSection
   (
     ID                    BIGINT UNSIGNED,
-    LumiSectionNumber     BIGINT UNSIGNED                                                   not null,
-    RunNumber             BIGINT UNSIGNED                                                   not null,
-    StartEventNumber      BIGINT UNSIGNED                                                   not null,
-    EndEventNumber        BIGINT UNSIGNED                                                   not null,
+    LumiSectionNumber     BIGINT UNSIGNED   not null,
+    RunNumber             BIGINT UNSIGNED   not null,
+    StartEventNumber      BIGINT UNSIGNED   not null,
+    EndEventNumber        BIGINT UNSIGNED   not null,
     LumiStartTime         varchar(100),
     LumiEndTime           varchar(100),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
   );
@@ -128,10 +128,10 @@ REM ======================================================================
 CREATE TABLE Branch
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)                                                      unique not null,
+    Name                  varchar(500)      unique not null,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    LastModificationDate  BIGINT,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -140,14 +140,15 @@ REM ======================================================================
 
 CREATE TABLE TimeLog
   (
-    ID            BIGINT UNSIGNED,
-    Action        varchar(100)          not null,
-    Cause         varchar(100)          not null,
-    Effect        varchar(100)          not null,
-    Description   varchar(500)          not null,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CreationDate  TIMESTAMP DEFAULT 0,
-    CreatedBy     BIGINT UNSIGNED,
+    ID                    BIGINT UNSIGNED,
+    Action                varchar(100)      not null,
+    Cause                 varchar(100)      not null,
+    Effect                varchar(100)      not null,
+    Description           varchar(500)      not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
 
@@ -156,11 +157,11 @@ REM ======================================================================
 CREATE TABLE DataTierOrder
   (
     ID                    BIGINT UNSIGNED,
-    DataTierOrder varchar(250)          unique not null,
-    Description   varchar(1000),
-    CreationDate  TIMESTAMP DEFAULT 0,
-    CreatedBy     BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    DataTierOrder         varchar(250)      unique not null,
+    Description           varchar(1000),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -170,11 +171,11 @@ REM ======================================================================
 CREATE TABLE AppFamily
   (
     ID                    BIGINT UNSIGNED,
-    FamilyName            varchar(100)                                                      unique not null,
+    FamilyName            varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -183,11 +184,11 @@ REM ======================================================================
 CREATE TABLE AppVersion
   (
     ID                    BIGINT UNSIGNED,
-    Version               varchar(100)                                                      unique not null,
+    Version               varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -196,11 +197,11 @@ REM ======================================================================
 CREATE TABLE AppExecutable
   (
     ID                    BIGINT UNSIGNED,
-    ExecutableName        varchar(100)                                                      unique not null,
+    ExecutableName        varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -209,15 +210,15 @@ REM ======================================================================
 CREATE TABLE QueryableParameterSet
   (
     ID                    BIGINT UNSIGNED,
-    Hash                  varchar(700)                                                      unique not null,
+    Hash                  varchar(700)      unique not null,
     Name                  varchar(1000),
     Version               varchar(100),
     Type                  varchar(100),
     Annotation            varchar(1000),
-    Content               TEXT,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Content               LONGTEXT,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -227,12 +228,12 @@ REM ======================================================================
 CREATE TABLE ParameterBinding
   (
     ID                    BIGINT UNSIGNED,
-    Self                  BIGINT UNSIGNED                                                   not null,
-    Contains              BIGINT UNSIGNED                                                   not null,
+    Self                  BIGINT UNSIGNED   not null,
+    Contains              BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -241,11 +242,11 @@ REM ======================================================================
 CREATE TABLE TriggerPathDescription
   (
     ID                      BIGINT UNSIGNED,
-    TriggerPathDescription  varchar(100)                                                      unique not null,
+    TriggerPathDescription  varchar(100)      unique not null,
     CreatedBy               BIGINT UNSIGNED,
-    CreationDate            TIMESTAMP DEFAULT 0,
+    CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
-    LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate    BIGINT,
     primary key(ID)
   );
 
@@ -254,13 +255,13 @@ REM ======================================================================
 CREATE TABLE MCDescription
   (
     ID                    BIGINT UNSIGNED,
-    MCChannelDescription  varchar(100)                                                      not null,
+    MCChannelDescription  varchar(100)      not null,
     MCProduction          varchar(100),
     MCDecayChain          varchar(100),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID),
     unique(MCChannelDescription,MCProduction,MCDecayChain)
   );
@@ -270,11 +271,11 @@ REM ======================================================================
 CREATE TABLE OtherDescription
   (
     ID                    BIGINT UNSIGNED,
-    Description           varchar(100)                                                      unique not null,
+    Description           varchar(100)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -283,10 +284,10 @@ REM ======================================================================
 CREATE TABLE FileStatus
   (
     ID                    BIGINT UNSIGNED,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Status                varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -296,10 +297,10 @@ REM ======================================================================
 CREATE TABLE FileType
   (
     ID                    BIGINT UNSIGNED,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Type                  varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -309,10 +310,10 @@ REM ======================================================================
 CREATE TABLE FileValidStatus
   (
     ID                    BIGINT UNSIGNED,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Status                varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -322,10 +323,10 @@ REM ======================================================================
 CREATE TABLE AnalysisDSType
   (
     ID                    BIGINT UNSIGNED,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Type                  varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -335,10 +336,10 @@ REM ======================================================================
 CREATE TABLE AnalysisDSStatus
   (
     ID                    BIGINT UNSIGNED,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Status                varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -348,7 +349,7 @@ REM ======================================================================
 CREATE TABLE AnalysisDSDef
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(700)                                                      unique not null,
+    Name                  varchar(700)      unique not null,
     LumiSections          TEXT,
     LumiSectionRanges     TEXT,
     Runs                  TEXT,
@@ -360,9 +361,9 @@ CREATE TABLE AnalysisDSDef
     AnalysisDatasets      TEXT,
     UserCut               TEXT,
     Description           TEXT,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -372,11 +373,11 @@ REM ======================================================================
 CREATE TABLE StorageElement
   (
     ID                    BIGINT UNSIGNED,
-    SEName                varchar(500)                                                      unique not null,
+    SEName                varchar(500)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -385,10 +386,10 @@ REM ======================================================================
 CREATE TABLE ProcDSStatus
   (
     ID                    BIGINT UNSIGNED,
-    Status                varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Status                varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -398,10 +399,10 @@ REM ======================================================================
 CREATE TABLE PrimaryDSType
   (
     ID                    BIGINT UNSIGNED,
-    Type                  varchar(100)                                                      unique not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Type                  varchar(100)      unique not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -411,13 +412,13 @@ REM ======================================================================
 CREATE TABLE AlgorithmConfig
   (
     ID                    BIGINT UNSIGNED,
-    ExecutableName        BIGINT UNSIGNED                                                   not null,
-    ApplicationVersion    BIGINT UNSIGNED                                                   not null,
-    ApplicationFamily     BIGINT UNSIGNED                                                   not null,
-    ParameterSetID        BIGINT UNSIGNED                                                   not null,
+    ExecutableName        BIGINT UNSIGNED   not null,
+    ApplicationVersion    BIGINT UNSIGNED   not null,
+    ApplicationFamily     BIGINT UNSIGNED   not null,
+    ParameterSetID        BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CreationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(ExecutableName,ApplicationVersion,ApplicationFamily,ParameterSetID)
@@ -432,9 +433,9 @@ CREATE TABLE PrimaryDatasetDescription
     MCChannelDescriptionID  BIGINT UNSIGNED,
     OtherDescriptionID      BIGINT UNSIGNED,
     CreatedBy               BIGINT UNSIGNED,
-    CreationDate            TIMESTAMP DEFAULT 0,
+    CreationDate            BIGINT,
     LastModifiedBy          BIGINT UNSIGNED,
-    LastModificationDate    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate    BIGINT,
     primary key(ID),
     unique(TriggerDescriptionID,MCChannelDescriptionID,OtherDescriptionID)
   );
@@ -444,15 +445,15 @@ REM ======================================================================
 CREATE TABLE PrimaryDataset
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(100)                                                      unique not null,
-    Annotation            varchar(1000)                                                     not null,
+    Name                  varchar(100)      unique not null,
+    Annotation            varchar(1000)     not null,
     Description           BIGINT UNSIGNED,
     StartDate             varchar(100),
     EndDate               varchar(100),
-    Type                  BIGINT UNSIGNED                                                   not null,
+    Type                  BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CreationDate          BIGINT,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
   );
@@ -462,14 +463,14 @@ REM ======================================================================
 CREATE TABLE ProcessedDataset
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)                                                      not null,
-    PrimaryDataset        BIGINT UNSIGNED                                                   not null,
-    PhysicsGroup          BIGINT UNSIGNED                                                   not null,
-    Status                BIGINT UNSIGNED                                                   not null,
+    Name                  varchar(500)      not null,
+    PrimaryDataset        BIGINT UNSIGNED   not null,
+    PhysicsGroup          BIGINT UNSIGNED   not null,
+    Status                BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID),
     unique(Name,PrimaryDataset)
   );
@@ -479,18 +480,18 @@ REM ======================================================================
 CREATE TABLE AnalysisDataset
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)                                                      unique not null,
-    Annotation            varchar(1000)                                                     not null,
-    ProcessedDS           BIGINT UNSIGNED                                                   not null,
-    Definition            BIGINT UNSIGNED                                                   not null,
-    Type                  BIGINT UNSIGNED                                                   not null,
-    Status                BIGINT UNSIGNED                                                   not null,
+    Name                  varchar(500)      unique not null,
+    Annotation            varchar(1000)     not null,
+    ProcessedDS           BIGINT UNSIGNED   not null,
+    Definition            BIGINT UNSIGNED   not null,
+    Type                  BIGINT UNSIGNED   not null,
+    Status                BIGINT UNSIGNED   not null,
     Parent                BIGINT UNSIGNED,
-    PhysicsGroup          BIGINT UNSIGNED                                                   not null,
+    PhysicsGroup          BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -499,11 +500,11 @@ REM ======================================================================
 CREATE TABLE ProcDSRuns
   (
     ID                    BIGINT UNSIGNED,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Run                   BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Dataset               BIGINT UNSIGNED   not null,
+    Run                   BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Dataset,Run)
@@ -514,11 +515,11 @@ REM ======================================================================
 CREATE TABLE ProcDSTier
   (
     ID                    BIGINT UNSIGNED,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    DataTier              BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Dataset               BIGINT UNSIGNED   not null,
+    DataTier              BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Dataset,DataTier)
@@ -529,12 +530,12 @@ REM ======================================================================
 CREATE TABLE ProcDSParent
   (
     ID                    BIGINT UNSIGNED,
-    ThisDataset           BIGINT UNSIGNED                                                   not null,
-    ItsParent             BIGINT UNSIGNED                                                   not null,
+    ThisDataset           BIGINT UNSIGNED   not null,
+    ItsParent             BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID),
     unique(ThisDataset,ItsParent)
   );
@@ -544,11 +545,11 @@ REM ======================================================================
 CREATE TABLE ProcAlgo
   (
     ID                    BIGINT UNSIGNED,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Algorithm             BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Dataset               BIGINT UNSIGNED   not null,
+    Algorithm             BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Dataset,Algorithm)
@@ -559,17 +560,17 @@ REM ======================================================================
 CREATE TABLE Block
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)                                                      unique not null,
-    Path                  varchar(500)                                                      not null,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    BlockSize             BIGINT UNSIGNED                                                   not null,
-    NumberOfFiles         BIGINT UNSIGNED                                                   not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    OpenForWriting        int                                                               not null,
+    Name                  varchar(500)      unique not null,
+    Path                  varchar(500)      not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    BlockSize             BIGINT UNSIGNED   not null,
+    NumberOfFiles         BIGINT UNSIGNED   not null,
+    NumberOfEvents        BIGINT UNSIGNED   not null,
+    OpenForWriting        int               not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -578,20 +579,20 @@ REM ======================================================================
 CREATE TABLE Files
   (
     ID                    BIGINT UNSIGNED,
-    LogicalFileName       varchar(500)                                                      unique not null,
-    Dataset               BIGINT UNSIGNED                                                   not null,
-    Block                 BIGINT UNSIGNED                                                   not null,
-    Checksum              varchar(100)                                                      not null,
-    NumberOfEvents        BIGINT UNSIGNED                                                   not null,
-    FileSize              BIGINT UNSIGNED                                                   not null,
-    FileStatus            BIGINT UNSIGNED                                                   not null,
-    FileType              BIGINT UNSIGNED                                                   not null,
+    LogicalFileName       varchar(500)      unique not null,
+    Dataset               BIGINT UNSIGNED   not null,
+    Block                 BIGINT UNSIGNED   not null,
+    Checksum              varchar(100)      not null,
+    NumberOfEvents        BIGINT UNSIGNED   not null,
+    FileSize              BIGINT UNSIGNED   not null,
+    FileStatus            BIGINT UNSIGNED   not null,
+    FileType              BIGINT UNSIGNED   not null,
     ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000),
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -600,11 +601,11 @@ REM ======================================================================
 CREATE TABLE FileTier
   (
     ID                    BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    DataTier              BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Fileid                BIGINT UNSIGNED   not null,
+    DataTier              BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Fileid,DataTier)
@@ -615,12 +616,12 @@ REM ======================================================================
 CREATE TABLE FileParentage
   (
     ID                    BIGINT UNSIGNED,
-    ThisFile              BIGINT UNSIGNED                                                   not null,
-    ItsParent             BIGINT UNSIGNED                                                   not null,
+    ThisFile              BIGINT UNSIGNED   not null,
+    ItsParent             BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     primary key(ID),
     unique(ThisFile,ItsParent)
   );
@@ -630,12 +631,12 @@ REM ======================================================================
 CREATE TABLE FileRunLumi
   (
     ID                    BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED                                                   not null,
+    Fileid                BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
-    Run                   BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Run                   BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Fileid,Lumi,Run)
@@ -646,11 +647,11 @@ REM ======================================================================
 CREATE TABLE FileAlgo
   (
     ID                    BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    Algorithm             BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Fileid                BIGINT UNSIGNED   not null,
+    Algorithm             BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Fileid,Algorithm)
@@ -661,11 +662,11 @@ REM ======================================================================
 CREATE TABLE FileBranch
   (
     ID                    BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    Branch                BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Fileid                BIGINT UNSIGNED   not null,
+    Branch                BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Fileid,Branch)
@@ -673,15 +674,46 @@ CREATE TABLE FileBranch
 
 REM ======================================================================
 
+CREATE TABLE FileTriggerTag
+  (
+    ID                    BIGINT UNSIGNED,
+    Fileid                BIGINT UNSIGNED   not null,
+    TriggerTag            varchar(500)      not null,
+    NumberOfEvents        BIGINT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(Fileid,TriggerTag)
+  );
+
+REM ======================================================================
+
+CREATE TABLE FileAssoc
+  (
+    ID                    BIGINT UNSIGNED,
+    ThisFile              BIGINT UNSIGNED   not null,
+    ItsAssoc              BIGINT UNSIGNED   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    primary key(ID),
+    unique(ThisFile,ItsAssoc)
+  );
+
+REM ======================================================================
+
 CREATE TABLE AnalysisDSFileLumi
   (
     ID                    BIGINT UNSIGNED,
-    AnalysisDataset       BIGINT UNSIGNED                                                   not null,
+    AnalysisDataset       BIGINT UNSIGNED   not null,
     Lumi                  BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    Fileid                BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(AnalysisDataset,Lumi,Fileid)
@@ -692,11 +724,11 @@ REM ======================================================================
 CREATE TABLE SEBlock
   (
     ID                    BIGINT UNSIGNED,
-    SEID                  BIGINT UNSIGNED                                                   not null,
-    BlockID               BIGINT UNSIGNED                                                   not null,
-    CreationDate          TIMESTAMP DEFAULT 0,
+    SEID                  BIGINT UNSIGNED   not null,
+    BlockID               BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(SEID,BlockID)
@@ -782,9 +814,15 @@ ALTER TABLE Branch ADD CONSTRAINT
 ALTER TABLE TimeLog ADD CONSTRAINT 
     TimeLog_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
+ALTER TABLE TimeLog ADD CONSTRAINT 
+    TimeLog_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
 
 ALTER TABLE DataTierOrder ADD CONSTRAINT 
     DataTierOrder_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE DataTierOrder ADD CONSTRAINT 
+    DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AppFamily ADD CONSTRAINT 
@@ -1153,6 +1191,29 @@ ALTER TABLE FileBranch ADD CONSTRAINT
     FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE FileTriggerTag ADD CONSTRAINT 
+    FileTriggerTag_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
+/
+ALTER TABLE FileTriggerTag ADD CONSTRAINT 
+    FileTriggerTag_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileTriggerTag ADD CONSTRAINT 
+    FileTriggerTagLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_ThisFile_FK foreign key(ThisFile) references Files(ID) on delete CASCADE
+/
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_ItsAssoc_FK foreign key(ItsAssoc) references Files(ID) on delete CASCADE
+/
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileAssoc ADD CONSTRAINT 
+    FileAssoc_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
     AnalysisDSFileLumiAnalysisD_FK foreign key(AnalysisDataset) references AnalysisDataset(ID) on delete CASCADE
 /
@@ -1170,10 +1231,10 @@ ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT
 /
 
 ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID) ON DELETE CASCADE
+    SEBlock_SEID_FK foreign key(SEID) references StorageElement(ID) on delete CASCADE
 /
 ALTER TABLE SEBlock ADD CONSTRAINT 
-    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID)
+    SEBlock_BlockID_FK foreign key(BlockID) references Block(ID) on delete CASCADE
 /
 ALTER TABLE SEBlock ADD CONSTRAINT 
     SEBlock_CreatedBy_FK foreign key(CreatedBy) references Person(ID)

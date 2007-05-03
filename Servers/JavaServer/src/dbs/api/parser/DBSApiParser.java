@@ -1,6 +1,6 @@
 /**
- $Revision: 1.10 $"
- $Id: DBSApiParser.java,v 1.10 2007/03/29 15:52:20 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSApiParser.java,v 1.11 2007/04/03 22:02:01 sekhri Exp $"
  *
 */
 
@@ -185,6 +185,7 @@ public class DBSApiParser {
 				file.put("file_child", new Vector());
 				file.put("file_algorithm", new Vector());
 				file.put("file_branch", new Vector());
+				file.put("file_trigger_tag", new Vector());
 				topLevel.add(file);
 				++index;
 			} 
@@ -209,6 +210,8 @@ public class DBSApiParser {
 				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
                         if (name.equals("file_branch") ) 
                                 ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
+                        if (name.equals("file_trigger_tag") )
+                                ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_trigger_tag", "file"))).add(e.attributes);
 			if (name.equals("processed_datatset") ) {
 				psDS = e.attributes;
 			}

@@ -160,6 +160,55 @@ myfile3= DbsFile (
         AlgoList = [algo],
 	RunsList = [1],
          )
+
+# A file with Trigger List
+myfile4= DbsFile (
+        Checksum= '000',
+        LogicalFileName= 'TRIG_TEST_FILE',
+        #QueryableMetadata= 'This is a test file',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EDM',
+        Dataset= proc,
+        #Block= isDictType,
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM', 'GEN'],
+        AlgoList = [algo],
+        BranchList=['testbranch01', 'testbranch02'],
+        ParentList = ['NEW_TEST0002'],
+        ##FileTriggerMap, Kept it disct may be there can be some future expansion and later we can turn it into Object 
+ 	FileTriggerMap=[{'TriggerTag':'TestTrig001', 'NumberOfEvents': 123 }, 
+			{'TriggerTag':'TestTrig002', 'NumberOfEvents': 345 }, 
+			{'TriggerTag':'TestTrig003', 'NumberOfEvents': 678 }]	
+         )
+
+# A file with Trigger List and FileAssoc on another File
+myfile44= DbsFile (
+        Checksum= '000',
+        LogicalFileName= 'TRIG_TEST_FILE_with_assoc',
+        #QueryableMetadata= 'This is a test file',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EDM',
+        Dataset= proc,
+        #Block= isDictType,
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM', 'GEN'],
+        AlgoList = [algo],
+        BranchList=['testbranch01', 'testbranch02'],
+        ParentList = ['NEW_TEST0002'],
+        ##FileTriggerMap, Kept it disct may be there can be some future expansion and later we can turn it into Object 
+        FileTriggerMap=[{'TriggerTag':'TestTrig001', 'NumberOfEvents': 123 },
+                        {'TriggerTag':'TestTrig002', 'NumberOfEvents': 345 },
+                        {'TriggerTag':'TestTrig003', 'NumberOfEvents': 678 }],
+	FileAssoc=myfile4
+         )
+
+
  
 # Need to provide Block name if YOU want to control Block management (The block named must pre-exist), if NOT then DBS will throw this file in
 # Open Block for this Dataset, and will do the Block management too.
@@ -177,13 +226,16 @@ print "In future it will be an optional parameter"
 print "Inserting files in processDS %s" % proc
 
 try:
-    # A file with RunsList and NOT lumi list
 
+    ##api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22])
     #Insert in a Block	
-    #api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22])
     api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22], block)
     #DBS Creates the Block and add file that has ONLYU run, No Lumi
     api.insertFiles (proc, [myfile3] )
+
+    api.insertFiles(proc, [myfile4], block)  
+
+    api.insertFiles(proc, [myfile44], block)  
 
     print "Result: %s" % myfile3
 

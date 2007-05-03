@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.90 $"
- $Id: DBSSql.java,v 1.90 2007/04/03 22:02:02 sekhri Exp $"
+ $Revision: 1.91 $"
+ $Id: DBSSql.java,v 1.91 2007/04/05 19:39:08 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1479,6 +1479,73 @@ public class DBSSql {
                                 "ON perlm.id = br.LastModifiedBy \n";
                 if(fileID != null) {
                         sql += "WHERE fb.Fileid = ? \n";
+                }
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if(fileID != null) {
+                        ps.setString(1, fileID);
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+       public static PreparedStatement listFileTrigs(Connection conn, String fileID) throws SQLException {
+                String sql = "SELECT DISTINCT ftrig.ID as ID, \n " +
+                        	"ftrig.TriggerTag as TRIGGER_TAG, \n" +
+				"ftrig.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+				"ftrig.CreationDate as CREATION_DATE, \n" +
+				"ftrig.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+	                        "percb.DistinguishedName as CREATED_BY, \n" +
+	                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+        	                "FROM FileTriggerTag ftrig \n" +
+		                        "LEFT OUTER JOIN Person percb \n" +
+        	                        	"ON percb.id = ftrig.CreatedBy \n" +
+                		        "LEFT OUTER JOIN Person perlm \n" +
+                                		"ON perlm.id = ftrig.LastModifiedBy \n";
+				if(fileID != null) {
+		                        sql += "WHERE ftrig.Fileid = ? \n";
+                		}
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                if(fileID != null) {
+                        ps.setString(1, fileID);
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+       public static PreparedStatement listFileAssoc(Connection conn, String fileID) throws SQLException {
+               String sql = "SELECT DISTINCT f.ID as ID, \n " +
+                        "f.LogicalFileName as LFN, \n" +
+                        "f.Checksum as CHECKSUM, \n" +
+                        "f.FileSize as FILESIZE, \n" +
+                        "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
+                        "f.CreationDate as CREATION_DATE, \n" +
+                        "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "f.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "f.ValidationStatus as VALIDATION_STATUS, \n" +
+                        "st.Status as STATUS, \n" +
+                        "ty.Type as TYPE, \n" +
+                        "b.Name as BLOCK_NAME, \n"+
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM Files f \n" +
+                        "JOIN FileAssoc fa \n" +
+				"ON fa.ItsAssoc = f.ID \n" +
+                        "LEFT OUTER JOIN Block b \n" +
+                                "ON b.id = f.Block \n "+
+                        "LEFT OUTER JOIN FileType ty \n" +
+                                "ON ty.id = f.FileType \n" +
+                        "LEFT OUTER JOIN FileStatus st \n" +
+                                "ON st.id = f.FileStatus \n" +
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = f.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = f.LastModifiedBy \n";
+
+                if(!DBSUtil.isNull(fileID)) {
+                        sql +=  "WHERE fa.ThisFile = ? \n";
                 }
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);

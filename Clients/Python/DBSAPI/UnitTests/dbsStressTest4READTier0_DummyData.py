@@ -54,7 +54,7 @@ for i in range(maxDS):
 	#Insert Primary
 	apiObj = DbsUnitTestApi(api.insertPrimaryDataset, f)
 	primary = 'StressTestPrimary' + mytime
-	pri1 = DbsPrimaryDataset (Name = primary)
+	pri1 = DbsPrimaryDataset (Name = primary, Type='MC')
 	apiObj.run(pri1, excep = False)
 
 	#Insert Algorithm
@@ -160,7 +160,7 @@ for i in range(maxDS):
                         LogicalFileName= lfn2,
                         #QueryableMetadata= 'This is a test file',
                         NumberOfEvents= 10000,
-                        FileSize= 0456778,
+                        FileSize= 456778,
                         Status= 'VALID',
                         FileType= 'EDM',
                         #LumiList= [lumi1, lumi2],

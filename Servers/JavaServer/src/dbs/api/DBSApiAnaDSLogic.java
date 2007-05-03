@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApiAnaDSLogic.java,v 1.29 2007/03/16 18:42:51 sekhri Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.30 2007/03/20 16:27:51 sekhri Exp $"
  *
  */
 
@@ -401,7 +401,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			
 			//For every lumiid,fileid pair insert a row in AnalysisDSFuleLumi table 
 			while(rs.next()) {
-				System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+				//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
 				insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
 						aDSID,
 						get(rs, "LUMIID"),

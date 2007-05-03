@@ -33,6 +33,7 @@ from dbsFileBranch import DbsFileBranch
 from dbsAlgorithm import DbsAlgorithm
 from dbsAnalysisDataset import DbsAnalysisDataset
 from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
+from dbsFileTriggerTag import DbsFileTriggerTag
 
 from dbsParent import DbsParent
 from dbsConfig import DbsConfig
@@ -911,6 +912,31 @@ class DbsApi(DbsConfig):
                                    LastModifiedBy=str(attrs['last_modified_by']),
                                   ))
 
+	  if name == 'file_trigger_tag':
+		self.currFile['FileTriggerMap'].append( DbsFileTriggerTag (
+				   TriggerTag=str(attrs['trigger_tag']),
+				   NumberOfEvents=getLong(attrs['number_of_events']),
+	         		   CreationDate=str(attrs['creation_date']),
+                                   CreatedBy=str(attrs['created_by']),
+                                   LastModificationDate=str(attrs['last_modification_date']),
+                                   LastModifiedBy=str(attrs['last_modified_by']),
+				))
+
+	  if name == 'file_assoc':
+                self.currFile['FileAssoc'] = DbsFile (
+                                       LogicalFileName=str(attrs['lfn']),
+                                       FileSize=long(attrs['size']),
+                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       Status=str(attrs['status']),
+                                       Block=DbsFileBlock(Name=str(attrs['block_name'])),
+                                       FileType=str(attrs['type']),
+                                       Checksum=str(attrs['checksum']),
+                                       QueryableMetadata=str(attrs['queryable_meta_data']),
+                                       CreationDate=str(attrs['creation_date']),
+                                       CreatedBy=str(attrs['created_by']),
+                                       LastModificationDate=str(attrs['last_modification_date']),
+                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       )
 
         def endElement(self, name):
           if name == 'file':
@@ -1987,6 +2013,7 @@ class DbsApi(DbsConfig):
        xmlinput += " type= '"+file.get('FileType', '')+"'"
        xmlinput += " validation_status='"+file.get('ValidationStatus', '')+"'"
        xmlinput += " queryable_meta_data='"+file.get('QueryableMetadata', '')+"'"
+       xmlinput += " file_assoc='"+self._file_name(file.get('FileAssoc', ''))+"'"
        xmlinput += " >" 
 
        for lumi in file.get('LumiList', []):
@@ -2010,6 +2037,13 @@ class DbsApi(DbsConfig):
 
        for branch in file.get('BranchList',[]):
             xmlinput += "<file_branch name='"+branch+"'/>"
+
+       for trig in file.get('FileTriggerMap',[]):
+	    xmlinput += "<file_trigger_tag trigger_tag='"+trig.get('TriggerTag')+"'"
+	    xmlinput +=	" number_of_events='"+str(trig.get('NumberOfEvents'))+"'"
+	    xmlinput +=	" />"
+
+	    
    
        # LFNs of the Parent Files(s) may be specified, sever expects LFNs
        for parent in file.get('ParentList',[]):
@@ -2669,7 +2703,11 @@ class DbsApi(DbsConfig):
         for abranch in fileDetail['BranchList']:
                 if abranch not in outputFile['BranchList']:
                         outputFile['BranchList'].append(abranch)
- 
+
+	for trig in file['FileTriggerMap']:
+		if trig not in outputFile['FileTriggerMap']:
+			outputFile['FileTriggerMap'].append(trig) 
+
     self.insertFiles(outputFile['Dataset'], [outputFile], outputFile['Block'])
 
   # ------------------------------------------------------------

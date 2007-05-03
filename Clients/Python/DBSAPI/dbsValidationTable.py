@@ -141,7 +141,14 @@ ValidationTable = {
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
           },
-
+"DbsFileTriggerTag" : {
+	 "TriggerTag" : {"Comment" : "Trigger tag", "Validator" : isStringType},
+	 "NumberOfEvents" : {"Comment" : "Number of Events in this trigger tag", "Validator" : isLongType },
+         "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+	},
 "DbsFileBranch" : {
          "Name" : { "Comment" : "REQUIRED and UNIQUE", "Validator" : isStringType },
          "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },

@@ -2255,8 +2255,8 @@ INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('FEVT', 'IS ITS A TIER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('STREAMER', 'Streamer File', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('INDEX', 'Index File for Streamer Files', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+-- INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('STREAMER', 'Streamer File', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+-- INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('INDEX', 'Index File for Streamer Files', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 #
 INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2267,8 +2267,8 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', (select (sysdate - to_
 INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTier (Name, CreationDate) VALUES ('INDEX', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+-- INSERT INTO DataTier (Name, CreationDate) VALUES ('INDEX', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+-- INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSYBSM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));

@@ -10,7 +10,7 @@
 #  M. Anzar Afaq (anzar@fnal[.NOSPAM]gov
 #
 #
-SchemaVersion=v00_00_06
+SchemaVersion=DBS_1_0_3
 #
 ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
@@ -33,7 +33,8 @@ fi
 echo
 echo "   Inserting auto_increment for mysql"
 #cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    int%ID                    int not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
-cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    BIGINT UNSIGNED%ID                    BIGINT UNSIGNED not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
+cat DBS-NeXtGen-MySQL.sql | sed -e "s%ID                    BIGINT UNSIGNED%ID                    BIGINT UNSIGNED not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.0
+cat DBS-NeXtGen-MySQL.sql.TMP.0 | sed -e "s%ID                      BIGINT UNSIGNED%ID                    BIGINT UNSIGNED not null auto_increment%g" > DBS-NeXtGen-MySQL.sql.TMP.1
 cat DBS-NeXtGen-MySQL.sql.TMP.1 | sed -e "s%);%) ENGINE = InnoDB ;%g" > DBS-NeXtGen-MySQL.sql.TMP.2
 cat DBS-NeXtGen-MySQL.sql.TMP.2 | sed -e "s%/%;%g" > DBS-NeXtGen-MySQL.sql.TMP.3
 cat DBS-NeXtGen-MySQL.sql.TMP.3 >> $ddl_file
@@ -95,12 +96,15 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', '
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('STREAMER', 'Streamer File');"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('INDEX', 'Index File for Streamer Files');"  >> $ddl_file
+#echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('STREAMER', 'Streamer File');"  >> $ddl_file
+#echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('INDEX', 'Index File for Streamer Files');"  >> $ddl_file
 #
 #
 #
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('STREAMER', UNIX_TIMESTAMP()), ('INDEX', UNIX_TIMESTAMP());" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()) ;" >> $ddl_file
+#echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('FEVT', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('STREAMER', UNIX_TIMESTAMP()), ('INDEX', UNIX_TIMESTAMP());" >> $ddl_file
+
+
 #echo "INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', UNIX_TIMESTAMP()), 
 #('Individual', '', UNIX_TIMESTAMP()), 
 #('Higgs', '', UNIX_TIMESTAMP()), 
