@@ -658,15 +658,23 @@ class DDHelper(DDLogger):
           else:
              status="CLOSED"
           desc="""
-<table>
-<tr><td><b>Block size:         </b></td><td>%s</td></tr>
-<tr><td><b>Number of files:    </b></td><td>%s</td></tr>
-<tr><td><b>Number of events:   </b></td><td>%s</td></tr>
-<tr><td><b>Status:             </b></td><td>%s</td></tr>
-<tr><td><b>TriggerDescription: </b></td><td>%s</td></tr>
-<tr><td><b>MCDescription:      </b></td><td>%s</td></tr>
-</table>
-"""%(colorSizeHTMLFormat(bSize),nFiles,nEvents,status,trigDesc,mcChannelDesc)
+Block size:         %s
+Number of files:    %s
+Number of events:   %s
+Status:             %s
+TriggerDescription: %s
+MCDescription:      %s
+"""%(sizeFormat(bSize),nFiles,nEvents,status,trigDesc,mcChannelDesc)
+#          desc="""
+#<table>
+#<tr><td><b>Block size:         </b></td><td>%s</td></tr>
+#<tr><td><b>Number of files:    </b></td><td>%s</td></tr>
+#<tr><td><b>Number of events:   </b></td><td>%s</td></tr>
+#<tr><td><b>Status:             </b></td><td>%s</td></tr>
+#<tr><td><b>TriggerDescription: </b></td><td>%s</td></tr>
+#<tr><td><b>MCDescription:      </b></td><td>%s</td></tr>
+#</table>
+#"""%(colorSizeHTMLFormat(bSize),nFiles,nEvents,status,trigDesc,mcChannelDesc)
           elem=(path,desc,cDate)
           if not oList.count(elem): oList.append(elem)
       self.closeConnection(con)
