@@ -179,11 +179,15 @@ class DDServer(DDLogger,Controller):
         if  int(string.split(cherrypy.__version__,".")[0])==3:
             if type=="xml":
                cherrypy.response.headers['Content-Type']='text/xml'
+            elif type=="rss":
+               cherrypy.response.headers['Content-Type']='application/rss+xml'
             else:
                cherrypy.response.headers['Content-Type']='text/html'
         elif int(string.split(cherrypy.__version__,".")[0])==2:
             if type=="xml":
                cherrypy.response.headerMap['Content-Type'] = "text/xml"
+            elif type=="rss":
+               cherrypy.response.headerMap['Content-Type'] = "application/rss+xml"
             else:
                cherrypy.response.headerMap['Content-Type'] = "text/html"
 
@@ -668,6 +672,7 @@ class DDServer(DDLogger,Controller):
     _rss.exposed=True
 
     def rssGenerator(self,primD,app="Any",dbsInst=DBSGLOBAL,userMode="user",**kwargs):
+        self.setContentType('rss')
         if string.lower(app)   =="all" or string.lower(app)   =="any": app="*"
         if string.lower(primD) =="all" or string.lower(primD) =="any": primD="*"
         try:
