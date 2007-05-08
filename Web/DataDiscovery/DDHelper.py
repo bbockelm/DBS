@@ -603,8 +603,9 @@ class DDHelper(DDLogger):
       cDate=""
       annotation=""
       for item in result:
-          cDate,annotation=item
-          cDate=timeGMT(cDate)
+          if item and item[0]:
+             cDate,annotation=item
+             cDate=timeGMT(cDate)
       self.closeConnection(con)
       return cDate,annotation
 
@@ -650,6 +651,7 @@ class DDHelper(DDLogger):
           printExcept()
           raise "Fail in getProcDSForRss"
       for item in result:
+          if not (item and item[0]): continue
           path,bSize,nFiles,nEvents,status,cDate,trigDesc,mcChannelDesc,mcProd,mcDecay=item
           if not path: continue
           cDate=timeGMT(cDate)

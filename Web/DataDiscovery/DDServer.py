@@ -676,7 +676,7 @@ class DDServer(DDLogger,Controller):
         if string.lower(app)   =="all" or string.lower(app)   =="any": app="*"
         if string.lower(primD) =="all" or string.lower(primD) =="any": primD="*"
         try:
-            if primD=="*" and release=="*":
+            if primD=="*" and app=="*":
                p="In order to subscribe to RSS feeds you must choose either Primary dataset or Release"
                return self.genTopHTML()+p+self.genBottomHTML()
         
