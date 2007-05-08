@@ -1374,6 +1374,8 @@ class DDServer(DDLogger,Controller):
                 tid = 't_runs_'+str(idx)
                 dataset = dList[idx]
                 nameSpace = {
+                             'dbsInst'  : dbsInst,
+                             'host'     : self.dbsdd,
                              'runList'  : self.helper.getRuns(dataset),
                              'tableId'  : tid,
                              'proc'     : dataset,
@@ -1401,7 +1403,7 @@ class DDServer(DDLogger,Controller):
         return page
     getParameterSet.exposed=True
 
-    def getLFNlist(self,dbsInst,blockName,dataset="",userMode='user'):
+    def getLFNlist(self,dbsInst,blockName,dataset="",userMode='user',run='*'):
         """
            Retrieves and represents LFN list. The list is formed by L{lfnToHTML}.
            @type  dataset: string 
@@ -1412,16 +1414,13 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         try:
-#            self.htmlInit()
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
-            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
-#            page+= self.genResultsHTML()
-#            page+="""<div id="_snapshot"></div><hr class="dbs" /><br />"""
-#            page+="""<script type="text/javascript">GetParentNavBar()</script>"""
-            page+= self.lfnToHTML(dbsInst,blockName,dataset,userMode)
-#            url="""%s/getLFNlist?dbsInst=%s&amp;blockName=%s&amp;dataset=%s"""%(self.dbsdd,dbsInst,string.replace(blockName,'#','%23'),dataset)
-#            page+="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,122))
+            if run and run!='*':
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s :: run %s'%(blockName,run),userMode)
+            else:
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
+            page+= self.lfnToHTML(dbsInst,blockName,dataset,userMode,run)
             page+= self.genBottomHTML()
             return page
         except:
@@ -1430,7 +1429,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     getLFNlist.exposed = True
  
-    def getLFN_txt(self,dbsInst,blockName,dataset="",userMode='user'):
+    def getLFN_txt(self,dbsInst,blockName,dataset="",userMode='user',run='*'):
         """
            Retrieves and represents LFN list in ASCII form
            @type  dataset: string 
@@ -1441,12 +1440,14 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         try:
-#            self.htmlInit()
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
-            page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
+            if run and run!='*':
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s :: run %s'%(blockName,run),userMode)
+            else:
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
             page+="""<pre>\n"""
-            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
+            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
             for item in lfnList:
                 lfn=item[0]
                 page+="%s\n"%lfn
@@ -1592,7 +1593,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     getLFN_cfg.exposed = True
 
-    def lfnToHTML(self,dbsInst,blockName,dataset="",userMode='user'):
+    def lfnToHTML(self,dbsInst,blockName,dataset="",userMode='user',run='*'):
         """
            Constructs LFN list into table.
            @type  dataset: string
@@ -1602,13 +1603,14 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
-        lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
+        lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
         nameSpace = {
                      'host'      : self.dbsdd,
                      'dbsInst'   : dbsInst,
                      'blockName' : blockName,
                      'lfnList'   : lfnList,
-                     'userMode'  : userMode
+                     'userMode'  : userMode,
+                     'run'       : run
                     }
         t = templateLFN(searchList=[nameSpace]).respond()
         return str(t)

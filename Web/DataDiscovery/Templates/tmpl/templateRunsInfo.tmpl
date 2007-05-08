@@ -1,5 +1,5 @@
 <!-- templateRunsInfo.tmpl -->
-
+#import urllib
 #set nRun=len($runList)
 <div>
 Dataset:<br />
@@ -28,6 +28,7 @@ contains $nRun run(s)
 <td>Modified by</td>
 <td>Modification time</td>
 #end if
+<td>LFNs</td>
 </tr>
 #for dbsDict in $runList
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
@@ -54,6 +55,11 @@ $dbsDict['RunNumber']
 <td align="right">$dbsDict['LastModifiedBy']</td>
 <td align="right">$dbsDict['LastModificationDate']</td>
 #end if
+#set bName=$urllib.quote($dbsDict['BlockName'])
+<td align="right">
+<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$dbsDict['RunNumber']">txt</a>
+<a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$dbsDict['RunNumber']">details</a>
+</td>
 </tr>
 #end for
 </table>

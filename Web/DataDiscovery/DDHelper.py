@@ -1554,7 +1554,7 @@ MCDescription:      %s
       self.closeConnection(con)
       return content
 
-  def getLFNs(self,dbsInst,blockName,dataset):
+  def getLFNs(self,dbsInst,blockName,dataset,run="*"):
       prim="*"
       tier="*"
       proc="*"
@@ -1570,6 +1570,8 @@ MCDescription:      %s
           tf   = self.alias('Files','tf')
           tfs  = self.alias('FileStatus','tfs')
           tft  = self.alias('FileType','tft')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tr   = self.alias('Runs','tr')
           oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents'),self.col(tf,'Checksum')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
@@ -1581,6 +1583,19 @@ MCDescription:      %s
                          .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
                      ],distinct=True,order_by=oSel
                                   )
+          if  run and run!="*":                        
+              sel  = sqlalchemy.select(oSel,
+                     from_obj=[
+                         tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                             .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                             .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                             .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                             .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+                             .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
+                             .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'FileId'))
+                             .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
+                         ],distinct=True,order_by=oSel
+                                      )
           sel.append_whereclause(self.col(tf,'Block')==self.col(tb,'ID'))
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
@@ -1590,6 +1605,8 @@ MCDescription:      %s
              self.joinTiers(sel,tpds,tier,tprd)
           if blockName and blockName!="*":
              sel.append_whereclause(self.col(tb,'Name')==blockName)
+          if run and run!="*":
+             sel.append_whereclause(self.col(tr,'RunNumber')==run)
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
           result = self.getSQLAlchemyResult(con,sel)
       except:
@@ -1837,6 +1854,7 @@ MCDescription:      %s
       oList  = []
       try:
           tprd = self.alias('ProcessedDataset','tprd')
+          tblk = self.alias('Block','tblk')
           tpm  = self.alias('PrimaryDataset','tpm')
           tpds = self.alias('ProcDSTier','tpds')
           tdt  = self.alias('DataTier','tdt')
@@ -1846,10 +1864,11 @@ MCDescription:      %s
           tp1   = self.alias('Person','tp1')
           tp2   = self.alias('Person','tp2')
 
-          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type')]
+          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Name')]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+                          .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
@@ -1875,13 +1894,13 @@ MCDescription:      %s
       oList=[]
       for item in result:
           if  item and item[0]:
-              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType=item
+              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,bName=item
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
               if not run: continue
-              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType}
+              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'BlockName':bName}
               oList.append(aDict)
       if self.verbose:
          self.writeLog("time in getRuns: %s"%(time.time()-t1))

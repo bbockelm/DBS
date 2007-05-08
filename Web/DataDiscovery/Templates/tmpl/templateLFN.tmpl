@@ -11,6 +11,9 @@ Block:<br />
 </table>
 #set nLFNs=len($lfnList)
 contians $nLFNs file(s)
+#if $run and $run!='*'
+with run $run
+#end if
 </div>
 <p />
 <!-- Main table -->
