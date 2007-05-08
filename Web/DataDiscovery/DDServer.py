@@ -1413,6 +1413,7 @@ class DDServer(DDLogger,Controller):
         """
         try:
 #            self.htmlInit()
+            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
 #            page+= self.genResultsHTML()
@@ -1441,6 +1442,7 @@ class DDServer(DDLogger,Controller):
         """
         try:
 #            self.htmlInit()
+            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
             page+="""<pre>\n"""
@@ -1463,6 +1465,7 @@ class DDServer(DDLogger,Controller):
         """
         try:
 #            self.htmlInit()
+            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
             page+="""<pre>\n"""
@@ -1522,6 +1525,7 @@ class DDServer(DDLogger,Controller):
         """
         try:
 #            self.htmlInit()
+            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             nameSpace={'name':name,'content':self.helper.getConfigContent(dbsInst,id)}
             t = templateAppConfigContent(searchList=[nameSpace]).respond()
@@ -1567,6 +1571,7 @@ class DDServer(DDLogger,Controller):
         """
         try:
 #            self.htmlInit()
+            self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
             page+="""<pre>\n"""
@@ -2802,6 +2807,7 @@ class DDServer(DDLogger,Controller):
 
     def getTableTemplate(self,func,dbsInst,lfn,msg,ajax,userMode='user',**kwargs):
 #        self.htmlInit()
+        self.helperInit(dbsInst)
         tList,iList=func(dbsInst,lfn,userMode)
         p=content=""
         if int(ajax):
