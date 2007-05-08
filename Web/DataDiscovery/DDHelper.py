@@ -1590,6 +1590,7 @@ MCDescription:      %s
              self.joinTiers(sel,tpds,tier,tprd)
           if blockName and blockName!="*":
              sel.append_whereclause(self.col(tb,'Name')==blockName)
+          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
