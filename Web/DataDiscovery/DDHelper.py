@@ -1874,14 +1874,15 @@ MCDescription:      %s
           raise "Fail in getRuns"
       oList=[]
       for item in result:
-          run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType=item
-          cDate=timeGMT(cDate)
-          mDate=timeGMT(mDate)
-          cBy=parseCreatedBy(cBy)
-          mBy=parseCreatedBy(mBy)
-          if not run: continue
-          aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType}
-          oList.append(aDict)
+          if  item and item[0]:
+              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType=item
+              cDate=timeGMT(cDate)
+              mDate=timeGMT(mDate)
+              cBy=parseCreatedBy(cBy)
+              mBy=parseCreatedBy(mBy)
+              if not run: continue
+              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType}
+              oList.append(aDict)
       if self.verbose:
          self.writeLog("time in getRuns: %s"%(time.time()-t1))
       self.closeConnection(con)
