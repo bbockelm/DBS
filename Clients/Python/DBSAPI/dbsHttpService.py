@@ -57,14 +57,33 @@ class DbsHttpService:
    Gets the User Proxy if it exists otherwise THROWs an exception
    """
 
-   if os.environ.has_key('X509_USER_PROXY'):
+   # First presendence to HOST Certificate, RARE
+   if os.environ.has_key('X509_HOST_CERT'):
+        proxy = os.environ['X509_HOST_CERT']
+        key = os.environ['X509_HOST_KEY']
+   
+   # Second preference to User Proxy, very common
+   elif os.environ.has_key('X509_USER_PROXY'):
 	proxy = os.environ['X509_USER_PROXY']
+	key = proxy
+
+   # Third preference to User Cert/Proxy combinition
+   elif os.environ.has_key('X509_USER_CERT'):
+   	proxy = os.environ['X509_USER_CERT']
+   	key = os.environ['X509_USER_KEY']
+
+   # Worst case, look for proxy at default location /tmp/x509up_u$uid
    else :
 	uid = os.getuid()
    	proxy = '/tmp/x509up_u'+str(uid)
-   if not os.path.exists(proxy):
-	raise DbsProxyNotFound(args="Required Proxy for Secure Call \n("+self.Url+") not found for user %s" %os.getlogin(), code="9999")
-   return proxy, proxy
+	key = proxy
+
+   #Set but not found
+   if not os.path.exists(proxy) or not os.path.exists(key):
+	raise DbsProxyNotFound(args="Required Proxy for Secure Call \n("+self.Url+") not found for user '%s'" %os.getlogin(), code="9999")
+
+   # All looks OK, still doesn't gurantee proxy's validity etc.
+   return key, proxy
    
   def _call (self, args, typ):
     """
