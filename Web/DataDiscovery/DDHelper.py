@@ -10,7 +10,9 @@ CLI DBS Data discovery toolkit.
 """
 
 # import system modules
-import string, sys, time, types, popen2
+import string, sys, time, types, popen2, httplib
+import elementtree
+from elementtree.ElementTree import fromstring
 
 # import DBS modules
 import DDOptions
@@ -1303,6 +1305,9 @@ MCDescription:      %s
               tName,col = key.split('.')
               t=self.dbManager.getTable(self.dbsInstance,tName)
               val = whereDict[key]
+#              val = val.replace('*','%') # replace wild card
+#              val = val.replace('%%','%') # remove double '%'
+#              if val[-1]=='%': val=val[:-1] # don't count last '%'
               lval=self.col(t,col)
               sel.append_whereclause(lval.like("%s%%"%str(val)))
           if len(iList)==1:
@@ -1847,6 +1852,39 @@ MCDescription:      %s
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
+  def getRunDBInfo(self,run):
+      """ I need to make the following query
+            http://cmsmon.cern.ch/cmsdb/servlet/RunSummaryTIF?RUN=8757,8762&DB=cms_pvss_tk&XML=1
+      """
+      runDBDict={}
+      conn = httplib.HTTPConnection("cmsmon.cern.ch")
+      if type(run) is types.ListType:
+         runUrl=""
+         for r in run:
+             runUrl+="%s,"%r
+         conn.request("GET", "/cmsdb/servlet/RunSummaryTIF?RUN=%s&DB=cms_pvss_tki&XML=1"%runUrl[:-1])
+      else:
+         conn.request("GET", "/cmsdb/servlet/RunSummaryTIF?RUN=%s&DB=cms_pvss_tki&XML=1"%run)
+      r1 = conn.getresponse()
+      if int(r1.status)==200:
+         data=r1.read()
+         elem=elementtree.ElementTree.fromstring(data)
+         for i in elem:
+             if i.tag=="query":
+                query_data=i # get query
+                for j in query_data:
+                    if  j.tag=="row":
+                        run=0
+                        runmode=""
+                        system=""
+                        for k in j.getchildren():
+                            if k.tag.lower()=="run":     run=int(k.text)
+                            if k.tag.lower()=="runmode": runmode=k.text
+                            if k.tag.lower()=="system":  system=k.text
+                        if run and not runDBDict.has_key(run):
+                           runDBDict[run]=(runmode,system)
+      return runDBDict
+
   def getRuns(self,dataset):
       t1=time.time()
       aDict = {}
@@ -1892,6 +1930,7 @@ MCDescription:      %s
           printExcept()
           raise "Fail in getRuns"
       oList=[]
+      runs=""
       for item in result:
           if  item and item[0]:
               run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,bName=item
@@ -1902,10 +1941,13 @@ MCDescription:      %s
               if not run: continue
               aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'BlockName':bName}
               oList.append(aDict)
+              runs+="%s,"%run
       if self.verbose:
          self.writeLog("time in getRuns: %s"%(time.time()-t1))
       self.closeConnection(con)
-      return oList
+      runs=runs[:-1] # get rid of last comma
+      runDBInfoDict=self.getRunDBInfo(runs)
+      return oList,runDBInfoDict
 
   def getDbsData(self,dataset):
       kwargs={'datasetPath':dataset,'fullOutput':1}

@@ -1330,17 +1330,6 @@ class DDServer(DDLogger,Controller):
         return page
     getDbsData.exposed = True 
 
-    def getRunDBInfo(self,run):
-        """ I need to make the following query
-            http://cmsmon.cern.ch/cmsdb/servlet/RunSummaryTIF?RUN=8757&DB=cms_pvss_tk&XML=1
-        """
-        conn = httplib.HTTPConnection("cmsmon.cern.ch")
-        conn.request("GET", "/cmsdb/servlet/RunSummaryTIF?RUN=%s&DB=cms_pvss_tki&XML=1"%run)
-        r1 = conn.getresponse()
-        if int(r1.status)==200:
-           data=r1.read()
-    getRunDBInfo.exposed=True
-    
     def getRuns(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            @type  dbsInst: string
@@ -1384,10 +1373,12 @@ class DDServer(DDLogger,Controller):
             for idx in xrange(0,len(dList)):
                 tid = 't_runs_'+str(idx)
                 dataset = dList[idx]
+                runList,runDBInfoDict=self.helper.getRuns(dataset)
                 nameSpace = {
                              'dbsInst'  : dbsInst,
                              'host'     : self.dbsdd,
-                             'runList'  : self.helper.getRuns(dataset),
+                             'runList'  : runList,
+                             'runDBInfo': runDBInfoDict,
                              'tableId'  : tid,
                              'proc'     : dataset,
                              'userMode' : userMode

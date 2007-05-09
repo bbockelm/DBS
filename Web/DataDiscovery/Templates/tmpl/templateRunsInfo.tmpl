@@ -23,6 +23,10 @@ contains $nRun run(s)
 <td>StartOfRun</td>
 <td>EndOfRun</td>
 #if $userMode!="user"
+#if $runList[0]['Type'].lower()!='mc'
+<td>Mode</td>
+<td>System</td>
+#end if
 <td>Created by</td>
 <td>Creation time</td>
 <td>Modified by</td>
@@ -31,15 +35,16 @@ contains $nRun run(s)
 <td>LFNs</td>
 </tr>
 #for dbsDict in $runList
+#set run=$dbsDict['RunNumber']
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
 <td align="center">
 #if $dbsDict['Type'].lower()!='mc'
-<a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$dbsDict['RunNumber']">
-$dbsDict['RunNumber']
+<a href="http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=$run">
+$run
 </a>
 #else
-$dbsDict['RunNumber']
+$run
 #end if
 </td>
 <td align="right">$dbsDict['Type']</td>
@@ -50,6 +55,20 @@ $dbsDict['RunNumber']
 <td align="right">$dbsDict['StartOfRun']</td>
 <td align="right">$dbsDict['EndOfRun']</td>
 #if $userMode!="user"
+#if $dbsDict['Type'].lower()!='mc'
+#if $runDBInfo.has_key($run)
+#set runmode,system=$runDBInfo[$run]
+#else
+#set runmode='N/A'
+#set system='N/A'
+#end if
+<td align="right">
+$runmode
+</td>
+<td align="right">
+$system
+</td>
+#end if
 <td align="right">$dbsDict['CreatedBy']</td>
 <td align="right">$dbsDict['CreationDate']</td>
 <td align="right">$dbsDict['LastModifiedBy']</td>
@@ -57,8 +76,8 @@ $dbsDict['RunNumber']
 #end if
 #set bName=$urllib.quote($dbsDict['BlockName'])
 <td align="right">
-<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$dbsDict['RunNumber']">txt</a>
-<a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$dbsDict['RunNumber']">details</a>
+<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$run">txt</a>
+<a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$run">details</a>
 </td>
 </tr>
 #end for
