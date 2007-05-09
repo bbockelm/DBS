@@ -2304,6 +2304,31 @@ class DbsApi(DbsConfig):
 		    'storage_element_name_from' : seNameFrom,
 		    'storage_element_name_to' : seNameTo }, 'POST')
     logging.log(DBSDEBUG, data)
+ # ------------------------------------------------------------
+
+  def openBlock(self, block=None ):
+    """
+    Updates the dbs file block states to open for writing. 
+    
+    param: 
+        block : The dbs file block passed in as a string containing the block name or as a dbsFileBlock object. 
+        This field is mandatory.
+                          
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
+           
+    examples:
+         api.openBlock ("/this/hahah/SIM#12345")
+
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    # Invoke Server.
+    block_name = self._name(block)
+    data = self._server._call ({ 'api' : 'openBlock', 'block_name' : block_name }, 'POST')
+    logging.log(DBSDEBUG, data)
+
 
    # ------------------------------------------------------------
 

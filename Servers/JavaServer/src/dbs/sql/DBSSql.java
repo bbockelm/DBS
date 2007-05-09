@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.91 $"
- $Id: DBSSql.java,v 1.91 2007/04/05 19:39:08 afaq Exp $"
+ $Revision: 1.92 $"
+ $Id: DBSSql.java,v 1.92 2007/05/03 21:42:08 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -560,6 +560,18 @@ public class DBSSql {
 		return ps;
 	}
 
+        public static PreparedStatement openBlock(Connection conn, String blockID, String lmbUserID) throws SQLException {
+                String sql = "UPDATE Block \n" +
+                        "SET LastModifiedBy = ? , \n" +
+                        "OpenForWriting = 1 \n" +
+                        "WHERE ID = ?" ;
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, blockID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
 
 
 	public static PreparedStatement closeBlock(Connection conn, String blockID, String lmbUserID) throws SQLException {

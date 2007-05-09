@@ -1,6 +1,6 @@
 /**
- $Revision: 1.84 $"
- $Id: DBSApi.java,v 1.84 2007/03/16 18:42:51 sekhri Exp $"
+ $Revision: 1.85 $"
+ $Id: DBSApi.java,v 1.85 2007/04/12 19:27:05 sekhri Exp $"
  *
 */
 
@@ -517,7 +517,12 @@ public class DBSApi {
 				(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
 						DBSApiParser.parseDatasetContents(getXml(table)), 
 						dbsUser);
-	
+
+                        } else if (apiStr.equals("openBlock")) {
+                                (new DBSApiBlockLogic(this.data)).openBlock(conn, out,
+                                                get(table, "block_name", true),
+                                                dbsUser);
+                	
 			} else if (apiStr.equals("closeBlock")) {
 				(new DBSApiBlockLogic(this.data)).closeBlock(conn, out,
 						get(table, "block_name", true),

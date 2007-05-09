@@ -1,6 +1,6 @@
 /**
- $Revision: 1.38 $"
- $Id: DBSApiBlockLogic.java,v 1.38 2007/04/12 19:27:05 sekhri Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSApiBlockLogic.java,v 1.39 2007/04/17 17:12:11 afaq Exp $"
  *
  */
 
@@ -477,6 +477,21 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 return id;
         }
 
+
+        public void openBlock(Connection conn, Writer out, String name, Hashtable dbsUser) throws Exception {
+
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.openBlock(conn, getBlockID(conn, name, false, true), personApi.getUserID(conn, dbsUser));
+                        ps.executeUpdate();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+
+                insertTimeLog(conn, "OpenBlock", "Open Block Called By User",
+                                                  "Block Open For Writing", "Block Name: "+name,
+                                                   dbsUser);
+        }
 
 	public void closeBlock(Connection conn, Writer out, String name, Hashtable dbsUser) throws Exception {
 

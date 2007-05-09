@@ -29,11 +29,10 @@ block = DbsFileBlock (
          Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
          )
 
-print "Closing block %s" % block
+print "Opening a block %s" % block
 
 try:
-    #print api.closeBlock ("/MTCC-070-os-DAQ-MTCC1/CMSSW_0_7_0-RAW-Run-00002120#53bfd044-b925-4446-b181-42ab98cc734a")
-    print api.closeBlock (block)
+    print api.openBlock (block)
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
   if ex.getErrorCode() not in (None, ""):

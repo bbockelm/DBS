@@ -649,6 +649,9 @@ class ApiDispatcher:
 
         print "\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n"  
         for anObj in apiret:
+		print anObj
+		print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+		print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
                 print "       /"+ anObj['ExecutableName'] \
 				+ "/" + anObj['ApplicationVersion']  \
 					+"/"+ anObj['ApplicationFamily'] \
@@ -783,6 +786,7 @@ class ApiDispatcher:
        #avoid duplication, wonder thats must not be possible anyways.
        datasetPaths=[]
        for anObj in procret:
+		"""
 		print "---------------------------------------------------------------------------------------------------------"
 		print "Dataset PrimaryDataset=%s, ProcessedDataset=%s" %(anObj['Name'], anObj['PrimaryDataset']['Name'])
 		print "---------------------------------------------------------------------------------------------------------"
@@ -793,11 +797,13 @@ class ApiDispatcher:
                                 + "/" + anAlgo['ApplicationVersion']  \
                                         +"/"+ anAlgo['ApplicationFamily'] \
                                                 + "/" + anAlgo['ParameterSetID']['Hash']
-
+                """
 		for aPath in anObj['PathList']:
                       if aPath not in datasetPaths:
                          datasetPaths.append(aPath)
-                         print "\n\nDataset Path: %s " %aPath
+                         print "Dataset Path: %s " %aPath
+                continue  
+		"""       
                          # List the Blocks next
                          blockret = self.api.listBlocks(dataset=aPath, block_name=blockpattern, storage_element_name=sepattern)
 			 for aBlk in blockret:
@@ -813,6 +819,7 @@ class ApiDispatcher:
 						self.reportFile(aFile)
 					else: 
 						print "                    %s" %aFile['LogicalFileName']
+	        """
        return
 				
 #
