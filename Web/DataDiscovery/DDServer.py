@@ -1015,7 +1015,8 @@ class DDServer(DDLogger,Controller):
         row=limit=0
         pList=[]
         whereDict={}
-        whereDict['%s.%s'%(table,column)]="%"+val.replace('*','').replace('%','')
+#        whereDict['%s.%s'%(table,column)]="%"+val.replace('*','').replace('%','')
+        whereDict['%s.%s'%(table,column)]=val.replace('*','%')
         for item in self.helper.getTableColumn(table,column,row,limit,whereDict):
             pList.append(item)
         return pList
@@ -1044,7 +1045,8 @@ class DDServer(DDLogger,Controller):
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
         if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
-        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
+#        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
+        if type(proc) is not types.ListType and len(proc)>1 and (proc.find("*")!=-1 or proc.find("%")!=-1):
            # we got a pattern
            proc=self.getMatch("Block","Path",proc)
            

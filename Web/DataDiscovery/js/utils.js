@@ -1385,3 +1385,14 @@ function HideProdRequestOutput()  {
        }
    }
 }
+function AutoTurnOn() {
+   $('proccontainer').className='';
+   $('autoOn').className='td_underline_pad';
+   $('autoOff').className='';
+}
+function AutoTurnOff() {
+   $('proccontainer').className='hide';
+   $('autoOn').className='';
+   $('autoOff').className='td_underline_pad';
+}
+
