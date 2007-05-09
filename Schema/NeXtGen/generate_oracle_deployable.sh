@@ -167,13 +167,11 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', ${unix_time});"  >> $ddl_file
-echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('FEVT', 'IS ITS A TIER', ${unix_time});"  >> $ddl_file
 #echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('STREAMER', 'Streamer File', ${unix_time});"  >> $ddl_file
 #echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('INDEX', 'Index File for Streamer Files', ${unix_time});"  >> $ddl_file
 #
 #
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', ${unix_time});" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('FEVT', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('SIM', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('DIGI', ${unix_time});" >> $ddl_file
