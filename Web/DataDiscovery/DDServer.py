@@ -1038,6 +1038,7 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         pagerStep=int(pagerStep)
+        proc_orig=urllib.quote(proc)
         if string.lower(tier) =="all" or string.lower(tier)=="any": tier="*"
         if string.lower(site) =="all" or string.lower(site)=="any": site="*"
         if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
@@ -1045,11 +1046,12 @@ class DDServer(DDLogger,Controller):
         if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
 #        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
+
         if type(proc) is not types.ListType and len(proc)>1 and (proc.find("*")!=-1 or proc.find("%")!=-1):
            # we got a pattern
-           row=int(_idx)*pagerStep
-           limit=int(_idx)*pagerStep+pagerStep
-           proc=self.getMatch("Block","Path",proc,row,limit)
+#           row=int(_idx)*pagerStep
+#           limit=int(_idx)*pagerStep+pagerStep
+           proc=self.getMatch("Block","Path",proc)
            
         self.dbsTime=self.dlsTime=0
         page=""
@@ -1076,8 +1078,15 @@ class DDServer(DDLogger,Controller):
         id=0
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
-        nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,count=1)
-        datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+        if  type(proc) is types.ListType:
+            nDatasets = len(proc)
+            i=int(_idx)*pagerStep
+            j=i+pagerStep
+            datasetsList=proc[i:j]
+            proc=proc_orig
+        else:
+            nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,count=1)
+            datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
 
         # Construct result page
         rPage=""
