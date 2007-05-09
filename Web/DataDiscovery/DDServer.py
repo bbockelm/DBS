@@ -1011,8 +1011,7 @@ class DDServer(DDLogger,Controller):
         if string.lower(prim) =="all" or string.lower(prim)=="any": prim="*"
         return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,userMode,fromRow,limit,count)
 
-    def getMatch(self,table,column,val):
-        row=limit=0
+    def getMatch(self,table,column,val,row=0,limit=0):
         pList=[]
         whereDict={}
 #        whereDict['%s.%s'%(table,column)]="%"+val.replace('*','').replace('%','')
@@ -1048,7 +1047,9 @@ class DDServer(DDLogger,Controller):
 #        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
         if type(proc) is not types.ListType and len(proc)>1 and (proc.find("*")!=-1 or proc.find("%")!=-1):
            # we got a pattern
-           proc=self.getMatch("Block","Path",proc)
+           row=int(_idx)*pagerStep
+           limit=int(_idx)*pagerStep+pagerStep
+           proc=self.getMatch("Block","Path",proc,row,limit)
            
         self.dbsTime=self.dlsTime=0
         page=""
