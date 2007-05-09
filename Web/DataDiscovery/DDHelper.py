@@ -1309,7 +1309,7 @@ MCDescription:      %s
 #              val = val.replace('%%','%') # remove double '%'
 #              if val[-1]=='%': val=val[:-1] # don't count last '%'
               lval=self.col(t,col)
-              sel.append_whereclause(lval.like("%s%%"%str(val)))
+              sel.append_whereclause(sqlalchemy.func.upper(lval).like("%s%%"%str(val.upper())))
           if len(iList)==1:
              sel.order_by=[sqlalchemy.desc(iList[0])]
           sel.distinct=True
