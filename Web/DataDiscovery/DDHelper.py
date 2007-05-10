@@ -1314,7 +1314,8 @@ MCDescription:      %s
              sel.order_by=[sqlalchemy.desc(iList[0])]
           sel.distinct=True
           # Due to bug in SQLAlchemy, I need to make a print statement, otherwise I'm not getting results.
-          print "### getTableContent",self.printQuery(sel)
+          # should be fixed with usage of SQLAlchemy 0.3.7
+#          print "### getTableContent",self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
