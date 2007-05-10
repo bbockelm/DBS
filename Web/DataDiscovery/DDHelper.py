@@ -1305,9 +1305,9 @@ MCDescription:      %s
               tName,col = key.split('.')
               t=self.dbManager.getTable(self.dbsInstance,tName)
               val = whereDict[key]
-#              val = val.replace('*','%') # replace wild card
-#              val = val.replace('%%','%') # remove double '%'
-#              if val[-1]=='%': val=val[:-1] # don't count last '%'
+              val = val.replace('*','%') # replace wild card
+              val = val.replace('%%','%') # remove double '%'
+              if val[-1]=='%': val=val[:-1] # don't count last '%'
               lval=self.col(t,col)
               sel.append_whereclause(sqlalchemy.func.upper(lval).like("%s%%"%str(val.upper())))
           if len(iList)==1:
