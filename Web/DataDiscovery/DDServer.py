@@ -39,6 +39,11 @@ except:
 from Framework import Controller
 from Framework.PluginManager import DeclarePlugin
 
+from Tools.SecurityModuleCore import SecurityToken, RedirectToLocalPage, RedirectAway, RedirectorToLogin
+from Tools.SecurityModuleCore import Group, Role, NotAuthenticated, FetchFromArgs
+from Tools.SecurityModuleCore import is_authorized, is_authenticated, has_site
+from Tools.Functors import AlwaysFalse
+
 class DDServer(DDLogger,Controller): 
     """
        DBS Data discovery server class.
@@ -87,6 +92,7 @@ class DDServer(DDLogger,Controller):
 # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="iguana3.cern.ch:8030",verbose=verbose)
         self.dbs  = DBSGLOBAL
+        self.baseUrl = ""
         self.site = ""
         self.app  = ""
         self.primD= ""
@@ -163,6 +169,9 @@ class DDServer(DDLogger,Controller):
                'desc'    : ['MCDescription','TriggerPathDescription','PrimaryDatasetDescription'],
               }
         self.writeLog("DDServer init")
+
+    def readyToRun(self):
+        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
 
     def setQuiet(self):
         self.helper.setQuiet()
@@ -267,6 +276,7 @@ class DDServer(DDLogger,Controller):
         """
         nameSpace = {
                      'host'        : self.dbsdd,
+                     'baseUrl'     : self.baseUrl,
                      'title'       : 'DBS Data Discovery Page',
                      'dbsGlobal'   : DBSGLOBAL,
                      'userMode'    : userMode,
