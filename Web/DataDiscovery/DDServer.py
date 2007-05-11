@@ -173,6 +173,14 @@ class DDServer(DDLogger,Controller):
     def readyToRun(self):
         self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
 
+    def redirectPage(self):
+        page = self.genTopHTML()
+        nameSpace = { 'localtime':time.asctime() }
+        t = templateRedirect(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+= self.genBottomHTML()
+        return page
+        
     def setQuiet(self):
         self.helper.setQuiet()
         self.quiet=1
@@ -789,6 +797,8 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _contact.exposed=True
 
+    @is_authorized (Role("DBS admin"), Group("dbs_admin"), 
+                    onFail=RedirectToLocalPage ("/redirectPage"))
     def _dbsExpert(self,dbsInst=DBSGLOBAL,userMode="dbsExpert"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
@@ -2922,7 +2932,9 @@ class DDServer(DDLogger,Controller):
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="%s">"""%id
         path=path.replace('#','%23')
-        nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id,'userMode':userMode}
+        dbsInstURL="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet"
+        PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
+        nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id,'userMode':userMode,'dbsInstURL':dbsInstURL,'PhedexURL':PhedexURL}
         t = templateMoreInfo(searchList=[nameSpace]).respond()
 #        t = templatePanelMore(searchList=[nameSpace]).respond()
         page+=str(t)
