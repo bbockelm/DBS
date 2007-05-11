@@ -172,6 +172,7 @@ class DDServer(DDLogger,Controller):
 
     def readyToRun(self):
         self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
+        if self.baseUrl[-1]!="/": self.baseUrl+="/"
 
     def redirectPage(self):
         page = self.genTopHTML()
