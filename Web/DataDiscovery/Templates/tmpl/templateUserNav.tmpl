@@ -225,9 +225,9 @@ The input form is case-insensitive, e.g. qcd and QCD are equivalent.
 <tr valign="top">
 <td valign="top" align="left">
 Auto-completion: 
-<a href="javascript:AutoTurnOn();ajax_dhtmlHistory('history_autoOn','AutoTurnOn()')"><span id="autoOn" class="td_underline_pad">ON</span></a> 
+<a href="javascript:AutoTurnOn();"><span id="autoOn" class="td_underline_pad">on</span></a> 
 | 
-<a href="javascript:AutoTurnOff();ajax_dhtmlHistory('history_autoOff','AutoTurnOff()')"><span id="autoOff">OFF</span></a>
+<a href="javascript:AutoTurnOff();"><span id="autoOff">off</span></a>
 </td>
 </tr>
 
@@ -319,6 +319,7 @@ tooltip="<p>The processed dataset path contains a three component: primary, proc
 MakeTooltip("t_compTier","composedTierDef",tooltip);
 tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic for cosmic data, raw for raw data, data for real processed data.</p>";
 MakeTooltip("t_primType","primDSTypeDef",tooltip);
+SetAutoCompletion();
 </script>
 
 <!-- end of templateUserNav.tmpl -->

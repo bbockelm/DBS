@@ -1389,10 +1389,24 @@ function AutoTurnOn() {
    $('proccontainer').className='';
    $('autoOn').className='td_underline_pad';
    $('autoOff').className='';
+   SetCookie('DBSDD_AutoCompletion','on');
 }
 function AutoTurnOff() {
    $('proccontainer').className='hide';
    $('autoOn').className='';
    $('autoOff').className='td_underline_pad';
+   SetCookie('DBSDD_AutoCompletion','off');
 }
-
+function SetAutoCompletion() {
+   var c=GetCookie('DBSDD_AutoCompletion');
+   if(c) {
+      if(c=='on') {
+         AutoTurnOn();
+      } 
+      if(c=='off') {
+         AutoTurnOff();
+      } 
+   } else {
+      AutoTurnOff(); // default
+   }
+}
