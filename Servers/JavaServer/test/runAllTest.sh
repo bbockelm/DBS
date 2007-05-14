@@ -103,6 +103,13 @@ updateFileStatus () {
 	display "$out"
 }
 
+updateFileMetaData () {
+	message="Executing updateFileMetaData API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateFileMetaData lfn=$lfn1 queryable_meta_data=A_NEW_META_DATA`
+	display "$out"
+}
+
 updateAnalDSType () {
 	message="Executing updateAnalDSType API..."
 	echo $message >> $outFile ; echo $message
@@ -642,6 +649,7 @@ deleteSEFromBlock
 updateProcDSStatus
 updateAnalDSStatus
 updateFileStatus
+updateFileMetaData
 updateAnalDSType
 updateFileType
 updateSEName

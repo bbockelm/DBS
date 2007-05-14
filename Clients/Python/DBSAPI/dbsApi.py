@@ -1863,6 +1863,25 @@ class DbsApi(DbsConfig):
                          'status' : status,
                          }, 'POST')
 
+    
+  # ------------------------------------------------------------
+  def updateFileMetaData(self, lfn, metaData):
+    """
+    Updates the QueryableMetadata field of a File (lfn)
+
+    lfn: Logical File Name of file that needs to be updated
+    metaData: The value for QueryableMetadata. Cannot be null
+  
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    data = self._server._call ({ 'api' : 'updateFileMetaData',
+                         'lfn' : self._file_name(lfn),
+                         'queryable_meta_data' : metaData,
+                         }, 'POST')
+
 # ------------------------------------------------------------
   def updateProcDSStatus(self, dataset, status):
     """

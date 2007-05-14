@@ -752,6 +752,20 @@ apiObj.run(lfn1, "VA/LID", excep = True)
 
 f.write("\n\n***********************updateFileStatus API tests***************************")
 
+apiObj = DbsUnitTestApi(api.updateFileMetaData, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************updateFileMetaData API tests***************************")
+
+apiObj.run(lfn1, "VALID", excep = False)
+apiObj.run(lfn1, "", excep = True)
+apiObj.run("DOESNOTEXIST", "abcd", excep = True)
+apiObj.run("DO;ESNOTEXIST", "abcd", excep = True)
+apiObj.run("DO/ESNOTEXIST", "abcd", excep = True)
+apiObj.run(lfn1, "INVA;LID", excep = True)
+apiObj.run(lfn1, "INVA/LID", excep = True)
+
+
+f.write("\n\n***********************updateFileMetaData API tests***************************")
 
 
 adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,

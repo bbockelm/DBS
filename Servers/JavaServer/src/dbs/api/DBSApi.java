@@ -1,6 +1,6 @@
 /**
- $Revision: 1.86 $"
- $Id: DBSApi.java,v 1.86 2007/05/09 14:44:50 afaq Exp $"
+ $Revision: 1.87 $"
+ $Id: DBSApi.java,v 1.87 2007/05/14 20:14:45 sekhri Exp $"
  *
 */
 
@@ -454,7 +454,14 @@ public class DBSApi {
 						get(table, "lfn", true),
 						get(table, "status", true),
 						dbsUser);
+				
+			} else if (apiStr.equals("updateFileMetaData")) {
+				(new DBSApiFileLogic(this.data)).updateFileMetaData(conn, out,
+						get(table, "lfn", true),
+						get(table, "queryable_meta_data", true),
+						dbsUser);
 	
+
 			} else if (apiStr.equals("updateFileType")) {
 				(new DBSApiFileLogic(this.data)).updateFileType(conn, out,
 						get(table, "lfn", true),

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.97 $"
- $Id: DBSApiLogic.java,v 1.97 2007/03/30 16:00:03 sekhri Exp $"
+ $Revision: 1.98 $"
+ $Id: DBSApiLogic.java,v 1.98 2007/04/05 21:36:30 afaq Exp $"
  *
  */
 
@@ -317,6 +317,29 @@ public class DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	}
+
+	/**
+	 * This is a generic method that can be used to a row in any table which has just one unique key.
+	 * @param tableName the table name of the table whose coloum needs to be changed.
+	 * @param uniqueIDValue the value of ID in tableName.
+	 * @param updateKey the name of the key that needs to be changed.
+	 * @param updateKeyValue the value of the key that the updateKey will be changed to.
+	 * @param lmbUserID a user id of the person who is updating this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 */
+	protected void updateValue(Connection conn, Writer out, String tableName, String uniqueIDValue, String updateKey, String updateKeyValue, String lmbUserID) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.updateValue(conn, tableName, 
+					uniqueIDValue,
+					updateKey, 
+					updateKeyValue,
+					lmbUserID);
+			ps.execute();
+		} finally {
+			if (ps != null) ps.close();
+		}
+	}
+
 
 	/**
 	 * This is a generic method that can be used to update status or types in any table.
@@ -779,7 +802,7 @@ public class DBSApiLogic {
 	 * @param key the name of the key which is used to throw an exception in case the word fails to validate. This make the exception message more intutive as it states which key was being checked.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid.
 	 */
-        private void checkString(String pattern, String key) throws Exception {
+        protected void checkString(String pattern, String key) throws Exception {
                 if(isNull(pattern))
                         throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid " + key);
                 if (! Pattern.matches(SAFE_STR, pattern))

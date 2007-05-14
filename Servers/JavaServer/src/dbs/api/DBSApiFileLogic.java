@@ -1,6 +1,6 @@
 /**
- $Revision: 1.52 $"
- $Id: DBSApiFileLogic.java,v 1.52 2007/05/03 21:42:07 afaq Exp $"
+ $Revision: 1.53 $"
+ $Id: DBSApiFileLogic.java,v 1.53 2007/05/14 20:14:45 sekhri Exp $"
  *
  */
 
@@ -1193,6 +1193,21 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}
 	}
 
+	 /**
+	 * Updates the meta data of a file a file. 
+	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
+	 * Then it fetches the file ID and call a generic methods updateName that fetches the type id and updates it in Files table.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+	 * @param lfn the logocal file name.
+	 * @param value a value of the meta data field to be set in this file.
+	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
+	 */
+	public void updateFileMetaData(Connection conn, Writer out, String lfn, String value, Hashtable dbsUser) throws Exception {
+		checkString(value, "queryable_meta_data");
+		updateValue(conn, out, "Files",  getFileID(conn, lfn, true), "QueryableMetadata", value, personApi.getUserID(conn, dbsUser));
+	}
 
 	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {
 		String id = "";
