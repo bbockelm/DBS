@@ -225,6 +225,7 @@ class DbsHttpService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 logging.log(DBSINFO, info)
 
+      #print data
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data
       return data

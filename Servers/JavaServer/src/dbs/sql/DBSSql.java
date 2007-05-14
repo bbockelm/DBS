@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.92 $"
- $Id: DBSSql.java,v 1.92 2007/05/03 21:42:08 afaq Exp $"
+ $Revision: 1.93 $"
+ $Id: DBSSql.java,v 1.93 2007/05/09 14:44:52 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1303,6 +1303,40 @@ public class DBSSql {
 
 	}
 
+	public static PreparedStatement listLFNs(Connection conn, String procDSID, String patternMetaData) throws SQLException {
+		String sql = "SELECT DISTINCT f.LogicalFileName as LFN, \n" +
+			"ftrig.TriggerTag as TRIGGER_TAG, \n" +
+			"ftrig.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+			"f.CreationDate as CREATION_DATE, \n" +
+			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM Files f \n" +
+			"LEFT OUTER JOIN Block b \n" +
+				"ON b.id = f.Block \n "+  
+			"LEFT OUTER JOIN FileTriggerTag ftrig \n" +
+				"ON ftrig.Fileid = f.id \n "+  
+			"LEFT OUTER JOIN FileStatus st \n" +
+				"ON st.id = f.FileStatus \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = f.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = f.LastModifiedBy \n" +
+			"WHERE f.Dataset = ? \n" +
+			"AND b.OpenForWriting = 0 \n " ;
+		if(!patternMetaData.equals("%")) sql += "AND f.QueryableMetaData like ? \n";
+
+		sql +=	"AND st.Status <> 'INVALID' \n" +
+			"ORDER BY LFN DESC";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                
+                int columnIndx=1;
+		ps.setString(columnIndx++, procDSID);
+		if(!patternMetaData.equals("%")) ps.setString(columnIndx++, patternMetaData);
+		
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
 
 	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN) throws SQLException {

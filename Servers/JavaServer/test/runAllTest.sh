@@ -168,6 +168,13 @@ listFiles () {
 	#$CMD api=listFiles path=$path pattern_lfn=* 
 }
 
+listLFNs () {
+	message="Executing listLFNs API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=listLFNs path=$path_child`
+	display "$out"
+}
+
 
 listRowsInTable () {
 	message="Executing listRowsInTable API..."
@@ -622,6 +629,7 @@ listRuns
 listTiers
 listBlocks
 listFiles
+listLFNs
 ##listDatasetContents
 listDatasetParents
 listFileParents

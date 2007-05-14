@@ -1,6 +1,6 @@
 /**
- $Revision: 1.51 $"
- $Id: DBSApiFileLogic.java,v 1.51 2007/04/17 17:12:11 afaq Exp $"
+ $Revision: 1.52 $"
+ $Id: DBSApiFileLogic.java,v 1.52 2007/05/03 21:42:07 afaq Exp $"
  *
  */
 
@@ -75,7 +75,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         listFileLumis(conn, out, lfn);
                                         listFileRuns(conn, out, lfn);
 					listFileTrigs(conn, out, lfn);
-					listFileAssoc(conn, out, lfn);
+					//listFileAssoc(conn, out, lfn);
                                 }
                                 out.write(((String) "</file>\n"));
                         }
@@ -186,7 +186,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listFileLumis(conn, out, lfn);
 					listFileRuns(conn, out, lfn);
 					listFileTrigs(conn, out, lfn);
-					listFileAssoc(conn, out, lfn);
+					//listFileAssoc(conn, out, lfn);
 
 				}
                 		out.write(((String) "</file>\n"));
@@ -341,7 +341,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}
 	 }
 
-
+	/*
          public void listFileAssoc(Connection conn, Writer out, String lfn) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
@@ -370,7 +370,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
          }
-
+	*/
 
 
          public void listFileTrigs(Connection conn, Writer out, String lfn) throws Exception {
@@ -545,6 +545,40 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
          }
+
+	 public void listLFNs(Connection conn, Writer out, String path, String patternMetaData) throws Exception {
+ 		 PreparedStatement ps = null;
+ 		 ResultSet rs =  null;
+ 		 boolean first = true; 
+ 		 String prevLFN = "";
+ 		 try {
+ 			 ps = DBSSql.listLFNs(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true) ,  getPattern(patternMetaData, "pattern_meta_data"));
+ 			 rs =  ps.executeQuery();
+ 			 while(rs.next()) {
+ 				 String lfn = get(rs, "LFN");
+ 				 if( !prevLFN.equals(lfn) && ! first) out.write(((String) "</file_lfn>\n"));
+	 			 if( !prevLFN.equals(lfn) || first) {
+					 out.write(((String) "<file_lfn lfn='" + get(rs, "LFN") +
+								 "' creation_date='" + getTime(rs, "CREATION_DATE") +
+								 "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+								 "' created_by='" + get(rs, "CREATED_BY") +
+								 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+			 					 "'>\n"));
+		 			 first = false;
+ 					 prevLFN = lfn;
+				 }
+				 out.write(((String) "<file_trigger_tag trigger_tag='" + get(rs, "TRIGGER_TAG") +
+ 							 "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
+ 							 "'/>\n"));
+
+ 			 }
+	 		 if (!first) out.write(((String) "</file_lfn>\n"));
+ 		 } finally {
+ 			 if (rs != null) rs.close();
+ 			 if (ps != null) ps.close();
+ 		 }
+	 }
+
 
 
 

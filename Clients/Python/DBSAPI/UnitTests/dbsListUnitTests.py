@@ -213,6 +213,16 @@ apiObj.run(lfn + "noway;thiswillexist",excep = True)
 apiObj.run(lfn ,"", excep = True)
 f.write("\n\n***********************listFileLumis API tests***************************")
 
+apiObj = DbsUnitTestApi(api.listLFNs,f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************listLFNs API tests***************************")
+apiObj.run(path,excep = False)
+apiObj.run(path + ".nowaythiswillexist",excep = True)
+apiObj.run(path + "noway thiswillexist",excep = True)
+apiObj.run(path + "noway;thiswillexist",excep = True)
+apiObj.run(path ,"a", excep = False)
+f.write("\n\n***********************listLFNs API tests***************************")
+
 
 apiObj = DbsUnitTestApi(api.listAnalysisDatasetDefinition,f)
 apiObj.setVerboseLevel(opts.verbose)
@@ -246,7 +256,7 @@ apiObj.run("ahs def",excep = True)
 apiObj.run("ahs*",  excep = True)
 f.write("\n\n***********************listDatasetParents API tests***************************")
 
-
+"""
 apiObj = DbsUnitTestApi(api.listDatasetContents,f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************listDatasetContents API tests***************************")
@@ -259,4 +269,5 @@ apiObj.run("ahs*",  block, excep = True)
 apiObj.run(path, "noeixts", excep = True)
 apiObj.run(path, "/no/ei/xts#1234", excep = True)
 f.write("\n\n***********************listDatasetContents API tests***************************")
+"""
 f.close()
