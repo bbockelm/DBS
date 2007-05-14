@@ -2724,7 +2724,11 @@ class DbsApi(DbsConfig):
 
     #print token
 
-    proc = self.listProcessedDatasets(token[1], token[3], token[2])[0]
+    orig_ds = self.listProcessedDatasets(token[1], token[3], token[2])
+    if len(orig_ds) < 1:
+	raise DbsApiException(args="Dataset %s Not found in DBS" %path, code="1008")
+    
+    proc = orig_ds[0]
     logging.log(DBSDEBUG, "proc fetched from DBS %s" %proc)
 
     proc['Name'] = merege_ds_name
