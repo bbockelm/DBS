@@ -90,7 +90,7 @@ class DDServer(DDLogger,Controller):
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
 # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
-        self.prodRequestServer= DDParamServer(server="iguana3.cern.ch:8030",verbose=verbose)
+        self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8031",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
         self.site = ""
@@ -2992,16 +2992,16 @@ class DDServer(DDLogger,Controller):
     def getProdRequest(self,prim,id,**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-#        page = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=%s&id="%(prim,id),{},debug=1)
-        page = """
-<ajax-response><response type="element" id="%s">
-<div class="float_ProdRequest">
-<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div>
-Response from ProdRequest will be placed here<br />
-primaryDataset='%s'
-</div>
-</response></ajax-response>
-"""%(id,id,prim)
+        page = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=%s&id="%(prim,id),{},debug=1)
+#        page = """
+#<ajax-response><response type="element" id="%s">
+#<div class="float_ProdRequest">
+#<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div>
+#Response from ProdRequest will be placed here<br />
+#primaryDataset='%s'
+#</div>
+#</response></ajax-response>
+#"""%(id,id,prim)
         if self.verbose==2:
            self.writeLog(page)
         return page
