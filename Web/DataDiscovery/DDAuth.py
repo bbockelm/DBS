@@ -20,7 +20,7 @@ class DDAuthentication:
   """
       DBS authentication module constructor. It reads DBS_DBPARAM file and parse it.
   """
-  def __init__(self,pattern,verbose=0):
+  def __init__(self,pattern="",verbose=0):
       """
           DBS authentication module constructor. It reads DBS_DBPARAM file and parse it.
           @type  pattern: string
@@ -35,6 +35,9 @@ class DDAuthentication:
       self.host  = ""
       self.verbose = verbose
       self.dbparam = ""
+      self.dbsInst = []
+#      self.url     = "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
+      self.url     = ""
       try:
           self.dbparam = open(os.environ['DBS_DBPARAM'],'r')
       except:
@@ -47,6 +50,9 @@ class DDAuthentication:
           if not len(lines): continue
           if lines[0][0]=="#": continue
           if lines[0]=="Section":
+             if not self.dbsInst.count(lines[1]) and lines[1].find("cms_dbs")!=-1:
+                self.dbsInst.append(lines[1])
+
              if lines[1]==pattern:
                 found = 1
              else:
@@ -62,6 +68,12 @@ class DDAuthentication:
                 self.passwd = lines[1]
              if lines[0]=="Host":
                 self.host = lines[1]
+             if lines[0]=="Url":
+                self.url = lines[1]
+
+  def dbsInstances(self):
+      return self.dbsInst
+
   def dbInfo(self):
       """
           @type  self: class object
@@ -69,7 +81,7 @@ class DDAuthentication:
           @rtype : tuple
           @return: tuple (iface,db,user,passwd)
       """
-      return (self.iface, self.db, self.user, self.passwd, self.host)
+      return (self.iface, self.db, self.user, self.passwd, self.host, self.url)
 #
 # main
 #

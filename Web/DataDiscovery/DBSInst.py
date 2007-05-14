@@ -38,33 +38,24 @@ DEFAULT_URL = "http://cmsdbs.cern.ch/cms/prod/comp/DBS/CGIServer/prodquerytest3"
 # DBS2 instances are: https://twiki.cern.ch/twiki/bin/view/CMS/CMS-DMS-DBS-2-instances
 #
 DBSGLOBAL="cms_dbs_prod_global"
-DBS_DLS_INST= {
-   "cms_dbs_prod_global"   :("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-   "cms_dbs_int_global"    :("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_01":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_02":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_03":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_04":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_05":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_06":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_07":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_local_08":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-    "cms_dbs_prod_tier0":("http://cmslcgco01.cern.ch:8900/DBS/servlet/DBSServlet","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-}
+DBS_DLS_INST={}
+dbAuth = DDAuthentication() 
+print "\n+++ Initialize DBS instances:"
+for dbs in dbAuth.dbsInstances():
+    print dbs
+    DBS_DLS_INST[dbs]=""
+if not DBS_DLS_INST.has_key(DBSGLOBAL):
+   msg="""
+Initialization of DBS instances failed, please check your DBS_DBPARAM syntax
+Section                 cms_dbs_prod_global
+Interface               Oracle
+Database                cms_dbs
+AuthDBUsername          XXXXXX
+AuthDBPassword          ZZZZZZ
+Url                     servlet URL
+"""
+   raise msg
 
-
-#   "MCLocal_1/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_1"), 
-#   "MCLocal_2/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_2"), 
-#   "MCLocal_3/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_3"),
-#   "MCLocal_4/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_4"),
-#   "Dev/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/LFC"),
-#   "DevMC/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
-#   "RelVal/Writer":("","DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/RelVal"),
-#   "Dev/fanfani":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_Test"),
-#   "MCLocal_5/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_5"),
-#   "MCLocal_6/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_6"),
-#   "MCLocal_7/Writer":("DLS_TYPE_DLI","prod-lfc-cms-central.cern.ch/grid/cms/DLS/MCLocal_7")
-#}
 ################################################################################################
 def getDictOfSites():
     """
@@ -155,7 +146,9 @@ class DBManager(DDLogger):
       t_ini=time.time()
       if  not self.engine.has_key(dbsInst):
           dbAuth = DDAuthentication(dbsInst,self.verbose) 
-          dbType, dbName, dbUser, dbPass, host = dbAuth.dbInfo()
+          dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
+          DBS_DLS_INST[dbsInst]=url
+
           eType  = string.lower(dbType)
           print "DBManager:connect to %s@%s:%s/%s"%(dbType,dbsInst,host,dbName)
 

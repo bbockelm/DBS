@@ -27,8 +27,14 @@
 <table class="small" bgcolor="#DDDDDD">
 #if $userMode!='user'
 <tr>
-<td align="right"><b>DBS instantce:</b></td>
-<td>$dbsInst</td>
+<td align="right">
+<b>DBS instantce:</b>
+</td>
+<td>
+<div id="dbsInstDef">
+<em>$dbsInst</em>
+</div>
+</td>
 </tr>
 #end if
 <tr>
@@ -125,4 +131,13 @@ Found 0 datasets.<br />
 
 
 <br />
+
+#if $dbsInst!='Any'
+<script type="text/javascript">
+var tooltip;
+tooltip='This DBS instnace is served by:<br/><a href="$dbsInstUrl">$dbsInstUrl</a>';
+MakeTooltip("t_dbsInst","dbsInstDef",tooltip,10000,700);
+</script>
+#end if
+
 <!-- end of templateSnapshot.tmpl -->

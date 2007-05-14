@@ -1149,6 +1149,7 @@ class DDServer(DDLogger,Controller):
                      'nDatasets': nDatasets,
                      'userMode' : userMode,
                      'dbsInst'  : dbsInst,
+                     'dbsInstUrl': DBS_DLS_INST[dbsInst],
                      'site'     : site,
                      'rel'      : softRel,
                      'primD'    : primD,
