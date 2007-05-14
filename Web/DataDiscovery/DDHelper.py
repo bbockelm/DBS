@@ -24,11 +24,11 @@ from   DDUtil    import * # general utils
 from QueryBuilder.Schema import Schema
 
 # import DLS modules
-try:
-    import dlsClient
-    import dlsApi
-except:
-    pass
+#try:
+#    import dlsClient
+#    import dlsApi
+#except:
+#    pass
 import __builtin__
 
 class DDHelper(DDLogger): 
@@ -283,21 +283,20 @@ class DDHelper(DDLogger):
          raise msg
       self.dbsInstance = dbsInst
       self.writeLog("DBS Instnace: %s"%dbsInst)
+      con = self.connectToDB()
+      self.closeConnection(con)
       # use cache
-      if not self.dbsApi.has_key(dbsInst):
-         if self.iface=="cgi":
-            self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
-         else: 
-            # new api can be initialized with DbsConfig, but we will use default one
-            url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
-#            self.api = dbsWebApi.DbsWebApi({'url':url})
-            self.api=""
-            con = self.connectToDB()
-            self.closeConnection(con)
-#            self.dbManager.writeGraph(dbsInst)
-         self.dbsApi[dbsInst]=self.api
-      else:
-         self.api = self.dbsApi[dbsInst]
+#      if not self.dbsApi.has_key(dbsInst):
+#         if self.iface=="cgi":
+#            self.api = dbsCgiApi.DbsCgiApi(DEFAULT_URL,{'instance':dbsInst})
+#         else: 
+#            url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
+#            self.api=""
+#            con = self.connectToDB()
+#            self.closeConnection(con)
+#         self.dbsApi[dbsInst]=self.api
+#      else:
+#         self.api = self.dbsApi[dbsInst]
       # UNCOMMENT FOR DLS usage
 #      if not self.dbsDLS.has_key(dbsInst):
 #         url,dlsType,endpoint = DBS_DLS_INST[dbsInst]
@@ -687,24 +686,22 @@ MCDescription:      %s
   def listDatasetsFromApp(self,appPath="*"):
       return self.listProcessedDatasets(app=appPath)
 
-  def listApplications(self,appPath="*"):
-      """
-         Wrapper around dbsApi
-      """
-      if self.iface=="cgi":
-         aList = self.api.listApplications(appPath)
-         aList.sort()
-         aList.reverse()
-         return aList
-      else:
-         if appPath=="*":
-            ver=family=exe="*"
-         else:
-            empty,ver,family,exe=string.split(appPath,"/")
-         res = self.api.listApplications(patternVer=ver,patternFam=family,patternExe=exe)
-#         print "\n\n\#### listApplications",res
-#         res = self.api.listAlgorithms(patternVer=ver,patternFam=family,patternExe=exe)
-         return res
+#  def listApplications(self,appPath="*"):
+#      """
+#         Wrapper around dbsApi
+#      """
+#      if self.iface=="cgi":
+#         aList = self.api.listApplications(appPath)
+#         aList.sort()
+#         aList.reverse()
+#         return aList
+#      else:
+#         if appPath=="*":
+#            ver=family=exe="*"
+#         else:
+#            empty,ver,family,exe=string.split(appPath,"/")
+#         res = self.api.listApplications(patternVer=ver,patternFam=family,patternExe=exe)
+#         return res
 
   def joinTiers(self,sel,tjoin,tier,tprd):
       aList=[]
@@ -1136,9 +1133,9 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
-  def getDatasetContent(self,dataset):
-      content = self.api.getDatasetContents(dataset)
-      return content
+#  def getDatasetContent(self,dataset):
+#      content = self.api.getDatasetContents(dataset)
+#      return content
 
   def getDatasetProvenance(self,dataset):
       t1=time.time()
@@ -1627,15 +1624,6 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
-  def getLFNs_old(self,dbsInst,blockName,dataset):
-      self.setDBSDLS(dbsInst)
-      res = self.api.getLFNs(blockName,dataset)
-      return res
-
-#  def getLFN_Branches(self,dbsInst,lfn):
-#      self.setDBSDLS(dbsInst)
-#      res = self.api.listFileBranches(lfn)
-#      return res
   def getLFN_Branches(self,dbsInst,lfn,userMode='user'):
       con = self.connectToDB()
       try:
@@ -1681,10 +1669,6 @@ MCDescription:      %s
       self.closeConnection(con)
       return tList,oList
 
-#  def getLFN_Lumis(self,dbsInst,lfn):
-#      self.setDBSDLS(dbsInst)
-#      res = self.api.listFileLumis(lfn)
-#      return res
   def getLFN_Lumis(self,dbsInst,lfn,userMode='user'):
       con = self.connectToDB()
       try:
@@ -1731,15 +1715,6 @@ MCDescription:      %s
       self.closeConnection(con)
       return tList,oList
 
-#  def getLFN_Algos(self,dbsInst,lfn):
-#      self.setDBSDLS(dbsInst)
-#      res = self.api.listFileAlgorithms(lfn)
-#      return res
-
-#  def getLFN_Tiers(self,dbsInst,lfn):
-#      self.setDBSDLS(dbsInst)
-#      res = self.api.listFileTiers(lfn)
-#      return res
   def getLFN_Tiers(self,dbsInst,lfn):
       con = self.connectToDB()
       try:
@@ -1777,11 +1752,6 @@ MCDescription:      %s
           oList.append(name,cBy,cDate,mBy,mDate)
       self.closeConnection(con)
       return tList,oList
-
-#  def getLFN_Parents(self,dbsInst,lfn):
-#      self.setDBSDLS(dbsInst)
-#      res = self.api.listFileParents(lfn)
-#      return res
 
   def alias(self,tableName,aliasName=""):
       """
