@@ -1,9 +1,13 @@
-function MakeTooltip(_tag,_ctx,_text,autodismissdelay) {
+function MakeTooltip(_tag,_ctx,_text,autodismissdelay,width) {
   var delay=5000;
   if(autodismissdelay) {
      delay=autodismissdelay;
   }
-  t = new YAHOO.widget.Tooltip(_tag, { context: _ctx, text: '<div class="tooltip">'+_text+'</div>', width:'400px', autodismissdelay:delay } );
+  _width='400px';
+  if(width) {
+     _width=width;
+  }
+  t = new YAHOO.widget.Tooltip(_tag, { context: _ctx, text: '<div class="tooltip">'+_text+'</div>', width:_width, autodismissdelay:delay } );
 }
 
 function PanelInit(myvar,tagName) {
