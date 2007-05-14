@@ -569,11 +569,15 @@ class DDServer(DDLogger,Controller):
             tabOut=str(self.sectionDict2[section])
             colOut=""
             for tableName in self.sectionDict2[section]:
-                cols = self.helper.getTableColumns(tableName)
+#                cols = self.helper.getTableColumns(tableName)
+                cTemp = self.helper.getTableColumns(tableName)
+                cols=[]
+                for item in cTemp:
+                    cols.append(item.encode('ascii'))
                 if cols.count('ID'): cols.remove('ID')
                 if cols.count('id'): cols.remove('id')
                 colOut+=str(cols)+","
-            colOut+=colOut[:-1]
+            colOut=colOut[:-1]
             out+="""var %sList={'tableNames':%s,'columnNames':[%s]};\n"""%(section,tabOut,colOut)
         return out
 
