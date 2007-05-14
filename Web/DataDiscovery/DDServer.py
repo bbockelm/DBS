@@ -2938,7 +2938,8 @@ class DDServer(DDLogger,Controller):
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="%s">"""%id
         path=path.replace('#','%23')
-        dbsInstURL="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet"
+#        dbsInstURL="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet"
+        dbsInstURL=DBS_DLS_INST[dbsInst]
         PhedexURL="https://cmsdoc.cern.ch:8443/cms/aprom/phedex/prod/Request::Create"
         nameSpace={'host':self.dbsdd,'dbsInst':dbsInst,'path':path,'appPath':appPath,'id':id,'userMode':userMode,'dbsInstURL':dbsInstURL,'PhedexURL':PhedexURL}
         t = templateMoreInfo(searchList=[nameSpace]).respond()
