@@ -118,6 +118,9 @@ class DBManager(DDLogger):
       self.verbose   = verbose
       self.clear()
       
+  def setVerbose(self,level):
+      self.verbose=level
+
   def writeGraph(self,dbsInst):
       print "writeGraph"
       fileName="%s.dot"%dbsInst
