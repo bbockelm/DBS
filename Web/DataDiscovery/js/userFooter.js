@@ -8,6 +8,7 @@ function footerMenuText(){
 {label: "Help", link: "_help?userMode=user", title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: "_contact?userMode=user", title: "Contact DBS support team"},
 {title: "Physicist view of DBS", link: "index?userMode=user", label: "Physicist", position: "right"},
-{title: "Production view of DBS, contains more detail for site admins and production operators.", link: "index?userMode=expert", label: "Production", position: "right"}
+{title: "Production view of DBS, contains more detail for site admins and production operators.", link: "index?userMode=expert", label: "Production", position: "right"},
+{title: "Run Manager view of DBS", link: "index?userMode=runManager", label: "RunMgr", position: "right"},
            ]
 }
