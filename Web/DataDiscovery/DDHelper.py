@@ -1884,7 +1884,7 @@ MCDescription:      %s
                           .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
                           .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(trun,'LastModifiedBy')==self.col(tp2,'ID'))
-                                ],distinct=True,order_by=oSel
+                                ],distinct=True,order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
                                  )
           if dataset:
              empty,prim,proc,tier=string.split(dataset,"/")
