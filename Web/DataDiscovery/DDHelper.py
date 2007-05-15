@@ -78,6 +78,10 @@ class DDHelper(DDLogger):
       self.setDBSDLS(dbsInst)
       self.quiet       = 0
 
+  def setVerbose(self,level):
+      self.verbose=level
+      self.dbManager.setVerbose(level)
+
   def col(self,table,col):
       return self.dbManager.col(self.dbsInstance,table,col)
 
