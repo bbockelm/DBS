@@ -39,8 +39,10 @@
 <script type="text/javascript" src="${baseUrl}YUI/autocomplete/autocomplete-min.js"></script>
 <script type="text/javascript" src="${baseUrl}YUI/treeview/treeview-min.js"></script>
 
-<script type="text/javascript" src="http://cmslcgco01.cern.ch:8050/Common/js/masthead.js"></script>
-<script type="text/javascript" src="http://cmslcgco01.cern.ch:8050/Common/js/footer.js"></script>
+<script type="text/javascript" src="${mastheadUrl}"></script>
+###<script type="text/javascript" src="${footerUrl}"></script>
+###<script type="text/javascript" src="${mastheadUrl}Common/js/masthead.js"></script>
+###<script type="text/javascript" src="${mastheadUrl}Common/js/footer.js"></script>
 
 <!-- DBS and RICO -->
 <script type="text/javascript" src="js/userName.js"></script>
@@ -53,6 +55,8 @@
 
 #if $userMode=='user'
 <script type="text/javascript" src="js/userFooter.js"></script>
+#else if $userMode=='runManager'
+<script type="text/javascript" src="js/runMgrFooter.js"></script>
 #else
 <script type="text/javascript" src="js/expertFooter.js"></script>
 #end if
