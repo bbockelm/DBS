@@ -46,10 +46,15 @@ fi
 cat DBS-NeXtGen-Oracle.sql| sed -e "s%int%integer%g" > DBS-NeXtGen-Oracle.sql.integer
 #
 # TEXT to CLOB
-cat DBS-NeXtGen-Oracle.sql.integer|sed -e "s%TEXT%CLOB%g" > DBS-NeXtGen-Oracle.sql.clob
+cat DBS-NeXtGen-Oracle.sql.integer|sed -e "s%TEXT%CLOB%g" > DBS-NeXtGen-Oracle.sql.clob.0
+# This puts a STUPID LONGCLOB that should only be CLOB
+cat DBS-NeXtGen-Oracle.sql.clob.0|sed -e "s%LONGCLOB%CLOB%g" > DBS-NeXtGen-Oracle.sql.clob
 #
 # BIGINT to int
-cat DBS-NeXtGen-Oracle.sql.clob | sed -e "s%BIGINT UNSIGNED%integer%g" > DBS-NeXtGen-Oracle.sql.nobig
+cat DBS-NeXtGen-Oracle.sql.clob | sed -e "s%BIGINT UNSIGNED%integer%g" > DBS-NeXtGen-Oracle.sql.nobig.0
+#
+cat DBS-NeXtGen-Oracle.sql.nobig.0 | sed -e "s%BIGINT%integer%g" > DBS-NeXtGen-Oracle.sql.nobig
+#
 mv DBS-NeXtGen-Oracle.sql.nobig DBS-NeXtGen-Oracle.sql.tmp.0
 #
 #
@@ -91,7 +96,12 @@ echo "-- ====================================================" >> $ddl_file
 # Add the rest of DDL
 # Along with changing the TIMESTAMP Format to ORACLE (PL/SQL) format
 echo "PROMPT Creating Tables" >> $ddl_file
-cat DBS-NeXtGen-Oracle.sql.tmp.0 | tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%float%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%float%g" >> $ddl_file
+
+
+cat DBS-NeXtGen-Oracle.sql.tmp.0| grep --invert-match "CREATE INDEX"  >> $ddl_file
+
+## TIMESTAMP was deprecated pre DBS_1_0_0 
+#cat DBS-NeXtGen-Oracle.sql.tmp.0 | tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%float%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%float%g" >> $ddl_file
 #cat DBS-NeXtGen-Oracle.sql.tmp.0 | tee |grep --invert-match "CREATE INDEX" |sed -e "s%TIMESTAMP DEFAULT 0%TIMESTAMP DEFAULT SYSTIMESTAMP%g" | sed -e "s%TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP%TIMESTAMP DEFAULT SYSTIMESTAMP%g" >> $ddl_file
 
 #
