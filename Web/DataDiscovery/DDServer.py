@@ -84,6 +84,9 @@ class DDServer(DDLogger,Controller):
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDServer",verbose)
         setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
         try:
+            if context:
+               context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 
+               default=0, dest="verbose",help="specify verbosity level, 0-none, 1-info, 2-debug")
             Controller.__init__ (self, context, __file__)
         except:
             pass
@@ -93,6 +96,8 @@ class DDServer(DDLogger,Controller):
         self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8031",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
+        self.mastheadUrl = "http://cmslcgco01.cern.ch:8050/Common/js/masthead.js"
+        self.footerUrl   = "http://cmslcgco01.cern.ch:8050/Common/js/footer.js"
         self.site = ""
         self.app  = ""
         self.primD= ""
@@ -171,8 +176,21 @@ class DDServer(DDLogger,Controller):
         self.writeLog("DDServer init")
 
     def readyToRun(self):
-        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
+        opts=self.context.CmdLineArgs().opts
+        self.baseUrl = opts.baseUrl
+#        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
+        self.mastheadUrl=self.baseUrl+"Common/masthead"
+        self.footerUrl=self.baseUrl+"Common/footer"
+        try:
+           self.verbose=opts.verbose
+           self.helper.setVerbose(self.verbose)
+        except:
+           pass
+        self.context.Logger ().message ("Creating DBS Data Discovery roles and groups")
+        securityApi = self.context.SecurityDBApi ()
+        securityApi.api.addRole ("DBS admin")
+        securityApi.api.addGroup ("dbs_admin")    
 
     def redirectPage(self):
         page = self.genTopHTML()
@@ -181,6 +199,7 @@ class DDServer(DDLogger,Controller):
         page+= str(t)
         page+= self.genBottomHTML()
         return page
+    redirectPage.exposed=True     
         
     def setQuiet(self):
         self.helper.setQuiet()
@@ -286,6 +305,8 @@ class DDServer(DDLogger,Controller):
         nameSpace = {
                      'host'        : self.dbsdd,
                      'baseUrl'     : self.baseUrl,
+                     'mastheadUrl' : self.mastheadUrl,
+                     'footerUrl'   : self.footerUrl,
                      'title'       : 'DBS Data Discovery Page',
                      'dbsGlobal'   : DBSGLOBAL,
                      'userMode'    : userMode,
