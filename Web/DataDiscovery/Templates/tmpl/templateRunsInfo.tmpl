@@ -26,7 +26,7 @@ contains $nRun run(s)
 <td>EndOfRun</td>
 <td>dataset</td>
 #if $userMode=="runManager"
-#if $runList[0]['Type'].lower()!='mc'
+#if $len($runList) and $runList[0]['Type'].lower()!='mc'
 <td>Mode</td>
 <td>System</td>
 #end if

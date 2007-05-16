@@ -1905,7 +1905,7 @@ MCDescription:      %s
           if maxRun and maxRun!="*":
              sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
 
-          sel.append_whereclause(self.col(tblk,'Name')!="")
+          sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
