@@ -1,11 +1,19 @@
 <!-- templateLFN.tmpl -->
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
 <div>
+#if $blockName and $blockName!="*"
 Block:<br /> 
+#else
+Dataset:<br /> 
+#end if
 <table class="offset_left">
 <tr>
 <td align="left">
+#if $blockName and $blockName!="*"
 <b>$blockName</b>
+#else
+<b>$dataset</b>
+#end if
 </td>
 </tr>
 </table>

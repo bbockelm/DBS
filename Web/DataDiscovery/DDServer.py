@@ -845,6 +845,26 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _dbsExpert.exposed=True
 
+    def _runs(self,dbsInst=DBSGLOBAL,userMode="runManager"):
+        try:
+            page = self.genTopHTML(intro=False,userMode=userMode,onload="resetRunNav();")
+            page+= self.whereMsg('Run search',userMode)
+            nameSpace = {
+                         'dbsList'      : self.dbsList,
+                         'dbsGlobal'    : DBSGLOBAL,
+                         'userMode'     : userMode,
+                         'style'        : 'width:200px',
+                        }
+            t = templateMenuRuns(searchList=[nameSpace]).respond()
+            page+= str(t)
+            page+= self.genBottomHTML()
+            return page
+        except:
+            t=self.errorReport("Fail in run search init function")
+            pass
+            return str(t)
+    _runs.exposed=True
+
     ################## END OF init methods
     def whereMsg(self,msg,userMode):
         t = templateWhere(searchList=[{'where':'DBS discovery :: '+msg,'userMode':userMode}]).respond()
@@ -1141,7 +1161,7 @@ class DDServer(DDLogger,Controller):
 
         # the progress bar for all results
         if _idx:
-            rPage+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s&pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode,pagerStep)
+            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode,pagerStep)
         tot=_idx
         for x in xrange(_idx,_idx+GLOBAL_STEP):
             if nDatasets>x*pagerStep:
@@ -1150,10 +1170,10 @@ class DDServer(DDLogger,Controller):
            ref=index+1
            if index==_idx:
               ref="""<span class="gray_box">%s</span>"""%(index+1)
-           rPage+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s&pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,index,userMode,pagerStep,ref)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,index,userMode,pagerStep,ref)
 #        if nDatasets>tot*pagerStep:
         if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s&pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode,pagerStep)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &amp;#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode,pagerStep)
 
         if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
@@ -1459,6 +1479,51 @@ class DDServer(DDLogger,Controller):
         return page
     getRuns.exposed = True 
 
+    def getRunsFromRange(self,dbsInst,minRun,maxRun,userMode="user",_idx=0,ajax=0,pagerStep=RES_PER_PAGE,**kwargs): 
+        """
+           @type  dbsInst: string
+           @param dbsInst: user selection of DBS menu
+           @rtype : string
+           @return: returns HTML code
+        """
+        _idx=int(_idx)
+        t1=time.time()
+        if int(ajax):
+           # AJAX wants response as "text/xml" type
+           self.setContentType('xml')
+           page="""<ajax-response><response type="object" id="runs">"""
+        else:
+           page=self.genTopHTML(userMode=userMode)
+        try:
+            self.helperInit(dbsInst)
+            page+=self.whereMsg('Run search :: Results :: Run information',userMode)
+            runList,runDBInfoDict=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun)
+            nameSpace = {
+                         'dbsInst'  : dbsInst,
+                         'host'     : self.dbsdd,
+                         'runList'  : runList,
+                         'runDBInfo': runDBInfoDict,
+                         'tableId'  : "runTable",
+                         'proc'     : "",
+                         'userMode' : userMode
+                        }
+            t = templateRunsInfo(searchList=[nameSpace]).respond()
+            page+=str(t)
+        except:
+            t=self.errorReport("Fail in getRunsFromRange function")
+            page+=str(t)
+        t2=time.time()
+        if userMode!="user" and self.profile:
+           page+=self.responseTime(t2-t1)
+        if int(ajax):
+           page+="</response></ajax-response>"
+        else:
+           page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getRunsFromRange.exposed = True 
+
     def getParameterSet(self,dbsInst,dataset=""):
         page="Here information about paramterSet information will appear"
         return page
@@ -1477,10 +1542,15 @@ class DDServer(DDLogger,Controller):
         try:
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
+            t="dataset"
+            v=dataset
+            if blockName and blockName!="*":
+               t="block"
+               v=blockName
             if run and run!='*':
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s :: run %s'%(blockName,run),userMode)
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
             else:
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
             page+= self.lfnToHTML(dbsInst,blockName,dataset,userMode,run)
             page+= self.genBottomHTML()
             return page
@@ -1503,10 +1573,15 @@ class DDServer(DDLogger,Controller):
         try:
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
+            t="dataset"
+            v=dataset
+            if blockName and blockName!="*":
+               t="block"
+               v=blockName
             if run and run!='*':
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s :: run %s'%(blockName,run),userMode)
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
             else:
-               page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
             page+="""<pre>\n"""
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
             for item in lfnList:
@@ -1669,6 +1744,7 @@ class DDServer(DDLogger,Controller):
                      'host'      : self.dbsdd,
                      'dbsInst'   : dbsInst,
                      'blockName' : blockName,
+                     'dataset'   : dataset,
                      'lfnList'   : lfnList,
                      'userMode'  : userMode,
                      'run'       : run
@@ -2112,6 +2188,33 @@ class DDServer(DDLogger,Controller):
         return page
     getGroups.exposed=True
 
+    def getRunRange(self,dbsInst,**kwargs):
+        """
+           Generates AJAX response to get runs for given DBS instances
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="kw_runRange_holder">"""
+        self.helperInit(dbsInst)
+        primD=primType="any"
+        for key in kwargs:
+            if key=='primType':
+               primType=kwargs['primType']
+            if key=='primD':
+               primD=kwargs['primD']
+        rMin,rMax=self.helper.getRunsForPrimary(primD,primType)
+#        if not rMin: return ""
+#        if not rMax: return ""
+        style="width:200px"
+        page+="""<input id="kw_minRun_holder" name="minRun" value="%s" size="6" />"""%rMin
+        page+="--"
+        page+="""<input id="kw_maxRun_holder" name="maxRun" value="%s" size="6" />"""%rMax
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getRunRange.exposed=True
+
     def getSites(self,dbsInst,sel="",tag="site",**kwargs):
         """
            Generates AJAX response to get sites for given DBS instances
@@ -2177,7 +2280,9 @@ class DDServer(DDLogger,Controller):
         dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel,dsType)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
-        nameSpace = {'name':'primD','iList': natsort24(dList),'selTag':'kw_prim','changeFunction':'','style':style}
+        cFunc=''
+        if kwargs.has_key('changeFunction'): cFunc=kwargs['changeFunction']
+        nameSpace = {'name':'primD','iList': natsort24(dList),'selTag':'kw_prim','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2219,6 +2324,7 @@ class DDServer(DDLogger,Controller):
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
+        if kwargs.has_key('changeFunction'): cFunc=kwargs['changeFunction']
         nameSpace = {'name':'primType','iList': dList,'selTag':'kw_primType','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)

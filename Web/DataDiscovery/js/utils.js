@@ -4,6 +4,17 @@ var GLOBAL_CELL='cell_1';
 //var DBSDD='http://cmsdbs.cern.ch/discovery/';
 //var DBSDD_EXPERT=DBSDD+'expert';
 
+function loadMasthead() {
+  try {
+    insertMastHead('dbs','')
+  } catch(err) {
+//    txt="There was an error during masthead loading.\n\n";
+//    txt+="Error description: " + err.description + "\n\n";
+//    txt+="Click OK to continue.\n\n";
+//    alert(txt);
+  }
+}
+
 // See http://www.javascriptkit.com/javatutors/navigator.shtml
 function CheckBrowser() {
   var browserName=navigator.appName; 
@@ -1410,3 +1421,12 @@ function SetAutoCompletion() {
       AutoTurnOff(); // default
    }
 }
+function resetRunNav() {
+  showLoadingMessage('kw_prim_holder');
+  ajaxGetTriggerLines('','ajaxGetRunRange()');// we skip first parameter which is dbsInst
+  showLoadingMessage('kw_primType_holder');
+  ajaxGetPrimDSTypes('','ajaxGetRunRange();ajaxUpdatePrimaryDatasets(\'\',\'ajaxGetRunRange()\')'); // we skip first parameter which is dbsInst
+  showLoadingMessage('kw_runRange_holder');
+  ajaxGetRunRange();
+}
+

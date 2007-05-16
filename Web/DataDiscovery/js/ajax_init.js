@@ -451,6 +451,7 @@ function registerAjaxObjectCalls() {
     finderQUpdater = new GetDataUpdater('myQueries','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('myQueries',finderQUpdater);
 
+    ajaxEngine.registerRequest('ajaxGetRunDBInfo','getRunDBInfo');
 //    ajaxEngine.registerRequest('ajaxGetUserNav','genUserNavigator');
 //    ajaxEngine.registerAjaxElement('kw_userNavigator');
 }
@@ -468,10 +469,18 @@ function registerAjaxUserMenuCalls() {
     ajaxEngine.registerAjaxElement('form2_siteHolder');
     ajaxEngine.registerRequest('ajaxGetGroups','getGroups');
     ajaxEngine.registerAjaxElement('kw_group_holder');
+
+    ajaxEngine.registerRequest('ajaxGetRunRange','getRunRange');
+    ajaxEngine.registerAjaxElement('kw_runRange_holder');
+
 //    ajaxEngine.registerRequest('ajaxGetBranches','getBranches');
 //    ajaxEngine.registerAjaxElement('kw_branch');
 //    ajaxEngine.registerRequest('ajaxGetUserData','getUserData');
 
+}
+
+function ajaxGetRunDBInfo(run) {
+  ajaxEngine.sendRequest('ajaxGetRunDBInfo','run='+run);
 }
 
 function ajaxMakeLine(id) {
@@ -709,9 +718,9 @@ function ajaxGetKWFields() {
   ajaxGetReleases();
   showLoadingMessage('kw_prim_holder');
   ajaxGetTriggerLines();
-  showLoadingMessage('kw_site_holder');
-  ajaxGetPrimDSTypes();
   showLoadingMessage('kw_primType_holder');
+  ajaxGetPrimDSTypes();
+  showLoadingMessage('kw_site_holder');
   ajaxGetSites('','kw_dbsInstSelector','kw_site_holder','site');
 //  var rel = $('kw_release').value;
 //  var tier= $('kw_tier').value;
@@ -731,10 +740,39 @@ function getDBS_kw(_dbs) {
   }
   return dbs;
 }
+function ajaxGetRunRange(_dbs) {
+  var dbs=getDBS_kw(_dbs);
+  var prim='any';
+  if($('kw_prim')) {
+      prim=$('kw_prim').value;
+  }
+  var primType='any';
+  if($('kw_primType')) {
+      primType=$('kw_primType').value;
+  }
+  ajaxEngine.sendRequest('ajaxGetRunRange','dbsInst='+dbs,'primD='+prim,'primType='+primType);
+}
 function ajaxGetReleases(_dbs) {
   var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetReleases','dbsInst='+dbs);
 }
+function ajaxGetTriggerLines(_dbs,_cFunc) {
+  var dbs=getDBS_kw(_dbs);
+  if(_cFunc) {
+      ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'changeFunction='+_cFunc);
+      return;
+  }
+  ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
+}
+function ajaxGetPrimDSTypes(_dbs,_cFunc) {
+  var dbs=getDBS_kw(_dbs);
+  if(_cFunc) {
+      ajaxEngine.sendRequest('ajaxGetPrimDSTypes','dbsInst='+dbs,'changeFunction='+_cFunc);
+      return;
+  }
+  ajaxEngine.sendRequest('ajaxGetPrimDSTypes','dbsInst='+dbs);
+}
+/*
 function ajaxGetTriggerLines(_dbs) {
   var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs);
@@ -743,7 +781,9 @@ function ajaxGetPrimDSTypes(_dbs) {
   var dbs=getDBS_kw(_dbs);
   ajaxEngine.sendRequest('ajaxGetPrimDSTypes','dbsInst='+dbs);
 }
-function ajaxUpdatePrimaryDatasets(_dbs) {
+*/
+
+function ajaxUpdatePrimaryDatasets(_dbs,_cFunc) {
   var dbs=getDBS_kw(_dbs);
   var rel = $('kw_release').value;
   var tier= $('kw_tier').value;
@@ -751,6 +791,10 @@ function ajaxUpdatePrimaryDatasets(_dbs) {
   var dsType=$('kw_primType').value;
 //  showLoadingMessage('kw_prim_holder');
   $('kw_prim').disabled="disabled";
+  if(_cFunc) {
+     ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel,'dsType='+dsType,'changeFunction='+_cFunc);
+     return;
+  }
   ajaxEngine.sendRequest('ajaxGetTriggerLines','dbsInst='+dbs,'group='+group,'tier='+tier,'rel='+rel,'dsType='+dsType);
 }
 function ajaxGetTiers(_dbs) {

@@ -40,9 +40,6 @@
 <script type="text/javascript" src="${baseUrl}YUI/treeview/treeview-min.js"></script>
 
 <script type="text/javascript" src="${mastheadUrl}"></script>
-###<script type="text/javascript" src="${footerUrl}"></script>
-###<script type="text/javascript" src="${mastheadUrl}Common/js/masthead.js"></script>
-###<script type="text/javascript" src="${mastheadUrl}Common/js/footer.js"></script>
 
 <!-- DBS and RICO -->
 <script type="text/javascript" src="js/userName.js"></script>
@@ -62,7 +59,8 @@
 #end if
 
 </head>
-<body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs','');initialize_dhtmlHistory();$onload" id="content">
+<body onload="setGreeting();ajaxInit('$dbsGlobal');loadMasthead();initialize_dhtmlHistory();$onload" id="content">
+###<body onload="setGreeting();ajaxInit('$dbsGlobal');insertMastHead('dbs','');initialize_dhtmlHistory();$onload" id="content">
 
 <noscript>
 <h1 class="box_red">Warning:</h1>

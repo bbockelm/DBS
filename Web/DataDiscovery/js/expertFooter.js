@@ -11,6 +11,6 @@ function footerMenuText(){
 {label: "Contact", link: "_contact?userMode=expert", title: "Contact DBS support team"},
 {title: "Physicist view of DBS", link: "index?userMode=user", label: "Physicist", position: "right"},
 {title: "Production view of DBS, contains more detail for site admins and production operators.", link: "index?userMode=expert", label: "Production", position: "right"},
+{title: "Run Manager view of DBS", link: "_runs?userMode=runManager", label: "RunMgr", position: "right"}
     ]
-{title: "Run Manager view of DBS", link: "index?userMode=runManager", label: "RunMgr", position: "right"},
 }

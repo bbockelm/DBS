@@ -1,6 +1,7 @@
 <!-- templateRunsInfo.tmpl -->
 #import urllib
 #set nRun=len($runList)
+#if $proc
 <div>
 Dataset:<br />
 <table class="offset_left">
@@ -10,6 +11,7 @@ Dataset:<br />
 </td></tr></table>
 contains $nRun run(s)
 </div>
+#end if
 <p />
 ###<table id="$tableId" class="sortable" cellspacing="0" cellpadding="0" border="1">
 <table id="$tableId" cellspacing="0" cellpadding="0" border="1">
@@ -22,6 +24,7 @@ contains $nRun run(s)
 <td>Store</td>
 <td>StartOfRun</td>
 <td>EndOfRun</td>
+<td>dataset</td>
 #if $userMode=="runManager"
 #if $runList[0]['Type'].lower()!='mc'
 <td>Mode</td>
@@ -38,6 +41,7 @@ contains $nRun run(s)
 </tr>
 #for dbsDict in $runList
 #set run=$dbsDict['RunNumber']
+#set procDS=$dbsDict['PathName']
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
 <td align="center">
@@ -56,6 +60,12 @@ $run
 <td align="right">$dbsDict['StoreNumber']</td>
 <td align="right">$dbsDict['StartOfRun']</td>
 <td align="right">$dbsDict['EndOfRun']</td>
+<td>
+<a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0">
+#set pathName="/"+$procDS[1:].replace("/","/<br />")
+$pathName
+</a>
+</td>
 #if $userMode=="runManager"
 #if $dbsDict['Type'].lower()!='mc'
 #if $runDBInfo.has_key($run)
@@ -78,10 +88,12 @@ $system
 <td align="right">$dbsDict['LastModifiedBy']</td>
 <td align="right">$dbsDict['LastModificationDate']</td>
 #end if
+#*
 #set bName=$urllib.quote($dbsDict['BlockName'])
+*#
 <td align="right">
-<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$run">txt</a>
-<a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=$bName&amp;dataset=$proc&amp;userMode=$userMode&amp;run=$run">details</a>
+<a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">txt</a>
+<a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
 </td>
 </tr>
 #end for

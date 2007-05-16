@@ -1599,7 +1599,7 @@ MCDescription:      %s
                              .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
                              .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
                              .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
-                             .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'FileId'))
+                             .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
                              .outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
                          ],distinct=True,order_by=oSel
                                       )
@@ -1860,7 +1860,9 @@ MCDescription:      %s
                            runDBDict[run]=(runmode,system)
       return runDBDict
 
-  def getRuns(self,dataset):
+  def getRuns(self,dataset,minRun="*",maxRun="*"):
+      if minRun.lower()=="any": minRun="*"
+      if maxRun.lower()=="any": maxRun="*"
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -1877,7 +1879,7 @@ MCDescription:      %s
           tp1   = self.alias('Person','tp1')
           tp2   = self.alias('Person','tp2')
 
-          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Name')]
+          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -1898,6 +1900,12 @@ MCDescription:      %s
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
              if tier and tier!="*":
                 self.joinTiers(sel,tpds,tier,tprd)
+          if minRun and minRun!="*":
+             sel.append_whereclause(self.col(trun,'RunNumber')>=minRun)
+          if maxRun and maxRun!="*":
+             sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
+
+          sel.append_whereclause(self.col(tblk,'Name')!="")
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
@@ -1908,13 +1916,13 @@ MCDescription:      %s
       runs=""
       for item in result:
           if  item and item[0]:
-              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,bName=item
+              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path=item
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
               if not run: continue
-              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'BlockName':bName}
+              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'PathName':path}
               oList.append(aDict)
               runs+="%s,"%run
       if self.verbose:
@@ -1923,6 +1931,47 @@ MCDescription:      %s
       runs=runs[:-1] # get rid of last comma
       runDBInfoDict=self.getRunDBInfo(runs)
       return oList,runDBInfoDict
+
+  def getRunsForPrimary(self,prim="any",primType="any"):
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tpmt = self.alias('PrimaryDSType','tpmt')
+          tpdr = self.alias('ProcDSRuns','tpdr')
+          trun = self.alias('Runs','trun')
+
+          oSel = [sqlalchemy.func.min(self.col(trun,'RunNumber')),sqlalchemy.func.max(self.col(trun,'RunNumber'))]
+          sel  = sqlalchemy.select(oSel,
+                       from_obj=[
+                          tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+                          .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
+                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                          .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                                ],distinct=True
+                                 )
+          if prim and prim.lower()!="any":
+             sel.append_whereclause(self.col(tpm,'Name')==prim)
+          if primType and primType.lower()!="any":
+             sel.append_whereclause(self.col(tpmt,'Type')==primType)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          if self.verbose:
+             self.writeLog(getExcept())
+          printExcept()
+          raise "Fail in getRunsForPrimary"
+      oList = result.fetchall()
+      rMin=oList[0][0]
+      rMax=oList[0][1]
+      if not rMin: rMin="N/A"
+      if not rMax: rMax="N/A"
+      if self.verbose:
+         self.writeLog("time in getRunsForPrimary: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return rMin,rMax
 
   def getDbsData(self,dataset):
       kwargs={'datasetPath':dataset,'fullOutput':1}
