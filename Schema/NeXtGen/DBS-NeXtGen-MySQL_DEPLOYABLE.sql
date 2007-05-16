@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 648
+-- === Build : 654
 -- ======================================================================
 
 drop database if exists dbs_new_era_v31;
@@ -174,7 +174,7 @@ CREATE TABLE Files
     FileStatus            BIGINT UNSIGNED   not null,
     FileType              BIGINT UNSIGNED   not null,
     ValidationStatus      BIGINT UNSIGNED,
-    QueryableMetadata     varchar(1000)  DEFAULT 'NOTSET',
+    QueryableMetadata     varchar(1000)     default 'NOTSET',
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -1592,7 +1592,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('DBS_1_0_3', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('DBS_1_0_4', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());

@@ -9,7 +9,7 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=DBS_1_0_3
+SchemaVersion=DBS_1_0_4
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
@@ -191,7 +191,7 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', ${unix_time});" 
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', ${unix_time});" >> $ddl_file
 #echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', ${unix_time});" >> $ddl_file
 #echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('INDEX', ${unix_time});" >> $ddl_file
-ggs#
+#
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSYBSM', ${unix_time});">> $ddl_file

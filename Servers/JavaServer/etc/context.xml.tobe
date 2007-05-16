@@ -74,8 +74,8 @@
                 driverClassName="oracle.jdbc.driver.OracleDriver"
                 url="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(PORT=10520)(HOST=oradev10.cern.ch))(CONNECT_DATA=(SID=D10)))"/-->
 
-<SupportedSchemaVersion schemaversion="DBS_1_0_3" />
-<SupportedClientVersions clientversions="v00_00_05, v00_00_06, DBS_1_0_3" />
+<SupportedSchemaVersion schemaversion="DBS_1_0_4" />
+<SupportedClientVersions clientversions="v00_00_06, DBS_1_0_3, DBS_1_0_4" />
 <DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
 </Context>
 					       

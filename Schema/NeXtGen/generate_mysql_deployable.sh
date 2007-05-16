@@ -10,7 +10,7 @@
 #  M. Anzar Afaq (anzar@fnal[.NOSPAM]gov
 #
 #
-SchemaVersion=DBS_1_0_3
+SchemaVersion=DBS_1_0_4
 #
 ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #

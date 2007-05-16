@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 651
+REM === Build : 654
 REM ======================================================================
 
 CREATE TABLE Person
@@ -588,7 +588,7 @@ CREATE TABLE Files
     FileStatus            BIGINT UNSIGNED   not null,
     FileType              BIGINT UNSIGNED   not null,
     ValidationStatus      BIGINT UNSIGNED,
-    QueryableMetadata     varchar(1000)  DEFAULT 'NOTSET',
+    QueryableMetadata     varchar(1000)     default 'NOTSET',
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -1249,3 +1249,5 @@ CREATE INDEX  ON Person(Name);
 CREATE INDEX  ON ProcessedDataset(Name);
 
 CREATE INDEX  ON AnalysisDataset(Annotation);
+
+CREATE INDEX  ON Files(QueryableMetadata);
