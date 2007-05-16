@@ -189,7 +189,7 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', ${unix_time});" 
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', ${unix_time});" >> $ddl_file
-#echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', ${unix_time});" >> $ddl_file
 #echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('INDEX', ${unix_time});" >> $ddl_file
 #
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', ${unix_time});">> $ddl_file

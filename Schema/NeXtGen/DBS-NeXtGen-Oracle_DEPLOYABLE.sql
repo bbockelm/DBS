@@ -2369,6 +2369,7 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', (select (sysdate - to_
 INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSYBSM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
