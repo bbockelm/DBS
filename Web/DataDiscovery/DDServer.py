@@ -96,8 +96,8 @@ class DDServer(DDLogger,Controller):
         self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8031",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
-        self.mastheadUrl = "http://cmslcgco01.cern.ch:8050/Common/js/masthead.js"
-        self.footerUrl   = "http://cmslcgco01.cern.ch:8050/Common/js/footer.js"
+        self.mastheadUrl = "http://cmsdbs.cern.ch/WEBTOOLS/js/masthead"
+        self.footerUrl   = "http://cmsdbs.cern.ch/WEBTOOS/js/footer"
         self.site = ""
         self.app  = ""
         self.primD= ""
