@@ -588,7 +588,7 @@ CREATE TABLE Files
     FileStatus            BIGINT UNSIGNED   not null,
     FileType              BIGINT UNSIGNED   not null,
     ValidationStatus      BIGINT UNSIGNED,
-    QueryableMetadata     varchar(1000),
+    QueryableMetadata     varchar(1000)  DEFAULT 'NOTSET',
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,

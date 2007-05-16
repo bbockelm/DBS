@@ -593,7 +593,7 @@ CREATE TABLE Files
     FileStatus            integer   not null,
     FileType              integer   not null,
     ValidationStatus      integer,
-    QueryableMetadata     varchar(1000),
+    QueryableMetadata     varchar(1000)  DEFAULT 'NOTSET',
     CreatedBy             integer,
     CreationDate          integer,
     LastModifiedBy        integer,
