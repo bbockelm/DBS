@@ -1497,7 +1497,45 @@ class DDServer(DDLogger,Controller):
         try:
             self.helperInit(dbsInst)
             page+=self.whereMsg('Run search :: Results :: Run information',userMode)
-            runList,runDBInfoDict=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun)
+
+            nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1)
+            page+="""<p>For run range %s-%s found %s run(s)</p>"""%(minRun,maxRun,nResults)
+            ########## Construct result page
+            rPage=""
+            if nResults:
+               rPage+="Result page:"
+
+            nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1)
+            # the progress bar for all results
+            if _idx:
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,minRun,maxRun,_idx-1,userMode,pagerStep)
+            tot=_idx
+            for x in xrange(_idx,_idx+GLOBAL_STEP):
+                if nResults>x*pagerStep:
+                   tot+=1
+            for index in xrange(_idx,tot):
+                ref=index+1
+                if index==_idx:
+                   ref="""<span class="gray_box">%s</span>"""%(index+1)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,minRun,maxRun,index,userMode,pagerStep,ref)
+            if  nResults>(_idx+1)*pagerStep:
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,minRun,maxRun,_idx+1,userMode,pagerStep)
+
+            if _idx and _idx*pagerStep>nResults:
+               return "No data found for this request"
+            ##### end of the pager
+            _nameSpace = {
+                         'style'    : "",
+                         'rPage'    : rPage,
+                         'pagerStep': pagerStep,
+                         'nameForPager': "runs",
+                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s')"%(dbsInst,minRun,maxRun,_idx,ajax,userMode)
+                        }
+            t = templatePagerStep(searchList=[_nameSpace]).respond()
+            pagerPage=str(t)
+            page+=pagerPage
+
+            runList,runDBInfoDict=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
             nameSpace = {
                          'dbsInst'  : dbsInst,
                          'host'     : self.dbsdd,
@@ -1509,6 +1547,7 @@ class DDServer(DDLogger,Controller):
                         }
             t = templateRunsInfo(searchList=[nameSpace]).respond()
             page+=str(t)
+            page+=pagerPage
         except:
             t=self.errorReport("Fail in getRunsFromRange function")
             page+=str(t)

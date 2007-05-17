@@ -1300,6 +1300,11 @@ function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx) {
    var url='getFileBlocks?dbsInst='+dbsInst+'&site='+site+'&ajax='+ajax+'&userMode='+userMode+'&idx='+idx+'&pagerStep='+pagerStep;
    load(url);
 }
+function LoadGetRunsFromRange(dbsInst,minRun,maxRun,idx,ajax,userMode) {
+   var pagerStep=$('pagerStep').value;
+   var url='getRunsFromRange?dbsInst='+dbsInst+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
+   load(url);
+}
 function Disable2Enable(tag1,tag2) {
    if($(tag1).disabled) {
       $(tag1).disabled='';
