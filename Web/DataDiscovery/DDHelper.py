@@ -1860,7 +1860,7 @@ MCDescription:      %s
                            runDBDict[run]=(runmode,system)
       return runDBDict
 
-  def getRuns(self,dataset,minRun="*",maxRun="*"):
+  def getRuns(self,dataset,minRun="*",maxRun="*",fromRow=0,limit=0,count=0):
       if minRun.lower()=="any": minRun="*"
       if maxRun.lower()=="any": maxRun="*"
       t1=time.time()
@@ -1881,7 +1881,10 @@ MCDescription:      %s
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
 
-          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path'),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct()),self.col(tf,'FileSize')]
+          if  count:
+              oSel = [sqlalchemy.func.count(self.col(trun,'RunNumber').distinct())]
+          else:
+              oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path'),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct()),self.col(tf,'FileSize')]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -1913,12 +1916,19 @@ MCDescription:      %s
 
           sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
           sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
+          if not count and limit:
+             sel.limit=limit
+             sel.offset=fromRow
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
              self.writeLog(getExcept())
           printExcept()
           raise "Fail in getRuns"
+      if count:
+         res = result.fetchone()[0]
+         self.closeConnection(con)
+         return res
       oList=[]
       runs=""
       for item in result:
