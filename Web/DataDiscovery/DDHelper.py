@@ -1715,7 +1715,7 @@ MCDescription:      %s
           dn1=parseCreatedBy(dn1)
           dn2=parseCreatedBy(dn2)
 #          oList.append(item)
-          oList.append(lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate)
+          oList.append((lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate))
       self.closeConnection(con)
       return tList,oList
 
@@ -1875,11 +1875,13 @@ MCDescription:      %s
           tdt  = self.alias('DataTier','tdt')
           tpdr = self.alias('ProcDSRuns','tpdr')
           trun = self.alias('Runs','trun')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tf   = self.alias('Files','tf')
           tpt  = self.alias('PrimaryDSType','tpt')
-          tp1   = self.alias('Person','tp1')
-          tp2   = self.alias('Person','tp2')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
 
-          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
+          oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path'),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct()),self.col(tf,'FileSize')]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -1888,9 +1890,13 @@ MCDescription:      %s
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
                           .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(trun,'LastModifiedBy')==self.col(tp2,'ID'))
-                                ],distinct=True,order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
+                                ],distinct=True,
+                                  order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))],
+                                  group_by=[self.col(tf,'LogicalFileName')]
                                  )
           if dataset:
              empty,prim,proc,tier=string.split(dataset,"/")
@@ -1906,6 +1912,7 @@ MCDescription:      %s
              sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
 
           sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
+          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
@@ -1916,13 +1923,14 @@ MCDescription:      %s
       runs=""
       for item in result:
           if  item and item[0]:
-              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path=item
+              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,nFiles,fSize=item
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
+              if not fSize: fSize=0
               if not run: continue
-              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'PathName':path}
+              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'PathName':path,'NumberOfFiles':nFiles,'fSize':fSize}
               oList.append(aDict)
               runs+="%s,"%run
       if self.verbose:

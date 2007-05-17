@@ -1,5 +1,6 @@
 <!-- templateRunsInfo.tmpl -->
 #import urllib
+#from DDUtil import sizeFormat, colorSizeHTMLFormat
 #set nRun=len($runList)
 #if $proc
 <div>
@@ -25,6 +26,8 @@ contains $nRun run(s)
 <td>StartOfRun</td>
 <td>EndOfRun</td>
 <td>dataset</td>
+<td># Files</td>
+<td>Size</td>
 #if $userMode=="runManager"
 #if $len($runList) and $runList[0]['Type'].lower()!='mc'
 <td>Mode</td>
@@ -62,10 +65,12 @@ $run
 <td align="right">$dbsDict['EndOfRun']</td>
 <td>
 <a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($procDS)&amp;userMode=$userMode&amp;ajax=0">
-#set pathName="/"+$procDS[1:].replace("/","/<br />")
+#set pathName="/"+$procDS[1:].replace("/","<br />/")
 $pathName
 </a>
 </td>
+<td>$dbsDict['NumberOfFiles']</td>
+<td>$colorSizeHTMLFormat($dbsDict['fSize'])</td>
 #if $userMode=="runManager"
 #if $dbsDict['Type'].lower()!='mc'
 #if $runDBInfo.has_key($run)
