@@ -8,8 +8,12 @@ $where
 <td align="right" class="box_darkblue">Physicist</td>
 #else if $userMode=='runManager'
 <td align="right" class="box_darkblue">Run Manager</td>
-#else
+#else if $userMode=='expert'
 <td align="right" class="box_darkblue">Production</td>
+#else if $userMode=='dbsExpert'
+<td align="right" class="box_darkblue">Expert</td>
+#else
+<td align="right" class="box_darkblue">$userMode</td>
 #end if
 </tr>
 </table>
