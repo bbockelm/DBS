@@ -34,7 +34,7 @@
 <tr>
 <td align="right">
 <div id="primDSTypeDef">
-<b>Types</b>
+<b>Data types</b>
 </div>
 </td>
 <td>
@@ -96,4 +96,15 @@
 
 </form>
 
+<script type="text/javascript">
+var tooltip;
+tooltip="<p>List of known DBS instances.</p>";
+MakeTooltip("t_dbsInst","dbsInstDef",tooltip);
+tooltip="<p>This is a list of primary datasets known in DBS. In a case of real data it is trigger lines, in a case of MC it is MC generators.</p> <p><b>Example:</b> mc-onsel-120_PU_Zee </p>";
+MakeTooltip("t_primDef","primDef",tooltip);
+tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic for cosmic data, raw for raw data, data for real processed data.</p>";
+MakeTooltip("t_primType","primDSTypeDef",tooltip);
+tooltip="<p>Here you can specify you desired run range. If you see N/A that means there is no runs available for your selection above.</p>";
+MakeTooltip("t_runRange","runRangeDef",tooltip);
+</script>
 <!-- end oftemplateRuns.tmpl -->
