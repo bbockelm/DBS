@@ -6,6 +6,8 @@ $where
 </td>
 #if $userMode=='user'
 <td align="right" class="box_darkblue">Physicist</td>
+#else if $userMode=='runManager'
+<td align="right" class="box_darkblue">Run Manager</td>
 #else
 <td align="right" class="box_darkblue">Production</td>
 #end if
