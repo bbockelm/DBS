@@ -152,6 +152,7 @@ echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', ${unix_
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', ${unix_time});" >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', ${unix_time});" >> $ddl_file
 echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', ${unix_time}) ;" >> $ddl_file
+echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', ${unix_time}) ;" >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', ${unix_time});" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', ${unix_time});" >> $ddl_file
 echo "INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('mc', ${unix_time});"  >> $ddl_file
@@ -177,8 +178,6 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', ${unix_time});"  >> $ddl_file
-#echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('STREAMER', 'Streamer File', ${unix_time});"  >> $ddl_file
-#echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('INDEX', 'Index File for Streamer Files', ${unix_time});"  >> $ddl_file
 #
 #
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', ${unix_time});" >> $ddl_file
@@ -189,8 +188,6 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', ${unix_time});" 
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', ${unix_time});" >> $ddl_file
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', ${unix_time});" >> $ddl_file
-#echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('INDEX', ${unix_time});" >> $ddl_file
 #
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', ${unix_time});">> $ddl_file

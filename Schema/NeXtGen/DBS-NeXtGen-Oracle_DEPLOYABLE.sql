@@ -2338,6 +2338,7 @@ INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', (select (sysd
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
+INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual)) ;
 INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('test', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PrimaryDSType  (Type, CreationDate) VALUES ('mc', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
@@ -2369,7 +2370,6 @@ INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', (select (sysdate - to_
 INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
-INSERT INTO DataTier (Name, CreationDate) VALUES ('STREAMER', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('SUSYBSM', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
