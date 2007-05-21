@@ -753,13 +753,19 @@ MCDescription:      %s
                             ],distinct=True,order_by=oSel
                                  )
           if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
-             empty,prim,proc,tier=string.split(kwargs['datasetPath'],"/")
-             if proc and proc!="*":
-                sel.append_whereclause(self.col(tprd,'Name')==proc)
-             if prim and prim!="*":
-                sel.append_whereclause(self.col(tpm,'Name')==prim)
-             if tier and tier!="*":
-                self.joinTiers(sel,tpds,tier,tprd)
+             if  kwargs['datasetPath'][0]=="/":
+                 empty,prim,proc,tier=string.split(kwargs['datasetPath'],"/")
+                 if proc and proc!="*":
+                    sel.append_whereclause(self.col(tprd,'Name')==proc)
+                 if prim and prim!="*":
+                    sel.append_whereclause(self.col(tpm,'Name')==prim)
+                 if tier and tier!="*":
+                    self.joinTiers(sel,tpds,tier,tprd)
+             else:
+                 msg ="Dataset name should be in a form /primary/processed/tier"
+                 msg+="You provided '%s'"%kwargs['datasetPath']
+                 msg+="If you need wild-card search please use *%s*"%kwargs['datasetPath']
+                 raise msg
 
           if kwargs.has_key('blockName') and kwargs['blockName']:
              sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
@@ -1933,6 +1939,7 @@ MCDescription:      %s
       runs=""
       for item in result:
           if  item and item[0]:
+              print item
               run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,nFiles,fSize=item
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)

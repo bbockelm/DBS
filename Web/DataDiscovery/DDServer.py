@@ -1113,11 +1113,19 @@ class DDServer(DDLogger,Controller):
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
 #        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
 
-        if type(proc) is not types.ListType and len(proc)>1 and (proc.find("*")!=-1 or proc.find("%")!=-1):
-           # we got a pattern
-#           row=int(_idx)*pagerStep
-#           limit=int(_idx)*pagerStep+pagerStep
-           proc=self.getMatch("Block","Path",proc)
+        if type(proc) is not types.ListType and len(proc)>1:
+           if (proc.find("*")!=-1 or proc.find("%")!=-1):
+               # we got a pattern
+               proc=self.getMatch("Block","Path",proc)
+           else:
+               if proc[0]!="/":
+                  page=self.genTopHTML()
+                  msg ="Dataset name should be in a form /primary/processed/tier<br />"
+                  msg+="You provided '%s'<br />"%proc
+                  msg+="If you need wild-card search please use *%s*<br />"%proc
+                  page+=msg
+                  page+=self.genBottomHTML()
+                  return page
            
         self.dbsTime=self.dlsTime=0
         page=""
@@ -1216,10 +1224,13 @@ class DDServer(DDLogger,Controller):
         if  not nDatasets:
             page+="""<p><span class="box_red">No data found</span></p>"""
 #        print "####",nDatasets,len(datasetsList)
-        for id in xrange(0,len(datasetsList)):
-            dataset=datasetsList[id]
-            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
-            page+= self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode)
+        try:
+            for id in xrange(0,len(datasetsList)):
+                dataset=datasetsList[id]
+                siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
+                page+= self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode)
+        except:    
+            page+="<verbatim>"+getExcept()+"</verbatim>"
 
         # end of response tag
         page+="""</div><hr class="dbs" />"""
