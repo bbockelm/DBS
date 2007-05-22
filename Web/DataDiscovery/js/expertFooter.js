@@ -6,7 +6,7 @@ function footerMenuText(){
 {label: "Analysis", link: "_analysis?userMode=expert", title: "Search analysis datasets"},
 {label: "RSS", link: "_rss?userMode=expert", title: "RSS Feeds publish frequently updates about your data"},
 {label: "Sites", link: "_siteSearch?userMode=expert", title: "Site search: site-based search"},
-{label: "Runs", link: "_siteSearch?userMode=expert", title: "Run search: run-based search"},
+{label: "Runs", link: "_runs?userMode=expert", title: "Run search: run-based search"},
 //    {label: "History", link: "_history?userMode=expert", title: "History: persistent history of user queries"},
 {label: "Help", link: "_help?userMode=expert", title: "Help: DBS glossary, terms, feedback form"},
 {label: "Contact", link: "_contact?userMode=expert", title: "Contact DBS support team"},
