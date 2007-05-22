@@ -96,8 +96,10 @@ class DDServer(DDLogger,Controller):
         self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8031",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
-        self.mastheadUrl = "http://cmsdbs.cern.ch/WEBTOOLS/Common/masthead"
-        self.footerUrl   = "http://cmsdbs.cern.ch/WEBTOOS/Common/footer"
+#        self.mastheadUrl = "http://cmsdbs.cern.ch/WEBTOOLS/Common/masthead"
+#        self.footerUrl   = "http://cmsdbs.cern.ch/WEBTOOS/Common/footer"
+        self.mastheadUrl = self.ddConfig.masthead()
+        self.footerUrl   = self.ddConfig.mastfooter()
         self.site = ""
         self.app  = ""
         self.primD= ""
@@ -1104,7 +1106,11 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         pagerStep=int(pagerStep)
-        proc_orig=urllib.quote(proc)
+        print "proc=",proc,type(proc)
+        if  type(proc) is types.ListType:
+            proc_orig=proc
+        else:
+            proc_orig=urllib.quote(proc)
         if string.lower(tier) =="all" or string.lower(tier)=="any": tier="*"
         if string.lower(site) =="all" or string.lower(site)=="any": site="*"
         if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
@@ -3354,7 +3360,10 @@ class DDServer(DDLogger,Controller):
            if type(_list) is types.ListType:
               iList=list(_list)
            else:
-              iList.append(_list)
+              if _list[0]=="[" and _list[-1]=="]":
+                 iList+=_list[1:-1].replace("[","").replace("]","").replace("'","").replace(" ","").split(",")
+              else:
+                 iList.append(_list)
         if kwargs.has_key('where') and kwargs['where']:
            where="( "+kwargs['where']+" )"
            whereClause=where
@@ -3442,14 +3451,15 @@ class DDServer(DDLogger,Controller):
     def findDSFromFinder(self,dbsInst,userMode,**kwargs):
         self.helperInit(dbsInst)
         parameters,iList,whereClause=self.constructQueryParameters(kwargs)
-        aList=['Block.Path']
-        for item in aList:
-            try:
-                iList.remove(item)
-            except:
-                pass
-        for item in aList:
-            iList.append(item)
+        if not iList.count('Block.Path'): iList.append('Block.Path')
+#        aList=['Block.Path']
+#        for item in aList:
+#            try:
+#                iList.remove(item)
+#            except:
+#                pass
+#        for item in aList:
+#            iList.append(item)
         query,oList = self.helper.queryMaker(iList,whereClause)
         pList=[]
         for item in oList:
