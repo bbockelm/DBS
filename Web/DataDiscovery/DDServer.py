@@ -851,7 +851,7 @@ class DDServer(DDLogger,Controller):
             page+= self.whereMsg('Run search',userMode)
             nameSpace = {
                          'dbsList'      : self.dbsList,
-                         'dbsGlobal'    : DBSGLOBAL,
+                         'dbsInst'      : DBSGLOBAL,
                          'userMode'     : userMode,
                          'style'        : 'width:200px',
                         }
