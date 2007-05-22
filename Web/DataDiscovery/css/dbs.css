@@ -1349,3 +1349,22 @@ table.selMenu th {
 .panel{
         width:200px;
 }
+
+.submenu {
+    margin-top:-5px;
+    background-color:rgb(100, 105, 115);
+/*    color:rgb(129, 136, 149);*/
+    color: #ffffff;
+    padding: 5px 5px 5px 5px;
+    text-decoration: none;
+}
+a.submenu
+{
+    padding: 1px 1px 1px 1px;
+    text-decoration: none;
+    color: #ffffff;
+}
+a.submenu:hover
+{
+    text-decoration: underline;
+}
