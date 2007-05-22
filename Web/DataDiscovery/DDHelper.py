@@ -1866,7 +1866,7 @@ MCDescription:      %s
                            runDBDict[run]=(runmode,system)
       return runDBDict
 
-  def getRuns(self,dataset,minRun="*",maxRun="*",fromRow=0,limit=0,count=0):
+  def getRuns(self,dataset,minRun="*",maxRun="*",fromRow=0,limit=0,count=0,userMode="user"):
       if minRun.lower()=="any": minRun="*"
       if maxRun.lower()=="any": maxRun="*"
       t1=time.time()
@@ -1973,7 +1973,8 @@ MCDescription:      %s
          self.writeLog("time in getRuns: %s"%(time.time()-t1))
       self.closeConnection(con)
       runs=runs[:-1] # get rid of last comma
-      runDBInfoDict=self.getRunDBInfo(runs)
+      runDBInfoDict={}
+      if userMode!="user": runDBInfoDict=self.getRunDBInfo(runs)
       return oList,runDBInfoDict
 
   def getRunsForPrimary(self,prim="any",primType="any"):

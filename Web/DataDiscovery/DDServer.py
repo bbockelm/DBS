@@ -845,7 +845,7 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _dbsExpert.exposed=True
 
-    def _runs(self,dbsInst=DBSGLOBAL,userMode="runManager"):
+    def _runs(self,dbsInst=DBSGLOBAL,userMode="user"):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetRunNav();")
             page+= self.whereMsg('Run search',userMode)
@@ -1463,7 +1463,7 @@ class DDServer(DDLogger,Controller):
             for idx in xrange(0,len(dList)):
                 tid = 't_runs_'+str(idx)
                 dataset = dList[idx]
-                runList,runDBInfoDict=self.helper.getRuns(dataset)
+                runList,runDBInfoDict=self.helper.getRuns(dataset,userMode=userMode)
                 nameSpace = {
                              'dbsInst'  : dbsInst,
                              'host'     : self.dbsdd,
@@ -1512,7 +1512,7 @@ class DDServer(DDLogger,Controller):
 
             nResults=0
             try:    
-               nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1)
+               nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
             except:
                msg="No runs found for your request:<br />"
                msg+="<ul>"
@@ -1528,7 +1528,6 @@ class DDServer(DDLogger,Controller):
             if nResults:
                rPage+="Result page:"
 
-            nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1)
             # the progress bar for all results
             if _idx:
                 rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,minRun,maxRun,_idx-1,userMode,pagerStep)
@@ -1558,7 +1557,7 @@ class DDServer(DDLogger,Controller):
             pagerPage=str(t)
             page+=pagerPage
 
-            runList,runDBInfoDict=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+            runList,runDBInfoDict=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             nameSpace = {
                          'dbsInst'  : dbsInst,
                          'host'     : self.dbsdd,
