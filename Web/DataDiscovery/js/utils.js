@@ -7,6 +7,14 @@ var GLOBAL_CELL='cell_1';
 function loadMasthead() {
   try {
     insertMastHead('dbs','')
+//    var myMenu=[ [ {text:'View', submenu:{id:"submenu_projects", itemdata:[
+//                       {text:'Physicists ',url: "index?userMode=user" }, 
+//                       {text:'Production ',url: "index?userMode=expert"}, 
+//                       {text:'Run Manager',url: "_runs?userMode=runManager"} 
+//                      ] }
+//                   }
+//               ] ];
+//    commonMenu('view_menu',myMenu);
   } catch(err) {
 //    txt="There was an error during masthead loading.\n\n";
 //    txt+="Error description: " + err.description + "\n\n";
@@ -1434,4 +1442,33 @@ function resetRunNav() {
   showLoadingMessage('kw_runRange_holder');
   ajaxGetRunRange();
 }
-
+function ChangeView() {
+   var tag=$("view_menu");
+   if(tag.className=="hide") {
+      tag.className="show_inline";
+   } else {
+      tag.className="hide";
+   }
+}
+function ChangeUserMode(mode) {
+  var url=window.location.href;
+  var newurl;
+  if(url.search("userMode")>0) {
+     if(url.search("userMode=user")>0) {
+        newurl=url.replace(/userMode=user/g,'userMode='+mode);
+     }
+     if(url.search("userMode=expert")>0) {
+        newurl=url.replace(/userMode=expert/g,'userMode='+mode);
+     }
+     if(url.search("userMode=runManager")>0) {
+        newurl=url.replace(/userMode=runManager/g,'userMode='+mode);
+     }
+  } else {
+    if(url.search(/\?/)>0) {
+       newurl=url+"&userMode="+mode;
+    } else {
+       newurl=url+"?userMode="+mode;
+    }
+  } 
+  load(newurl);
+}

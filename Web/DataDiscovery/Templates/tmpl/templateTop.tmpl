@@ -23,14 +23,7 @@
 <!-- if JavaScripts enables, turn visiable content on -->
 
 <!-- YUI and WEBTOOLS -->
-#*
-<script type="text/javascript" src="${baseUrl}YUI/yahoo/yahoo.js"></script>
-<script type="text/javascript" src="${baseUrl}YUI/dom/dom.js"></script>
-<script type="text/javascript" src="${baseUrl}YUI/event/event.js"></script> 
-<script type="text/javascript" src="${baseUrl}YUI/container/container_core.js"></script>
-*#
 <script type="text/javascript" src="${baseUrl}YUI/yahoo-dom-event/yahoo-dom-event.js"></script>
-
 <script type="text/javascript" src="${baseUrl}YUI/dom/dom-min.js"></script>
 <script type="text/javascript" src="${baseUrl}YUI/yahoo/yahoo-min.js"></script>
 <script type="text/javascript" src="${baseUrl}YUI/event/event-min.js"></script>
@@ -77,6 +70,22 @@ use a different browser with JavaScript support to use this page.
 </tr>
 </table>
 </noscript>
+
+<div id="view_menu" class="hide" align="right">
+<table id="submenu" class="submenu">
+<tr>
+<td>
+<a class="submenu" href="javascript:ChangeUserMode('user')">Physicist</a>
+</td>
+<td>
+<a class="submenu" href="javascript:ChangeUserMode('expert')">Production</a>
+</td>
+<td>
+<a class="submenu" href="javascript:ChangeUserMode('runManager')">Run Manager</a>
+</td>
+</tr>
+</table>
+</div>
 
 <div id="main" class="hide">
 <script type="text/javascript">SetMain()</script>
