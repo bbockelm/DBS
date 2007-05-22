@@ -1498,6 +1498,7 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         _idx=int(_idx)
+        pagerStep=int(pagerStep)
         t1=time.time()
         if int(ajax):
            # AJAX wants response as "text/xml" type
@@ -1509,7 +1510,18 @@ class DDServer(DDLogger,Controller):
             self.helperInit(dbsInst)
             page+=self.whereMsg('Run search :: Results :: Run information',userMode)
 
-            nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1)
+            nResults=0
+            try:    
+               nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1)
+            except:
+               msg="No runs found for your request:<br />"
+               msg+="<ul>"
+               msg+="<li>DBS instnace: <em>%s</em>"%dbsInst
+               msg+="<li>Run range:  <em>%s-%s</em>"%(minRun,maxRun)
+               msg+="</ul>"
+               page+=msg
+               page+=self.genBottomHTML()
+               return page
             page+="""<p>For run range %s-%s found %s run(s)</p>"""%(minRun,maxRun,nResults)
             ########## Construct result page
             rPage=""
@@ -1532,7 +1544,7 @@ class DDServer(DDLogger,Controller):
             if  nResults>(_idx+1)*pagerStep:
                 rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,minRun,maxRun,_idx+1,userMode,pagerStep)
 
-            if _idx and _idx*pagerStep>nResults:
+            if _idx and (_idx*pagerStep)>nResults:
                return "No data found for this request"
             ##### end of the pager
             _nameSpace = {
