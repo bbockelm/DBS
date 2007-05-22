@@ -26,8 +26,8 @@ contains $nRun run(s)
 <td>StartOfRun</td>
 <td>EndOfRun</td>
 <td>dataset</td>
-###<td># Files</td>
-###<td>Size</td>
+<td># Files</td>
+<td>Size</td>
 #if $userMode=="runManager"
 #* here we took first item from runList and 11th element which is dsType *#
 #set first=$runList[0]
@@ -62,9 +62,8 @@ contains $nRun run(s)
 #set mDate  = item[10]
 #set dsType = item[11]
 #set procDS = item[12]
-
-
-
+#set fSize  = item[13]
+#set nFiles = item[14]
 <tr valign="top" bgcolor="#FFFADC" name="dbs_row_sumInfo" id="dbs_row_sumInfo">
 ### I need to get run type and decide do I need or not provide a link to run quality DB.
 <td align="center">
@@ -89,8 +88,8 @@ $run
 $pathName
 </a>
 </td>
-###<td>$dbsDict['NumberOfFiles']</td>
-###<td>$colorSizeHTMLFormat($dbsDict['fSize'])</td>
+<td>$nFiles</td>
+<td>$colorSizeHTMLFormat($fSize)</td>
 #if $userMode=="runManager"
 #if $dsType.lower()!='mc'
 #if $runDBInfo.has_key($run)

@@ -1881,17 +1881,20 @@ MCDescription:      %s
           tdt  = self.alias('DataTier','tdt')
           tpdr = self.alias('ProcDSRuns','tpdr')
           trun = self.alias('Runs','trun')
-#          tfrl = self.alias('FileRunLumi','tfrl')
-#          tf   = self.alias('Files','tf')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tf   = self.alias('Files','tf')
           tpt  = self.alias('PrimaryDSType','tpt')
           tp1  = self.alias('Person','tp1')
           tp2  = self.alias('Person','tp2')
 
           if  count:
               oSel = [sqlalchemy.func.count(self.col(trun,'RunNumber').distinct())]
+              gBy  = []
           else:
-              oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
-#              oSel+=[self.col(tf,'FileSize'),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct())]
+#              oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
+              oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
+              gBy=list(oSel)
+              oSel+=[sqlalchemy.func.sum(self.col(tf,'FileSize')),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct())]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -1900,15 +1903,14 @@ MCDescription:      %s
                           .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
-#                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
-#                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
+                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
                           .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(trun,'LastModifiedBy')==self.col(tp2,'ID'))
                                 ],distinct=True,
+                                  group_by=gBy,
                                   order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
                                  )
-#          if not count:
-#             sel.group_by=oSel[:-1]
           if dataset:
              empty,prim,proc,tier=string.split(dataset,"/")
              if proc and proc!="*":
@@ -1923,12 +1925,21 @@ MCDescription:      %s
              sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
 
           sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
-#          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
+          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
+          result=""
           if not count and limit:
-             sel.use_labels=True
-             sel.limit=limit
-             sel.offset=fromRow
-          result = self.getSQLAlchemyResult(con,sel)
+#             sel.use_labels=True
+             if  self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 minRow,maxRow=fromRow,fromRow+limit
+                 s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
+                 print s
+                 result=con.execute(s,{"trun_runnumber":minRun,"trun_runnumb_1":maxRun})
+             else:
+                 sel.limit=limit
+                 sel.offset=fromRow
+                 result = self.getSQLAlchemyResult(con,sel)
+          else:       
+              result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
              self.writeLog(getExcept())
@@ -1937,23 +1948,24 @@ MCDescription:      %s
       if count:
          res = result.fetchone()[0]
          self.closeConnection(con)
-         return res
+         return long(res)
       oList=[]
       runs=""
       for item in result:
           if  item and item[0]:
-#              print item
-#              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,fSize,nFiles=item
-              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path=item
+              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,fSize,nFiles,row=item
+              else:
+                 run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,fSize,nFiles=item
+#              run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path=item
+              mBy=''
               cDate=timeGMT(cDate)
               mDate=timeGMT(mDate)
               cBy=parseCreatedBy(cBy)
               mBy=parseCreatedBy(mBy)
-#              if not fSize: fSize=0
+              if not fSize: fSize=0
               if not run: continue
-#              aDict={'RunNumber':run,'NumberOfEvents':nEvts,'NumberOfLumiSections':nLumis,'TotalLuminosity':totLumi,'StoreNumber':store,'StartOfRun':sRun,'EndOfRun':eRun,'CreatedBy':cBy,'CreationDate':cDate,'LastModificationDate':mDate,'LastModifiedBy':mBy,'Type':dsType,'PathName':path,'NumberOfFiles':nFiles,'fSize':fSize}
-#              oList.append(aDict)
-              oList.append( (run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path) )
+              oList.append( (run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path,fSize,nFiles) )
               runs+="%s,"%run
       oList.sort()
       oList.reverse()
