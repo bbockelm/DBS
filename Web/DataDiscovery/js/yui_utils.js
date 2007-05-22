@@ -122,4 +122,72 @@ function footerDBSMenuText() {
 
 */
 
+/*
+YAHOO.example.onMenuBarReady = function() {
+    
+    // "beforerender" event handler for the menu bar
+
+    function onMenuBarBeforeRender(p_sType, p_sArgs, p_oMenu) {
+
+        var oSubmenuData = {
+        
+            "communication": [ 
+            
+                { text: "360", url: "http://360.yahoo.com" },
+                { text: "Alerts", url: "http://alerts.yahoo.com" },
+                { text: "Avatars", url: "http://avatars.yahoo.com" },
+                { text: "Groups", url: "http://groups.yahoo.com " },
+                { text: "Internet Access", url: "http://promo.yahoo.com/broadband" },
+            ],
+
+            "shopping": [
+
+                { text: "Auctions", url: "http://auctions.shopping.yahoo.com" },
+                { text: "Autos", url: "http://autos.yahoo.com" },
+                { text: "Classifieds", url: "http://classifieds.yahoo.com" },
+            ]
+        };
+
+
+        this.getItem(0).cfg.setProperty("submenu", { id:"communication", itemdata: oSubmenuData["communication"] });
+        this.getItem(1).cfg.setProperty("submenu", { id:"shopping", itemdata: oSubmenuData["shopping"] });
+    }
+
+
+    // Instantiate and render the menu bar
+    var oMenuBar = new YAHOO.widget.MenuBar("productsandservices", { autosubmenudisplay:true, showdelay:250, hidedelay:750, lazyload:true });
+    // Subscribe to the "beforerender" event
+    oMenuBar.beforeRenderEvent.subscribe(onMenuBarBeforeRender, oMenuBar, true);
+    // Render the menu bar
+    oMenuBar.render();
+};
+
+// Initialize and render the menu bar when it is available in the DOM
+YAHOO.util.Event.onContentReady("productsandservices", YAHOO.example.onMenuBarReady);
+*/
+
+
+YAHOO.widget.MenuBarItem.prototype.IMG_ROOT = "YUI/menu/assets/";
+YAHOO.widget.MenuBarItem.prototype.SUBMENU_INDICATOR_IMAGE_PATH = "menuarorght8_nrm_1.gif";
+YAHOO.widget.MenuBarItem.prototype.SELECTED_SUBMENU_INDICATOR_IMAGE_PATH = "menuarorght8_hov_1.gif";
+YAHOO.widget.MenuBarItem.prototype.DISABLED_SUBMENU_INDICATOR_IMAGE_PATH = "menuarorght8_dim_1.gif";
+//YAHOO.widget.MenuBarItem.prototype.IMG_ROOT = ""
+//YAHOO.widget.MenuBarItem.prototype.SUBMENU_INDICATOR_IMAGE_PATH = "";
+//YAHOO.widget.MenuBarItem.prototype.SELECTED_SUBMENU_INDICATOR_IMAGE_PATH = "";
+//YAHOO.widget.MenuBarItem.prototype.DISABLED_SUBMENU_INDICATOR_IMAGE_PATH = "";
+function commonMenu(tag,iMenu) {
+    if($(tag)) {
+        $(tag).innerHTML='';
+        var oMenu = new YAHOO.widget.MenuBar("mymenubar", 
+                    { trigger:document,
+                      submenualignment:['tl','tr'],
+                      autosubmenudisplay:true,
+                      showdelay:250,
+                      hidedelay:750, 
+                      lazyload:true
+                    } );
+        oMenu.addItems(iMenu);
+        oMenu.render(tag);
+    }
+}
 
