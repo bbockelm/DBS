@@ -2287,8 +2287,11 @@ MCDescription:      %s
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
+          condList=[]   
           for block in blockList:
-             sel.append_whereclause(self.col(tblk,'Name')==block)
+              condList.append(self.col(tblk,'Name')==block)
+          if len(condList): 
+             sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
