@@ -1932,7 +1932,6 @@ MCDescription:      %s
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  minRow,maxRow=fromRow,fromRow+limit
                  s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
-                 print s
                  result=con.execute(s,{"trun_runnumber":minRun,"trun_runnumb_1":maxRun})
              else:
                  sel.limit=limit
@@ -1974,7 +1973,11 @@ MCDescription:      %s
       self.closeConnection(con)
       runs=runs[:-1] # get rid of last comma
       runDBInfoDict={}
-      if userMode!="user": runDBInfoDict=self.getRunDBInfo(runs)
+      if userMode!="user":
+         try:
+            runDBInfoDict=self.getRunDBInfo(runs)
+         except:
+            pass
       return oList,runDBInfoDict
 
   def getRunsForPrimary(self,prim="any",primType="any"):
