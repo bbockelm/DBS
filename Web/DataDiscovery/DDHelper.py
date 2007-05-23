@@ -1932,7 +1932,15 @@ MCDescription:      %s
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  minRow,maxRow=fromRow,fromRow+limit
                  s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
-                 result=con.execute(s,{"trun_runnumber":minRun,"trun_runnumb_1":maxRun})
+                 condDict={}
+                 for item in s.replace(")","").replace("(","").split():
+                     if item[0]==":":
+                        if not condDict:
+                           condDict[item]=minRun
+                        else:   
+                           condDict[item]=maxRun
+                 result=con.execute(s,condDict)
+#                 result=con.execute(s,{"trun_runnumber":minRun,"trun_runnumb_1":maxRun})
              else:
                  sel.limit=limit
                  sel.offset=fromRow
