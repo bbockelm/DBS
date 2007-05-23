@@ -4,9 +4,9 @@
 -- === Build : 654
 -- ======================================================================
 
-drop database if exists dbs_new_era_v31;
-create database dbs_new_era_v31;
-use dbs_new_era_v31;
+drop database if exists dbs_new_era_v40;
+create database dbs_new_era_v40;
+use dbs_new_era_v40;
 -- ======================================================================
 
 CREATE TABLE Person

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.53 $"
- $Id: DBSApiFileLogic.java,v 1.53 2007/05/14 20:14:45 sekhri Exp $"
+ $Revision: 1.54 $"
+ $Id: DBSApiFileLogic.java,v 1.54 2007/05/14 21:59:33 sekhri Exp $"
  *
  */
 
@@ -919,26 +919,29 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				//Insert A lumi Section if it does not exists
 				//Only when User provides a lumi section
 				//There can be cases when NO lumi Section number is give (Run only)
+				String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
 				String lsNumber = get(hashTable, "lumi_section_number", false);
 				if (!isNull(lsNumber)) {
 					insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
 				}
 				if (!isNull(lsNumber)) {
-
 					insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
 						fileID, 
 						getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true), 
-						getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true),
+						runID,
 						cbUserID, lmbUserID, creationDate);
 				}
 				//Just add Run-Fileid map
 				else {
 					insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
 						fileID, 
-                                                getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true),
+                                                runID,
 						cbUserID, lmbUserID, creationDate);
 				}
-
+				// Insert ProcDS-Run Map, if its already not there	
+				insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+                                		procDSID, runID,
+						cbUserID, lmbUserID, creationDate);
 			}
 			//Insert Branch and then FileBranch (Map)
 			for (int j = 0; j < branchVector.size(); ++j) {
