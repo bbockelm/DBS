@@ -1674,17 +1674,20 @@ class DDServer(DDLogger,Controller):
             page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
             page+="""<pre>\n"""
             bList=[]
-            if  blockList:
-                bList=blockList.split(",")
-            else:
-                try:
-                    bList=self.helper.getBlocksFromSite(site)
-                except:
-                    if self.verbose:
-                       self.writeLog(getExcept())
-                    printExcept()
-                    page+="No LFNs found for site '%s'\n"%site
-                    pass
+#            if  blockList:
+#                bList=blockList.split(",")
+#            else:
+            try:
+                blocks=[]
+                if blockList:
+                   blocks=blockList.split(",")
+                bList=self.helper.getBlocksFromSite(site,blocks)
+            except:
+                if self.verbose:
+                   self.writeLog(getExcept())
+                printExcept()
+                page+="No LFNs found for site '%s'\n"%site
+                pass
             if what=="cff":
                page+="replace PoolSource.fileNames = {\n"
             for blockName in bList:

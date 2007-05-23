@@ -2267,7 +2267,7 @@ MCDescription:      %s
       self.closeConnection(con)
       return aList
 
-  def getBlocksFromSite(self,site):
+  def getBlocksFromSite(self,site,blockList=[]):
       if site.lower()=='all' or site.lower()=='any': site="*"
       t1=time.time()
       aDict = {}
@@ -2287,6 +2287,8 @@ MCDescription:      %s
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
+          for block in blockList:
+             sel.append_whereclause(self.col(tblk,'Name')==block)
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
