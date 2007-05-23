@@ -1187,7 +1187,7 @@ class DDServer(DDLogger,Controller):
            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,index,userMode,pagerStep,ref)
 #        if nDatasets>tot*pagerStep:
         if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &amp;#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode,pagerStep)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode,pagerStep)
 
         if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
