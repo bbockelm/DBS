@@ -3339,7 +3339,6 @@ class DDServer(DDLogger,Controller):
         iList=[]
         whereClause=[]
         parameters =""
-        print "### constructQueryParameters.kwargs",kwargs
         for key in kwargs.keys():
             if key=="_": continue
             parameters+=kwargs[key]
