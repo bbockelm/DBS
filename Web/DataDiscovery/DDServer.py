@@ -3191,7 +3191,7 @@ class DDServer(DDLogger,Controller):
     def getProdRequest(self,prim,id,**kwargs):
         # AJAX wants response as "text/xml" type
         self.setContentType('xml')
-        page = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=%s&id="%(prim,id),{},debug=1)
+        page = self.prodRequestServer.sendPostMessage("/ProdRequest/getRequestsByDataset?primary_dataset=%s&id=%s"%(prim,id),{},debug=1)
 #        page = """
 #<ajax-response><response type="element" id="%s">
 #<div class="float_ProdRequest">
