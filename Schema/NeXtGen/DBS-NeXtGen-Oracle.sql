@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 654
+REM === Build : 691
 REM ======================================================================
 
 CREATE TABLE Person
@@ -350,21 +350,33 @@ CREATE TABLE AnalysisDSDef
   (
     ID                    BIGINT UNSIGNED,
     Name                  varchar(700)      unique not null,
+    Path                  varchar(1000),
+    Description           TEXT,
     LumiSections          TEXT,
     LumiSectionRanges     TEXT,
     Runs                  TEXT,
     RunsRanges            TEXT,
     Algorithms            varchar(1000),
     LFNs                  TEXT,
-    Path                  varchar(1000),
-    Tiers                 varchar(250),
-    AnalysisDatasets      TEXT,
     UserCut               TEXT,
-    Description           TEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE CompositeADS
+  (
+    ID                    BIGINT UNSIGNED,
+    Name                  varchar(500)      unique not null,
+    Description           varchar(1000)     not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
     primary key(ID)
   );
 
@@ -405,6 +417,100 @@ CREATE TABLE PrimaryDSType
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE SubSystem
+  (
+    ID                    BIGINT UNSIGNED,
+    Name                  varchar(500)      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE QualityValues
+  (
+    ID                    BIGINT UNSIGNED,
+    Value                 varchar(500)      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE RunLumiQuality
+  (
+    ID                    BIGINT UNSIGNED,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    DQValue               BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(ID,Run,Lumi,SubSystem)
+  );
+
+REM ======================================================================
+
+CREATE TABLE QualityHistory
+  (
+    ID                    BIGINT UNSIGNED,
+    HistoryOf             BIGINT UNSIGNED,
+    HistoryTimeStamp      BIGINT            not null,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    DQValue               BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(HistoryTimeStamp,Run,Lumi,SubSystem,DQValue)
+  );
+
+REM ======================================================================
+
+CREATE TABLE QFlagAssoc
+  (
+    ID                    BIGINT UNSIGNED,
+    ThisFlag              BIGINT UNSIGNED   not null,
+    ItsAssoc              BIGINT UNSIGNED   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    primary key(ID),
+    unique(ThisFlag,ItsAssoc)
+  );
+
+REM ======================================================================
+
+CREATE TABLE QualityVersion
+  (
+    ID                    BIGINT UNSIGNED,
+    Version               BIGINT            unique not null,
+    VersionTimeStamp      BIGINT            not null,
+    VersionName           varchar(1000),
+    Description           varchar(1000),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(VersionTimeStamp)
   );
 
 REM ======================================================================
@@ -477,26 +583,6 @@ CREATE TABLE ProcessedDataset
 
 REM ======================================================================
 
-CREATE TABLE AnalysisDataset
-  (
-    ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)      unique not null,
-    Annotation            varchar(1000)     not null,
-    ProcessedDS           BIGINT UNSIGNED   not null,
-    Definition            BIGINT UNSIGNED   not null,
-    Type                  BIGINT UNSIGNED   not null,
-    Status                BIGINT UNSIGNED   not null,
-    Parent                BIGINT UNSIGNED,
-    PhysicsGroup          BIGINT UNSIGNED   not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
 CREATE TABLE ProcDSRuns
   (
     ID                    BIGINT UNSIGNED,
@@ -553,6 +639,41 @@ CREATE TABLE ProcAlgo
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Dataset,Algorithm)
+  );
+
+REM ======================================================================
+
+CREATE TABLE AnalysisDataset
+  (
+    ID                    BIGINT UNSIGNED,
+    Name                  varchar(500)      unique not null,
+    Path                  varchar(1000),
+    Definition            BIGINT UNSIGNED   not null,
+    PhysicsGroup          BIGINT UNSIGNED   not null,
+    ProcessedDS           BIGINT UNSIGNED   not null,
+    Type                  BIGINT UNSIGNED   not null,
+    Status                BIGINT UNSIGNED   not null,
+    Description           varchar(1000),
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE CompADSMap
+  (
+    ID                    BIGINT UNSIGNED,
+    CompADS               BIGINT UNSIGNED   not null,
+    ADS                   BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(CompADS,ADS)
   );
 
 REM ======================================================================
@@ -929,6 +1050,13 @@ ALTER TABLE AnalysisDSDef ADD CONSTRAINT
     AnalysisDSDefLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+ALTER TABLE CompositeADS ADD CONSTRAINT 
+    CompositeADS_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE CompositeADS ADD CONSTRAINT 
+    CompositeADS_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
 ALTER TABLE StorageElement ADD CONSTRAINT 
     StorageElement_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
@@ -948,6 +1076,81 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
 /
 ALTER TABLE PrimaryDSType ADD CONSTRAINT 
     PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE QualityValues ADD CONSTRAINT 
+    QualityValues_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE QualityValues ADD CONSTRAINT 
+    QualityValuesLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+/
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_DQValue_FK foreign key(DQValue) references QualityValues(ID) on delete CASCADE
+/
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQualityLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_Run_FK foreign key(Run) references Runs(ID)
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_DQValue_FK foreign key(DQValue) references QualityValues(ID) on delete CASCADE
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistoryLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_ThisFlag_FK foreign key(ThisFlag) references RunLumiQuality(ID) on delete CASCADE
+/
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_ItsAssoc_FK foreign key(ItsAssoc) references RunLumiQuality(ID) on delete CASCADE
+/
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE QualityVersion ADD CONSTRAINT 
+    QualityVersion_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE QualityVersion ADD CONSTRAINT 
+    QualityVersionLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1014,31 +1217,6 @@ ALTER TABLE ProcessedDataset ADD CONSTRAINT
     ProcessedDatasetLastModifie_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID) on delete CASCADE
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Type_FK foreign key(Type) references AnalysisDSType(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Parent_FK foreign key(Parent) references AnalysisDataset(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDatasetPhysicsGroup_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE ProcDSRuns ADD CONSTRAINT 
     ProcDSRuns_Dataset_FK foreign key(Dataset) references ProcessedDataset(ID) on delete CASCADE
 /
@@ -1089,6 +1267,41 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
 /
 ALTER TABLE ProcAlgo ADD CONSTRAINT 
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDatasetPhysicsGroup_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID) on delete CASCADE
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_Type_FK foreign key(Type) references AnalysisDSType(ID)
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_CompADS_FK foreign key(CompADS) references CompositeADS(ID)
+/
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_ADS_FK foreign key(ADS) references AnalysisDataset(ID) on delete CASCADE
+/
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE Block ADD CONSTRAINT 
@@ -1246,8 +1459,12 @@ ALTER TABLE SEBlock ADD CONSTRAINT
 
 CREATE INDEX  ON Person(Name);
 
+CREATE INDEX  ON CompositeADS(Description);
+
+CREATE INDEX  ON QualityVersion(VersionName,Description);
+
 CREATE INDEX  ON ProcessedDataset(Name);
 
-CREATE INDEX  ON AnalysisDataset(Annotation);
+CREATE INDEX  ON AnalysisDataset(Description);
 
 CREATE INDEX  ON Files(QueryableMetadata);

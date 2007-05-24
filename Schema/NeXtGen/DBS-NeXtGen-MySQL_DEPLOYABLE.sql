@@ -1,12 +1,13 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 654
+-- === Build : 691
 -- ======================================================================
 
-drop database if exists dbs_new_era_v40;
-create database dbs_new_era_v40;
-use dbs_new_era_v40;
+drop database if exists dbs_new_era_newads;
+create database dbs_new_era_newads;
+use dbs_new_era_newads;
+
 -- ======================================================================
 
 CREATE TABLE Person
@@ -131,27 +132,6 @@ CREATE TABLE Runs
     StoreNumber           BIGINT UNSIGNED   not null,
     StartOfRun            varchar(100),
     EndOfRun              varchar(100),
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-
-    primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE AnalysisDataset
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)      unique not null,
-    Annotation            varchar(1000)     not null,
-    ProcessedDS           BIGINT UNSIGNED   not null,
-    Definition            BIGINT UNSIGNED   not null,
-    Type                  BIGINT UNSIGNED   not null,
-    Status                BIGINT UNSIGNED   not null,
-    Parent                BIGINT UNSIGNED,
-    PhysicsGroup          BIGINT UNSIGNED   not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -641,6 +621,27 @@ CREATE TABLE ProcAlgo
 
 -- ======================================================================
 
+CREATE TABLE AnalysisDataset
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)      unique not null,
+    Path                  varchar(1000),
+    Definition            BIGINT UNSIGNED   not null,
+    PhysicsGroup          BIGINT UNSIGNED   not null,
+    ProcessedDS           BIGINT UNSIGNED   not null,
+    Type                  BIGINT UNSIGNED   not null,
+    Status                BIGINT UNSIGNED   not null,
+    Description           varchar(1000),
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE AnalysisDSType
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -690,23 +691,52 @@ CREATE TABLE AnalysisDSDef
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Name                  varchar(700)      unique not null,
+    Path                  varchar(1000),
+    Description           TEXT,
     LumiSections          TEXT,
     LumiSectionRanges     TEXT,
     Runs                  TEXT,
     RunsRanges            TEXT,
     Algorithms            varchar(1000),
     LFNs                  TEXT,
-    Path                  varchar(1000),
-    Tiers                 varchar(250),
-    AnalysisDatasets      TEXT,
     UserCut               TEXT,
-    Description           TEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE CompositeADS
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)      unique not null,
+    Description           varchar(1000)     not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE CompADSMap
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    CompADS               BIGINT UNSIGNED   not null,
+    ADS                   BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(CompADS,ADS)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -789,6 +819,106 @@ CREATE TABLE PrimaryDSType
 
 -- ======================================================================
 
+CREATE TABLE SubSystem
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE QualityValues
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Value                 varchar(500)      unique not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE RunLumiQuality
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    DQValue               BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(ID,Run,Lumi,SubSystem)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE QualityHistory
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    HistoryOf             BIGINT UNSIGNED,
+    HistoryTimeStamp      BIGINT            not null,
+    Run                   BIGINT UNSIGNED   not null,
+    Lumi                  BIGINT UNSIGNED,
+    SubSystem             BIGINT UNSIGNED   not null,
+    DQValue               BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(HistoryTimeStamp,Run,Lumi,SubSystem,DQValue)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE QFlagAssoc
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    ThisFlag              BIGINT UNSIGNED   not null,
+    ItsAssoc              BIGINT UNSIGNED   not null,
+    CreatedBy             BIGINT UNSIGNED,
+    CreationDate          BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+
+    primary key(ID),
+    unique(ThisFlag,ItsAssoc)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE QualityVersion
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Version               BIGINT            unique not null,
+    VersionTimeStamp      BIGINT            not null,
+    VersionName           varchar(1000),
+    Description           varchar(1000),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(VersionTimeStamp)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -867,31 +997,6 @@ ALTER TABLE Runs ADD CONSTRAINT
 ;
 ALTER TABLE Runs ADD CONSTRAINT 
     Runs_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID) on delete CASCADE
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Type_FK foreign key(Type) references AnalysisDSType(ID)
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_Parent_FK foreign key(Parent) references AnalysisDataset(ID)
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDatasetPhysicsGroup_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE AnalysisDataset ADD CONSTRAINT 
-    AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE Files ADD CONSTRAINT 
@@ -1215,6 +1320,28 @@ ALTER TABLE ProcAlgo ADD CONSTRAINT
     ProcAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_Definition_FK foreign key(Definition) references AnalysisDSDef(ID)
+;
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDatasetPhysicsGroup_FK foreign key(PhysicsGroup) references PhysicsGroup(ID)
+;
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_ProcessedDS_FK foreign key(ProcessedDS) references ProcessedDataset(ID) on delete CASCADE
+;
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_Type_FK foreign key(Type) references AnalysisDSType(ID)
+;
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_Status_FK foreign key(Status) references AnalysisDSStatus(ID)
+;
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDataset_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE AnalysisDataset ADD CONSTRAINT 
+    AnalysisDatasetLastModified_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 ALTER TABLE AnalysisDSType ADD CONSTRAINT 
     AnalysisDSType_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -1250,6 +1377,26 @@ ALTER TABLE AnalysisDSDef ADD CONSTRAINT
 ;
 ALTER TABLE AnalysisDSDef ADD CONSTRAINT 
     AnalysisDSDefLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE CompositeADS ADD CONSTRAINT 
+    CompositeADS_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE CompositeADS ADD CONSTRAINT 
+    CompositeADS_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_CompADS_FK foreign key(CompADS) references CompositeADS(ID)
+;
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_ADS_FK foreign key(ADS) references AnalysisDataset(ID) on delete CASCADE
+;
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE CompADSMap ADD CONSTRAINT 
+    CompADSMap_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE SEBlock ADD CONSTRAINT 
@@ -1296,6 +1443,81 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
     PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE QualityValues ADD CONSTRAINT 
+    QualityValues_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE QualityValues ADD CONSTRAINT 
+    QualityValuesLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_Run_FK foreign key(Run) references Runs(ID)
+;
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+;
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+;
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_DQValue_FK foreign key(DQValue) references QualityValues(ID) on delete CASCADE
+;
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQuality_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE RunLumiQuality ADD CONSTRAINT 
+    RunLumiQualityLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_HistoryOf_FK foreign key(HistoryOf) references RunLumiQuality(ID)
+;
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_Run_FK foreign key(Run) references Runs(ID)
+;
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_Lumi_FK foreign key(Lumi) references LumiSection(ID)
+;
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_SubSystem_FK foreign key(SubSystem) references SubSystem(ID) on delete CASCADE
+;
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_DQValue_FK foreign key(DQValue) references QualityValues(ID) on delete CASCADE
+;
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistory_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE QualityHistory ADD CONSTRAINT 
+    QualityHistoryLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_ThisFlag_FK foreign key(ThisFlag) references RunLumiQuality(ID) on delete CASCADE
+;
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_ItsAssoc_FK foreign key(ItsAssoc) references RunLumiQuality(ID) on delete CASCADE
+;
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE QFlagAssoc ADD CONSTRAINT 
+    QFlagAssoc_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE QualityVersion ADD CONSTRAINT 
+    QualityVersion_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE QualityVersion ADD CONSTRAINT 
+    QualityVersionLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 -- =========== INSERT TRIGGERS FOR LastModificationDate ============================
 
 CREATE TRIGGER TR_Person BEFORE INSERT ON Person
@@ -1320,9 +1542,6 @@ CREATE TRIGGER TR_ProcessedDataset BEFORE INSERT ON ProcessedDataset
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_Runs BEFORE INSERT ON Runs
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_AnalysisDataset BEFORE INSERT ON AnalysisDataset
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_Files BEFORE INSERT ON Files
@@ -1415,6 +1634,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_ProcAlgo BEFORE INSERT ON ProcAlgo
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER TR_AnalysisDataset BEFORE INSERT ON AnalysisDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER TR_AnalysisDSType BEFORE INSERT ON AnalysisDSType
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1425,6 +1647,12 @@ CREATE TRIGGER TR_AnalysisDSFileLumi BEFORE INSERT ON AnalysisDSFileLumi
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_AnalysisDSDef BEFORE INSERT ON AnalysisDSDef
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_CompositeADS BEFORE INSERT ON CompositeADS
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_CompADSMap BEFORE INSERT ON CompADSMap
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_SEBlock BEFORE INSERT ON SEBlock
@@ -1440,6 +1668,24 @@ CREATE TRIGGER TR_ProcDSStatus BEFORE INSERT ON ProcDSStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_PrimaryDSType BEFORE INSERT ON PrimaryDSType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_SubSystem BEFORE INSERT ON SubSystem
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_QualityValues BEFORE INSERT ON QualityValues
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_RunLumiQuality BEFORE INSERT ON RunLumiQuality
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_QualityHistory BEFORE INSERT ON QualityHistory
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_QFlagAssoc BEFORE INSERT ON QFlagAssoc
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 -- =========== UPDATE TRIGGERS FOR LastModificationDate ============================
@@ -1466,9 +1712,6 @@ CREATE TRIGGER UTR_ProcessedDataset BEFORE UPDATE ON ProcessedDataset
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_Runs BEFORE UPDATE ON Runs
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_AnalysisDataset BEFORE UPDATE ON AnalysisDataset
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_Files BEFORE UPDATE ON Files
@@ -1561,6 +1804,9 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_ProcAlgo BEFORE UPDATE ON ProcAlgo
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_AnalysisDataset BEFORE UPDATE ON AnalysisDataset
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 CREATE TRIGGER UTR_AnalysisDSType BEFORE UPDATE ON AnalysisDSType
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
@@ -1571,6 +1817,12 @@ CREATE TRIGGER UTR_AnalysisDSFileLumi BEFORE UPDATE ON AnalysisDSFileLumi
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_AnalysisDSDef BEFORE UPDATE ON AnalysisDSDef
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_CompositeADS BEFORE UPDATE ON CompositeADS
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_CompADSMap BEFORE UPDATE ON CompADSMap
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_SEBlock BEFORE UPDATE ON SEBlock
@@ -1586,6 +1838,24 @@ CREATE TRIGGER UTR_ProcDSStatus BEFORE UPDATE ON ProcDSStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_PrimaryDSType BEFORE UPDATE ON PrimaryDSType
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_SubSystem BEFORE UPDATE ON SubSystem
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_QualityValues BEFORE UPDATE ON QualityValues
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_RunLumiQuality BEFORE UPDATE ON RunLumiQuality
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_QualityHistory BEFORE UPDATE ON QualityHistory
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_QFlagAssoc BEFORE UPDATE ON QFlagAssoc
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_QualityVersion BEFORE UPDATE ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 -- ======================================================================
