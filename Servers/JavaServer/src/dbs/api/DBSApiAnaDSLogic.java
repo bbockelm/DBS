@@ -1,6 +1,6 @@
 /**
- $Revision: 1.30 $"
- $Id: DBSApiAnaDSLogic.java,v 1.30 2007/03/20 16:27:51 sekhri Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.31 2007/05/03 21:42:07 afaq Exp $"
  *
  */
 
@@ -57,8 +57,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					"' algorithms='" + get(rs, "ALGORITHMS") +
 					"' lfns='" + get(rs, "LFNS") +
 					"' path='" + get(rs, "PATH") +
-					"' tiers='" + get(rs, "TIERS") +
-					"' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
 					"' user_cut='" + get(rs, "USER_CUT") +
 					"' creation_date='" + getTime(rs, "CREATION_DATE") +
 					"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -93,7 +91,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
  			 while(rs.next()) {
  				 out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
 							"' analysis_dataset_name='" + get(rs, "ANALYSIS_DATASET_NAME") +
-							"' annotation='" + get(rs, "ANNOTATION") +
+							"' path='" + get(rs, "ANALYSIS_DATASET_PATH") +
 							"' type='" + get(rs, "TYPE") +
 							"' status='" + get(rs, "STATUS") +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
@@ -110,9 +108,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 							"' runs_ranges='" + get(rs, "RUNS_RANGES") +
 							"' algorithms='" + get(rs, "ALGORITHMS") +
 							"' lfns='" + get(rs, "LFNS") +
-							"' path='" + get(rs, "PATH") +
-							"' tiers='" + get(rs, "TIERS") +
-							"' analysis_dataset_names='" + get(rs, "ANALYSIS_DATASET_NAMES") +
+							"' path='" + get(rs, "ANALYSIS_DATASET_DEF_PATH") +
 							"' user_cut='" + get(rs, "USER_CUT") +
 							"' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
@@ -132,24 +128,20 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
         public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_def_name", true);
-		String path = get(table, "path", true);
+		String path = get(table, "path");
 		String userCut = get(table, "user_cut");
 		String desc = getStr(table, "description", true);
 		Vector lumiVector = DBSUtil.getVector(table, "lumi_section");
 		Vector runVector = DBSUtil.getVector(table, "run");
-		Vector tierVector = DBSUtil.getVector(table, "data_tier");
 		Vector algoVector = DBSUtil.getVector(table, "algorithm");
 		Vector fileVector = DBSUtil.getVector(table, "file");
-		Vector adsVector = DBSUtil.getVector(table, "analysis_dataset");
 
 		String lumiNumberList = "";
 		String lumiRangeList = "";
 		String runNumberList = "";
 		String runRangeList = "";
-		String tierList = "";
 		String algoList = "";
 		String fileList = "";
-		String adsList = "";
 
 		for (int j = 0; j < lumiVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)lumiVector.get(j);
@@ -179,17 +171,9 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				runRangeList += runRange;
 			}
 	 	}
-		for (int j = 0; j < tierVector.size(); ++j) {
-			if(!isNull(tierList)) tierList += ",";
-			tierList += get((Hashtable)tierVector.get(j), "tier_name", true);
-	 	}
 		for (int j = 0; j < fileVector.size(); ++j) {
 			if(!isNull(fileList)) fileList += ",";
 			fileList += get((Hashtable)fileVector.get(j), "lfn", true);
-	 	}
-		for (int j = 0; j < adsVector.size(); ++j) {
-			if(!isNull(adsList)) adsList += ",";
-			adsList += get((Hashtable)adsVector.get(j), "analysis_dataset_name", true);
 	 	}
 		for (int j = 0; j < algoVector.size(); ++j) {
 			Hashtable hashTable = (Hashtable)algoVector.get(j);
@@ -200,7 +184,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				";" + get(hashTable, "ps_hash", true);
 	 	}
 		createAnalysisDatasetDefinition(conn, out, adsDefName, path, lumiNumberList, lumiRangeList, 
-				runNumberList, runRangeList, tierList, fileList, adsList, algoList, userCut, desc,
+				runNumberList, runRangeList, fileList, algoList, userCut, desc,
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false) );
@@ -211,11 +195,18 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			 String adsDefName, String path,
 			 String lumiNumberList, String lumiRangeList, 
 			 String runNumberList, String runRangeList, 
-			 String tierList, String fileList, 
-			 String adsList, String algoList, 
+			 String fileList, String algoList,  
 			 String userCut, String desc,
 			 String cbUserID, String lmbUserID, 
 			 String creationDate) throws Exception { 
+		 //Check if ProcDS exists or not
+		if(!isNull(path))
+			(new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
+		//check if fileList is provided but path is not. Template defination
+		else if (!isNull(fileList))
+			throw new DBSException("Wrong Parameters", "1064", "Path from template definition is not provided and fileList is provided. In a template defination which do not have path fileList cannot be provided. The fileList is " + fileList);
+			
+		 
 		 if( getID(conn, "AnalysisDSDef", "Name", adsDefName, false) == null ) {
 			PreparedStatement ps = null;
 			try {
@@ -226,9 +217,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 						lumiRangeList, 
 						runNumberList, 
 						runRangeList, 
-						tierList, 
 						fileList, 
-						adsList, 
 						algoList, 
 						userCut,
 						desc,
@@ -240,12 +229,12 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				if (ps != null) ps.close();
 			}
 
-		} else {
+		} else 
 			//Instead of warnning it is throwing an exception because the clients will know that there already exists 
 			//a definition and he/she needs to create a new one. Warnning can be ignored but exception cannot.
 			//writeWarning(out, "Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
 			throw new DBSException("Already Exists", "1020", "Analysis Dataset Defintaion " + adsDefName + " Already Exists");
-		}
+		
 
 	 }
 	 
@@ -254,6 +243,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		//Get the Definition of the analysis dataset first and get the path and its id to be used for inserting analysis dataset
 		String analysisDatasetDefinitionName = get(table, "analysisds_def_name", true);
+		String pathFromDS = get(table, "path");
+		String desc = getStr(table, "description", true);
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(table, "created_by"), dbsUser );
 		String creationDate = getTime(table, "creation_date", false);
@@ -262,13 +253,11 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		String anaDSDefID = ""; 
 		String procDSID = ""; 
 		String lumiNumberList =  ""; 
-		String runNumberList = ""; 
+		String runNumberList = "";
+		String path = "";
                 Vector lumiIDList = new Vector();
                 Vector runIDList = new Vector();
-		String tierList = ""; 
-		Vector tierIDList = new Vector(); 
 		Vector fileList = new Vector(); 
-		Vector adsList = new Vector(); 
 		String algoList = ""; 
 		Vector algoIDList = new Vector(); 
 		String userCut = "";
@@ -282,18 +271,29 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			if(rs.next()) {
 				anaDSDefID = get(rs, "ID");
-				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, get(rs, "PATH"), true);
+				String pathFromDef = get(rs, "PATH");
+				//Check if both path from defination and path from dataset exists
+                		if(!isNull(pathFromDef) && !isNull(pathFromDS)) 
+					throw new DBSException("Wrong Parameters", "1062", "Path from definition " + pathFromDef + " and path from dataset " + pathFromDS + " cannot be provided together");
+				
+				//Check if niether  path from defination nor path from dataset is provided
+                		if(isNull(pathFromDef) && isNull(pathFromDS)) 
+					throw new DBSException("Missing data", "1063", "Neither Path from definition nor path from dataset provided");
+				
+                		if(!isNull(pathFromDef) && isNull(pathFromDS)) 	path = pathFromDef;
+				if(isNull(pathFromDef) && !isNull(pathFromDS)) 	path = pathFromDS;
+
+				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
+
 				lumiNumberList = get(rs, "LUMI_SECTIONS");
 				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
 				runNumberList = get(rs, "RUNS");
 				runRangeList = parseRangeList(get(rs, "RUNS_RANGES"));
-				tierList = get(rs, "TIERS");
 				algoList = get(rs, "ALGORITHMS");
 				userCut = get(rs, "USER_CUT");
 				//FIXME insert it in definition first and change the query to fetch it
 				//logicalOp = get(rs, "LOGICAL_OP");
 				fileList = listToVector(get(rs, "LFNS"));
-				adsList = listToVector(get(rs, "ANALYSIS_DATASET_NAMES"));
 			
 			} else {
 				throw new DBSException("Unavailable data", "1021", "No such analysis dataset definition " + analysisDatasetDefinitionName );
@@ -319,14 +319,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
                         } 
                 }
 
-		//Get all the tier IDs
-		if(!isNull(tierList)) {
-			String[] data = tierList.split(",");
-			for (int i = 0; i != data.length ; ++i) {
-				tierIDList.add(getID(conn, "DataTier", "Name", data[i].trim(), true));
-			}
-		}
-
 
 		//Get all the algo IDs
 		if(!isNull(algoList)) {
@@ -341,7 +333,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
 
 		//Insert a row in AnalysisDataset Table
-		String analysisDatasetName = get(table, "name", true); 
+		//String analysisDatasetName = get(table, "name", true); 
+		String analysisDatasetName = path + "/" + analysisDatasetDefinitionName; 
 		String status = get(table, "status", false).toUpperCase();
 		String type = get(table, "type", false).toUpperCase();
 
@@ -355,15 +348,15 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 			try {
 				ps = DBSSql.insertAnalysisDataset(conn, 
 						analysisDatasetName,
-						getStr(table, "annotation", false),
+						path,
 						procDSID,
 						anaDSDefID,
 						getID(conn, "AnalysisDSType", "Type", type, true),
 						getID(conn, "AnalysisDSStatus", "Status", status, true),
-						"",//FIXME Parent is debatable
 						getID(conn, "PhysicsGroup", "PhysicsGroupName", 
 							 get(table, "physics_group_name", true),
  							 true),
+						desc,
 						cbUserID, lmbUserID, creationDate);
 				ps.execute();
 			} finally { 
@@ -384,16 +377,13 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		if(isNull(logicalOp)) logicalOp = "OR";
 		try {
 			ps = DBSSql.listAnalysisDSFileLumi(conn, 
-					//aDSID,
 					procDSID,
-					tierIDList,
 					algoIDList,
 					fileList,
 					lumiIDList,
 					runIDList,
 					lumiRangeList,
 					runRangeList,
-					adsList,
 					userCut,
 					logicalOp,
 					cbUserID, lmbUserID, creationDate);

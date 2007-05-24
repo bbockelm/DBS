@@ -514,14 +514,12 @@ createAnalysisDatasetDefinition () {
 				<run run_number='$run_number2' run_range='20000,25000'/>
 				<lumi_section lumi_section_number='9997' lumi_section_range='1,5000'/>
 				<lumi_section lumi_section_number='9996' lumi_section_range='9000,10000'/>
-				<file lfn='$lfn1'/>
-				<file lfn='$lfn2'/>
-				<data_tier tier_name='$tier_name1'/>
-				<data_tier tier_name='$tier_name2'/>
 				$algo1
 				$algo3
 				$algo4
-				<analysis_dataset analysis_dataset_name='AnalysisDS1_$rand'/>
+				<file lfn='$lfn1'/>
+				<file lfn='$lfn2'/>
+
                         </dbs>"
 	#echo "$xmlString"
         message="Executing  createAnalysisDatasetDefinition API..."
@@ -536,7 +534,7 @@ createAnalysisDatasetDefinition () {
 createAnalysisDataset () {
         xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS1_$rand' analysisds_def_name='AnalysisDS_Defination1_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS1_$rand' analysisds_def_name='AnalysisDS_Defination1_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' description='This is a test dataset' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDataset API..."
         echo $message >> $outFile ; echo $message
@@ -545,7 +543,7 @@ createAnalysisDataset () {
 
 	xmlString="<?xml version='1.0' standalone='yes'?>
                         <dbs>
-                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS2_$rand' analysisds_def_name='AnalysisDS_Defination2_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+                                <analysis_dataset annotation='aaaa$rand' name='AnalysisDS2_$rand' analysisds_def_name='AnalysisDS_Defination2_$rand' type='TEST' status='NEW' physics_group_name='AnyName_$rand' description='This is a test dataset' created_by='Let_me_try_this' creation_date='1066729598999'/>
                         </dbs>"
         message="Executing  createAnalysisDataset API..."
         echo $message >> $outFile ; echo $message
@@ -629,6 +627,7 @@ createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition
 listAnalysisDataset
+
 listPrimaryDatasets
 listProcessedDatasets
 listAlgorithms
@@ -654,8 +653,8 @@ updateAnalDSType
 updateFileType
 updateSEName
 closeBlock
-###
 #updateRun
+###
 ##	
 #												
 echo 

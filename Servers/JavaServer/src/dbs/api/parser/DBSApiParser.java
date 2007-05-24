@@ -1,6 +1,6 @@
 /**
- $Revision: 1.11 $"
- $Id: DBSApiParser.java,v 1.11 2007/04/03 22:02:01 sekhri Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSApiParser.java,v 1.12 2007/05/03 21:42:07 afaq Exp $"
  *
 */
 
@@ -231,23 +231,17 @@ public class DBSApiParser {
 				table = e.attributes;
 				table.put("lumi_section", new Vector());
 				table.put("run", new Vector());
-				table.put("data_tier", new Vector());
 				table.put("algorithm", new Vector());
 				table.put("file", new Vector());
-				table.put("analysis_dataset", new Vector());
 			} 
 			if (name.equals("lumi_section") ) 
 				((Vector)(get(table, "lumi_section", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("run") ) 
 				((Vector)(get(table, "run", "analysis_dataset_definition"))).add(e.attributes);
-			if (name.equals("data_tier") ) 
-				((Vector)(get(table, "data_tier", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("algorithm") ) 
 				((Vector)(get(table, "algorithm", "analysis_dataset_definition"))).add(e.attributes);
 			if (name.equals("file") ) 
 				((Vector)(get(table, "file", "analysis_dataset_definition"))).add(e.attributes);
-			if (name.equals("analysis_dataset") ) 
-				((Vector)(get(table, "analysis_dataset", "analysis_dataset_definition"))).add(e.attributes);
 
 		}
 		return table;
