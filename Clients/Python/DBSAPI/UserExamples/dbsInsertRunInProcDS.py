@@ -19,7 +19,7 @@ api = DbsApi(opts.__dict__)
 
                             
 run = DbsRun (
-         RunNumber=1111,
+         RunNumber=1,
          NumberOfEvents= 100,
          NumberOfLumiSections= 20,
          TotalLuminosity= 2222,
@@ -31,7 +31,7 @@ run = DbsRun (
 print "Creating a run"
 
 try:
-    api.insertRun (run)
+    api.insertRunInPD ("/test_primary_001/TestProcessedDS001/GEN-SIM", 1111)
 
     print "Result: %s" % run
 

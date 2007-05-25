@@ -20,7 +20,7 @@ try:
   # List all storage elements
   print ""
   print "deleting storage element (replica from Block)  ...."
-  print api.deleteReplicaFromBlock("/test/test#c801c8e8-4f55-45b9-84f4-438d28e9504e", "se1")
+  print api.deleteReplicaFromBlock("/QCD_Pt_120_170/CMSSW_1_2_3-Spring07-JetMet-1174666666/GEN-SIM#a7ae4f12-9af9-4d2a-9bec-cfa047cc488e", "sc.cr.cnaf.infn.it")
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
