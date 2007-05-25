@@ -1960,7 +1960,7 @@ MCDescription:      %s
       runs=""
       for item in result:
           if  item and item[0]:
-              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+              if self.dbManager.dbType[self.dbsInstance]=='oracle' and limit:
                  run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,fSize,nFiles,row=item
               else:
                  run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mDate,dsType,path,fSize,nFiles=item
