@@ -4,10 +4,9 @@
 -- === Build : 691
 -- ======================================================================
 
-drop database if exists dbs_new_era_newads;
-create database dbs_new_era_newads;
-use dbs_new_era_newads;
-
+drop database if exists dbs_new_era_v25;
+create database dbs_new_era_v25;
+use dbs_new_era_v25;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -1899,5 +1898,6 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', 
 ('PFlowTau', UNIX_TIMESTAMP()), 
 ('Btag', UNIX_TIMESTAMP()), 
 ('RelVal', UNIX_TIMESTAMP()), 
+('Trigger', UNIX_TIMESTAMP()), 
 ('PhysVal', UNIX_TIMESTAMP());
 commit;
