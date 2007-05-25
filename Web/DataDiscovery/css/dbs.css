@@ -1353,7 +1353,8 @@ table.selMenu th {
 .submenu {
     margin-top:-5px;
     background-color:rgb(100, 105, 115);
-    font-size: 0.625em;
+    font-size: 11px;
+/*    font-size: 0.625em;*/
 /*    color:rgb(129, 136, 149);*/
     color: #ffffff;
     padding: 5px 5px 5px 5px;
