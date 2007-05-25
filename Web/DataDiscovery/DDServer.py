@@ -83,6 +83,7 @@ class DDServer(DDLogger,Controller):
         self.ddConfig  = DDConfig()
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDServer",verbose)
         setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
+        setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
         try:
             if context:
                context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 

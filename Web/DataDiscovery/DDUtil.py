@@ -600,6 +600,14 @@ def setSQLAlchemyLogger(hdlr,logLevel):
     logging.getLogger('sqlalchemy.orm.unitofwork').addHandler(hdlr)
     logging.getLogger('sqlalchemy.pool').addHandler(hdlr)
 
+def setCherryPyLogger(hdlr,logLevel):
+    # set up logging for SQLAlchemy
+    logging.getLogger('cherrypy.error').setLevel(logLevel)
+    logging.getLogger('cherrypy.access').setLevel(logLevel)
+
+    logging.getLogger('cherrypy.error').addHandler(hdlr)
+    logging.getLogger('cherrypy.access').addHandler(hdlr)
+
 def removeEmptyLines(s):
     return ''.join(line for line in s.splitlines(1) if not line.isspace())
 
