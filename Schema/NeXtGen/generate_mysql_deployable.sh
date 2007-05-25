@@ -134,7 +134,7 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individ
 ('PFlowTau', UNIX_TIMESTAMP()), 
 ('Btag', UNIX_TIMESTAMP()), 
 ('RelVal', UNIX_TIMESTAMP()), 
-('Trigger', UNIX_TIMESTAMP()), 
+('Tracker', UNIX_TIMESTAMP()), 
 ('PhysVal', UNIX_TIMESTAMP());" >> $ddl_file
 #
 #

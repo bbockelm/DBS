@@ -205,7 +205,7 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PFlowTa
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Btag', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('RelVal', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PhysVal', ${unix_time});">> $ddl_file
-echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Trigger', ${unix_time});">> $ddl_file
+echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Tracker', ${unix_time});">> $ddl_file
 #
 echo "commit;" >> $ddl_file
 #

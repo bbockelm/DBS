@@ -1898,6 +1898,6 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', 
 ('PFlowTau', UNIX_TIMESTAMP()), 
 ('Btag', UNIX_TIMESTAMP()), 
 ('RelVal', UNIX_TIMESTAMP()), 
-('Trigger', UNIX_TIMESTAMP()), 
+('Tracker', UNIX_TIMESTAMP()), 
 ('PhysVal', UNIX_TIMESTAMP());
 commit;
