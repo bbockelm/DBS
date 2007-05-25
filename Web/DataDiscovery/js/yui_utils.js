@@ -171,6 +171,7 @@ YAHOO.util.Event.onContentReady("productsandservices", YAHOO.example.onMenuBarRe
 //YAHOO.widget.MenuBarItem.prototype.SUBMENU_INDICATOR_IMAGE_PATH = "menuarorght8_nrm_1.gif";
 //YAHOO.widget.MenuBarItem.prototype.SELECTED_SUBMENU_INDICATOR_IMAGE_PATH = "menuarorght8_hov_1.gif";
 //YAHOO.widget.MenuBarItem.prototype.DISABLED_SUBMENU_INDICATOR_IMAGE_PATH = "menuarorght8_dim_1.gif";
+/*
 function commonMenu(tag,iMenu) {
     if($(tag)) {
         $(tag).innerHTML='';
@@ -186,4 +187,4 @@ function commonMenu(tag,iMenu) {
         oMenu.render(tag);
     }
 }
-
+*/
