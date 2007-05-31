@@ -711,7 +711,7 @@ MCDescription:      %s
 #         res = self.api.listApplications(patternVer=ver,patternFam=family,patternExe=exe)
 #         return res
 
-  def joinTiers(self,sel,tjoin,tier,tprd):
+  def joinTiers(self,sel,tjoin,tier,tprd,condDict={}):
       aList=[]
       bList=[]
       if tier and tier!="*":
@@ -722,6 +722,7 @@ MCDescription:      %s
              tierValue=tierList[idx]
              sel.append_from( sqlalchemy.outerjoin( aList[-1],bList[-1],self.col(bList[-1],'DataTier')==self.col(aList[-1],'ID') ) )
              sel.append_whereclause(self.col(aList[-1],'Name')==tierValue)
+             condDict[findLastBindVar(str(sel))]=tierValue
              sel.append_whereclause(self.col(tprd,'ID')==self.col(bList[-1],'Dataset'))
 
   def listBlocks(self,kwargs):
@@ -1927,8 +1928,7 @@ MCDescription:      %s
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
                 condDict[findLastBindVar(str(sel))]=prim
              if tier and tier!="*":
-                self.joinTiers(sel,tpds,tier,tprd)
-                # TODO: need to add tiers into condDict
+                self.joinTiers(sel,tpds,tier,tprd,condDict)
           if primD and primD!="*":
              sel.append_whereclause(self.col(tpm,'Name')==primD)
              condDict[findLastBindVar(str(sel))]=primD
