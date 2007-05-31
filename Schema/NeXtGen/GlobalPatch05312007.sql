@@ -38,15 +38,6 @@ ALTER TABLE FileTriggerTag ADD CONSTRAINT
 /
 
 
-grant select on FileTriggerTag to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on FileTriggerTag to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on FileTriggerTag to CMS_DBS_PRODG_ADMIN_ROLE;
-
-
-
-
-
-
 create index ix_files_queryablemetadata on Files (QueryableMetadata);
 create sequence seq_filetriggertag ;
 
@@ -67,6 +58,17 @@ INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', (select (sysdate - 
 
 delete from SchemaVersion where SchemaVersion='v00_00_06';
 INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('DBS_1_0_4', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));
+
+
+grant select on FileTriggerTag to CMS_DBS_PRODG_READER_ROLE;
+grant insert, update on FileTriggerTag to CMS_DBS_PRODG_WRITER_ROLE;
+grant delete on FileTriggerTag to CMS_DBS_PRODG_ADMIN_ROLE;
+
+
+-- PROMPT "Following needs to be Run as every Admin, Reader and Writer"
+-- PROMPT "Create synonym FILETRIGGERTAG for CMS_DBS_PROD_GLOBAL.FILETRIGGERTAG"
+
+
 
 
 
