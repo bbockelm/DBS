@@ -1068,7 +1068,7 @@ class DDServer(DDLogger,Controller):
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
         return page
 
-    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode='user',fromRow=0,limit=0,count=0):
+    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",userMode='user',fromRow=0,limit=0,count=0):
         """
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
@@ -1078,7 +1078,7 @@ class DDServer(DDLogger,Controller):
         if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
         if string.lower(prim) =="all" or string.lower(prim)=="any": prim="*"
-        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,userMode,fromRow,limit,count)
+        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,primType,userMode,fromRow,limit,count)
 
     def getMatch(self,table,column,val,row=0,limit=0):
         pList=[]
@@ -1089,7 +1089,7 @@ class DDServer(DDLogger,Controller):
             pList.append(item)
         return pList
 
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -1117,6 +1117,7 @@ class DDServer(DDLogger,Controller):
         if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
         if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
+        if string.lower(primType)=="all" or string.lower(primType)=="any": primType="*"
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
 #        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
 
@@ -1166,8 +1167,8 @@ class DDServer(DDLogger,Controller):
             datasetsList=proc[i:j]
             proc=proc_orig
         else:
-            nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,count=1)
-            datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+            nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,count=1)
+            datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
 
         # Construct result page
         rPage=""
@@ -1176,7 +1177,7 @@ class DDServer(DDLogger,Controller):
 
         # the progress bar for all results
         if _idx:
-            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode,pagerStep)
+            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType_idx-1,userMode,pagerStep)
         tot=_idx
         for x in xrange(_idx,_idx+GLOBAL_STEP):
             if nDatasets>x*pagerStep:
@@ -1185,10 +1186,10 @@ class DDServer(DDLogger,Controller):
            ref=index+1
            if index==_idx:
               ref="""<span class="gray_box">%s</span>"""%(index+1)
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,index,userMode,pagerStep,ref)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,index,userMode,pagerStep,ref)
 #        if nDatasets>tot*pagerStep:
         if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode,pagerStep)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,_idx+1,userMode,pagerStep)
 
         if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
@@ -1211,6 +1212,7 @@ class DDServer(DDLogger,Controller):
                      'primD'    : primD,
                      'tier'     : tier,
                      'proc'     : proc,
+                     'primType' : primType,
                      'group'    : group,
                      'app'      : app,
                      'idx'      : _idx,
@@ -1220,7 +1222,7 @@ class DDServer(DDLogger,Controller):
                      'rPage'    : rPage,
                      'pagerStep': pagerStep,
                      'nameForPager': "datasets",
-                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,_idx,ajax,userMode)
+                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,_idx,ajax,userMode)
                     }
         t = templateSnapshot(searchList=[_nameSpace]).respond()
         snapshot=str(t)
@@ -1279,7 +1281,7 @@ class DDServer(DDLogger,Controller):
         page=str(t)
         return page
 
-    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
+    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1318,7 +1320,7 @@ class DDServer(DDLogger,Controller):
                 self.writeLog(msg)
                 msg=""
                 self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax,userMode,pagerStep)
+                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep)
             except:
                 t=self.errorReport("Fail in getData function")
                 page+=str(t)
@@ -1330,33 +1332,26 @@ class DDServer(DDLogger,Controller):
            page=self.genTopHTML(userMode=userMode)
            if hist:
               page+=hist
-           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax,userMode,pagerStep)
+           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep)
            page+= result
-#           if result:
-#              if _idx:
-#                 page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s">&#171; Prev</a> | """%(dbsInst,site,group,app,primD,tier,proc,_idx-1,userMode)
-#              page+="""<a href="getData?dbsInst=%s&site=%s&group=%s&app=%s&primD=%s&tier=%s&proc=%s&_idx=%s&ajax=0&userMode=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,_idx+1,userMode)
-#           else:
-#              page+="""No more data found for this request"""
            page+=self.genBottomHTML()
         if self.verbose==2:
            self.writeLog(page)
         return page
     getData.exposed = True 
 
-    def getUserData(self,dbsInst,group="All",tier="*",rel="*",prim="*",site="*",_idx=0,ajax=1,**kwargs): 
-        self.helperInit(dbsInst)
-        app="/%s/*/*"%rel # it is in form /ver/fam/exe
-        _idx=int(_idx)
-        # AJAX wants response as "text/xml" type
-        self.setContentType('xml')
-        page="""<ajax-response><response type="object" id="results">"""
-        page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax)
-        page+="</response></ajax-response>"
-        if self.verbose==2:
-           self.writeLog(page)
-        return page
-    getUserData.exposed=True
+#    def getUserData(self,dbsInst,group="All",tier="*",rel="*",prim="*",site="*",_idx=0,ajax=1,**kwargs): 
+#        self.helperInit(dbsInst)
+#        app="/%s/*/*"%rel # it is in form /ver/fam/exe
+#        _idx=int(_idx)
+#        self.setContentType('xml')
+#        page="""<ajax-response><response type="object" id="results">"""
+#        page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,hist,_idx,ajax)
+#        page+="</response></ajax-response>"
+#        if self.verbose==2:
+#           self.writeLog(page)
+#        return page
+#    getUserData.exposed=True
 
     def getDbsData(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """
@@ -1497,7 +1492,7 @@ class DDServer(DDLogger,Controller):
         return page
     getRuns.exposed = True 
 
-    def getRunsFromRange(self,dbsInst,minRun,maxRun,userMode="user",_idx=0,ajax=0,pagerStep=RES_PER_PAGE,**kwargs): 
+    def getRunsFromRange(self,dbsInst,primD,primType,minRun,maxRun,userMode="user",_idx=0,ajax=0,pagerStep=RES_PER_PAGE,**kwargs): 
         """
            @type  dbsInst: string
            @param dbsInst: user selection of DBS menu
@@ -1519,7 +1514,7 @@ class DDServer(DDLogger,Controller):
 
             nResults=0
             try:    
-               nResults=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
+               nResults=self.helper.getRuns(dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,count=1,userMode=userMode)
             except:
                msg="No runs found for your request:<br />"
                msg+="<ul>"
@@ -1537,7 +1532,7 @@ class DDServer(DDLogger,Controller):
 
             # the progress bar for all results
             if _idx:
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,minRun,maxRun,_idx-1,userMode,pagerStep)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,primD,primType,minRun,maxRun,_idx-1,userMode,pagerStep)
             tot=_idx
             for x in xrange(_idx,_idx+GLOBAL_STEP):
                 if nResults>x*pagerStep:
@@ -1546,9 +1541,9 @@ class DDServer(DDLogger,Controller):
                 ref=index+1
                 if index==_idx:
                    ref="""<span class="gray_box">%s</span>"""%(index+1)
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,minRun,maxRun,index,userMode,pagerStep,ref)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,primD,primType,minRun,maxRun,index,userMode,pagerStep,ref)
             if  nResults>(_idx+1)*pagerStep:
-                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,minRun,maxRun,_idx+1,userMode,pagerStep)
+                rPage+="""<a href="getRunsFromRange?dbsInst=%s&amp;;primD=%s&amp;primType=%s&amp;minRun=%s&amp;maxRun=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a> """%(dbsInst,primD,primType,minRun,maxRun,_idx+1,userMode,pagerStep)
 
             if _idx and (_idx*pagerStep)>nResults:
                return "No data found for this request"
@@ -1558,13 +1553,13 @@ class DDServer(DDLogger,Controller):
                          'rPage'    : rPage,
                          'pagerStep': pagerStep,
                          'nameForPager': "runs",
-                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s')"%(dbsInst,minRun,maxRun,_idx,ajax,userMode)
+                         'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode)
                         }
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
             page+=pagerPage
 
-            runList,runDBInfoDict=self.helper.getRuns(dataset="",minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
+            runList,runDBInfoDict=self.helper.getRuns(dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
             nameSpace = {
                          'dbsInst'  : dbsInst,
                          'host'     : self.dbsdd,
@@ -2404,49 +2399,6 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     getPrimaryDSTypes.exposed=True
-
-#    def getDatasets(self):
-#        """
-#           Forms datasets content into HTML.
-#           @type  self: class object
-#           @param self: none 
-#           @rtype : string
-#           @return: returns HTML code
-#        """
-#        dList = self.helper.getPrimaryDatasets()
-#        nameSpace = {
-#                     'host'  : self.dbsdd,
-#                     'msg'   : "Available primary datasets",
-#                     'dList' : dList
-#                    }
-#        t = templatePrintList(searchList=[nameSpace]).respond()
-#        page = self.genTopHTML()
-#        page+= self.genMenuForm()
-#        page+= str(t)
-#        page+= self.genBottomHTML()
-#        return page
-#    getDatasets.exposed=True
-
-#    def getDatasetContentHelper(self,dbsInst,dataset,**kwargs):
-#        """
-#           Get dataset content
-#           @type  dbsInst: string
-#           @param dbsInst: dbs instance
-#           @type  dataset: string
-#           @param dataset: dataset name
-#           @rtype: string
-#           @return: returns parents fro given datasets in HTML form 
-#        """
-#        page=""
-#        try:
-#            self.helperInit(dbsInst)
-#            siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,"*")
-#            page+=self.blockListToHTML(dbsInst,[(dataset,totEvt)])
-#            page+=self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id=0)
-#        except:
-#            printExcept()
-#            page="""<hr class="dbs" />No information found for dataset '%s' in DBS='%s'"""%(dataset,dbsInst)
-#        return page
 
     def getDatasetProvenanceHelper(self,dataset,userMode='user',**kwargs):
         """

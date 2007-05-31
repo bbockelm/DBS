@@ -1293,9 +1293,9 @@ function CheckOperator() {
 function load(url) {
   window.location.href=url;
 }
-function LoadGetData(dbsInst,site,group,app,prim,tier,proc,idx,ajax,userMode) {
+function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,idx,ajax,userMode) {
    var pagerStep=$('pagerStep').value;
-   var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
+   var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&primType='+primType+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
 function LoadAnalysisDS(dbsInst,idx,ajax,userMode) {
@@ -1308,9 +1308,9 @@ function LoadGetFileBlocks(dbsInst,site,ajax,userMode,idx) {
    var url='getFileBlocks?dbsInst='+dbsInst+'&site='+site+'&ajax='+ajax+'&userMode='+userMode+'&idx='+idx+'&pagerStep='+pagerStep;
    load(url);
 }
-function LoadGetRunsFromRange(dbsInst,minRun,maxRun,idx,ajax,userMode) {
+function LoadGetRunsFromRange(dbsInst,primD,primType,minRun,maxRun,idx,ajax,userMode) {
    var pagerStep=$('pagerStep').value;
-   var url='getRunsFromRange?dbsInst='+dbsInst+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
+   var url='getRunsFromRange?dbsInst='+dbsInst+'primD='+primD+'primType='+primType+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
 function Disable2Enable(tag1,tag2) {

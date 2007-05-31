@@ -482,7 +482,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",userMode="user",fromRow=0,limit=0,count=0):
+  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",userMode="user",fromRow=0,limit=0,count=0):
       if group.lower()=='any': group="*"
       if app.lower()  =='any': app  ="*"
       if prim.lower() =='any': prim ="*"
@@ -502,6 +502,7 @@ class DDHelper(DDLogger):
       try:
           tprd = self.alias('ProcessedDataset','tprd')
           tpm  = self.alias('PrimaryDataset','tpm')
+          tpmt = self.alias('PrimaryDSType','tpmt')
           tape = self.alias('AppExecutable','tape')
           tapv = self.alias('AppVersion','tapv')
           tapf = self.alias('AppFamily','tapf')
@@ -523,6 +524,7 @@ class DDHelper(DDLogger):
                      tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
                      .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
                      .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                      .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
@@ -549,6 +551,8 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tape,'ExecutableName')==exe)
           if site and site!="*":
                 sel.append_whereclause(self.col(tse,'SEName')==site)
+          if primType and primType!="*":
+                sel.append_whereclause(self.col(tpmt,'Type')==primType)
           if group and group!="*":
              sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
           if userMode=="user":
@@ -1866,7 +1870,9 @@ MCDescription:      %s
                            runDBDict[run]=(runmode,system)
       return runDBDict
 
-  def getRuns(self,dataset,minRun="*",maxRun="*",fromRow=0,limit=0,count=0,userMode="user"):
+  def getRuns(self,dataset,primD="*",primType="*",minRun="*",maxRun="*",fromRow=0,limit=0,count=0,userMode="user"):
+      if primD.lower()=="any": primD="*"
+      if primType.lower()=="any": primType="*"
       if minRun.lower()=="any": minRun="*"
       if maxRun.lower()=="any": maxRun="*"
       t1=time.time()
@@ -1919,6 +1925,10 @@ MCDescription:      %s
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
              if tier and tier!="*":
                 self.joinTiers(sel,tpds,tier,tprd)
+          if primD and primD!="*":
+             sel.append_whereclause(self.col(tpm,'Name')==primD)
+          if primType and primType!="*":
+             sel.append_whereclause(self.col(tpt,'Type')==primType)
           if minRun and minRun!="*":
              sel.append_whereclause(self.col(trun,'RunNumber')>=minRun)
           if maxRun and maxRun!="*":
