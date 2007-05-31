@@ -321,6 +321,13 @@ def getExcept():
     msg+="\n\n"
     return msg
 
+def findLastBindVar(s):
+    sList=s.replace(")","").replace("(","").split()
+    sList.reverse()
+    for item in sList:
+        if item[0]==":":
+           return item[1:]
+
 def constructExpression(s,listName):
     """
        For given string 's' and list name construct the expression statement.
