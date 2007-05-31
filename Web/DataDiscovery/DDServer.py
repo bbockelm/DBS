@@ -1557,21 +1557,22 @@ class DDServer(DDLogger,Controller):
                         }
             t = templatePagerStep(searchList=[_nameSpace]).respond()
             pagerPage=str(t)
-            page+=pagerPage
 
             runList,runDBInfoDict=self.helper.getRuns(dataset="",primD=primD,primType=primType,minRun=minRun,maxRun=maxRun,fromRow=_idx*pagerStep,limit=pagerStep,count=0,userMode=userMode)
-            nameSpace = {
-                         'dbsInst'  : dbsInst,
-                         'host'     : self.dbsdd,
-                         'runList'  : runList,
-                         'runDBInfo': runDBInfoDict,
-                         'tableId'  : "runTable",
-                         'proc'     : "",
-                         'userMode' : userMode
-                        }
-            t = templateRunsInfo(searchList=[nameSpace]).respond()
-            page+=str(t)
-            page+=pagerPage
+            if len(runList):
+                page+=pagerPage
+                nameSpace = {
+                             'dbsInst'  : dbsInst,
+                             'host'     : self.dbsdd,
+                             'runList'  : runList,
+                             'runDBInfo': runDBInfoDict,
+                             'tableId'  : "runTable",
+                             'proc'     : "",
+                             'userMode' : userMode
+                            }
+                t = templateRunsInfo(searchList=[nameSpace]).respond()
+                page+=str(t)
+                page+=pagerPage
         except:
             t=self.errorReport("Fail in getRunsFromRange function")
             page+=str(t)

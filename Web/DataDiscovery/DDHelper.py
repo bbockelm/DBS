@@ -1917,22 +1917,30 @@ MCDescription:      %s
                                   group_by=gBy,
                                   order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
                                  )
+          condDict={}
           if dataset:
              empty,prim,proc,tier=string.split(dataset,"/")
              if proc and proc!="*":
                 sel.append_whereclause(self.col(tprd,'Name')==proc)
+                condDict[findLastBindVar(str(sel))]=proc
              if prim and prim!="*":
                 sel.append_whereclause(self.col(tpm,'Name')==prim)
+                condDict[findLastBindVar(str(sel))]=prim
              if tier and tier!="*":
                 self.joinTiers(sel,tpds,tier,tprd)
+                # TODO: need to add tiers into condDict
           if primD and primD!="*":
              sel.append_whereclause(self.col(tpm,'Name')==primD)
+             condDict[findLastBindVar(str(sel))]=primD
           if primType and primType!="*":
              sel.append_whereclause(self.col(tpt,'Type')==primType)
+             condDict[findLastBindVar(str(sel))]=primType
           if minRun and minRun!="*":
              sel.append_whereclause(self.col(trun,'RunNumber')>=minRun)
+             condDict[findLastBindVar(str(sel))]=minRun
           if maxRun and maxRun!="*":
              sel.append_whereclause(self.col(trun,'RunNumber')<=maxRun)
+             condDict[findLastBindVar(str(sel))]=maxRun
 
           sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
           sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
@@ -1942,13 +1950,13 @@ MCDescription:      %s
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
                  minRow,maxRow=fromRow,fromRow+limit
                  s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
-                 condDict={}
-                 for item in s.replace(")","").replace("(","").split():
-                     if item[0]==":":
-                        if not condDict:
-                           condDict[item]=minRun
-                        else:   
-                           condDict[item]=maxRun
+#                 condDict={}
+#                 for item in s.replace(")","").replace("(","").split():
+#                     if item[0]==":":
+#                        if not condDict:
+#                           condDict[item]=minRun
+#                        else:   
+#                           condDict[item]=maxRun
                  result=con.execute(s,condDict)
 #                 result=con.execute(s,{"trun_runnumber":minRun,"trun_runnumb_1":maxRun})
              else:
