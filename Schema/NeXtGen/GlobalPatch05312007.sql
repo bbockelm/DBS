@@ -37,6 +37,16 @@ ALTER TABLE FileTriggerTag ADD CONSTRAINT
     FileTriggerTagLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
+
+grant select on FileTriggerTag to CMS_DBS_PRODG_READER_ROLE;
+grant insert, update on FileTriggerTag to CMS_DBS_PRODG_WRITER_ROLE;
+grant delete on FileTriggerTag to CMS_DBS_PRODG_ADMIN_ROLE;
+
+
+
+
+
+
 create index ix_files_queryablemetadata on Files (QueryableMetadata);
 create sequence seq_filetriggertag ;
 
