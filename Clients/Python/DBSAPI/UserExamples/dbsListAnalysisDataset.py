@@ -19,8 +19,10 @@ try:
   
   print "Analysis Daatset...."
   #for analysis in api.listAnalysisDataset("*t005", "/test_primary_001/TestProcessedDS001/SIM"):
+  #for analysis in api.listAnalysisDataset(version="2"):
   for analysis in api.listAnalysisDataset():
-     print "  %s" % analysis
+     #print "  %s" % analysis['Name']
+     print "  %s, %s" % (analysis['Name'], analysis['Version'])
   
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
