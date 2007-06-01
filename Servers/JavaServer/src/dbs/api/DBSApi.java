@@ -1,6 +1,6 @@
 /**
- $Revision: 1.87 $"
- $Id: DBSApi.java,v 1.87 2007/05/14 20:14:45 sekhri Exp $"
+ $Revision: 1.88 $"
+ $Id: DBSApi.java,v 1.88 2007/05/14 21:59:33 sekhri Exp $"
  *
 */
 
@@ -348,7 +348,8 @@ public class DBSApi {
 			} else if (apiStr.equals("listAnalysisDataset")) {
                                 (new DBSApiAnaDSLogic(this.data)).listAnalysisDataset(conn, out, 
 									get(table, "analysis_dataset_name_pattern", false), 
-									get(table, "path", false)
+									get(table, "path", false),
+									get(table, "version", false)
 						);
                         } else if (apiStr.equals("listAnalysisDatasetDefinition")) {
                                 (new DBSApiAnaDSLogic(this.data)).listAnalysisDatasetDefinition(conn, out,

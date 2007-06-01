@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.94 $"
- $Id: DBSSql.java,v 1.94 2007/05/14 20:14:46 sekhri Exp $"
+ $Revision: 1.95 $"
+ $Id: DBSSql.java,v 1.95 2007/05/24 21:59:27 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -346,6 +346,7 @@ public class DBSSql {
 
 	public static PreparedStatement insertAnalysisDataset(Connection conn, String analysisDatasetName, 
 			String path, String procDSID, String anaDSDefID,
+			String adsVer,
 			String type, String status, String phyGroupID,
 			String desc, String cbUserID, 
 			String lmbUserID, String cDate) throws SQLException {
@@ -354,6 +355,7 @@ public class DBSSql {
 		table.put("Path", path);
 		table.put("ProcessedDS", procDSID);
 		table.put("Definition", anaDSDefID);
+		table.put("Version", adsVer);
 		table.put("Type", type);
 		table.put("Status", status);
 		table.put("PhysicsGroup", phyGroupID);
@@ -363,6 +365,42 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "AnalysisDataset", table);
 	}
+
+        public static PreparedStatement listExADSFileLumiIDs(Connection conn,  String adsID) throws SQLException {
+		String sql = "SELECT DISTINCT \n" +
+                        "adsfl.Lumi as LUMIID, \n" +
+                        "adsfl.Fileid as FILEID \n" +
+                        "FROM AnalysisDSFileLumi adsfl \n" +
+			"WHERE AnalysisDataset = ? \n\t" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+                ps.setString(columnIndx++, adsID);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+        public static PreparedStatement getADSVersion(Connection conn, String adsName) throws SQLException {
+                String sql = "SELECT DISTINCT ads.Version as VERSION \n " +
+                        "FROM AnalysisDataset ads \n " +
+                        "WHERE Name = ? \n" +
+                        " order by Version desc limit 1 \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, adsName);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+        public static PreparedStatement getADSID(Connection conn, String adsName) throws SQLException {
+                String sql = "SELECT DISTINCT ads.ID as ID \n " +
+                        "FROM AnalysisDataset ads \n " +
+                        "WHERE Name = ? \n" +
+			" order by Version desc limit 1 \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, adsName);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
+                return ps;
+        }
 
 	public static PreparedStatement listAnalysisDSFileLumi(Connection conn,  String procDSID, 
 			Vector algoIDList, Vector fileList, 
@@ -1687,7 +1725,7 @@ public class DBSSql {
 
 
 
-      public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String procDSID) throws SQLException {
+      public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String version, String procDSID) throws SQLException {
                 //String sql = "SELECT DISTINCT ads.ID as ID, \n " +
                 String sql = "SELECT ads.ID as ID, \n " +
 			"ads.Name as ANALYSIS_DATASET_NAME, \n " +
@@ -1700,9 +1738,14 @@ public class DBSSql {
                         "ads.CreationDate as CREATION_DATE, \n" +
                         "ads.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
-                        "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
-
-			"adsdef.ID as ADDID, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY, \n";
+	        //If version is not provided must pick LATEST Version only		
+		if ( DBSUtil.isNull(version)){	
+			sql += "MAX(ads.Version) as VERSION, \n";
+		} else {
+			sql += "ads.Version as VERSION, \n";
+		}
+		sql += "adsdef.ID as ADDID, \n" +
                         "adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
                         "adsdef.LumiSections as LUMI_SECTIONS, \n" +
                         "adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
@@ -1737,6 +1780,13 @@ public class DBSSql {
 			if (! DBSUtil.isNull(procDSID)) {
 				sql += "AND ProcessedDS = ? \n";
 			}
+	        //If version is not provided must pick LATEST Version only		
+		if ( DBSUtil.isNull(version)){
+                	sql += " GROUP BY ads.NAME ";
+		} else {
+			sql += "AND ads.Version = ? \n";
+		}
+
                 sql += "ORDER BY ads.NAME DESC";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -1744,12 +1794,13 @@ public class DBSSql {
                 if (! DBSUtil.isNull(procDSID)) {
 			ps.setString(columnIndx++, procDSID);
 		}
+		if (! DBSUtil.isNull(version)){
+			ps.setString(columnIndx++, version);
+		}
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	}
 
-
-	
 	public static PreparedStatement getID(Connection conn, String table, String key, String value) throws SQLException {
 		String sql = "SELECT DISTINCT ID \n " +
 			"FROM " + table + "\n " +
