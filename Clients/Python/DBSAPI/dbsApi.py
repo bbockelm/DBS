@@ -1342,7 +1342,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listAnalysisDataset(self, pattern="*", path=""):
+  def listAnalysisDataset(self, pattern="*", path="", version=""):
     """
     Retrieves the list of analysis dataset by matching against the given shell pattern for analysis 
     dataset name.
@@ -1352,6 +1352,7 @@ class DbsApi(DbsConfig):
     params:
           pattern:  the shell pattren for nanlysis dataset name. If not given then the default value of * is assigned to it and all the datasets are listed
 	  path: is the processed dataset path in the format /prim/proc/datatier which if given list all the analysis dataset within that processed dataset
+	  version: by DEFAULT LATEST version of Analysis Dataset is returned, User can specify a Version.
     returns: 
           list of DbsAnalysisDataset objects  
     examples: 
@@ -1371,7 +1372,8 @@ class DbsApi(DbsConfig):
     # Invoke Server.    
     data = self._server._call ({ 'api' : 'listAnalysisDataset', 
                                  'analysis_dataset_name_pattern' : pattern,
-                                 'path' : path  
+                                 'path' : path,
+                                 'version' : version  
 				}, 'GET')
 
     logging.log(DBSDEBUG, data)
@@ -1382,10 +1384,11 @@ class DbsApi(DbsConfig):
         def startElement(self, name, attrs):
           if name == 'analysis_dataset':
 		self.curr_analysis = DbsAnalysisDataset (
-         		Annotation=str(attrs['annotation']),
+         		#Annotation=str(attrs['annotation']),
          		Name=str(attrs['analysis_dataset_name']),
          		Type=str(attrs['type']),
          		Status=str(attrs['status']),
+			Version=str(attrs['version']),
          		#PhysicsGroup=str(attrs['physics_group']),
          		#Definition=
                         CreationDate=str(attrs['creation_date']),
@@ -1397,13 +1400,13 @@ class DbsApi(DbsConfig):
                 self.curr_def = DbsAnalysisDatasetDefinition (
             		Name=str(attrs['analysis_dataset_definition_name']),
             		RunsList=str(attrs['runs']).split(','),
-            		TierList=str(attrs['tiers']).split(','),
+            		#TierList=str(attrs['tiers']).split(','),
             		FileList=str(attrs['lfns']).split(','),
             		LumiList=str(attrs['lumi_sections']).split(','),
             		AlgoList=str(attrs['algorithms']).split(','),
             		ProcessedDatasetPath=str(attrs['path']),
             		RunRangeList=str(attrs['runs_ranges']).split(','),
-            		AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
+            		#AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
             		LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
             		UserCut=str(attrs['user_cut']),
             		#Description=str(attrs['name']),
@@ -2933,7 +2936,7 @@ class DbsApi(DbsConfig):
     for aLumi in analysisDatasetDefinition.get('LumiList', []):
        xmlinput += " <lumi_section lumi_section_number='"+aLumi+"'/>"
 
-    for lfn in analysisDatasetDefinition.get('FilesList', []):
+    for lfn in analysisDatasetDefinition.get('FileList', []):
        xmlinput += " <file lfn='"+lfn+"'/>"
 
     for analysisds in  analysisDatasetDefinition.get('AnalysisDSList', []):
