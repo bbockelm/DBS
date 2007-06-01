@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 691
+REM === Build : 698
 REM ======================================================================
 
 CREATE TABLE Person
@@ -646,19 +646,21 @@ REM ======================================================================
 CREATE TABLE AnalysisDataset
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)      unique not null,
-    Path                  varchar(1000),
+    Name                  varchar(500)      not null,
+    Version               BIGINT            not null,
+    Path                  varchar(500)      not null,
     Definition            BIGINT UNSIGNED   not null,
+    Description           varchar(1000),
     PhysicsGroup          BIGINT UNSIGNED   not null,
     ProcessedDS           BIGINT UNSIGNED   not null,
-    Type                  BIGINT UNSIGNED   not null,
-    Status                BIGINT UNSIGNED   not null,
-    Description           varchar(1000),
+    Type                  BIGINT UNSIGNED,
+    Status                BIGINT UNSIGNED,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
-    primary key(ID)
+    primary key(ID),
+    unique(Name,Version)
   );
 
 REM ======================================================================
