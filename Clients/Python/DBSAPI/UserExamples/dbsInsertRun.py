@@ -19,13 +19,13 @@ api = DbsApi(opts.__dict__)
 
                             
 run = DbsRun (
-         RunNumber=1111,
+         RunNumber=1,
          NumberOfEvents= 100,
          NumberOfLumiSections= 20,
          TotalLuminosity= 2222,
          StoreNumber= 123,
-         StartOfRun= 'now',
-         EndOfRun= 'never',
+         StartOfRun= 12345,
+         EndOfRun= 45678,
          )
  
 print "Creating a run"

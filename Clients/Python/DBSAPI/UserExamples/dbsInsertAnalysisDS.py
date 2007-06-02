@@ -26,19 +26,32 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
-
+"""
+adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
+                ProcessedDatasetPath=path,
+                FileList=[file1['LogicalFileName'], file2['LogicalFileName']],
+                AlgoList = [algo1, algo2],
+                TierList= tierList,
+                AnalysisDSList=[],
+                LumiRangeList=[('1', '4444'), ('5000', '90000')],
+                RunRangeList=[('0', '5000'), ('6000', '99999')],
+                UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
+                Description="This is a test Analysis Dataset" + mytime,
+                )
+"""
 
 analysis=DbsAnalysisDataset(
-                            Name='TestAnalysisDataset001',
+                            Name='TestAnalysisDataset002',
                             Annotation='testdataset',
                             Type='TEST',
                             Status='NEW',
-                            PhysicsGroup='BPositive'
+                            PhysicsGroup='BPositive',
+			    Description="This is a test Analysis Dataset",
                            )
 
 try:
     #api.insertFiles (proc, [myfile1], block)
-    api.createAnalysisDataset(analysis, "TestAnalysisDSDef_001")
+    api.createAnalysisDataset(analysis, "TestAnalysisDSDef_002")
     print "DONE", analysis
 
 except DbsApiException, ex:
