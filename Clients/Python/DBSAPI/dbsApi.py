@@ -512,8 +512,8 @@ class DbsApi(DbsConfig):
                                    NumberOfLumiSections=getLong(attrs['number_of_lumi_sections']),
                                    TotalLuminosity=getLong(attrs['total_luminosity']),
                                    StoreNumber=getLong(attrs['store_number']),
-                                   StartOfRun=str(attrs['start_of_run']),
-                                   EndOfRun=str(attrs['end_of_run']),
+                                   StartOfRun=getLong(attrs['start_of_run']),
+                                   EndOfRun=getLong(attrs['end_of_run']),
                                    CreationDate=str(attrs['creation_date']),
                                    CreatedBy=str(attrs['created_by']),
                                    LastModificationDate=str(attrs['last_modification_date']),
@@ -915,8 +915,8 @@ class DbsApi(DbsConfig):
                                                    LumiSectionNumber=long(attrs['lumi_section_number']),
                                                    StartEventNumber=long(attrs['start_event_number']),
                                                    EndEventNumber=long(attrs['end_event_number']),   
-                                                   LumiStartTime=str(attrs['lumi_start_time']),
-                                                   LumiEndTime=str(attrs['lumi_end_time']),
+                                                   LumiStartTime=long(attrs['lumi_start_time']),
+                                                   LumiEndTime=long(attrs['lumi_end_time']),
                                                    RunNumber=long(attrs['run_number']),
                                                    CreationDate=str(attrs['creation_date']),
                                                    CreatedBy=str(attrs['created_by']),
@@ -974,8 +974,8 @@ class DbsApi(DbsConfig):
                                    NumberOfLumiSections=getLong(attrs['number_of_lumi_sections']),
                                    TotalLuminosity=getLong(attrs['total_luminosity']),
                                    StoreNumber=getLong(attrs['store_number']),
-                                   StartOfRun=str(attrs['start_of_run']),
-                                   EndOfRun=str(attrs['end_of_run']),
+                                   StartOfRun=getLong(attrs['start_of_run']),
+                                   EndOfRun=getLong(attrs['end_of_run']),
                                    CreationDate=str(attrs['creation_date']),
                                    CreatedBy=str(attrs['created_by']),
                                    LastModificationDate=str(attrs['last_modification_date']),
@@ -1259,8 +1259,8 @@ class DbsApi(DbsConfig):
                                                    LumiSectionNumber=long(attrs['lumi_section_number']),
                                                    StartEventNumber=long(attrs['start_event_number']),
                                                    EndEventNumber=long(attrs['end_event_number']),   
-                                                   LumiStartTime=str(attrs['lumi_start_time']),
-                                                   LumiEndTime=str(attrs['lumi_end_time']),
+                                                   LumiStartTime=getLong(attrs['lumi_start_time']),
+                                                   LumiEndTime=getLong(attrs['lumi_end_time']),
                                                    RunNumber=long(attrs['run_number']),
                                                    CreationDate=str(attrs['creation_date']),
                                                    CreatedBy=str(attrs['created_by']),
@@ -1317,13 +1317,13 @@ class DbsApi(DbsConfig):
                 curr_def = DbsAnalysisDatasetDefinition (
                         Name=str(attrs['analysis_dataset_definition_name']),
                         RunsList=str(attrs['runs']).split(','),
-                        TierList=str(attrs['tiers']).split(','),
+                        #TierList=str(attrs['tiers']).split(','),
                         FileList=str(attrs['lfns']).split(','),
                         LumiList=str(attrs['lumi_sections']).split(','),
                         AlgoList=str(attrs['algorithms']).split(','),
                         ProcessedDatasetPath=str(attrs['path']),
                         RunRangeList=str(attrs['runs_ranges']).split(','),
-                        AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
+                        #AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
                         LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
                         UserCut=str(attrs['user_cut']),
                         #Description=str(attrs['name']),
@@ -1818,8 +1818,8 @@ class DbsApi(DbsConfig):
                  NumberOfLumiSections= 20,
                  TotalLuminosity= 2222,
                  StoreNumber= 123,
-                 StartOfRun= 'now',
-                 EndOfRun= 'never',
+                 StartOfRun= 1234,
+                 EndOfRun= 2345,
          )
  
          api.insertRun (run)
@@ -1834,8 +1834,8 @@ class DbsApi(DbsConfig):
     xmlinput += " number_of_lumi_sections='"+str(run.get('NumberOfLumiSections', ''))+"'"
     xmlinput += " total_luminosity='"+str(run.get('TotalLuminosity', ''))+"'"
     xmlinput += " store_number='"+str(run.get('StoreNumber', ''))+"'"
-    xmlinput += " start_of_run='"+run.get('StartOfRun', '')+"'"
-    xmlinput += " end_of_run='"+run.get('EndOfRun', '')+"'"
+    xmlinput += " start_of_run='"+str(run.get('StartOfRun', ''))+"'"
+    xmlinput += " end_of_run='"+str(run.get('EndOfRun', ''))+"'"
     xmlinput += " />"
     xmlinput += "</dbs>"
 
@@ -1942,7 +1942,7 @@ class DbsApi(DbsConfig):
     xmlinput += " number_of_events='"+str(run.get('NumberOfEvents', ''))+"'"
     xmlinput += " number_of_lumi_sections='"+str(run.get('NumberOfLumiSections', ''))+"'"
     xmlinput += " total_luminosity='"+str(run.get('TotalLuminosity', ''))+"'"
-    xmlinput += " end_of_run='"+run.get('EndOfRun', '')+"'"
+    xmlinput += " end_of_run='"+str(run.get('EndOfRun', ''))+"'"
     xmlinput += " />"
     xmlinput += "</dbs>"
 
@@ -2013,8 +2013,8 @@ class DbsApi(DbsConfig):
                  LumiSectionNumber=1222,
                  StartEventNumber=100,
                  EndEventNumber=200,
-                 LumiStartTime='notime',
-                 LumiEndTime='neverending',
+                 LumiStartTime=1234,
+                 LumiEndTime=1234,
                  RunNumber=1,
          )
 
@@ -2022,8 +2022,8 @@ class DbsApi(DbsConfig):
                  LumiSectionNumber=1333,
                  StartEventNumber=100,
                  EndEventNumber=200,
-                 LumiStartTime='notime',
-                 LumiEndTime='neverending',
+                 LumiStartTime=1232,
+                 LumiEndTime=1234,
                  RunNumber=1,
          )
 
@@ -2113,8 +2113,8 @@ class DbsApi(DbsConfig):
             xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
             xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'" 
             xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
-            xmlinput += " lumi_start_time='"+lumi.get('LumiStartTime', '')+"'" 
-            xmlinput += " lumi_end_time='"+lumi.get('LumiEndTime', '')+"'"
+            xmlinput += " lumi_start_time='"+str(lumi.get('LumiStartTime', ''))+"'" 
+            xmlinput += " lumi_end_time='"+str(lumi.get('LumiEndTime', ''))+"'"
             xmlinput += " />"
 
        for run in file.get('RunsList', []):
@@ -2699,7 +2699,7 @@ class DbsApi(DbsConfig):
                 LumiSectionNumber=99,
                 StartEventNumber=100,
                 EndEventNumber=200,
-                LumiStartTime='notime',
+                LumiStartTime=1234,
                 LumiEndTime='neverending',
                 RunNumber=1,
          )
@@ -2717,8 +2717,8 @@ class DbsApi(DbsConfig):
     xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
     xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'"
     xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
-    xmlinput += " lumi_start_time='"+lumi.get('LumiStartTime', '')+"'"
-    xmlinput += " lumi_end_time='"+lumi.get('LumiEndTime', '')+"'"
+    xmlinput += " lumi_start_time='"+str(lumi.get('LumiStartTime', ''))+"'"
+    xmlinput += " lumi_end_time='"+str(lumi.get('LumiEndTime', ''))+"'"
     xmlinput += " />"
     xmlinput += "</dbs>"
 
