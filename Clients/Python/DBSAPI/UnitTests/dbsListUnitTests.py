@@ -239,8 +239,8 @@ apiObj.run(excep = False)
 apiObj.run("*",excep = False)
 apiObj.run("*",path,excep = False)
 apiObj.run("*","/this/will/notexist",excep = True)
-apiObj.run("ahs def", path,excep = True)
-apiObj.run("ahs*", path,"", excep = True)
+#apiObj.run("ahs def", path,excep = True)
+#apiObj.run("ahs*", path,"", excep = True)
 f.write("\n\n***********************listAnalysisDataset API tests***************************")
 
 

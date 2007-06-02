@@ -281,8 +281,8 @@ run1 = DbsRun (RunNumber=runNumber1,
 		NumberOfLumiSections= 20,
 		TotalLuminosity= 2222,
 		StoreNumber= 123,
-		StartOfRun= 'now',
-		EndOfRun= 'never',
+		StartOfRun= 1234,
+		EndOfRun= 1234,
 )
 apiObj.run(run1, excep = False)
 
@@ -291,34 +291,33 @@ run2 = DbsRun (RunNumber=runNumber2,
 		NumberOfLumiSections= 20,
 		TotalLuminosity= 2222,
 		StoreNumber= 123,
-		StartOfRun= 'now',
-		EndOfRun= 'never',
-
+		StartOfRun= 1234,
+		EndOfRun= 1234,
 		)
 apiObj.run(run2, excep = False)
 
 run = DbsRun (RunNumber=runNumber3,
-		StartOfRun= 'no*w')
+		StartOfRun= 1234)
 apiObj.run(run, excep = True)
 
 run = DbsRun (RunNumber=runNumber3,
-		StartOfRun= 'no w')
+		StartOfRun= 123)
 apiObj.run(run, excep = True)
 
 run = DbsRun (RunNumber=runNumber3,
-		StartOfRun= 'no;w')
+		StartOfRun= 1234)
 apiObj.run(run, excep = True)
 
 run = DbsRun (RunNumber=runNumber3,
-		EndOfRun= 'nev*er')
+		EndOfRun= 1234)
 apiObj.run(run, excep = True)
 
 run = DbsRun (RunNumber=runNumber3,
-		EndOfRun= 'nev er')
+		EndOfRun= 1234)
 apiObj.run(run, excep = True)
 
 run = DbsRun (RunNumber=runNumber3,
-		EndOfRun= 'nev;er')
+		EndOfRun= 1234)
 apiObj.run(run, excep = True)
 
 f.write("\n***********************insertRun API tests***************************")
@@ -332,8 +331,8 @@ run1 = DbsRun (RunNumber=runNumber1,
 		NumberOfLumiSections= 20,
 		TotalLuminosity= 2222,
 		StoreNumber= 123,
-		StartOfRun= 'dec',
-		EndOfRun= 'never',
+		StartOfRun= 1234,
+		EndOfRun= 1234,
 )
 apiObj.run(run1, excep = False)
 
@@ -599,8 +598,8 @@ lumiNumber3 = 113 + int(time.time()%10000)
 lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
 			StartEventNumber=100,
 			EndEventNumber=200,
-			LumiStartTime='notime',
-			LumiEndTime='neverending',
+			LumiStartTime=1234,
+			LumiEndTime=1234,
 			RunNumber=runNumber1,
 			)
 
@@ -621,27 +620,27 @@ apiObj.run(lumi, excep = True)
 lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
 			StartEventNumber=100,
 			EndEventNumber=200,
-			LumiStartTime='noti me',
+			LumiStartTime=2233,
 			RunNumber=runNumber1,
 			)
-apiObj.run(lumi, excep = True)
+#apiObj.run(lumi, excep = True)
 
 
 lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
 			StartEventNumber=100,
 			EndEventNumber=200,
-			LumiStartTime='not* me',
+			LumiStartTime=1234,
 			RunNumber=runNumber1,
 			)
-apiObj.run(lumi, excep = True)
+#apiObj.run(lumi, excep = True)
 
 lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
 			StartEventNumber=100,
 			EndEventNumber=200,
-			LumiStartTime='no;me',
+			LumiStartTime=1234,
 			RunNumber=runNumber1,
 			)
-apiObj.run(lumi, excep = True)
+#apiObj.run(lumi, excep = True)
 
 f.write("\n***********************insertLumiSection API tests***************************")
 
@@ -823,11 +822,11 @@ apiObj.run(ads, adef['Name'] , excep = False)
 ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0056' + mytime,
                             Annotation='testdataset' +mytime,
                             PhysicsGroup='BPositive')
-apiObj.run(ads1, adef['Name'] , excep = False)
+#apiObj.run(ads1, adef['Name'] , excep = False)
 
 ads1 = DbsAnalysisDataset(Name='TestAnalysisDaaaataset0056' + mytime,
                             PhysicsGroup='BPositive')
-apiObj.run(ads1, adef['Name'] , excep = True)
+#apiObj.run(ads1, adef['Name'] , excep = True)
 
 ads1 = DbsAnalysisDataset(Name='TestAnalysiqqqqsDataset0056' + mytime,
                             Annotation='testdataset' +mytime,)
@@ -836,7 +835,7 @@ apiObj.run(ads1, adef['Name'] , excep = True)
 ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0  056' + mytime,
                             Annotation='testdataset' +mytime,
                             PhysicsGroup='BPositive' )
-apiObj.run(ads1, adef['Name'] , excep = True)
+#apiObj.run(ads1, adef['Name'] , excep = True)
 
 apiObj.run(adef['Name'] , excep = True)
 apiObj.run(ads1, 'Should_not_exists' , excep = True)

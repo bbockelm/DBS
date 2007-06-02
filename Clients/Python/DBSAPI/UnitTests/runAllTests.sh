@@ -1,13 +1,13 @@
 #!/bin/sh
-rm -f $PWD/result.txt
-touch $PWD/result.txt
-cd ../..
-source setup.sh
-cd -
-#counter=`date +%m%h%s`
-#mkdir -p $counter
-#cp dbsInsertUnitTests.py dbsListUnitTests.py dbsUnitTestApi.py $counter
-#cd $counter
+#rm -f $PWD/result.txt
+#touch $PWD/result.txt
+#cd ../..
+#source setup.sh
+#cd -
+counter=`date +%m%h%s`
+mkdir -p $counter
+cp dbsInsertUnitTests.py dbsListUnitTests.py dbsUnitTestApi.py $counter
+cd $counter
 echo "Please wait ... The tests can take up to 5 minutes"
 python dbsInsertUnitTests.py --verbose=2 | grep '^\Test'
 if [ $? -eq 0 ] ; then 
