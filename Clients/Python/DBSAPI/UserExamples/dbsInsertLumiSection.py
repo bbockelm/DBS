@@ -21,8 +21,8 @@ lumi = DbsLumiSection (
          LumiSectionNumber=99,
          StartEventNumber=100,
          EndEventNumber=200,
-         LumiStartTime='notime',
-         LumiEndTime='neverending',
+         LumiStartTime=1111,
+         LumiEndTime=1111,
          RunNumber=1,
          )
                             
