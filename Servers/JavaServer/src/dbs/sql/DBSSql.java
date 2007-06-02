@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.95 $"
- $Id: DBSSql.java,v 1.95 2007/05/24 21:59:27 sekhri Exp $"
+ $Revision: 1.96 $"
+ $Id: DBSSql.java,v 1.96 2007/06/01 22:20:03 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -141,6 +141,21 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, "Runs", table);
 	}
+
+
+        public static PreparedStatement incRunLumiCount(Connection conn, String runID) throws SQLException {
+
+		String sql = "UPDATE Runs SET \n" +
+			"NumberOfLumiSections=NumberOfLumiSections+1 \n" +
+			"WHERE ID=? ";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+	 	ps.setString(columnIndx++, runID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
+
 
         public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String endOfRun, String lmbUserID) throws SQLException {
 

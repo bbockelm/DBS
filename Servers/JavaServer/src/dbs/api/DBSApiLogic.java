@@ -1,6 +1,6 @@
 /**
- $Revision: 1.98 $"
- $Id: DBSApiLogic.java,v 1.98 2007/04/05 21:36:30 afaq Exp $"
+ $Revision: 1.99 $"
+ $Id: DBSApiLogic.java,v 1.99 2007/05/14 21:59:33 sekhri Exp $"
  *
  */
 
@@ -218,19 +218,20 @@ public class DBSApiLogic {
 				);
 	}
 	
-	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+	protected void insertLumiSection(Connection conn, Writer out, Hashtable lumi, String cbUserID, 
+									String lmbUserID, String creationDate) throws Exception {
 
 		String lsNumber = get(lumi, "lumi_section_number", true);
                 String runNumber = get(lumi, "run_number", true);
                 //FIXME:Actually the runID will go in the database, the runNumber 
                 //field in LumiSection is confusing we must rename it.
                 String runID = getID(conn, "Runs", "RunNumber", runNumber, true);
+		PreparedStatement ps = null;
 
                 //LumiSectionNumber in UQ within this Run only
                 if( getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false) == null ) { 
 		//if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 		//Insert a new Lumi Section by feting the run ID 
-			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertLumiSection(conn,
 						lsNumber,
@@ -249,6 +250,15 @@ public class DBSApiLogic {
 
 		} else {
 			writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
+		}
+
+		//Update the Run to reflect the LumiSection count
+		ps = null;
+		try {
+			ps = DBSSql.incRunLumiCount(conn, runID);
+			ps.executeUpdate();
+		} finally {
+			if (ps != null) ps.close();
 		}
 	}
 
