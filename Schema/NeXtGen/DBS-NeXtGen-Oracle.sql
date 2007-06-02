@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 698
+REM === Build : 704
 REM ======================================================================
 
 CREATE TABLE Person
@@ -82,8 +82,8 @@ CREATE TABLE Runs
     NumberOfLumiSections  BIGINT UNSIGNED   not null,
     TotalLuminosity       BIGINT UNSIGNED   not null,
     StoreNumber           BIGINT UNSIGNED   not null,
-    StartOfRun            varchar(100),
-    EndOfRun              varchar(100),
+    StartOfRun            BIGINT,
+    EndOfRun              BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -113,8 +113,8 @@ CREATE TABLE LumiSection
     RunNumber             BIGINT UNSIGNED   not null,
     StartEventNumber      BIGINT UNSIGNED   not null,
     EndEventNumber        BIGINT UNSIGNED   not null,
-    LumiStartTime         varchar(100),
-    LumiEndTime           varchar(100),
+    LumiStartTime         BIGINT,
+    LumiEndTime           BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
