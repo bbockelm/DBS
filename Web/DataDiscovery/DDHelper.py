@@ -1901,7 +1901,7 @@ MCDescription:      %s
 #              oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
               oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
               gBy=list(oSel)
-              oSel+=[sqlalchemy.func.sum(self.col(tf,'FileSize')),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct())]
+              oSel+=[sqlalchemy.func.sum(self.col(tf,'FileSize').distinct()),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct())]
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -1944,6 +1944,7 @@ MCDescription:      %s
 
           sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
           sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
+          sel.append_whereclause(self.col(tf,'Dataset')==self.col(tprd,'ID'))
           result=""
           if not count and limit:
 #             sel.use_labels=True
@@ -1957,6 +1958,7 @@ MCDescription:      %s
 #                           condDict[item]=minRun
 #                        else:   
 #                           condDict[item]=maxRun
+#                 print "\n\n### query",s,condDict
                  result=con.execute(s,condDict)
 #                 result=con.execute(s,{"trun_runnumber":minRun,"trun_runnumb_1":maxRun})
              else:
