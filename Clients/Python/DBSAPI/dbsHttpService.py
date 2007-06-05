@@ -2,7 +2,7 @@
 # Revision: 1.3 $"
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
-import os, re, string, httplib, urllib, urllib2, gzip
+import os, re, string, httplib, urllib, urllib2, gzip, time
 from dbsException import DbsException
 from dbsApiException import *
 from dbsExecHandler import DbsExecHandler
@@ -85,7 +85,31 @@ class DbsHttpService:
    # All looks OK, still doesn't gurantee proxy's validity etc.
    return key, proxy
    
-  def _call (self, args, typ):
+
+
+
+  def _call(self, args, typ, repeat = 3, delay = 2 ):
+	  try:
+		  self._callOriginal(args, typ)
+	  except DbsConnectionError ,  ex:
+		  self.callAgain(args, typ, repeat, delay)
+	  except DbsProxyNotFound , ex:
+		  self.callAgain(args, typ, repeat, delay)
+	  except DbsExecutionError , ex:
+		  self.callAgain(args, typ, repeat, delay)
+	  except DbsBadXMLData , ex:
+		  self.callAgain(args, typ, repeat, delay)
+		  
+  def callAgain(self, args, typ, repeat, delay):
+	  print "I will retry in %s seconds" % delay
+	  if(repeat!=0):
+		  repeat -= 1
+		  time.sleep(delay)
+		  delay += 1
+		  self._call(args, typ, repeat, delay*10)
+
+  
+  def _callOriginal (self, args, typ):
     """
     Make a call to the server, either a remote HTTP request (the
     URL is of the form http:*), or invoke as a local executable
