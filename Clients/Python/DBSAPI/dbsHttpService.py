@@ -90,15 +90,15 @@ class DbsHttpService:
 
   def _call(self, args, typ, repeat = 3, delay = 2 ):
 	  try:
-		  self._callOriginal(args, typ)
+		  return self._callOriginal(args, typ)
 	  except DbsConnectionError ,  ex:
-		  self.callAgain(args, typ, repeat, delay)
+		  return self.callAgain(args, typ, repeat, delay)
 	  except DbsProxyNotFound , ex:
-		  self.callAgain(args, typ, repeat, delay)
+		  return self.callAgain(args, typ, repeat, delay)
 	  except DbsExecutionError , ex:
-		  self.callAgain(args, typ, repeat, delay)
+		  return self.callAgain(args, typ, repeat, delay)
 	  except DbsBadXMLData , ex:
-		  self.callAgain(args, typ, repeat, delay)
+		  return self.callAgain(args, typ, repeat, delay)
 		  
   def callAgain(self, args, typ, repeat, delay):
 	  print "I will retry in %s seconds" % delay
@@ -106,7 +106,7 @@ class DbsHttpService:
 		  repeat -= 1
 		  time.sleep(delay)
 		  delay += 1
-		  self._call(args, typ, repeat, delay*10)
+		  return self._call(args, typ, repeat, delay*10)
 
   
   def _callOriginal (self, args, typ):
