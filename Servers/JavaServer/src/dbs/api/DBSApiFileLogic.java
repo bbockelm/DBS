@@ -1,6 +1,6 @@
 /**
- $Revision: 1.55 $"
- $Id: DBSApiFileLogic.java,v 1.55 2007/05/23 15:55:09 afaq Exp $"
+ $Revision: 1.56 $"
+ $Id: DBSApiFileLogic.java,v 1.56 2007/06/06 15:23:45 sekhri Exp $"
  *
  */
 
@@ -1211,28 +1211,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		checkString(value, "queryable_meta_data");
 		updateValue(conn, out, "Files",  getFileID(conn, lfn, true), "QueryableMetadata", value, personApi.getUserID(conn, dbsUser));
 	}
-	/*
-	public void updateFileLumiSection(Connection conn, Writer out, Hashtable lumi, Hashtable dbsUser) throws Exception {
-		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
-		String runNumber = get(run, "run_number", true);
-		if(getID(conn, "Runs", "RunNumber", runNumber, true) != null ) {
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.updateRun(conn,
-						runNumber,
-						get(run, "number_of_events", false),
-						get(run, "number_of_lumi_sections", false),
-						get(run, "total_luminosity", false),
-						get(run, "start_of_run", false),
-						get(run, "end_of_run", false),
-						personApi.getUserID(conn, dbsUser)
-						);
-				ps.execute();
-			} finally {
-				if (ps != null) ps.close();
-			}
-		} 
-	}*/
 
 
 	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {

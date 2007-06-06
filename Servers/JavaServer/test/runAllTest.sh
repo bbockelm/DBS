@@ -12,7 +12,7 @@ cd $BASE/lib
 CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=v00_00_05"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_4"
 rand=`uuidgen`
 #$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 block='/TestPrimary1164144491.29/TestProcessed1164144491.29#42665801-a716-487e-9220-057e955f3a39'
@@ -92,7 +92,7 @@ updateProcDSStatus () {
 updateAnalDSStatus () {
 	message="Executing updateAnalDSStatus API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updateAnalDSStatus analysis_dataset_name=AnalysisDS1_$rand status=NEW`
+	out=`$CMD api=updateAnalDSStatus analysis_dataset_name=$path_child/AnalysisDS_Defination1_$rand status=NEW`
 	display "$out"
 }
 
@@ -113,7 +113,7 @@ updateFileMetaData () {
 updateAnalDSType () {
 	message="Executing updateAnalDSType API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=updateAnalDSType analysis_dataset_name=AnalysisDS1_$rand type=TEST`
+	out=`$CMD api=updateAnalDSType analysis_dataset_name=$path_child/AnalysisDS_Defination1_$rand type=TEST`
 	display "$out"
 }
 
@@ -329,12 +329,12 @@ insertTier () {
 insertRun () {
 	xmlString1="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<run run_number='$run_number1' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov' end_of_run='dec' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<run run_number='$run_number1' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='1066729598999' end_of_run='1066729348999' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	
 	xmlString2="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<run run_number='$run_number2' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='nov_$rand' end_of_run='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<run run_number='$run_number2' number_of_events='54' number_of_lumi_sections='12' total_luminosity='2' store_number='32' start_of_run='1022729598999' end_of_run='1066729596699' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 
 	message="Executing insertRun API 2 times with different inputs..."	
@@ -349,7 +349,7 @@ insertRun () {
 updateRun () {
         xmlString1="<?xml version='1.0' standalone='yes'?>
                 <dbs>
-                        <run run_number='$run_number1' number_of_events='3000' end_of_run='FEB' />
+                        <run run_number='$run_number1' number_of_events='3000' end_of_run='1066711118999' />
                 </dbs>"
 
         message="Executing update Run API..."
@@ -358,12 +358,24 @@ updateRun () {
         display "$out"
 }
 
+updateLumiSection () {
+        xmlString1="<?xml version='1.0' standalone='yes'?>
+                <dbs>
+                        <lumi_section lumi_section_number='4445' run_number='$run_number1' start_event_number='33' end_event_number='999'			lumi_start_time='1011129598999' lumi_end_time='1066729598000'/>
+                </dbs>"
+
+        message="Executing updateLumiSection API..."
+        echo $message >> $outFile ; echo $message
+        out=`$CMD api=updateLumiSection "xmlinput=$xmlString1"`
+        display "$out"
+}
+
 
 # insert lumi section
 insertLumiSection () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<lumi_section lumi_section_number='1111' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<lumi_section lumi_section_number='4445' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='1066729598555' lumi_end_time='1066766698999' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	message="Executing insertLumiSection API..."	
 	echo $message >> $outFile ; echo $message
@@ -372,7 +384,7 @@ insertLumiSection () {
 
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<lumi_section lumi_section_number='4444' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='1999729598999' lumi_end_time='1066729555999' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	message="Executing insertLumiSection API..."	
 	echo $message >> $outFile ; echo $message
@@ -381,7 +393,7 @@ insertLumiSection () {
 
 	xmlString="<?xml version='1.0' standalone='yes'?>
 		<dbs>
-			<lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='nov_$rand' lumi_end_time='dec_$rand' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='20' end_event_number='200' lumi_start_time='1066111198999' lumi_end_time='1066712128999' created_by='Let_me_try_this' creation_date='1066729598999'/>
 		</dbs>"
 	message="Executing insertLumiSection API..."	
 	echo $message >> $outFile ; echo $message
@@ -459,17 +471,17 @@ insertFiles () {
 		<dbs>
 		<processed_datatset path='$path_child'>
 			<file lfn='$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
-				<file_lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<file_lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<file_lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_lumi_section lumi_section_number='9997' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
+				<file_lumi_section lumi_section_number='9996' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
+				<file_lumi_section lumi_section_number='9995' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
 				<file_data_tier name='$tier_name2'/>
 				$falgo1
 				$falgo1
 			</file>
 			<file lfn='$lfn2' checksum='CHKSUM2' number_of_events='300' size='2002' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
-				<file_lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<file_lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
-				<file_lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='nov' lumi_end_time='dec'/>
+				<file_lumi_section lumi_section_number='1006' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
+				<file_lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
+				<file_lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
 				<file_data_tier name='$tier_name2'/>
 				<file_parent lfn='TEST_LFN_1_$rand'/>
 				$falgo3
@@ -653,7 +665,8 @@ updateAnalDSType
 updateFileType
 updateSEName
 closeBlock
-#updateRun
+updateRun
+updateLumiSection
 ###
 ##	
 #												

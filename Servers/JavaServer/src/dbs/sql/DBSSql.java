@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.97 $"
- $Id: DBSSql.java,v 1.97 2007/06/02 05:04:48 afaq Exp $"
+ $Revision: 1.98 $"
+ $Id: DBSSql.java,v 1.98 2007/06/06 15:23:45 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -156,6 +156,31 @@ public class DBSSql {
                 return ps;
         }
 
+								
+	 public static PreparedStatement updateLumiSection(Connection conn, String lumiNumber, String runNumber, String startEvNumber, String endEvNumber, String lStartTime, String lEndTime, String lmbUserID) throws SQLException {
+		String sql = "UPDATE LumiSection SET \n";
+		if ( !DBSUtil.isNull(startEvNumber) ) sql += "StartEventNumber = ? ,";
+		if ( !DBSUtil.isNull(endEvNumber) ) sql += "EndEventNumber = ? ,";
+		if ( !DBSUtil.isNull(lStartTime) ) sql += "LumiStartTime = ? ,";
+		if ( !DBSUtil.isNull(lEndTime) ) sql += "LumiEndTime = ? ,";
+		
+		sql += "LastModifiedBy = ? \n" +
+			"WHERE RunNumber = ? AND LumiSectionNumber = ?";
+
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		if ( !DBSUtil.isNull(startEvNumber) ) ps.setString(columnIndx++, startEvNumber);
+		if ( !DBSUtil.isNull(endEvNumber) ) ps.setString(columnIndx++, endEvNumber);
+		if ( !DBSUtil.isNull(lStartTime) ) ps.setString(columnIndx++, lStartTime);
+		if ( !DBSUtil.isNull(lEndTime) ) ps.setString(columnIndx++, lEndTime);
+		
+		ps.setString(columnIndx++, lmbUserID);
+		ps.setString(columnIndx++, runNumber);
+		ps.setString(columnIndx++, lumiNumber);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+		return ps;
+        }
 
         public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String startOfRun, String endOfRun, String lmbUserID) throws SQLException {
 		String sql = "UPDATE Runs SET \n";
@@ -381,7 +406,7 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
-	/*
+	
           
         public static PreparedStatement getADSVersion(Connection conn, String adsName) throws SQLException {
                 String sql = "SELECT DISTINCT ads.Version as VERSION \n " +
@@ -405,7 +430,7 @@ public class DBSSql {
                 //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
                 return ps;
         }
-*/
+
 	public static PreparedStatement listAnalysisDSFileLumi(Connection conn,  String procDSID, 
 			Vector algoIDList, Vector fileList, 
                         Vector lumiIDList,Vector runIDList, 
@@ -1978,7 +2003,7 @@ public class DBSSql {
 				//}
 			}
 		}
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 
 	}

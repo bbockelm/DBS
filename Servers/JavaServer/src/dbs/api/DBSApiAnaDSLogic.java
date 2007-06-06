@@ -1,6 +1,6 @@
 /**
- $Revision: 1.33 $"
- $Id: DBSApiAnaDSLogic.java,v 1.33 2007/06/01 22:20:03 afaq Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.34 2007/06/06 15:23:45 sekhri Exp $"
  *
  */
 
@@ -372,7 +372,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					cbUserID, lmbUserID, creationDate);
                         rs =  ps.executeQuery();
 
-			if( isNull((aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false))) ) {
+			//if( isNull((aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false))) ) {
+			if( isNull((aDSID = getADSID(conn, analysisDatasetName, false))) ) {
 				adsVer = 0;
 				insert = true;
 			} else {
@@ -384,18 +385,21 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					int numberOfRowsExisting = DBSUtil.getNumberOfRows(rs1);
 
 					if (numberOfRowsExisting == DBSUtil.getNumberOfRows(rs)) { 
-						for (int j = 0 ; j!= numberOfRowsExisting - 1 ; ++j) {
-							rs1.next();
-							rs.next();
+						for (int j = 0 ; j!= numberOfRowsExisting ; ++j) {
 							if(!(get(rs1, "LUMIID").equals(get(rs, "LUMIID"))) ||
 									!(get(rs1, "FILEID").equals(get(rs, "FILEID")))) {
 								insert = true;
-								
 								break;
 							}
+							rs1.next();
+							rs.next();
 						}
 						
-					} else insert = true;
+					} else {
+
+						System.out.println("line 3");
+						insert = true;
+					}
 					
 	    			} finally {
 					if (rs1 != null) rs1.close();
@@ -411,8 +415,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 				}
 			}
-			rs.first();
-			
 			if(insert) {
 				//System.out.println("create the analysis dataset ........");
 	    			PreparedStatement ps1 = null;
@@ -435,15 +437,18 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					if (ps1 != null) ps1.close();
 	    			}
 
-		    		if(isNull(aDSID)) aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, true);
-				while(rs.next()) {
-				//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+		    		//if(isNull(aDSID)) aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, true);
+		    		aDSID = getADSID(conn, analysisDatasetName, true);
+				//This is important beacuse the resultset is already on the first element
+				for (int j = 0 ; j!= DBSUtil.getNumberOfRows(rs) ; ++j) {
+					//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
 					insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
 						aDSID,
 						get(rs, "LUMIID"),
 						get(rs, "FILEID"),
 						cbUserID, lmbUserID, creationDate);
-				} 
+					rs.next();
+				}
 
 			} else 	writeWarning(out, "Already Exists", "1020", "AnalysisDataset " + 
 					analysisDatasetName + " with same entries already exists");
@@ -454,33 +459,30 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		    }
 	 }
 
-/*
+
 	public String getADSID(Connection conn, String analysisDatasetName, boolean excep) throws Exception {
-
-	    if(isNull(analysisDatasetName)) {
-		if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
-		return null;
-	    }
-
-	    String id = "";
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
-	    try {
-		ps =  DBSSql.getADSID(conn, analysisDatasetName);
-		rs =  ps.executeQuery();
-		if(!rs.next()) {
-		    if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
-		    else return null;
-		}
-		id = get(rs, "ID");
-	    } finally {
-		if (rs != null) rs.close();
-		if (ps != null) ps.close();
-	    }
-	    
-	    return  id;
+	    	if(isNull(analysisDatasetName)) {
+			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
+			return null;
+    		}
+	    	String id = "";
+    		PreparedStatement ps = null;
+    		ResultSet rs = null;
+    		try {
+			ps =  DBSSql.getADSID(conn, analysisDatasetName);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+	    			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
+	    			else return null;
+			}
+			id = get(rs, "ID");
+    		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+	    	}
+	    	return  id;
 	}
-*/
+
         public String getADSVersion(Connection conn, String analysisDatasetName, boolean excep) throws Exception {
       		if(isNull(analysisDatasetName)) {
 			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);

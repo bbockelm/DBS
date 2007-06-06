@@ -1,6 +1,6 @@
 /**
- $Revision: 1.100 $"
- $Id: DBSApiLogic.java,v 1.100 2007/06/02 05:04:32 afaq Exp $"
+ $Revision: 1.101 $"
+ $Id: DBSApiLogic.java,v 1.101 2007/06/06 15:23:45 sekhri Exp $"
  *
  */
 
@@ -142,7 +142,7 @@ public class DBSApiLogic {
 	public void updateRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		String runNumber = get(run, "run_number", true);
-		if(getID(conn, "Runs", "RunNumber", runNumber, true) != null ) {
+		if(!isNull(getID(conn, "Runs", "RunNumber", runNumber, true)) ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.updateRun(conn,
@@ -154,6 +154,30 @@ public class DBSApiLogic {
 						get(run, "end_of_run", false),
 						personApi.getUserID(conn, dbsUser)
 						);
+				ps.execute();
+			} finally {
+				if (ps != null) ps.close();
+			}
+		} 
+	}
+
+	
+	public void updateLumiSection(Connection conn, Writer out, Hashtable lumi, Hashtable dbsUser) throws Exception {
+		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
+		String lsNumber = get(lumi, "lumi_section_number", true);
+		String runNumber = get(lumi, "run_number", true);
+                String runID = getID(conn, "Runs", "RunNumber", runNumber, true);
+		PreparedStatement ps = null;
+		if( !isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, true)))  { 
+			try {
+				ps = DBSSql.updateLumiSection(conn,
+						lsNumber,
+						runID,
+						get(lumi, "start_event_number", false),
+						get(lumi, "end_event_number", false),
+						get(lumi, "lumi_start_time", false),
+						get(lumi, "lumi_end_time", false),
+						personApi.getUserID(conn, dbsUser));
 				ps.execute();
 			} finally {
 				if (ps != null) ps.close();
@@ -229,7 +253,7 @@ public class DBSApiLogic {
 		PreparedStatement ps = null;
 
                 //LumiSectionNumber in UQ within this Run only
-                if( getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false) == null ) { 
+                if( isNull(getMapID(conn, "LumiSection", "LumiSectionNumber", "RunNumber", lsNumber, runID, false)) ) { 
 		//if( getID(conn, "LumiSection", "LumiSectionNumber", lsNumber, false) == null ) {
 		//Insert a new Lumi Section by feting the run ID 
 			try {

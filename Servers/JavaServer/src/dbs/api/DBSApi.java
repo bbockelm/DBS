@@ -1,6 +1,6 @@
 /**
- $Revision: 1.88 $"
- $Id: DBSApi.java,v 1.88 2007/05/14 21:59:33 sekhri Exp $"
+ $Revision: 1.89 $"
+ $Id: DBSApi.java,v 1.89 2007/06/01 22:20:02 afaq Exp $"
  *
 */
 
@@ -387,6 +387,12 @@ public class DBSApi {
                                 api.updateRun(conn, out,
                                                 DBSApiParser.parse(getXml(table), "run") ,
                                                 dbsUser);
+
+			} else if (apiStr.equals("updateLumiSection")) {
+                                api.updateLumiSection(conn, out,
+                                                DBSApiParser.parse(getXml(table), "lumi_section") ,
+                                                dbsUser);
+
 
 			} else if (apiStr.equals("insertTier")) {
 				api.insertTier(conn, out, DBSApiParser.parse(getXml(table), "tier"), dbsUser);
