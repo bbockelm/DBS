@@ -342,6 +342,90 @@ apiObj.run(run2, excep = True)
 
 f.write("\n\n***********************updateRun API tests***************************")
 
+apiObj = DbsUnitTestApi(api.insertLumiSection, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************insertLumiSection API tests***************************")
+lumiNumber1 = 111 + int(time.time()%10000)
+lumiNumber2 = 112 + int(time.time()%10000)
+lumiNumber3 = 113 + int(time.time()%10000)
+
+lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime=1234,
+			LumiEndTime=1234,
+			RunNumber=runNumber1,
+			)
+
+apiObj.run(lumi1, excep = False)
+
+lumi2 = DbsLumiSection (LumiSectionNumber=lumiNumber2,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			RunNumber=runNumber1)
+apiObj.run(lumi2, excep = False)
+
+lumi = DbsLumiSection (startEventNumber=100)
+apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (startEventNumber='10 0')
+apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime=2233,
+			RunNumber=runNumber1,
+			)
+#apiObj.run(lumi, excep = True)
+
+
+lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime=1234,
+			RunNumber=runNumber1,
+			)
+#apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
+			StartEventNumber=100,
+			EndEventNumber=200,
+			LumiStartTime=1234,
+			RunNumber=runNumber1,
+			)
+#apiObj.run(lumi, excep = True)
+
+f.write("\n***********************insertLumiSection API tests***************************")
+
+
+apiObj = DbsUnitTestApi(api.updateLumiSection, f)
+apiObj.setVerboseLevel(opts.verbose)
+f.write("\n\n***********************updateLumiSection API tests***************************")
+
+lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
+			StartEventNumber=1001,
+			EndEventNumber=2001,
+			LumiStartTime=1232224,
+			LumiEndTime=1234444,
+			RunNumber=runNumber1,
+			)
+
+apiObj.run(lumi1, excep = False)
+
+lumi2 = DbsLumiSection (LumiSectionNumber=lumiNumber2,
+			EndEventNumber=200222,
+			RunNumber=runNumber1)
+apiObj.run(lumi2, excep = False)
+
+lumi = DbsLumiSection (startEventNumber=100)
+apiObj.run(lumi, excep = True)
+
+lumi = DbsLumiSection (startEventNumber='10 0')
+apiObj.run(lumi, excep = True)
+
+
+f.write("\n***********************updateLumiSection API tests***************************")
 
 
 f.write("\n\n***********************insertProcessedDataset API tests***************************")
@@ -588,62 +672,6 @@ apiObj.run("/ddd/hd/hd;hd", excep = True)
 
 f.write("\n***********************insertBlock API tests***************************")
 
-apiObj = DbsUnitTestApi(api.insertLumiSection, f)
-apiObj.setVerboseLevel(opts.verbose)
-f.write("\n\n***********************insertLumiSection API tests***************************")
-lumiNumber1 = 111 + int(time.time()%10000)
-lumiNumber2 = 112 + int(time.time()%10000)
-lumiNumber3 = 113 + int(time.time()%10000)
-
-lumi1 = DbsLumiSection (LumiSectionNumber=lumiNumber1,
-			StartEventNumber=100,
-			EndEventNumber=200,
-			LumiStartTime=1234,
-			LumiEndTime=1234,
-			RunNumber=runNumber1,
-			)
-
-apiObj.run(lumi1, excep = False)
-
-lumi2 = DbsLumiSection (LumiSectionNumber=lumiNumber2,
-			StartEventNumber=100,
-			EndEventNumber=200,
-			RunNumber=runNumber1)
-apiObj.run(lumi2, excep = False)
-
-lumi = DbsLumiSection (startEventNumber=100)
-apiObj.run(lumi, excep = True)
-
-lumi = DbsLumiSection (startEventNumber='10 0')
-apiObj.run(lumi, excep = True)
-
-lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
-			StartEventNumber=100,
-			EndEventNumber=200,
-			LumiStartTime=2233,
-			RunNumber=runNumber1,
-			)
-#apiObj.run(lumi, excep = True)
-
-
-lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
-			StartEventNumber=100,
-			EndEventNumber=200,
-			LumiStartTime=1234,
-			RunNumber=runNumber1,
-			)
-#apiObj.run(lumi, excep = True)
-
-lumi = DbsLumiSection (LumiSectionNumber=lumiNumber3,
-			StartEventNumber=100,
-			EndEventNumber=200,
-			LumiStartTime=1234,
-			RunNumber=runNumber1,
-			)
-#apiObj.run(lumi, excep = True)
-
-f.write("\n***********************insertLumiSection API tests***************************")
-
 apiObj = DbsUnitTestApi(api.insertFiles, f)
 apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************insertFiles API tests***************************")
@@ -809,7 +837,6 @@ f.write("\n\n***********************createAnalysisDataset API tests*************
 
 
 ads = DbsAnalysisDataset(
-                            Name='TestAnalysisDataset005' + mytime,
                             Annotation='testdataset' +mytime,
                             Type='TEST',
                             Status='NEW',
@@ -819,7 +846,7 @@ ads = DbsAnalysisDataset(
 apiObj.run(ads, adef['Name'] , excep = False)
 apiObj.run(ads, adef['Name'] , excep = False)
 
-ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0056' + mytime,
+ads1 = DbsAnalysisDataset(
                             Annotation='testdataset' +mytime,
                             PhysicsGroup='BPositive')
 #apiObj.run(ads1, adef['Name'] , excep = False)
@@ -830,7 +857,7 @@ ads1 = DbsAnalysisDataset(Name='TestAnalysisDaaaataset0056' + mytime,
 
 ads1 = DbsAnalysisDataset(Name='TestAnalysiqqqqsDataset0056' + mytime,
                             Annotation='testdataset' +mytime,)
-apiObj.run(ads1, adef['Name'] , excep = True)
+#apiObj.run(ads1, adef['Name'] , excep = True)
 
 ads1 = DbsAnalysisDataset(Name='TestAnalysisDataset0  056' + mytime,
                             Annotation='testdataset' +mytime,

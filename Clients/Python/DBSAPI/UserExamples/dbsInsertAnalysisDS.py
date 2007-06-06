@@ -41,7 +41,7 @@ adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
 """
 
 analysis=DbsAnalysisDataset(
-                            Name='TestAnalysisDataset002',
+                            #Name='TestAnalysisDataset002',
                             Annotation='testdataset',
                             Type='TEST',
                             Status='NEW',
@@ -51,7 +51,7 @@ analysis=DbsAnalysisDataset(
 
 try:
     #api.insertFiles (proc, [myfile1], block)
-    api.createAnalysisDataset(analysis, "TestAnalysisDSDef_002")
+    api.createAnalysisDataset(analysis, "TestAnalysisDSDef_001")
     print "DONE", analysis
 
 except DbsApiException, ex:

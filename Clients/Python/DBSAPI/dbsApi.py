@@ -1955,6 +1955,57 @@ class DbsApi(DbsConfig):
     logging.log(DBSDEBUG, data)
 
   # ------------------------------------------------------------
+  def updateLumiSection(self, lumi):
+	  
+    """
+    Updates the lumi section in the DBS databse. 
+    
+    param: 
+	lumi : The lumi section passed as an DbsLumiSection obejct. The following fields 
+	       are mandatory and should be present in the lumi section object : 
+               lumi_section_number, run_number
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         lumi = DbsLumiSection (
+                LumiSectionNumber=99,
+                StartEventNumber=100,
+                EndEventNumber=200,
+                LumiStartTime=1234,
+                LumiEndTime='neverending',
+                RunNumber=1,
+         )
+         api.updateLumiSection(lumi)
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+  
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<lumi_section "
+    xmlinput += " lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
+    xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
+    xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'"
+    xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
+    xmlinput += " lumi_start_time='"+str(lumi.get('LumiStartTime', ''))+"'"
+    xmlinput += " lumi_end_time='"+str(lumi.get('LumiEndTime', ''))+"'"
+    xmlinput += " />"
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+    if self.verbose():
+       print "updateLumiSection, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'updateLumiSection',
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.log(DBSDEBUG, data)
+
+
+  # ------------------------------------------------------------
 
   def insertFiles(self, dataset=None, files=[], block=None):
     """ 
@@ -2851,7 +2902,6 @@ class DbsApi(DbsConfig):
 
     examples:
         analysis = DbsAnalysisDataset(
-                Name='TestAnalysisDataset001',
                 Annotation='This is a test analysis dataset',
                 Type='KnowTheType',
                 Status='VALID',
@@ -2869,7 +2919,7 @@ class DbsApi(DbsConfig):
        return
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>" 
-    xmlinput += "<analysis_dataset name='"+ analysisdataset.get('Name', '') +"'"
+    xmlinput += "<analysis_dataset "
     xmlinput += " analysisds_def_name='"+ defName +"'"
     xmlinput += " annotation='"+ analysisdataset.get('Annotation', '') +"'"
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
@@ -2950,9 +3000,6 @@ class DbsApi(DbsConfig):
         if pset != None:
            xmlinput += " ps_hash='"+pset.get('Hash', "")+"'"
         xmlinput += "/>"
-
-    for tier in analysisDatasetDefinition.get('TierList',[]):
-        xmlinput += "<data_tier tier_name='"+tier+"'/>"
 
     for run in analysisDatasetDefinition.get('RunsList',[]):
         xmlinput += "<run run_number='"+str(self._get_run(run))+"'/>"

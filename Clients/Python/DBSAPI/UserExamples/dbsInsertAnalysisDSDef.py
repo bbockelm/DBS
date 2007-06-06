@@ -42,7 +42,7 @@ analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_001",
                                          #RunsList=[1, 2],
                                          #AnalysisDSList=[],
                                          #LumiRangeList=[('3333', '4444'), ('1', '2000')],
-                                         #RunRangeList=[('0', '9'), ('11', '21')],
+                                         RunRangeList=[('0', '9'), ('11', '21000')],
                                          #UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
                                          Description="This is a test Analysis Dataset",
                                          )

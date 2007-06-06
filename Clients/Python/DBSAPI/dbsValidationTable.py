@@ -77,7 +77,7 @@ ValidationTable = {
          "ProcessedDatasetPath" : { "Comment" : "Not a required var, user can provide if desired", "Validator" : isStringType },
          "FileList" : { "Comment" : "List of LFNs, User may need to provide PATH list of parents", "Validator" : isListType },
          "AlgoList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
-         "TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
+         #"TierList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "LumiList" : { "Comment" : "User may not need to set this variable always", "Validator" : isListType },
          "RunsList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
          "AnalysisDSList" : { "Comment" : "User may need to provide PATH list of parents", "Validator" : isListType },
