@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.9 $"
- $Id: DBManagement.java,v 1.9 2006/12/05 19:39:39 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBManagement.java,v 1.10 2006/12/14 20:36:05 sekhri Exp $"
 
  *
  */
@@ -94,6 +94,11 @@ public class DBManagement {
 	public static PreparedStatement getStatement(Connection conn, String query) throws SQLException {
 		return (new PreparedStatementWrapper(conn.prepareStatement(query), conn, query));
 	}
+
+	public static PreparedStatement getStatementScrollable(Connection conn, String query) throws SQLException {
+		return (new PreparedStatementWrapper(conn.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE), conn, query));
+	}
+
 
 	
 	/*

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.34 $"
- $Id: DBSApiAnaDSLogic.java,v 1.34 2007/06/06 15:23:45 sekhri Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.35 2007/06/06 18:32:14 sekhri Exp $"
  *
  */
 
@@ -84,45 +84,52 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
          * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
          */
 	 public void listAnalysisDataset(Connection conn, Writer out, String patternName, String path, String version) throws Exception {
- 		 PreparedStatement ps = null;
- 		 ResultSet rs =  null;
+		 PreparedStatement ps = null;
+		 ResultSet rs =  null;
 		 String procDSID = null;
+		 String prevADS = "";
 		 //String version = null;
-
+		 //
+		 boolean first = true; 
  		 if(!isNull(path)) 
  			 procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
  		 try {
  			 ps = DBSSql.listAnalysisDataset(conn, getPattern(patternName, "analysis_dataset_name_pattern"), version, procDSID);
  			 rs =  ps.executeQuery();
  			 while(rs.next()) {
- 				 out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
-							"' analysis_dataset_name='" + get(rs, "ANALYSIS_DATASET_NAME") +
-							"' path='" + get(rs, "ANALYSIS_DATASET_PATH") +
-							"' type='" + get(rs, "TYPE") +
-							"' status='" + get(rs, "STATUS") +
-							"' version ='" + get(rs, "VERSION") +
-							"' creation_date='" + getTime(rs, "CREATION_DATE") +
-							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-							"' created_by='" + get(rs, "CREATED_BY") +
-							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-							"'>\n"));
-				//Add the details of definition also for this dataset
-				out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
-							"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
-							"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
-							"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
-							"' runs='" + get(rs, "RUNS") +
-							"' runs_ranges='" + get(rs, "RUNS_RANGES") +
-							"' algorithms='" + get(rs, "ALGORITHMS") +
-							"' lfns='" + get(rs, "LFNS") +
-							"' path='" + get(rs, "ANALYSIS_DATASET_DEF_PATH") +
-							"' user_cut='" + get(rs, "USER_CUT") +
-							"' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
-							"' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
-							"' created_by='" + get(rs, "ADD_CREATED_BY") +
-							"' last_modified_by='" + get(rs, "ADD_LAST_MODIFIED_BY") +
-							"'/>\n"));
-				out.write("</analysis_dataset>\n");
+				 String adsName = get(rs, "ANALYSIS_DATASET_NAME");
+ 				 if( !prevADS.equals(adsName) || first) {
+       					out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
+								"' analysis_dataset_name='" + adsName +
+								"' path='" + get(rs, "ANALYSIS_DATASET_PATH") +
+								"' type='" + get(rs, "TYPE") +
+								"' status='" + get(rs, "STATUS") +
+								"' version ='" + get(rs, "VERSION") +
+								"' creation_date='" + getTime(rs, "CREATION_DATE") +
+								"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+								"' created_by='" + get(rs, "CREATED_BY") +
+								"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+								"'>\n"));
+					//Add the details of definition also for this dataset
+					out.write(((String) "<analysis_dataset_definition id='" +  get(rs, "ADDID") +
+								"' analysis_dataset_definition_name='" + get(rs, "ANALYSIS_DATASET_DEF_NAME") +
+								"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
+								"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
+								"' runs='" + get(rs, "RUNS") +
+								"' runs_ranges='" + get(rs, "RUNS_RANGES") +
+								"' algorithms='" + get(rs, "ALGORITHMS") +
+								"' lfns='" + get(rs, "LFNS") +
+								"' path='" + get(rs, "ANALYSIS_DATASET_DEF_PATH") +
+								"' user_cut='" + get(rs, "USER_CUT") +
+								"' creation_date='" + getTime(rs, "ADD_CREATION_DATE") +
+								"' last_modification_date='" + get(rs, "ADD_LAST_MODIFICATION_DATE") +
+								"' created_by='" + get(rs, "ADD_CREATED_BY") +
+								"' last_modified_by='" + get(rs, "ADD_LAST_MODIFIED_BY") +
+								"'/>\n"));
+					out.write("</analysis_dataset>\n");
+					first = false;
+				 }
+ 				 prevADS = adsName;
 			}
 		} finally {
 			if (rs != null) rs.close();
@@ -291,10 +298,12 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				if(isNull(pathFromDef) && !isNull(pathFromDS)) 	path = pathFromDS;
 
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
+				System.out.println("procDSID " + procDSID);
 
 				lumiNumberList = get(rs, "LUMI_SECTIONS");
 				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
 				runNumberList = get(rs, "RUNS");
+				String abc = get(rs, "RUNS_RANGES");
 				runRangeList = parseRangeList(get(rs, "RUNS_RANGES"));
 				algoList = get(rs, "ALGORITHMS");
 				userCut = get(rs, "USER_CUT");
@@ -386,18 +395,16 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 					if (numberOfRowsExisting == DBSUtil.getNumberOfRows(rs)) { 
 						for (int j = 0 ; j!= numberOfRowsExisting ; ++j) {
+							rs1.next();
+							rs.next();
 							if(!(get(rs1, "LUMIID").equals(get(rs, "LUMIID"))) ||
 									!(get(rs1, "FILEID").equals(get(rs, "FILEID")))) {
 								insert = true;
 								break;
 							}
-							rs1.next();
-							rs.next();
 						}
 						
 					} else {
-
-						System.out.println("line 3");
 						insert = true;
 					}
 					
@@ -437,19 +444,17 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 					if (ps1 != null) ps1.close();
 	    			}
 
-		    		//if(isNull(aDSID)) aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, true);
 		    		aDSID = getADSID(conn, analysisDatasetName, true);
-				//This is important beacuse the resultset is already on the first element
-				for (int j = 0 ; j!= DBSUtil.getNumberOfRows(rs) ; ++j) {
-					//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+				rs.beforeFirst();
+				while(rs.next()){
+					System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));					
 					insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
 						aDSID,
 						get(rs, "LUMIID"),
 						get(rs, "FILEID"),
 						cbUserID, lmbUserID, creationDate);
-					rs.next();
 				}
-
+	
 			} else 	writeWarning(out, "Already Exists", "1020", "AnalysisDataset " + 
 					analysisDatasetName + " with same entries already exists");
 
@@ -492,8 +497,8 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
     		PreparedStatement ps = null;
     		ResultSet rs = null;
     		try {
-			ps = DBSSql.listAnalysisDataset(conn, analysisDatasetName, "", "");
-			//ps =  DBSSql.getADSVersion(conn, analysisDatasetName);
+			//ps = DBSSql.listAnalysisDataset(conn, analysisDatasetName, "", "");
+			ps =  DBSSql.getADSVersion(conn, analysisDatasetName);
 			rs =  ps.executeQuery();
 			if(!rs.next()) {
 	    			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);

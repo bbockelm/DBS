@@ -264,7 +264,7 @@ deleteSEFromBlock () {
 insertPrimaryDataset () {
 	xmlString="<?xml version='1.0' standalone='yes'?>
 			<dbs>
-				<primary_dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='COSMIC' created_by='Let_me_try_this' creation_date='1066729598999'>
+				<primary_dataset annotation='aaaa$rand' primary_name='$primary_name' start_date='NOV_$rand' end_date='DEC_$rand' trigger_path_description='anyTD_$rand' mc_channel_description='MCDesc_$rand' mc_production='MCProd_$rand' mc_decay_chain='DC_$rand' other_description='OD_$rand' type='cosmic' created_by='Let_me_try_this' creation_date='1066729598999'>
 				</primary_dataset>
 			</dbs>"
 	message="Executing insertPrimaryDataset API..."

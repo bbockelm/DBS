@@ -1,6 +1,6 @@
 /**
- $Revision: 1.36 $"
- $Id: DBSApiProcDSLogic.java,v 1.36 2007/04/03 22:02:01 sekhri Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSApiProcDSLogic.java,v 1.37 2007/04/05 21:36:30 afaq Exp $"
  *
  */
 
@@ -481,6 +481,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertRunInPD(Connection conn, Writer out, Hashtable table, String runNumber, Hashtable dbsUser) throws Exception {
+		checkTime(runNumber, "run_number");
 		insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
 				getProcessedDSID(conn, get(table, "path"), true), 
 				getID(conn, "Runs", "RunNumber", runNumber , true), 	

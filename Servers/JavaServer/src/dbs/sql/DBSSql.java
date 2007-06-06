@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.98 $"
- $Id: DBSSql.java,v 1.98 2007/06/06 15:23:45 sekhri Exp $"
+ $Revision: 1.99 $"
+ $Id: DBSSql.java,v 1.99 2007/06/06 18:32:16 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -400,7 +400,8 @@ public class DBSSql {
                         "FROM AnalysisDSFileLumi adsfl \n" +
 			"WHERE AnalysisDataset = ? \n\t" +
 			"ORDER BY FILEID,LUMIID";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		//PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		PreparedStatement ps = DBManagement.getStatementScrollable(conn, sql);
 		int columnIndx = 1;
                 ps.setString(columnIndx++, adsID);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -412,7 +413,7 @@ public class DBSSql {
                 String sql = "SELECT DISTINCT ads.Version as VERSION \n " +
                         "FROM AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
-                        " order by Version desc limit 1 \n";
+                        " order by Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -420,10 +421,10 @@ public class DBSSql {
         }
 
         public static PreparedStatement getADSID(Connection conn, String adsName) throws SQLException {
-                String sql = "SELECT DISTINCT ads.ID as ID \n " +
+                String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
                         "FROM AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
-			" order by Version desc limit 1 \n";
+			" order by Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -515,7 +516,8 @@ public class DBSSql {
 		sql += "ORDER BY FILEID,LUMIID";
 		//System.out.println("The SQL query is " + sql);
 
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		//PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		PreparedStatement ps = DBManagement.getStatementScrollable(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
 		for(int i = 0 ; i != algoIDList.size(); ++i) ps.setString(columnIndx++, (String)algoIDList.get(i));
@@ -1756,6 +1758,13 @@ public class DBSSql {
 
       public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String version, String procDSID) throws SQLException {
                 //String sql = "SELECT DISTINCT ads.ID as ID, \n " +
+		/*If version is not provided must pick LATEST Version only		
+		if ( DBSUtil.isNull(version)){	
+			sql += "MAX(ads.Version) as VERSION, \n";
+		} else {
+			sql += "ads.Version as VERSION, \n";
+		}*/
+
                 String sql = "SELECT ads.ID as ID, \n " +
 			"ads.Name as ANALYSIS_DATASET_NAME, \n " +
 			"ads.Path as ANALYSIS_DATASET_PATH, \n " +
@@ -1766,15 +1775,10 @@ public class DBSSql {
 			"ads.Description as DESCRIPTION, \n" +
                         "ads.CreationDate as CREATION_DATE, \n" +
                         "ads.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"ads.Version as VERSION, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
-                        "perlm.DistinguishedName as LAST_MODIFIED_BY, \n";
-	        //If version is not provided must pick LATEST Version only		
-		if ( DBSUtil.isNull(version)){	
-			sql += "MAX(ads.Version) as VERSION, \n";
-		} else {
-			sql += "ads.Version as VERSION, \n";
-		}
-		sql += "adsdef.ID as ADDID, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+			"adsdef.ID as ADDID, \n" +
                         "adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
                         "adsdef.LumiSections as LUMI_SECTIONS, \n" +
                         "adsdef.LumiSectionRanges as LUMI_SECTION_RANGES, \n" +
@@ -1785,38 +1789,34 @@ public class DBSSql {
                         "adsdef.Path as ANALYSIS_DATASET_DEF_PATH, \n" +
                         "adsdef.UserCut as USER_CUT, \n" +
                         "adsdef.Description as ADD_DESCRIPTION, \n" +
-
                         "adsdef.CreationDate as ADD_CREATION_DATE, \n" +
                         "adsdef.LastModificationDate as ADD_LAST_MODIFICATION_DATE, \n" +
                         "adsdefpercb.DistinguishedName as ADD_CREATED_BY, \n" +
                         "adsdefperlm.DistinguishedName as ADD_LAST_MODIFIED_BY \n" +
-
                         "FROM AnalysisDataset ads \n" +
-
                         "JOIN AnalysisDSDef adsdef \n"+
                                 "ON adsdef.ID = ads.Definition \n"+
-
                         "LEFT OUTER JOIN Person adsdefpercb \n" +
                                 "ON adsdefpercb.id = adsdef.CreatedBy \n" +
                         "LEFT OUTER JOIN Person adsdefperlm \n" +
                                 "ON adsdefperlm.id = adsdef.LastModifiedBy \n" +
-
                         "LEFT OUTER JOIN Person percb \n" +
                                 "ON percb.id = ads.CreatedBy \n" +
                         "LEFT OUTER JOIN Person perlm \n" +
                                 "ON perlm.id = ads.LastModifiedBy \n" +
                         "WHERE ads.Name like ? \n";
-			if (! DBSUtil.isNull(procDSID)) {
-				sql += "AND ProcessedDS = ? \n";
-			}
-	        //If version is not provided must pick LATEST Version only		
-		if ( DBSUtil.isNull(version)){
+			
+		if (! DBSUtil.isNull(procDSID)) sql += "AND ProcessedDS = ? \n";
+		//If version is not provided must pick LATEST Version only		
+		if (! DBSUtil.isNull(version))	sql += "AND ads.Version = ? \n";
+
+		/*if ( DBSUtil.isNull(version)){
                 	sql += " GROUP BY ads.NAME ";
 		} else {
 			sql += "AND ads.Version = ? \n";
-		}
+		}*/
 
-                sql += "ORDER BY ads.NAME DESC";
+                sql += "ORDER BY ads.NAME, ads.Version DESC";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
                 ps.setString(columnIndx++, patternName);

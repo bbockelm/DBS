@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.7 $"
- $Id: DBSUtil.java,v 1.7 2006/12/14 20:36:07 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSUtil.java,v 1.8 2007/06/06 15:23:46 sekhri Exp $"
  *
 */
 
@@ -114,9 +114,15 @@ public class DBSUtil {
         }
 
 	public static int getNumberOfRows(ResultSet rs) throws SQLException {
+		/*int count = 0;
+		while(rs.next()) {
+			++count;
+		}
+		return count;*/
 		rs.last();
 		int numberOfRows = rs.getRow();
-		rs.first();
+		rs.beforeFirst();
+		//rs.first();
 		return numberOfRows;
 	}
 
