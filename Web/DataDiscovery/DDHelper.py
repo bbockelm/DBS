@@ -1688,19 +1688,21 @@ MCDescription:      %s
       con = self.connectToDB()
       try:
           tls   = self.alias('LumiSection','tls')
-          tfr  = self.alias('FileRunLumi','tfr')
-          tf   = self.alias('Files','tf')
+          tfr   = self.alias('FileRunLumi','tfr')
+          trun  = self.alias('Runs','trun')
+          tf    = self.alias('Files','tf')
           tp1   = self.alias('Person','tp1')
           tp2   = self.alias('Person','tp2')
 
           if userMode!='user':
-             oSel = [self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tp1,'DistinguishedName'),self.col(tls,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tls,'LastModificationDate')]
+             oSel = [self.col(tls,'LumiSectionNumber'),self.col(trun,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime'),self.col(tp1,'DistinguishedName'),self.col(tls,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tls,'LastModificationDate')]
           else:
-             oSel = [self.col(tls,'LumiSectionNumber'),self.col(tls,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime')]
+             oSel = [self.col(tls,'LumiSectionNumber'),self.col(trun,'RunNumber'),self.col(tls,'StartEventNumber'),self.col(tls,'EndEventNumber'),self.col(tls,'LumiStartTime'),self.col(tls,'LumiEndTime')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
                      tf.outerjoin(tfr,self.col(tfr,'Fileid')==self.col(tf,'ID'))
                        .outerjoin(tls,onclause=self.col(tfr,'Lumi')==self.col(tls,'ID'))
+                       .outerjoin(trun,onclause=self.col(tls,'RunNumber')==self.col(trun,'ID'))
                        .outerjoin(tp1,onclause=self.col(tls,'CreatedBy')==self.col(tp1,'ID'))
                        .outerjoin(tp2,onclause=self.col(tls,'LastModifiedBy')==self.col(tp2,'ID'))
                      ],distinct=True,order_by=oSel
