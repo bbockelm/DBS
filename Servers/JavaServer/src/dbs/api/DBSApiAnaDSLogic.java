@@ -1,6 +1,6 @@
 /**
- $Revision: 1.32 $"
- $Id: DBSApiAnaDSLogic.java,v 1.32 2007/05/24 21:59:26 sekhri Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.33 2007/06/01 22:20:03 afaq Exp $"
  *
  */
 
@@ -339,39 +339,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 		//We can fecth and store what will go in this analysis dataset, if anything will.
 		Vector tobeFileLumis = new Vector();
-
-                //NOW Lets get the Dataset TO BE's LUMIIDs and FILEIDs
-                    ps = null;
-                    rs = null;
-                    try {
-                        ps = DBSSql.listAnalysisDSFileLumi(conn,
-                                                           procDSID,
-                                                           algoIDList,
-                                                           fileList,
-                                                           lumiIDList,
-                                                           runIDList,
-                                                           lumiRangeList,
-                                                           runRangeList,
-                                                           userCut,
-                                                           logicalOp,
-                                                           cbUserID, lmbUserID, creationDate);
-                        rs =  ps.executeQuery();
-
-                        //For every lumiid,fileid pair insert a row in AnalysisDSFuleLumi table
-                        while(rs.next()) {
-		            HashMap tmp = new HashMap();
-			    tmp.put(get(rs, "LUMIID"), get(rs, "FILEID"));	    
-                            tobeFileLumis.add(tmp);
-			    System.out.println("LUMIID: " + get(rs, "LUMIID") + ", FILEID: " + get(rs, "FILEID") );	
-                        }
-
-                    } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                    }
-
-		//Insert a row in AnalysisDataset Table
-		//String analysisDatasetName = get(table, "name", true); 
 		String analysisDatasetName = path + "/" + analysisDatasetDefinitionName; 
 		String status = get(table, "status", false).toUpperCase();
 		String type = get(table, "type", false).toUpperCase();
@@ -382,112 +349,112 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		
 		Vector existingFileLumis = new Vector();
 		long adsVer = 0;
-		boolean notInsert = false;
+		boolean insert = false;
 
 		String aDSID = "";
 
 		//No prior version of this ADS exists
-		if( isNull((aDSID = getADSID(conn, analysisDatasetName, false)))) {
-		    System.out.println("No prior version of this ADS exists");
-                    adsVer = 0;
 
-                    //NOW Lets get the Dataset TO BE's LUMIIDs and FILEIDs
-			//DONE Above
-		}
-		//If ADS already exists, makes the versioning comes into play
-		else {
-		    //Write waring message that analysis dataset exists already
-		    //Check if there is anything new, only then Bump Up the ADS Version and Make a New Entry 
-		    System.out.println("Analysis Dataset Already Exists, Checking if Something is New........");
-		    //List CURRENT ADS Version's (aDSID)  LUMIIDs and FILEIDs
-		    System.out.println("List CURRENT ADS Version's (aDSID)  LUMIIDs and FILEIDs..............");
-		    ps = null;
-		    rs = null;
-		    try {
-			ps = DBSSql.listExADSFileLumiIDs(conn, aDSID);
-			rs =  ps.executeQuery();
-			while(rs.next()) {
-			    HashMap tmp = new HashMap();
-                            tmp.put(get(rs, "LUMIID"), get(rs, "FILEID"));
-                            existingFileLumis.add(tmp);
+                //NOW Lets get the Dataset TO BE's LUMIIDs and FILEIDs
+		ps = null;
+		rs = null;
+		try {
+			ps = DBSSql.listAnalysisDSFileLumi(conn,
+					procDSID,
+					algoIDList,
+					fileList,
+					lumiIDList,
+					runIDList,
+					lumiRangeList,
+					runRangeList,
+					userCut,
+					logicalOp,
+					cbUserID, lmbUserID, creationDate);
+                        rs =  ps.executeQuery();
+
+			if( isNull((aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, false))) ) {
+				adsVer = 0;
+				insert = true;
+			} else {
+				PreparedStatement ps1 = null;
+				ResultSet rs1 =  null;
+	    			try {
+					ps1 = DBSSql.listExADSFileLumiIDs(conn, aDSID);
+					rs1 =  ps1.executeQuery();
+					int numberOfRowsExisting = DBSUtil.getNumberOfRows(rs1);
+
+					if (numberOfRowsExisting == DBSUtil.getNumberOfRows(rs)) { 
+						for (int j = 0 ; j!= numberOfRowsExisting - 1 ; ++j) {
+							rs1.next();
+							rs.next();
+							if(!(get(rs1, "LUMIID").equals(get(rs, "LUMIID"))) ||
+									!(get(rs1, "FILEID").equals(get(rs, "FILEID")))) {
+								insert = true;
+								
+								break;
+							}
+						}
+						
+					} else insert = true;
+					
+	    			} finally {
+					if (rs1 != null) rs1.close();
+					if (ps1 != null) ps1.close();
+	    			}
+				if(insert) {
+					adsVer = Long.parseLong(getADSVersion(conn, analysisDatasetName, false));
+					++adsVer;
+					writeWarning(out, "Version Already Exists", "10299", 
+							"AnalysisDataset " + analysisDatasetName + 
+							" Already Exists with Version: "+ (adsVer-1) +
+							" Creating a new one with Version: "+adsVer);
+
+				}
 			}
-		    } finally {
-			if (rs != null) rs.close();
-			if (ps != null) ps.close();
-		    }
-
-		    System.out.println("NOW Lets get the Dataset TO BE's LUMIIDs and FILEIDs................");
-		    //NOW Lets get the Dataset TO BE's LUMIIDs and FILEIDs
-		      //DONE Above
- 
-		    //Let us now compare the two existingFileLumis and tobeFileLumis and see if there is any difference
-		    System.out.println("Let us now compare the two existingFileLumis and tobeFileLumis and see if there is any difference");
-		    // MIGHT HAVE TO USE A DIFFERENT TESTING MECHANISM HERE
-		    if (existingFileLumis.equals(tobeFileLumis)) {
-			writeWarning(out, "Already Exists", "1020",
-				     "AnalysisDataset " + analysisDatasetName + " with same entries already exists");
-			//No need to do anything, raise warning and go back
-			notInsert = true;
-		    }
-		    else {
-			//bump-up version
-		        System.out.println("create the analysis dataset with new version........");
-			adsVer = Long.parseLong(getADSVersion(conn, analysisDatasetName, false));
-			++adsVer;
-			//also reset aDSID, so code below gets a new ADS ID after a fresh insert
-			aDSID = null;
-			writeWarning(out, "Version Already Exists", "10299",
-                                 "AnalysisDataset " + analysisDatasetName + " Already Exists with Version: "+(adsVer-1)+" Creating a new one with Version: "+adsVer);
-		    }	
-		}
-		
-		if (! notInsert ) {
-		    //create the analysis dataset with new version
-		    System.out.println("create the analysis dataset ........");
-		    ps = null;
-		    try {
-			ps = DBSSql.insertAnalysisDataset(conn,
-							  analysisDatasetName,
-							  path,
-							  procDSID,
-							  anaDSDefID,
-							  String.valueOf(adsVer),
-							  getID(conn, "AnalysisDSType", "Type", type, true),
-							  getID(conn, "AnalysisDSStatus", "Status", status, true),
-							  getID(conn, "PhysicsGroup", "PhysicsGroupName",
+			rs.first();
+			
+			if(insert) {
+				//System.out.println("create the analysis dataset ........");
+	    			PreparedStatement ps1 = null;
+	    			try {
+					ps1 = DBSSql.insertAnalysisDataset(conn,
+							analysisDatasetName,
+							path,
+							procDSID,
+							anaDSDefID,
+							String.valueOf(adsVer),
+							getID(conn, "AnalysisDSType", "Type", type, true),
+							getID(conn, "AnalysisDSStatus", "Status", status, true),
+							getID(conn, "PhysicsGroup", "PhysicsGroupName",
 								get(table, "physics_group_name", true),
 								true),
-							  desc,
-							  cbUserID, lmbUserID, creationDate);
-			ps.execute();
-		    } finally {
-			if (ps != null) ps.close();
+							desc,
+							cbUserID, lmbUserID, creationDate);
+					ps1.execute();
+	    			} finally {		
+					if (ps1 != null) ps1.close();
+	    			}
+
+		    		if(isNull(aDSID)) aDSID = getID(conn, "AnalysisDataset", "Name", analysisDatasetName, true);
+				while(rs.next()) {
+				//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));
+					insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
+						aDSID,
+						get(rs, "LUMIID"),
+						get(rs, "FILEID"),
+						cbUserID, lmbUserID, creationDate);
+				} 
+
+			} else 	writeWarning(out, "Already Exists", "1020", "AnalysisDataset " + 
+					analysisDatasetName + " with same entries already exists");
+
+       		    } finally {
+    			    if (rs != null) rs.close();
+    			    if (ps != null) ps.close();
 		    }
-		
-		    //Fetch the analysis dataset id if not null, that just got inserted
-		    if(isNull(aDSID)) aDSID = getADSID(conn, analysisDatasetName, true);
-
-
-		    for (int j=0; j < tobeFileLumis.size(); ++j) {
-                    	System.out.println("tobeFileLumis.j "+j);
-                    	HashMap hm = (HashMap)tobeFileLumis.elementAt(j);
-                    	Set set = hm.entrySet();
-                    	Iterator i = set.iterator();
-
-                    	while(i.hasNext()){
-                        	Map.Entry me = (Map.Entry)i.next();
-                        	System.out.println(me.getKey() + " : " + me.getValue() );
-				insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
-                              		aDSID,
-					(String)me.getKey(),
-					(String)me.getValue(),
-					cbUserID, lmbUserID, creationDate);
-                    	}
-                    }
-		}
 	 }
 
-
+/*
 	public String getADSID(Connection conn, String analysisDatasetName, boolean excep) throws Exception {
 
 	    if(isNull(analysisDatasetName)) {
@@ -513,32 +480,30 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 	    
 	    return  id;
 	}
-
+*/
         public String getADSVersion(Connection conn, String analysisDatasetName, boolean excep) throws Exception {
-
-            if(isNull(analysisDatasetName)) {
-                if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
-                return null;
-            }
-
-            String ver = "";
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                ps =  DBSSql.getADSVersion(conn, analysisDatasetName);
-                rs =  ps.executeQuery();
-                if(!rs.next()) {
-                    if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
-                    else return null;
-                }
-                ver = get(rs, "VERSION");
-            } finally {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-            }
-
-            return  ver;
-        }
+      		if(isNull(analysisDatasetName)) {
+			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
+			return null;
+    		}
+    		String ver = "";
+    		PreparedStatement ps = null;
+    		ResultSet rs = null;
+    		try {
+			ps = DBSSql.listAnalysisDataset(conn, analysisDatasetName, "", "");
+			//ps =  DBSSql.getADSVersion(conn, analysisDatasetName);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+	    			if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
+	    			else return null;
+			}
+			ver = get(rs, "VERSION");
+    		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+    		}
+    		return  ver;
+ 	}
 
  
  	 /**

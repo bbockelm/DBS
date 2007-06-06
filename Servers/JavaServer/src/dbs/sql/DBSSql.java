@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.96 $"
- $Id: DBSSql.java,v 1.96 2007/06/01 22:20:03 afaq Exp $"
+ $Revision: 1.97 $"
+ $Id: DBSSql.java,v 1.97 2007/06/02 05:04:48 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -157,43 +157,30 @@ public class DBSSql {
         }
 
 
-        public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String endOfRun, String lmbUserID) throws SQLException {
+        public static PreparedStatement updateRun(Connection conn, String runNumber, String nOfEvents, String nOfLumiSections, String totalLumi, String startOfRun, String endOfRun, String lmbUserID) throws SQLException {
+		String sql = "UPDATE Runs SET \n";
+		if ( !DBSUtil.isNull(nOfEvents) ) sql += "NumberOfEvents = ? ,";
+		if ( !DBSUtil.isNull(nOfLumiSections) ) sql += "NumberOfLumiSections = ? ,";
+		if ( !DBSUtil.isNull(totalLumi) ) sql += "TotalLuminosity = ? ,";
+		if ( !DBSUtil.isNull(startOfRun) ) sql += "StartOfRun = ? ,";
+		if ( !DBSUtil.isNull(endOfRun) ) sql += "EndOfRun = ? ,";
+		
+		sql += "LastModifiedBy = ? \n" +
+			"WHERE RunNumber = ?";
 
-               String sql = "UPDATE Runs SET \n";
-                        if ( !DBSUtil.isNull(nOfEvents) ) {
-                            sql += "NumberOfEvents = ? ,";
-                        }
-                        if ( !DBSUtil.isNull(nOfLumiSections) ) {
-                             sql += "NumberOfLumiSections = ? ,";
-                        }
-                        if ( !DBSUtil.isNull(totalLumi) ) {
-                             sql += "TotalLuminosity = ? ,";
-                        }
-                        if ( !DBSUtil.isNull(endOfRun) ) {
-                             sql += "EndOfRun = ? ,";
-                        }
-                        sql += "LastModifiedBy = ? \n";
-                        sql += "WHERE RunNumber = ?";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		if ( !DBSUtil.isNull(nOfEvents) ) ps.setString(columnIndx++, nOfEvents);
+		if ( !DBSUtil.isNull(nOfLumiSections) ) ps.setString(columnIndx++, nOfLumiSections);
+		if ( !DBSUtil.isNull(totalLumi) ) ps.setString(columnIndx++, totalLumi);
+		if ( !DBSUtil.isNull(startOfRun) ) ps.setString(columnIndx++, startOfRun);
+		if ( !DBSUtil.isNull(endOfRun) ) ps.setString(columnIndx++, endOfRun);
+		
+		ps.setString(columnIndx++, lmbUserID);
+		ps.setString(columnIndx++, runNumber);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                int columnIndx = 1;
-                if ( !DBSUtil.isNull(nOfEvents) ) {
-                        ps.setString(columnIndx++, nOfEvents);
-                }
-                if ( !DBSUtil.isNull(nOfLumiSections) ) {
-                        ps.setString(columnIndx++, nOfLumiSections);
-                }
-                if ( !DBSUtil.isNull(totalLumi) ) {
-                        ps.setString(columnIndx++, totalLumi);
-                }
-                if ( !DBSUtil.isNull(endOfRun) ) {
-                        ps.setString(columnIndx++, endOfRun);
-                }
-                ps.setString(columnIndx++, lmbUserID);
-                ps.setString(columnIndx++, runNumber);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-
-                return ps;
+		return ps;
         }
 
 
@@ -386,14 +373,16 @@ public class DBSSql {
                         "adsfl.Lumi as LUMIID, \n" +
                         "adsfl.Fileid as FILEID \n" +
                         "FROM AnalysisDSFileLumi adsfl \n" +
-			"WHERE AnalysisDataset = ? \n\t" ;
+			"WHERE AnalysisDataset = ? \n\t" +
+			"ORDER BY FILEID,LUMIID";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		int columnIndx = 1;
                 ps.setString(columnIndx++, adsID);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
-
+	/*
+          
         public static PreparedStatement getADSVersion(Connection conn, String adsName) throws SQLException {
                 String sql = "SELECT DISTINCT ads.Version as VERSION \n " +
                         "FROM AnalysisDataset ads \n " +
@@ -416,7 +405,7 @@ public class DBSSql {
                 //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
                 return ps;
         }
-
+*/
 	public static PreparedStatement listAnalysisDSFileLumi(Connection conn,  String procDSID, 
 			Vector algoIDList, Vector fileList, 
                         Vector lumiIDList,Vector runIDList, 

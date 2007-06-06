@@ -1,17 +1,19 @@
 /**
  * @author sekhri
- $Revision: 1.6 $"
- $Id: DBSUtil.java,v 1.6 2006/12/05 22:44:31 sekhri Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSUtil.java,v 1.7 2006/12/14 20:36:07 sekhri Exp $"
  *
 */
 
 package dbs.util;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import dbs.DBSConstants;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.io.Writer;
+import dbs.DBSConstants;
 
 /**
 * A util class that has a few utility menthods. All of the methods are static methods and do not need instance of this class to be called.
@@ -111,5 +113,11 @@ public class DBSUtil {
                 }
         }
 
+	public static int getNumberOfRows(ResultSet rs) throws SQLException {
+		rs.last();
+		int numberOfRows = rs.getRow();
+		rs.first();
+		return numberOfRows;
+	}
 
 }
