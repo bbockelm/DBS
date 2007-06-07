@@ -3735,7 +3735,7 @@ class DDServer(DDLogger,Controller):
             if self.verbose:
                self.writeLog(getExcept())
             printExcept()
-            return """<?xml version="1.0" encoding="utf-8"?><ddresponse>%s</ddresponse>"""%getExceptionInHTML()
+            return """<?xml version="1.0" encoding="utf-8"?><ddresponse><exception>%s</exception></ddresponse>"""%getExceptionInHTML()
         if self.verbose==2:
            self.writeLog("Selection list:")
            self.writeLog(str(selList))
