@@ -3735,6 +3735,7 @@ class DDServer(DDLogger,Controller):
             if self.verbose:
                self.writeLog(getExcept())
             printExcept()
+            return """<?xml version="1.0" encoding="utf-8"?><ddresponse>%s</ddresponse>"""%getExceptionInHTML()
         if self.verbose==2:
            self.writeLog("Selection list:")
            self.writeLog(str(selList))
@@ -3758,6 +3759,8 @@ class DDServer(DDLogger,Controller):
         if conDict.has_key('offset'): offset = conDict['offset']
         whereClause=' AND '.join(["("+x+")" for x in whereList])
         query,oList = self.helper.queryMaker(selList,whereClause,limit,offset)
+        if self.verbose:
+           self.writeLog(query)
         if not xmlOutput:
            return query,oList
         if self.verbose==2:
