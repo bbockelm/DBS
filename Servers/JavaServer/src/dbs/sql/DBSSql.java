@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.99 $"
- $Id: DBSSql.java,v 1.99 2007/06/06 18:32:16 sekhri Exp $"
+ $Revision: 1.100 $"
+ $Id: DBSSql.java,v 1.100 2007/06/06 22:03:33 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -441,18 +441,21 @@ public class DBSSql {
 		String sql = "SELECT DISTINCT \n" + 
 			"f.ID as FILEID, \n" +
 			"ls.ID as LUMIID \n" +
-                        "FROM FileRunLumi fl \n" +
+                        "FROM Files f \n" +
+                        "LEFT OUTER JOIN FileRunLumi fl \n"+
+				"ON fl.Fileid = f.ID \n" +
                         "LEFT OUTER JOIN LumiSection ls \n"+
-				"ON fl.Lumi = ls.ID \n" +
-			"JOIN Files f \n\t" +
-				"ON f.ID = fl.Fileid \n" +
-			"LEFT OUTER JOIN FileTier fdt \n\t" +
-				"ON fdt.Fileid = f.ID \n" +
-			"LEFT OUTER JOIN FileAlgo fa \n\t" +
-				"ON fa.Fileid = f.ID \n" +
-			"LEFT OUTER JOIN Runs r \n\t" +
-				"ON r.ID = fl.Run \n" +
-			"WHERE f.Dataset = ? \n\t" ;
+				"ON fl.Lumi = ls.ID \n";
+		
+		if(algoIDList.size() > 0) 
+			sql += "LEFT OUTER JOIN FileAlgo fa \n\t" +
+			"ON fa.Fileid = f.ID \n";
+		
+		if((runIDList.size() > 0) || (runRangeList.size() > 0)) 
+			sql += "LEFT OUTER JOIN Runs r \n\t" +
+			"ON r.ID = fl.Run \n";
+
+		sql += "WHERE f.Dataset = ? \n\t" ;
 
 
 
