@@ -1,6 +1,6 @@
 /**
- $Revision: 1.101 $"
- $Id: DBSApiLogic.java,v 1.101 2007/06/06 15:23:45 sekhri Exp $"
+ $Revision: 1.102 $"
+ $Id: DBSApiLogic.java,v 1.102 2007/06/06 18:32:15 sekhri Exp $"
  *
  */
 
@@ -36,7 +36,7 @@ public class DBSApiLogic {
 	//A regular expression used to validate a word. This word will not contain any blank space or special characters.
 	private static String SAFE_WORD = "[-\\w_\\.%]+";
 	//A regular expression used to validate a sentence. This word will not contain any special characters but can contain blank spaces.
-	private static String SAFE_STR = "[-\\w_\\.% ]+";
+	private static String SAFE_STR = "[-\\w_\\.,% ]+";
 	//A regular expression used to validate a block name. This word will not contain any special characters or blank spaces but can contain slashes.
 	private static String SAFE_BLOCK = "[-\\w_\\.%#/]+";
 	private static String SAFE_BLOCK_LIST = "[-\\w_\\.%#/\\%]+";

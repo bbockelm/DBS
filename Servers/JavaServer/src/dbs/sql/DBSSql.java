@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.100 $"
- $Id: DBSSql.java,v 1.100 2007/06/06 22:03:33 sekhri Exp $"
+ $Revision: 1.101 $"
+ $Id: DBSSql.java,v 1.101 2007/06/07 15:38:50 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1781,6 +1781,7 @@ public class DBSSql {
 			"ads.Version as VERSION, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
 			"adsdef.ID as ADDID, \n" +
                         "adsdef.Name as ANALYSIS_DATASET_DEF_NAME, \n" +
                         "adsdef.LumiSections as LUMI_SECTIONS, \n" +
@@ -1807,6 +1808,8 @@ public class DBSSql {
                                 "ON percb.id = ads.CreatedBy \n" +
                         "LEFT OUTER JOIN Person perlm \n" +
                                 "ON perlm.id = ads.LastModifiedBy \n" +
+			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+                                "ON pg.id = ads.PhysicsGroup \n" +
                         "WHERE ads.Name like ? \n";
 			
 		if (! DBSUtil.isNull(procDSID)) sql += "AND ProcessedDS = ? \n";

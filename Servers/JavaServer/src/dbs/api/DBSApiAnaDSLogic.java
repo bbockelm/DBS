@@ -1,6 +1,6 @@
 /**
- $Revision: 1.35 $"
- $Id: DBSApiAnaDSLogic.java,v 1.35 2007/06/06 18:32:14 sekhri Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.36 2007/06/06 22:03:32 sekhri Exp $"
  *
  */
 
@@ -102,9 +102,11 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
        					out.write(((String) "<analysis_dataset id='" +  get(rs, "ID") +
 								"' analysis_dataset_name='" + adsName +
 								"' path='" + get(rs, "ANALYSIS_DATASET_PATH") +
+								"' description='" + get(rs, "DESCRIPTION") +
 								"' type='" + get(rs, "TYPE") +
 								"' status='" + get(rs, "STATUS") +
 								"' version ='" + get(rs, "VERSION") +
+								"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
 								"' creation_date='" + getTime(rs, "CREATION_DATE") +
 								"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 								"' created_by='" + get(rs, "CREATED_BY") +
@@ -116,6 +118,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 								"' lumi_sections='" + get(rs, "LUMI_SECTIONS") +
 								"' lumi_section_ranges='" + get(rs, "LUMI_SECTION_RANGES") +
 								"' runs='" + get(rs, "RUNS") +
+								"' description='" + get(rs, "ADD_DESCRIPTION") +
 								"' runs_ranges='" + get(rs, "RUNS_RANGES") +
 								"' algorithms='" + get(rs, "ALGORITHMS") +
 								"' lfns='" + get(rs, "LFNS") +
