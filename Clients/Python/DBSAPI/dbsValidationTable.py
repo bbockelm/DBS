@@ -21,6 +21,7 @@ ValidationTable = {
 "DbsAnalysisDataset" : {
          "Annotation" : { "Comment" : "A required variable", "Validator" : isStringType },
          "Name" : { "Comment" : "A required variable, UNIQUE", "Validator" : isStringType },
+         "Path" : { "Comment" : "Dataset Path, User may not need to set this variable always", "Validator" : isStringType },
          "Type" : { "Comment" : "A required variable", "Validator" : isStringType },
          "Status" : { "Comment" : "A required variable", "Validator" : isStringType },
          "Version" : { "Comment" : "A required variable", "Validator" : isStringType },

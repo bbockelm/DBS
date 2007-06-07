@@ -46,8 +46,14 @@ analdsdef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_001",
                                          #UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
                                          Description="This is a test Analysis Dataset",
                                          )
+
+"""
+analdsdef = DbsAnalysisDatasetDefinition(Name="ALLFILES", 
+					Description="Template ADS Def, when used to create a ADS, the ADS will result in having ALL Files in the Dataset at the point in time")
+
+"""
+
 try:
-    #api.insertFiles (proc, [myfile1], block)
     api.createAnalysisDatasetDefinition (analdsdef)
     print "Result: %s" % analdsdef
 

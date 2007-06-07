@@ -19,9 +19,10 @@ try:
   
   print "Analysis Daatset...."
   #for analysis in api.listAnalysisDataset("*t005", "/test_primary_001/TestProcessedDS001/SIM"):
-  #for analysis in api.listAnalysisDataset(version="2"):
+  #for analysis in api.listAnalysisDataset(version=1):
+  #for analysis in api.listAnalysisDataset(path="/RelVal131QCD_pt600_800/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO", version=0):
   for analysis in api.listAnalysisDataset():
-     #print "  %s" % analysis['Name']
+     print "  %s" % analysis
      print "  %s, %s" % (analysis['Name'], analysis['Version'])
   
 except DbsApiException, ex:

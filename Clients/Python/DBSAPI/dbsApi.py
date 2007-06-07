@@ -808,6 +808,24 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
+  def listDatasetFiles(self, datasetPath):
+   """
+	Checks to see if input datasetPath satisfies the PATH naming convention, otherwise
+	its is ASSUMED that provided datasetPath is an AnalysisDataset Name
+   """
+   inpath=datasetPath[1:]
+   if inpath.endswith('/'):
+      inpath=inpath[:-1]
+   pathl = inpath.split('/')
+
+   if len(pathl) == 3: # Most most probably this is Processed Dataset Path
+   	return self.listFiles(path=datasetPath)
+   else:
+	return self.listFiles(analysisDataset=datasetPath)
+	
+
+  # ------------------------------------------------------------
+
   def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
@@ -1342,7 +1360,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def listAnalysisDataset(self, pattern="*", path="", version=""):
+  def listAnalysisDataset(self, pattern="*", path="", version=None):
     """
     Retrieves the list of analysis dataset by matching against the given shell pattern for analysis 
     dataset name.
@@ -1370,11 +1388,17 @@ class DbsApi(DbsConfig):
     path = self._path(path)
 
     # Invoke Server.    
-    data = self._server._call ({ 'api' : 'listAnalysisDataset', 
+    if version not in (None, ''):
+    	data = self._server._call ({ 'api' : 'listAnalysisDataset', 
                                  'analysis_dataset_name_pattern' : pattern,
                                  'path' : path,
-                                 'version' : version  
+                                 'version' : str(version)  
 				}, 'GET')
+    else:
+	data = self._server._call ({ 'api' : 'listAnalysisDataset',
+                                 'analysis_dataset_name_pattern' : pattern,
+                                 'path' : path
+                                }, 'GET')
 
     logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
@@ -1384,13 +1408,13 @@ class DbsApi(DbsConfig):
         def startElement(self, name, attrs):
           if name == 'analysis_dataset':
 		self.curr_analysis = DbsAnalysisDataset (
-         		#Annotation=str(attrs['annotation']),
+         		Path=str(attrs['path']),
          		Name=str(attrs['analysis_dataset_name']),
          		Type=str(attrs['type']),
          		Status=str(attrs['status']),
 			Version=str(attrs['version']),
-         		#PhysicsGroup=str(attrs['physics_group']),
-         		#Definition=
+         		PhysicsGroup=str(attrs['physics_group_name']),
+         		Description=str(attrs['description']),
                         CreationDate=str(attrs['creation_date']),
                         CreatedBy=str(attrs['created_by']),
                         LastModificationDate=str(attrs['last_modification_date']),
@@ -1400,7 +1424,6 @@ class DbsApi(DbsConfig):
                 self.curr_def = DbsAnalysisDatasetDefinition (
             		Name=str(attrs['analysis_dataset_definition_name']),
             		RunsList=str(attrs['runs']).split(','),
-            		#TierList=str(attrs['tiers']).split(','),
             		FileList=str(attrs['lfns']).split(','),
             		LumiList=str(attrs['lumi_sections']).split(','),
             		AlgoList=str(attrs['algorithms']).split(','),
@@ -1409,7 +1432,7 @@ class DbsApi(DbsConfig):
             		#AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
             		LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
             		UserCut=str(attrs['user_cut']),
-            		#Description=str(attrs['name']),
+         		Description=str(attrs['description']),
                         CreationDate=str(attrs['creation_date']),
                         CreatedBy=str(attrs['created_by']),
                         LastModificationDate=str(attrs['last_modification_date']),
@@ -2925,8 +2948,7 @@ class DbsApi(DbsConfig):
     xmlinput += " type='"+ analysisdataset.get('Type', '') +"'"
     xmlinput += " status='"+ analysisdataset.get('Status', '') +"'"
     xmlinput += " physics_group_name='"+ analysisdataset.get('PhysicsGroup', '') +"'" 
-    # Path is taken from the definition 
-    #xmlinput += " path='"+path+"'/>"
+    xmlinput += " path='"+analysisdataset.get('Path','')+"'/>"
     xmlinput += " />"
     xmlinput += "</dbs>"
 
