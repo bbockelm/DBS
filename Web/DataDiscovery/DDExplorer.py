@@ -139,6 +139,9 @@ def sendMessage(host,port,dbsInst,xmlEnvelope,output="list",debug=0):
                    self.res.append(attrs['value'])
                else:
                    self.out+="%s\t"%attrs['value']
+            if name=='exception':
+               print "Fail to parse your results, please specify --output=xml to see exception"
+               result.append(name)
         def endElement(self, name):
             if name=="row":
                if output=="list":
@@ -243,6 +246,10 @@ if __name__ == "__main__":
        print h
        sys.exit(0)
     if opts.host: host=opts.host
+    if host.find("http://")!=-1:
+       host=host.replace("http://","")
+    if host[-1]!="/":
+       host+="/"
     if opts.port: port=opts.port
     if opts.dbsInst: dbsInst=opts.dbsInst
 
