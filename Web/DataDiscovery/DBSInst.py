@@ -273,7 +273,11 @@ class DBManager(DDLogger):
           for t in tList:
               lowTableList.append(string.lower(t))
           self.lowTables[dbsInst]=lowTableList
-      return tList[self.lowTables[dbsInst].index(table.lower())]
+      try:    
+         res=tList[self.lowTables[dbsInst].index(table.lower())]
+         return res
+      except:
+         raise "Fail to lookup table '%s' in '%s' instance"%(table.lower(),dbsInst)
       
   # convert SQLAlchemy schema to Drew's one.
 #  def constructSchema(self,dbsInst):
