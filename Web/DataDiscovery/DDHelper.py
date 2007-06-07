@@ -1672,15 +1672,19 @@ MCDescription:      %s
       else:
          tList=['Name']
       oList=[]
+      dn1=cDate=dn2=mDate=""
       for item in result:
           if not item[0]: continue
-          name,dn1,cDate,dn2,mDate=item
-          dn1=parseCreatedBy(dn1)
-          dn2=parseCreatedBy(dn2)
-          cDate=timeGMT(cDate)
-          mDate=timeGMT(mDate)
-#          oList.append(item)
-          oList.append((name,dn1,cDate,dn2,mDate))
+          if userMode!='user':
+             name,dn1,cDate,dn2,mDate=item
+             dn1=parseCreatedBy(dn1)
+             dn2=parseCreatedBy(dn2)
+             cDate=timeGMT(cDate)
+             mDate=timeGMT(mDate)
+             oList.append((name,dn1,cDate,dn2,mDate))
+          else:
+             name=item[0]
+             oList.append(item)
       self.closeConnection(con)
       return tList,oList
 
@@ -1722,13 +1726,16 @@ MCDescription:      %s
       oList=[]
       for item in result:
           if not item[0]: continue
-          lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate=item
-          cDate=timeGMT(cDate)
-          mDate=timeGMT(mDate)
-          dn1=parseCreatedBy(dn1)
-          dn2=parseCreatedBy(dn2)
-#          oList.append(item)
-          oList.append((lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate))
+          if userMode!='user':
+              lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate=item
+              cDate=timeGMT(cDate)
+              mDate=timeGMT(mDate)
+              dn1=parseCreatedBy(dn1)
+              dn2=parseCreatedBy(dn2)
+              oList.append((lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate))
+          else:
+              lumi,run,begNum,endNum,lumiBeg,lumiEnd=item
+              oList.append((lumi,run,begNum,endNum,lumiBeg,lumiEnd))
       self.closeConnection(con)
       return tList,oList
 
