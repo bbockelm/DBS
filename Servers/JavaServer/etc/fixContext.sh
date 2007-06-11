@@ -26,6 +26,7 @@ cd JARFIX
 if [ $server == "MYSQL" ]; then
 
 cat > context.xml << EOF
+<Context path="/servlet/DBSServlet" docBase="DBSServlet" debug="5" reloadable="true" crossContext="true">
        <Resource name="jdbc/dbs"
                auth="Container"
                type="javax.sql.DataSource"
@@ -35,12 +36,17 @@ cat > context.xml << EOF
                username="__insert_username__"
                password="__insert_password__"
                driverClassName="org.gjt.mm.mysql.Driver"
-               url="jdbc:mysql://__insert_hostname__:3306/dbs_new_era_v17?autoReconnect=true"/>
+               url="jdbc:mysql://__insert_hostname__:3306/dbs_new_era_v25?autoReconnect=true"/>
+<SupportedSchemaVersion schemaversion="DBS_1_0_4" />
+<SupportedClientVersions clientversions="DBS_1_0_4" />
+<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
+</Context>
 EOF
 
 elif [ $server == "ORACLE" ]; then
 
 cat > context.xml << EOF
+<Context path="/servlet/DBSServlet" docBase="DBSServlet" debug="5" reloadable="true" crossContext="true">
        <Resource name="jdbc/dbs"
                auth="Container"
                type="javax.sql.DataSource"
@@ -54,6 +60,10 @@ cat > context.xml << EOF
                validationQuery="select * from dual;"
                driverClassName="oracle.jdbc.driver.OracleDriver"
                url="jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr1-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr2-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr3-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr4-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr5-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr6-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr7-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = cmsr8-v.cern.ch)(PORT = 10121)) (ENABLE=BROKEN) (LOAD_BALANCE = yes) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = cmsr.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))"/>
+<SupportedSchemaVersion schemaversion="DBS_1_0_4" />
+<SupportedClientVersions clientversions="DBS_1_0_4" />
+<DBSBlockConfig maxBlockSize="2000000000000" maxBlockFiles="100" />
+</Context>
 EOF
 
 else
