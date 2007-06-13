@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.101 $"
- $Id: DBSSql.java,v 1.101 2007/06/07 15:38:50 sekhri Exp $"
+ $Revision: 1.102 $"
+ $Id: DBSSql.java,v 1.102 2007/06/07 21:48:19 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -143,13 +143,14 @@ public class DBSSql {
 	}
 
 
-        public static PreparedStatement incRunLumiCount(Connection conn, String runID) throws SQLException {
+        public static PreparedStatement updateRunLumiCount(Connection conn, String runID) throws SQLException {
 
 		String sql = "UPDATE Runs SET \n" +
-			"NumberOfLumiSections=NumberOfLumiSections+1 \n" +
-			"WHERE ID=? ";
+			"NumberOfLumiSections = (SELECT COUNT(*) FROM LumiSection WHERE RunNumber = ?) \n" +
+			"WHERE ID = ? ";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
+	 	ps.setString(columnIndx++, runID);
 	 	ps.setString(columnIndx++, runID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.102 $"
- $Id: DBSApiLogic.java,v 1.102 2007/06/06 18:32:15 sekhri Exp $"
+ $Revision: 1.103 $"
+ $Id: DBSApiLogic.java,v 1.103 2007/06/07 21:48:19 afaq Exp $"
  *
  */
 
@@ -272,18 +272,21 @@ public class DBSApiLogic {
 				if (ps != null) ps.close();
 			}
 
+	                //Update the Run to reflect the LumiSection count
+        	        ps = null;
+                	try {
+                        	ps = DBSSql.updateRunLumiCount(conn, runID);
+                        	ps.executeUpdate();
+                	} finally {
+                        	if (ps != null) ps.close();
+                	}
+
+
+
 		} else {
 			writeWarning(out, "Already Exists", "1020", "LumiSection " + lsNumber + " Already Exists");
 		}
 
-		//Update the Run to reflect the LumiSection count
-		ps = null;
-		try {
-			ps = DBSSql.incRunLumiCount(conn, runID);
-			ps.executeUpdate();
-		} finally {
-			if (ps != null) ps.close();
-		}
 	}
 
 /*
