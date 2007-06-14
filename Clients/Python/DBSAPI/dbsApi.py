@@ -47,7 +47,7 @@ import inspect
 from dbsLogger import *
 
 #DBS Api version
-__version__ = "v00_00_06"
+__version__ = "DBS_1_0_4"
 
 
 # DBS Defined Log Levels
@@ -235,6 +235,35 @@ class DbsApi(DbsConfig):
             return ""
 
     return num
+
+
+
+  #------------------------------------------------------------
+
+  def getServerInfo(self):
+    """
+    Retrieves the server parameters, such as Server version, Schema version
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'getDBSServerVersion' }, 'GET')
+
+    logging.log(DBSDEBUG, data)
+    # Parse the resulting xml output.
+    result = {}
+    class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'dbs_version':
+		result['ServerVersion'] = str(attrs['server_version'])
+		if result['ServerVersion'] in ('', None):
+			result['ServerVersion'] = 'PROBABLY_CVS_HEAD'
+		result['SchemaVersion'] = str(attrs['schema_version'])
+    xml.sax.parseString (data, Handler ())
+    return result
+
+  #-----------------------------------------------------------
 
 
   # ------------------------------------------------------------
