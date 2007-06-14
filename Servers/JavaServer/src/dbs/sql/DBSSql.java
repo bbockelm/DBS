@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.103 $"
- $Id: DBSSql.java,v 1.103 2007/06/13 16:35:18 afaq Exp $"
+ $Revision: 1.104 $"
+ $Id: DBSSql.java,v 1.104 2007/06/14 18:21:20 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -112,6 +112,151 @@ public class DBSSql {
 		return getInsertSQL(conn, tableName, table);
 	}
 
+        public static PreparedStatement insertDQFlagHistory(Connection conn, String rowID) throws SQLException {
+
+                //UNIX_TIMESTAMP Will be replaced with Trigger
+                String sql = "INSERT INTO QualityHistory \n "+
+                                " (HistoryOf, Run,  Lumi, SubSystem, DQValue, \n" +
+                                " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
+                                " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, DQValue, CreationDate, \n" +
+                                " CreatedBy, LastModificationDate, LastModifiedBy, UNIX_TIMESTAMP() \n" +
+                                " from RunLumiQuality where ID = ?";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, rowID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+        public static PreparedStatement updateDQFlag(Connection conn,
+                                                        String rowID,
+                                                        String valueID,
+                                                        String lmbUserID) throws SQLException {
+
+                String sql = "UPDATE RunLumiQuality \n" +
+                                "SET DQValue = ? , \n"+
+                                "LastModifiedBy = ? \n" +
+                                "WHERE ID = ?";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, valueID);
+                ps.setString(columnIndx++, lmbUserID);
+                ps.setString(columnIndx++, rowID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+        }
+
+
+/*------- Data Quality Calls Collected in one place, later we can separate them out ------*/
+
+        public static PreparedStatement insertDQFlag(Connection conn, String runID, String lumiID,
+                                                        String flagID, String valueID,
+                                                        String cbUserID, String lmbUserID, String cDate) throws SQLException {
+
+                Hashtable table = new Hashtable();
+
+                table.put("Run", runID);
+                if (!DBSUtil.isNull(lumiID)) table.put("Lumi", lumiID);
+                table.put("SubSystem", flagID);
+                table.put("DQValue", valueID);
+                table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "RunLumiQuality", table);
+        }
+
+        public static PreparedStatement listRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
+        throws SQLException
+        {
+
+                String sql = "SELECT distinct r.RunNumber as RUN_NUMBER, \n" +
+                                "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
+                                "ss.Name as DQ_FLAG, qv.Value as QVALUE, \n" +
+                                "ss.Parent as PARENT \n" +
+                                "FROM  RunLumiQuality rq \n" +
+                                "join Runs r \n" +
+                                        "on rq.Run = r.ID \n" +
+                                "LEFT OUTER JOIN LumiSection ls \n" +
+                                        "on ls.ID = rq.Lumi \n" +
+                                "join SubSystem ss \n" +
+                                        "on ss.ID = rq.SubSystem \n" +
+                                "join QualityValues qv \n" +
+                                        "on qv.ID = rq.DQValue \n";
+
+                                String rlsql = "";
+
+                                //MAKE THIS BIND Valriable LATERS !!
+                                if (runDQList.size() > 0) {
+                                        sql += "WHERE \n";
+                                        for (int i = 0; i < runDQList.size() ; ++i) {
+                                                Hashtable runDQ = (Hashtable) runDQList.get(i);
+                                                if (i==0) rlsql = " ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number") ;
+                                                else rlsql = " OR ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number");
+
+                                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
+                                                if (!DBSUtil.isNull(lumisec))
+                                                        rlsql += " AND ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number");
+                                                //Get the sub-system Vector
+                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+
+                                                //Loop over each item
+                                                for (int j = 0; j < subSys.size() ; ++j) {
+                                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
+                                                        String fvsql =  "";
+
+                                                        //Check for NULL
+                                                        if (j == 0) {
+                                                                fvsql = rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
+                                                        } else {
+                                                                fvsql = "OR "+rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
+                                                        }
+
+                                                        sql += fvsql;
+                                                }
+                                                if (subSys.size() <= 0) sql +=  rlsql + ") ";
+                                                //else sql += rlsql;
+                                        }
+                                }
+
+                                sql += "order by r.RunNumber, rq.ID";  //THE ORDER BY is VERY IMPORTANT here
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                //ps.setString(columnIndx++, adsID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+        }
+
+        public static PreparedStatement getDQFlag(Connection conn, String runID, String lumiID,
+                                                        String flagID,
+                                                        String value) throws SQLException
+        {
+                String sql = "SELECT DISTINCT ID \n " +
+                        "FROM RunLumiQuality \n " +
+                        "WHERE Run = ? \n";
+                if (!DBSUtil.isNull(flagID)) sql +=  "AND SubSystem = ? \n";
+                if (!DBSUtil.isNull(value))  sql +=  "AND DQValue = ? \n";
+                if (!DBSUtil.isNull(lumiID)) sql +=  "AND Lumi = ? \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, runID);
+                if (!DBSUtil.isNull(flagID)) ps.setString(columnIndx++, flagID);
+                if (!DBSUtil.isNull(value))  ps.setString(columnIndx++, value);
+
+                if (!DBSUtil.isNull(lumiID)) ps.setString(columnIndx++, lumiID);
+
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+        }
+
+
+/*----------------END DQ Calls ------------------*/
 
 	public static PreparedStatement insertPrimaryDataset(Connection conn, String ann, String name, String descID, String startDate, String endDate, String typeID , String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiParser.java,v 1.12 2007/05/03 21:42:07 afaq Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiParser.java,v 1.13 2007/05/24 21:59:27 sekhri Exp $"
  *
 */
 
@@ -265,6 +265,98 @@ public class DBSApiParser {
 		}
                 (new DBSApiFileLogic(new DBSApiData())).remapFiles(conn, out, topLevel, table,  dbsUser);
 	}
+
+
+        public static Vector parseDQFlags(String inputXml) throws Exception {
+               Vector topLevel = new Vector();
+                int subIndex = -1;
+                DBSXMLParser dbsParser = new DBSXMLParser();
+                dbsParser.parseString(inputXml);
+                Vector allElement = dbsParser.getElements();
+
+                for (int i=0; i<allElement.size(); ++i) {
+                        Element e = (Element)allElement.elementAt(i);
+                        String name = e.name;
+                        if (name.equals("dq_sub_system") ) {
+                                Hashtable subsys = e.attributes;
+
+                                //Add a sub-sub system vector
+                                subsys.put("dq_sub_subsys", new Vector());
+
+                                // Add the sub-system to topLevel
+                                topLevel.add(subsys);
+
+                                //Increase the counter so next dq_sub_subsys, get THIS item
+                                ++subIndex;
+                        }
+                        if (name.equals("dq_sub_subsys") ) {
+                                Hashtable subsubsys = e.attributes;
+
+                                //Get the sub system
+                                Hashtable subsys = (Hashtable) get(topLevel, subIndex, "dq_sub_system");
+                                //Get the sub-sub system vector
+                                Vector subsubvec = (Vector) get (subsys, "dq_sub_subsys", "dq_sub_subsys");
+                                //Add to subsubvec current dq_sub_subsys
+                                subsubvec.add(subsubsys);
+                        }
+
+
+
+                }
+                return topLevel;
+        }
+
+        public static Vector parseDQRunLumi(String inputXml) throws Exception {
+
+                Vector topLevel = new Vector();
+                int index = -1;
+                int subIndex = -1;
+                DBSXMLParser dbsParser = new DBSXMLParser();
+                dbsParser.parseString(inputXml);
+                Vector allElement = dbsParser.getElements();
+
+                for (int i=0; i<allElement.size(); ++i) {
+                        Element e = (Element)allElement.elementAt(i);
+                        String name = e.name;
+
+                        if (name.equals("run") ) {
+                                Hashtable run = e.attributes;
+                                run.put("dq_sub_system", new Vector());
+                                topLevel.add(run);
+                                ++index;
+                                subIndex=-1;
+
+                        }
+                        if (name.equals("dq_sub_system") ) {
+                                Hashtable subsys = e.attributes;
+
+                                //Add a sub-sub system vector
+                                subsys.put("dq_sub_subsys", new Vector());
+
+                                // Add the sub-system to current run
+                                ((Vector)( get((Hashtable) get(topLevel, index, "run"), "dq_sub_system", "run"))).add(subsys);
+
+                                //Increase the counter so next dq_sub_subsys, get THIS item
+                                ++subIndex;
+                        }
+                        if (name.equals("dq_sub_subsys") ) {
+                                Hashtable subsubsys = e.attributes;
+                                //Get the Run
+                                Hashtable run = (Hashtable) get(topLevel, index, "run");
+                                //Get the Sub System vector
+                                Vector subvec = (Vector) get (run, "dq_sub_system", "run");
+                                //Get the sub system
+                                Hashtable subsys = (Hashtable) get(subvec, subIndex, "dq_sub_system");
+                                //Get the sub-sub system vector
+                                Vector subsubvec = (Vector) get (subsys, "dq_sub_subsys", "dq_sub_subsys");
+                                //Add to subsubvec current dq_sub_subsys
+                                subsubvec.add(subsubsys);
+                        }
+
+                }
+                return topLevel;
+        }
+
 
 	private static Object get(Hashtable table, String key, String missingKey) throws Exception {
 		if(key == null ||  table == null) 
