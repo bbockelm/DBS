@@ -138,6 +138,19 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individ
 ('PhysVal', UNIX_TIMESTAMP());" >> $ddl_file
 #
 #
+echo "" >> $ddl_file
+
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES
+                (\"HCAL\", UNIX_TIMESTAMP()), (\"HCAL+\", UNIX_TIMESTAMP()), (\"HCAL-\", UNIX_TIMESTAMP()),
+                (\"ECAL\", UNIX_TIMESTAMP()), (\"ECAL+\", UNIX_TIMESTAMP()), (\"ECAL-\", UNIX_TIMESTAMP()),
+                (\"NOSUB\", UNIX_TIMESTAMP());
+
+
+INSERT INTO QualityValues (Value, CreationDate) VALUES (\"GOOD\", UNIX_TIMESTAMP()),
+                (\"BAD\", UNIX_TIMESTAMP()), (\"UNKNOWN\", UNIX_TIMESTAMP());
+" >> $ddl_file
+
+
 echo "commit;"  >> $ddl_file
 
 echo "   Deploy DBS-NeXtGen-MySQL_DEPLOYABLE.sql to MySQL"

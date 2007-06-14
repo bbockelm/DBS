@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 704
+-- === Build : 715
 -- ======================================================================
 
 drop database if exists pre_DBS_1_0_4;
@@ -820,10 +820,10 @@ CREATE TABLE PrimaryDSType
 
 -- ======================================================================
 
-CREATE TABLE SubSystem
+CREATE TABLE QualityValues
   (
     ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)      unique not null,
+    Value                 varchar(500)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -834,10 +834,11 @@ CREATE TABLE SubSystem
 
 -- ======================================================================
 
-CREATE TABLE QualityValues
+CREATE TABLE SubSystem
   (
     ID                    BIGINT UNSIGNED,
-    Value                 varchar(500)      unique not null,
+    Name                  varchar(500)      unique not null,
+    Parent                varchar(500)      not null default 'CMS',
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -861,7 +862,7 @@ CREATE TABLE RunLumiQuality
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
-    unique(ID,Run,Lumi,SubSystem)
+    unique(Run,Lumi,SubSystem)
   );
 
 -- ======================================================================
@@ -886,27 +887,11 @@ CREATE TABLE QualityHistory
 
 -- ======================================================================
 
-CREATE TABLE QFlagAssoc
-  (
-    ID                    BIGINT UNSIGNED,
-    ThisFlag              BIGINT UNSIGNED   not null,
-    ItsAssoc              BIGINT UNSIGNED   not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-
-    primary key(ID),
-    unique(ThisFlag,ItsAssoc)
-  );
-
--- ======================================================================
-
 CREATE TABLE QualityVersion
   (
     ID                    BIGINT UNSIGNED,
     Version               BIGINT            unique not null,
-    VersionTimeStamp      BIGINT            not null,
+    VersionTimeStamp      BIGINT            unique not null,
     VersionName           varchar(1000),
     Description           varchar(1000),
     CreationDate          BIGINT,
@@ -914,8 +899,7 @@ CREATE TABLE QualityVersion
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
-    primary key(ID),
-    unique(VersionTimeStamp)
+    primary key(ID)
   );
 
 -- ======================================================================
@@ -1444,18 +1428,18 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
     PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE SubSystem ADD CONSTRAINT 
-    SubSystem_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE SubSystem ADD CONSTRAINT 
-    SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE QualityValues ADD CONSTRAINT 
     QualityValues_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 ALTER TABLE QualityValues ADD CONSTRAINT 
     QualityValuesLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE RunLumiQuality ADD CONSTRAINT 
@@ -1497,19 +1481,6 @@ ALTER TABLE QualityHistory ADD CONSTRAINT
 /
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistoryLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_ThisFlag_FK foreign key(ThisFlag) references RunLumiQuality(ID) on delete CASCADE
-/
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_ItsAssoc_FK foreign key(ItsAssoc) references RunLumiQuality(ID) on delete CASCADE
-/
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE QualityVersion ADD CONSTRAINT 

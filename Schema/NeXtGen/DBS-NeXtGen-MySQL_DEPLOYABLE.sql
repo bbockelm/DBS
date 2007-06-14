@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 704
+-- === Build : 715
 -- ======================================================================
 
 drop database if exists pre_DBS_1_0_4;
@@ -820,10 +820,10 @@ CREATE TABLE PrimaryDSType
 
 -- ======================================================================
 
-CREATE TABLE SubSystem
+CREATE TABLE QualityValues
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)      unique not null,
+    Value                 varchar(500)      unique not null,
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -834,10 +834,11 @@ CREATE TABLE SubSystem
 
 -- ======================================================================
 
-CREATE TABLE QualityValues
+CREATE TABLE SubSystem
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Value                 varchar(500)      unique not null,
+    Name                  varchar(500)      unique not null,
+    Parent                varchar(500)      not null default 'CMS',
     CreatedBy             BIGINT UNSIGNED,
     CreationDate          BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
@@ -861,7 +862,7 @@ CREATE TABLE RunLumiQuality
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID),
-    unique(ID,Run,Lumi,SubSystem)
+    unique(Run,Lumi,SubSystem)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -886,27 +887,11 @@ CREATE TABLE QualityHistory
 
 -- ======================================================================
 
-CREATE TABLE QFlagAssoc
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    ThisFlag              BIGINT UNSIGNED   not null,
-    ItsAssoc              BIGINT UNSIGNED   not null,
-    CreatedBy             BIGINT UNSIGNED,
-    CreationDate          BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-
-    primary key(ID),
-    unique(ThisFlag,ItsAssoc)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
 CREATE TABLE QualityVersion
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Version               BIGINT            unique not null,
-    VersionTimeStamp      BIGINT            not null,
+    VersionTimeStamp      BIGINT            unique not null,
     VersionName           varchar(1000),
     Description           varchar(1000),
     CreationDate          BIGINT,
@@ -914,8 +899,7 @@ CREATE TABLE QualityVersion
     LastModificationDate  BIGINT,
     LastModifiedBy        BIGINT UNSIGNED,
 
-    primary key(ID),
-    unique(VersionTimeStamp)
+    primary key(ID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -1444,18 +1428,18 @@ ALTER TABLE PrimaryDSType ADD CONSTRAINT
     PrimaryDSTypeLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
-ALTER TABLE SubSystem ADD CONSTRAINT 
-    SubSystem_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE SubSystem ADD CONSTRAINT 
-    SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
 ALTER TABLE QualityValues ADD CONSTRAINT 
     QualityValues_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
 ALTER TABLE QualityValues ADD CONSTRAINT 
     QualityValuesLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE SubSystem ADD CONSTRAINT 
+    SubSystem_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE RunLumiQuality ADD CONSTRAINT 
@@ -1497,19 +1481,6 @@ ALTER TABLE QualityHistory ADD CONSTRAINT
 ;
 ALTER TABLE QualityHistory ADD CONSTRAINT 
     QualityHistoryLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_ThisFlag_FK foreign key(ThisFlag) references RunLumiQuality(ID) on delete CASCADE
-;
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_ItsAssoc_FK foreign key(ItsAssoc) references RunLumiQuality(ID) on delete CASCADE
-;
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE QFlagAssoc ADD CONSTRAINT 
-    QFlagAssoc_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE QualityVersion ADD CONSTRAINT 
@@ -1671,19 +1642,16 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_PrimaryDSType BEFORE INSERT ON PrimaryDSType
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER TR_SubSystem BEFORE INSERT ON SubSystem
+CREATE TRIGGER TR_QualityValues BEFORE INSERT ON QualityValues
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER TR_QualityValues BEFORE INSERT ON QualityValues
+CREATE TRIGGER TR_SubSystem BEFORE INSERT ON SubSystem
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_RunLumiQuality BEFORE INSERT ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_QualityHistory BEFORE INSERT ON QualityHistory
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_QFlagAssoc BEFORE INSERT ON QFlagAssoc
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
@@ -1841,19 +1809,16 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_PrimaryDSType BEFORE UPDATE ON PrimaryDSType
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER UTR_SubSystem BEFORE UPDATE ON SubSystem
+CREATE TRIGGER UTR_QualityValues BEFORE UPDATE ON QualityValues
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER UTR_QualityValues BEFORE UPDATE ON QualityValues
+CREATE TRIGGER UTR_SubSystem BEFORE UPDATE ON SubSystem
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_RunLumiQuality BEFORE UPDATE ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_QualityHistory BEFORE UPDATE ON QualityHistory
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_QFlagAssoc BEFORE UPDATE ON QFlagAssoc
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_QualityVersion BEFORE UPDATE ON QualityVersion
@@ -1902,4 +1867,14 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', 
 ('RelVal', UNIX_TIMESTAMP()), 
 ('Tracker', UNIX_TIMESTAMP()), 
 ('PhysVal', UNIX_TIMESTAMP());
+
+INSERT INTO SubSystem (Name, CreationDate) VALUES
+                ("HCAL", UNIX_TIMESTAMP()), ("HCAL+", UNIX_TIMESTAMP()), ("HCAL-", UNIX_TIMESTAMP()),
+                ("ECAL", UNIX_TIMESTAMP()), ("ECAL+", UNIX_TIMESTAMP()), ("ECAL-", UNIX_TIMESTAMP()),
+                ("NOSUB", UNIX_TIMESTAMP());
+
+
+INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()),
+                ("BAD", UNIX_TIMESTAMP()), ("UNKNOWN", UNIX_TIMESTAMP());
+
 commit;
