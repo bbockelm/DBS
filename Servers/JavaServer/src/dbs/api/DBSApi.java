@@ -1,6 +1,6 @@
 /**
- $Revision: 1.89 $"
- $Id: DBSApi.java,v 1.89 2007/06/01 22:20:02 afaq Exp $"
+ $Revision: 1.90 $"
+ $Id: DBSApi.java,v 1.90 2007/06/06 18:32:14 sekhri Exp $"
  *
 */
 
@@ -156,13 +156,13 @@ public class DBSApi {
                 return false;
         }
 
-	private void checkSchemaVersion() throws Exception {
+	private String checkSchemaVersion() throws Exception {
 		Connection conn =  getConnection();
+		String dbsSchemaVersion="";
 		try {
 			String sql = "select SchemaVersion from SchemaVersion";
 			DBSUtil.writeLog(sql);
 			ResultSet rs =  DBSSql.getSchemaVersion(conn).executeQuery();
-			String dbsSchemaVersion="";
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
 			} else {
@@ -175,6 +175,7 @@ public class DBSApi {
 		} finally {
 			if(conn != null) conn.close();
                 }
+		return dbsSchemaVersion;
         }  
 
         private void checkVersion(String apiversion) throws Exception {
@@ -244,12 +245,21 @@ public class DBSApi {
 
 	                checkVersion(get(table, "apiversion", true));
  
-        	        checkSchemaVersion();
+        	        String dbsSchemaVersion = checkSchemaVersion();
 
-
+			
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			if (apiStr.equals("listPrimaryDatasets")) {
+			if (apiStr.equals("getDBSServerVersion")) {
+				String serverVersion = DBSConstants.DBSTag;
+			        //$Name: ignore_test_tag_001 $
+
+				serverVersion = serverVersion.replace("$Name:", "");	
+				serverVersion = serverVersion.replace("$", "");
+				serverVersion = serverVersion.trim();
+
+				out.write("<dbs_version server_version='"+serverVersion+"' schema_version='"+dbsSchemaVersion+"' />");
+			} else if (apiStr.equals("listPrimaryDatasets")) {
 				//System.out.println("Pattern is "+ get(table, "pattern", false));
 				(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
