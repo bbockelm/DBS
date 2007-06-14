@@ -27,8 +27,8 @@ try:
   
   #for afile in api.listFiles(analysisDataset="/RelVal131QCD_pt600_800/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO/ALLFILES"):
   #for afile in api.listFiles(analysisDataset="/RelVal131QCD_pt15_20/CMSSW_1_3_1-1176201507/GEN-SIM-DIGI-RECO/ALLFILES"):
-  for afile in api.listFiles(path="/test_primary_001/TestProcessedDS001/GEN-SIM"):
   #for afile in api.listFiles("", "test_primary_001", "TestProcessedDS001", ['GEN', 'SIM'], "", "", "", False):
+  for afile in api.listFiles(path="/test_primary_001/TestProcessedDS001/GEN-SIM"):
      #print "  %s" % afile
      print "  %s" % afile['LogicalFileName']
      	

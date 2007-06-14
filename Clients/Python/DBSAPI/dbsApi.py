@@ -861,7 +861,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None):
+  def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", runNumber="", details=None):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -925,6 +925,7 @@ class DbsApi(DbsConfig):
 				    'data_tier_list' : sendTier,
 		                    'analysis_dataset_name' : analysisDataset,
                                     'block_name' : blockName, 
+				    'run_number' : str(self._get_run(runNumber)),
                                     'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
@@ -933,6 +934,7 @@ class DbsApi(DbsConfig):
                                     'data_tier_list' : sendTier,
                                     'path' : path, 'block_name' : blockName, 
 		                    'analysis_dataset_name' : analysisDataset,
+				    'run_number' : str(self._get_run(runNumber)),
                                     'pattern_lfn' : patternLFN}, 'GET')
     logging.log(DBSDEBUG, data)
 
