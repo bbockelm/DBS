@@ -34,6 +34,7 @@ from dbsAlgorithm import DbsAlgorithm
 from dbsAnalysisDataset import DbsAnalysisDataset
 from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 from dbsFileTriggerTag import DbsFileTriggerTag
+from dbsMigrateApi import DbsMigrateApi
 
 from dbsParent import DbsParent
 from dbsConfig import DbsConfig
@@ -68,6 +69,11 @@ def getLong(value = None):
 	if (len(value) < 1 ) :
 		return 0
 	return long(value)
+
+def makeAPI(url):
+		args = {}
+		args['url'] = url
+		return DbsApi(args)
 
 class DbsApi(DbsConfig):
   """
@@ -1487,7 +1493,8 @@ class DbsApi(DbsConfig):
       class Handler (xml.sax.handler.ContentHandler):
         def startElement(self, name, attrs):
           if name == 'processed_dataset_parent':
-		  myPath = str(attrs['path']).split('/')
+		  parentPath = str(attrs['path'])
+		  myPath = parentPath.split('/')
 		  result.append(DbsProcessedDataset ( 
 			  			Name=myPath[2],
                                                 #openForWriting=str(attrs['open_for_writing']), 
@@ -1498,7 +1505,7 @@ class DbsApi(DbsConfig):
                                                 CreatedBy=str(attrs['created_by']),
                                                 LastModificationDate=str(attrs['last_modification_date']),
                                                 LastModifiedBy=str(attrs['last_modified_by']),
-                                                #PathList=[str(attrs['path'])],     
+                                                PathList=[parentPath],     
                                                 #Path=[str(attrs['path'])],     
                                                 ))
 
@@ -1591,16 +1598,73 @@ class DbsApi(DbsConfig):
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
+    #try:
+    # Invoke Server.
+    data = self._server._call ({ 'api' : 'insertDatasetContents', 'xmlinput' : xmlinput }, 'POST')
+    #logging.log(DBSDEBUG, data)
+
+    return data
+    """
+    #except Exception, ex:
+	    #import pdb
+	    #pdb.set_trace()
+	    #raise DbsBadResponse(exception=ex, code=ex.getErrorCode())
+    """
+
+  #-------------------------------------------------------------------
+
+  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False):
+    """
+    This Api Call does the 3rd party transfer of a dataset from a source DBS instance to 
+    destination DBS instance. This API call also take cares of parentage information for the dataset.
+    If a dataset is being transferred and its parents are not in the destination DBS instance, then 
+    this API will transfer the parents first and thier parents and so on and so fortth until a parent is 
+    found in the destination DBS.
+
+    params: 
+        srcURL : is the URL of the deployed DBS instance from where the dataset will be transferred.
+	dstURL : is the URL of the deployed DBS instance into which the dataset will be transferred.
+        path : Not Defaulted. Its the dataset path for which API is being invoked (can be provided as dataset object).
+        block_name : Name of the Block whise files fille be migrated, This is an optional parameter. If not provided
+	             then all the blocks within the dataset will be migrated
+	force : is an optional parameter which specifies weather the existance of datasets path will be checked on the 
+	        destination DBS before transferring it. By default it is set to false that means that the existance will 
+		be checked
+
+    examples:
+        Migrates the dataset and the specified block
+	api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet" 
+					"https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
+					"/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
+					"/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58")
+
+        Migrates all the blocks in the dataset
+	api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet" 
+					"https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
+					"/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",)
+
+
+    raise: DbsApiException.
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
     try:
        # Invoke Server.
-       data = self._server._call ({ 'api' : 'insertDatasetContents', 'xmlinput' : xmlinput }, 'POST')
-       #logging.log(DBSDEBUG, data)
+       path = self._path(path)
+       apiSrc = makeAPI(srcURL)
+       apiDst = makeAPI(dstURL)
 
-       return data
+       transfer = DbsMigrateApi(apiSrc, apiDst, force)
+       if block_name not in [None, ""] :
+	       transfer.migrateBlock(path, block_name)
+       else :
+	       transfer.migratePath(path)
 
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
-
 
  # ------------------------------------------------------------
 
@@ -3070,5 +3134,9 @@ class DbsApi(DbsConfig):
    logging.log(DBSDEBUG, data)
 
  
+
+
+
+
 #############################################################################
 # Unit testing: see $PWD/UnitTests
