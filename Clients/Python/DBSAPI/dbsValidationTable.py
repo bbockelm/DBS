@@ -185,6 +185,26 @@ ValidationTable = {
          "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
          "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
           },
+"DbsDQFlag" : {
+         "Name" : { "Comment" : "A required variable, UNIQUE", "Validator" : isStringType },
+         "Value" : { "Comment" : "A required variable, GOOD, BAD, UNKNOWN", "Validator" : isStringType },
+         "SubSysFlagList" : { "Comment" : "User may need to provide list of sub-sub-system flags associated to THIS sub-system", "Validator" : isListType }, 
+         "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        },
+"DbsRunLumiDQ" : {
+        "RunNumber" : { "Comment" : "REQUIRED", "Validator" : isLongType },
+        "LumiSectionNumber" : { "Comment" : "Optional LumiSection Number, Unique within this Run", "Validator" : isLongType },
+        "DQFlagList" : { "Comment" : "List of DbsDQFlag Objects, representing Sub-System and Sub-SubSystem Flags", "Validator" : isListType },
+        "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        },
+
+
 }
 
 # To generate the doc uncomment these lines

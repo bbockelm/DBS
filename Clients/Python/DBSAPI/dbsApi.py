@@ -35,6 +35,8 @@ from dbsAnalysisDataset import DbsAnalysisDataset
 from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
 from dbsFileTriggerTag import DbsFileTriggerTag
 from dbsMigrateApi import DbsMigrateApi
+from DBSAPI.dbsDQFlag import DbsDQFlag
+from DBSAPI.dbsRunLumiDQ import DbsRunLumiDQ
 
 from dbsParent import DbsParent
 from dbsConfig import DbsConfig
@@ -3164,7 +3166,171 @@ class DbsApi(DbsConfig):
 		         'xmlinput' : input })
    logging.log(DBSDEBUG, data)
 
- 
+#############################################################################
+#  All DQ API Calls are being put here, will be moved to a separate files soon !! 
+#############################################################################
+  #-------------------------------------------------------------------
+
+  def listRunLumiDQ(self, runLumiDQList=[]):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+
+    for aRunLumiDQ in runLumiDQList:
+        xmlinput += "<run run_number='"+str(self._get_run(aRunLumiDQ.get('RunNumber'))) + "'"
+        xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
+        xmlinput += " />"
+
+        for aFlag in aRunLumiDQ.get('DQFlagList'):
+                xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+                # Sub sub system list
+                for aSubFlag in aFlag.get('SubSysFlagList'):
+                        xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+
+    data = self._server._call ({ 'api' : 'listRunLumiDQ',
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.log(DBSDEBUG, data)
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+
+        def __init__(self):
+                #xml.sax.handler.ContentHandler.__init__()
+                self.dqFlaglist = []
+                self.first=1
+
+        def startElement(self, name, attrs):
+                if name == 'dq_sub_system' or name == 'dq_sub_subsys':
+                        runNumber=getLong(attrs['run_number'])
+                        lumiSectionNumber=getLong(attrs['lumi_section_number'])
+                        print runNumber, lumiSectionNumber
+                        if self.first != 1:
+                                if self.currRun['RunNumber'] != runNumber \
+                                        or self.currRun['LumiSectionNumber'] != lumiSectionNumber :
+
+
+                                        print "NEW Run, Lumi", runNumber, lumiSectionNumber
+
+                                        #self.currRun['DQFlagList'] = self.dqFlaglist
+
+                                        self.currRun = DbsRunLumiDQ (
+                                                RunNumber=runNumber,
+                                                LumiSectionNumber=lumiSectionNumber
+                                                )
+                                        #Re-initialize the DQ list
+                                        self.dqFlaglist = []
+                                        self.currRun['DQFlagList'] = self.dqFlaglist
+                                        result.append(self.currRun)
+
+                        else:
+                                self.currRun = DbsRunLumiDQ (
+                                                RunNumber=runNumber,
+                                                LumiSectionNumber=lumiSectionNumber
+                                                )
+                                result.append(self.currRun)
+                                self.currRun['DQFlagList'] = self.dqFlaglist
+                                self.first = 0
+                if name == 'dq_sub_system':
+                        self.currSubFlag = DbsDQFlag(
+                                        Name=str(attrs['name']),
+                                        Value=str(attrs['value']),
+                                        #CreationDate=str(attrs['creation_date']),
+                                        #CreatedBy=str(attrs['created_by']),
+                                        #LastModificationDate=str(attrs['last_modification_date']),
+                                        #LastModifiedBy=str(attrs['last_modified_by']),
+                                        )
+                        self.dqFlaglist.append(self.currSubFlag)
+
+                if name == 'dq_sub_subsys':
+                                subSubFlag = DbsDQFlag(
+                                                Name=str(attrs['name']),
+                                                Value=str(attrs['value']),
+                                                #CreationDate=str(attrs['creation_date']),
+                                                #CreatedBy=str(attrs['created_by']),
+                                                #LastModificationDate=str(attrs['last_modification_date']),
+                                                #LastModifiedBy=str(attrs['last_modified_by']),
+                                                )
+                                if 'currSubFlag' not in dir(self):
+                                        # OR Should I add the DUMMY
+                                        # Make it Sub Flag instead of Sub-Sub Flag
+                                        self.dqFlaglist.append(subSubFlag)
+                                else:
+                                        self.currSubFlag['SubSysFlagList'].append(subSubFlag)
+
+        def endElement(self, name):
+                pass
+            #if name == 'dbs':
+            #   result.append(self.currRun)
+      xml.sax.parseString (data, Handler ())
+      return result
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+  #-------------------------------------------------------------------
+  def updateRunLumiDQ(self, runLumiDQList):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+
+    for aRunLumiDQ in runLumiDQList:
+        xmlinput += "<run run_number='"+str(self._get_run(aRunLumiDQ.get('RunNumber'))) + "'"
+        xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
+        xmlinput += " />"
+
+        for aFlag in aRunLumiDQ.get('DQFlagList'):
+                xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+                # Sub sub system list
+                for aSubFlag in aFlag.get('SubSysFlagList'):
+                        xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+
+    data = self._server._call ({ 'api' : 'updateRunLumiDQ',
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.log(DBSDEBUG, data)
+
+  #-------------------------------------------------------------------
+
+  def insertRunLumiDQ(self, runLumiDQList):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+
+    for aRunLumiDQ in runLumiDQList:
+        xmlinput += "<run run_number='"+str(self._get_run(aRunLumiDQ.get('RunNumber'))) + "'"
+        xmlinput += " lumi_section_number='"+str(aRunLumiDQ.get('LumiSectionNumber', ''))+"'"
+        xmlinput += " />"
+
+        for aFlag in aRunLumiDQ.get('DQFlagList'):
+                xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+                # Sub sub system list
+                for aSubFlag in aFlag.get('SubSysFlagList'):
+                        xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+
+    data = self._server._call ({ 'api' : 'insertRunLumiDQ',
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.log(DBSDEBUG, data)
+  #-------------------------------------------------------------------
 
 
 
