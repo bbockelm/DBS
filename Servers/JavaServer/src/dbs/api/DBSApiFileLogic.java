@@ -1,6 +1,6 @@
 /**
- $Revision: 1.57 $"
- $Id: DBSApiFileLogic.java,v 1.57 2007/06/06 18:32:15 sekhri Exp $"
+ $Revision: 1.58 $"
+ $Id: DBSApiFileLogic.java,v 1.58 2007/06/07 21:48:19 afaq Exp $"
  *
  */
 
@@ -35,15 +35,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 
 	//This api call WILL only take into consideration the PATH parameter
-        private void listFiles(Connection conn, Writer out, String path, String detail) throws Exception {
+        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail) throws Exception {
 
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+		String runID = null;
+		if (!isNull(runNumber)) runID = getID(conn, "Runs", "RunNumber", runNumber , true);
 
 		PreparedStatement ps = null;
                 ResultSet rs =  null;
 
                 try {
-                        ps = DBSSql.listFiles(conn, procDSID, path);
+                        ps = DBSSql.listFiles(conn, procDSID, path, runID);
 			rs =  ps.executeQuery();
                         while(rs.next()) {
                                 String fileID = get(rs, "ID");
@@ -81,7 +83,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         }
                 } finally {
                         if (rs != null) rs.close();
-                        if (ps != null) ps.close();
                 }
 
         }
@@ -89,14 +90,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 	public void listFiles(Connection conn, Writer out, String path, 
 					String primary, String proc, String dataTierList, String aDSName, 
-					String blockName, String patternLFN, String detail) throws Exception {
+					String blockName, String patternLFN, String runNumber, String detail) throws Exception {
 
 		//By default a file detail is not needed
 
 
 		//if path is given we will only regard it to be sufficient criteria for listing files.
 		if (!isNull(path)) {  
-			listFiles(conn, out, path, detail);
+			listFiles(conn, out, path, runNumber, detail);
 			return;
 		}
 				

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.102 $"
- $Id: DBSSql.java,v 1.102 2007/06/07 21:48:19 afaq Exp $"
+ $Revision: 1.103 $"
+ $Id: DBSSql.java,v 1.103 2007/06/13 16:35:18 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1242,7 +1242,7 @@ public class DBSSql {
 		return ps;
 	}
 
-        public static PreparedStatement listFiles(Connection conn, String procDSID, String path) throws SQLException {
+        public static PreparedStatement listFiles(Connection conn, String procDSID, String path,String runID) throws SQLException {
 
                 String sql = "SELECT DISTINCT f.ID as ID, \n " +
                         "f.LogicalFileName as LFN, \n" +
@@ -1258,8 +1258,14 @@ public class DBSSql {
                         "b.Name as BLOCK_NAME, \n"+
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM Files f \n" +
-                        "LEFT OUTER JOIN Block b \n" +
+                        "FROM Files f \n" ;
+			if (!DBSUtil.isNull(runID)) {
+                        	sql += "JOIN FileRunLumi fr \n" +
+                                		"ON fr.Fileid = f.id \n" +
+                        		"JOIN Runs r \n" +
+                                		"ON r.ID = fr.Run \n";
+			}
+                        sql += "LEFT OUTER JOIN Block b \n" +
                                 "ON b.id = f.Block \n "+
                         "LEFT OUTER JOIN FileType ty \n" +
                                 "ON ty.id = f.FileType \n" +
@@ -1273,6 +1279,7 @@ public class DBSSql {
                                 "ON perlm.id = f.LastModifiedBy \n";
                 sql += "WHERE b.Path = ? \n" ;
                 sql += "AND f.Dataset = ? \n";
+		if (!DBSUtil.isNull(runID)) sql += "AND fr.Run = ? \n";
 		sql +=  "AND st.Status <> 'INVALID' \n" +
                         "ORDER BY LFN DESC";
 
@@ -1282,6 +1289,7 @@ public class DBSSql {
 
                 ps.setString(columnIndx++, path);
                 ps.setString(columnIndx++, procDSID);
+		if (!DBSUtil.isNull(runID)) ps.setString(columnIndx++, runID);
 
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;

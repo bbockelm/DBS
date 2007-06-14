@@ -1,6 +1,6 @@
 /**
- $Revision: 1.90 $"
- $Id: DBSApi.java,v 1.90 2007/06/06 18:32:14 sekhri Exp $"
+ $Revision: 1.91 $"
+ $Id: DBSApi.java,v 1.91 2007/06/14 17:35:59 afaq Exp $"
  *
 */
 
@@ -252,7 +252,7 @@ public class DBSApi {
 			conn.setAutoCommit(false);
 			if (apiStr.equals("getDBSServerVersion")) {
 				String serverVersion = DBSConstants.DBSTag;
-			        //$Name: ignore_test_tag_001 $
+			        //$Name:  $
 
 				serverVersion = serverVersion.replace("$Name:", "");	
 				serverVersion = serverVersion.replace("$", "");
@@ -318,6 +318,7 @@ public class DBSApi {
 						get(table, "analysis_dataset_name", false),
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
+						get(table, "run_number", false),
 						get(table, "detail", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {
