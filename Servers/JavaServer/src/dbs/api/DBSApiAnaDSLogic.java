@@ -1,6 +1,6 @@
 /**
- $Revision: 1.36 $"
- $Id: DBSApiAnaDSLogic.java,v 1.36 2007/06/06 22:03:32 sekhri Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.37 2007/06/07 21:48:19 afaq Exp $"
  *
  */
 
@@ -450,7 +450,7 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		    		aDSID = getADSID(conn, analysisDatasetName, true);
 				rs.beforeFirst();
 				while(rs.next()){
-					System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));					
+					//System.out.println("ADSID, Lumi ID , File ID = " + aDSID + "," + get(rs, "LUMIID") + "," + get(rs, "FILEID"));					
 					insertMap(conn, out, "AnalysisDSFileLumi", "AnalysisDataset", "Lumi", "Fileid",
 						aDSID,
 						get(rs, "LUMIID"),
