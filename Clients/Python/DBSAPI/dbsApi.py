@@ -3330,9 +3330,35 @@ class DbsApi(DbsConfig):
     data = self._server._call ({ 'api' : 'insertRunLumiDQ',
                          'xmlinput' : xmlinput }, 'POST')
     logging.log(DBSDEBUG, data)
+
   #-------------------------------------------------------------------
 
+  def insertRunRangeDQ(self, startRun, endRun, dqFlagList):
 
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+
+    for aFlag in dqFlagList:
+            xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+            # Sub sub system list
+            for aSubFlag in aFlag.get('SubSysFlagList'):
+                    xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+
+    data = self._server._call ({ 'api' : 'insertRunRangeDQ',
+					'start_run': str(self._get_run(startRun)), 
+					'end_run': str(self._get_run(endRun)),
+                         		'xmlinput' : xmlinput }, 'POST')
+
+    logging.log(DBSDEBUG, data)
+
+  #-------------------------------------------------------------------
 
 
 #############################################################################
