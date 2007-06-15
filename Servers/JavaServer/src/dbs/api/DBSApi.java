@@ -1,6 +1,6 @@
 /**
- $Revision: 1.92 $"
- $Id: DBSApi.java,v 1.92 2007/06/14 18:21:17 afaq Exp $"
+ $Revision: 1.93 $"
+ $Id: DBSApi.java,v 1.93 2007/06/14 18:35:49 afaq Exp $"
  *
 */
 
@@ -125,12 +125,10 @@ public class DBSApi {
 	}
 
         public Vector supportedClientApiVersions() throws Exception {
-		//FIXME ASK Anzar  to use some conventions in declaing vaiables.
                 DBSConfig config = DBSConfig.getInstance();
                 String clientVers = config.getSupportedClientVersions(); 
                 String[] result = clientVers.split(","); 
                 //String[] result = clientVers.split("\\s"); 
-                //FIXME Turning array into a verstor is just something not required, fix this later 
 		Vector supported_version_list  = new Vector();
                 for (int x=0; x<result.length; x++) {
                     supported_version_list.add(result[x].trim());
@@ -179,7 +177,6 @@ public class DBSApi {
         }  
 
         private void checkVersion(String apiversion) throws Exception {
-		//FIXME I dont think this api check is does anything. Anyways it has to move in the call method insated of the constructor
                 Enumeration verEnum = supportedClientApiVersions().elements();
                 String msg  = "Incorrect API version specified '"+apiversion+"'";
                        msg += " Supported versions are: ";
@@ -252,15 +249,12 @@ public class DBSApi {
 			conn.setAutoCommit(false);
 			if (apiStr.equals("getDBSServerVersion")) {
 				String serverVersion = DBSConstants.DBSTag;
-			        //$Name:  $
-
 				serverVersion = serverVersion.replace("$Name:", "");	
 				serverVersion = serverVersion.replace("$", "");
 				serverVersion = serverVersion.trim();
 
 				out.write("<dbs_version server_version='"+serverVersion+"' schema_version='"+dbsSchemaVersion+"' />");
 			} else if (apiStr.equals("listPrimaryDatasets")) {
-				//System.out.println("Pattern is "+ get(table, "pattern", false));
 				(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
 			} else if (apiStr.equals("listProcessedDatasets")) {
@@ -431,11 +425,6 @@ public class DBSApi {
 			} else if (apiStr.equals("insertProcessedDataset")) {
 				(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out,  DBSApiParser.parsePD(getXml(table)), dbsUser);
 				
-			/*} else if (apiStr.equals("createAnalysisDatasetFromPD")) {
-				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetFromPD(conn, out,
-					DBSApiParser.parse(getXml(table), "analysis_dataset"),
-					dbsUser);*/
-				
 			} else if (apiStr.equals("createAnalysisDatasetDefinition")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefinition(conn, out,  DBSApiParser.parseADD(getXml(table)), dbsUser);
 
@@ -562,6 +551,12 @@ public class DBSApi {
                         } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),
+                                                dbsUser);
+                        } else if (apiStr.equals("insertRunRangeDQ"))  {
+                                (new DBSApiDQLogic(this.data)).insertRunRangeDQ(conn, out,
+						get(table, "start_run", true),
+						get(table, "end_run", true),
+                                                DBSApiParser.parseDQFlags(getXml(table)),
                                                 dbsUser);
                         } else if (apiStr.equals("updateRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).updateRunLumiDQ(conn, out,

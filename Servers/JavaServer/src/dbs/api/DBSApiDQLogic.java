@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiDQLogic.java,v 1.20 2007/04/13 17:24:42 afaq Exp $"
+ $Revision: 1.1 $"
+ $Id: DBSApiDQLogic.java,v 1.1 2007/06/14 18:55:40 afaq Exp $"
  *
  */
 
@@ -80,6 +80,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			writeWarning(out, "Already Exists", "1020", "FLAG:="+flag+
 							" for This Run (LumiSection) already exixts with value:="+value );
 			return flagID;
+
 		}
 
                 PreparedStatement ps = null;
@@ -251,12 +252,35 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 	}
 
-		
-	public void insertRunLumiDQ(Connection conn, Writer out, Vector runDQList, Hashtable dbsUser) throws Exception {
 
-	        String cbUserID = null;
-                String creationDate = null;
-		String lmbUserID = personApi.getUserID(conn, dbsUser);
+	public void insertRunRangeDQ(Connection conn, Writer out, String startRun, String endRun, 
+							Vector dqFlags, Hashtable dbsUser) throws Exception {
+
+		//We do not need lumiID
+		String lumiID = null;
+
+		for (int i = Integer.parseInt(startRun); i <= Integer.parseInt(endRun); ++i) {
+			//See if Run Exists, It must, else throw error
+			DBSUtil.writeLog("runNumber: "+i);
+			String runID = getID(conn, "Runs", "RunNumber", String.valueOf(i), false);
+			
+                        if (isNull (runID )){
+                                throw new DBSException("Run Do Not Exist", "7001",
+                                                        "RunNumber: "+ i +", Do Not eixst in DBS, cannot add DQ Flags");
+                        }
+
+			insertDQFlags(conn, out, runID, lumiID, dqFlags, dbsUser);
+			
+		}	
+
+	}
+		
+	public void insertRunLumiDQ(Connection conn, Writer out, 
+							Vector runDQList, Hashtable dbsUser) throws Exception {
+
+	        //String cbUserID = null;
+                //String creationDate = null;
+		//String lmbUserID = personApi.getUserID(conn, dbsUser);
 
 
 		 DBSUtil.writeLog("Entering insertRunLumiDQ...");	
@@ -264,17 +288,17 @@ public class DBSApiDQLogic extends DBSApiLogic {
 			//Get the Run
                         Hashtable runDQ = (Hashtable) runDQList.get(i);
 
-			creationDate = getTime(runDQ, "creation_date", false);
-			cbUserID = personApi.getUserID(conn, get(runDQ, "created_by"), dbsUser );
+			//creationDate = getTime(runDQ, "creation_date", false);
+			//cbUserID = personApi.getUserID(conn, get(runDQ, "created_by"), dbsUser );
 
 			//Get the Run Number
 			String runNumber = get(runDQ, "run_number", true);
 		        DBSUtil.writeLog("runNumber: "+runNumber);	
 
                         //See if Run Exists, It must, else throw error
-                        String runID = getID(conn, "Runs", "RunNumber", runNumber, true);
+                        String runID = getID(conn, "Runs", "RunNumber", runNumber, false);
 
-                        if (isNull (runID = getID(conn, "Runs", "RunNumber", runNumber, true))){
+                        if (isNull (runID )){
                                 throw new DBSException("Run Do Not Exist", "7001",
                                                         "RunNumber: "+runNumber+", Do Not eixst in DBS, cannot add DQ Flags");
                         }
@@ -306,57 +330,71 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 			//Get the sub-system Vector
 			Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+			insertDQFlags(conn, out, runID, lumiID, subSys, dbsUser);
+		}
 
-			//Loop over each item
-			for (int j = 0; j < subSys.size() ; ++j) {
-				Hashtable dqFlag = (Hashtable) subSys.get(j);				
+	}
 
-				//Check for null yourself!	
-				String name = DBSUtil.get(dqFlag, "name");
 
-				String value = get(dqFlag, "value", true);
-				DBSUtil.writeLog("Flag: Name..."+name);
-				DBSUtil.writeLog("Flag: Value..."+value);
+	private void insertDQFlags(Connection conn, Writer out, String runID, String lumiID,
+                                                        Vector subSys, Hashtable dbsUser) throws Exception {
+
+
+                String cbUserID = null;
+                String creationDate = null;
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+
+		//Loop over each item
+		for (int j = 0; j < subSys.size() ; ++j) {
+			Hashtable dqFlag = (Hashtable) subSys.get(j);				
+
+			//Check for null yourself!	
+			String name = DBSUtil.get(dqFlag, "name");
+
+			String value = get(dqFlag, "value", true);
+			DBSUtil.writeLog("Flag: Name..."+name);
+			DBSUtil.writeLog("Flag: Value..."+value);
+
+                        creationDate = getTime(dqFlag, "creation_date", false);
+                        cbUserID = personApi.getUserID(conn, get(dqFlag, "created_by"), dbsUser );
+
+			//Let us insert THIS FLAG
+			String subFlagID = insertDQFlag(conn, out, runID, lumiID,
+                                                               name, value,
+                                                               cbUserID, creationDate,
+                                                               lmbUserID);
+
+			//stow away the ID of latest insert for later use
+			//String subFlagID = getDQFlagID(conn, runID, lumiID, name, value, true);
+
+			//It may have a sub-sub-system vector to itself 
+			Vector subsubSys = DBSUtil.getVector(dqFlag, "dq_sub_subsys");
+
+			for (int k = 0; k < subsubSys.size() ; ++k) {
+				Hashtable dqsubFlag = (Hashtable) subsubSys.get(k);
+				//Check for null yourself! 
+				String subname = DBSUtil.get(dqsubFlag, "name");
+
+                               	String subvalue = get(dqsubFlag, "value", true);
+                               	DBSUtil.writeLog("      Flag: Sub Name..."+subname);
+                               	DBSUtil.writeLog("      Flag: Sub Value..."+subvalue);
 
 				//Let us insert THIS FLAG
-				String subFlagID = insertDQFlag(conn, out, runID, lumiID,
-                                                                name, value,
-                                                                cbUserID, creationDate,
-                                                                lmbUserID);
-
-				//stow away the ID of latest insert for later use
-				//String subFlagID = getDQFlagID(conn, runID, lumiID, name, value, true);
-
-				//It may have a sub-sub-system vector to itself 
-				Vector subsubSys = DBSUtil.getVector(dqFlag, "dq_sub_subsys");
-				for (int k = 0; k < subsubSys.size() ; ++k) {
-					Hashtable dqsubFlag = (Hashtable) subsubSys.get(k);
-					//Check for null yourself! 
-					String subname = DBSUtil.get(dqsubFlag, "name");
-
-                                	String subvalue = get(dqsubFlag, "value", true);
-                                	DBSUtil.writeLog("      Flag: Sub Name..."+subname);
-                                	DBSUtil.writeLog("      Flag: Sub Value..."+subvalue);
-
-					//Let us insert THIS FLAG
-                                	String subsubID = insertDQFlag(conn, out, runID, lumiID,
+                               	String subsubID = insertDQFlag(conn, out, runID, lumiID,
                                                                 subname, subvalue,
                                                                 cbUserID, creationDate,
                                                                 lmbUserID);
 
-					//ID of latest insert, going tobe used right now	
-					//String subsubID = getDQFlagID(conn, runID, lumiID, subname, subvalue, true);	
-					//AND associate it to its parent 
-					//(Thats done HARD CODED in SubSystem Table, So I do not need to do that anymore)
-					//Afaq: 06/07/2007
-					//insertMap(conn, out, "QFlagAssoc", "ThisFlag", "ItsAssoc",
-                                        //        subFlagID,
-                                        //        subsubID,
-                                        //        cbUserID, lmbUserID, creationDate);
-				}
+				//ID of latest insert, going tobe used right now	
+				//String subsubID = getDQFlagID(conn, runID, lumiID, subname, subvalue, true);	
+				//AND associate it to its parent 
+				//(Thats done HARD CODED in SubSystem Table, So I do not need to do that anymore)
+				//Afaq: 06/07/2007
+				//insertMap(conn, out, "QFlagAssoc", "ThisFlag", "ItsAssoc",
+                                //        subFlagID,
+                                //        subsubID,
+                                //        cbUserID, lmbUserID, creationDate);
 			}
 		}
-
 	}
-	
 }

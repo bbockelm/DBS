@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.104 $"
- $Id: DBSSql.java,v 1.104 2007/06/14 18:21:20 afaq Exp $"
+ $Revision: 1.105 $"
+ $Id: DBSSql.java,v 1.105 2007/06/14 18:35:51 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -155,7 +155,6 @@ public class DBSSql {
                                                         String cbUserID, String lmbUserID, String cDate) throws SQLException {
 
                 Hashtable table = new Hashtable();
-
                 table.put("Run", runID);
                 if (!DBSUtil.isNull(lumiID)) table.put("Lumi", lumiID);
                 table.put("SubSystem", flagID);
