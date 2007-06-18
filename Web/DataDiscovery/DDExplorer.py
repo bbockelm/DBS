@@ -25,7 +25,7 @@ The XML structure:
 <select column='PrimaryDataset.Name' />
 <select column='ProcessedDataset.Name' />
 <output limit="5" offset="2" />
-<where cluse="PrimaryDataset.Name like 'MTCC%'" />
+<where clause="PrimaryDataset.Name like 'MTCC%'" />
 </ddrequest>
 
 The following conditions are supported: =,>=,<=,>,<,like,likeLeft,likeRight
