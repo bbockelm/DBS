@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiDQLogic.java,v 1.2 2007/06/15 21:30:59 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiDQLogic.java,v 1.3 2007/06/18 19:55:16 afaq Exp $"
  *
  */
 
@@ -44,23 +44,24 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		//NO Need to Pass the value, this is the UPDATED Value actually
                 String rowID =  getDQFlagID(conn, runID, lumiID, flag, "", true);
 
-		//Update its value
+        	//INSERT into HISTORY table FIRST
                 PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertDQFlagHistory(conn, rowID);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+
+
+		//Update its value
+        	ps = null;
                 try {
                         ps = DBSSql.updateDQFlag(conn, rowID,
                                                         getID(conn, "QualityValues", "Value", value, true),
                                                         lmbUserID);
                         ps.executeUpdate();
                 } finally {
-                        if (ps != null) ps.close();
-                }
-
-	//INSERT into HISTORY table too
-        ps = null;
-                try {
-                        ps = DBSSql.insertDQFlagHistory(conn, rowID);
-			ps.execute();
-		} finally {
                         if (ps != null) ps.close();
                 }
 
