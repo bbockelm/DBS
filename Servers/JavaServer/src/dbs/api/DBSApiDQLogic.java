@@ -1,6 +1,6 @@
 /**
- $Revision: 1.1 $"
- $Id: DBSApiDQLogic.java,v 1.1 2007/06/14 18:55:40 afaq Exp $"
+ $Revision: 1.2 $"
+ $Id: DBSApiDQLogic.java,v 1.2 2007/06/15 21:30:59 afaq Exp $"
  *
  */
 
@@ -252,6 +252,39 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 	}
 
+
+        public void insertLumiRangeDQ(Connection conn, Writer out, String runNumber, String stratLumi, String endLumi,
+                                                        Vector dqFlags, Hashtable dbsUser) throws Exception {
+
+		String runID = getID(conn, "Runs", "RunNumber", runNumber, false);
+
+		if (isNull (runID )){
+			throw new DBSException("Run Do Not Exist", "7001",
+				"RunNumber: "+ runNumber +", Do Not eixst in DBS, cannot add DQ Flags");
+		}
+
+		//The Run Information MUST already be in DBS to be able to add LumiSections to it !
+		String runExists = getID(conn, "RunLumiQuality", "Run", runID, false);
+	        if (isNull(runExists)) {
+                      throw new DBSException("Run Quality Do Not Exist", "7005",
+                                                                "RunNumber: "+runNumber +
+                                                                " Do not have any DataQuality information in DBS, Run DQ goes before Lumi");
+                }
+
+		for (int i = Integer.parseInt(stratLumi); i <= Integer.parseInt(endLumi); ++i) {
+			
+			String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", String.valueOf(i), false);
+			if ( isNull(lumiID) ) {
+                                throw new DBSException("Lumi Section Do Not Exist", "7004",
+                                                        "Lumi Section "+String.valueOf(i)+", Do Not eixst in DBS RunNumber "+runNumber+
+                                                        ", cannot add DQ Flags");
+
+                        }	
+			insertDQFlags(conn, out, runID, lumiID, dqFlags, dbsUser);
+		}
+
+
+	}
 
 	public void insertRunRangeDQ(Connection conn, Writer out, String startRun, String endRun, 
 							Vector dqFlags, Hashtable dbsUser) throws Exception {

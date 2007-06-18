@@ -1,6 +1,6 @@
 /**
- $Revision: 1.93 $"
- $Id: DBSApi.java,v 1.93 2007/06/14 18:35:49 afaq Exp $"
+ $Revision: 1.94 $"
+ $Id: DBSApi.java,v 1.94 2007/06/15 21:30:58 afaq Exp $"
  *
 */
 
@@ -556,6 +556,13 @@ public class DBSApi {
                                 (new DBSApiDQLogic(this.data)).insertRunRangeDQ(conn, out,
 						get(table, "start_run", true),
 						get(table, "end_run", true),
+                                                DBSApiParser.parseDQFlags(getXml(table)),
+                                                dbsUser);
+                        } else if (apiStr.equals("insertLumiRangeDQ"))  {
+                                (new DBSApiDQLogic(this.data)).insertLumiRangeDQ(conn, out,
+						get(table, "run_number", true),
+                                                get(table, "start_lumi", true),
+                                                get(table, "end_lumi", true),
                                                 DBSApiParser.parseDQFlags(getXml(table)),
                                                 dbsUser);
                         } else if (apiStr.equals("updateRunLumiDQ"))  {

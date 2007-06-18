@@ -2060,7 +2060,6 @@ class DbsApi(DbsConfig):
     xmlinput += "<run"
     xmlinput += " run_number='"+str(run.get('RunNumber', ''))+"'"
     xmlinput += " number_of_events='"+str(run.get('NumberOfEvents', ''))+"'"
-    xmlinput += " number_of_lumi_sections='"+str(run.get('NumberOfLumiSections', ''))+"'"
     xmlinput += " total_luminosity='"+str(run.get('TotalLuminosity', ''))+"'"
     xmlinput += " end_of_run='"+str(run.get('EndOfRun', ''))+"'"
     xmlinput += " />"
@@ -3360,6 +3359,32 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
+  def insertLumiRangeDQ(self, runNumber, startLumi, endLumi, dqFlagList):
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    
+    for aFlag in dqFlagList:
+            xmlinput += "<dq_sub_system name='" + aFlag.get('Name') + "'  value='" + aFlag.get('Value') + "'  />"
+            # Sub sub system list
+            for aSubFlag in aFlag.get('SubSysFlagList'):
+                    xmlinput += "<dq_sub_subsys name='" + aSubFlag.get('Name') + "'  value='" + aSubFlag.get('Value') + "'  />"
+    
+    xmlinput += "</dbs>"
+    
+    logging.log(DBSDEBUG, xmlinput)
+    
+    data = self._server._call ({ 'api' : 'insertLumiRangeDQ',
+					'run_number': str(self._get_run(runNumber)),
+                                        'start_lumi': str(startLumi),
+                                        'end_lumi': str(endLumi),
+                                        'xmlinput' : xmlinput }, 'POST')
+    
+    logging.log(DBSDEBUG, data)
+  #-------------------------------------------------------------------
 
 #############################################################################
 # Unit testing: see $PWD/UnitTests
