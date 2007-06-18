@@ -9,6 +9,7 @@ DBS Discovery :: Finder
 | <a href="javascript:HideTag('builderFinder');ShowTag('queriesFinder');ClearTag('results_finder')">My queries</a>
 | <a href="$host/finderExample?userMode=$userMode">Demo</a>
 ###| <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">Command Line Interface</a>
+###$title
 </td>
 #if $userMode=='user'
 <td align="right" class="box_darkblue">Physicist</td>
@@ -41,7 +42,8 @@ DBS instances:
 </tr>
 </table>
 #else
-<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+###<input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
+<input type="hidden" name="dbsInst" value="$dbsInst" id="finder_dbsSelector" />
 #end if
 <input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
 
@@ -100,9 +102,13 @@ Query limit:
 <tr>
 <td>
 <p>
-save query as: <input type="text" name="finderAlias" size="30" id="kw_alias" disabled="disabled" /> 
+save query as: 
+###<input type="text" name="finderAlias" size="30" id="kw_alias" /> 
+###<input type="button" value="Save" id="saveQuery" onclick="javascript:ajaxFinderStoreQuery();" />
+<input type="text" name="finderAlias" size="30" id="kw_alias" disabled="disabled" /> 
 <input type="button" value="Save" id="saveQuery" onclick="javascript:ajaxFinderStoreQuery();" disabled="disabled" />
 </p>
+<p id="query_confirmation"></p>
 </td>
 </tr>
 

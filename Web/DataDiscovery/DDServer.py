@@ -20,6 +20,7 @@ from   Cheetah.Template import Template
 
 # CherryPy server modules
 import cherrypy 
+from   cherrypy    import expose
 
 # DBS  modules
 from   DDUtil      import *
@@ -27,6 +28,7 @@ from   DDConfig    import *
 from   DDHelper    import *
 from   Templates   import *
 from DDParamServer import *
+
 #from   DDLucene  import *
 # load DBS history tables module
 try:
@@ -2595,7 +2597,23 @@ class DDServer(DDLogger,Controller):
         return page
 #    sendFeedback.exposed=True
 
+    def lookupUserId(self,userId):
+        if  userId=="guest": # not authenticated user trying to store history
+            _user = ""
+            try:
+                token = SecurityToken()
+                _user = token.dn
+                if _user and _user!=userId:
+                   userId=_user
+#                cherrypy.response.cookie['DBSDD_username']
+            except:
+                pass
+        return userId
+    lookupUserId.expose=True
+
     def storeHistory(self,dbsInst,userId,actionString,alias=''):
+        userId=self.lookupUserId(userId)
+
         # update DB history
         # try to insert dbsInst, otherwise get its id from DB
         dbsid=0
@@ -3343,8 +3361,20 @@ class DDServer(DDLogger,Controller):
         else:
             page=self.genTopHTML()
 
+#        t = templateFinderTitle(searchList=[{'ext':":: Results",'host':self.dbsdd,'userMode':userMode}]).respond()
+#        page+=self.whereMsg(str(t),userMode)
         page+=self.whereMsg('Finder :: Results',userMode)
         parameters,iList,whereClause=self.constructQueryParameters(kwargs)
+        queryInXML=self.saveQueryToXML(iList,whereClause)
+        page+="""<textarea id="queryXML" class="hide">%s</textarea>"""%urllib.quote(queryInXML)
+        page+="""<table width="100%%"><tr><td align="left">
+Save query as:
+<input type="hidden" name="dbsInst" id="dbsInst" value="%s" />
+<input type="text" name="finderAlias" size="30" id="kw_alias" />
+<input type="button" value="Save" id="saveQuery" onclick="javascript:ajaxFinderResultStoreQuery();" />
+<p id="query_confirmation"></p>
+</td></tr></table>
+"""%dbsInst
         if not validator(whereClause):
            page+="Wrong where clause expression '%s'"%whereClause
            page+=self.genBottomHTML()
@@ -3471,26 +3501,33 @@ class DDServer(DDLogger,Controller):
         return page
     getAliasesFromHistoryDB.exposed=True
 
-    def finderStoreQueryInXML(self,dbsInst,userId,alias,**kwargs):
+    def saveQueryToXML(self,iList,whereClause):
         xmlOutput="""<?xml version="1.0" encoding="utf-8"?><ddRequest>"""
+        for item in iList:
+            xmlOutput+="""<select column="%s" />"""%(item)
+        if  whereClause:
+            xmlOutput+="""<where clause="( %s )" />"""%(whereClause)
+        xmlOutput+="""</ddRequest>"""
+        queryInXML=xmlOutput.strip()
+        return queryInXML
+
+    def finderStoreQueryInXML(self,dbsInst,userId,alias,**kwargs):
+        iList=[]
+        whereClause=""
+        queryInXML=""
         for key in kwargs.keys():
             if key=="_": continue
-            pList = kwargs[key].split("_newparam_")
-#            print kwargs[key],pList
-            for item in pList:
-                table,col,op,where=string.split(item,"__")
-                tableName=self.helper.dbManager.getDBTableName(dbsInst,table)
-                if col.lower()=='all':
-                   cols=self.helper.getTableColumns(tableName)
-                   for column in cols:
-                       xmlOutput+="""<select column="%s.%s" />"""%(tableName,column)
-                else:
-                   xmlOutput+="""<select column="%s.%s" />"""%(tableName,col)
-                if where:
-                   xmlOutput+="""<where column="%s.%s" operator="%s" value="%s" />"""%(tableName,col,str(op),str(where))
-        xmlOutput+="""</ddRequest>"""
-#        queryInXML=urllib.quote(xmlOutput.strip())
-        queryInXML=xmlOutput.strip()
+            if key=="params":
+               pList = kwargs[key].split("_table_")
+               for item in pList:
+                   if item and not iList.count(item):
+                      iList.append(item)
+            if key=="where":
+               whereClause=kwargs[key]
+            if key=="queryXML":
+               queryInXML=urllib.unquote(kwargs[key])
+        if  not queryInXML:
+            queryInXML=self.saveQueryToXML(iList,whereClause)
         try:
             self.storeHistory(dbsInst,userId,queryInXML,alias)
         except:
@@ -3500,27 +3537,27 @@ class DDServer(DDLogger,Controller):
             pass
     finderStoreQueryInXML.exposed=True
 
-    def finderStoreQuery(self,dbsInst,userId,alias,**kwargs):
-        iList=[]
-        for key in kwargs.keys():
-            if key=="_": continue
-            pList = kwargs[key].split("_newparam_")
-#            print kwargs[key],pList
-            for item in pList:
-                table,col,op,where=string.split(item,"__")
-                if col.lower()=='all': col='*'
-                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName(dbsInst,table),col))
-        query,oList = self.helper.queryMaker(iList)
-        try:
-            self.storeHistory(dbsInst,userId,query,alias)
-        except:
-            if self.verbose:
-               self.writeLog(getExcept())
-            printExcept()
-            pass
-    finderStoreQuery.exposed=True
+#    def finderStoreQuery(self,dbsInst,userId,alias,**kwargs):
+#        iList=[]
+#        for key in kwargs.keys():
+#            if key=="_": continue
+#            pList = kwargs[key].split("_newparam_")
+#            for item in pList:
+#                table,col,op,where=string.split(item,"__")
+#                if col.lower()=='all': col='*'
+#                iList.append("%s.%s"%(self.helper.dbManager.getDBTableName(dbsInst,table),col))
+#        query,oList = self.helper.queryMaker(iList)
+#        try:
+#            self.storeHistory(dbsInst,userId,query,alias)
+#        except:
+#            if self.verbose:
+#               self.writeLog(getExcept())
+#            printExcept()
+#            pass
+#    finderStoreQuery.exposed=True
 
     def finderSearchQuery(self,userId,alias,**kwargs):
+        userId=self.lookupUserId(userId)
         cList=[]
         try:
 #            c = select([DD_COMMAND.c.command,DD_COMMAND.c.alias],
@@ -3593,7 +3630,7 @@ class DDServer(DDLogger,Controller):
            page+="""<div align="right"><a href="javascript:HideTag('%s')">close &#8855;</a><hr class="dbs" /></div> """%id
         page+=xmlOutput
 #        page+="<code>"+xmlOutput+"</code>"
-        page+="""<p/><div>You may use this XML snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
+        page+="""<p/><hr class="dbs" /><div>You may use this XML snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
         if int(ajax):
            page+="</div>"
            page+="""</response></ajax-response>"""
@@ -3827,6 +3864,8 @@ class DDServer(DDLogger,Controller):
            page+="<pre>"+out+"</pre>"
         else:
            page+=out
+
+        page+="""<p/><hr class="dbs" /><div>You may use this TXT snippet with <a href="https://twiki.cern.ch/twiki/bin/view/CMS/DDExplorer">DDExplorer</a> a command line interface to Finder.</div>"""
         if int(ajax):
            page+="</div>"
            page+="""</response></ajax-response>"""

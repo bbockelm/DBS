@@ -445,6 +445,7 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxFinderSearch','finderSearch');
     ajaxEngine.registerRequest('ajaxFindDSFromFinder','findDSFromFinder');
     ajaxEngine.registerRequest('ajaxFinderStoreQuery','finderStoreQueryInXML');
+    ajaxEngine.registerRequest('ajaxFinderResultStoreQuery','finderStoreQueryInXML');
     ajaxEngine.registerRequest('ajaxFinderSearchQuery','finderSearchQuery');
     finderUpdater = new GetDataUpdater('results_finder','replace','noResultsMenu');
     ajaxEngine.registerAjaxObject('results_finder',finderUpdater);
@@ -682,6 +683,21 @@ function ajaxFindDSFromFinder(dbsInst,params,userMode) {
 }
 function ajaxFinderStoreQuery(iUser) {
     var dbsInst=$('finder_dbsSelector').value;
+    var sel=document.getElementsByName("tableColumnList");
+    var parameters='';
+    for(var i=0;i<sel.length;i++) {
+        if (sel[i].checked) {
+            if (!parameters) {
+                 parameters='params='+sel[i].id;
+            } else {
+                 parameters=parameters+'_table_'+sel[i].id;
+            }
+        }
+    }
+    var where='where='+$('kw_where').value;
+    var aName=$('kw_alias').value;
+
+/*
     var sel=document.getElementsByName("sectionTables");
     var maxId=1;
     for(var i=0;i<sel.length;i++) {
@@ -703,7 +719,18 @@ function ajaxFinderStoreQuery(iUser) {
         }
     }
     ajaxEngine.sendRequest('ajaxFinderStoreQuery','dbsInst='+dbsInst,'userId='+getUserName(iUser),'alias='+aName,parameters);
-    $('results_finder').innerHTML='Your query "'+aName+'" has been saved.';
+*/
+    ajaxEngine.sendRequest('ajaxFinderStoreQuery','dbsInst='+dbsInst,'userId='+getUserName(iUser),'alias='+aName,parameters,where);
+//    $('results_finder').innerHTML='Your query "'+aName+'" has been saved.';
+    $('query_confirmation').innerHTML='<span class="box_gray">Your query "'+aName+'" has been saved.</span>';
+    $('kw_alias').value='';
+}
+function ajaxFinderResultStoreQuery(iUser) {
+    var query=$('queryXML').value;
+    var dbsInst=$('dbsInst').value;
+    var aName=$('kw_alias').value;
+    ajaxEngine.sendRequest('ajaxFinderStoreQuery','dbsInst='+dbsInst,'userId='+getUserName(iUser),'alias='+aName,'queryXML='+query);
+    $('query_confirmation').innerHTML='<span class="box_gray">Your query "'+aName+'" has been saved.</span>';
     $('kw_alias').value='';
 }
 function ajaxFinderSearchQuery(iUser) {
