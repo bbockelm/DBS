@@ -1,6 +1,6 @@
 /**
- $Revision: 1.103 $"
- $Id: DBSApiLogic.java,v 1.103 2007/06/07 21:48:19 afaq Exp $"
+ $Revision: 1.104 $"
+ $Id: DBSApiLogic.java,v 1.104 2007/06/13 16:35:17 afaq Exp $"
  *
  */
 
@@ -113,13 +113,16 @@ public class DBSApiLogic {
 	public void insertRun(Connection conn, Writer out, Hashtable run, Hashtable dbsUser) throws Exception {
 		DBSApiPersonLogic personApi = new DBSApiPersonLogic(this.data);
 		String runNumber = get(run, "run_number", true);
+		String numLumiSec = get(run, "number_of_lumi_sections", false);
+		if (isNull(numLumiSec)) numLumiSec = "0";
+
 		if(getID(conn, "Runs", "RunNumber", runNumber, false) == null ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertRun(conn, 
 					runNumber,
 					get(run, "number_of_events", true),
-					get(run, "number_of_lumi_sections", true),
+					numLumiSec,
 					get(run, "total_luminosity", true),
 					get(run, "store_number", true),
 					get(run, "start_of_run", false),
