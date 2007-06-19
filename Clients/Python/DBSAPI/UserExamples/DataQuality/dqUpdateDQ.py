@@ -23,13 +23,13 @@ api = DbsApi(opts.__dict__)
 # Sub-Sub System Flag (Making it Unknown)
 flag1 = DbsDQFlag (
         Name = "HCAL+",
-        Value = "UNKNOWN",
+        Value = "GOOD",
         )
 
 # Sub-Sub System Flag  (Making it BAD)
 flag2 = DbsDQFlag (
         Name = "HCAL-",
-        Value = "BAD",
+        Value = "GOOD",
         )
 
 # Sub System Flag (NO Change)

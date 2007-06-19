@@ -46,7 +46,7 @@ dqFlagList = [flag1, flag2, flag3]
 try:
 
     # Lets say from RunNumber 5 to 10 we need to have THESE Flags set
-    api.insertRunRangeDQ(6, 10, dqFlagList)
+    api.insertRunRangeDQ(startRun=5, endRun=10, dqFlagList=dqFlagList)
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
