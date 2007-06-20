@@ -19,6 +19,16 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
+def print_flags_nice(dqHierarchyList):
+    for aDQ in dqHierarchyList:
+        print "\nRunNumber: ", aDQ['RunNumber']
+        print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
+        for aSubDQ in aDQ['DQFlagList']:
+                print "      ", aSubDQ['Name'], aSubDQ['Value']
+                for aSubSubDQ in aSubDQ['SubSysFlagList']:
+                        print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+
+
 #-------------------------------------------------------------------------------
 # Sub-Sub System Flag (Making it Unknown)
 flag1 = DbsDQFlag (
@@ -29,13 +39,13 @@ flag1 = DbsDQFlag (
 # Sub-Sub System Flag  (Making it BAD)
 flag2 = DbsDQFlag (
         Name = "HCAL-",
-        Value = "GOOD",
+        Value = "BAD",
         )
 
 # Sub System Flag (NO Change)
 flag3 = DbsDQFlag (
         Name = "HCAL",
-        Value = "GOOD",
+        Value = "UNKNOWN",
         #Well no one stops you from specifying Sub Flags
         #SubSysFlagList = [flag11, flag12]
         )
@@ -57,16 +67,9 @@ run_search = DbsRunLumiDQ (
 
 try:
 
-
     print "List B4 Update"
-    dqHierarchyList =  api.listRunLumiDQ(  [run_search]  )
-    for aDQ in dqHierarchyList:
-        print "\nRunNumber: ", aDQ['RunNumber']
-        print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
-        for aSubDQ in aDQ['DQFlagList']:
-                print "      ", aSubDQ['Name'], aSubDQ['Value']
-                for aSubSubDQ in aSubDQ['SubSysFlagList']:
-                        print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+    dqHierarchyList = api.listRunLumiDQ(  [run_search]  )
+    print_flags_nice(dqHierarchyList)
 
     # Update One Flag of one Run, Update Several Flags of a Runs
     # Update Several Flags of Several Runs
@@ -74,16 +77,7 @@ try:
     
     print "\n\nList AFTER Update"
     dqHierarchyList =  api.listRunLumiDQ(  [run_search]  )
-    for aDQ in dqHierarchyList:
-	print "\nRunNumber: ", aDQ['RunNumber']
-	print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
-	for aSubDQ in aDQ['DQFlagList']:
-		print "      ", aSubDQ['Name'], aSubDQ['Value']
-		for aSubSubDQ in aSubDQ['SubSysFlagList']:
-			print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
-
-
-    # Single LumiSection, with in a Run (Some sub systems have sub-sub systems, some don't)
+    print_flags_nice(dqHierarchyList)
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

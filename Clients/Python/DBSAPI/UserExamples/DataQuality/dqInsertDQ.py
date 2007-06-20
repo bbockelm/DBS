@@ -68,13 +68,13 @@ flag_nosub = DbsDQFlag (
 #Create RunDQ Object, for RunNumber 1, RunNumber 1 already exists in DBS
 
 lumi_dq1 = DbsRunLumiDQ (
-        RunNumber=5,
+        RunNumber=1,
         LumiSectionNumber=123,
         DQFlagList = [flag1, flag2, flag_nosub]
 	)
 
 run_dq1 = DbsRunLumiDQ (
-        RunNumber=5,
+        RunNumber=1,
         #LumiSectionNumber=123,
         DQFlagList = [flag1, flag2, flag_nosub]
         )

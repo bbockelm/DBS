@@ -19,6 +19,17 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
+
+def print_flags_nice(dqHierarchyList):
+    for aDQ in dqHierarchyList:
+        print "\nRunNumber: ", aDQ['RunNumber']
+        print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
+        for aSubDQ in aDQ['DQFlagList']:
+                print "      ", aSubDQ['Name'], aSubDQ['Value']
+                for aSubSubDQ in aSubDQ['SubSysFlagList']:
+                        print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+
+
 #-------------------------------------------------------------------------------
 # Sub-Sub System Flag
 flag1 = DbsDQFlag (
@@ -61,25 +72,27 @@ try:
     # Mind that run_dq_search_criteria is just one object, API takes a LIST of such objects
     # So you must pass it as list
 
-    #dqHierarchyList =  api.listRunLumiDQ(  [run_dq_search_criteria]  )
+    #dqHierarchyList =  api.listRunLumiDQ(  runLumiDQList=[run_dq_search_criteria]  )
  
     # ALL of them, ARE U CRAZY ?
+    print "\n-------------------CURRENT...."
     dqHierarchyList =  api.listRunLumiDQ(   )
-    
-    # Lets go over them
-    #import pdb
-    #pdb.set_trace()
+    print_flags_nice(dqHierarchyList)
 
-    for aDQ in dqHierarchyList:
-	print "\nRunNumber: ", aDQ['RunNumber']
-	print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
-	for aSubDQ in aDQ['DQFlagList']:
-		print "      ", aSubDQ['Name'], aSubDQ['Value']
-		for aSubSubDQ in aSubDQ['SubSysFlagList']:
-			print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+    """ 
+    # List a specific Version DQ_00_00_00
+    print "\n-------------------Version DQ_00_00_00..."
+    dqHierarchyList =  api.listRunLumiDQ(dqVersion="DQ_00_00_00")
+    print_flags_nice(dqHierarchyList)
 
+    print "\n-------------------Version DQ_00_00_01..."
+    dqHierarchyList =  api.listRunLumiDQ(dqVersion="DQ_00_00_01")
+    print_flags_nice(dqHierarchyList)
 
-    # Single LumiSection, with in a Run (Some sub systems have sub-sub systems, some don't)
+    print "\n-------------------Version DQ_00_00_02..."
+    dqHierarchyList =  api.listRunLumiDQ(dqVersion="DQ_00_00_02")
+    print_flags_nice(dqHierarchyList)
+    """
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
