@@ -3168,9 +3168,78 @@ class DbsApi(DbsConfig):
 #############################################################################
 #  All DQ API Calls are being put here, will be moved to a separate files soon !! 
 #############################################################################
+
+  #-------------------------------------------------------------------
+  
+  def versionDQ(self, version, description=""):
+    """
+    This API is used to Version the Data Quality (Tag) with the input 'version' provided
+
+    params:
+	version: the NAME you would like to give to your version
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<dq_version version='"+str(version)+"' description='"+description+"' />"
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+
+    data = self._server._call ({ 'api' : 'versionDQ',
+                                        'xmlinput': xmlinput,
+                                         }, 'GET')
+
+    logging.log(DBSDEBUG, data)
+
   #-------------------------------------------------------------------
 
-  def listRunLumiDQ(self, runLumiDQList=[]):
+  def listRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
+
+    """
+    Lists the Run/LumiSection DQ information based on the input criteria 
+	(for now if NO criteria is provided dumps all DQ information, DO NOT DO That !) 
+
+    params: 
+         runLumiDQList : Takes LIST of DbsRunLumiDQ objects, each representing a Run OR a LumiSection within a Run
+                         with a list of Data Quality Flags (Sub-System and Sub-Sub-System Flags and their values)
+                         defined as "DQFlagList". Each object of this list if of type DbsDQFlag. 
+                         These values are made part of look up, so if you say
+                        
+			flag1 = DbsDQFlag (
+				        Name = "HCAL+",
+        				Value = "GOOD",
+        			)
+			run_dq_search_criteria = DbsRunLumiDQ (
+        			RunNumber=1,
+        			#LumiSectionNumber can be part of this serach criteria
+        			#LumiSectionNumber=123,
+        			DQFlagList = [flag1]
+				#Multiple flags
+        			#DQFlagList = [flag1, flag2, flag3]
+        			)
+			dqHierarchyList = api.listRunLumiDQ(  [run_dq_search_criteria]  )
+
+			This will mean, Looking for DQ information for RunNumber = 1, with a Sub-System HCAL+ and Value=GOOD.
+        		Anyother type of combinitions can be provided. This is just an example.
+
+			The returned values can be marched through to see whats returned.
+
+			    for aDQ in dqHierarchyList:
+			        print "\nRunNumber: ", aDQ['RunNumber']
+  				print "LumiSectionNumber: ", aDQ['LumiSectionNumber']
+			        for aSubDQ in aDQ['DQFlagList']:
+                			print "      ", aSubDQ['Name'], aSubDQ['Value']
+                			for aSubSubDQ in aSubDQ['SubSysFlagList']:
+                        			print "                ", aSubSubDQ['Name'], aSubSubDQ['Value']
+
+	dqVersion:  User can specify a Data Quality Version, By DEFAULT latest values are listed by this API
+	timeStamp: The SnapShot of Data Quality at a certain time, Time Specified in UNIX Time Format (Seconds since epoch)
+    
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
@@ -3193,7 +3262,9 @@ class DbsApi(DbsConfig):
     logging.log(DBSDEBUG, xmlinput)
 
     data = self._server._call ({ 'api' : 'listRunLumiDQ',
-                         'xmlinput' : xmlinput }, 'POST')
+                         'xmlinput' : xmlinput, 
+			'time_stamp':timeStamp, 
+			'dq_version':dqVersion }, 'POST')
     logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
@@ -3210,16 +3281,10 @@ class DbsApi(DbsConfig):
                 if name == 'dq_sub_system' or name == 'dq_sub_subsys':
                         runNumber=getLong(attrs['run_number'])
                         lumiSectionNumber=getLong(attrs['lumi_section_number'])
-                        print runNumber, lumiSectionNumber
                         if self.first != 1:
                                 if self.currRun['RunNumber'] != runNumber \
                                         or self.currRun['LumiSectionNumber'] != lumiSectionNumber :
-
-
-                                        print "NEW Run, Lumi", runNumber, lumiSectionNumber
-
                                         #self.currRun['DQFlagList'] = self.dqFlaglist
-
                                         self.currRun = DbsRunLumiDQ (
                                                 RunNumber=runNumber,
                                                 LumiSectionNumber=lumiSectionNumber
@@ -3275,6 +3340,14 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
   def updateRunLumiDQ(self, runLumiDQList):
+    """
+    This API is used to UPDATE Data Quality information for a Run, a List of Runs, a LumiSection within a Run, or a List of Lumi Sections
+    
+    params: 
+         runLumiDQList : Takes LIST of DbsRunLumiDQ objects, each representing a Run OR a LumiSection within a Run
+                         with a list of Data Quality Flags (Sub-System and Sub-Sub-System Flags and their values)
+                         defined as "DQFlagList". Each object of this list if of type DbsDQFlag.
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
@@ -3305,6 +3378,29 @@ class DbsApi(DbsConfig):
 
   def insertRunLumiDQ(self, runLumiDQList):
 
+    """
+    This API is used to insert Data Quality information for a Run, a List of Runs, a LumiSection within a Run, or a List of Lumi Sections
+
+    params: 
+         runLumiDQList : Takes LIST of DbsRunLumiDQ obkjects, each representing a Run, a LumiSection withina Run
+			 with a list of Data Quality Flags (Sub-System and Sub-Sub-System Flags and their values)
+			 defined as "DQFlagList". Each object of this list if of type DbsDQFlag.
+
+	DbsRunLumiDQ = {
+        "RunNumber" : { "Comment" : "REQUIRED", "Validator" : isLongType },
+        "LumiSectionNumber" : { "Comment" : "Optional LumiSection Number, Unique within this Run", "Validator" : isLongType },
+        "DQFlagList" : { "Comment" : "List of DbsDQFlag Objects, representing Sub-System and Sub-SubSystem Flags", "Validator" : isListType },
+        "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+        }
+
+        If LumiSectionNumber is provided, then the object represents a LumiSection, otherwise it represents a Run with RunNumber
+    
+
+    """
+
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
@@ -3333,6 +3429,15 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def insertRunRangeDQ(self, startRun, endRun, dqFlagList):
+    """
+    This API is used to insert Data Quality information for a *range* of Runs 
+
+    params:
+        startRun: First run number in the Range of Runs
+        endRun: Last run number in the Range of Runs
+        dqFlagList: List of DQ Flags, each object is of type DbsDQFlag.
+
+    """
 
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
@@ -3360,7 +3465,14 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   def insertLumiRangeDQ(self, runNumber, startLumi, endLumi, dqFlagList):
-
+    """
+    This API is used to insert Data Quality information for a *range* of LumiSections within a Run 
+    params:
+        runNumber: RunNumber of the Run these LumiSections belong to
+        startLumi: First lumi section number in the Range of lumi sections
+        endLumi: Last lumi section number in the Range of lumi sections
+        dqFlagList: List of DQ Flags, each object is of type DbsDQFlag.
+    """
     funcInfo = inspect.getframeinfo(inspect.currentframe())
     logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
 
