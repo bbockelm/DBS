@@ -52,8 +52,9 @@ echo "-- =========== INSERT TRIGGERS FOR LastModificationDate ==================
 table_list=`cat DBS-NeXtGen-MySQL.sql|grep "CREATE TABLE" | awk '{print $3}'`
 for atable in $table_list; do
    echo   >> $ddl_file
-   echo "CREATE TRIGGER TR_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
-   echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
+   if [ "TR_QualityHistory" != "TR_${atable}" ]; then
+      echo "CREATE TRIGGER TR_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
+      echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
 done
 #
 echo  >> $ddl_file

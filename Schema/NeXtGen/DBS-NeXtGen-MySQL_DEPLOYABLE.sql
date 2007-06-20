@@ -4,9 +4,9 @@
 -- === Build : 715
 -- ======================================================================
 
-drop database if exists pre_DBS_1_0_4;
-create database pre_DBS_1_0_4;
-use pre_DBS_1_0_4;
+drop database if exists pre_DBS_1_0_4Anzar_d;
+create database pre_DBS_1_0_4Anzar_d;
+use pre_DBS_1_0_4Anzar_d;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -890,9 +890,8 @@ CREATE TABLE QualityHistory
 CREATE TABLE QualityVersion
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Version               BIGINT            unique not null,
+    Version               varchar(500)      unique not null,
     VersionTimeStamp      BIGINT            unique not null,
-    VersionName           varchar(1000),
     Description           varchar(1000),
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -1651,11 +1650,11 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_RunLumiQuality BEFORE INSERT ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER TR_QualityHistory BEFORE INSERT ON QualityHistory
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+-- CREATE TRIGGER TR_QualityHistory BEFORE INSERT ON QualityHistory
+-- FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP(), NEW.VersionTimeStamp = UNIX_TIMESTAMP();
 
 -- =========== UPDATE TRIGGERS FOR LastModificationDate ============================
 
@@ -1822,7 +1821,8 @@ CREATE TRIGGER UTR_QualityHistory BEFORE UPDATE ON QualityHistory
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_QualityVersion BEFORE UPDATE ON QualityVersion
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP(), NEW.VersionTimeStamp = UNIX_TIMESTAMP();
+
 
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 
@@ -1868,10 +1868,10 @@ INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', 
 ('Tracker', UNIX_TIMESTAMP()), 
 ('PhysVal', UNIX_TIMESTAMP());
 
-INSERT INTO SubSystem (Name, CreationDate) VALUES
-                ("HCAL", UNIX_TIMESTAMP()), ("HCAL+", UNIX_TIMESTAMP()), ("HCAL-", UNIX_TIMESTAMP()),
-                ("ECAL", UNIX_TIMESTAMP()), ("ECAL+", UNIX_TIMESTAMP()), ("ECAL-", UNIX_TIMESTAMP()),
-                ("NOSUB", UNIX_TIMESTAMP());
+INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES
+                ("HCAL", 'CMS',UNIX_TIMESTAMP()), ("HCAL+", 'HCAL', UNIX_TIMESTAMP()), ("HCAL-", 'HCAL', UNIX_TIMESTAMP()),
+                ("ECAL", 'CMS', UNIX_TIMESTAMP()), ("ECAL+", 'ECAL', UNIX_TIMESTAMP()), ("ECAL-", 'ECAL', UNIX_TIMESTAMP()),
+                ("NOSUB", 'CMS', UNIX_TIMESTAMP());
 
 
 INSERT INTO QualityValues (Value, CreationDate) VALUES ("GOOD", UNIX_TIMESTAMP()),

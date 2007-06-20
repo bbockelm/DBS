@@ -207,6 +207,18 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('RelVal'
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PhysVal', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Tracker', ${unix_time});">> $ddl_file
 #
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('HCAL', ${unix_time});">> $ddl_file
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('HCAL+', ${unix_time});">> $ddl_file
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('HCAL-',${unix_time});">> $ddl_file 
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('ECAL',${unix_time});">> $ddl_file 
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('ECAL+',${unix_time});">> $ddl_file 
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('ECAL-',${unix_time});">> $ddl_file 
+echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('NOSUB',${unix_time});">> $ddl_file 
+#
+echo "INSERT INTO QualityValues (Value, CreationDate) VALUES ('GOOD', ${unix_time});">> $ddl_file
+echo "INSERT INTO QualityValues (Value, CreationDate) VALUES ('BAD', ${unix_time});">> $ddl_file
+echo "INSERT INTO QualityValues (Value, CreationDate) VALUES ('UNKNOWN', ${unix_time});">> $ddl_file
+#
 echo "commit;" >> $ddl_file
 #
 echo
