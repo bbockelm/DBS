@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.10 $"
- $Id: DBManagement.java,v 1.10 2006/12/14 20:36:05 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBManagement.java,v 1.11 2007/06/06 22:03:32 sekhri Exp $"
 
  *
  */
@@ -39,13 +39,36 @@ public class DBManagement {
 		if( instance != null) return instance;
 		synchronized(mutex) {
 			if( instance != null ) return instance;
-			DBManagement dbm = new DBManagement();
+			DBManagement dbm = new DBManagement("jdbc/dbs");
 			instance = dbm;
 		}
 		return instance;
 	}
 	
+	public static DBManagement getDBConnManInstance(String rootContext) throws Exception {
+		if( instance != null) return instance;
+		synchronized(mutex) {
+			if( instance != null ) return instance;
+			DBManagement dbm = new DBManagement(rootContext);
+			instance = dbm;
+		}
+		return instance;
+	}
+
 	/**
+	 * This is a private constructor of this class.To get an instance of this class getDBConnManInstance method should be used. This constructor creates a datasource object to be used for creating connection to the database. The datasource object is provided by the Tomcat connection pooling interface. It catches a javax.naming.NoInitialContextException exception that would happen only if this class is not invoked within the tomcat container i.e as a standalone application.
+	 * @throws Exception - Various types of exception can be thrown from this method related to invalid data source name or invalid contex, etc.
+	 */
+	private DBManagement(String rootContext) throws Exception {
+		try {
+			if ( (ds = (DataSource)(((Context)((new InitialContext()).lookup("java:/comp/env"))).lookup(rootContext))) == null ) {
+				throw new SQLException("Datasource cound not be initialized. Connection pooling failed.");
+			}
+		} catch(javax.naming.NoInitialContextException e) {
+			//System.out.println("This must be a standalone client");
+		}
+	}
+/**
 	 * This is a private constructor of this class.To get an instance of this class getDBConnManInstance method should be used. This constructor creates a datasource object to be used for creating connection to the database. The datasource object is provided by the Tomcat connection pooling interface. It catches a javax.naming.NoInitialContextException exception that would happen only if this class is not invoked within the tomcat container i.e as a standalone application.
 	 * @throws Exception - Various types of exception can be thrown from this method related to invalid data source name or invalid contex, etc.
 	 */
