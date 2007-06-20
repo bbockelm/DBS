@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.105 $"
- $Id: DBSSql.java,v 1.105 2007/06/14 18:35:51 afaq Exp $"
+ $Revision: 1.106 $"
+ $Id: DBSSql.java,v 1.106 2007/06/15 21:31:06 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import dbs.util.DBSUtil;
 import db.DBManagement;
+import java.util.Date;
 
 
 
@@ -114,12 +115,13 @@ public class DBSSql {
 
         public static PreparedStatement insertDQFlagHistory(Connection conn, String rowID) throws SQLException {
 
-                //UNIX_TIMESTAMP Will be replaced with Trigger
+		//HistoryTimeStamp  MUSt be provided by Trigger later ON.
                 String sql = "INSERT INTO QualityHistory \n "+
                                 " (HistoryOf, Run,  Lumi, SubSystem, DQValue, \n" +
                                 " CreationDate, CreatedBy, LastModificationDate, LastModifiedBy, \n"+
                                 " HistoryTimeStamp) select ID, Run, Lumi, SubSystem, DQValue, CreationDate, \n" +
-                                " CreatedBy, LastModificationDate, LastModifiedBy, UNIX_TIMESTAMP() \n" +
+                                " CreatedBy, LastModificationDate, LastModifiedBy, " + 
+				Long.toString( (new Date()).getTime() / 1000 ) +
                                 " from RunLumiQuality where ID = ?";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -152,7 +154,8 @@ public class DBSSql {
 
         public static PreparedStatement insertDQFlag(Connection conn, String runID, String lumiID,
                                                         String flagID, String valueID,
-                                                        String cbUserID, String lmbUserID, String cDate) throws SQLException {
+                                                        String cbUserID, String lmbUserID, String cDate) throws SQLException
+	{
 
                 Hashtable table = new Hashtable();
                 table.put("Run", runID);
@@ -165,11 +168,134 @@ public class DBSSql {
                 return getInsertSQL(conn, "RunLumiQuality", table);
         }
 
+        public static PreparedStatement insertDQVersion(Connection conn, String versionName, String descrp,
+							String cbUserID, String lmbUserID, String cDate)  throws SQLException 
+	{
+		Hashtable table = new Hashtable();
+		table.put("Version", versionName);
+		table.put("VersionTimeStamp", Long.toString((new Date()).getTime()/1000));
+		if (!DBSUtil.isNull(descrp)) table.put("Description", descrp);
+                table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "QualityVersion", table);
+	}
+
+        public static PreparedStatement getDQVerTimeStamp(Connection conn, String dqVersion) throws SQLException {
+		String sql = "SELECT VersionTimeStamp as TIMESTAMP \n" +
+				" FROM QualityVersion \n" +
+				" WHERE Version = ? ";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, dqVersion);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	
+	}
+
         public static PreparedStatement listRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)
         throws SQLException
         {
 
-                String sql = "SELECT distinct r.RunNumber as RUN_NUMBER, \n" +
+                //JUST for testing 
+                //timeStamp = "1182285735";
+
+                String sql = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n"+
+				"ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
+				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
+				"ss.Parent as PARENT, \n"+
+				"rq.LastModificationDate as LASTMODIFICATIONDATE \n"+
+				"FROM  RunLumiQuality rq \n"+
+				"join Runs r \n"+
+				       "on rq.Run = r.ID \n"+
+				"LEFT OUTER JOIN LumiSection ls \n"+
+				       "on ls.ID = rq.Lumi \n"+
+				"join SubSystem ss \n"+
+			       		"on ss.ID = rq.SubSystem \n"+
+				"join QualityValues qv \n"+
+       					"on qv.ID = rq.DQValue \n";
+
+                //MAKE THIS BIND Valriable LATERS !!
+		String tmpSql = "";
+		String rlsql = "";
+                if (runDQList.size() > 0) {
+                                        for (int i = 0; i < runDQList.size() ; ++i) {
+                                                Hashtable runDQ = (Hashtable) runDQList.get(i);
+                                                if (i==0) rlsql = " ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number") ;
+                                                else rlsql = " OR ( r.RunNumber="+ DBSUtil.get(runDQ, "run_number");
+
+                                                String lumisec = DBSUtil.get(runDQ, "lumi_section_number");
+                                                if (!DBSUtil.isNull(lumisec))
+                                                        rlsql += " AND ls.LumiSectionNumber=" + DBSUtil.get(runDQ, "lumi_section_number");
+                                                //Get the sub-system Vector
+                                                Vector subSys = DBSUtil.getVector(runDQ, "dq_sub_system");
+
+                                                //Loop over each item
+                                                for (int j = 0; j < subSys.size() ; ++j) {
+                                                        Hashtable dqFlag = (Hashtable) subSys.get(j);
+                                                        String fvsql =  "";
+
+                                                        //Check for NULL
+                                                        if (j == 0) {
+                                                                fvsql = rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
+                                                        } else {
+                                                                fvsql = "OR "+rlsql + " AND ss.Name='"+DBSUtil.get(dqFlag, "name")+"' "+
+                                                                        " AND qv.Value='"+DBSUtil.get(dqFlag, "value")+"' ) ";
+                                                        }
+
+                                                        tmpSql += fvsql;
+                                                }
+                                                if (subSys.size() <= 0) sql +=  rlsql + ") ";
+                                                //else sql += rlsql;
+                                        }
+                                }
+
+		sql += tmpSql;
+		if (!DBSUtil.isNull(timeStamp)) {
+                              	sql += "AND rq.CreationDate <= " +timeStamp+  "\n";
+                               	sql += "and rq.LastModificationDate <= "+timeStamp+ "\n";
+		}
+		if (!DBSUtil.isNull(timeStamp)) {
+
+				sql += "UNION \n"+
+				"SELECT distinct qh.HistoryOf as ID, r.RunNumber as RUN_NUMBER, \n"+
+				"ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n"+
+				"ss.Name as DQ_FLAG, qv.Value as QVALUE, \n"+
+				"ss.Parent as PARENT, \n"+
+				"qh.LastModificationDate as LASTMODIFICATIONDATE \n"+
+				"FROM  QualityHistory qh \n"+
+				"join Runs r \n"+
+       					"on qh.Run = r.ID \n"+
+				"LEFT OUTER JOIN LumiSection ls \n"+
+       					"on ls.ID = qh.Lumi \n"+
+				"join SubSystem ss \n"+
+       					"on ss.ID = qh.SubSystem \n"+
+				"join QualityValues qv \n"+
+       					"on qv.ID = qh.DQValue \n";
+
+					sql += "where qh.CreationDate <= "+timeStamp+" and \n"+
+					"qh.LastModificationDate <= "+timeStamp+" \n";
+		
+					//"and qh.HistoryTimeStamp <= "+timeStamp+" \n";
+		}
+
+		//sql += "order by LASTMODIFICATIONDATE, RUN_NUMBER desc "; 
+		//sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc "; 
+		sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC"; 
+		//Order by is very important, Change it ONLY if BUSH becomes president third times!
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
+	}
+
+        public static PreparedStatement listRunLumiDQ_old(Connection conn, Vector runDQList, String timeStamp)
+        throws SQLException
+        {
+
+                String sql = "SELECT distinct rq.ID as ID, r.RunNumber as RUN_NUMBER, \n" +
                                 "ls.LumiSectionNumber as LUMI_SECTION_NUMBER, \n" +
                                 "ss.Name as DQ_FLAG, qv.Value as QVALUE, \n" +
                                 "ss.Parent as PARENT \n" +

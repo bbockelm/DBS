@@ -1,6 +1,6 @@
 /**
- $Revision: 1.3 $"
- $Id: DBSApiDQLogic.java,v 1.3 2007/06/18 19:55:16 afaq Exp $"
+ $Revision: 1.4 $"
+ $Id: DBSApiDQLogic.java,v 1.4 2007/06/18 21:51:55 afaq Exp $"
  *
  */
 
@@ -14,6 +14,7 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
 import java.util.Vector;
+import java.util.Date;
 
 /**
 * A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -151,8 +152,76 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		return id;	
 	}
 
-		
-        public void listRunLumiDQ(Connection conn, Writer out, Vector runDQList) throws Exception {
+	
+	public String getDQVerTimeStamp(Connection conn, String dqVersion) throws Exception {
+	
+		String timeStamp = null;
+		PreparedStatement ps = null;
+                ResultSet rs = null;
+		try {
+                        ps = DBSSql.getDQVerTimeStamp(conn, dqVersion);
+			rs =  ps.executeQuery();
+
+                        if(!rs.next()) {
+                                        throw new DBSException("Unavailable data", "7008", "DQ Version:="+dqVersion+" do not exists in DBS" );
+                        }
+                        timeStamp = get(rs, "TIMESTAMP");
+
+                } finally {
+
+                        if (ps != null) ps.close();
+                        if (rs != null) rs.close();
+                }
+                return timeStamp;
+
+
+	}
+	
+        public void listRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+
+                if (!isNull(timeStamp) && !isNull(dqVersion)) {
+			throw new DBSException("Duplicate information supplied", "7006",
+                                                                "You have provided both a TimeStamp:="+timeStamp+" and DQ Version:="+dqVersion);
+
+		}
+
+		if (!isNull(dqVersion)) {
+			//Get the time stamp from the version table
+		 	timeStamp = getDQVerTimeStamp(conn, dqVersion);	
+		}
+		Vector alreadyGotID = new Vector();
+
+                try {
+                        ps = DBSSql.listRunLumiDQ(conn, runDQList, timeStamp);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                //Lets keep it Hierarechal, we might need to return this info in hierarch later on.
+                                String parent = get(rs, "PARENT");     
+				String entryID = get(rs, "ID");
+				if(!alreadyGotID.contains(entryID)) {
+                                	if ( parent.equals("CMS")) {
+                                        	out.write(((String) "<dq_sub_system name='"+get(rs, "DQ_FLAG")+"'"+
+                                                        " value='"+get(rs, "QVALUE")+"'"));
+                                	} else {
+                                        	out.write((String) "<dq_sub_subsys name='"+get(rs, "DQ_FLAG")+"'"+
+                                                        " value='"+get(rs, "QVALUE")+"'");
+                                	}
+                                	out.write( (String)     " run_number='"+get(rs, "RUN_NUMBER")+"'" +
+                        	                                " lumi_section_number='"+get(rs, "LUMI_SECTION_NUMBER") +"' />");
+					//AND STORE IT AS WELL
+					alreadyGotID.add(entryID);
+				}
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+        }
+
+/*
+        public void listRunLumiDQ_OLD(Connection conn, Writer out, Vector runDQList) throws Exception {
         //public void listRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
@@ -182,7 +251,7 @@ public class DBSApiDQLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
                 }
 	}
-
+*/
 
         public void updateRunLumiDQ(Connection conn, Writer out, Vector runDQList, Hashtable dbsUser) throws Exception {
 
@@ -253,6 +322,35 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 	}
 
+
+        public void versionDQ(Connection conn, Writer out, Hashtable vertable, Hashtable dbsUser) throws Exception {
+		//Check to see if a version with same name already exists !
+
+		String versionName =  get(vertable, "version", true);
+                String descrp = get(vertable, "description", false);
+
+
+		String versionID = getID(conn, "QualityVersion", "Version", versionName, false);
+		if (!isNull(versionID)) {
+			throw new DBSException("Version Already Exists", "7007",
+							"Data Quality Version:="+versionName+" already exists in DBS, cannnot create again");
+		}
+
+		//String creationDate = Long.toString( (new Date()).getTime() / 1000 );
+		String creationDate = getTime(vertable, "creation_date", false);
+		String cbUserID = personApi.getUserID(conn, dbsUser);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+
+                PreparedStatement ps = null;
+                try {
+			ps = DBSSql.insertDQVersion(conn, versionName, descrp, cbUserID, lmbUserID, creationDate);
+                        ps.execute();
+
+                } finally {
+                        if (ps != null) ps.close();
+                }
+	
+	}
 
         public void insertLumiRangeDQ(Connection conn, Writer out, String runNumber, String stratLumi, String endLumi,
                                                         Vector dqFlags, Hashtable dbsUser) throws Exception {

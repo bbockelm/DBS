@@ -1,6 +1,6 @@
 /**
- $Revision: 1.94 $"
- $Id: DBSApi.java,v 1.94 2007/06/15 21:30:58 afaq Exp $"
+ $Revision: 1.95 $"
+ $Id: DBSApi.java,v 1.95 2007/06/18 19:55:16 afaq Exp $"
  *
 */
 
@@ -571,8 +571,13 @@ public class DBSApi {
                                                 dbsUser);
                         } else if (apiStr.equals("listRunLumiDQ")) {
                                 (new DBSApiDQLogic(this.data)).listRunLumiDQ(conn, out,
-                                                DBSApiParser.parseDQRunLumi(getXml(table)) );
-	
+                                                DBSApiParser.parseDQRunLumi(getXml(table)),
+						get(table, "time_stamp",false),
+						get(table, "dq_version", false) );
+			} else if (apiStr.equals("versionDQ")) {
+				(new DBSApiDQLogic(this.data)).versionDQ(conn, out,
+						DBSApiParser.parse(getXml(table), "dq_version"),
+						dbsUser);
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;
