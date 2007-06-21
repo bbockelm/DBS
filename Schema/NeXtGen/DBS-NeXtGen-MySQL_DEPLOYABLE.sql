@@ -4,9 +4,9 @@
 -- === Build : 715
 -- ======================================================================
 
-drop database if exists pre_DBS_1_0_4Anzar_d;
-create database pre_DBS_1_0_4Anzar_d;
-use pre_DBS_1_0_4Anzar_d;
+drop database if exists DBS_1_0_4;
+create database DBS_1_0_4;
+use DBS_1_0_4;
 -- ======================================================================
 
 CREATE TABLE Person
