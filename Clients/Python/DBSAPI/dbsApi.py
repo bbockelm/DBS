@@ -3267,72 +3267,58 @@ class DbsApi(DbsConfig):
 			'dq_version':dqVersion }, 'POST')
     logging.log(DBSDEBUG, data)
 
+
     # Parse the resulting xml output.
     try:
       result = []
+
       class Handler (xml.sax.handler.ContentHandler):
-
-        def __init__(self):
-                #xml.sax.handler.ContentHandler.__init__()
-                self.dqFlaglist = []
-                self.first=1
-
         def startElement(self, name, attrs):
-                if name == 'dq_sub_system' or name == 'dq_sub_subsys':
-                        runNumber=getLong(attrs['run_number'])
-                        lumiSectionNumber=getLong(attrs['lumi_section_number'])
-                        if self.first != 1:
-                                if self.currRun['RunNumber'] != runNumber \
-                                        or self.currRun['LumiSectionNumber'] != lumiSectionNumber :
-                                        #self.currRun['DQFlagList'] = self.dqFlaglist
-                                        self.currRun = DbsRunLumiDQ (
-                                                RunNumber=runNumber,
-                                                LumiSectionNumber=lumiSectionNumber
-                                                )
-                                        #Re-initialize the DQ list
-                                        self.dqFlaglist = []
-                                        self.currRun['DQFlagList'] = self.dqFlaglist
-                                        result.append(self.currRun)
-
-                        else:
-                                self.currRun = DbsRunLumiDQ (
-                                                RunNumber=runNumber,
-                                                LumiSectionNumber=lumiSectionNumber
-                                                )
-                                result.append(self.currRun)
-                                self.currRun['DQFlagList'] = self.dqFlaglist
-                                self.first = 0
-                if name == 'dq_sub_system':
-                        self.currSubFlag = DbsDQFlag(
+          if name == 'run':
+               self.currRun = DbsRunLumiDQ (
+						RunNumber=getLong(attrs['run_number']),
+						LumiSectionNumber=getLong(attrs['lumi_section_number']),
+						DQFlagList=[]
+						)
+          if name == 'dq_sub_system':
+                        currSubFlag = DbsDQFlag(
                                         Name=str(attrs['name']),
                                         Value=str(attrs['value']),
+					Parent=str(attrs['parent']),
                                         #CreationDate=str(attrs['creation_date']),
                                         #CreatedBy=str(attrs['created_by']),
                                         #LastModificationDate=str(attrs['last_modification_date']),
                                         #LastModifiedBy=str(attrs['last_modified_by']),
                                         )
-                        self.dqFlaglist.append(self.currSubFlag)
+			#if currSubFlag in self.currRun['DQFlagList']:
+			#	self.currRun['DQFlagList']
+			self.currRun['DQFlagList'].append(currSubFlag)
 
-                if name == 'dq_sub_subsys':
-                                subSubFlag = DbsDQFlag(
+          if name == 'dq_sub_subsys':
+			parent=str(attrs['parent'])
+                        subSubFlag = DbsDQFlag(
                                                 Name=str(attrs['name']),
                                                 Value=str(attrs['value']),
+						Parent=parent,
                                                 #CreationDate=str(attrs['creation_date']),
                                                 #CreatedBy=str(attrs['created_by']),
                                                 #LastModificationDate=str(attrs['last_modification_date']),
                                                 #LastModifiedBy=str(attrs['last_modified_by']),
                                                 )
-                                if 'currSubFlag' not in dir(self):
-                                        # OR Should I add the DUMMY
-                                        # Make it Sub Flag instead of Sub-Sub Flag
-                                        self.dqFlaglist.append(subSubFlag)
-                                else:
-                                        self.currSubFlag['SubSysFlagList'].append(subSubFlag)
+			found = 0	
+			for aSubSys in self.currRun['DQFlagList']:
+				if aSubSys['Name'] == parent:
+					aSubSys['SubSysFlagList'].append(subSubFlag)
+					found = 1
+					break
+			if found == 0:
+				print "This should never happen, there is NO Parent ???"
 
         def endElement(self, name):
-                pass
-            #if name == 'dbs':
-            #   result.append(self.currRun)
+            if name == 'run':
+               result.append(self.currRun)
+
+
       xml.sax.parseString (data, Handler ())
       return result
     except Exception, ex:
