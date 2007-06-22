@@ -2995,7 +2995,7 @@ class DbsApi(DbsConfig):
                 if abranch not in outputFile['BranchList']:
                         outputFile['BranchList'].append(abranch)
 
-	for trig in file['FileTriggerMap']:
+	for trig in fileDetail['FileTriggerMap']:
 		if trig not in outputFile['FileTriggerMap']:
 			outputFile['FileTriggerMap'].append(trig) 
 
