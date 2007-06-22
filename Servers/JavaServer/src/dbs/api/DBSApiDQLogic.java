@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiDQLogic.java,v 1.4 2007/06/18 21:51:55 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiDQLogic.java,v 1.5 2007/06/20 22:03:48 afaq Exp $"
  *
  */
 
@@ -193,65 +193,47 @@ public class DBSApiDQLogic extends DBSApiLogic {
 		}
 		Vector alreadyGotID = new Vector();
 
+		boolean first = true;
                 try {
                         ps = DBSSql.listRunLumiDQ(conn, runDQList, timeStamp);
                         rs =  ps.executeQuery();
-                        while(rs.next()) {
-                                //Lets keep it Hierarechal, we might need to return this info in hierarch later on.
-                                String parent = get(rs, "PARENT");     
+
+			String prevRun="";
+			String prevLumi="";
+
+			while(rs.next()) {
+				String runNumber = get(rs, "RUN_NUMBER");
+				String lumiNumber = get(rs, "LUMI_SECTION_NUMBER");
+				if (!runNumber.equals(prevRun) || !lumiNumber.equals(prevLumi)) {
+					if (!first) out.write( (String) "</run>");
+					out.write( (String) "<run run_number='"+runNumber+"'" + 
+									" lumi_section_number='"+lumiNumber+"' >");
+					prevRun = runNumber;
+					prevLumi = lumiNumber;
+					first = false;
+				}
+				String parent = get(rs, "PARENT");
 				String entryID = get(rs, "ID");
-				if(!alreadyGotID.contains(entryID)) {
-                                	if ( parent.equals("CMS")) {
-                                        	out.write(((String) "<dq_sub_system name='"+get(rs, "DQ_FLAG")+"'"+
-                                                        " value='"+get(rs, "QVALUE")+"'"));
-                                	} else {
-                                        	out.write((String) "<dq_sub_subsys name='"+get(rs, "DQ_FLAG")+"'"+
+                                if(!alreadyGotID.contains(entryID)) {
+					if ( parent.equals("CMS")) {
+                                                out.write((String) "<dq_sub_system name='"+get(rs, "DQ_FLAG")+"'"+
                                                         " value='"+get(rs, "QVALUE")+"'");
-                                	}
-                                	out.write( (String)     " run_number='"+get(rs, "RUN_NUMBER")+"'" +
-                        	                                " lumi_section_number='"+get(rs, "LUMI_SECTION_NUMBER") +"' />");
+                                        } else {
+                                                out.write((String) "<dq_sub_subsys name='"+get(rs, "DQ_FLAG")+"'"+
+                                                        " value='"+get(rs, "QVALUE")+"'");
+                                        }
+                                        out.write( (String) " parent='"+parent+"' />" );
 					//AND STORE IT AS WELL
-					alreadyGotID.add(entryID);
-				}
-                        }
+                                        alreadyGotID.add(entryID);
+                                }
+			}
+
                 } finally {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
+		if (!first) out.write( (String) "</run>");
         }
-
-/*
-        public void listRunLumiDQ_OLD(Connection conn, Writer out, Vector runDQList) throws Exception {
-        //public void listRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp) throws Exception {
-                PreparedStatement ps = null;
-                ResultSet rs =  null;
-
-		String timeStamp = null;
-
-                try {
-                        ps = DBSSql.listRunLumiDQ(conn, runDQList, timeStamp);
-                        rs =  ps.executeQuery();
-                        while(rs.next()) {
-
-				//Lets keep it Hierarechal, we might need to return this info in hierarch later on.
-				String parent = get(rs, "PARENT");	
-				if ( parent.equals("CMS")) {
-					out.write(((String) "<dq_sub_system name='"+get(rs, "DQ_FLAG")+"'"+
-							" value='"+get(rs, "QVALUE")+"'"));
-				} else {
-					out.write((String) "<dq_sub_subsys name='"+get(rs, "DQ_FLAG")+"'"+
-                                                        " value='"+get(rs, "QVALUE")+"'");
-				}
-				out.write( (String)     " run_number='"+get(rs, "RUN_NUMBER")+"'" +
-                                                        " lumi_section_number='"+get(rs, "LUMI_SECTION_NUMBER") +"' />");
-
-			}	
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-	}
-*/
 
         public void updateRunLumiDQ(Connection conn, Writer out, Vector runDQList, Hashtable dbsUser) throws Exception {
 

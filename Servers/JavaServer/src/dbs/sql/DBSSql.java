@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.106 $"
- $Id: DBSSql.java,v 1.106 2007/06/15 21:31:06 afaq Exp $"
+ $Revision: 1.107 $"
+ $Id: DBSSql.java,v 1.107 2007/06/20 22:03:48 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -215,6 +215,7 @@ public class DBSSql {
 				"join QualityValues qv \n"+
        					"on qv.ID = rq.DQValue \n";
 
+		if (runDQList.size() > 0 || !DBSUtil.isNull(timeStamp)) sql += " WHERE ";
                 //MAKE THIS BIND Valriable LATERS !!
 		String tmpSql = "";
 		String rlsql = "";
@@ -253,8 +254,8 @@ public class DBSSql {
 
 		sql += tmpSql;
 		if (!DBSUtil.isNull(timeStamp)) {
-                              	sql += "AND rq.CreationDate <= " +timeStamp+  "\n";
-                               	sql += "and rq.LastModificationDate <= "+timeStamp+ "\n";
+                              	sql += " rq.CreationDate <= " +timeStamp+  "\n";
+                               	sql += " and rq.LastModificationDate <= "+timeStamp+ "\n";
 		}
 		if (!DBSUtil.isNull(timeStamp)) {
 
