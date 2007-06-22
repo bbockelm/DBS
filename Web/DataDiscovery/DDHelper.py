@@ -1880,6 +1880,41 @@ MCDescription:      %s
                            runDBDict[run]=(runmode,system)
       return runDBDict
 
+  def getRunDQInfo(self,run):
+      con = self.connectToDB()
+      oList  = []
+      try:
+          trun = self.alias('Runs','trun')
+          trlq = self.alias('RunLumiQuality','trlq')
+          tss  = self.alias('SubSystem','tss')
+          tqv  = self.alias('QualityValues','tqv')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
+
+          oSel = [self.col(tss,'Name'),self.col(tqv,'Value')]
+          sel  = sqlalchemy.select(oSel,
+                       from_obj=[
+                          trun.outerjoin(trlq,onclause=self.col(trlq,'Run')==self.col(trun,'ID'))
+                          .outerjoin(tss,onclause=self.col(trlq,'SubSystem')==self.col(tss,'ID'))
+                          .outerjoin(tqv,onclause=self.col(tpdr,'DQValue')==self.col(tqv,'ID'))
+                                ],distinct=True,
+                                  order_by=oSel
+                                 )
+          if run and run!="*":
+             sel.append_whereclause(self.col(trun,'RunNumber')==run)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          if self.verbose:
+             self.writeLog(getExcept())
+          printExcept()
+          raise "Fail in getRunDQInfo"
+      oList=[]
+      for item in result:
+          if  item and item[0]:
+              name,value=item
+              oList.append((name,value))
+      return oList
+      
   def getRuns(self,dataset,primD="*",primType="*",minRun="*",maxRun="*",fromRow=0,limit=0,count=0,userMode="user"):
       if primD.lower()=="any": primD="*"
       if primType.lower()=="any": primType="*"
