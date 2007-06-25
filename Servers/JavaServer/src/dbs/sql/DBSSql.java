@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.107 $"
- $Id: DBSSql.java,v 1.107 2007/06/20 22:03:48 afaq Exp $"
+ $Revision: 1.108 $"
+ $Id: DBSSql.java,v 1.108 2007/06/22 19:41:48 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -191,6 +191,17 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 	
+	}
+
+	public static PreparedStatement listSubSystems(Connection conn) throws SQLException
+	{
+		String sql = "SELECT Name as SUBSYSTEM, \n"+
+				" Parent as PARENT \n" +
+				" FROM SubSystem \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+
 	}
 
         public static PreparedStatement listRunLumiDQ(Connection conn, Vector runDQList, String timeStamp)

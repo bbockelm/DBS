@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiDQLogic.java,v 1.5 2007/06/20 22:03:48 afaq Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiDQLogic.java,v 1.6 2007/06/22 19:41:48 afaq Exp $"
  *
  */
 
@@ -176,7 +176,26 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 
 	}
-	
+
+
+        public void listSubSystems(Connection conn, Writer out) throws Exception {
+		PreparedStatement ps = null;
+                ResultSet rs =  null;
+
+		try {
+                        ps = DBSSql.listSubSystems(conn);
+                        rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write( (String) "<sub_system name='"+get(rs, "SUBSYSTEM")+"' parent='"+get(rs, "PARENT")+"' />");
+				
+			} 
+		} finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+	}
+
+
         public void listRunLumiDQ(Connection conn, Writer out, Vector runDQList, String timeStamp, String dqVersion) throws Exception {
                 PreparedStatement ps = null;
                 ResultSet rs =  null;

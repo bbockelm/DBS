@@ -1,6 +1,6 @@
 /**
- $Revision: 1.104 $"
- $Id: DBSApiLogic.java,v 1.104 2007/06/13 16:35:17 afaq Exp $"
+ $Revision: 1.105 $"
+ $Id: DBSApiLogic.java,v 1.105 2007/06/18 21:55:28 afaq Exp $"
  *
  */
 
@@ -76,27 +76,35 @@ public class DBSApiLogic {
 
         public void listRowsInTable(Connection conn, Writer out, String tableName, String from, String rows) throws Exception {
 
+
+		System.out.println("what ?");
                 PreparedStatement ps = null;
                 ResultSet rs =  null;
                 try {
+		System.out.println("what ?");
                         ps = DBSSql.listRowsInTable(conn, tableName, from, rows);
                         rs =  ps.executeQuery();
 
                         ResultSetMetaData rsmd = rs.getMetaData();
                         int numberOfColumns = rsmd.getColumnCount();
 
+		System.out.println("what ?");
                         while(rs.next()) {
+		System.out.println("what ?");
                                 out.write( "<" + tableName +" " );
                                 for (int i=1; i <= numberOfColumns; ++i) {
 					String colName = rsmd.getColumnName(i);	
                                         out.write( colName+"='"+get(rs, colName)+"' ");
+					System.out.println("colName: "+colName);
                                 }
                                 out.write( "/>" );
+		System.out.println("what ?");
                         }
                 } finally {
                         if (rs != null) rs.close();
                         if (ps != null) ps.close();
                 }
+		System.out.println("what ?");
         }
 
 

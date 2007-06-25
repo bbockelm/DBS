@@ -1,6 +1,6 @@
 /**
- $Revision: 1.95 $"
- $Id: DBSApi.java,v 1.95 2007/06/18 19:55:16 afaq Exp $"
+ $Revision: 1.96 $"
+ $Id: DBSApi.java,v 1.96 2007/06/20 22:03:48 afaq Exp $"
  *
 */
 
@@ -367,7 +367,6 @@ public class DBSApi {
      									get(table, "from", false),
      									get(table, "rows", false)
 			    						);
-
                         } else if (apiStr.equals("insertPrimaryDataset")) {
 				(new DBSApiPrimDSLogic(this.data)).insertPrimaryDataset(conn, out,
 						DBSApiParser.parse( getXml(table), "primary_dataset") , 
@@ -578,6 +577,9 @@ public class DBSApi {
 				(new DBSApiDQLogic(this.data)).versionDQ(conn, out,
 						DBSApiParser.parse(getXml(table), "dq_version"),
 						dbsUser);
+			} else if (apiStr.equals("listSubSystems")) {
+                                (new DBSApiDQLogic(this.data)).listSubSystems(conn, out);
+
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;
