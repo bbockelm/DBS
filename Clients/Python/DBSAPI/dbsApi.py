@@ -3197,6 +3197,62 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
+  def insertSubSystem(self, name, parent="CMS"):
+    """
+    This API is used to insert a new subsystem, for now it is just a preliminary api
+    to insert single Sub-System but later will be modified to 
+    add several Sub and SubSubSystems in one go.
+
+    params:
+        version: the NAME you would like to give to your version
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<sub_system name='"+str(name)+"' parent='"+parent+"' />"
+    xmlinput += "</dbs>"
+    
+    logging.log(DBSDEBUG, xmlinput)
+
+    data = self._server._call ({ 'api' : 'insertSubSystem',
+                                        'xmlinput': xmlinput,
+                                         }, 'GET')
+
+    logging.log(DBSDEBUG, data)
+  #-------------------------------------------------------------------
+
+  def listSubSystems(self):
+    """
+    ist all the Sub Systems known to this DBS instance
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    data = self._server._call ({ 'api' : 'listSubSystems'}, 'POST')
+
+    # Parse the resulting xml output.
+    try:
+      result = []
+
+      class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'sub_system': 
+			dqSubSys = DbsDQFlag(Name=str(attrs['name']),Parent=str(attrs['parent']))
+			result.append(dqSubSys)
+
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)   
+
+  #-------------------------------------------------------------------
+
   def listRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
 
     """
@@ -3311,8 +3367,12 @@ class DbsApi(DbsConfig):
 					aSubSys['SubSysFlagList'].append(subSubFlag)
 					found = 1
 					break
-			if found == 0:
-				print "This should never happen, there is NO Parent ???"
+				else :
+					for aSubSubSys in aSubSys['SubSysFlagList']:
+						if aSubSubSys['Name'] == parent:
+							aSubSubSys['SubSysFlagList'].append(subSubFlag)
+							found = 1
+							break
 
         def endElement(self, name):
             if name == 'run':
@@ -3484,5 +3544,39 @@ class DbsApi(DbsConfig):
     logging.log(DBSDEBUG, data)
   #-------------------------------------------------------------------
 
+
+  #def listRowsInTable(self):
+  # """
+  #	API is used to list RowsInTable
+  # """
+  # data = self._server._call ({ 'api' : 'listRowsInTable', 'table_name' : 'SubSystem', 'rows':'*'}, 'GET')
+  # print data
+
+
+
 #############################################################################
 # Unit testing: see $PWD/UnitTests
+############################################################################
+
+from DBSAPI.dbsException import *
+from DBSAPI.dbsApiException import *
+from DBSAPI.dbsOptions import DbsOptionParser
+
+if __name__ == "__main__":
+
+  try:
+    optManager  = DbsOptionParser()
+    (opts,args) = optManager.getOpt()
+
+    api = DbsApi(opts.__dict__)
+    serverInfo = api.getServerInfo()
+    print "Server Version : ", serverInfo['ServerVersion']
+    print "Schema Version : ", serverInfo['SchemaVersion']
+
+    #print api.listSubSystems()
+
+  except DbsApiException, ex:
+    print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+    if ex.getErrorCode() not in (None, ""):
+      print "DBS Exception Error Code: ", ex.getErrorCode()
+ 
