@@ -9,7 +9,7 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=DBS_1_0_4
+SchemaVersion=DBS_1_0_5
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
@@ -55,7 +55,9 @@ cat DBS-NeXtGen-Oracle.sql.clob | sed -e "s%BIGINT UNSIGNED%integer%g" > DBS-NeX
 #
 cat DBS-NeXtGen-Oracle.sql.nobig.0 | sed -e "s%BIGINT%integer%g" > DBS-NeXtGen-Oracle.sql.nobig
 #
-mv DBS-NeXtGen-Oracle.sql.nobig DBS-NeXtGen-Oracle.sql.tmp.0
+#mv DBS-NeXtGen-Oracle.sql.nobig DBS-NeXtGen-Oracle.sql.tmp.0
+#
+cat DBS-NeXtGen-Oracle.sql.nobig | sed -e "s%not null default 'CMS'%default 'CMS' not null%g" > DBS-NeXtGen-Oracle.sql.tmp.0
 #
 #
 echo "-- ====================================================" >> $ddl_file
@@ -76,6 +78,9 @@ for atable in $table_list; do
    echo "/" >> $trig_ddl
    echo >> $trig_ddl
    echo "-- ====================================================" >> $stamp_trig
+   if [ "${atable}" == "qualityhistory" ]; then
+	continue
+   fi
    echo "-- LastModified Time Stamp Trigger" >> $stamp_trig
    echo >> $stamp_trig
    echo "PROMPT LastModified Time Stamp Trigger for Table: ${atable}" >> $stamp_trig
@@ -207,13 +212,13 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('RelVal'
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('PhysVal', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Tracker', ${unix_time});">> $ddl_file
 #
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('HCAL', ${unix_time});">> $ddl_file
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('HCAL+', ${unix_time});">> $ddl_file
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('HCAL-',${unix_time});">> $ddl_file 
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('ECAL',${unix_time});">> $ddl_file 
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('ECAL+',${unix_time});">> $ddl_file 
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('ECAL-',${unix_time});">> $ddl_file 
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES ('NOSUB',${unix_time});">> $ddl_file 
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('HCAL', 'CMS',(select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('HCAL+','HCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('HCAL-','HCAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('ECAL', 'CMS', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('ECAL+','ECAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('ECAL-','ECAL', (select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
+#echo "INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES ('NOSUB','CMS',(select (sysdate - to_date('19700101','YYYYMMDD')) * 86400 from dual));">> $ddl_file
 #
 echo "INSERT INTO QualityValues (Value, CreationDate) VALUES ('GOOD', ${unix_time});">> $ddl_file
 echo "INSERT INTO QualityValues (Value, CreationDate) VALUES ('BAD', ${unix_time});">> $ddl_file

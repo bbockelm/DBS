@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 715
+-- === Build : 719
 -- ======================================================================
 
-drop database if exists pre_DBS_1_0_4;
-create database pre_DBS_1_0_4;
-use pre_DBS_1_0_4;
+drop database if exists DBS_1_0_5;
+create database DBS_1_0_5;
+use DBS_1_0_5;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -890,9 +890,8 @@ CREATE TABLE QualityHistory
 CREATE TABLE QualityVersion
   (
     ID                    BIGINT UNSIGNED,
-    Version               BIGINT            unique not null,
+    Version               varchar(500)      unique not null,
     VersionTimeStamp      BIGINT            unique not null,
-    VersionName           varchar(1000),
     Description           varchar(1000),
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,

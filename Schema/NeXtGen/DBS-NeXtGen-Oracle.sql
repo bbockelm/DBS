@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 717
+REM === Build : 719
 REM ======================================================================
 
 CREATE TABLE Person
@@ -487,9 +487,8 @@ REM ======================================================================
 CREATE TABLE QualityVersion
   (
     ID                    BIGINT UNSIGNED,
-    Version               BIGINT            unique not null,
+    Version               varchar(500)      unique not null,
     VersionTimeStamp      BIGINT            unique not null,
-    VersionName           varchar(1000),
     Description           varchar(1000),
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -1435,7 +1434,7 @@ CREATE INDEX  ON Person(Name);
 
 CREATE INDEX  ON CompositeADS(Description);
 
-CREATE INDEX  ON QualityVersion(VersionName,Description);
+CREATE INDEX  ON QualityVersion(Description);
 
 CREATE INDEX  ON ProcessedDataset(Name);
 

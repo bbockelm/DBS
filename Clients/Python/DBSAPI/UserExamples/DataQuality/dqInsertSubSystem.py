@@ -12,7 +12,22 @@ if __name__ == "__main__":
     api = DbsApi(opts.__dict__)
 
     #Add a new SubSystem
+    
+
     api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HB", parent="HCAL")
+
+
+
 
     subSys = api.listSubSystems()
     for aSub in subSys:

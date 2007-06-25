@@ -49,7 +49,7 @@ import inspect
 from dbsLogger import *
 
 #DBS Api version
-__version__ = "DBS_1_0_4"
+__version__ = "DBS_1_0_5"
 
 
 # DBS Defined Log Levels

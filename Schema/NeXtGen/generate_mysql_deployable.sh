@@ -10,7 +10,7 @@
 #  M. Anzar Afaq (anzar@fnal[.NOSPAM]gov
 #
 #
-SchemaVersion=DBS_1_0_4
+SchemaVersion=DBS_1_0_5
 #
 ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
@@ -52,9 +52,11 @@ echo "-- =========== INSERT TRIGGERS FOR LastModificationDate ==================
 table_list=`cat DBS-NeXtGen-MySQL.sql|grep "CREATE TABLE" | awk '{print $3}'`
 for atable in $table_list; do
    echo   >> $ddl_file
-   if [ "TR_QualityHistory" != "TR_${atable}" ]; then
-      echo "CREATE TRIGGER TR_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
-      echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
+   if [ "TR_QualityHistory" == "TR_${atable}" ]; then
+        continue
+   fi
+   echo "CREATE TRIGGER TR_${atable} BEFORE INSERT ON ${atable}"  >> $ddl_file
+   echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
 done
 #
 echo  >> $ddl_file
@@ -63,6 +65,9 @@ echo "-- =========== UPDATE TRIGGERS FOR LastModificationDate ==================
 table_list=`cat DBS-NeXtGen-MySQL.sql|grep "CREATE TABLE" | awk '{print $3}'`
 for atable in $table_list; do
    echo   >> $ddl_file
+   if [ "UTR_QualityHistory" == "UTR_${atable}" ]; then
+        continue
+   fi
    echo "CREATE TRIGGER UTR_${atable} BEFORE UPDATE ON ${atable}"  >> $ddl_file
    echo "FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();"  >> $ddl_file
 done
@@ -141,13 +146,14 @@ echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individ
 #
 echo "" >> $ddl_file
 
-echo "INSERT INTO SubSystem (Name, CreationDate) VALUES
-                (\"HCAL\", UNIX_TIMESTAMP()), (\"HCAL+\", UNIX_TIMESTAMP()), (\"HCAL-\", UNIX_TIMESTAMP()),
-                (\"ECAL\", UNIX_TIMESTAMP()), (\"ECAL+\", UNIX_TIMESTAMP()), (\"ECAL-\", UNIX_TIMESTAMP()),
-                (\"NOSUB\", UNIX_TIMESTAMP());
+#echo "
+#INSERT INTO SubSystem (Name, Parent, CreationDate) VALUES
+#                ("HCAL", 'CMS',UNIX_TIMESTAMP()), ("HCAL+", 'HCAL', UNIX_TIMESTAMP()), ("HCAL-", 'HCAL', UNIX_TIMESTAMP()),
+#                ("ECAL", 'CMS', UNIX_TIMESTAMP()), ("ECAL+", 'ECAL', UNIX_TIMESTAMP()), ("ECAL-", 'ECAL', UNIX_TIMESTAMP()),
+#                ("NOSUB", 'CMS', UNIX_TIMESTAMP());
+#" >> $ddl_file
 
-
-INSERT INTO QualityValues (Value, CreationDate) VALUES (\"GOOD\", UNIX_TIMESTAMP()),
+echo "INSERT INTO QualityValues (Value, CreationDate) VALUES (\"GOOD\", UNIX_TIMESTAMP()),
                 (\"BAD\", UNIX_TIMESTAMP()), (\"UNKNOWN\", UNIX_TIMESTAMP());
 " >> $ddl_file
 
