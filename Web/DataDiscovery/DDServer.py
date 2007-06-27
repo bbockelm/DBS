@@ -96,7 +96,7 @@ class DDServer(DDLogger,Controller):
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
 # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
-        self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8031",verbose=verbose)
+        self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8030",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
 #        self.mastheadUrl = "http://cmsdbs.cern.ch/WEBTOOLS/Common/masthead"
