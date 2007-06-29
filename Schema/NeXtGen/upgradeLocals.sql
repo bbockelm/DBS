@@ -1,8 +1,9 @@
--- DBS Local/Global instances UPGRADE 101 TO 105
+-- DBS Local instances UPGRADE 101 TO 105
 -- Anzar Afaq; 06/29/2007
 -- =============================================================================
 
--- There is s BLOCK of Script near BOTTOM, DO NOT NEED to Run it for DBS Global
+-- DBS Global needs different traetment based on DBS_1_0_4 ---> 1_0_5
+
 -- REST of the Script should be fine
 -- DO NOT Forget to do the Syonyms and Role Permissions
 
@@ -473,8 +474,6 @@ ALTER TABLE SEBLOCK ADD CONSTRAINT SEBLOCK_BLOCKID_FK FOREIGN KEY (BLOCKID)
 REFERENCES BLOCK (ID)
 ON DELETE CASCADE;
 
----------------- Do not Perform THIS Block on GLOBAL its alraedy done there ---------------
--------------------------------------------------------------------------------------------
 ALTER TABLE RUNS ADD TMP_STARTOFRUN INTEGER;
 UPDATE RUNS SET TMP_STARTOFRUN=STARTOFRUN;
 UPDATE RUNS SET STARTOFRUN=null;
@@ -502,8 +501,6 @@ UPDATE LUMISECTION SET LUMIENDTIME=null;
 ALTER TABLE LUMISECTION modify (LUMIENDTIME INTEGER);
 UPDATE LUMISECTION SET LUMIENDTIME=TMP_LUMIENDTIME;
 ALTER TABLE LUMISECTION DROP COLUMN TMP_LUMIENDTIME;
----------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------
 
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_0_5' WHERE ID=1;
 
