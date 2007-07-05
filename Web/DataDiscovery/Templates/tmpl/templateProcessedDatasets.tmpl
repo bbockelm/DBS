@@ -105,11 +105,13 @@ Details
 #set siteTotFiles+=$blockDict[$bName][2]
 #set siteTotSize+=$blockDict[$bName][3]
 #end if
+#*
 #if blockList
 #set blockList=blockList+","+$bName.replace('#','%23')
 #else
 #set blockList=$bName.replace('#','%23')
 #end if
+*#
 #end for
   <tr valign="top" class="sortable_yellow">
      <td><div class="dbs_cell">$site</div></td>
@@ -117,8 +119,10 @@ Details
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center">
-     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=cff&amp;userMode=$userMode">cff</a>
-     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=txt&amp;userMode=$userMode">plain</a>
+     ###<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=cff&amp;userMode=$userMode">cff</a>
+     ###<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;blockList=$blockList&amp;what=txt&amp;userMode=$userMode">plain</a>
+     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>
+     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>
      </td>
   </tr>
 #end for

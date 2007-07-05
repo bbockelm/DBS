@@ -2372,7 +2372,8 @@ MCDescription:      %s
       self.closeConnection(con)
       return aList
 
-  def getBlocksFromSite(self,site,blockList=[]):
+#  def getBlocksFromSite(self,site,blockList=[]):
+  def getBlocksFromSite(self,site,datasetPath):
       if site.lower()=='all' or site.lower()=='any': site="*"
       t1=time.time()
       aDict = {}
@@ -2392,11 +2393,13 @@ MCDescription:      %s
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
-          condList=[]   
-          for block in blockList:
-              condList.append(self.col(tblk,'Name')==block)
-          if len(condList): 
-             sel.append_whereclause(sqlalchemy.or_(*condList))
+          if datasetPath!="*":
+             sel.append_whereclause(self.col(tblk,'Path')==datasetPath)
+#          condList=[]   
+#          for block in blockList:
+#              condList.append(self.col(tblk,'Name')==block)
+#          if len(condList): 
+#             sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
       except:
           if self.verbose:
