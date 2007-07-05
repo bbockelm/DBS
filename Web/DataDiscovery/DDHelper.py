@@ -1725,7 +1725,7 @@ MCDescription:      %s
          tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime']
       oList=[]
       for item in result:
-          if not item[0]: continue
+          if not item[1]: continue
           if userMode!='user':
               lumi,run,begNum,endNum,lumiBeg,lumiEnd,dn1,cDate,dn2,mDate=item
               cDate=timeGMT(cDate)
