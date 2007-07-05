@@ -1179,7 +1179,7 @@ class DDServer(DDLogger,Controller):
 
         # the progress bar for all results
         if _idx:
-            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType_idx-1,userMode,pagerStep)
+            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,_idx-1,userMode,pagerStep)
         tot=_idx
         for x in xrange(_idx,_idx+GLOBAL_STEP):
             if nDatasets>x*pagerStep:
@@ -1662,7 +1662,8 @@ class DDServer(DDLogger,Controller):
             return str(t)
     getLFN_txt.exposed = True
     
-    def getLFNsForSite(self,dbsInst,site,blockList="",what="cff",userMode='user'):
+#    def getLFNsForSite(self,dbsInst,site,blockList="",what="cff",userMode='user'):
+    def getLFNsForSite(self,dbsInst,site,datasetPath,what="cff",userMode='user'):
         """
            Generates a list of LFNs for given site
         """
@@ -1677,10 +1678,11 @@ class DDServer(DDLogger,Controller):
 #                bList=blockList.split(",")
 #            else:
             try:
-                blocks=[]
-                if blockList:
-                   blocks=blockList.split(",")
-                bList=self.helper.getBlocksFromSite(site,blocks)
+#                blocks=[]
+#                if blockList:
+#                   blocks=blockList.split(",")
+#                bList=self.helper.getBlocksFromSite(site,blocks)
+                bList=self.helper.getBlocksFromSite(site,datasetPath)
             except:
                 if self.verbose:
                    self.writeLog(getExcept())
