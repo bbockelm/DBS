@@ -189,7 +189,10 @@ class DBManager(DDLogger):
           tables={}
           tList = con.execute(self.tQuery[dbsInst])
           for t in tList: 
-              tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False)
+              if eType=='oracle':
+                 tables[t[0]]=sqlalchemy.Table(t[0].lower(), dbsMeta, autoload=True,case_sensitive=False)
+              else:
+                 tables[t[0]]=sqlalchemy.Table(t[0], dbsMeta, autoload=True,case_sensitive=False)
           self.dbTables[dbsInst]=tables
       t_end=time.time()
       self.writeLog("Initialization time: '%s' seconds"%(t_end-t_ini))
