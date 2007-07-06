@@ -1994,7 +1994,10 @@ MCDescription:      %s
           sel.append_whereclause(self.col(tblk,'Name')!=sqlalchemy.null())
           sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
           sel.append_whereclause(self.col(tf,'Dataset')==self.col(tprd,'ID'))
-          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+#          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
+          status="INVALID"
+          sel.append_whereclause(self.col(tfs,'Status')!=status)   
+          condDict[findLastBindVar(str(sel))]=status
           result=""
           if not count and limit:
 #             sel.use_labels=True
