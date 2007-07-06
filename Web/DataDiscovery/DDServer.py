@@ -1109,7 +1109,6 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         pagerStep=int(pagerStep)
-        print "proc=",proc,type(proc)
         if  type(proc) is types.ListType:
             proc_orig=proc
         else:
