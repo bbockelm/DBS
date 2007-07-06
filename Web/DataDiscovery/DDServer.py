@@ -97,6 +97,9 @@ class DDServer(DDLogger,Controller):
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
 # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8030",verbose=verbose)
+#        self.phedexServer= DDParamServer(server="cmsdoc.cern.ch/cms/test/aprom/phedex/",verbose=verbose)
+        self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
+#        self.phedexServer= DDParamServer(server="cmslcgco03.cern.ch",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
 #        self.mastheadUrl = "http://cmsdbs.cern.ch/WEBTOOLS/Common/masthead"
@@ -3945,6 +3948,30 @@ Save query as:
         res+="""</ddresponse>"""
         return res
     cliHandler_v1.exposed=True
+
+    def phedexStatus(self,site,datasetPath,id_suffix,**kwargs):
+        self.setContentType('xml')
+#        url="/cms/test/aprom/phedex/dev/egeland/tbedi/XML::TransferStatus"
+        url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
+        params={}
+        if site:
+           params={'dataset':datasetPath,'se_name':site}
+        else:
+           params={'dataset':datasetPath,'se_name':'*'}
+        if id_suffix: params['id_suffix']=id_suffix
+        page=""
+        try:
+            page = self.phedexServer.sendPostMessage(url,params,debug=0)
+#            print "\n\n### response phedex response",page
+            page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
+        except:
+            t=self.errorReport("Fail in phedexStatus function")
+            page+="Phedex information is not available at this time"
+            pass
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    phedexStatus.exposed=True 
 #
 # main
 #

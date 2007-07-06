@@ -1034,6 +1034,7 @@ function ajaxInit(_dbs) {
   registerAjaxGetFloatBoxCalls();
   registerAjaxGetLumisCalls();
   registerAjaxProdRequestCalls();
+  registerAjaxPhedexCalls();
 
 //  ajaxGenNavigatorMenuDict(_dbs);
   registerAjaxLucene();
@@ -1042,6 +1043,12 @@ function ajaxInit(_dbs) {
   registerAjaxGetMoreInfoCalls();
 }
 
+function registerAjaxPhedexCalls() {
+    ajaxEngine.registerRequest('ajaxPhedexStatus','phedexStatus');
+}
+function ajaxPhedexStatus(site,datasetPath,id_suffix) {
+   ajaxEngine.sendRequest('ajaxPhedexStatus','site='+site,'datasetPath='+datasetPath,'id_suffix='+id_suffix);
+}
 function registerAjaxProdRequestCalls() {
     ajaxEngine.registerRequest('ajaxGetProdRequest','getProdRequest');
 //    ajaxEngine.registerAjaxElement('id_ProdRequest');
@@ -1344,4 +1351,3 @@ function ajaxConvertXMLTOTXT(input,id) {
     ajaxEngine.sendRequest('ajaxConvertXMLTOTXT','input='+input,'id='+id,'ajax=1','html=1');
     ShowTag(id);
 }
-

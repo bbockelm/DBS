@@ -1,4 +1,5 @@
 <!-- templateRunsInfo.tmpl -->
+<script type="text/javascript">registerAjaxPhedexCalls();</script>
 #import urllib
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
 #set nRun=len($runList)
@@ -92,9 +93,23 @@ $pathName
 </td>
 <td align="right">$nFiles</td>
 <td align="right">$colorSizeHTMLFormat($fSize)</td>
+#### Here is Phedex transfer status call for each site
 <td align="right">
-<div id="$run:$procDS">$sites</div>
+
+#for site in $sites
+#set phedexResponse=$site+":"+$procDS+":"+str($run)
+#set id_suffix=$run
+<div id="$phedexResponse">$site</div>
+#*
+<script type="text/javascript">
+var phedexUpdater = new GetDataUpdater('$phedexResponse','replace','noResultsMenu');
+ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
+ajaxPhedexStatus('$site','$procDS','$id_suffix');
+</script>
+#end for
+*#
 </td>
+
 #if $userMode=="runManager"
 #if $dsType.lower()!='mc'
 #if $runDBInfo.has_key($run)
