@@ -3955,10 +3955,17 @@ Save query as:
         url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
         params={}
         if site:
-           params={'dataset':datasetPath,'se_name':site}
+           if site.find(",")!=-1:
+              params['se_name']=site.split(",")
+           else:
+              params['se_name']=site
         else:
-           params={'dataset':datasetPath,'se_name':'*'}
+           params['se_name']='*'
         if id_suffix: params['id_suffix']=id_suffix
+        if datasetPath.find(",")!=-1:
+           params['dataset']=datasetPath.split(",")
+        else:
+           params['dataset']=datasetPath
         page=""
         try:
             page = self.phedexServer.sendPostMessage(url,params,debug=0)
