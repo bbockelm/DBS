@@ -62,7 +62,7 @@ class DDParamServer(DDLogger):
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/plain"}
         conn = httplib.HTTPConnection(self.server)
-        conn.request("POST",method, params, headers)
+        conn.request("POST",method, oParams, headers)
         response = conn.getresponse()
 
         if response.reason!="OK":
