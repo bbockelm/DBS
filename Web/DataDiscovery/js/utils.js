@@ -1409,6 +1409,24 @@ function HideProdRequestOutput()  {
        }
    }
 }
+function ShowPhedexStatusOutput() {
+//   var names=document.getElementsByName('phedex_transfer_status');
+   var names=document.getElementsByName('phedexStatusField');
+   for(i=0;i<names.length;i++) {
+      names[i].className="show_block";
+   }
+   getPhedexStatusForAllDatasets();
+}
+function HidePhedexStatusOutput() {
+//   var names=document.getElementsByName('phedex_transfer_status');
+   var names=document.getElementsByName('phedexStatusField');
+   for(i=0;i<names.length;i++) {
+      names[i].className="hide";
+   }
+}
+function getPhedexStatusForAllDatasets() {
+  // this function will be written in templateSnapshot.tmpl
+}
 function AutoTurnOn() {
    $('proccontainer').className='';
    $('autoOn').className='td_underline_pad';

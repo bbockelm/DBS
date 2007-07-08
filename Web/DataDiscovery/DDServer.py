@@ -1208,6 +1208,7 @@ class DDServer(DDLogger,Controller):
         # I re-use this dict for different templates
         _nameSpace = {
                      'nDatasets': nDatasets,
+                     'datasetList': datasetsList,
                      'userMode' : userMode,
                      'dbsInst'  : dbsInst,
                      'dbsInstUrl': DBS_DLS_INST[dbsInst],
@@ -3969,7 +3970,8 @@ Save query as:
         page=""
         try:
             page = self.phedexServer.sendPostMessage(url,params,debug=0)
-#            print "\n\n### response phedex response",page
+#            print "\n\n### response phedex response",site,datasetPath,id_suffix
+#            print page
             page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
         except:
             t=self.errorReport("Fail in phedexStatus function")

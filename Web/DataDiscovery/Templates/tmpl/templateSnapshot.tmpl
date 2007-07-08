@@ -1,4 +1,5 @@
 <!-- templateSnapshot.tmpl -->
+<script type="text/javascript">registerAjaxPhedexCalls();</script>
 
 #if $group=="*"
 #set group="Any"
@@ -112,10 +113,27 @@ ProdRequest status for all datasets:
 </td>
 <td>
 <span id="showProdRequest">
-<a href="javascript:ShowProdRequestOutput();ajax_dhtmlHistory('__showProdRequest','ShowProdRequestOutput()')">show</a>
+###<a href="javascript:ShowProdRequestOutput();ajax_dhtmlHistory('__showProdRequest','ShowProdRequestOutput()')">show</a>
+<a href="javascript:ShowProdRequestOutput()">show</a>
 </span> |
 <span id="hideProdRequest">
-<a href="javascript:HideProdRequestOutput();ajax_dhtmlHistory('__hideProdRequest','HideProdRequestOutput()')">hide</a>
+###<a href="javascript:HideProdRequestOutput();ajax_dhtmlHistory('__hideProdRequest','HideProdRequestOutput()')">hide</a>
+<a href="javascript:HideProdRequestOutput()">hide</a>
+</span>
+</td>
+</tr>
+<tr>
+<td>
+PhEDEx status for all datasets:
+</td>
+<td>
+<span id="showPhedexStatus">
+###<a href="javascript:ShowPhedexStatusOutput();ajax_dhtmlHistory('__showPhedexStatus','ShowPhedexStatusOutput()')">show</a>
+<a href="javascript:ShowPhedexStatusOutput()">show</a>
+</span> |
+<span id="hidePhedexStatus">
+###<a href="javascript:HidePhedexStatusOutput();ajax_dhtmlHistory('__hidePhedexStatus','HidePhedexStatusOutput()')">hide</a>
+<a href="javascript:HidePhedexStatusOutput()">hide</a>
 </span>
 </td>
 </tr>
@@ -140,4 +158,17 @@ MakeTooltip("t_dbsInst","dbsInstDef",tooltip,10000,700);
 </script>
 #end if
 
+<script type="text/javascript">
+var _snapshot=0;
+function getPhedexStatusForAllDatasets() {
+#if len($datasetList)
+if(!_snapshot) {
+#for dataset in $datasetList
+ajaxPhedexStatus('','$dataset');
+#end for
+}
+_snapshot=1;
+}
+#end if
+</script>
 <!-- end of templateSnapshot.tmpl -->

@@ -38,6 +38,19 @@ contains $nEvents events, $totFiles files, $totSize.
 <p>
 <span id="parentGraph"></span>
 </p>
+### Phedex status
+<div name="phedexStatusField" class="hide">
+PhEDEx status:<br>
+<div class="offset_left">
+#set phedexResponse="multiple:"+$path
+<div id="$phedexResponse"></div>
+</div>
+</div>
+<script type="text/javascript">
+var phedexUpdater = new PhedexUpdater('$phedexResponse');
+ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
+//ajaxPhedexStatus('','$path');
+</script>
 ##
 #if $nEvents
 ##
