@@ -97,12 +97,16 @@ $pathName
 <td align="right">
 
 #set phedexResponse="multiple:"+$procDS+":"+str($run)
-<div id="$phedexResponse">$site</div>
+<div id="$phedexResponse">
+#for site in $sites
+$site
+#end for
+</div>
 
 <script type="text/javascript">
 var phedexUpdater = new GetDataUpdater('$phedexResponse','replace','noResultsMenu');
 ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
-ajaxPhedexStatus('$site','$procDS','$run');
+ajaxPhedexStatus('','$procDS','$run');
 </script>
 
 </td>
