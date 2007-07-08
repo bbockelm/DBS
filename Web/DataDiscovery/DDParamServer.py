@@ -41,8 +41,24 @@ class DDParamServer(DDLogger):
     def sendPostMessage(self,method,iParams,debug=0):
         if debug:
            httplib.HTTPConnection.debuglevel = 1
-        params = urllib.urlencode(iParams)
-        print params
+        oParams=""
+        for key in iParams:
+            if len(oParams):
+               amp="&"
+            else:
+               amp=""
+            param=iParams[key]
+            if type(param) is types.ListType:
+               for item in param:
+                   if len(oParams):
+                      amp="&"
+                   else:
+                      amp=""
+                   oParams=oParams+amp+key+"="+urllib.quote(item)
+            else:
+               oParams=oParams+amp+key+"="+urllib.quote(param)
+        if debug:
+           print "Encode parameters",iParams,oParams
         headers = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/plain"}
         conn = httplib.HTTPConnection(self.server)
@@ -63,6 +79,15 @@ class DDParamServer(DDLogger):
 if __name__ == "__main__":
     optManager  = DDOptions.DDOptionParser()
     (opts,args) = optManager.getOpt()
+
+    # test Phedex status response call
+    url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
+    server = DDParamServer(server="cmsdoc.cern.ch")
+    params={'dataset':'/GlobalJun07-A/Online/RAW','se_name':['cmssrm.fnal.gov','cmssrc.cern.ch']}
+    page = server.sendPostMessage(url,params,debug=1)
+    print page
+
+    # test configuration file server call
     server = DDParamServer(server="edge.fnal.gov:8888")
     data = server.sendGetMessage(debug=1)
     print data
