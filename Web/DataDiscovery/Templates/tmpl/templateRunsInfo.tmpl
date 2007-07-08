@@ -96,18 +96,15 @@ $pathName
 #### Here is Phedex transfer status call for each site
 <td align="right">
 
-#for site in $sites
-#set phedexResponse=$site+":"+$procDS+":"+str($run)
-#set id_suffix=$run
+#set phedexResponse="multiple:"+$procDS+":"+str($run)
 <div id="$phedexResponse">$site</div>
-#*
+
 <script type="text/javascript">
 var phedexUpdater = new GetDataUpdater('$phedexResponse','replace','noResultsMenu');
 ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
-ajaxPhedexStatus('$site','$procDS','$id_suffix');
+ajaxPhedexStatus('$site','$procDS','$run');
 </script>
-#end for
-*#
+
 </td>
 
 #if $userMode=="runManager"
