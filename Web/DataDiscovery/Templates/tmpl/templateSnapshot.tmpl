@@ -122,6 +122,7 @@ ProdRequest status for all datasets:
 </span>
 </td>
 </tr>
+#if $userMode!='user'
 <tr>
 <td>
 PhEDEx status for all datasets:
@@ -137,6 +138,7 @@ PhEDEx status for all datasets:
 </span>
 </td>
 </tr>
+#end if
 </table>
 
 #else
@@ -158,17 +160,22 @@ MakeTooltip("t_dbsInst","dbsInstDef",tooltip,10000,700);
 </script>
 #end if
 
+#if $userMode!='user'
 <script type="text/javascript">
 var _snapshot=0;
 function getPhedexStatusForAllDatasets() {
 #if len($datasetList)
 if(!_snapshot) {
+#set datasetPaths=$datasetList[0]
 #for dataset in $datasetList
-ajaxPhedexStatus('','$dataset');
+#set datasetPaths=$datasetPaths+","+dataset
+//ajaxPhedexStatus('','$dataset');
 #end for
+ajaxPhedexStatus('','$datasetPaths');
 }
 _snapshot=1;
 }
 #end if
 </script>
+#end if
 <!-- end of templateSnapshot.tmpl -->
