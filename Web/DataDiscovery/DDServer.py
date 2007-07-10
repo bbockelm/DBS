@@ -3970,7 +3970,7 @@ Save query as:
         page=""
         try:
             page = self.phedexServer.sendPostMessage(url,params,debug=0)
-#            print "\n\n### response phedex response",site,datasetPath,id_suffix
+#            print "\n\n### response phedex response",site,datasetPath,id_suffix,params
 #            print page
             page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
         except:
