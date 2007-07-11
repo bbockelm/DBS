@@ -2351,12 +2351,12 @@ class DDServer(DDLogger,Controller):
             if key=='dsType':
                dsType=kwargs['dsType']
 
-        dList = ['Any']+self.helper.getPrimaryDatasets(group,tier,rel,dsType)
+        dList = self.helper.getPrimaryDatasets(group,tier,rel,dsType)
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
         cFunc=''
         if kwargs.has_key('changeFunction'): cFunc=kwargs['changeFunction']
-        nameSpace = {'name':'primD','iList': natsort24(dList),'selTag':'kw_prim','changeFunction':cFunc,'style':style}
+        nameSpace = {'name':'primD','iList': ['Any']+natsort24(dList),'selTag':'kw_prim','changeFunction':cFunc,'style':style}
         t = templateSelect(searchList=[nameSpace]).respond()
         page+=str(t)
         page+="</response></ajax-response>"
@@ -2373,7 +2373,9 @@ class DDServer(DDLogger,Controller):
         self.setContentType('xml')
         page="""<ajax-response><response type="element" id="kw_release_holder">"""
         self.helperInit(dbsInst)
-        dList = ['Any']+self.helper.getSoftwareReleases()
+        relList=self.helper.getSoftwareReleases()
+        relList.reverse()
+        dList = ['Any']+relList
         cFunc ="ajaxEngine.registerRequest('ajaxGetTriggerLines','getTriggerLines');ajaxUpdatePrimaryDatasets();"
         style="width:200px"
         if kwargs.has_key('style'): style=kwargs['style']
@@ -3970,7 +3972,11 @@ Save query as:
         page=""
         try:
             page = self.phedexServer.sendPostMessage(url,params,debug=0)
-#            print "\n\n### response phedex response",site,datasetPath,id_suffix,params
+#            print "\n\n### response phedex response"
+#            print site
+#            print datasetPath
+#            print id_suffix
+#            print params
 #            print page
             page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
         except:
