@@ -2057,7 +2057,6 @@ MCDescription:      %s
              sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
-              print item
               path,se=item
               pDict[path]=pDict[path]+[se]
           for idx in xrange(0,len(oList)):
