@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.108 $"
- $Id: DBSSql.java,v 1.108 2007/06/22 19:41:48 afaq Exp $"
+ $Revision: 1.109 $"
+ $Id: DBSSql.java,v 1.109 2007/06/25 15:59:06 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -390,6 +390,26 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
+        }
+
+        public static PreparedStatement listDQVersions(Connection conn) throws SQLException
+	{
+		String sql = "SELECT Version as DQ_VERSION, VersionTimeStamp as TIME_STAMP from QualityVersion";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+        public static PreparedStatement insertSubSystem(Connection conn, String name, String parent,
+                                                    String cbUserID, String lmbUserID, String cDate)  throws SQLException
+        {
+                Hashtable table = new Hashtable();
+                table.put("Name", name);
+                if (!DBSUtil.isNull(parent)) table.put("Parent", parent);
+                table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "SubSystem", table);
         }
 
 

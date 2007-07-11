@@ -1,6 +1,6 @@
 /**
- $Revision: 1.96 $"
- $Id: DBSApi.java,v 1.96 2007/06/20 22:03:48 afaq Exp $"
+ $Revision: 1.97 $"
+ $Id: DBSApi.java,v 1.97 2007/06/25 15:59:05 afaq Exp $"
  *
 */
 
@@ -557,6 +557,10 @@ public class DBSApi {
 						get(table, "end_run", true),
                                                 DBSApiParser.parseDQFlags(getXml(table)),
                                                 dbsUser);
+                        } else if (apiStr.equals("insertSubSystem"))  {
+                                (new DBSApiDQLogic(this.data)).insertSubSystem(conn, out,
+                                                DBSApiParser.parse(getXml(table), "sub_system"),
+                                                dbsUser);
                         } else if (apiStr.equals("insertLumiRangeDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertLumiRangeDQ(conn, out,
 						get(table, "run_number", true),
@@ -580,6 +584,9 @@ public class DBSApi {
 			} else if (apiStr.equals("listSubSystems")) {
                                 (new DBSApiDQLogic(this.data)).listSubSystems(conn, out);
 
+                        } else if (apiStr.equals("listDQVersions")) {
+
+                                (new DBSApiDQLogic(this.data)).listDQVersions(conn, out);
 			} else {
 				writeException(out, "Invalid API", "1018", "The api " + apiStr + " provided by the client is not valid");
 				return;

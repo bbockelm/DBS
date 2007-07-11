@@ -3544,6 +3544,29 @@ class DbsApi(DbsConfig):
     logging.log(DBSDEBUG, data)
   #-------------------------------------------------------------------
 
+  def listDQVersions(self):
+    """
+    List of Data Quality Versions
+
+    returns a List of TUPLE of (version, timestamp)
+
+    """
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    data = self._server._call ({ 'api' : 'listDQVersions'}, 'GET')
+
+    # Parse the resulting xml output.
+    result = []
+
+    class Handler (xml.sax.handler.ContentHandler):
+        def startElement(self, name, attrs):
+          if name == 'dq_version': 
+                        dqVersion = str(attrs['version'])
+			dq_timestamp= str(attrs['time_stamp'])
+                        result.append((dqVersion, dq_timestamp))
+    xml.sax.parseString (data, Handler ())
+    return result
 
   #def listRowsInTable(self):
   # """
@@ -3574,6 +3597,7 @@ if __name__ == "__main__":
     print "Schema Version : ", serverInfo['SchemaVersion']
 
     #print api.listSubSystems()
+    print api.listDQVersions()
 
   except DbsApiException, ex:
     print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

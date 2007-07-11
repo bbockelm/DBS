@@ -14,20 +14,18 @@ if __name__ == "__main__":
     #Add a new SubSystem
     
 
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
-    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="ECAL", parent="CMS")
+    api.insertSubSystem(name="ECAL+", parent="ECAL")
+    api.insertSubSystem(name="ECAL-", parent="ECAL")
 
+    api.insertSubSystem(name="HCAL", parent="CMS")
+    api.insertSubSystem(name="HCAL+", parent="HCAL")
+    api.insertSubSystem(name="HCAL-", parent="HCAL")
 
+    api.insertSubSystem(name="HB", parent="HCAL")
+    api.insertSubSystem(name="HF", parent="HCAL")
 
+    api.insertSubSystem(name="NOSUB", parent="CMS")
 
     subSys = api.listSubSystems()
     for aSub in subSys:

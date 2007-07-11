@@ -1,6 +1,6 @@
 /**
- $Revision: 1.6 $"
- $Id: DBSApiDQLogic.java,v 1.6 2007/06/22 19:41:48 afaq Exp $"
+ $Revision: 1.7 $"
+ $Id: DBSApiDQLogic.java,v 1.7 2007/06/25 15:59:05 afaq Exp $"
  *
  */
 
@@ -177,6 +177,23 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 	}
 
+
+        public void listDQVersions(Connection conn, Writer out) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+
+                try {
+                        ps = DBSSql.listDQVersions(conn);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                out.write( (String) "<dq_version version='"+get(rs, "DQ_VERSION")+"' time_stamp='"+get(rs, "TIME_STAMP")+"' />");
+			}
+
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+        }
 
         public void listSubSystems(Connection conn, Writer out) throws Exception {
 		PreparedStatement ps = null;
@@ -385,6 +402,35 @@ public class DBSApiDQLogic extends DBSApiLogic {
 
 
 	}
+
+        public void insertSubSystem(Connection conn, Writer out, Hashtable subSys, Hashtable dbsUser) throws Exception {
+
+		//Check for nulls ?
+                String parent = DBSUtil.get(subSys, "parent");
+                String name = DBSUtil.get(subSys, "name");
+
+                String creationDate = getTime(subSys, "creation_date", false);
+                String cbUserID = personApi.getUserID(conn, dbsUser);
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+
+                String checkID = getIDNoCheck(conn, "SubSystem", "Name", name, false);
+                if ( !isNull (checkID )){
+                        writeWarning(out, "Already Exist", "7009",
+                                "SubSystem "+ name +", already eixst in DBS, cannot add again");
+                        return;
+                }
+
+                PreparedStatement ps = null;
+
+                try {
+                        ps = DBSSql.insertSubSystem(conn, name, parent, cbUserID, lmbUserID, creationDate);
+                        ps.execute();
+                } finally {
+                        if (ps != null) ps.close();
+                }
+
+        }
+
 
 	public void insertRunRangeDQ(Connection conn, Writer out, String startRun, String endRun, 
 							Vector dqFlags, Hashtable dbsUser) throws Exception {
