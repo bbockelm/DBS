@@ -1557,7 +1557,7 @@ class DDServer(DDLogger,Controller):
                          'style'    : "",
                          'rPage'    : rPage,
                          'pagerStep': pagerStep,
-                         'nameForPager': "runs",
+                         'nameForPager': "rows",
                          'onchange' : "javascript:LoadGetRunsFromRange('%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,primD,primType,minRun,maxRun,_idx,ajax,userMode)
                         }
             t = templatePagerStep(searchList=[_nameSpace]).respond()
