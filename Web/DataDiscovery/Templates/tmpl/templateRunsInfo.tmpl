@@ -49,6 +49,8 @@ contains $nRun run(s)
 </tr>
 ###for dbsDict in $runList
 #* (run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path) *#
+#set datasetDict={}
+#set siteDict={}
 
 #for item in $runList
 #set run    = item[0]
@@ -95,18 +97,24 @@ $pathName
 <td align="right">$colorSizeHTMLFormat($fSize)</td>
 #### Here is Phedex transfer status call for each site
 <td align="right">
-
 #set phedexResponse="multiple:"+$procDS+":"+str($run)
+#if $datasetDict.has_key($run)
+#set datasetDict[$run]=$datasetDict[$run]+[$procDS]
+#else
+#set datasetDict[$run]=[$procDS]
+#end if
+#set siteDict[$run]=$sites
 <div id="$phedexResponse">
+<span class="hide">Phedex</span>
 #for site in $sites
-$site
+$site<br>
 #end for
 </div>
 
 <script type="text/javascript">
-var phedexUpdater = new GetDataUpdater('$phedexResponse','replace','noResultsMenu');
+var phedexUpdater = new PhedexUpdater('$phedexResponse');
 ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
-ajaxPhedexStatus('','$procDS','$run');
+//ajaxPhedexStatus('','$procDS','$run');
 </script>
 
 </td>
@@ -141,4 +149,12 @@ $system
 #end for
 </table>
 <hr class="dbs" />
+
+<script type="text/javascript">
+#for run in $datasetDict.keys()
+#set datasets=','.join($datasetDict[$run])
+#set listOfSites=','.join($siteDict[$run])
+ajaxPhedexStatus('$listOfSites','$datasets','$run');
+#end for
+</script>
 <!-- end of templateRunsInfo.tmpl -->

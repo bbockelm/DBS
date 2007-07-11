@@ -75,17 +75,22 @@ HistoryUpdater.prototype = {
 }
 var PhedexUpdater=Class.create();
 PhedexUpdater.prototype = {
-   initialize: function(tab) {
-     this.tab=tab
+   initialize: function(tab,mode) {
+      this.tab=tab
+      // keep always in update mode
+      if(mode && mode=='replace') {
+         this.mode=mode;
+      } else {
+         this.mode='update';
+      }
    },
    ajaxUpdate: function(ajaxResponse) {
      var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
      var t=document.getElementById(this.tab);
-     var iVal=t.innerHTML;
-     if(responseHTML.indexOf('%')) {
+     if(t.innerHTML.indexOf('PhEDEx')>-1||t.innerHTML.indexOf('Phedex')>-1||this.mode=='replace') {
         t.innerHTML=responseHTML;
      } else {
-        t.innerHTML=iVal+responseHTML;
+        t.innerHTML=t.innerHTML+responseHTML;
      }
    }
 }
