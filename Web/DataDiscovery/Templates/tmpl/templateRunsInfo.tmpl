@@ -149,11 +149,11 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
 </td>
 #### Here is Run summary status call for each run
 <td>
-<div name="runSummary_key_$run"></div>
-<div name="runSummary_triggers_$run"></div>
-<div name="runSummary_events_$run"></div>
-<div name="runSummary_bfield_$run"></div>
-<div name="runSummary_components_$run"></div>
+<div id="runSummary_key_$run" name="runSummary_key_$run"></div>
+<div id="runSummary_triggers_$run" name="runSummary_triggers_$run"></div>
+<div id="runSummary_events_$run" name="runSummary_events_$run"></div>
+<div id="runSummary_bfield_$run" name="runSummary_bfield_$run"></div>
+<div id="runSummary_components_$run" name="runSummary_components_$run"></div>
 <script type="text/javascript">
 var runUpdater_k = new RunSummaryUpdater('runSummary_key_$run');
 ajaxEngine.registerAjaxObject('runSummary_key_$run',runUpdater_k);
