@@ -1847,7 +1847,7 @@ MCDescription:      %s
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
-  def getRunDBInfo_v2(self,run):
+  def getRunSummaryTIF(self,run):
       """ I need to make the following query
             http://cmsmon.cern.ch/cmsdb/servlet/RunSummaryTIF?RUN=8757,8762&DB=cms_pvss_tk&XML=1
       """
@@ -2109,7 +2109,7 @@ MCDescription:      %s
       runDBInfoDict={}
       if userMode!="user":
          try:
-            runDBInfoDict=self.getRunDBInfo(runs)
+            runDBInfoDict=self.getRunSummaryTIF(runs)
          except:
             pass
       return oList,runDBInfoDict
