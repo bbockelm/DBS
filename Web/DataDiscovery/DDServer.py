@@ -3987,6 +3987,42 @@ Save query as:
            self.writeLog(page)
         return page
     phedexStatus.exposed=True 
+
+    def getRunDBInfo(self,runs,**kwargs):
+        self.setContentType('xml')
+        rDict={}
+        try:
+            rDict = self.helper.getRunDBInfo(runs)
+#            print "\n\n### getRunDBInfo response"
+#            print runs
+#            print rDict
+        except:
+            t=self.errorReport("Fail in phedexStatus function")
+            pass
+        page="""<ajax-response>"""
+        for run in rDict.keys():
+            global_key,triggers,events,bfield,components=rDict[run]
+            page+="""<response type='object' id="runSummary_key_%s">"""%run
+            page+="""<span>Type: %s</span>"""%global_key
+            page+="</response>"
+            page+="""<response type='object' id="runSummary_triggers_%s">"""%run
+            page+="""<span>Triggers: %s</span>"""%triggers
+            page+="</response>"
+            page+="""<response type='object' id="runSummary_events_%s">"""%run
+            page+="""<span>Events: %s</span>"""%triggers
+            page+="</response>"
+            page+="""<response type='object' id="runSummary_bfield_%s">"""%run
+            page+="""<span>B-field: %s</span>"""%bfield
+            page+="</response>"
+            page+="""<response type='object' id="runSummary_components_%s">"""%run
+            page+="""<span>Components: %s</span>"""%components
+            page+="</response>"
+        page+="</ajax-response>"
+            
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getRunDBInfo.exposed=True 
 #
 # main
 #

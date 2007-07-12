@@ -1,5 +1,8 @@
 <!-- templateRunsInfo.tmpl -->
-<script type="text/javascript">registerAjaxPhedexCalls();</script>
+<script type="text/javascript">
+registerAjaxPhedexCalls();
+registerAjaxRunSummaryCalls();
+</script>
 #import urllib
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
 #set nRun=len($runList)
@@ -29,7 +32,6 @@ contains $nRun run(s)
 <td>dataset</td>
 <td># Files</td>
 <td>Size</td>
-<td>Transfer</td>
 #if $userMode=="runManager"
 #* here we took first item from runList and 11th element which is dsType *#
 #set first=$runList[0]
@@ -46,6 +48,8 @@ contains $nRun run(s)
 <td>Modification time</td>
 #end if
 <td>LFNs</td>
+<td>Transfer</td>
+<td>Run Summary</td>
 </tr>
 ###for dbsDict in $runList
 #* (run,nEvts,nLumis,totLumi,store,sRun,eRun,cBy,cDate,mBy,mDate,dsType,path) *#
@@ -95,30 +99,6 @@ $pathName
 </td>
 <td align="right">$nFiles</td>
 <td align="right">$colorSizeHTMLFormat($fSize)</td>
-#### Here is Phedex transfer status call for each site
-<td align="right">
-#set phedexResponse="multiple:"+$procDS+":"+str($run)
-#if $datasetDict.has_key($run)
-#set datasetDict[$run]=$datasetDict[$run]+[$procDS]
-#else
-#set datasetDict[$run]=[$procDS]
-#end if
-#set siteDict[$run]=$sites
-<div id="$phedexResponse">
-<span class="hide">Phedex</span>
-#for site in $sites
-$site<br>
-#end for
-</div>
-
-<script type="text/javascript">
-var phedexUpdater = new PhedexUpdater('$phedexResponse');
-ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
-//ajaxPhedexStatus('','$procDS','$run');
-</script>
-
-</td>
-
 #if $userMode=="runManager"
 #if $dsType.lower()!='mc'
 #if $runDBInfo.has_key($run)
@@ -145,16 +125,65 @@ $system
 <a href="$host/getLFN_txt?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">txt</a>
 <a href="$host/getLFNlist?dbsInst=$dbsInst&amp;blockName=*&amp;dataset=$procDS&amp;userMode=$userMode&amp;run=$run">details</a>
 </td>
+#### Here is Phedex transfer status call for each site
+<td align="right">
+#set phedexResponse="multiple:"+$procDS+":"+str($run)
+#if $datasetDict.has_key($run)
+#set datasetDict[$run]=$datasetDict[$run]+[$procDS]
+#else
+#set datasetDict[$run]=[$procDS]
+#end if
+#set siteDict[$run]=$sites
+<div id="$phedexResponse">
+<span class="hide">Phedex</span>
+#for site in $sites
+$site<br>
+#end for
+</div>
+
+<script type="text/javascript">
+var phedexUpdater = new PhedexUpdater('$phedexResponse');
+ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
+</script>
+
+</td>
+#### Here is Run summary status call for each run
+<td>
+<div name="runSummary_key_$run"></div>
+<div name="runSummary_triggers_$run"></div>
+<div name="runSummary_events_$run"></div>
+<div name="runSummary_bfield_$run"></div>
+<div name="runSummary_components_$run"></div>
+<script type="text/javascript">
+var runUpdater_k = new RunSummaryUpdater('runSummary_key_$run');
+ajaxEngine.registerAjaxObject('runSummary_key_$run',runUpdater_k);
+var runUpdater_t = new RunSummaryUpdater('runSummary_triggers_$run');
+ajaxEngine.registerAjaxObject('runSummary_triggers_$run',runUpdater_t);
+var runUpdater_e = new RunSummaryUpdater('runSummary_events_$run');
+ajaxEngine.registerAjaxObject('runSummary_events_$run',runUpdater_e);
+var runUpdater_b = new RunSummaryUpdater('runSummary_bfield_$run');
+ajaxEngine.registerAjaxObject('runSummary_bfield_$run',runUpdater_b);
+var runUpdater_c = new RunSummaryUpdater('runSummary_components_$run');
+ajaxEngine.registerAjaxObject('runSummary_components_$run',runUpdater_c);
+</script>
+</td>
 </tr>
 #end for
 </table>
 <hr class="dbs" />
 
 <script type="text/javascript">
+#set runs=""
 #for run in $datasetDict.keys()
 #set datasets=','.join($datasetDict[$run])
 #set listOfSites=','.join($siteDict[$run])
 ajaxPhedexStatus('$listOfSites','$datasets','$run');
+#if not $runs
+#set runs="%s"%$run
+#else
+#set runs=runs+',%s'%$run
+#end if
 #end for
+ajaxRunSummary('$runs');
 </script>
 <!-- end of templateRunsInfo.tmpl -->

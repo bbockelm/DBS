@@ -1847,7 +1847,7 @@ MCDescription:      %s
           print app
 #          print app.get('executable'),app.get('version'),app.get('family')
 
-  def getRunDBInfo(self,run):
+  def getRunDBInfo_v2(self,run):
       """ I need to make the following query
             http://cmsmon.cern.ch/cmsdb/servlet/RunSummaryTIF?RUN=8757,8762&DB=cms_pvss_tk&XML=1
       """
@@ -1878,6 +1878,41 @@ MCDescription:      %s
                             if k.tag.lower()=="system":  system=k.text
                         if run and not runDBDict.has_key(run):
                            runDBDict[run]=(runmode,system)
+      return runDBDict
+
+  def getRunDBInfo(self,run):
+      """ I need to make the following query
+            http://cmsmon.cern.ch/cmsdb/servlet/RunSummary?RUN=12024,12222&XML=1
+      """
+      runDBDict={}
+      conn = httplib.HTTPConnection("cmsmon.cern.ch")
+      if type(run) is types.ListType:
+         runUrl=""
+         for r in run:
+             runUrl+="%s,"%r
+         conn.request("GET", "/cmsdb/servlet/RunSummary?RUN=%s&XML=1"%runUrl[:-1])
+      else:
+         conn.request("GET", "/cmsdb/servlet/RunSummary?RUN=%s&XML=1"%run)
+      r1 = conn.getresponse()
+      if int(r1.status)==200:
+         data=r1.read()
+         elem=elementtree.ElementTree.fromstring(data)
+         for i in elem:
+             if i.tag=="query":
+                query_data=i # get query
+                for j in query_data:
+                    if  j.tag=="row":
+                        run=0
+                        global_key=triggers=events=bfield=components=""
+                        for k in j.getchildren():
+                            if k.tag.lower()=="run":        run=int(k.text)
+                            if k.tag.lower()=="global_key": global_key=k.text
+                            if k.tag.lower()=="triggers":   triggers=k.text
+                            if k.tag.lower()=="events":     events=k.text
+                            if k.tag.lower()=="bfield":     bfield=k.text
+                            if k.tag.lower()=="components": components=k.text
+                        if run and not runDBDict.has_key(run):
+                           runDBDict[run]=(global_key,triggers,events,bfield,components)
       return runDBDict
 
   def getRunDQInfo(self,run):

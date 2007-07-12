@@ -94,6 +94,25 @@ PhedexUpdater.prototype = {
      }
    }
 }
+var RunSummaryUpdater=Class.create();
+RunSummaryUpdater.prototype = {
+   initialize: function(tab,mode) {
+      this.tab=tab
+      // keep always in update mode
+      if(mode && mode=='replace') {
+         this.mode=mode;
+      } else {
+         this.mode='update';
+      }
+   },
+   ajaxUpdate: function(ajaxResponse) {
+     var responseHTML=RicoUtil.getContentAsString(ajaxResponse);
+     var t=document.getElementsByName(this.tab);
+     for(i=0;i<t.length;i++) {
+        t[i].innerHTML=t[i].innerHTML+responseHTML;
+     }
+   }
+}
 function registerAjaxHistoryCalls() {
   userRegUpdater = new UserRegistrationUpdater();
   ajaxEngine.registerRequest('ajaxCheckUser','checkUser');
@@ -1056,6 +1075,7 @@ function ajaxInit(_dbs) {
   registerAjaxGetLumisCalls();
   registerAjaxProdRequestCalls();
   registerAjaxPhedexCalls();
+  registerAjaxRunSummaryCalls();
 
 //  ajaxGenNavigatorMenuDict(_dbs);
   registerAjaxLucene();
@@ -1064,6 +1084,12 @@ function ajaxInit(_dbs) {
   registerAjaxGetMoreInfoCalls();
 }
 
+function registerAjaxRunSummaryCalls() {
+    ajaxEngine.registerRequest('ajaxRunSummary','getRunDBInfo');
+}
+function ajaxRunSummary(runs) {
+   ajaxEngine.sendRequest('ajaxRunSummary','runs='+runs);
+}
 function registerAjaxPhedexCalls() {
     ajaxEngine.registerRequest('ajaxPhedexStatus','phedexStatus');
 }
