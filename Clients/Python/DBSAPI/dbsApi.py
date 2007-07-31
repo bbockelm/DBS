@@ -698,9 +698,9 @@ class DbsApi(DbsConfig):
                self.currBlock = DbsFileBlock(
                                        Name=str(attrs['name']), 
                                        Path=str(attrs['path']), 
-                                       BlockSize=long(attrs['size']),
-                                       NumberOfFiles=long(attrs['number_of_files']),
-                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       BlockSize=getLong(attrs['size']),
+                                       NumberOfFiles=getLong(attrs['number_of_files']),
+                                       NumberOfEvents=getLong(attrs['number_of_events']),
                                        OpenForWriting=str(attrs['open_for_writing']),
                                        CreationDate=str(attrs['creation_date']),
                                        CreatedBy=str(attrs['created_by']),
@@ -948,8 +948,8 @@ class DbsApi(DbsConfig):
           if name == 'file':
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
-                                       FileSize=long(attrs['size']),
-                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       FileSize=getLong(attrs['size']),
+                                       NumberOfEvents=getLong(attrs['number_of_events']),
                                        Status=str(attrs['status']),
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
@@ -969,12 +969,12 @@ class DbsApi(DbsConfig):
 
           if name == 'file_lumi_section':
              self.currFile['LumiList'].append(DbsLumiSection(
-                                                   LumiSectionNumber=long(attrs['lumi_section_number']),
-                                                   StartEventNumber=long(attrs['start_event_number']),
-                                                   EndEventNumber=long(attrs['end_event_number']),   
-                                                   LumiStartTime=long(attrs['lumi_start_time']),
-                                                   LumiEndTime=long(attrs['lumi_end_time']),
-                                                   RunNumber=long(attrs['run_number']),
+                                                   LumiSectionNumber=getLong(attrs['lumi_section_number']),
+                                                   StartEventNumber=getLong(attrs['start_event_number']),
+                                                   EndEventNumber=getLong(attrs['end_event_number']),   
+                                                   LumiStartTime=getLong(attrs['lumi_start_time']),
+                                                   LumiEndTime=getLong(attrs['lumi_end_time']),
+                                                   RunNumber=getLong(attrs['run_number']),
                                                    CreationDate=str(attrs['creation_date']),
                                                    CreatedBy=str(attrs['created_by']),
                                                    LastModificationDate=str(attrs['last_modification_date']),
@@ -996,8 +996,8 @@ class DbsApi(DbsConfig):
           if name == 'file_parent':
              self.currFile['ParentList'].append(DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
-                                       FileSize=long(attrs['size']),
-                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       FileSize=getLong(attrs['size']),
+                                       NumberOfEvents=getLong(attrs['number_of_events']),
                                        Status=str(attrs['status']),
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
@@ -1012,8 +1012,8 @@ class DbsApi(DbsConfig):
           if name == 'file_child':
              self.currFile['ChildList'].append(DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
-                                       FileSize=long(attrs['size']),
-                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       FileSize=getLong(attrs['size']),
+                                       NumberOfEvents=getLong(attrs['number_of_events']),
                                        Status=str(attrs['status']),
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
@@ -1110,8 +1110,8 @@ class DbsApi(DbsConfig):
           if name == 'file_parent':
              result.append( DbsFile (
                                        LogicalFileName=str(attrs['lfn']),
-                                       FileSize=long(attrs['size']),
-                                       NumberOfEvents=long(attrs['number_of_events']),
+                                       FileSize=getLong(attrs['size']),
+                                       NumberOfEvents=getLong(attrs['number_of_events']),
                                        Status=str(attrs['status']),
                                        Block=DbsFileBlock(Name=str(attrs['block_name'])),
                                        FileType=str(attrs['type']),
@@ -1313,12 +1313,12 @@ class DbsApi(DbsConfig):
         def startElement(self, name, attrs):
           if name == 'file_lumi_section':
              result.append(DbsLumiSection (
-                                                   LumiSectionNumber=long(attrs['lumi_section_number']),
-                                                   StartEventNumber=long(attrs['start_event_number']),
-                                                   EndEventNumber=long(attrs['end_event_number']),   
+                                                   LumiSectionNumber=getLong(attrs['lumi_section_number']),
+                                                   StartEventNumber=getLong(attrs['start_event_number']),
+                                                   EndEventNumber=getLong(attrs['end_event_number']),   
                                                    LumiStartTime=getLong(attrs['lumi_start_time']),
                                                    LumiEndTime=getLong(attrs['lumi_end_time']),
-                                                   RunNumber=long(attrs['run_number']),
+                                                   RunNumber=getLong(attrs['run_number']),
                                                    CreationDate=str(attrs['creation_date']),
                                                    CreatedBy=str(attrs['created_by']),
                                                    LastModificationDate=str(attrs['last_modification_date']),
