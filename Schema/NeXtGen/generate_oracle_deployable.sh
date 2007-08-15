@@ -159,6 +159,7 @@ echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('VALID', ${unix_ti
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('INVALID', ${unix_time});" >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('EXPORTED', ${unix_time});" >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('IMPORTED', ${unix_time});" >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CREATIONDATE) VALUES ('RO', ${unix_time});" >> $ddl_file
 echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('EDM', ${unix_time}) ;" >> $ddl_file
 echo "INSERT INTO FileType(Type, CREATIONDATE) VALUES ('STREAMER', ${unix_time}) ;" >> $ddl_file
 echo "INSERT INTO AnalysisDSType(Type, CREATIONDATE) VALUES ('TEST', ${unix_time});" >> $ddl_file

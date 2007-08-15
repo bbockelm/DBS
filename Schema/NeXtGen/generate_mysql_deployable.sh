@@ -82,7 +82,7 @@ echo "-- ======================================================================"
 echo  >> $ddl_file
 echo "INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('$SchemaVersion', '$InstanceName', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());"  >> $ddl_file
-echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;"  >> $ddl_file

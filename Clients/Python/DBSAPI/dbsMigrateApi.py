@@ -102,7 +102,7 @@ class DbsMigrateApi:
 		try:
 			print "Transferring path %s " %path
 			print "            block %s " %blockName
-			self.apiDst.insertDatasetROContents(self.apiSrc.listDatasetContents(path,  blockName))
+			self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName), True)
 		except DbsBadRequest, ex:
 			print ex
 			if int(ex.getErrorCode()) != 1024:
@@ -127,7 +127,7 @@ class DbsMigrateApi:
 		
 	
 	def isDatasetStatusRO(self, path):
-		if getDatasetStatus(path) == "RO":
+		if self.getDatasetStatus(path) == "RO":
 			return True
 		else:
 			return False
@@ -138,49 +138,52 @@ class DbsMigrateApi:
 
 	
 	def migratePathRO(self, path):
-		srcInstanceName = getInstanceName(self.apiSrc)
-		dstInstanceName = getInstanceName(self.apiDst)
-		checkDatasetStatus(path)
-		checkInstances(srcInstanceName, dstInstanceName)
-		if dstInstanceName == "GLOBAL" and srcInstanceName = "LOCAL" :
+		srcInstanceName = self.getInstanceName(self.apiSrc)
+		dstInstanceName = self.getInstanceName(self.apiDst)
+		self.checkDatasetStatus(path)
+		self.checkInstances(srcInstanceName, dstInstanceName)
+		if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
 			#One level Migration
-			migratePathBasic(self.apiDst, path)
-		else if dstInstanceName == "LOCAL" and srcInstanceName = "GLOBAL" :
-			# One level Migraton
-			migratePathROBasic(self.apiDst, path)
-			#Set dataset status as RO
-			setDatasetStatusAsRO(path)
+			self.migratePathBasic(path)
+		else:
+			if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
+				# One level Migraton
+				self.migratePathROBasic(path)
+				#Set dataset status as RO
+				self.setDatasetStatusAsRO(path)
 	
 
 	def migrateBlockRO(self, path, blockName):
-		srcInstanceName = getInstanceName(self.apiSrc)
-		dstInstanceName = getInstanceName(self.apiDst)
-		checkDatasetStatus(path)
-		checkInstances(srcInstanceName, dstInstanceName)
-		if dstInstanceName == "GLOBAL" and srcInstanceName = "LOCAL" :
+		srcInstanceName = self.getInstanceName(self.apiSrc)
+		dstInstanceName = self.getInstanceName(self.apiDst)
+		self.checkDatasetStatus(path)
+		self.checkInstances(srcInstanceName, dstInstanceName)
+		if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
 			#One level Migration
-			migrateBlockBasic(self.apiDst, path, blockName)
-		else if dstInstanceName == "LOCAL" and srcInstanceName = "GLOBAL" :
-			# One level Migraton
-			migrateBlockROBasic(self.apiDst, path)
-			#Set dataset status as RO
-			setDatasetStatusAsRO(path)
+			self.migrateBlockBasic(path, blockName)
+		else:
+			if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
+				# One level Migraton
+				self.migrateBlockROBasic(path, blockName)
+				#Set dataset status as RO
+				self.setDatasetStatusAsRO(path)
 			
 	
-	def setDatasetStatusAsRO(path):
+	def setDatasetStatusAsRO(self, path):
 		self.apiDst.updateProcDSStatus(path, "RO")
 	
 	def checkDatasetStatus(self, path):
-		if isDatasetStatusRO(path):
+		if self.isDatasetStatusRO(path):
 			 raise DbsBadRequest (args = "Read Only dataset CANNOT be Migrated.", code = 1222)
 	
 
 	def checkInstances(self, srcInstanceName, dstInstanceName):
-		if dstInstanceName == "LOCAL" and srcInstanceName = "LOCAL" :
+		if dstInstanceName == "LOCAL" and srcInstanceName == "LOCAL" :
 			 raise DbsBadRequest (args = "Local to Local migration is NOT allowed with one level transfer (excluding parentage).\n Either use GLOBAL instance as source DBS or do the complete migration (including parentage) using this API migrateDatasetContents with readOnly option set to False", code = 1223)
 
-		else if dstInstanceName == "GLOBAL" and srcInstanceName = "GLOBAL" :
-			 raise DbsBadRequest (args = "Global to Global NOT allowed", code = 1224)
+		else:
+			if dstInstanceName == "GLOBAL" and srcInstanceName == "GLOBAL" :
+				raise DbsBadRequest (args = "Global to Global NOT allowed", code = 1224)
 	
 
 

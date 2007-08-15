@@ -4,9 +4,9 @@
 -- === Build : 719
 -- ======================================================================
 
-drop database if exists DBS_1_0_5;
-create database DBS_1_0_5;
-use DBS_1_0_5;
+drop database if exists DBS_1_0_5dst;
+create database DBS_1_0_5dst;
+use DBS_1_0_5dst;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -1826,7 +1826,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_5', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
-INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());
+INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
 INSERT INTO FileValidStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP());
 INSERT INTO FileType(Type, CreationDate) VALUES ('EDM', UNIX_TIMESTAMP()) ;
