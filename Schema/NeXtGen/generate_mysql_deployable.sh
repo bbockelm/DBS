@@ -11,6 +11,8 @@
 #
 #
 SchemaVersion=DBS_1_0_5
+echo "Please provide the instance Name. There are only two types. Acceptable input are GLOBAL, LOCAL"
+read InstanceName
 #
 ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
@@ -78,7 +80,7 @@ echo "-- ======================================================================"
 echo "-- Initialize status tables There can be better ways to do it ( laters ) "  >> $ddl_file
 echo "-- ======================================================================"  >> $ddl_file
 echo  >> $ddl_file
-echo "INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('$SchemaVersion', UNIX_TIMESTAMP());"  >> $ddl_file
+echo "INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('$SchemaVersion', '$InstanceName', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());"  >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());"  >> $ddl_file

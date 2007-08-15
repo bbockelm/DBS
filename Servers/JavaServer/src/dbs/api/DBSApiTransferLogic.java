@@ -1,6 +1,6 @@
 /**
- $Revision: 1.20 $"
- $Id: DBSApiTransferLogic.java,v 1.20 2007/04/03 22:02:01 sekhri Exp $"
+ $Revision: 1.21 $"
+ $Id: DBSApiTransferLogic.java,v 1.21 2007/06/14 18:21:17 afaq Exp $"
  *
  */
 
@@ -78,7 +78,8 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
-	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+	//public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser, boolean ignoreParent) throws Exception {
 		//FIXME dont pass dbsUser instaed get it from the table
 		String path = getPath(table, "path", true);
 		//System.out.println("line 1");
@@ -99,7 +100,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		for (int j = 0; j < runVector.size(); ++j) 
 			insertRun(conn, out, (Hashtable)runVector.get(j), dbsUser);
 		
-		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser);
+		(new DBSApiProcDSLogic(this.data)).insertProcessedDataset(conn, out, pdTable, dbsUser, ignoreParent);
 		Vector blockVector = DBSUtil.getVector(pdTable, "block");
 		Vector closeBlockVector = new Vector();
 		DBSApiBlockLogic blockApi = new DBSApiBlockLogic(this.data);
@@ -118,7 +119,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		
 		//(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, blockName, DBSUtil.getVector(table, "file"), dbsUser);
 		//System.out.println("---------> Inserting files for path " + path);
-                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getVector(table, "file"), dbsUser);
+                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getVector(table, "file"), dbsUser, ignoreParent);
  
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {

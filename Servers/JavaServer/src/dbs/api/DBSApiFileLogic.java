@@ -1,6 +1,6 @@
 /**
- $Revision: 1.58 $"
- $Id: DBSApiFileLogic.java,v 1.58 2007/06/07 21:48:19 afaq Exp $"
+ $Revision: 1.59 $"
+ $Id: DBSApiFileLogic.java,v 1.59 2007/06/14 18:21:17 afaq Exp $"
  *
  */
 
@@ -535,10 +535,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-        //public void insertFiles(Connection conn, Writer out, String path, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
-	//public void insertFiles(Connection conn, Writer out, String path, String blockName, Vector files, Hashtable dbsUser) throws Exception {
-        public void insertFiles(Connection conn, Writer out, String path, String primary, 
+	public void insertFiles(Connection conn, Writer out, String path, String primary, 
 							String proc, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
+		insertFiles(conn, out, path, primary, proc, block, files, dbsUser, false);
+	}
+
+        public void insertFiles(Connection conn, Writer out, String path, String primary, 
+							String proc, Hashtable block, Vector files, Hashtable dbsUser, boolean ignoreParent) throws Exception { 
 
 		//The presedence order is Block, then Path, then (Primary, Process Dataset)
 
@@ -800,12 +803,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			}
 			
 			//Insert FileParentage table by fetching parent File ID
-			for (int j = 0; j < parentVector.size(); ++j) {
-				insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
-						fileID, 
-						getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
-						cbUserID, lmbUserID, creationDate);
-			}
+			if(!ignoreParent)
+				for (int j = 0; j < parentVector.size(); ++j) {
+					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+							fileID, 
+							getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
+							cbUserID, lmbUserID, creationDate);
+				}
 
 			//Insert FileParentage for all the child of give by the client. Used during Merge operation
 			for (int j = 0; j < childVector.size(); ++j) {

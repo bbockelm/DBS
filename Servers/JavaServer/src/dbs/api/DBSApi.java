@@ -1,6 +1,6 @@
 /**
- $Revision: 1.97 $"
- $Id: DBSApi.java,v 1.97 2007/06/25 15:59:05 afaq Exp $"
+ $Revision: 1.98 $"
+ $Id: DBSApi.java,v 1.98 2007/07/11 20:03:20 afaq Exp $"
  *
 */
 
@@ -115,6 +115,7 @@ public class DBSApi {
 	
 	private DBSApiLogic api;
 	private DBSApiData data = null;
+	private String instanceName = null;
 
 	/**
 	* Constructs a DBSApi object that can be used to invoke call method that invokes several APIs from <code>dbs.api.DBSApiLogic</code> class. The constructor instantiates a private <code>dbs.api.DBSApiLogic</code> object.
@@ -163,6 +164,7 @@ public class DBSApi {
 			ResultSet rs =  DBSSql.getSchemaVersion(conn).executeQuery();
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
+				instanceName = rs.getString("InstanceName");
 			} else {
 				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
@@ -253,7 +255,7 @@ public class DBSApi {
 				serverVersion = serverVersion.replace("$", "");
 				serverVersion = serverVersion.trim();
 
-				out.write("<dbs_version server_version='"+serverVersion+"' schema_version='"+dbsSchemaVersion+"' />");
+				out.write("<dbs_version server_version='"+serverVersion+"' schema_version='"+dbsSchemaVersion+"' instance_name='" + instanceName + "'/>");
 			} else if (apiStr.equals("listPrimaryDatasets")) {
 				(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, get(table, "pattern", false));
 				
@@ -534,9 +536,13 @@ public class DBSApi {
 						dbsUser);
 				
 			} else if (apiStr.equals("insertDatasetContents")) {
+				boolean ignoreParent = false;
+				String ignoreParentStr = get(table, "ignore_parent", true);
+				if (ignoreParentStr.equals("true")) ignoreParent = true;
 				(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
 						DBSApiParser.parseDatasetContents(getXml(table)), 
-						dbsUser);
+						dbsUser,
+						ignoreParent);
 
                         } else if (apiStr.equals("openBlock")) {
                                 (new DBSApiBlockLogic(this.data)).openBlock(conn, out,

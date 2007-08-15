@@ -58,7 +58,6 @@ class DbsMigrateApi:
 			return True;
 			
 	def migratePath(self, path):
-
 		#Get the parents of the path
 		datasets = self.getParentPathList(self.apiSrc, path)
 		if datasets not in [[], None] :
@@ -73,11 +72,19 @@ class DbsMigrateApi:
 			#print "path does not exists "
 			#Transfer all the blocks in this child path
 			#print "listing blocks in path "
-			for block in self.apiSrc.listBlocks(path):
-				self.migrateBlockBasic(path, block['Name'])
+			migratePathBasic(self.apiDst, path)
+			#for block in self.apiSrc.listBlocks(path):
+			#	self.migrateBlockBasic(path, block['Name'])
 	
 
 
+	def migratePathBasic(self, path):
+		for block in self.apiSrc.listBlocks(path):
+			self.migrateBlockBasic(path, block['Name'])
+
+	def migratePathROBasic(self, path):
+		for block in self.apiSrc.listBlocks(path):
+			self.migrateBlockROBasic(path, block['Name'])
 
 	
 	def migrateBlockBasic(self, path, blockName):
@@ -91,7 +98,16 @@ class DbsMigrateApi:
 			if int(ex.getErrorCode()) != 1024:
 				raise ex
 		
-		
+	def migrateBlockROBasic(self, path, blockName):
+		try:
+			print "Transferring path %s " %path
+			print "            block %s " %blockName
+			self.apiDst.insertDatasetROContents(self.apiSrc.listDatasetContents(path,  blockName))
+		except DbsBadRequest, ex:
+			print ex
+			if int(ex.getErrorCode()) != 1024:
+				raise ex
+	
 	def migrateBlock(self, path, blockName):
 		#Get the parents of the path
 		datasets = self.getParentPathList(self.apiSrc, path)
@@ -103,9 +119,72 @@ class DbsMigrateApi:
 		self.migrateBlockBasic(path, blockName)
 		
 		
+	def getDatasetStatus(self, path):
+		tokens = path.split('/')
+		datasets = self.apiSrc.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
+		for aDataset in datasets:
+			return aDataset['Status']
+		
 	
+	def isDatasetStatusRO(self, path):
+		if getDatasetStatus(path) == "RO":
+			return True
+		else:
+			return False
+
+	def getInstanceName(self, api):
+		return api.getServerInfo()['InstanceName']
+		
+
+	
+	def migratePathRO(self, path):
+		srcInstanceName = getInstanceName(self.apiSrc)
+		dstInstanceName = getInstanceName(self.apiDst)
+		checkDatasetStatus(path)
+		checkInstances(srcInstanceName, dstInstanceName)
+		if dstInstanceName == "GLOBAL" and srcInstanceName = "LOCAL" :
+			#One level Migration
+			migratePathBasic(self.apiDst, path)
+		else if dstInstanceName == "LOCAL" and srcInstanceName = "GLOBAL" :
+			# One level Migraton
+			migratePathROBasic(self.apiDst, path)
+			#Set dataset status as RO
+			setDatasetStatusAsRO(path)
 	
 
+	def migrateBlockRO(self, path, blockName):
+		srcInstanceName = getInstanceName(self.apiSrc)
+		dstInstanceName = getInstanceName(self.apiDst)
+		checkDatasetStatus(path)
+		checkInstances(srcInstanceName, dstInstanceName)
+		if dstInstanceName == "GLOBAL" and srcInstanceName = "LOCAL" :
+			#One level Migration
+			migrateBlockBasic(self.apiDst, path, blockName)
+		else if dstInstanceName == "LOCAL" and srcInstanceName = "GLOBAL" :
+			# One level Migraton
+			migrateBlockROBasic(self.apiDst, path)
+			#Set dataset status as RO
+			setDatasetStatusAsRO(path)
+			
+	
+	def setDatasetStatusAsRO(path):
+		self.apiDst.updateProcDSStatus(path, "RO")
+	
+	def checkDatasetStatus(self, path):
+		if isDatasetStatusRO(path):
+			 raise DbsBadRequest (args = "Read Only dataset CANNOT be Migrated.", code = 1222)
+	
+
+	def checkInstances(self, srcInstanceName, dstInstanceName):
+		if dstInstanceName == "LOCAL" and srcInstanceName = "LOCAL" :
+			 raise DbsBadRequest (args = "Local to Local migration is NOT allowed with one level transfer (excluding parentage).\n Either use GLOBAL instance as source DBS or do the complete migration (including parentage) using this API migrateDatasetContents with readOnly option set to False", code = 1223)
+
+		else if dstInstanceName == "GLOBAL" and srcInstanceName = "GLOBAL" :
+			 raise DbsBadRequest (args = "Global to Global NOT allowed", code = 1224)
+	
+
+
+		
 """
 usage = "\n****************************************************************" + \
 	"\npython dbsMigrateRecursive.py source_url targert_url datasetPath blockName" + \

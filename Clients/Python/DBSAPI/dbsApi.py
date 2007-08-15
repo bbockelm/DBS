@@ -262,6 +262,7 @@ class DbsApi(DbsConfig):
 		if result['ServerVersion'] in ('', None):
 			result['ServerVersion'] = 'PROBABLY_CVS_HEAD'
 		result['SchemaVersion'] = str(attrs['schema_version'])
+		result['InstanceName'] = str(attrs['instance_name'])
     xml.sax.parseString (data, Handler ())
     return result
 
@@ -392,6 +393,7 @@ class DbsApi(DbsConfig):
                                                 Name=self.procName,     
 						PhysicsGroup=str(attrs['physics_group_name']),
 						PhysicsGroupConverner=str(attrs['physics_group_convener']),
+						Status=str(attrs['status']),
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
                                                 CreationDate=str(attrs['creation_date']),
@@ -1646,7 +1648,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False):
+  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False, readOnly = False):
     """
     This Api Call does the 3rd party transfer of a dataset from a source DBS instance to 
     destination DBS instance. This API call also take cares of parentage information for the dataset.
@@ -1692,9 +1694,17 @@ class DbsApi(DbsConfig):
 
        transfer = DbsMigrateApi(apiSrc, apiDst, force)
        if block_name not in [None, ""] :
-	       transfer.migrateBlock(path, block_name)
+	       if readOnly:
+		       transfer.migrateBlockRO(path, block_name)
+               else:
+		       transfer.migrateBlock(path, block_name)
+	       
        else :
-	       transfer.migratePath(path)
+	       if readOnly:
+		       transfer.migratePathRO(path)
+	       else:
+		       transfer.migratePath(path)
+		       
 
     except Exception, ex:
       raise DbsBadResponse(exception=ex)

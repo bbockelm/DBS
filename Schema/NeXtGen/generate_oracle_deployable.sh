@@ -10,6 +10,9 @@ oracle_passwd=?????????
 oracle_db=devdb10
 #
 SchemaVersion=DBS_1_0_5
+echo "Please provide the instance Name. There are only two types. Acceptable input are GLOBAL, LOCAL"
+read InstanceName
+
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
@@ -144,7 +147,7 @@ cat $stamp_trig >>  $ddl_file
 #
 #
 echo "-- Set the Schema Version -- " >> $ddl_file
-echo "INSERT INTO SchemaVersion(SCHEMAVERSION, CREATIONDATE) values ('${SchemaVersion}', ${unix_time});" >> $ddl_file
+echo "INSERT INTO SchemaVersion(SCHEMAVERSION, INSTANCENAME, CREATIONDATE) values ('${SchemaVersion}', '${InstanceName}', ${unix_time});" >> $ddl_file
 echo "-- Pre Fill some information into tables ---------" >> $ddl_file
 echo "INSERT INTO AnalysisDSStatus (Status, CREATIONDATE) VALUES ('NEW', ${unix_time});" >> $ddl_file
 echo "INSERT INTO FileStatus (Status, CREATIONDATE) VALUES ('VALID', ${unix_time});" >> $ddl_file

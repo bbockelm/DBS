@@ -74,6 +74,7 @@ CREATE TABLE SchemaVersion
   (
     ID                    BIGINT UNSIGNED,
     SchemaVersion         varchar(100)      unique not null,
+    InstanceName          varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,

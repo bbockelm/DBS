@@ -74,6 +74,7 @@ CREATE TABLE SchemaVersion
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     SchemaVersion         varchar(100)      unique not null,
+    InstanceName          varchar(100)      unique not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -1815,8 +1816,6 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_RunLumiQuality BEFORE UPDATE ON RunLumiQuality
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
-CREATE TRIGGER UTR_QualityHistory BEFORE UPDATE ON QualityHistory
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_QualityVersion BEFORE UPDATE ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
@@ -1825,7 +1824,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, CreationDate) values ('DBS_1_0_5', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_5', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());

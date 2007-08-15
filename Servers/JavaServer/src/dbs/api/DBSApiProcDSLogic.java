@@ -1,6 +1,6 @@
 /**
- $Revision: 1.37 $"
- $Id: DBSApiProcDSLogic.java,v 1.37 2007/04/05 21:36:30 afaq Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSApiProcDSLogic.java,v 1.38 2007/06/06 22:03:32 sekhri Exp $"
  *
  */
 
@@ -102,6 +102,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							//"' path='" +  get(rs, "PATH") +
 							"' primary_datatset_name='" +  get(rs, "PRIMARY_DATATSET_NAME") +
 							"' processed_datatset_name='" +  get(rs, "PROCESSED_DATATSET_NAME") +
+							"' status='" +  get(rs, "STATUS") +
 							"' creation_date='" + getTime(rs, "CREATION_DATE") +
 							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 							"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
@@ -281,6 +282,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser) throws Exception {
+		insertProcessedDataset(conn, out, dataset, dbsUser, false);
+	}
+	public void insertProcessedDataset(Connection conn, Writer out, Hashtable dataset, Hashtable dbsUser, boolean ignoreParent) throws Exception {
 		//Get the User ID from USERDN
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		String cbUserID = personApi.getUserID(conn, get(dataset, "created_by"), dbsUser );
@@ -375,12 +379,13 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 
 		//Insert ProcDSParent table by fetching parent File ID
-		for (int j = 0; j < parentVector.size(); ++j) {
-			insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
-					procDSID, 
-					getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true), 
-					cbUserID, lmbUserID, creationDate);
-		}
+		if(!ignoreParent)
+			for (int j = 0; j < parentVector.size(); ++j) {
+				insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
+						procDSID, 
+						getProcessedDSID(conn,  get((Hashtable)parentVector.get(j), "path"), true), 
+						cbUserID, lmbUserID, creationDate);
+			}
 
 		//Insert ProcDSRun table by fetching Run ID
 		for (int j = 0; j < runVector.size(); ++j) {
