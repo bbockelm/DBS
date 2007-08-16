@@ -10,7 +10,7 @@
                 maxIdle="1"
                 maxWait="-1"
                 username="anzar"
-                password="prodagentpass"
+                password="XXXXXXXXXXX"
                 driverClassName="org.gjt.mm.mysql.Driver"
                 url="jdbc:mysql://localhost:3306/dbs_new_era_delme?autoReconnect=true"/>
 
@@ -40,7 +40,7 @@
                 maxIdle="1"
                 maxWait="-1"
                 username="lueking"
-                password="lueking_cms2006"
+                password="XXXXXXX"
                 removeAbandoned="true"
                 removeAbandonedTimeout="100"
                 driverClassName="oracle.jdbc.driver.OracleDriver"

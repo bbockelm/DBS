@@ -1651,7 +1651,7 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False, readOnly = False):
+  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=True, parents = True):
     """
     This Api Call does the 3rd party transfer of a dataset from a source DBS instance to 
     destination DBS instance. This API call also take cares of parentage information for the dataset.
@@ -1697,13 +1697,13 @@ class DbsApi(DbsConfig):
 
        transfer = DbsMigrateApi(apiSrc, apiDst, force)
        if block_name not in [None, ""] :
-	       if readOnly:
+	       if not parents:
 		       transfer.migrateBlockRO(path, block_name)
                else:
 		       transfer.migrateBlock(path, block_name)
 	       
        else :
-	       if readOnly:
+	       if not parents:
 		       transfer.migratePathRO(path)
 	       else:
 		       transfer.migratePath(path)

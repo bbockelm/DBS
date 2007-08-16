@@ -55,6 +55,15 @@ procChild = DbsProcessedDataset (
 	ParentList=['/test_primary_001/TestProcessedDS001/GEN-SIM']
         )
 
+procGrandChild = DbsProcessedDataset (
+        PrimaryDataset=primary, 
+        Name="TestProcessedDS003", 
+        PhysicsGroup="BPositive",
+        Status="Valid",
+        TierList=['SIM', 'GEN'],
+        AlgoList=[algo],
+	ParentList=['/test_primary_001/TestProcessedDS002/GEN-SIM']
+        )
 
 run = DbsRun (
          RunNumber=1,
@@ -87,50 +96,42 @@ lumi2 = DbsLumiSection (
 myfile1= DbsFile (
         Checksum= '999',
         LogicalFileName= 'NEW_TEST0001',
-        #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
 	ValidationStatus = 'VALID',
         FileType= 'EDM',
         Dataset= proc,
-        #Block= isDictType,
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
-        #ParentList = ['NEW_TEST0003']  
          )
 
 myfile2= DbsFile (
         Checksum= '000',
         LogicalFileName= 'NEW_TEST0002',
-        #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
 	ValidationStatus = 'VALID',
         FileType= 'EDM',
         Dataset= proc,
-        #Block= isDictType,
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
         BranchList=['testbranch01', 'testbranch02'],
-        #ParentList = ['NEW_TEST0004']  
          )
         
 
 myfile3= DbsFile (
         Checksum= '999',
         LogicalFileName= 'NEW_TEST0004',
-        #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
         ValidationStatus = 'VALID',
         FileType= 'EDM',
         Dataset= proc,
-        #Block= isDictType,
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
@@ -140,14 +141,12 @@ myfile3= DbsFile (
 myfile4= DbsFile (
         Checksum= '000',
         LogicalFileName= 'NEW_TEST0005',
-        #QueryableMetadata= 'This is a test file',
         NumberOfEvents= 10000,
         FileSize= 12340,
         Status= 'VALID',
         ValidationStatus = 'VALID',
         FileType= 'EDM',
         Dataset= proc,
-        #Block= isDictType,
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
@@ -156,7 +155,40 @@ myfile4= DbsFile (
          )
 
 
-                   
+ 
+myfile5= DbsFile (
+        Checksum= '999',
+        LogicalFileName= 'NEW_TEST0005',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EDM',
+        Dataset= proc,
+        AlgoList = [algo],
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM', 'GEN'],
+        ParentList = ['NEW_TEST0004']  
+         )
+
+myfile6= DbsFile (
+        Checksum= '000',
+        LogicalFileName= 'NEW_TEST0006',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EDM',
+        Dataset= proc,
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM', 'GEN'],
+        AlgoList = [algo],
+        BranchList=['testbranch01', 'testbranch02'],
+        ParentList = ['NEW_TEST0005']  
+         )
+
+
+                  
 block = DbsFileBlock (
          StorageElement=['test1', 'test3'],
 	 Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
@@ -167,8 +199,14 @@ block2 = DbsFileBlock (
 	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#44444"
          )
 
+block3 = DbsFileBlock (
+         StorageElement=['test1', 'test3'],
+	 Name="/test_primary_001/TestProcessedDS003/GEN-SIM#3333"
+         )
+
 try:
 	
+    """	
     print "\n\nInserting primary %s" % primary
     print api.insertPrimaryDataset (primary)
 
@@ -193,8 +231,21 @@ try:
     print "\n\nInserting Block2 %s" % block2	
     print api.insertBlock (procChild, block2)
  
-    print "\n\nInserting Files %s" % [myfile1, myfile2]	
+    print "\n\nInserting Files %s" % [myfile3, myfile4]	
     print api.insertFiles (procChild, [myfile3, myfile4], block2)
+    """
+    
+    print "\n\nInserting Grand Child Processed %s" % procGrandChild
+    print api.insertProcessedDataset (procGrandChild)
+
+    print "\n\nInserting Block3 %s" % block3	
+    print api.insertBlock (procGrandChild, block3)
+ 
+    print "\n\nInserting Files %s" % [myfile5, myfile6]	
+    print api.insertFiles (procGrandChild, [myfile5, myfile6], block3)
+
+
+    
 
 
 except DbsApiException, ex:

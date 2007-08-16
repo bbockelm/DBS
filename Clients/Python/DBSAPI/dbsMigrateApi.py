@@ -7,6 +7,7 @@ import os
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
+from dbsLogger import *
 
 class DbsMigrateApi:
 	
@@ -49,16 +50,19 @@ class DbsMigrateApi:
 
 	def doesPathExist(self, api, path):
 		if (self.force):
+			logging.log(DBSWARNING, "The dataset path " + path + " will not be checked for existance in the destination DBS.\n If you want to enforce the checking of path existance before transefrring, use force=False option in this API")
 			return False
 		tokens = path.split('/')
 		datasets = api.listProcessedDatasets(patternPrim = tokens[1], patternProc = tokens[2])
 		if datasets in [[], None] :
 			return False;
 		else:
+			logging.log(DBSWARNING, "The dataset path " + path + " already exists in the destination DBS and will NOT be transferred. If you want to  remove the existance check before transferring, use force=True option in this API")
 			return True;
 			
 	def migratePath(self, path):
 		#Get the parents of the path
+		self.checkDatasetStatus(path)
 		datasets = self.getParentPathList(self.apiSrc, path)
 		if datasets not in [[], None] :
 			for dataset in datasets:
@@ -72,7 +76,7 @@ class DbsMigrateApi:
 			#print "path does not exists "
 			#Transfer all the blocks in this child path
 			#print "listing blocks in path "
-			migratePathBasic(self.apiDst, path)
+			self.migratePathBasic(path)
 			#for block in self.apiSrc.listBlocks(path):
 			#	self.migrateBlockBasic(path, block['Name'])
 	
@@ -110,6 +114,7 @@ class DbsMigrateApi:
 	
 	def migrateBlock(self, path, blockName):
 		#Get the parents of the path
+		self.checkDatasetStatus(path)
 		datasets = self.getParentPathList(self.apiSrc, path)
 		if datasets not in [[], None] :
 			for dataset in datasets:
@@ -142,15 +147,16 @@ class DbsMigrateApi:
 		dstInstanceName = self.getInstanceName(self.apiDst)
 		self.checkDatasetStatus(path)
 		self.checkInstances(srcInstanceName, dstInstanceName)
-		if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
-			#One level Migration
-			self.migratePathBasic(path)
-		else:
-			if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
-				# One level Migraton
-				self.migratePathROBasic(path)
-				#Set dataset status as RO
-				self.setDatasetStatusAsRO(path)
+		if not self.doesPathExist(self.apiDst, path):
+			if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
+				#One level Migration
+				self.migratePathBasic(path)
+			else:
+				if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
+					# One level Migraton
+					self.migratePathROBasic(path)
+					#Set dataset status as RO
+					self.setDatasetStatusAsRO(path)
 	
 
 	def migrateBlockRO(self, path, blockName):
@@ -158,15 +164,16 @@ class DbsMigrateApi:
 		dstInstanceName = self.getInstanceName(self.apiDst)
 		self.checkDatasetStatus(path)
 		self.checkInstances(srcInstanceName, dstInstanceName)
-		if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
-			#One level Migration
-			self.migrateBlockBasic(path, blockName)
-		else:
-			if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
-				# One level Migraton
-				self.migrateBlockROBasic(path, blockName)
-				#Set dataset status as RO
-				self.setDatasetStatusAsRO(path)
+		if not self.doesPathExist(self.apiDst, path):
+			if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
+				#One level Migration
+				self.migrateBlockBasic(path, blockName)
+			else:
+				if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
+					# One level Migraton
+					self.migrateBlockROBasic(path, blockName)
+					#Set dataset status as RO
+					self.setDatasetStatusAsRO(path)
 			
 	
 	def setDatasetStatusAsRO(self, path):
@@ -174,7 +181,7 @@ class DbsMigrateApi:
 	
 	def checkDatasetStatus(self, path):
 		if self.isDatasetStatusRO(path):
-			 raise DbsBadRequest (args = "Read Only dataset CANNOT be Migrated.", code = 1222)
+			 raise DbsBadRequest (args = "Read Only dataset " + path + " CANNOT be Migrated.", code = 1222)
 	
 
 	def checkInstances(self, srcInstanceName, dstInstanceName):

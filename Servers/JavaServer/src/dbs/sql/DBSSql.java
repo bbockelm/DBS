@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.110 $"
- $Id: DBSSql.java,v 1.110 2007/07/11 20:03:22 afaq Exp $"
+ $Revision: 1.111 $"
+ $Id: DBSSql.java,v 1.111 2007/08/15 19:48:10 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1453,6 +1453,22 @@ public class DBSSql {
 		return ps;
 	}
 	
+
+	public static PreparedStatement listProcDSStatus(Connection conn, String procDSID) throws SQLException {
+		String sql = "SELECT DISTINCT pds.Status as STATUS \n " +
+			"FROM ProcDSStatus pds \n" +
+			"JOIN ProcessedDataset pd \n" +
+				"ON pd.Status = pds.id \n";
+
+		if(procDSID != null) {
+			sql += "WHERE pd.id = ? \n";
+		}
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, procDSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +
 			"b.Name as NAME, \n" +
