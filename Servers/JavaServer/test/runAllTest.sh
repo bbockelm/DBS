@@ -12,7 +12,7 @@ cd $BASE/lib
 CLASSPATH=.:$PWD/ojdbc14.jar:$PWD/mysql-connector-java-5.0.5-bin.jar
 cd $BASE/bin
 CLASSPATH=$CLASSPATH:$PWD/WEB-INF/classes/
-CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_4"
+CMD="$JAVA_HOME/bin/java -classpath $CLASSPATH -DDBS_SERVER_CONFIG=$BASE/etc/context.xml dbs.test.DBSCLI apiversion=DBS_1_0_5"
 rand=`uuidgen`
 #$JAVA_HOME/bin/java -classpath $CLASSPATH dbs.test.DBSTest
 block='/TestPrimary1164144491.29/TestProcessed1164144491.29#42665801-a716-487e-9220-057e955f3a39'
@@ -31,6 +31,7 @@ run_number1="9999"
 run_number2="9998"
 #block_name="/test/test/test#$rand"
 block_name="$path_child#$rand"
+block_name2="$path_child#2_$rand"
 lfn1="TEST_LFN_1_$rand"
 lfn2="TEST_LFN_2_$rand"
 algo1="<algorithm app_version='MyVersion1_$rand' app_family_name='MyFamily1_$rand' app_executable_name='MyExe1_$rand' ps_name='DUMMYa_ps_name2_$rand' ps_hash='DUMMY_HASH_$rand' ps_version='DUMMY1_$rand' ps_type='DUMMYTYPE1_$rand' ps_annotation='ANN1_$rand' ps_content='aW50IGE9IHt9LCBiPXtjPTEsIGQ9MzN9LCBmPXt9LCB4LCB5LCB4' created_by='Let_me_try_this' creation_date='1066729598999'/>"
@@ -448,6 +449,18 @@ insertBlock () {
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=insertBlock "xmlinput=$xmlString"`
 	display "$out"
+
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<block path='$path_child' name='$block_name2' open_for_writing='1' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<storage_element storage_element_name='SE3_$rand'/>
+			<storage_element storage_element_name='SE4_$rand'/>
+		</dbs>"
+	message="Executing insertBlock API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=insertBlock "xmlinput=$xmlString"`
+	display "$out"
+
 	#echo "$out"
 }
 
@@ -462,6 +475,13 @@ updateSEName () {
 	message="Executing updateSEName API ..."	
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=updateSEName storage_element_name_from=SE1_$rand storage_element_name_to=HAHAHHHAHAHH`
+	display "$out"
+}
+
+updateSEBlock () {
+	message="Executing updateSEBlock API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=updateSEBlock block_name=$block_name storage_element_name_from=SE1_$rand storage_element_name_to=SE4_$rand`
 	display "$out"
 }
 
@@ -664,10 +684,11 @@ updateFileMetaData
 updateAnalDSType
 updateFileType
 updateSEName
+updateSEBlock
 closeBlock
 updateRun
 updateLumiSection
-###
+##
 ##	
 #												
 echo 

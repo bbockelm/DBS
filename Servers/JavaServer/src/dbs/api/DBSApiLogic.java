@@ -1,6 +1,6 @@
 /**
- $Revision: 1.105 $"
- $Id: DBSApiLogic.java,v 1.105 2007/06/18 21:55:28 afaq Exp $"
+ $Revision: 1.106 $"
+ $Id: DBSApiLogic.java,v 1.106 2007/06/25 15:59:05 afaq Exp $"
  *
  */
 
@@ -388,6 +388,22 @@ public class DBSApiLogic {
 		}
 	}
 
+	protected void updateMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2New, String value2Old, String lmbUserID) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.updateMap(conn, tableName, 
+					key1,
+					key2, 
+					value1,
+					value2New,
+					value2Old,
+					lmbUserID);
+			ps.execute();
+		} finally {
+			if (ps != null) ps.close();
+		}
+	}
+
 
 	/**
 	 * This is a generic method that can be used to update status or types in any table.
@@ -413,6 +429,7 @@ public class DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	}
+
 
 
 	/**
@@ -693,7 +710,7 @@ public class DBSApiLogic {
 	 * @param excep a boolean flag that determines if the exception needs to be raised if the block is not found.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable, or the table id is not found.
 	 */
-	private String getMapID(Connection conn, String tableName, String key1, String key2, String value1, String value2,  boolean excep) throws Exception {
+	public String getMapID(Connection conn, String tableName, String key1, String key2, String value1, String value2,  boolean excep) throws Exception {
 		if(isNull(tableName) || isNull(key1) || isNull(value1) || isNull(key2) || isNull(key2) ) return null;
 		if (excep) {
 			checkWord(value1, key1);

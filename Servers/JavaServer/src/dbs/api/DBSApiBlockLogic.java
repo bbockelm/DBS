@@ -1,6 +1,6 @@
 /**
- $Revision: 1.39 $"
- $Id: DBSApiBlockLogic.java,v 1.39 2007/04/17 17:12:11 afaq Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSApiBlockLogic.java,v 1.40 2007/05/09 14:44:50 afaq Exp $"
  *
  */
 
@@ -353,6 +353,19 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 */
 	public void updateSEName(Connection conn, Writer out, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
 		updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
+	}
+
+	public void updateSEBlock(Connection conn, Writer out, String blockName, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
+		String blockID = getBlockID(conn, blockName, false, true);
+		String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , true);
+		if( !isNull(getMapID(conn, "SEBlock", "SEID", "BlockID", seIDNew, blockID, false)))  
+			throw new DBSException("Already exists", "1082", "Block " + blockName + "  with Storage Element " + seNameTo + "  Already exists. Cannot change storage element " + seNameFrom + " to " + seNameTo);
+		updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
+				blockID,
+				seIDNew,
+				getID(conn, "StorageElement", "SEName", seNameFrom , true),
+				personApi.getUserID(conn, dbsUser));
+
 	}
 
 	public void updateBlock(Connection conn, Writer out,  String blockID, String lmbUserID) throws Exception {

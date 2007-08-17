@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.111 $"
- $Id: DBSSql.java,v 1.111 2007/08/15 19:48:10 sekhri Exp $"
+ $Revision: 1.112 $"
+ $Id: DBSSql.java,v 1.112 2007/08/16 19:16:11 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -52,6 +52,23 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+	public static PreparedStatement updateMap(Connection conn, String tableName, String key1, String key2, String value1, String value2New, String value2Old, String lmbUserID) throws SQLException {
+		String sql = "UPDATE " + tableName + " \n" +
+			"SET " + key2 + " = ?, \n" +
+			"LastModifiedBy = ? \n" +
+			"WHERE " + key1 + " = ? \n" +
+			"AND " + key2 + " = ? \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+		ps.setString(columnIndx++, value2New);
+		ps.setString(columnIndx++, lmbUserID);
+		ps.setString(columnIndx++, value1);
+		ps.setString(columnIndx++, value2Old);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 
 	public static PreparedStatement updateName(Connection conn, String tableName, String key, String valueFrom, String valueTo, String lmbUserID) throws Exception {
 		String sql = "UPDATE " + tableName + " \n" +

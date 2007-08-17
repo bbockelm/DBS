@@ -1,6 +1,6 @@
 /**
- $Revision: 1.98 $"
- $Id: DBSApi.java,v 1.98 2007/07/11 20:03:20 afaq Exp $"
+ $Revision: 1.99 $"
+ $Id: DBSApi.java,v 1.99 2007/08/15 19:48:10 sekhri Exp $"
  *
 */
 
@@ -409,6 +409,13 @@ public class DBSApi {
 			
 			} else if (apiStr.equals("updateSEName")) {
 				(new DBSApiBlockLogic(this.data)).updateSEName(conn, out, 
+						get(table, "storage_element_name_from", true),
+						get(table, "storage_element_name_to", true),
+						dbsUser);
+
+			} else if (apiStr.equals("updateSEBlock")) {
+				(new DBSApiBlockLogic(this.data)).updateSEBlock(conn, out, 
+						get(table, "block_name", true),
 						get(table, "storage_element_name_from", true),
 						get(table, "storage_element_name_to", true),
 						dbsUser);
