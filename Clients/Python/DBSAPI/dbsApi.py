@@ -2721,6 +2721,37 @@ Examples
     logging.log(DBSDEBUG, data)
  # ------------------------------------------------------------
 
+  def updateSEBlock(self, blockName, storage_element_from, storage_element_to):
+    """
+    Updates the Storage Element in the spoecified block from torage_element_from to storage_element_to
+    
+    param: 
+	blockName : the name of the block in which storage element will be changed
+	storage_element_from : The name of storage element in the string format or object format that needs to be changed
+	storage_element_to : The name of storage element in the string format or object format that it will be changed to.
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         api.updateSEBlock ("/pri/proc/tier#1234", "se1", "se2")
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    seNameFrom = self._name(storage_element_from)
+    seNameTo = self._name(storage_element_to)
+    
+    name = self._name(blockName)
+
+    data = self._server._call ({ 'api' : 'updateSEBlock',
+		    'block_name' : name,
+		    'storage_element_name_from' : seNameFrom,
+		    'storage_element_name_to' : seNameTo }, 'POST')
+    logging.log(DBSDEBUG, data)
+
   def openBlock(self, block=None ):
     """
     Updates the dbs file block states to open for writing. 
