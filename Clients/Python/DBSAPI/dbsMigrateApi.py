@@ -118,9 +118,9 @@ class DbsMigrateApi:
 		datasets = self.getParentPathList(self.apiSrc, path)
 		if datasets not in [[], None] :
 			for dataset in datasets:
-				#Check if the child path is in dest DBS
-				if not self.doesPathExist(self.apiDst, dataset):
-					self.migratePath( dataset)
+				#Dont Check for existance of path if Block is given
+				#if not self.doesPathExist(self.apiDst, dataset):
+				self.migratePath( dataset)
 		self.migrateBlockBasic(path, blockName)
 		
 		
@@ -164,16 +164,15 @@ class DbsMigrateApi:
 		dstInstanceName = self.getInstanceName(self.apiDst)
 		self.checkDatasetStatus(path)
 		self.checkInstances(srcInstanceName, dstInstanceName)
-		if not self.doesPathExist(self.apiDst, path):
-			if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
-				#One level Migration
-				self.migrateBlockBasic(path, blockName)
-			else:
-				if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
-					# One level Migraton
-					self.migrateBlockROBasic(path, blockName)
-					#Set dataset status as RO
-					self.setDatasetStatusAsRO(path)
+		if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
+			#One level Migration
+			self.migrateBlockBasic(path, blockName)
+		else:
+			if dstInstanceName == "LOCAL" and srcInstanceName == "GLOBAL" :
+				# One level Migraton
+				self.migrateBlockROBasic(path, blockName)
+				#Set dataset status as RO
+				self.setDatasetStatusAsRO(path)
 			
 	
 	def setDatasetStatusAsRO(self, path):

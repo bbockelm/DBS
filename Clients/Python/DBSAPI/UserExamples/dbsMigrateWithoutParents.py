@@ -18,13 +18,10 @@ try:
 	dstURL = sys.argv[2]
 	path = sys.argv[3]
 	block = ""
-	force = False
 	if len(sys.argv) > 4 :
 		block = sys.argv[4]
-	if len(sys.argv) > 5 :
-		force = sys.argv[4]
-
-	api.migrateDatasetContents(srcURL, dstURL, path, block, force, parents = False)
+	
+	api.migrateDatasetContents(srcURL, dstURL, path, block, True)
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

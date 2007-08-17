@@ -1651,7 +1651,8 @@ class DbsApi(DbsConfig):
 
   #-------------------------------------------------------------------
 
-  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False, parents = True):
+  #def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False, parents = True):
+  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False):
     """
     
 Migrate API Instructions
@@ -1677,15 +1678,9 @@ Parameters
         block_name : Name of the Block of whose  files wile be migrated, This is an optional parameter. If not provided
                              then all the blocks within the dataset will be migrated.
 
-        force : is an optional parameter which specifies weather the existence of datasets path will be checked on the
-                destination DBS before transferring it. By default it is set to false that means that the existence will
-                be checked. NOTE that by default checking the existence of every dataset in the destination DBS will 
-                increase the time latency.  If users want to speed up the transfer, they should set this flag to True. 
-                If this flag is True then the datasets will be forcefully transferred and not checked for existence in destination DBS.
-
-       parents : this is an optional flag which allows the users to either migrate all the parent datasets along with
+       noParentsReadOnly : this is an optional flag which allows the users to either migrate all the parent datasets along with
                      the specified dataset (path), or just  the specified dataset (path) without all the parents. 
-                     By default this flag is set to True which implies that all the parents will be migrated
+                     By default this flag is set to False which implies that all the parents will be migrated
                      as well. NOTE that this will be a time expensive operation since the datasets parents will be
                      migrated recursively before the specified  dataset gets migrated. This is by far the ideal way 
                      of transferring the dataset. If the users want to just transfer the specified dataset and ignore 
@@ -1764,7 +1759,7 @@ Scenarios
 
   The recursive migration of DS4 to Global will make sure that if DS3 does not exist in Global, it gets transferred first and 
   same is true for DS3 and DS1. In this case since they are already present in Global the migration of DS3, DS2 and DS1 
-   will be ignored even if the user tried the recursive migration. One catch here is that the user can always set the force
+   will be ignored even if the user tried the recursive migration. 
   flag to be True, in which case the DS3,DS2 and DS1 will be forcefully migrated even if they are already present in Global DBS. 
    The implication is None.
 
@@ -1784,8 +1779,7 @@ Scenarios
    though it was transferred via single level (without parents) migration . This implies that the READ ONLY dataset cannot
    be created in Gloaball DBS. they can just resides in LOCAL instances.
 
-  Second option is to transfer recursively DS4 with force set to False. NOTE that by default the force is set to False, 
-  so you don't need to explicitly set it.
+  Second option is to transfer recursively DS4. 
 
     [ DBS Gobal ]                                                                                        [ DBS Local ]
      DS1             
@@ -1796,19 +1790,8 @@ Scenarios
 
    The reason the above will succeed is that the recursive migration will first check for parent of DS4 which is DS3 and check 
    its existence in Global DBS. Since it already exists there  DS3 (along with DS2 and DS1) will be ignored and will NOT get 
-   transferred. If we set the force option to True in this case then it will be an error condition. Here is why
-
-
-     [ DBS Gobal ]                                                                                           [ DBS Local ]
-     DS1             
-       +----DS2   
-               +----DS3                migrateDatasetContents(LU, GU, DS3, force=True)                           DS3(Marked as READ ONLY)
-                          +----DS4   <--------------------------------------------------------------------         +----DS4
- 
-   In the above case , it will not check the existence of DS3 in Global DBS and will try to transfer it first, but NOTE that DS3 
-   is marked as READ ONLY in Local DBS, so it will raise an exception that the dataset DS4 cannot be transferred since 
-  DS3 is READ-ONLY
-
+   transferred. 
+  
 
 Examples
 
@@ -1817,13 +1800,6 @@ Examples
                                         "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
                                         "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
                                         "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58")
-
-        Migrates the dataset and the specified block with parents without checking the existence of datasets (May be faster in some cases)
-        api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
-                                        "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
-                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
-                                        "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58",
-                                         force=True)
 
         Migrates all the blocks in the dataset with parents
         api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
@@ -1835,14 +1811,14 @@ Examples
                                         "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
                                         "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
                                         "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO#a03cf5c0-bed4-40d3-9f0e-39e6b91ccf58",
-                                         parents=False)
+                                         noParentsReadOnly=True)
 
 
         Migrates all the blocks in the dataset without the parents
         api.migrateDatasetContents("http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet"
                                         "https://cmssrv17.fnal.gov:8443/DBS/servlet/DBSServlet"
                                         "/ZmumuJets_EtGamma_450_550/CMSSW_1_3_4-Spring07-1689/GEN-SIM-DIGI-RECO",
-                                         parents=False)
+                                         noParentsReadOnly=True)
 
 
 
@@ -1859,15 +1835,15 @@ Examples
        apiSrc = makeAPI(srcURL)
        apiDst = makeAPI(dstURL)
 
-       transfer = DbsMigrateApi(apiSrc, apiDst, force)
+       transfer = DbsMigrateApi(apiSrc, apiDst, False)
        if block_name not in [None, ""] :
-	       if not parents:
+	       if noParentsReadOnly:
 		       transfer.migrateBlockRO(path, block_name)
                else:
 		       transfer.migrateBlock(path, block_name)
 	       
        else :
-	       if not parents:
+	       if noParentsReadOnly:
 		       transfer.migratePathRO(path)
 	       else:
 		       transfer.migratePath(path)
