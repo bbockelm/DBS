@@ -2436,10 +2436,12 @@ Examples
        for lumi in file.get('LumiList', []):
             xmlinput += "<file_lumi_section lumi_section_number='"+str(lumi.get('LumiSectionNumber', ''))+"'"
             xmlinput += " run_number='"+str(lumi.get('RunNumber', ''))+"'"
-            xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'" 
-            xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
-            xmlinput += " lumi_start_time='"+str(lumi.get('LumiStartTime', ''))+"'" 
-            xmlinput += " lumi_end_time='"+str(lumi.get('LumiEndTime', ''))+"'"
+            #No need to provide other LumiSection info, User will never provide lumisection TO be added at this stage
+            #All Lumi Scetions will already be in DBS (SV#28264). Anzar Afaq (08/20/2007)
+            #xmlinput += " start_event_number='"+str(lumi.get('StartEventNumber', ''))+"'" 
+            #xmlinput += " end_event_number='"+str(lumi.get('EndEventNumber', ''))+"'"
+            #xmlinput += " lumi_start_time='"+str(lumi.get('LumiStartTime', ''))+"'" 
+            #xmlinput += " lumi_end_time='"+str(lumi.get('LumiEndTime', ''))+"'"
             xmlinput += " />"
 
        for run in file.get('RunsList', []):
