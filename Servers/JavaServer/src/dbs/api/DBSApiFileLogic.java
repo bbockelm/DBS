@@ -1,6 +1,6 @@
 /**
- $Revision: 1.59 $"
- $Id: DBSApiFileLogic.java,v 1.59 2007/06/14 18:21:17 afaq Exp $"
+ $Revision: 1.60 $"
+ $Id: DBSApiFileLogic.java,v 1.60 2007/08/15 19:48:10 sekhri Exp $"
  *
  */
 
@@ -823,14 +823,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			//Insert FileLumi table by first inserting and then fetching Lumi Section ID
 			for (int j = 0; j < lumiVector.size(); ++j) {
 				Hashtable hashTable = (Hashtable)lumiVector.get(j);
-				//Insert A lumi Section if it does not exists
-				//Only when User provides a lumi section
+
+				//No need to add a LumiSection, User will never provide lumisection TO be added at this stage
+				//All Lumi Scetions will already be in DBS (SV#28264). Anzar Afaq (08/20/2007)
+
+				//Only when User provides a lumi section, MAP it
 				//There can be cases when NO lumi Section number is give (Run only)
 				String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
 				String lsNumber = get(hashTable, "lumi_section_number", false);
-				if (!isNull(lsNumber)) {
-					insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-				}
+				//if (!isNull(lsNumber)) {
+				//	insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+				//}
 				if (!isNull(lsNumber)) {
 					insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
 						fileID, 
