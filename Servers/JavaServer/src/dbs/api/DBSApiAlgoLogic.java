@@ -1,6 +1,6 @@
 /**
- $Revision: 1.12 $"
- $Id: DBSApiAlgoLogic.java,v 1.12 2007/03/15 19:41:42 sekhri Exp $"
+ $Revision: 1.13 $"
+ $Id: DBSApiAlgoLogic.java,v 1.13 2007/04/03 22:02:01 sekhri Exp $"
  *
  */
 
@@ -63,7 +63,8 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_hash='" + get(rs, "PS_HASH") +
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
-						"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+						//"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+						"' ps_annotation='" + Base64.encodeBytes(get(rs, "PS_ANNOTATION").getBytes()) +
 						"' ps_content='" + Base64.encodeBytes(get(rs, "PS_CONTENT").getBytes()) +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -102,7 +103,8 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_hash='" + get(rs, "PS_HASH") +
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
-						"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+						//"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
+						"' ps_annotation='" + Base64.encodeBytes(get(rs, "PS_ANNOTATION").getBytes()) +
 						"' ps_content='" + Base64.encodeBytes(get(rs, "PS_CONTENT").getBytes()) +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -208,14 +210,24 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 				String content = get(algo, "ps_content");
 				String contentBase64 =  "";
 				if(!isNull(content)) {
-					contentBase64 = new String(Base64.decode(get(algo, "ps_content")));
+					contentBase64 = new String(Base64.decode(content));
 				}
+
+				String annotation = get(algo, "ps_annotation");
+				//System.out.println("ps_annotation " + annotation);
+				String annotationBase64 =  "";
+				if(!isNull(annotation)) {
+					annotationBase64 = new String(Base64.decode(annotation));
+				}
+				//System.out.println("annotationBase64 " + annotationBase64);
+
 				ps = DBSSql.insertParameterSet(conn,
 						psHash,
 						get(algo, "ps_name"), 
 						get(algo, "ps_version"), 
 						get(algo, "ps_type"), 
-						get(algo, "ps_annotation"), 
+						//get(algo, "ps_annotation"), 
+						annotationBase64, 
                                                 //FIXME We are allowing every thing in content, need to fix it
 						contentBase64, 
 						cbUserID, userID, creationDate);

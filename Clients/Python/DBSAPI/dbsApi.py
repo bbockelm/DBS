@@ -479,7 +479,8 @@ class DbsApi(DbsConfig):
                                                            Name=str(attrs['ps_name']),
                                                            Version=str(attrs['ps_version']),
                                                            Type=str(attrs['ps_type']),
-                                                           Annotation=str(attrs['ps_annotation']),
+                                                           #Annotation=str(attrs['ps_annotation']),
+                                                           Annotation=base64.decodestring(str(attrs['ps_annotation'])),
                                                            Content=base64.decodestring(str(attrs['ps_content']))
                                                            ),
                                                          CreationDate=str(attrs['creation_date']),
@@ -1947,7 +1948,8 @@ Examples
        xmlinput += " ps_name='"+pset.get('Name', "")+"'"
        xmlinput += " ps_version='"+pset.get('Version', "")+"'"
        xmlinput += " ps_type='"+pset.get('Type', "")+"'"
-       xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
+       #xmlinput += " ps_annotation='"+pset.get('Annotation', "")+"'"
+       xmlinput += " ps_annotation='"+base64.binascii.b2a_base64(pset.get('Annotation', ""))+"'"
        # Converting Content to base64 encoded string, otherwise it can leave the xml invalid
        xmlinput += " ps_content='"+base64.binascii.b2a_base64(pset.get('Content', ""))+"'"
     xmlinput += "/>"
