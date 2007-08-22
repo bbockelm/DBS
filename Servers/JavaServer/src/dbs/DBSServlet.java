@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.29 $"
- $Id: DBSServlet.java,v 1.29 2007/01/03 22:27:52 afaq Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSServlet.java,v 1.30 2007/02/09 19:29:39 sekhri Exp $"
 
  */
 package dbs;
@@ -73,17 +73,18 @@ public class DBSServlet extends HttpServlet{
                 DBSApi api = null; 
 
 		try {
-			//Another interim solution no user DN so make one up, 
-			//will not work for Fresh DB deployments, unless a DN is inserted by hand   ANZAR
+
 			Hashtable userDN = new Hashtable();
 			String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
-			//userDN.put("user_dn", "ANZARDN");
-			DBSUtil.writeLog("SERIOUS WARNING HARD CODED DN USED ????");
+
 			DBSUtil.writeLog("DN of the user is " + dn);
-			if (dn == null) dn = "NO_DN";
+			if (dn == null) {
+	                        dn = request.getHeader("UserID");
+				DBSUtil.writeLog("NO DN, using UserID: "+dn+" from HTTP header");
+	                        //System.out.println("UserID: "+dn);
+			}
 			userDN.put("user_dn", dn);
 			
-
 			response.setContentType("text/xml");
 			out = response.getWriter();
 		
