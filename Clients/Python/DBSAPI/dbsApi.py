@@ -7,7 +7,7 @@
 #
 
 # system modules
-import os, re, string, xml.sax, xml.sax.handler
+import os, re, string, socket, xml.sax, xml.sax.handler
 import base64
 from xml.sax.saxutils import escape
 from cStringIO import StringIO
@@ -105,6 +105,11 @@ class DbsApi(DbsConfig):
        print "configuration dictionary:", self.configDict
        print "using version",self.version()
        print "using mode   ",self.mode()
+
+    #Store infor about current user
+    #
+    if not self.configDict.has_key('userID'):
+    	Args['userID'] = os.getlogin()+'@'+socket.gethostname()
     #
     # Connect to the Server proxy
     #

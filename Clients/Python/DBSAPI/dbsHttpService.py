@@ -48,6 +48,8 @@ class DbsHttpService:
             else:
                self.Secure = False
 
+	    self.UserID = Args['userID']
+
   def setDebug(self, on=1):
     """ Set low-level debugging. """
     httplib.HTTPConnection.debuglevel = on
@@ -147,13 +149,14 @@ class DbsHttpService:
        logging.log(DBSINFO, self.conto)	
  
        params = urllib.urlencode(args)
-       headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"} 
 
+       headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", 
+							"UserID": self.UserID} 
 
        if typ == 'POST':
           result = self.conn.request(typ, request_string, params, headers)  
        else:
-          result = self.conn.request(typ, request_string )
+          result = self.conn.request(typ, request_string, {}, headers )
 
        logging.log(DBSINFO, request_string)
 
