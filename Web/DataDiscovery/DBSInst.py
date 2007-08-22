@@ -147,6 +147,7 @@ class DBManager(DDLogger):
         
   def connect(self,dbsInst):
       t_ini=time.time()
+      eType='oracle' # default DB back-end
       if  not self.engine.has_key(dbsInst):
           dbAuth = DDAuthentication(dbsInst,self.verbose) 
           dbType, dbName, dbUser, dbPass, host, url = dbAuth.dbInfo()
