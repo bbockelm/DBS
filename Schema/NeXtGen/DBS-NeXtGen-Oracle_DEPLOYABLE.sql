@@ -1444,10 +1444,7 @@ ALTER TABLE SEBlock ADD CONSTRAINT
 -- === generated index statements ==============
 PROMPT Creating indexes
 create index ix_person_name on Person (Name);
-create index ix_compositeads_description on CompositeADS (Description);
-create index ix_qualityversion_description on QualityVersion (Description);
 create index ix_processeddataset_name on ProcessedDataset (Name);
-create index ix_analysisdataset_description on AnalysisDataset (Description);
 create index ix_files_queryablemetadata on Files (QueryableMetadata);
 -- ====================================================
 

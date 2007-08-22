@@ -1433,12 +1433,6 @@ ALTER TABLE SEBlock ADD CONSTRAINT
 
 CREATE INDEX  ON Person(Name);
 
-CREATE INDEX  ON CompositeADS(Description);
-
-CREATE INDEX  ON QualityVersion(Description);
-
 CREATE INDEX  ON ProcessedDataset(Name);
-
-CREATE INDEX  ON AnalysisDataset(Description);
 
 CREATE INDEX  ON Files(QueryableMetadata);
