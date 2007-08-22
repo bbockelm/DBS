@@ -9,10 +9,13 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=DBS_1_0_5
-echo "Please provide the instance Name. There are only two types. Acceptable input are GLOBAL, LOCAL"
-read InstanceName
-
+SchemaVersion=DBS_1_0_7
+# By default the schema will be deployed as LOCAL, later on it could be changed to GLOBAL (as an adminstrative task)
+# I am not for changing this script all the time or interactively!
+InstanceName=LOCAL
+#
+#echo "Please provide the instance Name. There are only two types. Acceptable input are GLOBAL, LOCAL"
+#read InstanceName
 #
 ddl_file=DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 #
@@ -180,6 +183,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AOD', 'Analysis Object Data products TBA', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('AODSIM', 'Analysis Object Data SIM asked by Skim team', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('RAW', 'Raw detector output from the HLT system', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA', ${unix_time});"  >> $ddl_file
@@ -197,6 +201,7 @@ echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RECO', ${unix_time});" 
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('ALCARECO', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('USER', ${unix_time});" >> $ddl_file
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AOD', ${unix_time});" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('AODSIM', ${unix_time});" >> $ddl_file
 #
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', ${unix_time});">> $ddl_file
 echo "INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Higgs', ${unix_time});">> $ddl_file

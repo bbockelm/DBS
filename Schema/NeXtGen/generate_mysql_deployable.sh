@@ -10,9 +10,13 @@
 #  M. Anzar Afaq (anzar@fnal[.NOSPAM]gov
 #
 #
-SchemaVersion=DBS_1_0_5
-echo "Please provide the instance Name. There are only two types. Acceptable input are GLOBAL, LOCAL"
-read InstanceName
+SchemaVersion=DBS_1_0_7
+# By default the schema will be deployed as LOCAL, later on it could be changed to GLOBAL (as an adminstrative task)
+# I am not for changing this script all the time or interactively!
+InstanceName=LOCAL
+#
+#echo "Please provide the instance Name. There are only two types. Acceptable input are GLOBAL, LOCAL"
+#read InstanceName
 #
 ddl_file=DBS-NeXtGen-MySQL_DEPLOYABLE.sql
 #
@@ -97,6 +101,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simu
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data       TBA');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('AOD', 'Analysis Object Data products TBA');"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('AODSIM', 'AODSIM Tier asked by Skim Team');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW', 'Raw detector output from the HLT system   TBA');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA');"  >> $ddl_file
@@ -107,7 +112,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIG
 #
 #
 #
-echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()) ;" >> $ddl_file
+echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()) ;" >> $ddl_file
 
 #echo "INSERT INTO PhysicsGroup (PhysicsGroupName, PhysicsGroupConvener, CreationDate) VALUES ('None', '', UNIX_TIMESTAMP()), 
 #('Individual', '', UNIX_TIMESTAMP()), 

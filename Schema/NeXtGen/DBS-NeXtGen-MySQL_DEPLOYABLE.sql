@@ -1824,7 +1824,7 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_5', 'GLOBAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_7', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());
@@ -1838,6 +1838,7 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('SIM', 'Simulated 
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI', 'Digitixed output from the various Digitizers that act on the SIM data    EBDigiCollection, HBHEDigiCollection, HFDigiCollection, StripDigiCollection, CSCStripDigiCollection, CSCWireDigiCollection');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RECO', 'Reconstructed products produced from either real data or DIGI data       TBA');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('AOD', 'Analysis Object Data products TBA');
+INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('AODSIM', 'AODSIM Tier asked by Skim Team');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('RAW', 'Raw detector output from the HLT system   TBA');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('ALCARECO', 'IS ITS A TIER ? TBA');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('USER', 'Things that users make afte AOD. The analysis equivalent of the kitchen sink TBA');
@@ -1845,7 +1846,7 @@ INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', 'Genera
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');
 INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');
-INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()) ;
+INSERT INTO DataTier (Name, CreationDate) VALUES ('GEN', UNIX_TIMESTAMP()), ('SIM', UNIX_TIMESTAMP()), ('DIGI', UNIX_TIMESTAMP()), ('RECO', UNIX_TIMESTAMP()), ('ALCARECO', UNIX_TIMESTAMP()), ('USER', UNIX_TIMESTAMP()),  ('RAW', UNIX_TIMESTAMP()), ('AOD', UNIX_TIMESTAMP()), ('AODSIM', UNIX_TIMESTAMP()) ;
 INSERT INTO PhysicsGroup (PhysicsGroupName, CreationDate) VALUES ('Individual', UNIX_TIMESTAMP()), 
 ('Higgs', UNIX_TIMESTAMP()), 
 ('SUSYBSM', UNIX_TIMESTAMP()), 
