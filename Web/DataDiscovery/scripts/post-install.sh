@@ -15,6 +15,7 @@ mkdir -p $DIR/Logs
 
 # Fix template files
 cat $DDHOME/Templates/CherryServer3.conf | sed "s/\$port/$port/g" > $DIR/CherryServer3.conf
+/bin/cp -f $DDHOME/Templates/DBSDD.conf $DIR
 cat >> $DIR/DBSDD.conf << EOF
 #
 # DO NOT EDIT, AUTO-GENERATED SETTINGS
