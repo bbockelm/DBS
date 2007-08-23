@@ -4041,6 +4041,7 @@ if __name__ == "__main__":
                 '/css'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'css'},
                 '/js'       : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'js'},
                 '/WEBTOOLS' : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS'},
+                '/Common'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS/Common'},
                 '/yui'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'yui'},
                 '/YUI'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'YUI'},
                }
