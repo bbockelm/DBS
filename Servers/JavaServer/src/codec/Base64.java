@@ -43,7 +43,7 @@
  * @author rob@iharder.net
  * @version 2.0
  * Adapted for Frontier needs by Sergey Kosyakov
- * $Id: Base64.java,v 1.5 2004/08/18 16:20:45 serge Exp $
+ * $Id: Base64.java,v 1.1 2007/01/09 21:26:44 sekhri Exp $
  */
 package codec;
 
@@ -737,7 +737,9 @@ public class Base64
             else
             {
                 System.err.println( "Bad Base64 input character at " + i + ": " + source[i] + "(decimal)" );
-                return null;
+		//Return null cause a weired crash -- AA 08/27/2007
+		return "".getBytes();
+                //return null;
             }   // end else:
         }   // each input character
 
