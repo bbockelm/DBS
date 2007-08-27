@@ -394,11 +394,15 @@ class DbsApi(DbsConfig):
 	  if name == 'processed_dataset':
 	    self.procName = str(attrs['processed_datatset_name'])	  
 	    self.primName = str(attrs['primary_datatset_name'])	  
+            ds_status='UnKnown'
+            if attrs.has_key('status'):
+		ds_status=str(attrs['status'])
+	    
             self.currDataset = DbsProcessedDataset ( 
                                                 Name=self.procName,     
 						PhysicsGroup=str(attrs['physics_group_name']),
 						PhysicsGroupConverner=str(attrs['physics_group_convener']),
-						Status=str(attrs['status']),
+						Status=ds_status,
                                                 #openForWriting=str(attrs['open_for_writing']), 
                                                 PrimaryDataset=DbsPrimaryDataset(Name=self.primName),
                                                 CreationDate=str(attrs['creation_date']),
