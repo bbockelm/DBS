@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiAlgoLogic.java,v 1.13 2007/04/03 22:02:01 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiAlgoLogic.java,v 1.14 2007/08/20 16:39:59 sekhri Exp $"
  *
  */
 
@@ -216,9 +216,16 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 				String annotation = get(algo, "ps_annotation");
 				//System.out.println("ps_annotation " + annotation);
 				String annotationBase64 =  "";
-				if(!isNull(annotation)) {
-					annotationBase64 = new String(Base64.decode(annotation));
-				}
+
+                                if(!isNull(annotation)) {
+                                        byte[] check_encode = Base64.decode(annotation);
+                                        if(check_encode == null) {
+                                                annotationBase64 = new String(check_encode);
+                                        }
+                                        else {
+                                                annotationBase64 = annotation;
+                                        }
+                                }
 				//System.out.println("annotationBase64 " + annotationBase64);
 
 				ps = DBSSql.insertParameterSet(conn,
