@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.30 $"
- $Id: DBSServlet.java,v 1.30 2007/02/09 19:29:39 sekhri Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSServlet.java,v 1.31 2007/08/22 16:25:35 afaq Exp $"
 
  */
 package dbs;
@@ -80,6 +80,9 @@ public class DBSServlet extends HttpServlet{
 			DBSUtil.writeLog("DN of the user is " + dn);
 			if (dn == null) {
 	                        dn = request.getHeader("UserID");
+				if (dn == null) {
+					dn = "web-client";
+				}
 				DBSUtil.writeLog("NO DN, using UserID: "+dn+" from HTTP header");
 	                        //System.out.println("UserID: "+dn);
 			}
