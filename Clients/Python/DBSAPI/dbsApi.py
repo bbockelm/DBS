@@ -875,7 +875,7 @@ class DbsApi(DbsConfig):
 
   # ------------------------------------------------------------
 
-  def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", runNumber="", details=None):
+  def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", runNumber="", details=None, branchNTrig=False):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -907,6 +907,8 @@ class DbsApi(DbsConfig):
 	User MUST provide one of (path, (pri, proc), blockName, patternLFN)
 
         details: if not None, then server will return details like list of Tier, Parents, etc etc.
+
+	branchNTrig: Want to list File Branches and Triggers, by default False.
          
     raise: DbsApiException.
 
@@ -932,6 +934,9 @@ class DbsApi(DbsConfig):
 
     sendTier = string.join(tier_list, "-")
 
+    if branchNTrig not in ("", None, False):
+	branchNTrig = "True"
+
     if details not in ("", None, False):
        data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
 				    'primary_dataset' : primary, 
@@ -940,7 +945,7 @@ class DbsApi(DbsConfig):
 		                    'analysis_dataset_name' : analysisDataset,
                                     'block_name' : blockName, 
 				    'run_number' : str(self._get_run(runNumber)),
-                                    'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
+                                    'pattern_lfn' : patternLFN, 'detail' : 'True', 'branchNTrig' : str(branchNTrig) }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
                                     'primary_dataset': primary,
@@ -949,7 +954,7 @@ class DbsApi(DbsConfig):
                                     'path' : path, 'block_name' : blockName, 
 		                    'analysis_dataset_name' : analysisDataset,
 				    'run_number' : str(self._get_run(runNumber)),
-                                    'pattern_lfn' : patternLFN}, 'GET')
+                                    'pattern_lfn' : patternLFN, 'branchNTrig' : str(branchNTrig) }, 'GET')
     logging.log(DBSDEBUG, data)
 
     # Parse the resulting xml output.
@@ -3162,7 +3167,7 @@ Examples
        
 
         #def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", details=None)
-        fileDetails = self.listFiles(patternLFN=self._name(anInputLFN), details=True) 
+        fileDetails = self.listFiles(patternLFN=self._name(anInputLFN), details=True, branchNTrig=True) 
         if len(fileDetails) < 1:
 		raise DbsApiException(args="Unmerged file %s not found in DBS" %self._name(anInputLFN), code="1999")
         fileDetail = fileDetails[0] 
