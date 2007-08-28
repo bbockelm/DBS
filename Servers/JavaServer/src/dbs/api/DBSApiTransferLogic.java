@@ -1,6 +1,6 @@
 /**
- $Revision: 1.21 $"
- $Id: DBSApiTransferLogic.java,v 1.21 2007/06/14 18:21:17 afaq Exp $"
+ $Revision: 1.22 $"
+ $Id: DBSApiTransferLogic.java,v 1.22 2007/08/15 19:48:10 sekhri Exp $"
  *
  */
 
@@ -39,7 +39,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
-	public void listDatasetContents(Connection conn, Writer out, String path, String blockName) throws Exception {
+	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName) throws Exception {
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
@@ -64,7 +64,14 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null);
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, path, "", blockName, null, "true");
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true");
+
+
+
+		//CHECK TO SEE IF THIS IS GLOBAL INSTANCE, THEN NO NEED TO TRANSFER BRANCH AND TRIGGER INFORMATION (branchNTrig=false)
+		String branchNTrig = "true";
+                if (instanceName.equals ("GLOBAL") )
+			branchNTrig = "false";
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", branchNTrig);
 	}
 	
 	

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.61 $"
- $Id: DBSApiFileLogic.java,v 1.61 2007/08/20 20:23:56 afaq Exp $"
+ $Revision: 1.62 $"
+ $Id: DBSApiFileLogic.java,v 1.62 2007/08/27 16:42:18 afaq Exp $"
  *
  */
 
@@ -35,7 +35,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 
 	//This api call WILL only take into consideration the PATH parameter
-        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail) throws Exception {
+        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail, String branchNTrig) throws Exception {
 
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 		String runID = null;
@@ -73,10 +73,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         listFileProvenence(conn, out, lfn, false);//Children
                                         listFileAlgorithms(conn, out, lfn);
                                         listFileTiers(conn, out, lfn);
-                                        listFileBranches(conn, out, lfn);
+                                        if (branchNTrig.equals("true")) {
+						listFileBranches(conn, out, lfn);
+						listFileTrigs(conn, out, lfn);
+					}
                                         listFileLumis(conn, out, lfn);
                                         listFileRuns(conn, out, lfn);
-					listFileTrigs(conn, out, lfn);
 					//listFileAssoc(conn, out, lfn);
                                 }
                                 out.write(((String) "</file>\n"));
@@ -90,14 +92,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 	public void listFiles(Connection conn, Writer out, String path, 
 					String primary, String proc, String dataTierList, String aDSName, 
-					String blockName, String patternLFN, String runNumber, String detail) throws Exception {
+					String blockName, String patternLFN, String runNumber, String detail, 
+									String branchNTrig) throws Exception {
 
 		//By default a file detail is not needed
 
 
 		//if path is given we will only regard it to be sufficient criteria for listing files.
 		if (!isNull(path)) {  
-			listFiles(conn, out, path, runNumber, detail);
+			listFiles(conn, out, path, runNumber, detail, branchNTrig);
 			return;
 		}
 				
@@ -183,12 +186,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listFileProvenence(conn, out, lfn, false);//Children
 					listFileAlgorithms(conn, out, lfn);
 					listFileTiers(conn, out, lfn);
-					listFileBranches(conn, out, lfn);
 					listFileLumis(conn, out, lfn);
 					listFileRuns(conn, out, lfn);
-					listFileTrigs(conn, out, lfn);
+					if (branchNTrig.equals("true")) {
+                                                listFileBranches(conn, out, lfn);
+                                                listFileTrigs(conn, out, lfn);
+                                        }
 					//listFileAssoc(conn, out, lfn);
-
 				}
                 		out.write(((String) "</file>\n"));
       

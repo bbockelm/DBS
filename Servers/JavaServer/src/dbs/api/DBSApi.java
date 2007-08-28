@@ -1,6 +1,6 @@
 /**
- $Revision: 1.99 $"
- $Id: DBSApi.java,v 1.99 2007/08/15 19:48:10 sekhri Exp $"
+ $Revision: 1.100 $"
+ $Id: DBSApi.java,v 1.100 2007/08/17 20:27:39 sekhri Exp $"
  *
 */
 
@@ -272,7 +272,8 @@ public class DBSApi {
 			} else if (apiStr.equals("listDatasetContents")) {
 				(new DBSApiTransferLogic(this.data)).listDatasetContents(conn, out, 
 						get(table, "path", false),
-						get(table, "block_name", false)
+						get(table, "block_name", false),
+						instanceName
 						);
 			} else if (apiStr.equals("listDatasetParents")) {
 				(new DBSApiProcDSLogic(this.data)).listDatasetParents(conn, out, 
@@ -315,7 +316,8 @@ public class DBSApi {
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
 						get(table, "run_number", false),
-						get(table, "detail", false)
+						get(table, "detail", false),
+						get(table, "branchNTrig", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {
 				(new DBSApiFileLogic(this.data)).listFileProvenence(conn, out, 
