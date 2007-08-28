@@ -109,6 +109,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM', '
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('DIGI-RECO', 'Min bias data');"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct');"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07');"  >> $ddl_file
 #
 #
 #

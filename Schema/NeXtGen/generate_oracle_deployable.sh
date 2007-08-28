@@ -191,6 +191,7 @@ echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RECO', 'Generator output, four vectors and vertices in vacuum. For example, pythia events HepMCProduct', ${unix_time});"  >> $ddl_file
 echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('DIGI-RECO', 'Min bias data', ${unix_time});"  >> $ddl_file
+echo "INSERT INTO DataTierOrder(DataTierOrder, Description, CREATIONDATE) VALUES ('GEN-SIM-DIGI-RAW', 'SV Support 102463 for CSA 07', ${unix_time});"  >> $ddl_file
 #
 #
 echo "INSERT INTO DataTier (Name, CreationDate) VALUES ('RAW', ${unix_time});" >> $ddl_file
