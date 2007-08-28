@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSApiAlgoLogic.java,v 1.14 2007/08/20 16:39:59 sekhri Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSApiAlgoLogic.java,v 1.15 2007/08/27 21:12:37 afaq Exp $"
  *
  */
 
@@ -42,7 +42,8 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param patternPS a parameter passed in from the client that can contain wild card characters for parameter set name. This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied pattern parameters are invalid or the database connection is unavailable.
 	 */
-	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+	
+	public void listAlgorithms(Connection conn, Writer out, String patternVer, String patternFam, String patternExe, String patternPS, String clientVersion) throws Exception {
 		//FIXME name should be changed to hash
 		patternVer	= getPattern(patternVer, "app_version");
 		patternFam	= getPattern(patternFam, "app_family_name");
@@ -55,6 +56,9 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 			ps = DBSSql.listAlgorithms(conn, patternVer, patternFam, patternExe, patternPS);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
+				String ann = get(rs, "PS_ANNOTATION");
+				if(clientVersion.equals("DBS_1_0_7")) ann = Base64.encodeBytes(ann.getBytes());
+				
 				out.write(((String) "<algorithm id='" + get(rs, "ID") + 
 						"' app_version='" + get(rs, "APP_VERSION") +
 						"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
@@ -64,7 +68,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
 						//"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
-						"' ps_annotation='" + Base64.encodeBytes(get(rs, "PS_ANNOTATION").getBytes()) +
+						"' ps_annotation='" + ann +
 						"' ps_content='" + Base64.encodeBytes(get(rs, "PS_CONTENT").getBytes()) +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -87,7 +91,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied pattern parameters are invalid or the database connection is unavailable.
 	 */
-	public void listAlgorithms(Connection conn, Writer out, String path) throws Exception {
+	public void listAlgorithms(Connection conn, Writer out, String path, String clientVersion) throws Exception {
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -95,6 +99,9 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 			ps = DBSSql.listAlgorithms(conn, (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true));
 			rs =  ps.executeQuery();
 			while(rs.next()) {
+				String ann = get(rs, "PS_ANNOTATION");
+				if(clientVersion.equals("DBS_1_0_7")) ann = Base64.encodeBytes(ann.getBytes());
+
 				out.write(((String) "<processed_dataset_algorithm id='" + get(rs, "ID") + 
 						"' app_version='" + get(rs, "APP_VERSION") +
 						"' app_family_name='" + get(rs, "APP_FAMILY_NAME") +
@@ -104,7 +111,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 						"' ps_version='" + get(rs, "PS_VERSION") +
 						"' ps_type='" + get(rs, "PS_TYPE") +
 						//"' ps_annotation='" + get(rs, "PS_ANNOTATION") +
-						"' ps_annotation='" + Base64.encodeBytes(get(rs, "PS_ANNOTATION").getBytes()) +
+						"' ps_annotation='" + ann +
 						"' ps_content='" + Base64.encodeBytes(get(rs, "PS_CONTENT").getBytes()) +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
@@ -136,7 +143,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
-	public void insertAlgorithm(Connection conn, Writer out, Hashtable algo, Hashtable dbsUser) throws Exception {
+	public void insertAlgorithm(Connection conn, Writer out, Hashtable algo, Hashtable dbsUser, String clientVersion) throws Exception {
 		String version = get(algo, "app_version", true);
 		String family = get(algo, "app_family_name", true);
 		String exe = get(algo, "app_executable_name", true);
@@ -161,7 +168,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		insertName(conn, out, "AppExecutable", "ExecutableName", exe, cbUserID, userID, creationDate);
 
 		//Insert the ParameterSet if it does not exists
-		insertParameterSet(conn, out, algo, cbUserID, userID, creationDate);
+		insertParameterSet(conn, out, algo, cbUserID, userID, creationDate, clientVersion);
 			    
 		//Insert the Algorithm by fetching the ID of exe, version, family and parameterset
 		if(getAlgorithmID(conn, version, family, exe, psHash, false) == null) {
@@ -197,7 +204,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
-	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String cbUserID, String userID, String creationDate) throws Exception {
+	private void insertParameterSet(Connection conn, Writer out,  Hashtable algo, String cbUserID, String userID, String creationDate, String clientVersion) throws Exception {
 		String psHash = get(algo, "ps_hash", false);
 
                 if ( isNull(psHash) ) {
@@ -207,26 +214,19 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		if( getID(conn, "QueryableParameterSet", "Hash", psHash, false) == null ) {
 			PreparedStatement ps = null;
 			try {
-				String content = get(algo, "ps_content");
-				String contentBase64 =  "";
-				if(!isNull(content)) {
-					contentBase64 = new String(Base64.decode(content));
+				String contentBase64 = get(algo, "ps_content");
+				if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
+
+				String annotationBase64 = get(algo, "ps_annotation");
+				if(clientVersion.equals("DBS_1_0_7")) {
+	                                if(!isNull(annotationBase64)) annotationBase64 = new String(Base64.decode(annotationBase64));
 				}
 
-				String annotation = get(algo, "ps_annotation");
-				//System.out.println("ps_annotation " + annotation);
-				String annotationBase64 =  "";
-
-                                if(!isNull(annotation)) {
-                                        byte[] check_encode = Base64.decode(annotation);
-                                        if(check_encode == null) {
-                                                annotationBase64 = new String(check_encode);
-                                        }
-                                        else {
-                                                annotationBase64 = annotation;
-                                        }
-                                }
 				//System.out.println("annotationBase64 " + annotationBase64);
+				/*byte[] checkEncode = Base64.decode(annotation);
+				if(checkEncode == null) annotationBase64 = new String(checkEncode);
+				else annotationBase64 = annotation;
+				*/
 
 				ps = DBSSql.insertParameterSet(conn,
 						psHash,

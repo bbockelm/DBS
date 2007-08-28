@@ -1,6 +1,6 @@
 /**
- $Revision: 1.100 $"
- $Id: DBSApi.java,v 1.100 2007/08/17 20:27:39 sekhri Exp $"
+ $Revision: 1.101 $"
+ $Id: DBSApi.java,v 1.101 2007/08/28 18:54:17 afaq Exp $"
  *
 */
 
@@ -242,7 +242,7 @@ public class DBSApi {
         	        String apiVersion = get(table, "apiversion", true);
                 	DBSUtil.writeLog("apiStr: "+apiStr);
 
-	                checkVersion(get(table, "apiversion", true));
+	                checkVersion(apiVersion);
  
         	        String dbsSchemaVersion = checkSchemaVersion();
 
@@ -273,7 +273,8 @@ public class DBSApi {
 				(new DBSApiTransferLogic(this.data)).listDatasetContents(conn, out, 
 						get(table, "path", false),
 						get(table, "block_name", false),
-						instanceName
+						instanceName,
+						apiVersion
 						);
 			} else if (apiStr.equals("listDatasetParents")) {
 				(new DBSApiProcDSLogic(this.data)).listDatasetParents(conn, out, 
@@ -285,7 +286,8 @@ public class DBSApi {
 						get(table, "app_version", false),
 						get(table, "app_family_name", false),
 						get(table, "app_executable_name", false),
-						get(table, "ps_hash", false)
+						get(table, "ps_hash", false),
+						apiVersion
 						);
 				
 			} else if (apiStr.equals("listRuns")) {
@@ -385,7 +387,8 @@ public class DBSApi {
 			} else if (apiStr.equals("insertAlgorithm")) {
 				(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out,
 						DBSApiParser.parse(getXml(table), "algorithm") , 
-						dbsUser);
+						dbsUser,
+						apiVersion);
 			} else if (apiStr.equals("insertRun")) {
 				api.insertRun(conn, out,
 						DBSApiParser.parse(getXml(table), "run") , 
@@ -551,7 +554,8 @@ public class DBSApi {
 				(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
 						DBSApiParser.parseDatasetContents(getXml(table)), 
 						dbsUser,
-						ignoreParent);
+						ignoreParent,
+						apiVersion);
 
                         } else if (apiStr.equals("openBlock")) {
                                 (new DBSApiBlockLogic(this.data)).openBlock(conn, out,

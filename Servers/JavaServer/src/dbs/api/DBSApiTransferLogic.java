@@ -1,6 +1,6 @@
 /**
- $Revision: 1.22 $"
- $Id: DBSApiTransferLogic.java,v 1.22 2007/08/15 19:48:10 sekhri Exp $"
+ $Revision: 1.23 $"
+ $Id: DBSApiTransferLogic.java,v 1.23 2007/08/28 18:54:17 afaq Exp $"
  *
  */
 
@@ -39,7 +39,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. This path is used to find the existing processed dataset id.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
-	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName) throws Exception {
+	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName, String clientVersion) throws Exception {
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
@@ -59,7 +59,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
 		//pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
 		pdApi.listProcessedDatasets(conn, out, data[1], "", data[2], null, null, null, null);
-		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path);
+		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path, clientVersion);
 		pdApi.listDatasetParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
 		bApi.listBlocks(conn, out, path, blockName, null);
@@ -86,7 +86,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable.
 	 */
 	//public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser, boolean ignoreParent) throws Exception {
+	public void insertDatasetContents(Connection conn, Writer out, Hashtable table, Hashtable dbsUser, boolean ignoreParent, String clientVersion) throws Exception {
 		//FIXME dont pass dbsUser instaed get it from the table
 		String path = getPath(table, "path", true);
 		//System.out.println("line 1");
@@ -101,7 +101,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		Hashtable pdTable = DBSUtil.getTable(table, "processed_dataset");
 		Vector algoVector = DBSUtil.getVector(pdTable, "algorithm");
 		for (int j = 0; j < algoVector.size(); ++j) 
-			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser);
+			(new DBSApiAlgoLogic(this.data)).insertAlgorithm(conn, out, (Hashtable)algoVector.get(j), dbsUser, clientVersion);
 		
 		Vector runVector = DBSUtil.getVector(pdTable, "run");
 		for (int j = 0; j < runVector.size(); ++j) 
