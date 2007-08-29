@@ -109,7 +109,8 @@ class DbsApi(DbsConfig):
     #Store infor about current user
     #
     if not self.configDict.has_key('userID'):
-    	Args['userID'] = os.getlogin()+'@'+socket.gethostname()
+    	#Args['userID'] = os.getlogin()+'@'+socket.gethostname()
+    	Args['userID'] = os.environ['USER']+'@'+socket.gethostname()
     #
     # Connect to the Server proxy
     #
