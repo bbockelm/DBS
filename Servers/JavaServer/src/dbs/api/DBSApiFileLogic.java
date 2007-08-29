@@ -1,6 +1,6 @@
 /**
- $Revision: 1.63 $"
- $Id: DBSApiFileLogic.java,v 1.63 2007/08/28 18:54:17 afaq Exp $"
+ $Revision: 1.64 $"
+ $Id: DBSApiFileLogic.java,v 1.64 2007/08/29 14:12:37 afaq Exp $"
  *
  */
 
@@ -588,6 +588,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						
  			//THIS is ONE BIG Crazy Hack,, for Pete's will....Must be reverted as soon as possible.
 			procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
+			procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
 			//procDSID = procDSApiObj.getProcessedDSID(conn, blockPath, true);
 
 		}
@@ -595,6 +596,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//Path is given ------- insertFiles in path
 		else if (!isNull(path)){
 			procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
+			procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
 
 			//List Tiers from ProcDS
                 	Vector procDSTiers = procDSApiObj.getProcDSTierVec(conn, procDSID);
@@ -641,6 +643,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			
 			//This will be the PATH used for blockName	
                         correctedPath = "/"+primary+"/"+proc + "/" + makeOrderedTierList(conn, fileTiers);
+			procDSApiObj.checkProcDSStatus(conn, out, correctedPath, procDSID);
 
 			//This will verify all files have SAME tiers
 			matchWithFileTiers(files, fileTiers, correctedPath);

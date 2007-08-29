@@ -1,6 +1,6 @@
 /**
- $Revision: 1.39 $"
- $Id: DBSApiProcDSLogic.java,v 1.39 2007/08/15 19:48:10 sekhri Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSApiProcDSLogic.java,v 1.40 2007/08/16 19:16:11 sekhri Exp $"
  *
  */
 
@@ -332,7 +332,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String primaryName = get(dataset, "primary_datatset_name", true);
 		//Insert a Processed Datatset before by fetching the primDSID, status
 		//if( (procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, false)) == null ) {
-		if( isNull(procDSID = getProcessedDSID(conn, "/" + primaryName + "/" + procDSName +  "/nothing", false) ) ){
+		String path =  "/" + primaryName + "/" + procDSName +  "/nothing";
+		if( isNull(procDSID = getProcessedDSID(conn, path, false) ) ){
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertProcessedDatatset(conn, 
@@ -361,8 +362,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
 		if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0) 
 			//if(isNull(procDSID)) procDSID = getID(conn, "ProcessedDataset", "Name", procDSName, true);
-			if(isNull(procDSID)) procDSID = getProcessedDSID(conn, "/" + primaryName + "/" + procDSName +  "/nothing", true);
+			if(isNull(procDSID)) procDSID = getProcessedDSID(conn, path, true);
 		
+		checkProcDSStatus(conn, out, path, procDSID);
 		//Insert ProcAlgoMap table by fetching application ID. 
 		for (int j = 0; j < algoVector.size(); ++j) {
 			
@@ -429,8 +431,11 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertTierInPD(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
+		String path =  get(table, "path");
+		String procDSID = getProcessedDSID(conn, path, true);
+		checkProcDSStatus(conn, out, path, procDSID);
 		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
-				getProcessedDSID(conn, get(table, "path"), true), 
+				procDSID, 
 				getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -453,8 +458,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertParentInPD(Connection conn, Writer out, Hashtable table, String parentPath, Hashtable dbsUser) throws Exception {
+		String path =  get(table, "path");
+		String procDSID = getProcessedDSID(conn, path, true);
+		checkProcDSStatus(conn, out, path, procDSID);
+		
 		insertMap(conn, out, "ProcDSParent", "ThisDataset", "ItsParent", 
-					getProcessedDSID(conn, get(table, "path"), true), 
+					procDSID, 
 					getProcessedDSID(conn, parentPath, true), 
 					personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 					personApi.getUserID(conn, dbsUser),
@@ -476,8 +485,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void insertAlgoInPD(Connection conn, Writer out, Hashtable table, Hashtable algo, Hashtable dbsUser) throws Exception {
+		String path =  get(table, "path");
+		String procDSID = getProcessedDSID(conn, path, true);
+		checkProcDSStatus(conn, out, path, procDSID);
+
 		insertMap(conn, out, "ProcAlgo", "Dataset", "Algorithm", 
-					getProcessedDSID(conn, get(table, "path"), true), 
+					procDSID, 
 					(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(algo, "app_version"), 
 							get(algo, "app_family_name"), 
 							get(algo, "app_executable_name"),
@@ -504,8 +517,12 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	public void insertRunInPD(Connection conn, Writer out, Hashtable table, String runNumber, Hashtable dbsUser) throws Exception {
 		checkTime(runNumber, "run_number");
+		String path =  get(table, "path");
+		String procDSID = getProcessedDSID(conn, path, true);
+		checkProcDSStatus(conn, out, path, procDSID);
+
 		insertMap(conn, out, "ProcDSRuns", "Dataset", "Run", 
-				getProcessedDSID(conn, get(table, "path"), true), 
+				procDSID, 
 				getID(conn, "Runs", "RunNumber", runNumber , true), 	
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
@@ -526,11 +543,15 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	public void updateProcDSStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
 		String procDSID = getProcessedDSID(conn, path, true);
-		if (listProcDSStatus(conn, out, procDSID).equals("RO"))
-			throw new DBSException("Operation NOT permitted", "1080", "Dataset " + path + " is read only dataset and CANNOT be altered. The status of this dataset CANNOT be changed");
-
+		checkProcDSStatus(conn, out, path, procDSID);
 		updateName(conn, out, "ProcessedDataset", procDSID,
 				                        "Status", "ProcDSStatus", "Status", value, personApi.getUserID(conn, dbsUser));
+	}
+	
+	public void checkProcDSStatus(Connection conn, Writer out, String path, String procDSID) throws Exception {
+		if (listProcDSStatus(conn, out, procDSID).equals("RO"))
+			throw new DBSException("Operation NOT permitted", "1080", "Dataset " + path + " is read only dataset and CANNOT be altered. Further, the status of this dataset CANNOT be changed");
+
 	}
 
 	/**

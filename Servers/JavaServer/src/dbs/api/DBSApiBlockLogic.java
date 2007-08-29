@@ -1,6 +1,6 @@
 /**
- $Revision: 1.40 $"
- $Id: DBSApiBlockLogic.java,v 1.40 2007/05/09 14:44:50 afaq Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSApiBlockLogic.java,v 1.41 2007/08/17 20:27:39 sekhri Exp $"
  *
  */
 
@@ -148,6 +148,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
 		//Getting ID before spliting the path will type chech the path also.
 		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
+		procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
+
                 Vector procDSTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
 
 		String[] datapath = path.split("/");
@@ -309,6 +311,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
                 String userID = personApi.getUserID(conn, dbsUser);
                 String cbUserID = personApi.getUserID(conn, get(block, "created_by"), dbsUser );
                 String creationDate = getTime(block, "creation_date", false);
+		
+		(new DBSApiProcDSLogic(this.data)).checkProcDSStatus(conn, out, path, procDSID);
 
                 //checkBlock(name);
                 PreparedStatement ps = null;
