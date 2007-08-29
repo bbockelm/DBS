@@ -1,6 +1,6 @@
 /**
- $Revision: 1.101 $"
- $Id: DBSApi.java,v 1.101 2007/08/28 18:54:17 afaq Exp $"
+ $Revision: 1.102 $"
+ $Id: DBSApi.java,v 1.102 2007/08/28 19:45:19 sekhri Exp $"
  *
 */
 
@@ -549,7 +549,7 @@ public class DBSApi {
 				
 			} else if (apiStr.equals("insertDatasetContents")) {
 				boolean ignoreParent = false;
-				String ignoreParentStr = get(table, "ignore_parent", true);
+				String ignoreParentStr = get(table, "ignore_parent", false);
 				if (ignoreParentStr.equals("true")) ignoreParent = true;
 				(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
 						DBSApiParser.parseDatasetContents(getXml(table)), 
