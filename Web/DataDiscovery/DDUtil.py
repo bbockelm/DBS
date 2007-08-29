@@ -309,11 +309,14 @@ def getExceptionInHTML():
     """%(e1,e2)
     return msg
 
-def getExcept():
+def getExcept(_msg=None):
     """
        return exception type, value and traceback in a message
     """
-    msg ="Exception type: \n%s\n\n"%sys.exc_info()[0]
+    msg = ""
+    if _msg:
+       msg=_msg
+    msg+="Exception type: \n%s\n\n"%sys.exc_info()[0]
     msg+="Exception value: \n%s\n\n"%sys.exc_info()[1]
     msg+="Traceback: \n"
     for m in traceback.format_tb(sys.exc_info()[2]):
