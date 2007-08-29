@@ -88,6 +88,12 @@ class DDHelper(DDLogger):
   def printQuery(self,sel):
       return self.dbManager.printQuery(self.dbsInstance,sel).replace("\n","")
   
+  def printExcept(self,msg=None):
+      if self.verbose:
+         self.writeLog(getExcept(msg))
+      print msg
+      printExcept()
+
   def setQuiet(self):
       self.quiet=1
 
@@ -400,9 +406,8 @@ class DDHelper(DDLogger):
               if id and name:
                   oList.append((id,name,ver,psType,ann,cDate,cBy,mDate,mBy))
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listApplicationsConfigs"
       if self.verbose:
          self.writeLog("time listApplicationsConfigs: %s"%(time.time()-t1))
@@ -473,9 +478,8 @@ class DDHelper(DDLogger):
               if name and not oList.count((softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy)):
                  oList.append((softRel,name,content,ver,psType,ann,cDate,cBy,mDate,mBy))
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listApplicationsConfigsContent"
       if self.verbose:
          self.writeLog("time listApplicationsConfigsContent: %s"%(time.time()-t1))
@@ -574,9 +578,8 @@ class DDHelper(DDLogger):
 #          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listProcessedDataset"
       if count:
          res = result.fetchone()[0]
@@ -605,9 +608,8 @@ class DDHelper(DDLogger):
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getPrimDetailsForRSS"
       cDate=""
       annotation=""
@@ -655,9 +657,8 @@ class DDHelper(DDLogger):
              sel.offset=fromRow
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getProcDSForRss"
       for item in result:
           if not (item and item[0]): continue
@@ -783,9 +784,8 @@ MCDescription:      %s
 #          print "\n\nblockList query\n",sel
           result = self.getSQLAlchemyResult(con,sel,idx)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listBlocks"
       aDict={}
       aList=[]
@@ -857,9 +857,8 @@ MCDescription:      %s
              self.joinTiers(sel,tpds,tier,tprd)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in numberOfEvents"
       evts=0
       for item in result:
@@ -926,9 +925,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getDataDescription"
 #      oList = result.fetchall()
       oList=[]
@@ -971,9 +969,8 @@ MCDescription:      %s
                                  )
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listProcessedDataset"
       for item in result:
           ver  = item[0]
@@ -1010,9 +1007,8 @@ MCDescription:      %s
                                  )
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getApplications"
       oList   = []
       for entry in result:
@@ -1092,9 +1088,8 @@ MCDescription:      %s
                   if item[0]:
                      oList.append(item[0])
           except:
-              if self.verbose:
-                 self.writeLog(getExcept())
-              printExcept()
+              msg="\n### Query:\n"+str(sel)
+              self.printExcept(msg)
               raise "Fail in getPrimaryDatasets"
 #          for entry in content:
 #              name=entry[0]
@@ -1139,9 +1134,8 @@ MCDescription:      %s
                   if item[0]:
                      oList.append(item[0])
           except:
-              if self.verbose:
-                 self.writeLog(getExcept())
-              printExcept()
+              msg="\n### Query:\n"+str(sel)
+              self.printExcept(msg)
               raise "Fail in getPrimaryDatasets"
       if self.verbose:
          self.writeLog("time getPrimaryDatasets: %s"%(time.time()-t1))
@@ -1187,9 +1181,8 @@ MCDescription:      %s
               oList.append(path)
 
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getDatasetProvenance"
       if self.verbose:
          self.writeLog("time getProcessedDatasets: %s"%(time.time()-t1))
@@ -1215,9 +1208,8 @@ MCDescription:      %s
             self.setDBSDLS(self.dbsInstance)
 	    result= self.dbManager.engine[self.dbsInstance].execute(q)
 	 except:
-            if self.verbose:
-               self.writeLog(getExcept())
-            printExcept()
+            msg="\n### Query:\n"+str(q)
+            self.printExcept(msg)
             raise "Fail to execute \n\n%s\n\n"%q
 	 pass
       return result
@@ -1330,9 +1322,8 @@ MCDescription:      %s
 #          print "### getTableContent",self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail to get content for table='%s'"%tableName
       return result
 
@@ -1532,9 +1523,8 @@ MCDescription:      %s
           sel  = sqlalchemy.select([self.col(tqps,'Content')],self.col(tqps,'ID')==id)
           res  = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getConfigContent"
       content=""
       for item in res:
@@ -1563,9 +1553,8 @@ MCDescription:      %s
           for item in result:
               content=item[0]
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getConfigContentByName"
       if self.verbose:
          self.writeLog("time getConfigContentByName: %s"%(time.time()-t1))
@@ -1628,9 +1617,8 @@ MCDescription:      %s
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getLFNs"
       oList=[]
       for item in result:
@@ -1663,9 +1651,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getLFN_Branches"
       if userMode!='user':
          tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
@@ -1715,9 +1702,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getLFN_Lumis"
       if userMode!='user':
          tList=['LumiSectionNumber','RunNumber','StartEventNumber','EndEventNumber','LumiStartTime','LumiEndTime','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
@@ -1761,9 +1747,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tf,'LogicalFileName')==lfn)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getLFN_Tiers"
       tList=['Name','CreatedBy','CreationDate','LastModifiedBy','LastModificationDate']
       oList=[]
@@ -1939,9 +1924,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(trun,'RunNumber')==run)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getRunDQInfo"
       oList=[]
       for item in result:
@@ -2044,9 +2028,8 @@ MCDescription:      %s
           else:       
               result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getRuns"
       if count:
          res = result.fetchone()[0]
@@ -2098,7 +2081,8 @@ MCDescription:      %s
               path=oList[idx][12]
               oList[idx][13]=pDict[path] # place for se's list
       except:
-          printExcept()
+          msg="\n### Query:\n"+str(sel)+"\nConditions\n"+printListElements(condList)
+          self.printExcept(msg)
           raise "Fail in getRuns"
       ######### end of se's lookup
 
@@ -2141,9 +2125,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tpmt,'Type')==primType)
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getRunsForPrimary"
       oList = result.fetchall()
       rMin=oList[0][0]
@@ -2246,7 +2229,8 @@ MCDescription:      %s
           if  cDict.has_key('max') and cDict['max']==1:
               oSel = [sqlalchemy.func.count(self.col(tad,'Name').distinct())]
           else:
-              oSel = [self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
+#              oSel = [self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
+              oSel = [self.col(tad,'Name'),self.col(tadt,'Type'),
                       self.col(tads,'Status'),self.col(tadd,'Name'),
                       self.col(tadd,'LumiSections'),
                       self.col(tadd,'LumiSectionRanges'),
@@ -2320,9 +2304,8 @@ MCDescription:      %s
 #          print str(sel).replace("\n","")
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in getAnalysisDS"
       if cDict.has_key('max') and cDict['max']==1:
          res = result.fetchone()[0]
@@ -2384,9 +2367,8 @@ MCDescription:      %s
           sel.use_labels=True
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listBlocksFromSite"
       aList=[]
       aDict={}
@@ -2434,9 +2416,8 @@ MCDescription:      %s
 #             sel.append_whereclause(sqlalchemy.or_(*condList))
           result = self.getSQLAlchemyResult(con,sel)
       except:
-          if self.verbose:
-             self.writeLog(getExcept())
-          printExcept()
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
           raise "Fail in listBlocksFromSite"
       aList=[]
       for item in result:
