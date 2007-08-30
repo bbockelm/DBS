@@ -1939,6 +1939,9 @@ MCDescription:      %s
       if primType.lower()=="any": primType="*"
       if minRun.lower()=="any": minRun="*"
       if maxRun.lower()=="any": maxRun="*"
+      
+#      print dataset,primD,primType,minRun,maxRun,fromRow,limit,count,userMode
+
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -1961,8 +1964,10 @@ MCDescription:      %s
           tp2  = self.alias('Person','tp2')
 
           if  count:
-              oSel = [sqlalchemy.func.count(self.col(trun,'RunNumber').distinct())]
-              gBy  = []
+#              oSel = [sqlalchemy.func.count(self.col(trun,'RunNumber').distinct())]
+#              gBy  = []
+              oSel = [self.col(trun,'RunNumber'),self.col(tblk,'Path')]
+              gBy  = list(oSel)
           else:
               oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
               gBy=list(oSel)
@@ -2021,20 +2026,27 @@ MCDescription:      %s
                  minRow,maxRow=fromRow,fromRow+limit
                  s = """ select * from ( select a.*, rownum as rnum from ( %s ) a ) where rnum between %s and %s"""%(self.printQuery(sel),minRow,maxRow)
                  result=con.execute(s,condDict)
+#                 print "not count and limit"
+#                 print s
+#                 print condDict
              else:
                  sel.limit=limit
                  sel.offset=fromRow
                  result = self.getSQLAlchemyResult(con,sel)
           else:       
               result = self.getSQLAlchemyResult(con,sel)
+#              print sel
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
           raise "Fail in getRuns"
       if count:
-         res = result.fetchone()[0]
+#         res = result.fetchone()[0]
+         total=0
+         for i in result: total+=1
          self.closeConnection(con)
-         return long(res)
+#         return long(res)
+         return total
       oList=[]
       oDict={}
       pDict={} # diction of dataset path which we will fill with SE's later.
