@@ -49,7 +49,9 @@ import inspect
 from dbsLogger import *
 
 #DBS Api version
-__version__ = "DBS_1_0_5"
+__version__ = "DBS_1_0_7"
+#__version__ = "$Name:  $"
+#__version__ = "$Name: DBS_1_0_5 $"
 
 
 # DBS Defined Log Levels
@@ -141,6 +143,7 @@ class DbsApi(DbsConfig):
     Note: Config (dbs.config) and Constructor 
       arguments have higher presedence 
     """
+
     return __version__
 
   def getApiVersion(self):
