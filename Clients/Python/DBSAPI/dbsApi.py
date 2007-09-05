@@ -51,7 +51,7 @@ from dbsLogger import *
 #DBS Api version
 __version__ = "DBS_1_0_7"
 #__version__ = "$Name:  $"
-#__version__ = "$Name: DBS_1_0_5 $"
+#__version__ = "$Name:  $"
 
 
 # DBS Defined Log Levels
@@ -2934,6 +2934,41 @@ Examples
        print "insertTier, xmlinput",xmlinput
 
     data = self._server._call ({ 'api' : 'insertTierInPD', 
+		         'tier_name' : tier_name,
+                         'xmlinput' : xmlinput }, 'POST')
+    logging.log(DBSDEBUG, data)
+
+
+  # ------------------------------------------------------------
+
+  def insertTierInFile(self, lfn, tier_name):
+    """
+    Inserts a new tier in the DBS file. 
+    
+    param: 
+	tier_name : The data tier name passed in as string 
+			  
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException	
+	   
+    examples:
+         tier_name = "GEN-SIM-TEST"
+         api.insertTierInPD ("ANewFile", tier_name)
+
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+    xmlinput  = "<?xml version='1.0' standalone='yes'?>"
+    xmlinput += "<dbs>"
+    xmlinput += "<file lfn='" + lfn + "'/>"
+    xmlinput += "</dbs>"
+
+    logging.log(DBSDEBUG, xmlinput)
+    if self.verbose():
+       print "insertTier, xmlinput",xmlinput
+
+    data = self._server._call ({ 'api' : 'insertTierInFile', 
 		         'tier_name' : tier_name,
                          'xmlinput' : xmlinput }, 'POST')
     logging.log(DBSDEBUG, data)
