@@ -4,9 +4,9 @@
 -- === Build : 719
 -- ======================================================================
 
-drop database if exists DBS_1_0_5;
-create database DBS_1_0_5;
-use DBS_1_0_5;
+drop database if exists DBS_1_0_7;
+create database DBS_1_0_7;
+use DBS_1_0_7;
 -- ======================================================================
 
 CREATE TABLE Person
