@@ -1,6 +1,6 @@
 /**
- $Revision: 1.40 $"
- $Id: DBSApiProcDSLogic.java,v 1.40 2007/08/16 19:16:11 sekhri Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSApiProcDSLogic.java,v 1.41 2007/08/29 18:25:18 sekhri Exp $"
  *
  */
 
@@ -614,8 +614,11 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 //List Tiers from ProcDS
                 PreparedStatement pss = null;
                 ResultSet rss = null;
+		System.out.println("Line 3.1");
                 try {
+		System.out.println("Line 3.2");
                         pss =  DBSSql.listTiers(conn, procDSID);
+		System.out.println("Line 3.3");
                         rss =  pss.executeQuery();
                         while(rss.next()) {
                                 procTierVec.add(get(rss, "NAME"));

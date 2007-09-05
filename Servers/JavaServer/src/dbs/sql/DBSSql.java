@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.112 $"
- $Id: DBSSql.java,v 1.112 2007/08/16 19:16:11 sekhri Exp $"
+ $Revision: 1.113 $"
+ $Id: DBSSql.java,v 1.113 2007/08/17 20:27:41 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -311,7 +311,7 @@ public class DBSSql {
 
 		//sql += "order by LASTMODIFICATIONDATE, RUN_NUMBER desc "; 
 		//sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE desc "; 
-		sql += "order by RUN_NUMBER, ID, LASTMODIFICATIONDATE DESC"; 
+		sql += "ORDER BY r.RunNumber, qh.HistoryOf, qh.LastModificationDate DESC"; 
 		//Order by is very important, Change it ONLY if BUSH becomes president third times!
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -375,7 +375,7 @@ public class DBSSql {
                                         }
                                 }
 
-                                sql += "order by r.RunNumber, rq.ID";  //THE ORDER BY is VERY IMPORTANT here
+                                sql += "ORDER by r.RunNumber, rq.ID";  //THE ORDER BY is VERY IMPORTANT here
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
@@ -719,7 +719,7 @@ public class DBSSql {
                         "adsfl.Fileid as FILEID \n" +
                         "FROM AnalysisDSFileLumi adsfl \n" +
 			"WHERE AnalysisDataset = ? \n\t" +
-			"ORDER BY FILEID,LUMIID";
+			"ORDER BY adsfl.Fileid, adsfl.Lumi";
 		//PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		PreparedStatement ps = DBManagement.getStatementScrollable(conn, sql);
 		int columnIndx = 1;
@@ -733,7 +733,7 @@ public class DBSSql {
                 String sql = "SELECT DISTINCT ads.Version as VERSION \n " +
                         "FROM AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
-                        " order by Version desc\n";
+                        "ORDER by ads.Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -744,7 +744,7 @@ public class DBSSql {
                 String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
                         "FROM AnalysisDataset ads \n " +
                         "WHERE Name = ? \n" +
-			" order by Version desc\n";
+			"ORDER by Version desc\n";
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 ps.setString(1, adsName);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -836,7 +836,7 @@ public class DBSSql {
 		}
 		
 		
-		sql += "ORDER BY FILEID,LUMIID";
+		sql += "ORDER BY f.ID, ls.ID";
 		//System.out.println("The SQL query is " + sql);
 
 		//PreparedStatement ps = DBManagement.getStatement(conn, sql);
@@ -1140,7 +1140,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = pd.LastModifiedBy \n" +
 			"WHERE pd.Name like ?\n" +
-				"ORDER BY PRIMARY_NAME DESC";
+				"ORDER BY pd.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, pattern);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1262,7 +1262,7 @@ public class DBSSql {
 
 		if(useAnd) sql += " AND ";
 		sql +=	"pds.Status <> 'INVALID' \n" +
-			"ORDER BY id, APP_VERSION, APP_FAMILY_NAME, APP_EXECUTABLE_NAME, PS_NAME, DATA_TIER DESC";
+			"ORDER BY procds.id, av.Version, af.FamilyName, ae.ExecutableName, ps.Name, dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		if(!patternPrim.equals("%")) ps.setString(columnIndx++, patternPrim);
@@ -1364,7 +1364,7 @@ public class DBSSql {
 			"and af.FamilyName like ? \n" +
 			"and ae.ExecutableName like ? \n" +
 			"and ps.Hash like ? \n" +
-			"ORDER BY APP_FAMILY_NAME, APP_EXECUTABLE_NAME, APP_VERSION, PS_NAME DESC";
+			"ORDER BY af.FamilyName, ae.ExecutableName, av.Version, ps.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, patternVer);
@@ -1406,7 +1406,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = algo.LastModifiedBy \n" +
 			"WHERE pa.Dataset = ? \n" +
-			"ORDER BY APP_FAMILY_NAME, APP_EXECUTABLE_NAME, APP_VERSION, PS_NAME DESC";
+			"ORDER BY af.FamilyName, ae.ExecutableName, av.Version, ps.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
@@ -1438,7 +1438,7 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE pdsr.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY RUN_NUMBER DESC";
+		sql +=	"ORDER BY run.RunNumber DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, procDSID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
@@ -1463,9 +1463,12 @@ public class DBSSql {
 		if(procDSID != null) {
 			sql += "WHERE pdst.Dataset = ? \n";
 		}
-		sql +=	"ORDER BY NAME DESC";
+		sql +=	"ORDER BY dt.Name DESC";
+		System.out.println("Line 3.1.1");
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		System.out.println("Line 3.1.2");
 		ps.setString(1, procDSID);
+		System.out.println("Line 3.1.3");
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -1536,7 +1539,7 @@ public class DBSSql {
 			sql += "se.SEName like ? \n";
 		}
 		
-		sql +=	"ORDER BY NAME DESC";
+		sql +=	"ORDER BY b.Name DESC";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
@@ -1568,7 +1571,7 @@ public class DBSSql {
 			 sql += "WHERE \n" +
 			 	"se.SEName like ? \n";
 		}
-		sql +=	"ORDER BY STORAGE_ELEMENT_NAME DESC";
+		sql +=	"ORDER BY se.SEName DESC";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!seName.equals("%")) ps.setString(columnIndx++, seName);
@@ -1616,7 +1619,7 @@ public class DBSSql {
                 sql += "AND f.Dataset = ? \n";
 		if (!DBSUtil.isNull(runID)) sql += "AND fr.Run = ? \n";
 		sql +=  "AND st.Status <> 'INVALID' \n" +
-                        "ORDER BY LFN DESC";
+                        "ORDER BY f.LogicalFileName DESC";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
@@ -1695,7 +1698,7 @@ public class DBSSql {
 		if(!patternMetaData.equals("%")) sql += "AND f.QueryableMetaData like ? \n";
 
 		sql +=	"AND st.Status <> 'INVALID' \n" +
-			"ORDER BY LFN DESC";
+			"ORDER BY f.LogicalFileName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
@@ -1770,7 +1773,7 @@ public class DBSSql {
 		}
 
 		sql +=	"AND st.Status <> 'INVALID' \n" +
-			"ORDER BY LFN DESC";
+			"ORDER BY f.LogicalFileName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
@@ -1841,7 +1844,7 @@ public class DBSSql {
 		if(!DBSUtil.isNull(fileID)) {
 			sql += whereStr;
 		}
-		sql +=	"ORDER BY LFN DESC";
+		sql +=	"ORDER BY f.LogicalFileName DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		if(!DBSUtil.isNull(fileID)) {
@@ -2093,7 +2096,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = adsdef.LastModifiedBy \n" +
 			"WHERE adsdef.Name like  ? \n" +
-				"ORDER BY ANALYSIS_DATASET_DEF_NAME DESC";
+				"ORDER BY adsdef.Name DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(1, patternName);
@@ -2328,7 +2331,7 @@ public class DBSSql {
 			sqlValues.substring(0, sqlValues.length() - 2) + 
 			"\n)\n";
 		
-		//System.out.println("THE QUERY IS " +sql);
+		System.out.println("THE QUERY IS " +sql);
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		e = table.keys();
