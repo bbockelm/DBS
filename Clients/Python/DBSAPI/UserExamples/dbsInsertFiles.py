@@ -66,11 +66,11 @@ lumi2 = DbsLumiSection (
          )
 
 lumi3 = DbsLumiSection (
-         #LumiSectionNumber=1333,
-         #StartEventNumber=100,
-         #EndEventNumber=200,
-         #LumiStartTime=1233,
-         #LumiEndTime=1234,
+         LumiSectionNumber=1333,
+         StartEventNumber=100,
+         EndEventNumber=200,
+         LumiStartTime=1233,
+         LumiEndTime=1234,
          RunNumber=1,
          )
 
