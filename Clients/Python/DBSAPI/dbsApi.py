@@ -75,8 +75,13 @@ def getLong(value = None):
 	return long(value)
 
 def makeAPI(url):
+		#args = {}
+		#args['url'] = url
 		args = {}
-		args['url'] = url
+		if url.startswith('http'):
+			args['url'] = url
+			args['mode'] = 'POST'
+
 		return DbsApi(args)
 
 class DbsApi(DbsConfig):

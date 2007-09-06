@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.113 $"
- $Id: DBSSql.java,v 1.113 2007/08/17 20:27:41 sekhri Exp $"
+ $Revision: 1.114 $"
+ $Id: DBSSql.java,v 1.114 2007/09/05 22:16:22 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -841,6 +841,7 @@ public class DBSSql {
 
 		//PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		PreparedStatement ps = DBManagement.getStatementScrollable(conn, sql);
+		//System.out.println("Line 1" );
                 int columnIndx = 1;
 		ps.setString(columnIndx++, procDSID);
 		for(int i = 0 ; i != algoIDList.size(); ++i) ps.setString(columnIndx++, (String)algoIDList.get(i));
@@ -1278,6 +1279,46 @@ public class DBSSql {
 
 	public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT DISTINCT procds.id as id, \n" +
+			"primds.Name as PRIMARY_DATASET_NAME, \n" +
+			"procds.name as PROCESSED_DATASET_NAME, \n" +
+			"procds.CreationDate as CREATION_DATE, \n" +
+			"procds.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+			"pg.PhysicsGroupName as PHYSICS_GROUP_NAME, \n" +
+			"perpg.DistinguishedName as PHYSICS_GROUP_CONVENER, \n" +
+			"percb.DistinguishedName as CREATED_BY, \n" +
+			"perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+			"FROM ProcessedDataset procds \n" +
+			"JOIN PrimaryDataset primds \n" +
+				"ON primds.id = procds.PrimaryDataset \n" +
+			"LEFT OUTER JOIN ProcDSTier pdst \n" +
+				"ON pdst.Dataset = procds.id \n" +
+			"LEFT OUTER JOIN PhysicsGroup pg \n" +
+				"ON pg.id = procds.PhysicsGroup \n" +
+			"JOIN ProcDSParent dp \n" +
+				"ON dp.ItsParent = procds.id \n" +
+			"LEFT OUTER JOIN Person perpg \n" +
+				"ON perpg.id = pg.PhysicsGroupConvener \n" +
+			"LEFT OUTER JOIN Person percb \n" +
+				"ON percb.id = procds.CreatedBy \n" +
+			"LEFT OUTER JOIN Person perlm \n" +
+				"ON perlm.id = procds.LastModifiedBy \n";
+		
+		if(procDSID != null) {
+			sql += "WHERE dp.ThisDataset = ? \n";
+		}
+		sql +=	"ORDER BY primds.Name, procds.name DESC";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		if(procDSID != null) {
+			ps.setString(1, procDSID);
+		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
+/*	public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
+		String sql = "SELECT DISTINCT procds.id as id, \n" +
 			"concat( \n" +
 				"concat( \n" +
 					"concat( \n" +
@@ -1325,7 +1366,7 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-
+*/
 	public static PreparedStatement listAlgorithms(Connection conn, String patternVer, String patternFam, String patternExe, String patternPS) throws SQLException {
 		String sql = "SELECT algo.id as ID, \n" +
 			"av.Version as APP_VERSION, \n" +
@@ -1464,11 +1505,8 @@ public class DBSSql {
 			sql += "WHERE pdst.Dataset = ? \n";
 		}
 		sql +=	"ORDER BY dt.Name DESC";
-		System.out.println("Line 3.1.1");
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		System.out.println("Line 3.1.2");
 		ps.setString(1, procDSID);
-		System.out.println("Line 3.1.3");
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -2331,7 +2369,7 @@ public class DBSSql {
 			sqlValues.substring(0, sqlValues.length() - 2) + 
 			"\n)\n";
 		
-		System.out.println("THE QUERY IS " +sql);
+		//System.out.println("THE QUERY IS " +sql);
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		e = table.keys();

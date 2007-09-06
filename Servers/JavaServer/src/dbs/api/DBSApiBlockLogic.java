@@ -1,6 +1,6 @@
 /**
- $Revision: 1.42 $"
- $Id: DBSApiBlockLogic.java,v 1.42 2007/08/29 18:25:17 sekhri Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSApiBlockLogic.java,v 1.43 2007/09/05 22:16:22 sekhri Exp $"
  *
  */
 
@@ -147,37 +147,27 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
 		//Getting ID before spliting the path will type chech the path also.
-		System.out.println("Line 1");
 		String procDSID = procDSApiObj.getProcessedDSID(conn, path, true);
-		System.out.println("Line 2");
 		procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
 
-		System.out.println("Line 3");
                 Vector procDSTierVec = procDSApiObj.getProcDSTierVec(conn, procDSID);
 
-		System.out.println("Line 4");
 		String[] datapath = path.split("/");
                 Vector pathTierVec = parseTierVec(datapath[3]);
-		System.out.println("Line 5");
 		if ( ! procDSTierVec.containsAll(pathTierVec) )
 				throw new DBSException("Tier Mismatch", "1044",
                                                         "Provided Tier(s) combinition " + pathTierVec.toString() + 
 							" is not present in dataset "+ path + " Path contains " + 
 							procDSTierVec.toString());
 
-		System.out.println("Line 6");
 		Vector seVector = DBSUtil.getVector(block, "storage_element");
 		//Set defaults Values
 
-		System.out.println("Line 7");
 		String correctedPath = "/" + datapath[1] + "/" + datapath[2]
                                                                 + "/"+ makeOrderedTierList(conn, pathTierVec);
 
-		System.out.println("Line 8");
 		if (!isNull(name)) {
-		System.out.println("Line 9");
 			checkBlock(name);
-		System.out.println("Line 10");
 			String[] data = name.split("#");
 			String[] blockPath = data[0].split("/");
 			
@@ -192,11 +182,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			//}
 
 			//Check the Order of Tier list	
-		System.out.println("Line 11");
 			if(blockPath.length == 4) {
-		System.out.println("Line 12");
 				Vector blockTierVec = parseTierVec(blockPath[3]);
-		System.out.println("Line 13");
 				if ((blockTierVec.size() != pathTierVec.size()) || (!pathTierVec.containsAll(blockTierVec)) )
 					throw new DBSException("Tier Mismatch", "1043",
 							"Tiers of path portion of the block " + name + " does not match with " +
@@ -214,12 +201,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		//if (isNull(name)) name = path +"#" + UUID.randomUUID(); 
 		if (isNull(openForWriting)) openForWriting = "1";
 
-		System.out.println("Line 14");
 		if(getBlockID(conn, name, false, false) == null ) {
-		System.out.println("Line 15");
 			PreparedStatement ps = null;
 			try {
-		System.out.println("Line 16");
 				ps = DBSSql.insertBlock(conn,
 					"0",// A new block should always have 0 size
 					name,
@@ -231,10 +215,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					cbUserID,
 					userID,
 					creationDate);
-		System.out.println("Line 17");
 
 				ps.execute();
-		System.out.println("Line 18");
 			} finally { 
 				if (ps != null) ps.close();
 	                }
@@ -242,10 +224,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			writeWarning(out, "Already Exists", "1020", "Block " + name + " Already Exists");
 		}
 		//Storage Element will be added to an existing block
-		System.out.println("Line 19");
 		String blockID = "";
 		//System.out.println("seVector.size() " + seVector.size() );
-		System.out.println("Line 20");
        		if(seVector.size() > 0) blockID = getBlockID(conn, name, false, true);
 		//System.out.println("BLOCK ID is " + blockID);
 		for (int j = 0; j < seVector.size(); ++j) {

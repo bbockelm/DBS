@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.2 $"
- $Id: DBSCLI.java,v 1.2 2006/12/04 19:30:24 sekhri Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSCLI.java,v 1.3 2006/12/13 16:58:01 sekhri Exp $"
  *
  */
 
@@ -28,8 +28,8 @@ public class DBSCLI {
 		user.put("user_name", "VIJAY_SEKHRI");
 		user.put("contact_info", "VIJAY_SEKHRI_HOME");
 		out = new PrintWriter(System.out);
- 
 	}
+	
 	public void call(String[] args) {
 		try {
 			try { 
@@ -39,6 +39,7 @@ public class DBSCLI {
 					api.writeException(out, "Null parameters", "401", "No command line parameters specified\n" + usage);
 					return;
 				}
+				
 				for (int i = 0 ; i != len; ++i) {
 					//out.write("arg "+ i + " => " + args[i] + "\n");
 					String[] pairs = args[i].split("=");

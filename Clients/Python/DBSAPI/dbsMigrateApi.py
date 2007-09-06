@@ -30,7 +30,9 @@ class DbsMigrateApi:
 
 	def makeAPI(self, url):
 		args = {}
-		args['url'] = url
+		if url.startswith('http'):
+			args['url'] = url
+			args['mode'] = 'POST'
 		return DbsApi(args)
 
 	def getParentPathList(self, api, path):

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.41 $"
- $Id: DBSApiProcDSLogic.java,v 1.41 2007/08/29 18:25:18 sekhri Exp $"
+ $Revision: 1.42 $"
+ $Id: DBSApiProcDSLogic.java,v 1.42 2007/09/05 22:16:22 sekhri Exp $"
  *
  */
 
@@ -178,7 +178,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				out.write(((String) "<processed_dataset_parent id='" + get(rs, "ID") + 
-						"' path='" +  get(rs, "PATH") +
+						"' path='" +  "/" + get(rs, "PRIMARY_DATASET_NAME") + "/" + get(rs, "PROCESSED_DATASET_NAME") + "/TIER_DOES_NOT_MATTER" +
 						"' creation_date='" + getTime(rs, "CREATION_DATE") +
 						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
 						"' physics_group_name='" + get(rs, "PHYSICS_GROUP_NAME") +
@@ -614,11 +614,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
                 //List Tiers from ProcDS
                 PreparedStatement pss = null;
                 ResultSet rss = null;
-		System.out.println("Line 3.1");
                 try {
-		System.out.println("Line 3.2");
                         pss =  DBSSql.listTiers(conn, procDSID);
-		System.out.println("Line 3.3");
                         rss =  pss.executeQuery();
                         while(rss.next()) {
                                 procTierVec.add(get(rss, "NAME"));

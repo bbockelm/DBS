@@ -10,7 +10,7 @@ from dbsExecHandler import DbsExecHandler
 from xml.sax import SAXParseException
 
 
-import os, re, string, xml.sax, xml.sax.handler
+import os, re, string, xml.sax, xml.sax.handler, random
 from xml.sax.saxutils import escape
 import logging
 from dbsLogger import *
@@ -41,29 +41,47 @@ class DbsExecService:
        for ajar in os.listdir(classpathbase):
            if ajar.endswith('.jar'):
               classpath+=classpathbase+ajar+':'
-       request_string = self.JavaHome+'/bin/java -classpath '+classpath+ ' -DDBS_SERVER_CONFIG='+self.Home+'/etc/context.xml dbs.test.DBSCLI'
+       #request_string = self.JavaHome+'/bin/java -classpath '+classpath+ ' -DDBS_SERVER_CONFIG='+self.Home+'/etc/context.xml dbs.test.DBSCLI'
+       fileName = '/tmp/paramFile' + str(random.random())
+       request_string = self.JavaHome+'/bin/java -classpath '+classpath+ ' -DDBS_SERVER_CONFIG='+self.Home+'/etc/context.xml dbs.test.DBSCLIFile ' + fileName
        
 
        #request_string = './cli.sh apiversion='+self.ApiVersion
 
+       """
        for key, value in args.items():
                    if (value== ''): continue    
 		   request_string += ' "' + key + '=' + value + '"'
            
        request_string += ' apiversion='+self.ApiVersion
        print request_string  
-
-       
+       """
+ 
+       paramStr=""
+       for key, value in args.items():
+                   if (value== ''): continue    
+		   paramStr += ' "' + key + '=' + value + '"'
+           
+       paramStr += ' apiversion='+self.ApiVersion
+       print paramStr  
+      
+       tmpFile = open(fileName, 'w')
+       tmpFile.write(paramStr)
+       tmpFile.close()
        #obj = os.popen('cd ' + self.Home + '/test;' + request_string)
         
        obj = os.popen(request_string)
+       #import pdb
+       #pdb.set_trace()
+
 
        tmp = obj.readline()
        data = tmp
        while(tmp != "") :
 	       tmp = obj.readline()
 	       data += tmp
-       #print data	       
+       #print data	      
+       os.remove(fileName)
        try:
       # Error message would arrive in XML, if any
         class Handler (xml.sax.handler.ContentHandler):
@@ -96,7 +114,7 @@ class DbsExecService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 logging.log(DBSINFO, info)
 
-        print data
+        #print data
         xml.sax.parseString (data, Handler ())
         # All is ok, return the data
         return data

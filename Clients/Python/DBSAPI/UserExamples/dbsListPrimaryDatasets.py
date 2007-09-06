@@ -17,9 +17,10 @@ try:
   optManager  = DbsOptionParser()
   (opts,args) = optManager.getOpt()
 
-  #args={}
+  args={}
   #args['url']='http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet' 
-  #args['version']='v00_00_05'
+  #args['version']='DBS_1_0_4'
+  #args['mode']='POST'
   #api = DbsApi(args)
 
   api = DbsApi(opts.__dict__)
