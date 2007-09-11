@@ -2,6 +2,7 @@
 ###Site='$site' contains the following blocks:<p/>
 <table class="dbs_table_plain">
 <tr>
+<th align="left" >Dataset</th>
 <th align="left" >Block name</th>
 <th align="right">Events</th>
 <th align="right">Files</th>
@@ -19,11 +20,14 @@
 #from DDUtil import sizeFormat, colorSizeHTMLFormat
 ###from DDUtil import splitString 
 #for dbsDict in $dbsList
+#set prdName=$dbsDict['ProcDSName']
+#set pName="/"+$prdName[1:].replace("/","<br>/")
 #set blockName=$dbsDict['Name']
 #set bName=$blockName.replace('#','%23')
 ###set sName=$splitString($dbsDict['Name'],30,"\\n")
 #set sName=$blockName.replace('#','<br />#')
 <tr>
+<td align="left" >$pName</td>
 <td align="left" >$sName</td>
 <td align="right">$dbsDict['NumberOfEvents']</td>
 <td align="right">$dbsDict['NumberOfFiles']</td>
