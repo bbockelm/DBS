@@ -42,14 +42,17 @@ contains $nEvents events, $totFiles files, $totSize.
 <div name="phedexStatusField" class="hide">
 PhEDEx status:<br>
 <div class="offset_left">
+#if $phedex
+#set phedexResponse=$phedex+":"+$path
+#else
 #set phedexResponse="multiple:"+$path
+#end if
 <div id="$phedexResponse"><img src="images/loading.gif" alt="Loading data" />&nbsp;Please wait, while we retrieve PhEDEx data</div>
 </div>
 </div>
 <script type="text/javascript">
 var phedexUpdater = new PhedexUpdater('$phedexResponse');
 ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
-//ajaxPhedexStatus('','$path');
 </script>
 ##
 #if $nEvents
@@ -212,4 +215,9 @@ Details
 <span class="box_red">No data found</span>
 #end if
 ##
+#if $phedex
+<script type="text/javascript">
+ShowPhedexStatusOutput();
+</script>
+#end if
 <!-- end of templateProcessedDatasets.tmpl -->

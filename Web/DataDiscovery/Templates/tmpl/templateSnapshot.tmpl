@@ -122,7 +122,7 @@ ProdRequest status for all datasets:
 </span>
 </td>
 </tr>
-#if $userMode!='user'
+#if $phedex or $userMode!='user'
 <tr>
 <td>
 PhEDEx status for all datasets:
@@ -168,8 +168,10 @@ function getPhedexStatusForAllDatasets() {
 if(!_snapshot) {
 #set datasetPaths=$datasetList[0]
 #for dataset in $datasetList
+### we need to skip first dataset since we initialized datasetPaths with it
+#if dataset!=$datasetList[0]
 #set datasetPaths=$datasetPaths+","+dataset
-//ajaxPhedexStatus('','$dataset');
+#end if
 #end for
 ajaxPhedexStatus('','$datasetPaths');
 }

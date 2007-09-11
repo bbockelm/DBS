@@ -1094,7 +1094,7 @@ class DDServer(DDLogger,Controller):
             pList.append(item)
         return pList
 
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -1112,6 +1112,7 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         pagerStep=int(pagerStep)
+        if not proc: proc="*"
         if  type(proc) is types.ListType:
             proc_orig=proc
         else:
@@ -1222,6 +1223,7 @@ class DDServer(DDLogger,Controller):
                      'app'      : app,
                      'idx'      : _idx,
                      'ajax'     : ajax,
+                     'phedex'   : phedex,
                      'host'     : self.dbsdd,
                      'style'    : "margin-top:-20px",
                      'rPage'    : rPage,
@@ -1242,7 +1244,7 @@ class DDServer(DDLogger,Controller):
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
                 siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
-                page+= self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode)
+                page+= self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
         except:    
             page+="<verbatim>"+getExcept()+"</verbatim>"
 
@@ -1286,7 +1288,7 @@ class DDServer(DDLogger,Controller):
         page=str(t)
         return page
 
-    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
+    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1313,6 +1315,15 @@ class DDServer(DDLogger,Controller):
         t1=time.time()
         if string.lower(tier)=="all" or string.lower(tier)=="any": tier="*"
         if string.lower(site)=="all" or string.lower(site)=="any": site="*"
+        if type(phedex) is types.StringType and string.lower(phedex)=="off":
+           phedex=0
+        if phedex:
+           # we will pass site as phedex parameter in order to create a single 
+           # phedex call in templateProcessedDatasets.tmpl
+           if site=="*":
+              phedex="multiple"
+           else:
+              phedex="site"
         page=""
         if  int(ajax):
             # AJAX wants response as "text/xml" type
@@ -1325,7 +1336,7 @@ class DDServer(DDLogger,Controller):
                 self.writeLog(msg)
                 msg=""
                 self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep)
+                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep,phedex)
             except:
                 t=self.errorReport("Fail in getData function")
                 page+=str(t)
@@ -1337,7 +1348,7 @@ class DDServer(DDLogger,Controller):
            page=self.genTopHTML(userMode=userMode)
            if hist:
               page+=hist
-           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep)
+           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep,phedex)
            page+= result
            page+=self.genBottomHTML()
         if self.verbose==2:
@@ -1826,7 +1837,7 @@ class DDServer(DDLogger,Controller):
         t = templateLFN(searchList=[nameSpace]).respond()
         return str(t)
         
-    def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot="",appPath="",userMode="user"):
+    def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot="",appPath="",userMode="user",phedex=0):
         """
            Forms output tables.
            @type  path: string 
@@ -1849,7 +1860,8 @@ class DDServer(DDLogger,Controller):
                      'tid'        : id,
                      'snapshot'   : snapshot,
                      'appPath'    : appPath,
-                     'userMode'   : userMode
+                     'userMode'   : userMode,
+                     'phedex'     : phedex,
                     }
         t = templateProcessedDatasets(searchList=[nameSpace]).respond()
 #        t = templateLFB(searchList=[nameSpace]).respond()
@@ -2550,6 +2562,14 @@ class DDServer(DDLogger,Controller):
         """
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
+
+
+        # auto-competion form for processed datasets
+        nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':DBSGLOBAL,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+        t = templateAutoComplete(searchList=[nameSearch]).respond()
+        prdForm=str(t)
+
+
 #        siteList=['Any']+self.helper.getSites()
         siteList=self.helper.getSites()
         siteDict=sortSitesByDomain(siteList)
@@ -2560,7 +2580,8 @@ class DDServer(DDLogger,Controller):
                      'dbsGlobal': DBSGLOBAL,
 #                     'siteList' : siteList,
                      'siteDict' : siteDict,
-                     'userMode' : userMode
+                     'userMode' : userMode,
+                     'prdForm'  : prdForm,
                     }
         t = templateSiteForm(searchList=[nameSpace]).respond()
         page = str(t)
@@ -3954,7 +3975,6 @@ Save query as:
 
     def phedexStatus(self,site,datasetPath,id_suffix,**kwargs):
         self.setContentType('xml')
-#        url="/cms/test/aprom/phedex/dev/egeland/tbedi/XML::TransferStatus"
         url="/cms/test/aprom/phedex/dev/egeland/prod/XML::TransferStatus"
         params={}
         if site:
@@ -3978,7 +3998,8 @@ Save query as:
 #            print id_suffix
 #            print params
 #            print page
-            page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
+            if type(page) is types.StringType:
+               page = string.replace(page,"""<?xml version='1.0' encoding='ISO-8859-1'?>""","")
         except:
             t=self.errorReport("Fail in phedexStatus function")
             page+="Phedex information is not available at this time"

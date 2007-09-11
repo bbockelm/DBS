@@ -8,6 +8,7 @@
 ###<form action="javascript:ResetAllResults();MakeUserNavBar();showResMenu('results');ajaxGetUserData()" method="get">
 
 <input type="hidden" name="ajax" value="0" />
+<input type="hidden" name="phedex" value="off" />
 <input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
 #if $userMode=='user'
 <input type="hidden" name="dbsInst" value="$dbsInst" id="kw_dbsInstSelector" />
@@ -238,6 +239,7 @@ Auto-completion:
 
 <form action="getData" method="get">
 <input type="hidden" name="ajax" value="0" />
+<input type="hidden" name="phedex" value="off" />
 <input type="hidden" name="userMode" value="$userMode" id="kw_userModeSelector" />
 <input type="hidden" name="group" value="*" />
 <input type="hidden" name="tier" value="*" />
