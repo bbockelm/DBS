@@ -1323,7 +1323,7 @@ class DDServer(DDLogger,Controller):
            if site=="*":
               phedex="multiple"
            else:
-              phedex="site"
+              phedex=site
         page=""
         if  int(ajax):
             # AJAX wants response as "text/xml" type
