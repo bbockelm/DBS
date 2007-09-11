@@ -1034,13 +1034,26 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+        if type(proc) is not types.ListType and len(proc)>1:
+           if (proc.find("*")!=-1 or proc.find("%")!=-1):
+               # we got a pattern
+               proc=self.getMatch("Block","Path",proc)
+           else:
+               if proc[0]!="/":
+                  page=self.genTopHTML()
+                  msg ="Dataset name should be in a form /primary/processed/tier<br />"
+                  msg+="You provided '%s'<br />"%proc
+                  msg+="If you need wild-card search please use *%s*<br />"%proc
+                  page+=msg
+                  page+=self.genBottomHTML()
+                  return page
         try:
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: list of datasets',userMode)
             page+= self.genResultsHTML()
             page+= "<pre>"
-            if  len(proc) and proc!="*":
+            if  type(proc) is not types.ListType and len(proc) and proc!="*":
                 page+=proc+"\n"
             else:
                 procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=0,limit=0,count=0)
