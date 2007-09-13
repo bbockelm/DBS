@@ -2093,7 +2093,7 @@ MCDescription:      %s
               path=oList[idx][12]
               oList[idx][13]=pDict[path] # place for se's list
       except:
-          msg="\n### Query:\n"+str(sel)+"\nConditions\n"+printListElements(condList)
+          msg="\n### Query:\n"+str(sel)+"\nConditions\n"+str(condList)
           self.printExcept(msg)
           raise "Fail in getRuns"
       ######### end of se's lookup
