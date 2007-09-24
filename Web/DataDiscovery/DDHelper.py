@@ -2080,6 +2080,7 @@ MCDescription:      %s
                       tblk.outerjoin(tsb,onclause=self.col(tsb,'BlockID')==self.col(tblk,'ID'))
                           .outerjoin(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True )
+          sel.append_whereclause(self.col(tse,'SEName')!=sqlalchemy.null())
           condList=[]   
           for path in pDict.keys():
               condList.append(self.col(tblk,'Path')==path)
@@ -2091,7 +2092,7 @@ MCDescription:      %s
               if pDict.has_key(path):
                  pDict[path]=pDict[path]+[se]
               else:
-                 pDict[path]=pDict[path]
+                 pDict[path]=[se]
           for idx in xrange(0,len(oList)):
               path=oList[idx][12]
               oList[idx][13]=pDict[path] # place for se's list
