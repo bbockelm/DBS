@@ -21,6 +21,7 @@ from   Cheetah.Template import Template
 # CherryPy server modules
 import cherrypy 
 from   cherrypy    import expose
+#from   cherrypy.lib import profiler
 
 # DBS  modules
 from   DDUtil      import *
@@ -82,6 +83,7 @@ class DDServer(DDLogger,Controller):
            @rtype : none
            @return: none 
         """
+#        self.p = profiler.Profiler(os.getcwd())
         self.ddConfig  = DDConfig()
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDServer",verbose)
         setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
@@ -1709,7 +1711,9 @@ class DDServer(DDLogger,Controller):
 #                if blockList:
 #                   blocks=blockList.split(",")
 #                bList=self.helper.getBlocksFromSite(site,blocks)
-                bList=self.helper.getBlocksFromSite(site,datasetPath)
+
+#                bList=self.helper.getBlocksFromSite(site,datasetPath)
+                lfnList=self.helper.getLFNsFromSite(site,datasetPath)
             except:
                 if self.verbose:
                    self.writeLog(getExcept())
@@ -1718,26 +1722,38 @@ class DDServer(DDLogger,Controller):
                 pass
             if what=="cff":
                page+="replace PoolSource.fileNames = {\n"
-            for blockName in bList:
-                try:
-                    lfnList = self.helper.getLFNs(dbsInst,blockName,"")
-                    if not lfnList: page+="No LFNs found in '%s' on site='%s' for blockName='%s'\n"%(dbsInst,site,blockName)
-                    for item in lfnList:
-                        if  what=="cff":
-                            lfn=item[0]
-                            if lfn==lfnList[-1][0] and blockName==bList[-1]:
-                               page+="'%s'\n"%lfn
-                            else:
-                               page+="'%s',\n"%lfn
-                        else:
-                            lfn=item[0]
-                            page+="%s\n"%lfn
-                except:
-                    if self.verbose:
-                       self.writeLog(getExcept())
-                    printExcept()
-                    page+="No LFNs found int DBS for block='%s'\n"%blockName
-                    pass
+
+            # loop over files
+            for item in lfnList:
+                if  what=="cff":
+                    lfn=item[0]
+                    if lfn==lfnList[-1][0] and blockName==bList[-1]:
+                       page+="'%s'\n"%lfn
+                    else:
+                       page+="'%s',\n"%lfn
+                else:
+                    lfn=item[0]
+                    page+="%s\n"%lfn
+#            for blockName in bList:
+#                try:
+#                    lfnList = self.helper.getLFNs(dbsInst,blockName,"")
+#                    if not lfnList: page+="No LFNs found in '%s' on site='%s' for blockName='%s'\n"%(dbsInst,site,blockName)
+#                    for item in lfnList:
+#                        if  what=="cff":
+#                            lfn=item[0]
+#                            if lfn==lfnList[-1][0] and blockName==bList[-1]:
+#                               page+="'%s'\n"%lfn
+#                            else:
+#                               page+="'%s',\n"%lfn
+#                        else:
+#                            lfn=item[0]
+#                            page+="%s\n"%lfn
+#                except:
+#                    if self.verbose:
+#                       self.writeLog(getExcept())
+#                    printExcept()
+#                    page+="No LFNs found int DBS for block='%s'\n"%blockName
+#                    pass
             if what=="cff": page+="}"
             page+="\n</pre>"
             page+= self.genBottomHTML()
