@@ -2459,7 +2459,7 @@ MCDescription:      %s
           tse  = self.alias('StorageElement','tse')
           tf   = self.alias('Files','tf')
 
-          oSel = [self.col(tblk,'Name'),self.col(tf,'LogicalFileName')]
+          oSel = [self.col(tf,'LogicalFileName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                      tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
