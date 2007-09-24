@@ -1726,8 +1726,8 @@ class DDServer(DDLogger,Controller):
             # loop over files
             for item in lfnList:
                 if  what=="cff":
-                    lfn=item[0]
-                    if lfn==lfnList[-1][0] and blockName==bList[-1]:
+                    lfn=item
+                    if lfn==lfnList[-1]:
                        page+="'%s'\n"%lfn
                     else:
                        page+="'%s',\n"%lfn
