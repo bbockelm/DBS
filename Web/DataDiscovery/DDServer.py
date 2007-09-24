@@ -1555,7 +1555,7 @@ class DDServer(DDLogger,Controller):
                page+=msg
                page+=self.genBottomHTML()
                return page
-            page+="""<p>For run range %s-%s found %s run,path pair(s)</p>"""%(minRun,maxRun,nResults)
+            page+="""<p>For run range %s-%s found %s run,dataset entries</p>"""%(minRun,maxRun,nResults)
             ########## Construct result page
             rPage=""
             if nResults:
