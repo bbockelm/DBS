@@ -2088,7 +2088,10 @@ MCDescription:      %s
           result = self.getSQLAlchemyResult(con,sel)
           for item in result:
               path,se=item
-              pDict[path]=pDict[path]+[se]
+              if pDict.has_key(path):
+                 pDict[path]=pDict[path]+[se]
+              else:
+                 pDict[path]=pDict[path]
           for idx in xrange(0,len(oList)):
               path=oList[idx][12]
               oList[idx][13]=pDict[path] # place for se's list
@@ -2121,6 +2124,8 @@ MCDescription:      %s
           tpmt = self.alias('PrimaryDSType','tpmt')
           tpdr = self.alias('ProcDSRuns','tpdr')
           trun = self.alias('Runs','trun')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tf   = self.alias('Files','tf')
 
           oSel = [sqlalchemy.func.min(self.col(trun,'RunNumber')),sqlalchemy.func.max(self.col(trun,'RunNumber'))]
           sel  = sqlalchemy.select(oSel,
@@ -2129,12 +2134,15 @@ MCDescription:      %s
                           .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
                           .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
                                 ],distinct=True
                                  )
           if prim and prim.lower()!="any":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if primType and primType.lower()!="any":
              sel.append_whereclause(self.col(tpmt,'Type')==primType)
+          sel.append_whereclause(self.col(tf,'LogicalFileName')!=sqlalchemy.null())
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
@@ -2436,6 +2444,43 @@ MCDescription:      %s
           aList.append(item[0])
       if self.verbose:
          self.writeLog("time listBlocksFromSite: %s"%(time.time()-t1))
+      self.closeConnection(con)
+      return aList
+
+  def getLFNsFromSite(self,site,datasetPath):
+      if site.lower()=='all' or site.lower()=='any': site="*"
+      t1=time.time()
+      aDict = {}
+      con = self.connectToDB()
+      oList  = []
+      try:
+          tblk = self.alias('Block','tblk')
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
+          tf   = self.alias('Files','tf')
+
+          oSel = [self.col(tblk,'Name'),self.col(tf,'LogicalFileName')]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                     tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                     .outerjoin(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+                            ],distinct=True,order_by=oSel
+                                 )
+          if site!="*":
+             sel.append_whereclause(self.col(tse,'SEName')==site)
+          if datasetPath!="*":
+             sel.append_whereclause(self.col(tblk,'Path')==datasetPath)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getLFNsFromSite"
+      aList=[]
+      for item in result:
+          aList.append(item[0])
+      if self.verbose:
+         self.writeLog("time getLFNsFromSite: %s"%(time.time()-t1))
       self.closeConnection(con)
       return aList
 
