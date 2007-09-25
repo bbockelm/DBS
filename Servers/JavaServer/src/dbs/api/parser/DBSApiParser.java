@@ -1,6 +1,6 @@
 /**
- $Revision: 1.13 $"
- $Id: DBSApiParser.java,v 1.13 2007/05/24 21:59:27 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSApiParser.java,v 1.14 2007/06/14 18:35:50 afaq Exp $"
  *
 */
 
@@ -62,6 +62,26 @@ public class DBSApiParser {
 		}
 		return table;
 	}
+
+
+        public static Hashtable parseBranchInfo(String inputXml) throws Exception {
+                DBSXMLParser dbsParser = new DBSXMLParser();
+                dbsParser.parseString(inputXml);
+                Vector allElement = dbsParser.getElements();
+                Hashtable table = null;
+                for (int i=0; i<allElement.size(); ++i) {
+                        Element e = (Element)allElement.elementAt(i);
+                        String name = e.name;
+                        if (name.equals("branch_info") ) {
+                                table = e.attributes;
+                                table.put("branch_names", new Vector());
+                        }
+                        if (name.equals("branch") )
+                                ((Vector)(get(table, "branch_names", "branch_info"))).add(e.attributes);
+                }
+                return table;
+        }
+
 
 	public static Hashtable parsePD(String inputXml) throws Exception {
 		DBSXMLParser dbsParser = new DBSXMLParser();
@@ -156,8 +176,8 @@ public class DBSApiParser {
 				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_parent", "file"))).add(e.attributes);
 			if (name.equals("file_algorithm") ) 
 				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
-			if (name.equals("file_branch") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
+			//if (name.equals("file_branch") ) 
+			//	((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
 
 		}
 		table.put("processed_dataset", psDS);
@@ -208,8 +228,8 @@ public class DBSApiParser {
 				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_child", "file"))).add(e.attributes);
 			if (name.equals("file_algorithm") ) 
 				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
-                        if (name.equals("file_branch") ) 
-                                ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
+                        //if (name.equals("file_branch") ) 
+                        //        ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
                         if (name.equals("file_trigger_tag") )
                                 ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_trigger_tag", "file"))).add(e.attributes);
 			if (name.equals("processed_datatset") ) {

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.106 $"
- $Id: DBSApiLogic.java,v 1.106 2007/06/25 15:59:05 afaq Exp $"
+ $Revision: 1.107 $"
+ $Id: DBSApiLogic.java,v 1.107 2007/08/17 20:27:39 sekhri Exp $"
  *
  */
 
@@ -466,6 +466,25 @@ public class DBSApiLogic {
 		} 
 		return false;
 	}
+
+
+        protected boolean insertNameNoExistCheck(Connection conn, Writer out, String table, String key, 
+							String value, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+                //if(isNull(value)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid " + key );
+                //if(isNull(lmbUserID)) throw new DBSException("Missing data", "1006", "Null field. Expected a valid UserDN");
+                //if( getID(conn, table, key, value, false) == null ) {
+                        PreparedStatement ps = null;
+                        try {
+                                ps = DBSSql.insertName(conn, table, key, value, cbUserID, lmbUserID, creationDate);
+                                ps.execute();
+                        } finally {
+                                if (ps != null) ps.close();
+                        }
+                        return true;
+                //}
+                //return false;
+        }
+
 
 	/**
 	 * This is a generic method that can insert entry into any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it does not exist, it goes ahead and performs a new insert.

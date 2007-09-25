@@ -1,6 +1,6 @@
 /**
- $Revision: 1.64 $"
- $Id: DBSApiFileLogic.java,v 1.64 2007/08/29 14:12:37 afaq Exp $"
+ $Revision: 1.65 $"
+ $Id: DBSApiFileLogic.java,v 1.65 2007/08/29 18:25:18 sekhri Exp $"
  *
  */
 
@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
+import codec.Base64;
 import dbs.DBSException;
 
 /**
@@ -35,7 +36,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 
 	//This api call WILL only take into consideration the PATH parameter
-        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail, String branchNTrig) throws Exception {
+        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail) throws Exception {
+        //private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail, String branchNTrig) throws Exception {
 
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 		String runID = null;
@@ -73,10 +75,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         listFileProvenence(conn, out, lfn, false);//Children
                                         listFileAlgorithms(conn, out, lfn);
                                         listFileTiers(conn, out, lfn);
-                                        if (branchNTrig.equals("true")) {
-						listFileBranches(conn, out, lfn);
-						listFileTrigs(conn, out, lfn);
-					}
+                                        //if (branchNTrig.equals("true")) {
+					//	listFileBranches(conn, out, lfn);
+					listFileTrigs(conn, out, lfn);
+					//}
                                         listFileLumis(conn, out, lfn);
                                         listFileRuns(conn, out, lfn);
 					//listFileAssoc(conn, out, lfn);
@@ -92,15 +94,17 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 	public void listFiles(Connection conn, Writer out, String path, 
 					String primary, String proc, String dataTierList, String aDSName, 
-					String blockName, String patternLFN, String runNumber, String detail, 
-									String branchNTrig) throws Exception {
+					String blockName, String patternLFN, String runNumber, String detail 
+									) throws Exception {
+									//String branchNTrig) throws Exception {
 
 		//By default a file detail is not needed
 
 
 		//if path is given we will only regard it to be sufficient criteria for listing files.
 		if (!isNull(path)) {  
-			listFiles(conn, out, path, runNumber, detail, branchNTrig);
+			listFiles(conn, out, path, runNumber, detail);
+			//listFiles(conn, out, path, runNumber, detail, branchNTrig);
 			return;
 		}
 				
@@ -188,10 +192,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listFileTiers(conn, out, lfn);
 					listFileLumis(conn, out, lfn);
 					listFileRuns(conn, out, lfn);
-					if (branchNTrig.equals("true")) {
-                                                listFileBranches(conn, out, lfn);
-                                                listFileTrigs(conn, out, lfn);
-                                        }
+					//if (branchNTrig.equals("true")) {
+					listFileBranches(conn, out, lfn);
+                                        //        listFileTrigs(conn, out, lfn);
+                                        //}
 					//listFileAssoc(conn, out, lfn);
 				}
                 		out.write(((String) "</file>\n"));
@@ -486,9 +490,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
  		 }
 	 }
 
-
-
-
         //Checks if files have same tiers as provided in tierVecToCheckWithFile
 	private boolean matchWithFileTiers(Vector files, Vector tierVecToCheckWithFile, String path)  throws Exception {
 
@@ -510,6 +511,67 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 }
 
 		return true;
+	}
+
+
+
+	//Method that adds BranchInfo (BranchHash, contents and corresponding Branches in DBS)
+
+        public void insertBranchInfo(Connection conn, Writer out, Hashtable branchInfo, Hashtable dbsUser) throws Exception {
+		
+		//Lets insert BrtanchHash if not already there
+		String branchHash = DBSUtil.get(branchInfo, "branch_hash");
+		String branchHashID = getID(conn, "BranchHash", "Hash", branchHash, false);
+
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+                String cbUserID = personApi.getUserID(conn, get(branchInfo, "created_by"), dbsUser );
+                String creationDate = getTime(branchInfo, "creation_date", false);
+
+                if( branchHashID == null ) {
+                        PreparedStatement ps = null;
+                        try {
+                                String contentBase64 = get(branchInfo, "content");
+
+                                if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
+
+                                ps = DBSSql.insertBranchHash(conn,
+                                                branchHash,
+						contentBase64,
+                                                get(branchInfo, "description"),
+                                                cbUserID, lmbUserID, creationDate);
+                                ps.execute();
+				branchHashID = getID(conn, "BranchHash", "Hash", branchHash, true);
+                        } finally {
+                                if (ps != null) ps.close();
+                        }
+                } else {
+                        writeWarning(out, "Already Exists", "1020", "Branch Hash " + branchHash +  " Already Exists");
+                }
+
+		//Lest insert the BranchHashMap entries
+		//get the list of branches
+		Vector branchVector = DBSUtil.getVector(branchInfo,"branch_names");
+		String branchID =null;
+		//Insert Branch and then its entry into BranchHashMap
+		for (int j = 0; j < branchVector.size(); ++j) {
+			//insert Branch, if not already there
+			String branchName = get((Hashtable)branchVector.get(j), "name");
+
+
+			//Assuming in most cases the Branches will already be in DBS
+			branchID = getID(conn, "Branch", "Name", branchName, false);
+			if (isNull(branchID)) {
+				insertNameNoExistCheck(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
+				branchID = getID(conn, "Branch", "Name", branchName, false);
+			}
+
+
+			//insert File-Branch Map now.
+			insertMap(conn, out,  "BranchHashMap", "BranchID", "BranchHashID",
+					branchID,
+					branchHashID,
+					cbUserID, lmbUserID, creationDate);
+		}
 	}
 
 
@@ -671,6 +733,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String orderedTiers = "";
 		Vector blockInfoVec = new Vector();
 
+		String thisBranchHash = null;
+		String lastBranchHash = null;
+		String branchID = null;
+
 		for (int i = 0; i < files.size() ; ++i) {
 			Hashtable file = (Hashtable)files.get(i);
 		
@@ -686,7 +752,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			Vector parentVector = DBSUtil.getVector(file,"file_parent");
 			Vector childVector = DBSUtil.getVector(file,"file_child");
 			Vector algoVector = DBSUtil.getVector(file,"file_algorithm");
-			Vector branchVector = DBSUtil.getVector(file,"file_branch");
+			//Vector branchVector = DBSUtil.getVector(file,"file_branch");
 			Vector trigTagVector = DBSUtil.getVector(file,"file_trigger_tag");
 		
 
@@ -743,6 +809,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					}
                                 }
 
+				thisBranchHash = get(file, "branch_hash", false);
+				if (! thisBranchHash.equals(lastBranchHash) ) {
+					branchID = getID(conn, "BranchHash", "Hash", thisBranchHash, false);
+					lastBranchHash = thisBranchHash;
+				}
+
 				PreparedStatement ps = null;
 				try {
 					ps = DBSSql.insertFile(conn, 
@@ -756,6 +828,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 							typeID,
 							valStatusID,
 							get(file, "queryable_meta_data", false), 
+							branchID,
 							cbUserID, lmbUserID, creationDate);
 					ps.execute();
 
@@ -862,18 +935,20 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                 		procDSID, runID,
 						cbUserID, lmbUserID, creationDate);
 			}
-			//Insert Branch and then FileBranch (Map)
-			for (int j = 0; j < branchVector.size(); ++j) {
-				//insert Branch, if not already there
-				String branchName = get((Hashtable)branchVector.get(j), "name");
-				insertName(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
-				//insert File-Branch Map now.
-				insertMap(conn, out,  "FileBranch", "Fileid", "Branch",
-						fileID,
-						getID(conn, "Branch", "Name", branchName, true),
-						cbUserID, lmbUserID, creationDate);
-			}
 
+
+			
+			//Insert Branch and then FileBranch (Map)
+			//for (int j = 0; j < branchVector.size(); ++j) {
+			//	//insert Branch, if not already there
+			//	String branchName = get((Hashtable)branchVector.get(j), "name");
+			//	insertName(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
+			//	//insert File-Branch Map now.
+			//	insertMap(conn, out,  "FileBranch", "Fileid", "Branch",
+			//			fileID,
+			//			getID(conn, "Branch", "Name", branchName, true),
+			//			cbUserID, lmbUserID, creationDate);
+			//}
 
 			//Insert Trigger tags (if present)
                         for (int j = 0; j < trigTagVector.size(); ++j) {

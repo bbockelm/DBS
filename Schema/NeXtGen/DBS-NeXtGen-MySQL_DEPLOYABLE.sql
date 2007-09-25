@@ -1,12 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 719
+-- === Build : 729
 -- ======================================================================
 
-drop database if exists DBS_1_0_7;
-create database DBS_1_0_7;
-use DBS_1_0_7;
+drop database if exists DBS_1_0_8_ANZAR;
+create database DBS_1_0_8_ANZAR;
+use DBS_1_0_8_ANZAR;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -153,6 +153,7 @@ CREATE TABLE Files
     FileSize              BIGINT UNSIGNED   not null,
     FileStatus            BIGINT UNSIGNED   not null,
     FileType              BIGINT UNSIGNED   not null,
+    FileBranch            BIGINT UNSIGNED,
     ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000)     default 'NOTSET',
     CreatedBy             BIGINT UNSIGNED,
@@ -195,20 +196,6 @@ CREATE TABLE LumiSection
 
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE Branch
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Name                  varchar(500)      unique not null,
-    LastModifiedBy        BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-
-    primary key(ID)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -490,22 +477,6 @@ CREATE TABLE FileType
     LastModifiedBy        BIGINT UNSIGNED,
 
     primary key(ID)
-  ) ENGINE = InnoDB ;
-
--- ======================================================================
-
-CREATE TABLE FileBranch
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED   not null,
-    Branch                BIGINT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(Fileid,Branch)
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
@@ -904,6 +875,52 @@ CREATE TABLE QualityVersion
 
 -- ======================================================================
 
+CREATE TABLE Branch
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Name                  varchar(500)      unique not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE BranchHash
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Hash                  varchar(700)      unique not null,
+    Description           varchar(1000),
+    Content               LONGTEXT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE BranchHashMap
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    BranchID              BIGINT UNSIGNED   not null,
+    BranchHashID          BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(BranchID,BranchHashID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
@@ -997,6 +1014,9 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_FileType_FK foreign key(FileType) references FileType(ID)
 ;
 ALTER TABLE Files ADD CONSTRAINT 
+    Files_FileBranch_FK foreign key(FileBranch) references BranchHash(ID)
+;
+ALTER TABLE Files ADD CONSTRAINT 
     Files_ValidationStatus_FK foreign key(ValidationStatus) references FileValidStatus(ID)
 ;
 ALTER TABLE Files ADD CONSTRAINT 
@@ -1021,13 +1041,6 @@ ALTER TABLE LumiSection ADD CONSTRAINT
 ;
 ALTER TABLE LumiSection ADD CONSTRAINT 
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE Branch ADD CONSTRAINT 
-    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-ALTER TABLE Branch ADD CONSTRAINT 
-    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 ;
 
 ALTER TABLE TimeLog ADD CONSTRAINT 
@@ -1208,19 +1221,6 @@ ALTER TABLE FileType ADD CONSTRAINT
 ;
 ALTER TABLE FileType ADD CONSTRAINT 
     FileType_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
-
-ALTER TABLE FileBranch ADD CONSTRAINT 
-    FileBranch_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
-;
-ALTER TABLE FileBranch ADD CONSTRAINT 
-    FileBranch_Branch_FK foreign key(Branch) references Branch(ID)
-;
-ALTER TABLE FileBranch ADD CONSTRAINT 
-    FileBranch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE FileBranch ADD CONSTRAINT 
-    FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE FileValidStatus ADD CONSTRAINT 
@@ -1490,6 +1490,33 @@ ALTER TABLE QualityVersion ADD CONSTRAINT
     QualityVersionLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE BranchHash ADD CONSTRAINT 
+    BranchHash_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE BranchHash ADD CONSTRAINT 
+    BranchHash_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE BranchHashMap ADD CONSTRAINT 
+    BranchHashMap_BranchID_FK foreign key(BranchID) references Branch(ID) on delete CASCADE
+;
+ALTER TABLE BranchHashMap ADD CONSTRAINT 
+    BranchHashMap_BranchHashID_FK foreign key(BranchHashID) references BranchHash(ID)
+;
+ALTER TABLE BranchHashMap ADD CONSTRAINT 
+    BranchHashMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE BranchHashMap ADD CONSTRAINT 
+    BranchHashMapLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
 -- =========== INSERT TRIGGERS FOR LastModificationDate ============================
 
 CREATE TRIGGER TR_Person BEFORE INSERT ON Person
@@ -1523,9 +1550,6 @@ CREATE TRIGGER TR_DataTier BEFORE INSERT ON DataTier
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_LumiSection BEFORE INSERT ON LumiSection
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_Branch BEFORE INSERT ON Branch
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_TimeLog BEFORE INSERT ON TimeLog
@@ -1580,9 +1604,6 @@ CREATE TRIGGER TR_FileStatus BEFORE INSERT ON FileStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_FileType BEFORE INSERT ON FileType
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER TR_FileBranch BEFORE INSERT ON FileBranch
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_FileValidStatus BEFORE INSERT ON FileValidStatus
@@ -1655,6 +1676,15 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER TR_QualityVersion BEFORE INSERT ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER TR_Branch BEFORE INSERT ON Branch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_BranchHash BEFORE INSERT ON BranchHash
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_BranchHashMap BEFORE INSERT ON BranchHashMap
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 -- =========== UPDATE TRIGGERS FOR LastModificationDate ============================
 
 CREATE TRIGGER UTR_Person BEFORE UPDATE ON Person
@@ -1688,9 +1718,6 @@ CREATE TRIGGER UTR_DataTier BEFORE UPDATE ON DataTier
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_LumiSection BEFORE UPDATE ON LumiSection
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_Branch BEFORE UPDATE ON Branch
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_TimeLog BEFORE UPDATE ON TimeLog
@@ -1745,9 +1772,6 @@ CREATE TRIGGER UTR_FileStatus BEFORE UPDATE ON FileStatus
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_FileType BEFORE UPDATE ON FileType
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
-
-CREATE TRIGGER UTR_FileBranch BEFORE UPDATE ON FileBranch
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_FileValidStatus BEFORE UPDATE ON FileValidStatus
@@ -1820,11 +1844,20 @@ FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 CREATE TRIGGER UTR_QualityVersion BEFORE UPDATE ON QualityVersion
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
+CREATE TRIGGER UTR_Branch BEFORE UPDATE ON Branch
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_BranchHash BEFORE UPDATE ON BranchHash
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_BranchHashMap BEFORE UPDATE ON BranchHashMap
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
 -- ======================================================================
 -- Initialize status tables There can be better ways to do it ( laters ) 
 -- ======================================================================
 
-INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_7', 'LOCAL', UNIX_TIMESTAMP());
+INSERT INTO SchemaVersion(SchemaVersion, InstanceName, CreationDate) values ('DBS_1_0_8', 'LOCAL', UNIX_TIMESTAMP());
 INSERT INTO AnalysisDSStatus (Status, CreationDate) VALUES ('NEW', UNIX_TIMESTAMP());
 INSERT INTO ProcDSStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()), ('EXPORTED', UNIX_TIMESTAMP()), ('RO', UNIX_TIMESTAMP());
 INSERT INTO FileStatus (Status, CreationDate) VALUES ('VALID', UNIX_TIMESTAMP()), ('INVALID', UNIX_TIMESTAMP()), ('MERGED', UNIX_TIMESTAMP()), ('IMPORTED', UNIX_TIMESTAMP()) , ('EXPORTED', UNIX_TIMESTAMP());

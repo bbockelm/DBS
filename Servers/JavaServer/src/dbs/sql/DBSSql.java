@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.114 $"
- $Id: DBSSql.java,v 1.114 2007/09/05 22:16:22 sekhri Exp $"
+ $Revision: 1.115 $"
+ $Id: DBSSql.java,v 1.115 2007/09/06 21:06:19 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -569,7 +569,19 @@ public class DBSSql {
 		return getInsertSQL(conn, "Person", table);
 	}
 
+        public static PreparedStatement insertBranchHash(Connection conn, String hash, String content, String description,
+								String cbUserID, String lmbUserID, String cDate) throws SQLException {
 
+		Hashtable table = new Hashtable();
+                table.put("Hash", hash);
+                table.put("Content", content);
+                table.put("Description", description);
+		table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "BranchHash", table);
+
+	}
 
 	public static PreparedStatement insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
@@ -628,7 +640,7 @@ public class DBSSql {
 	// ____________________________________________________
 	
 	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID) throws SQLException {
-	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String branchHash, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("LogicalFileName", lfn);
 		table.put("Dataset", procDSID);
@@ -640,6 +652,7 @@ public class DBSSql {
 		table.put("FileType", typeID);
 		table.put("ValidationStatus", valStatusID);
 		table.put("QueryableMetadata", qMetaData);
+		if (!DBSUtil.isNull(branchHash)) table.put("FileBranch", branchHash);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);

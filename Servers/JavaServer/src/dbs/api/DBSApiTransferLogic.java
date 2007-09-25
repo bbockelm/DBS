@@ -1,6 +1,6 @@
 /**
- $Revision: 1.23 $"
- $Id: DBSApiTransferLogic.java,v 1.23 2007/08/28 18:54:17 afaq Exp $"
+ $Revision: 1.24 $"
+ $Id: DBSApiTransferLogic.java,v 1.24 2007/08/28 19:45:19 sekhri Exp $"
  *
  */
 
@@ -68,10 +68,12 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 
 		//CHECK TO SEE IF THIS IS GLOBAL INSTANCE, THEN NO NEED TO TRANSFER BRANCH AND TRIGGER INFORMATION (branchNTrig=false)
-		String branchNTrig = "true";
-                if (instanceName.equals ("GLOBAL") )
-			branchNTrig = "false";
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", branchNTrig);
+		//String branchNTrig = "true";
+                //if (instanceName.equals ("GLOBAL") )
+		//	branchNTrig = "false";
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", branchNTrig);
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true");
+
 	}
 	
 	
