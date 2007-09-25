@@ -13,7 +13,7 @@ try:
 	optManager  = DbsOptionParser()
 	(opts,args) = optManager.getOpt()
 	args = {}
-	args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
+	args['url']='http://cmssrv17.fnal.gov:8989/DBS_1_0_5_STABLE/servlet/DBSServlet' 
 	#args['version']='DBS_1_0_7'
 	args['mode']='POST'
 	api = DbsApi(args)
@@ -26,7 +26,7 @@ try:
 	if len(sys.argv) > 4 :
 		block = sys.argv[4]
 
-	api.migrateDatasetContents(srcURL, dstURL, path, block )
+	api.migrateDatasetContents(srcURL, dstURL, path, block , False, True)
 	#print api.listPrimaryDatasets();
 
 except DbsApiException, ex:

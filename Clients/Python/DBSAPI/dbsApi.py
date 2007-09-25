@@ -1676,7 +1676,7 @@ class DbsApi(DbsConfig):
   #-------------------------------------------------------------------
 
   #def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False, parents = True):
-  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False):
+  def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False, pruneBranches = False):
     """
     
 Migrate API Instructions
@@ -1859,7 +1859,8 @@ Examples
        apiSrc = makeAPI(srcURL)
        apiDst = makeAPI(dstURL)
 
-       transfer = DbsMigrateApi(apiSrc, apiDst, False)
+       transfer = DbsMigrateApi(apiSrc, apiDst, False, pruneBranches)
+       #transfer = DbsMigrateApi(apiSrc, apiDst, True, pruneBranches)
        if block_name not in [None, ""] :
 	       if noParentsReadOnly:
 		       transfer.migrateBlockRO(path, block_name)
