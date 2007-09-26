@@ -4,9 +4,9 @@
 import sys
 import os
 #from DBSAPI.dbsApi import DbsApi
-from DBSAPI.dbsException import *
-from DBSAPI.dbsApiException import *
-from DBSAPI.dbsOptions import DbsOptionParser
+from dbsException import *
+from dbsApiException import *
+from dbsOptions import DbsOptionParser
 from dbsLogger import *
 
 class DbsMigrateApi:
