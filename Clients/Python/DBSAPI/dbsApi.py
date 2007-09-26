@@ -2307,7 +2307,7 @@ Examples
 
 
   # ------------------------------------------------------------
-  def insertBranchInfo(self, branchHash, description, content, branches=[]):
+  def insertBranchInfo(self, branchInfo):
     """
     Used to insert BranchHash, alongwith Branch contents and Branch list within this hash 
 
@@ -2324,11 +2324,11 @@ Examples
 
     xmlinput  = "<?xml version='1.0' standalone='yes'?>"
     xmlinput += "<dbs>"
-    xmlinput += "<branch_info branch_hash='"+branchHash+"'"
-    xmlinput += " content='"+base64.binascii.b2a_base64(content)+"'"
-    xmlinput += " description='"+description+"'"
+    xmlinput += "<branch_info branch_hash='"+branchInfo.get('Hash', '')+"'"
+    xmlinput += " content='"+base64.binascii.b2a_base64(branchInfo.get('Content', ''))+"'"
+    xmlinput += " description='"+branchInfo.get('Description', '')+"'"
     xmlinput += " >"
-    for branch in branches:
+    for branch in branchInfo.get('BranchList', []):
         xmlinput += "<branch name='"+branch+"'/>"
     xmlinput += "</branch_info>"
     xmlinput += "</dbs>"

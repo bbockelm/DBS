@@ -203,7 +203,16 @@ ValidationTable = {
         "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
         "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
         },
-
+"DbsBranchInfo" : {
+         "Hash" : { "Comment" : "A required variable, md5hash of Branches", "Validator" : isStringType },
+         "Description" : { "Comment" : "Please provide one", "Validator" : isStringType },
+         "Content" : { "Comment" : "Contents, XML of Branches", "Validator" : isStringType },
+         "BranchList" : { "Comment" : "Python list of Branch Names in this set", "Validator" : isListType },
+         "CreationDate" : { "Comment" : "TimeStamp, object created in database (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN, who created this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "LastModificationDate" : { "Comment" : "Last Modification, (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+         "CreatedBy" : { "Comment" : "User DN of who last modified this object (AUTO set by DBS, you can over ride, why ?)", "Validator" : isStringType },
+          },
 
 }
 
