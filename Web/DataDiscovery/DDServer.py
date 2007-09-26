@@ -1732,7 +1732,7 @@ class DDServer(DDLogger,Controller):
                     else:
                        page+="'%s',\n"%lfn
                 else:
-                    lfn=item[0]
+                    lfn=item
                     page+="%s\n"%lfn
 #            for blockName in bList:
 #                try:
