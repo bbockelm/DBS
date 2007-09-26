@@ -23,6 +23,16 @@
    The JSON class near the end of this file is
    Copyright 2005, JSON.org
 */
+function isInternetExplorer() {
+      var userAgent = navigator.userAgent.toLowerCase();
+      if (document.all && userAgent.indexOf('msie')!=-1) {
+         return true;
+      }
+      else {
+         return false;
+      }
+   }
+var isIE=isInternetExplorer();
 
 /** An object that provides DHTML history, history data, and bookmarking 
     for AJAX applications. */
@@ -35,7 +45,7 @@ window.dhtmlHistory = {
       // Basicly, IE doesn't autofill form data until the page
       // is finished loading, which means historyStorage won't
       // work until onload has been fired.
-      if (this.isInternetExplorer() == false) {
+      if (isIE == false) {
          return;
       }
          
@@ -123,7 +133,7 @@ window.dhtmlHistory = {
          window.location.hash = newLocation;
          
          // change the hidden iframe's location if on IE
-         if (self.isInternetExplorer())
+         if(isIE)
             self.iframe.src = "blank.html?" + newLocation;
             
          // end of atomic location change block
@@ -231,7 +241,7 @@ window.dhtmlHistory = {
       
       // write out a hidden iframe for IE and
       // set the amount of time to wait between add() requests
-      if (this.isInternetExplorer()) {
+      if(isIE) {
          document.write("<iframe style='border: 0px; width: 1px; "
                                + "height: 1px; position: absolute; bottom: 0px; "
                                + "right: 0px; visibility: visible;' "
@@ -260,7 +270,7 @@ window.dhtmlHistory = {
       // we have no historyStorage at this point
       // in IE, which only exists after the page
       // is finished loading for that browser
-      if (this.isInternetExplorer() == false) {
+      if (isIE==false) {
          if (historyStorage.hasKey("DhtmlHistory_pageLoaded") == false) {
             this.ignoreLocationChange = true;
             this.firstLoad = true;
@@ -288,7 +298,7 @@ window.dhtmlHistory = {
          this.ignoreLocationChange = true;
       }
       
-      if (this.isInternetExplorer()) {
+      if (isIE) {
             this.iframe = document.getElementById("DhtmlHistoryFrame");
       }                                                              
 
@@ -321,7 +331,7 @@ window.dhtmlHistory = {
    /** private */ checkLocation: function() {
       // ignore any location changes that we made ourselves
       // for browsers other than Internet Explorer
-      if (this.isInternetExplorer() == false
+      if (isIE==false
          && this.ignoreLocationChange == true) {
          this.ignoreLocationChange = false;
          return;
@@ -330,7 +340,7 @@ window.dhtmlHistory = {
       // if we are dealing with Internet Explorer
       // and we are in the middle of making a location
       // change from an iframe, ignore it
-      if (this.isInternetExplorer() == false
+      if (isIE==false
           && this.ieAtomicLocationChange == true) {
          return;
       }
@@ -349,11 +359,11 @@ window.dhtmlHistory = {
       // place it inside our history, otherwise we can return
       this.ieAtomicLocationChange = true;
       
-      if (this.isInternetExplorer()
+      if (isIE
           && this.getIFrameHash() != hash) {
          this.iframe.src = "blank.html?" + hash;
       }
-      else if (this.isInternetExplorer()) {
+      else if (isIE) {
          // the iframe is unchanged
          return;
       }
@@ -424,7 +434,9 @@ window.dhtmlHistory = {
    },
    
    /** Determines if this is Internet Explorer. */
-   /** private */ isInternetExplorer: function() {
+   /** private */ 
+   /*
+   isInternetExplorer: function() {
       var userAgent = navigator.userAgent.toLowerCase();
       if (document.all && userAgent.indexOf('msie')!=-1) {
          return true;
@@ -433,6 +445,7 @@ window.dhtmlHistory = {
          return false;
       }
    }
+   */
 };
 
 
