@@ -1,0 +1,125 @@
+
+import os, re, string, socket, xml.sax, xml.sax.handler
+import base64
+from xml.sax.saxutils import escape
+from cStringIO import StringIO
+
+from dbsRun import DbsRun
+from dbsQueryableParameterSet import DbsQueryableParameterSet
+from dbsProcessedDataset import DbsProcessedDataset
+from dbsPrimaryDataset import DbsPrimaryDataset
+from dbsLumiSection import DbsLumiSection
+from dbsFile import DbsFile
+from dbsFileBlock import DbsFileBlock
+from dbsDataTier import DbsDataTier
+from dbsStorageElement import DbsStorageElement
+from dbsFileBranch import DbsFileBranch
+from dbsAlgorithm import DbsAlgorithm
+from dbsAnalysisDataset import DbsAnalysisDataset
+from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
+from dbsFileTriggerTag import DbsFileTriggerTag
+from dbsMigrateApi import DbsMigrateApi
+from dbsDQFlag import DbsDQFlag
+from dbsRunLumiDQ import DbsRunLumiDQ
+
+from dbsException import DbsException
+from dbsApiException import *
+
+import logging
+import inspect
+
+from dbsLogger import *
+
+from dbsUtil import *
+
+def dbsApiImplListAnalysisDataset(self, pattern="*", path="", version=None):
+    """
+    Retrieves the list of analysis dataset by matching against the given shell pattern for analysis 
+    dataset name.
+    Returns a list of DbsAnalysisDataset objects. 
+
+    
+    params:
+          pattern:  the shell pattren for nanlysis dataset name. If not given then the default value of * is assigned to it and all the datasets are listed
+	  path: is the processed dataset path in the format /prim/proc/datatier which if given list all the analysis dataset within that processed dataset
+	  version: by DEFAULT LATEST version of Analysis Dataset is returned, User can specify a Version.
+    returns: 
+          list of DbsAnalysisDataset objects  
+    examples: 
+          api.listAnalysisDataset("*t005", "/test_primary_anzar_001/TestProcessedDS001/SIM")
+          api.listAnalysisDataset()
+
+    raise: DbsApiException, DbsBadRequest, DbsBadData, DbsNoObject, DbsExecutionError, DbsConnectionError, 
+           DbsToolError, DbsDatabaseError, DbsException	
+             
+    """
+
+    funcInfo = inspect.getframeinfo(inspect.currentframe())
+    logging.log(DBSDEBUG, "Api call invoked %s" % str(funcInfo[2]))
+
+    path = get_path(path)
+
+    # Invoke Server.    
+    if version not in (None, ''):
+    	data = self._server._call ({ 'api' : 'listAnalysisDataset', 
+                                 'analysis_dataset_name_pattern' : pattern,
+                                 'path' : path,
+                                 'version' : str(version)  
+				}, 'GET')
+    else:
+	data = self._server._call ({ 'api' : 'listAnalysisDataset',
+                                 'analysis_dataset_name_pattern' : pattern,
+                                 'path' : path
+                                }, 'GET')
+
+    logging.log(DBSDEBUG, data)
+    # Parse the resulting xml output.
+    try:
+      result = []
+      class Handler (xml.sax.handler.ContentHandler):
+
+        def startElement(self, name, attrs):
+          if name == 'analysis_dataset':
+		self.curr_analysis = DbsAnalysisDataset (
+         		Path=str(attrs['path']),
+         		Name=str(attrs['analysis_dataset_name']),
+         		Type=str(attrs['type']),
+         		Status=str(attrs['status']),
+			Version=str(attrs['version']),
+         		PhysicsGroup=str(attrs['physics_group_name']),
+         		Description=str(attrs['description']),
+                        CreationDate=str(attrs['creation_date']),
+                        CreatedBy=str(attrs['created_by']),
+                        LastModificationDate=str(attrs['last_modification_date']),
+                        LastModifiedBy=str(attrs['last_modified_by']),
+			)
+	  if name == 'analysis_dataset_definition':
+                self.curr_def = DbsAnalysisDatasetDefinition (
+            		Name=str(attrs['analysis_dataset_definition_name']),
+            		RunsList=str(attrs['runs']).split(','),
+            		FileList=str(attrs['lfns']).split(','),
+            		LumiList=str(attrs['lumi_sections']).split(','),
+            		AlgoList=str(attrs['algorithms']).split(','),
+            		ProcessedDatasetPath=str(attrs['path']),
+            		RunRangeList=str(attrs['runs_ranges']).split(','),
+            		#AnalysisDSList=str(attrs['analysis_dataset_names']).split(','),
+            		LumiRangeList=str(attrs['lumi_section_ranges']).split(','),
+            		UserCut=str(attrs['user_cut']),
+         		Description=str(attrs['description']),
+                        CreationDate=str(attrs['creation_date']),
+                        CreatedBy=str(attrs['created_by']),
+                        LastModificationDate=str(attrs['last_modification_date']),
+                        LastModifiedBy=str(attrs['last_modified_by']),
+			)
+                self.curr_analysis['Definition'] = self.curr_def	
+                result.append(self.curr_analysis)
+
+      xml.sax.parseString (data, Handler ())
+      return result
+
+    except Exception, ex:
+      raise DbsBadResponse(exception=ex)
+
+
+  #-------------------------------------------------------------------
+
