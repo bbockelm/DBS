@@ -489,8 +489,12 @@ class DDHelper(DDLogger):
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",userMode="user",fromRow=0,limit=0,count=0):
       if group.lower()=='any': group="*"
       if app.lower()  =='any': app  ="*"
+      app=app.replace("Any","*")
+      app=app.replace("Any","*")
       if prim.lower() =='any': prim ="*"
       if tier.lower() =='any': tier ="*"
+      if site.lower() =='any': site ="*"
+      if primType.lower() =='any': primType ="*"
       if type(proc) is not types.ListType and proc.lower() =='any': proc ="*"
 #      if proc and proc!="*":
       if proc!="*":
@@ -503,6 +507,7 @@ class DDHelper(DDLogger):
          return [proc]
       con = self.connectToDB()
       oList  = []
+      sel = ""
       try:
           tprd = self.alias('ProcessedDataset','tprd')
           tpm  = self.alias('PrimaryDataset','tpm')
@@ -523,21 +528,65 @@ class DDHelper(DDLogger):
               oSel = [sqlalchemy.func.count(self.col(tblk,'Path').distinct())]
           else:
               oSel = [self.col(tblk,'Path')]
-          sel = sqlalchemy.select(oSel,
-                 from_obj=[
-                     tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                     .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
-                     .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-                     .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                     .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
-                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
-                     .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
-                     ],distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
+#          print "group,app,prim,tier,proc,site,primType",group,app,prim,tier,proc,site,primType
+          # I need to decide which table to join based on input parameters
+          obj=tblk
+          if  site and site!="*":
+              obj=obj.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+              obj=obj.outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+          if (proc and proc!="*") or (app and app!="/*/*/*") or \
+             (prim and prim!="*") or (primType and primType!="*") or \
+             (group and group!="*") or (tier and tier!="*"):
+              obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+              if (app and app!="/*/*/*"):
+                  obj=obj.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                  obj=obj.outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                  empty,ver,fam,exe=string.split(app,"/")
+                  if ver.lower()=="any" or ver.lower()=="all": ver="*"
+                  if fam.lower()=="any" or fam.lower()=="all": fam="*"
+                  if exe.lower()=="any" or exe.lower()=="all": exe="*"
+                  if ver!="*":
+                     obj=obj.outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                  if fam!="*":
+                     obj=obj.outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                  if exe!="*":
+                     obj=obj.outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+              primInc=0
+              if (prim and prim!="*"):
+                  obj=obj.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                  primInc=1
+              if (primType and primType!="*"):
+                  if not primInc:
+                     obj=obj.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                  obj=obj.outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+              if  group and group!="*":
+                  obj=obj.outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
+              if  tier and tier!="*":
+                  obj=obj.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                  obj=obj.outerjoin(tdt,onclause=self.col(tdt,'ID')==self.col(tpds,'DataTier'))
+          sel = sqlalchemy.select(oSel,from_obj=[obj],
+                distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
+
+#          if  group=="*" and (app=="*" or app=="/*/*/*") and prim=="*" and tier=="*" and \
+#              proc=="*" and site=="*" and primType=="*":
+#              sel = sqlalchemy.select(oSel,from_obj=[tblk],
+#                    distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
+#          else:
+#              sel = sqlalchemy.select(oSel,
+#                     from_obj=[
+#                         tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+#                         .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+#                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+#                         .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+#                         .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+#                         .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+#                         .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+#                         .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+#                         .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+#                         .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+#                         .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+#                         .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
+#                         ],distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
@@ -575,8 +624,8 @@ class DDHelper(DDLogger):
              else:
                  sel.limit=limit
                  sel.offset=fromRow
-#          print self.printQuery(sel)
           result = self.getSQLAlchemyResult(con,sel)
+#          print self.printQuery(sel)
       except:
           msg="\n### Query:\n"+str(sel)
           self.printExcept(msg)
