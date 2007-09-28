@@ -1,6 +1,6 @@
 /**
- $Revision: 1.37 $"
- $Id: DBSApiAnaDSLogic.java,v 1.37 2007/06/07 21:48:19 afaq Exp $"
+ $Revision: 1.38 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.38 2007/06/14 19:15:52 afaq Exp $"
  *
  */
 
@@ -142,7 +142,69 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 
 
 
-		
+	//Creates Composite Analysis Datasets
+        public void createCompositeAnalysisDataset(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
+
+		String compAdsName = get(table, "comp_analysisds_name", true);
+		String compAdsDesc = getStr(table, "comp_analysisds_desc", true);
+
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+                String cbUserID = personApi.getUserID(conn, get(table, "created_by"), dbsUser );
+                String creationDate = getTime(table, "creation_date", false);
+
+		if( getID(conn, "CompositeADS", "Name", compAdsName, false) == null ) {
+                        PreparedStatement ps = null;
+                        try {
+                                ps = DBSSql.insertCompADS(conn,
+                                                compAdsName,
+                                                compAdsDesc,
+                                                cbUserID,
+                                                lmbUserID,
+                                                creationDate);
+                                ps.execute();
+                        } finally {
+                                if (ps != null) ps.close();
+                        }
+
+                } else {
+                        throw new DBSException("Already Exists", "1075", "Composite Analysis Dataset " + compAdsName + " Already Exists");
+		}
+
+		String comAdsID = getID(conn, "CompositeADS", "Name", compAdsName, true);
+		Vector adsVector = DBSUtil.getVector(table, "analysis_datasets");
+
+		if ( adsVector.size() == 0 ) {
+			throw new DBSException("Cannot create", "1076", "Composite Analysis Dataset " + compAdsName + " Provide cnstituent Analysis Datasets ");
+		}
+
+		for (int j = 0; j < adsVector.size(); ++j) {
+			Hashtable hashTable = (Hashtable)adsVector.get(j);
+			String adsName = get(hashTable, "analysis_dataset_name", true);
+			String adsVer = get(hashTable, "version", false);
+
+			String adsID = null;
+			if (isNull(adsVer)) {
+				adsID = getADSID(conn, adsName, false);
+			}
+			else {
+				adsID = getADSVersionID(conn, adsName, adsVer, false);
+			}
+				
+			if (isNull(adsID)) {
+				String msg = "No such Analysis Dataset" + adsName;
+				if (!isNull(adsVer)) msg += " and version: "+adsVer;
+                        	throw new DBSException("Unavailable data", "1011", msg);
+			}
+			else {
+				insertMap(conn, out, "CompADSMap", "CompADS", "ADS", 
+                                                comAdsID,
+						adsID,
+                                                cbUserID, lmbUserID, creationDate);
+			}
+		}
+	}
+
+
         public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_def_name", true);
 		String path = get(table, "path");
@@ -466,6 +528,32 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
     			    if (ps != null) ps.close();
 		    }
 	 }
+
+
+	//Returns ID of an analysis dataset for a particular version
+        public String getADSVersionID(Connection conn, String analysisDatasetName, String version, boolean excep) throws Exception {
+                //if(isNull(analysisDatasetName)) {
+                //       if(excep) throw new DBSException("Unavailable data", "1011", "" + analysisDatasetName);
+                //        return null;
+                //}
+                String id = "";
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+                try {
+                        ps =  DBSSql.getADSVersionID(conn, analysisDatasetName, version);
+                        rs =  ps.executeQuery();
+                        if(!rs.next()) {
+                                if(excep) throw new DBSException("Unavailable data", "1011", "No such Analysis Dataset" + analysisDatasetName);
+                                else return null;
+                        }
+                        id = get(rs, "ID");
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+                return  id;
+        }
+
 
 
 	public String getADSID(Connection conn, String analysisDatasetName, boolean excep) throws Exception {

@@ -469,6 +469,11 @@ class DbsApi(DbsConfig):
        from dbsApiCreateAnalysisDatasetDefinition import dbsApiImplCreateAnalysisDatasetDefinition
        return  dbsApiImplCreateAnalysisDatasetDefinition(self, analysisDatasetDefinition )
 
+  def createCompADS(self, compADS):
+      #Calling the Implementation function
+      from dbsApiCreateCompADS import dbsApiImplCreateCompADS
+      dbsApiImplCreateCompADS(self, compADS)
+	
   def remap_DEPRECATED(self, files, outFile):
 
        #Calling the Implementation function

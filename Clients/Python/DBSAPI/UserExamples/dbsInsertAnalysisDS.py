@@ -26,6 +26,7 @@ optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
 api = DbsApi(opts.__dict__)
 
+"""
 adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
                 ProcessedDatasetPath=path,
                 FileList=[file1['LogicalFileName'], file2['LogicalFileName']],
@@ -37,7 +38,6 @@ adef = DbsAnalysisDatasetDefinition(Name="TestAnalysisDSDef_005" + mytime,
                 UserCut="get all blah blah from x=1, y=6, z=j, lumi=all",
                 Description="This is a test Analysis Dataset" + mytime,
                 )
-"""
 
 analysis=DbsAnalysisDataset(
                             Type='TEST',
@@ -49,6 +49,7 @@ analysis=DbsAnalysisDataset(
 
 
 
+"""
 analysis=DbsAnalysisDataset(
                             Type='TEST',
                             Status='NEW',

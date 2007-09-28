@@ -1,6 +1,6 @@
 /**
- $Revision: 1.14 $"
- $Id: DBSApiParser.java,v 1.14 2007/06/14 18:35:50 afaq Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSApiParser.java,v 1.15 2007/09/25 21:41:52 afaq Exp $"
  *
 */
 
@@ -266,6 +266,27 @@ public class DBSApiParser {
 		}
 		return table;
 	}
+
+
+	public static Hashtable parseCompADS(String inputXml) throws Exception {
+                DBSXMLParser dbsParser = new DBSXMLParser();
+                dbsParser.parseString(inputXml);
+                Vector allElement = dbsParser.getElements();
+                Hashtable table = null;
+                for (int i=0; i<allElement.size(); ++i) {
+                        Element e = (Element)allElement.elementAt(i);
+                        String name = e.name;
+                        if (name.equals("comp_analysisds") ) {
+                                table = e.attributes;
+                                table.put("analysis_datasets", new Vector());
+                        } 
+                        if (name.equals("analysis_dataset") )
+                                ((Vector)(get(table, "analysis_datasets", "analysis_dataset"))).add(e.attributes);
+                }
+                return table;
+        }
+
+
 
 	public static void remapFiles(Connection conn, Writer out, String inputXml, Hashtable dbsUser) throws Exception {
 		Vector topLevel = new Vector();

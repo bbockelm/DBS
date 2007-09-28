@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.115 $"
- $Id: DBSSql.java,v 1.115 2007/09/06 21:06:19 sekhri Exp $"
+ $Revision: 1.116 $"
+ $Id: DBSSql.java,v 1.116 2007/09/25 21:41:53 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -726,6 +726,19 @@ public class DBSSql {
 		return getInsertSQL(conn, "AnalysisDataset", table);
 	}
 
+        public static PreparedStatement insertCompADS(Connection conn, String compADSName,
+			String desc,
+			String cbUserID,
+                        String lmbUserID, String cDate) throws SQLException {
+                Hashtable table = new Hashtable();
+                table.put("Name", compADSName);
+                table.put("Description", desc);
+                table.put("CreatedBy", cbUserID);
+                table.put("LastModifiedBy", lmbUserID);
+                table.put("CreationDate", cDate);
+                return getInsertSQL(conn, "CompositeADS", table);
+        }
+
         public static PreparedStatement listExADSFileLumiIDs(Connection conn,  String adsID) throws SQLException {
 		String sql = "SELECT DISTINCT \n" +
                         "adsfl.Lumi as LUMIID, \n" +
@@ -752,6 +765,20 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
+
+        public static PreparedStatement getADSVersionID(Connection conn, String adsName, String version) throws SQLException {
+                String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
+                        "FROM AnalysisDataset ads \n " +
+                        "WHERE Name = ? \n" +
+                        "AND Version = ? \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, adsName);
+                ps.setString(2, version);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
+                return ps;
+        }
+
 
         public static PreparedStatement getADSID(Connection conn, String adsName) throws SQLException {
                 String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
