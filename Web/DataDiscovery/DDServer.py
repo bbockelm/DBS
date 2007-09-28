@@ -1126,6 +1126,7 @@ class DDServer(DDLogger,Controller):
            @rtype : string
            @return: returns HTML code
         """
+#        t1=time.time()
         pagerStep=int(pagerStep)
         if not proc: proc="*"
         if  type(proc) is types.ListType:
@@ -1163,6 +1164,8 @@ class DDServer(DDLogger,Controller):
 #           className="show_inline"
             
         
+#        print "Init step",time.time()-t1
+
         self.helperInit(dbsInst)
         self.dbs  = dbsInst
         self.site = site
@@ -1187,14 +1190,19 @@ class DDServer(DDLogger,Controller):
             datasetsList=proc[i:j]
             proc=proc_orig
         else:
+#            ttt=time.time()
             nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,count=1)
+#            print "Time to get all dataset",time.time()-ttt
+#            ttt=time.time()
             datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+#            print "Time to get N datasets",time.time()-ttt
 
         # Construct result page
         rPage=""
         if nDatasets:
            rPage+="Result page:"
 
+#        print "Paging step before loop",time.time()-t1
         # the progress bar for all results
         if _idx:
             rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,_idx-1,userMode,pagerStep)
@@ -1214,6 +1222,7 @@ class DDServer(DDLogger,Controller):
         if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
 
+#        print "Paging step before snapshot",time.time()-t1
         page+="""<div id="results_response_%s" class="%s">"""%(_idx,className)
 
         regList=[]
@@ -1252,6 +1261,9 @@ class DDServer(DDLogger,Controller):
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
 
+#        print "Paging step",time.time()-t1
+#        t2=time.time()
+
         if  not nDatasets:
             page+="""<p><span class="box_red">No data found</span></p>"""
 #        print "####",nDatasets,len(datasetsList)
@@ -1268,6 +1280,8 @@ class DDServer(DDLogger,Controller):
         _nameSpace['style']="" # change style for the pager
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
+
+#        print "Data step",time.time()-t1, time.time()-t2
 
         return page
     getDataHelper.exposed=True
