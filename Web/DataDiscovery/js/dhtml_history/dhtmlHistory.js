@@ -31,7 +31,7 @@ function isInternetExplorer() {
       else {
          return false;
       }
-   }
+}
 var isIE=isInternetExplorer();
 
 /** An object that provides DHTML history, history data, and bookmarking 
@@ -431,33 +431,8 @@ window.dhtmlHistory = {
 
       // notify listeners of the change
       this.fireHistoryEvent(hash);
-   },
-   
-   /** Determines if this is Internet Explorer. */
-   /** private */ 
-   /*
-   isInternetExplorer: function() {
-      var userAgent = navigator.userAgent.toLowerCase();
-      if (document.all && userAgent.indexOf('msie')!=-1) {
-         return true;
-      }
-      else {
-         return false;
-      }
    }
-   */
 };
-
-
-
-
-
-
-
-
-
-
-
 
 /** An object that uses a hidden form to store history state 
     across page loads. The chief mechanism for doing so is using
