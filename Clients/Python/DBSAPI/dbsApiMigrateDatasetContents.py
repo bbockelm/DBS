@@ -31,6 +31,19 @@ import inspect
 from dbsLogger import *
 
 from dbsUtil import *
+from dbsApi import DbsApi
+
+def makeAPI(url):
+                #args = {}
+                #args['url'] = url
+                args = {}
+                if url.startswith('http'):
+                        args['url'] = url
+                        args['mode'] = 'POST'
+
+                return DbsApi(args)
+
+
 
 def dbsApiImplMigrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False, pruneBranches = False):
     """
@@ -215,8 +228,8 @@ Examples
        apiSrc = makeAPI(srcURL)
        apiDst = makeAPI(dstURL)
 
-       transfer = DbsMigrateApi(apiSrc, apiDst, False, pruneBranches)
-       #transfer = DbsMigrateApi(apiSrc, apiDst, True, pruneBranches)
+       #transfer = DbsMigrateApi(apiSrc, apiDst, False, pruneBranches)
+       transfer = DbsMigrateApi(apiSrc, apiDst, True, pruneBranches)
        if block_name not in [None, ""] :
 	       if noParentsReadOnly:
 		       transfer.migrateBlockRO(path, block_name)

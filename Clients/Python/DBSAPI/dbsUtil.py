@@ -1,8 +1,9 @@
 import os, string
 from dbsException import DbsException
 from dbsApiException import *
+#from dbsApi import DbsApi
 
-
+"""
 def makeAPI(url):
                 #args = {}
                 #args['url'] = url
@@ -13,7 +14,7 @@ def makeAPI(url):
 
                 return DbsApi(args)
 
-
+"""
 
 def get_name (obj):
     """

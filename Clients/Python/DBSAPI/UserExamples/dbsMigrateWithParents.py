@@ -3,10 +3,10 @@
 # Unit tests for the DBS CGI implementation.
 import sys
 import os
-from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
+from DBSAPI.dbsApi import DbsApi
 
 
 try:
