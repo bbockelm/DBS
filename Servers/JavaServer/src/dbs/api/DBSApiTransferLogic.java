@@ -1,6 +1,6 @@
 /**
- $Revision: 1.24 $"
- $Id: DBSApiTransferLogic.java,v 1.24 2007/08/28 19:45:19 sekhri Exp $"
+ $Revision: 1.25 $"
+ $Id: DBSApiTransferLogic.java,v 1.25 2007/09/25 21:41:52 afaq Exp $"
  *
  */
 
@@ -72,7 +72,8 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
                 //if (instanceName.equals ("GLOBAL") )
 		//	branchNTrig = "false";
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", branchNTrig);
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true");
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true");
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
 
 	}
 	

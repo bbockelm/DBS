@@ -1,6 +1,6 @@
 /**
- $Revision: 1.65 $"
- $Id: DBSApiFileLogic.java,v 1.65 2007/08/29 18:25:18 sekhri Exp $"
+ $Revision: 1.66 $"
+ $Id: DBSApiFileLogic.java,v 1.66 2007/09/25 21:41:52 afaq Exp $"
  *
  */
 
@@ -36,8 +36,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 
 	//This api call WILL only take into consideration the PATH parameter
-        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail) throws Exception {
-        //private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail, String branchNTrig) throws Exception {
+        //private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail) throws Exception {
+        private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail, boolean listInvalidFiles) throws Exception {
 
 		String procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
 		String runID = null;
@@ -47,7 +47,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 ResultSet rs =  null;
 
                 try {
-                        ps = DBSSql.listFiles(conn, procDSID, path, runID);
+                        ps = DBSSql.listFiles(conn, procDSID, path, runID, listInvalidFiles);
 			rs =  ps.executeQuery();
                         while(rs.next()) {
                                 String fileID = get(rs, "ID");
@@ -91,19 +91,45 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
         }
 
+	public void listFiles(Connection conn, 
+			Writer out, 
+			String path, 
+			String primary, 
+			String proc, 
+			String dataTierList, 
+			String aDSName,
+			String blockName, 
+			String patternLFN, 
+			String runNumber, 
+			String detail 
+			) throws Exception {
+		listFiles(conn, out, path, primary, proc, dataTierList, aDSName, blockName, patternLFN, runNumber, detail, false);
+	}
+	
+	public void listFiles(Connection conn, 
+			Writer out, 
+			String path, 
+			String primary, 
+			String proc, 
+			String dataTierList, 
+			String aDSName, 
+			String blockName, 
+			String patternLFN, 
+			String runNumber, 
+			String detail, 
+			boolean listInvalidFiles 
+			) throws Exception {
+		
+		
 
-	public void listFiles(Connection conn, Writer out, String path, 
-					String primary, String proc, String dataTierList, String aDSName, 
-					String blockName, String patternLFN, String runNumber, String detail 
-									) throws Exception {
-									//String branchNTrig) throws Exception {
+								//String branchNTrig) throws Exception {
 
 		//By default a file detail is not needed
 
 
 		//if path is given we will only regard it to be sufficient criteria for listing files.
 		if (!isNull(path)) {  
-			listFiles(conn, out, path, runNumber, detail);
+			listFiles(conn, out, path, runNumber, detail, listInvalidFiles);
 			//listFiles(conn, out, path, runNumber, detail, branchNTrig);
 			return;
 		}
@@ -163,7 +189,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn);
+			//ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn);
+			ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn, listInvalidFiles);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
@@ -186,8 +213,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				if (!isNull(detail)) {
 					this.data.globalFile = new Hashtable();
 					this.data.globalFile.put(lfn, fileID);
-					listFileProvenence(conn, out, lfn, true);//Parents
-					listFileProvenence(conn, out, lfn, false);//Children
+					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
 					listFileAlgorithms(conn, out, lfn);
 					listFileTiers(conn, out, lfn);
 					listFileLumis(conn, out, lfn);
@@ -220,11 +247,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 */
 	 //public void listFileParents(Connection conn, Writer out, String lfn) throws Exception {
 	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild) throws Exception {
+		 listFileProvenence(conn, out, lfn, parentOrChild, true);
+		 //Note that by default the invalid files will be listed . This is a required behaviour.
+	 }
+
+	 public void listFileProvenence(Connection conn, Writer out, String lfn, boolean parentOrChild, boolean listInvalidFiles) throws Exception {
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			//ps = DBSSql.listFileParents(conn, getFileID(conn, lfn, true));
-			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
+			//ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild);
+			ps = DBSSql.listFileProvenence(conn, getFileID(conn, lfn, true), parentOrChild, listInvalidFiles);
 			rs =  ps.executeQuery();
 			String tag = "";
 			if(parentOrChild) tag = "file_parent";
@@ -1110,7 +1142,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			ResultSet rs =  null;
 			try {
 				//Get all the parents
-				ps = DBSSql.listFileProvenence(conn, inFileID, true);
+				ps = DBSSql.listFileProvenence(conn, inFileID, true, true);
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
@@ -1127,7 +1159,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			rs = null;
 			try {
 				//Get all the childern
-				ps = DBSSql.listFileProvenence(conn, inFileID, false);
+				ps = DBSSql.listFileProvenence(conn, inFileID, false, true);
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 

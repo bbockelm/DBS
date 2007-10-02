@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.116 $"
- $Id: DBSSql.java,v 1.116 2007/09/25 21:41:53 afaq Exp $"
+ $Revision: 1.117 $"
+ $Id: DBSSql.java,v 1.117 2007/09/28 18:02:05 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1657,8 +1657,7 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-
-        public static PreparedStatement listFiles(Connection conn, String procDSID, String path,String runID) throws SQLException {
+        public static PreparedStatement listFiles(Connection conn, String procDSID, String path, String runID, boolean listInvalidFiles) throws SQLException {
 
                 String sql = "SELECT DISTINCT f.ID as ID, \n " +
                         "f.LogicalFileName as LFN, \n" +
@@ -1696,8 +1695,8 @@ public class DBSSql {
                 sql += "WHERE b.Path = ? \n" ;
                 sql += "AND f.Dataset = ? \n";
 		if (!DBSUtil.isNull(runID)) sql += "AND fr.Run = ? \n";
-		sql +=  "AND st.Status <> 'INVALID' \n" +
-                        "ORDER BY f.LogicalFileName DESC";
+		if (!listInvalidFiles)	sql +=  "AND st.Status <> 'INVALID' \n";
+		sql += "ORDER BY f.LogicalFileName DESC";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
@@ -1788,7 +1787,7 @@ public class DBSSql {
 	}
 
 
-	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN) throws SQLException {
+	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN, boolean listInvalidFiles) throws SQLException {
 		String joinStrAna = "";
 		if(!DBSUtil.isNull(aDSID)) {
 			joinStrAna = "JOIN AnalysisDSFileLumi adfl \n" +
@@ -1850,8 +1849,9 @@ public class DBSSql {
 			sql += "AND adfl.AnalysisDataset = ? \n";
 		}
 
-		sql +=	"AND st.Status <> 'INVALID' \n" +
-			"ORDER BY f.LogicalFileName DESC";
+		if (!listInvalidFiles)	sql +=  "AND st.Status <> 'INVALID' \n";
+		//sql +=	"AND st.Status <> 'INVALID' \n" +
+		sql +=	"ORDER BY f.LogicalFileName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
@@ -1875,8 +1875,8 @@ public class DBSSql {
 		return ps;
 	}
 
-	//public static PreparedStatement listFileParents(Connection conn, String fileID) throws SQLException {
-	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
+	//public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
+	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild, boolean listInvalidFiles) throws SQLException {
 		//parentOrChild if true means we need to get the parents of the file 
 		//parentOrChild if false means we need to get the childern of the file
 		String joinStr = "";
@@ -1922,6 +1922,7 @@ public class DBSSql {
 		if(!DBSUtil.isNull(fileID)) {
 			sql += whereStr;
 		}
+		if (!listInvalidFiles)	sql +=  "WHERE st.Status <> 'INVALID' \n";
 		sql +=	"ORDER BY f.LogicalFileName DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
