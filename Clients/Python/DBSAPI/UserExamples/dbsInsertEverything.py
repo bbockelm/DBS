@@ -155,6 +155,39 @@ myfile4= DbsFile (
          )
 
 
+myfile31= DbsFile (
+        Checksum= '999',
+        LogicalFileName= 'NEW_TEST0004xxxxxx',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EDM',
+        Dataset= proc,
+        AlgoList = [algo],
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM', 'GEN'],
+        ParentList = ['NEW_TEST0001']  
+         )
+
+myfile41= DbsFile (
+        Checksum= '000',
+        LogicalFileName= 'NEW_TEST0005xxxxxxxxxx',
+        NumberOfEvents= 10000,
+        FileSize= 12340,
+        Status= 'VALID',
+        ValidationStatus = 'VALID',
+        FileType= 'EDM',
+        Dataset= proc,
+        LumiList= [lumi1, lumi2],
+        TierList= ['SIM', 'GEN'],
+        AlgoList = [algo],
+        BranchList=['testbranch01', 'testbranch02'],
+        ParentList = ['NEW_TEST0002']  
+         )
+
+
+
  
 myfile5= DbsFile (
         Checksum= '999',
@@ -199,6 +232,11 @@ block2 = DbsFileBlock (
 	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#44444"
          )
 
+block21 = DbsFileBlock (
+         StorageElement=['test1', 'test3'],
+	 Name="/test_primary_001/TestProcessedDS002/GEN-SIM#3333"
+         )
+
 block3 = DbsFileBlock (
          StorageElement=['test1', 'test3'],
 	 Name="/test_primary_001/TestProcessedDS003/GEN-SIM#3333"
@@ -206,7 +244,7 @@ block3 = DbsFileBlock (
 
 try:
 	
-    """	
+    #"""	
     print "\n\nInserting primary %s" % primary
     print api.insertPrimaryDataset (primary)
 
@@ -231,8 +269,15 @@ try:
     print "\n\nInserting Block2 %s" % block2	
     print api.insertBlock (procChild, block2)
  
+    print "\n\nInserting Block2 %s" % block21	
+    print api.insertBlock (procChild, block21)
+
     print "\n\nInserting Files %s" % [myfile3, myfile4]	
     print api.insertFiles (procChild, [myfile3, myfile4], block2)
+    
+    print "\n\nInserting Files %s" % [myfile31, myfile41]	
+    print api.insertFiles (procChild, [myfile31, myfile41], block21)
+
     """
     
     print "\n\nInserting Grand Child Processed %s" % procGrandChild
@@ -244,7 +289,7 @@ try:
     print "\n\nInserting Files %s" % [myfile5, myfile6]	
     print api.insertFiles (procGrandChild, [myfile5, myfile6], block3)
 
-    #"""
+    """
     
 
 
