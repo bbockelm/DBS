@@ -21,6 +21,7 @@ from   Cheetah.Template import Template
 # CherryPy server modules
 import cherrypy 
 from   cherrypy    import expose
+from   cherrypy    import tools
 #from   cherrypy.lib import profiler
 
 # DBS  modules
@@ -1088,7 +1089,7 @@ class DDServer(DDLogger,Controller):
         page="""<hr class="dbs" /><p>For a bookmark to this data, use</p><a href="%s">%s</a>"""%(url,splitString(url,80,'\n'))
         return page
 
-    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",userMode='user',fromRow=0,limit=0,count=0):
+    def getDatasetList(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",date="*",userMode='user',fromRow=0,limit=0,count=0):
         """
            Call different APIs for given list of app/prim/tier/proc. Return a list of processed
            datasets.
@@ -1098,7 +1099,8 @@ class DDServer(DDLogger,Controller):
         if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
         if string.lower(prim) =="all" or string.lower(prim)=="any": prim="*"
-        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,primType,userMode,fromRow,limit,count)
+        if string.lower(date) =="all" or string.lower(date)=="any": date="*"
+        return self.helper.listProcessedDatasets(group,app,prim,tier,proc,site,primType,date,userMode,fromRow,limit,count)
 
     def getMatch(self,table,column,val,row=0,limit=0):
         pList=[]
@@ -1109,7 +1111,7 @@ class DDServer(DDLogger,Controller):
             pList.append(item)
         return pList
 
-    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
+    def getDataHelper(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            Main worker. It pass user selected information to the L{DBSHelper} and 
            form HTML representation of the data output.
@@ -1138,6 +1140,7 @@ class DDServer(DDLogger,Controller):
         if string.lower(app)  =="all" or string.lower(app)=="any": app="*"
         if string.lower(group)=="all" or string.lower(group)=="any": group="*"
         if string.lower(primD)=="all" or string.lower(primD)=="any": primD="*"
+        if string.lower(date) =="all" or string.lower(date)=="any": date="*"
         if string.lower(primType)=="all" or string.lower(primType)=="any": primType="*"
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
 #        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
@@ -1191,10 +1194,10 @@ class DDServer(DDLogger,Controller):
             proc=proc_orig
         else:
 #            ttt=time.time()
-            nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,count=1)
+            nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,count=1)
 #            print "Time to get all dataset",time.time()-ttt
 #            ttt=time.time()
-            datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+            datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
 #            print "Time to get N datasets",time.time()-ttt
 
         # Construct result page
@@ -1205,7 +1208,7 @@ class DDServer(DDLogger,Controller):
 #        print "Paging step before loop",time.time()-t1
         # the progress bar for all results
         if _idx:
-            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,_idx-1,userMode,pagerStep)
+            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx-1,userMode,pagerStep)
         tot=_idx
         for x in xrange(_idx,_idx+GLOBAL_STEP):
             if nDatasets>x*pagerStep:
@@ -1214,10 +1217,10 @@ class DDServer(DDLogger,Controller):
            ref=index+1
            if index==_idx:
               ref="""<span class="gray_box">%s</span>"""%(index+1)
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,index,userMode,pagerStep,ref)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,index,userMode,pagerStep,ref)
 #        if nDatasets>tot*pagerStep:
         if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,_idx+1,userMode,pagerStep)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx+1,userMode,pagerStep)
 
         if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
@@ -1245,6 +1248,7 @@ class DDServer(DDLogger,Controller):
                      'primType' : primType,
                      'group'    : group,
                      'app'      : app,
+                     'date'     : date,
                      'idx'      : _idx,
                      'ajax'     : ajax,
                      'phedex'   : phedex,
@@ -1253,7 +1257,7 @@ class DDServer(DDLogger,Controller):
                      'rPage'    : rPage,
                      'pagerStep': pagerStep,
                      'nameForPager': "datasets",
-                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,_idx,ajax,userMode)
+                     'onchange' : "javascript:LoadGetData('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx,ajax,userMode)
                     }
         t = templateSnapshot(searchList=[_nameSpace]).respond()
         snapshot=str(t)
@@ -1317,7 +1321,7 @@ class DDServer(DDLogger,Controller):
         page=str(t)
         return page
 
-    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
+    def getData(self,dbsInst,site="Any",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",hist="",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,phedex=0,**kwargs): 
         """
            HTML wrapper for Main worker L{getDataHelper}.
            @type  dbsInst: string
@@ -1365,7 +1369,7 @@ class DDServer(DDLogger,Controller):
                 self.writeLog(msg)
                 msg=""
                 self.formDict['menuForm']=(msg,dbsInst,site,app,primD,tier)
-                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep,phedex)
+                page+= self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
             except:
                 t=self.errorReport("Fail in getData function")
                 page+=str(t)
@@ -1377,7 +1381,7 @@ class DDServer(DDLogger,Controller):
            page=self.genTopHTML(userMode=userMode)
            if hist:
               page+=hist
-           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,hist,_idx,ajax,userMode,pagerStep,phedex)
+           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
            page+= result
            page+=self.genBottomHTML()
         if self.verbose==2:
@@ -4099,15 +4103,88 @@ if __name__ == "__main__":
        dbsManager.setQuiet()
     if  int(string.split(cherrypy.__version__,".")[0])==3:
         cherrypy.config.update("CherryServer3.conf")
-        conf = {'/'         : {'tools.staticdir.root': os.getcwd()},
-                '/images'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'images'},
+        mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
+        conf = {'/'         : {'tools.staticdir.root': os.getcwd(),
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires','Mon, 26 Jul 1997 05:00:00 GMT'),
+                               ('Accept-Encoding','gzip, deflate'),
+                               ('Cache-Control','no-store, no-cache, must-revalidate,post-check=0, pre-check=0')]
+                              },
+                '/images'   : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.dir':'images',
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
                 '/rss'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'rss'},
-                '/css'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'css'},
-                '/js'       : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'js'},
-                '/WEBTOOLS' : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS'},
-                '/Common'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS/Common'},
-                '/yui'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'yui'},
-                '/YUI'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'YUI'},
+                '/css'      : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.dir':'css',
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
+                '/js'       : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.dir':'js',
+                               'tools.staticdir.content_types':{'js':'text/javascript'},
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
+                '/WEBTOOLS' : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.dir':'WEBTOOLS',
+                               'tools.staticdir.content_types':{'js':'text/javascript','':'text/javascript','css':'text/css'},
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
+#                '/Common'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS/Common',
+#                               'tools.gzip.on': True},
+                '/Common'   : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.dir':'WEBTOOLS/Common',
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
+                '/yui'      : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.dir':'yui',
+                               'tools.staticdir.content_types':{'js':'text/javascript'},
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
+                '/YUI'      : {'tools.gzip.on': True, 
+                               'tools.gzip.mime_types':mime_types,
+                               'tools.staticdir.on':True,
+                               'tools.staticdir.root': os.getcwd(),
+                               'tools.staticdir.dir':'YUI',
+                               'tools.staticdir.content_types':{'js':'text/javascript'},
+                               'tools.response_headers.on':True,
+                               'tools.response_headers.headers':
+                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Cache-Control','max-age=315360000')]
+                              },
                }
 
 

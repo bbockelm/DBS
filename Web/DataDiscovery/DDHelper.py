@@ -486,7 +486,7 @@ class DDHelper(DDLogger):
       self.closeConnection(con)
       return oList
 
-  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",userMode="user",fromRow=0,limit=0,count=0):
+  def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",date="*",userMode="user",fromRow=0,limit=0,count=0):
       if group.lower()=='any': group="*"
       app=app.replace("Any","*")
       app=app.replace("any","*")
@@ -496,6 +496,7 @@ class DDHelper(DDLogger):
       if tier.lower() =='any': tier ="*"
       if site.lower() =='any': site ="*"
       if primType.lower() =='any': primType ="*"
+      if date.lower() =='any': date="*"
       if type(proc) is not types.ListType and proc.lower() =='any': proc ="*"
 #      if proc and proc!="*":
       if proc!="*":
@@ -537,12 +538,11 @@ class DDHelper(DDLogger):
               obj=obj.outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
           if (proc and proc!="*") or (app and app!="/*/*/*") or \
              (prim and prim!="*") or (primType and primType!="*") or \
-             (group and group!="*") or (tier and tier!="*"):
+             (group and group!="*") or (tier and tier!="*") or (date and date!="*"):
               obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
               if (app and app!="/*/*/*"):
                   obj=obj.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                   obj=obj.outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                  print "app",app
                   empty,ver,fam,exe=string.split(app,"/")
                   if ver.lower()=="any" or ver.lower()=="all": ver="*"
                   if fam.lower()=="any" or fam.lower()=="all": fam="*"
@@ -610,6 +610,8 @@ class DDHelper(DDLogger):
                 sel.append_whereclause(self.col(tpmt,'Type')==primType)
           if group and group!="*":
              sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
+          if date and date!="*":
+             sel.append_whereclause(self.col(tprd,'CreationDate')>=date)
           if userMode=="user":
                 sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           sel.append_whereclause(self.col(tblk,'Path')!=sqlalchemy.null())

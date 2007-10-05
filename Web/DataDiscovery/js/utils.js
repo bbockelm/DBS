@@ -1293,7 +1293,7 @@ function CheckOperator() {
 function load(url) {
   window.location.href=url;
 }
-function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,idx,ajax,userMode) {
+function LoadGetData(dbsInst,site,group,app,prim,tier,proc,primType,date,idx,ajax,userMode) {
    var pagerStep=$('pagerStep').value;
    var url='getData?dbsInst='+dbsInst+'&site='+site+'&group='+group+'&app='+app+'&primD='+prim+'&tier='+tier+'&proc='+proc+'&primType='+primType+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);

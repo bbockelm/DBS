@@ -1,4 +1,5 @@
 <!-- templateUserNav.tmpl -->
+#import time
 <!-- begin outer most table -->
 <table class="lfn" width="90%">
 <tr valign="top">
@@ -180,6 +181,31 @@
 
 </td>
 </tr>
+
+### Time selection
+<tr>
+<td valign="top" align="right">
+<div id="timeDef">
+<b>Date:</b>
+</div>
+</td>
+<td>
+
+<div id="kw_date_holder">
+<select name="date" id="kw_date" style="$style">
+<option value="Any" selected="selected">Any</option>
+<option value="$long($time.time()-1*60*60)">In last 1 hour</option>
+<option value="$long($time.time()-5*60*60)">In last 5 hours</option>
+<option value="$long($time.time()-12*60*60)">In last 12 hours</option>
+<option value="$long($time.time()-1*24*60*60)">In last day</option>
+<option value="$long($time.time()-2*24*60*60)">In last 2 days</option>
+<option value="$long($time.time()-1*7*24*60*60)">In last week</option>
+<option value="$long($time.time()-1*30*7*24*60*60)">In last month (30 days)</option>
+</select>
+</div>
+
+</td>
+</tr>
 #end if
 
 <tr>
@@ -301,6 +327,13 @@ $prdForm
 </table>
 
 
+<div class="hide" id="isIE" class="tiny">
+<span class="box_red">
+This page is optimized under Firefox/Mozilla/Safari browsers. It may have issues with
+page rendering using IE browsers. If you are a windows user, please consider to use
+Firefox as alternative.
+</span>
+</div>
 <script type="text/javascript">
 var tooltip;
 tooltip="<p>List of known DBS instances.</p>";
@@ -321,7 +354,13 @@ tooltip="<p>The processed dataset path contains a three component: primary, proc
 MakeTooltip("t_compTier","composedTierDef",tooltip);
 tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic for cosmic data, raw for raw data, data for real processed data.</p>";
 MakeTooltip("t_primType","primDSTypeDef",tooltip);
+MakeTooltip("t_date","dateDef",tooltip);
+tooltip="<p>The elapsed time since datasets creation date.</p>";
 SetAutoCompletion();
+// check if user uses IE and turn on warning message
+if(isInternetExplorer()) {
+ShowTag("isIE");
+}
 </script>
 
 <!-- end of templateUserNav.tmpl -->
