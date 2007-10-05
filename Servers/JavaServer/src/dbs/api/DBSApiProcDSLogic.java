@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApiProcDSLogic.java,v 1.43 2007/09/06 21:06:19 sekhri Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApiProcDSLogic.java,v 1.44 2007/10/05 16:57:43 sekhri Exp $"
  *
  */
 
@@ -31,6 +31,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		super(data);
 		this.data = data;
 		personApi = new DBSApiPersonLogic(data);
+		//System.out.println("in proc const this.data.apiName is  "+ this.data.apiName);
 	}
 
 	/**
@@ -543,12 +544,16 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 */
 	public void updateProcDSStatus(Connection conn, Writer out, String path, String value, Hashtable dbsUser) throws Exception {
 		String procDSID = getProcessedDSID(conn, path, true);
-		checkProcDSStatus(conn, out, path, procDSID);
-		updateName(conn, out, "ProcessedDataset", procDSID,
-				                        "Status", "ProcDSStatus", "Status", value, personApi.getUserID(conn, dbsUser));
+		if (!listProcDSStatus(conn, out, procDSID).equals(value)) {
+			checkProcDSStatus(conn, out, path, procDSID);
+			updateName(conn, out, "ProcessedDataset", procDSID,
+					"Status", "ProcDSStatus", "Status", 
+					value, personApi.getUserID(conn, dbsUser));
+		}
 	}
 	
 	public void checkProcDSStatus(Connection conn, Writer out, String path, String procDSID) throws Exception {
+		//System.out.println("in procds this.data.apiName is  "+ this.data.apiName);
 		if(!this.data.apiName.equals("transfer"))
 			if (listProcDSStatus(conn, out, procDSID).equals("RO"))
 				throw new DBSException("Operation NOT permitted", "1080", "Dataset " + path + " is read only dataset and CANNOT be altered. Further, the status of this dataset CANNOT be changed");

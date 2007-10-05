@@ -1,6 +1,6 @@
 /**
- $Revision: 1.26 $"
- $Id: DBSApiTransferLogic.java,v 1.26 2007/10/02 19:23:53 sekhri Exp $"
+ $Revision: 1.27 $"
+ $Id: DBSApiTransferLogic.java,v 1.27 2007/10/05 16:57:43 sekhri Exp $"
  *
  */
 
@@ -95,6 +95,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		String path = getPath(table, "path", true);
 		//System.out.println("line 1");
                 //FIXME: Confirm with Vijay -- Change made by AA 01/18/2007, Block is passed as a separate object now.
+		//System.out.println("in transfer this.data.apiName is  "+ this.data.apiName);
 		String blockName = (new DBSApiBlockLogic(this.data)).getBlock(table, "block_name", true);
                 Hashtable fileblock = new Hashtable();
                 fileblock.put("block_name", blockName);

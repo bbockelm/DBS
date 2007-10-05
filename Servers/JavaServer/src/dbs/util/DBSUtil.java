@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.8 $"
- $Id: DBSUtil.java,v 1.8 2007/06/06 15:23:46 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSUtil.java,v 1.9 2007/06/06 22:03:33 sekhri Exp $"
  *
 */
 
@@ -110,6 +110,12 @@ public class DBSUtil {
         public static void writeLog(String logText) {
                 if (DBSConstants.DEBUG) {
                           System.out.println(logText);
+                }
+        }
+	
+        public static void writeErrorLog(String logText) {
+                if (DBSConstants.ERROR) {
+                          System.err.println(logText);
                 }
         }
 

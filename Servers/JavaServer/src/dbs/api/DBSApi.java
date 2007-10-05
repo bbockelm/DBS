@@ -1,6 +1,6 @@
 /**
- $Revision: 1.104 $"
- $Id: DBSApi.java,v 1.104 2007/09/25 21:41:52 afaq Exp $"
+ $Revision: 1.105 $"
+ $Id: DBSApi.java,v 1.105 2007/09/28 18:02:04 afaq Exp $"
  *
 */
 
@@ -116,6 +116,7 @@ public class DBSApi {
 	private DBSApiLogic api;
 	private DBSApiData data = null;
 	private String instanceName = null;
+	private String apiStr = null;
 
 	/**
 	* Constructs a DBSApi object that can be used to invoke call method that invokes several APIs from <code>dbs.api.DBSApiLogic</code> class. The constructor instantiates a private <code>dbs.api.DBSApiLogic</code> object.
@@ -123,6 +124,7 @@ public class DBSApi {
 	public DBSApi() {
 		data = new DBSApiData();
 		api = new DBSApiLogic(data);
+		apiStr = "";
 	}
 
         public Vector supportedClientApiVersions() throws Exception {
@@ -239,6 +241,7 @@ public class DBSApi {
 
 			out.write(DBSConstants.XML_HEADER); 
 			String apiStr = get(table, "api", true);
+			this.apiStr = apiStr;
         	        String apiVersion = get(table, "apiversion", true);
                 	DBSUtil.writeLog("apiStr: "+apiStr);
 
@@ -680,7 +683,8 @@ public class DBSApi {
 	
 	public void writeException(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
-		 message = message.replace('\'',' ');
+		message = " ____________ API Invoked " + this.apiStr + "____________\n" + message;
+		message = message.replace('\'',' ');
 		message = message.replace('<',' ');
 		message = message.replace('>',' ');
                 detail= detail.replace('\'',' ');
@@ -695,6 +699,9 @@ public class DBSApi {
 		out.write(DBSConstants.XML_FOOTER);
 		out.flush();
 		//out.write(DBSConstants.XML_EXCEPTION_FOOTER); 
+       		DBSUtil.writeErrorLog("<exception message='" + message + "' ");
+		DBSUtil.writeErrorLog(" code ='" + code + "' ");
+		DBSUtil.writeErrorLog(" detail ='" + detail + "' />\n");
 	}
 
 

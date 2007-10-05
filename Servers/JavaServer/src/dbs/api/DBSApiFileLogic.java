@@ -1,6 +1,6 @@
 /**
- $Revision: 1.66 $"
- $Id: DBSApiFileLogic.java,v 1.66 2007/09/25 21:41:52 afaq Exp $"
+ $Revision: 1.67 $"
+ $Id: DBSApiFileLogic.java,v 1.67 2007/10/02 19:23:53 sekhri Exp $"
  *
  */
 
@@ -220,7 +220,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					listFileLumis(conn, out, lfn);
 					listFileRuns(conn, out, lfn);
 					//if (branchNTrig.equals("true")) {
-					listFileBranches(conn, out, lfn);
+					//FIXME The branches
+					//listFileBranches(conn, out, lfn);
                                         //        listFileTrigs(conn, out, lfn);
                                         //}
 					//listFileAssoc(conn, out, lfn);
