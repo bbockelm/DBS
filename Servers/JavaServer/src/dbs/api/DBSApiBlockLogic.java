@@ -1,6 +1,6 @@
 /**
- $Revision: 1.43 $"
- $Id: DBSApiBlockLogic.java,v 1.43 2007/09/05 22:16:22 sekhri Exp $"
+ $Revision: 1.44 $"
+ $Id: DBSApiBlockLogic.java,v 1.44 2007/09/06 21:06:19 sekhri Exp $"
  *
  */
 
@@ -356,8 +356,50 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
 	public void updateSEName(Connection conn, Writer out, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
-		updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
+		String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , false);
+		String seIDOld = getID(conn, "StorageElement", "SEName", seNameFrom , true);
+		if (isNull(seIDNew)) {
+			updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
+		} else {
+			Vector oldBlockIDs = getBlockIDListFromMap(conn, seIDOld);
+			Vector newBlockIDs = getBlockIDListFromMap(conn, seIDNew);
+			for (int i = 0; i != oldBlockIDs.size() ; ++i) {
+				String blockID = (String)oldBlockIDs.elementAt(i);
+				if(newBlockIDs.contains(blockID)) {
+					//Delete this entry beacuse of duplication
+					deleteMap(conn, out, "SEBlock", "BlockID", "SEID", blockID, seIDOld);
+					//System.out.println("deleting SEID " + seIDOld + " blockID " + blockID);
+				} else {
+					//Just change the SE for this Block
+					updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
+							blockID,
+							seIDNew,
+							seIDOld,
+							personApi.getUserID(conn, dbsUser));
+					//System.out.println("updating SEID " + seIDOld + " blockID " + blockID + " to SEID " + seIDNew);
+
+				}
+			}
+	
+		}
 	}
+
+	private Vector getBlockIDListFromMap(Connection conn, String seID) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		Vector toReturn = new Vector();
+		try {
+			ps =  DBSSql.getMap(conn, "SEBlock", "SEID", "BlockID", seID, "");
+			rs =  ps.executeQuery();
+			while(rs.next()) toReturn.add(get(rs, "BlockID"));
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+		return toReturn;
+
+	}
+	
 
 	public void updateSEBlock(Connection conn, Writer out, String blockName, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
 		String blockID = getBlockID(conn, blockName, false, true);
