@@ -1,6 +1,6 @@
 /**
- $Revision: 1.25 $"
- $Id: DBSApiTransferLogic.java,v 1.25 2007/09/25 21:41:52 afaq Exp $"
+ $Revision: 1.26 $"
+ $Id: DBSApiTransferLogic.java,v 1.26 2007/10/02 19:23:53 sekhri Exp $"
  *
  */
 
@@ -27,6 +27,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	public DBSApiTransferLogic(DBSApiData data) {
 		super(data);
 		this.data = data;
+		this.data.apiName = "transfer";
 	}
 
 

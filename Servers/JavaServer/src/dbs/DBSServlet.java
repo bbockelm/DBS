@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.31 $"
- $Id: DBSServlet.java,v 1.31 2007/08/22 16:25:35 afaq Exp $"
+ $Revision: 1.32 $"
+ $Id: DBSServlet.java,v 1.32 2007/08/27 16:36:46 afaq Exp $"
 
  */
 package dbs;
@@ -76,7 +76,7 @@ public class DBSServlet extends HttpServlet{
 
 			Hashtable userDN = new Hashtable();
 			String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
-
+			
 			DBSUtil.writeLog("DN of the user is " + dn);
 			if (dn == null) {
 	                        dn = request.getHeader("UserID");
@@ -88,6 +88,7 @@ public class DBSServlet extends HttpServlet{
 			}
 			userDN.put("user_dn", dn);
 			
+			System.out.println("DN of the user is " + dn);
 			response.setContentType("text/xml");
 			out = response.getWriter();
 		

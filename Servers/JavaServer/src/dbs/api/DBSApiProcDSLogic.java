@@ -1,6 +1,6 @@
 /**
- $Revision: 1.42 $"
- $Id: DBSApiProcDSLogic.java,v 1.42 2007/09/05 22:16:22 sekhri Exp $"
+ $Revision: 1.43 $"
+ $Id: DBSApiProcDSLogic.java,v 1.43 2007/09/06 21:06:19 sekhri Exp $"
  *
  */
 
@@ -549,8 +549,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	}
 	
 	public void checkProcDSStatus(Connection conn, Writer out, String path, String procDSID) throws Exception {
-		if (listProcDSStatus(conn, out, procDSID).equals("RO"))
-			throw new DBSException("Operation NOT permitted", "1080", "Dataset " + path + " is read only dataset and CANNOT be altered. Further, the status of this dataset CANNOT be changed");
+		if(!this.data.apiName.equals("transfer"))
+			if (listProcDSStatus(conn, out, procDSID).equals("RO"))
+				throw new DBSException("Operation NOT permitted", "1080", "Dataset " + path + " is read only dataset and CANNOT be altered. Further, the status of this dataset CANNOT be changed");
 
 	}
 

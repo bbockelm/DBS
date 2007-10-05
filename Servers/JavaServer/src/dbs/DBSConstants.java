@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.40 $"
- $Id: DBSConstants.java,v 1.40 2007/09/06 21:06:18 sekhri Exp $"
+ $Revision: 1.41 $"
+ $Id: DBSConstants.java,v 1.41 2007/09/25 21:41:51 afaq Exp $"
  *
 */
 package dbs;
@@ -12,8 +12,8 @@ package dbs;
 */
 public class DBSConstants {
         //Specify the Global debug flag, if set to True DEBUG Messages wil be displayed. 
-	//public static boolean DEBUG = false;
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
+	//public static boolean DEBUG = true;
 	public static String XML_HEADER =  "<?xml version='1.0' standalone='yes'?>\n<!-- DBS Version 1 -->\n<dbs>\n";
 	public static String XML_FOOTER = "</dbs>\n";
 	public static String XML_EXCEPTION_HEADER = "<exception>\n";
