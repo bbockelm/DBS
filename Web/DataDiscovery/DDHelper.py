@@ -488,9 +488,10 @@ class DDHelper(DDLogger):
 
   def listProcessedDatasets(self,group="*",app="*",prim="*",tier="*",proc="*",site="*",primType="*",userMode="user",fromRow=0,limit=0,count=0):
       if group.lower()=='any': group="*"
-      if app.lower()  =='any': app  ="*"
       app=app.replace("Any","*")
-      app=app.replace("Any","*")
+      app=app.replace("any","*")
+      if app.lower()  =='any': app  ="/*/*/*"
+      if app=="*": app ="/*/*/*"
       if prim.lower() =='any': prim ="*"
       if tier.lower() =='any': tier ="*"
       if site.lower() =='any': site ="*"
@@ -541,6 +542,7 @@ class DDHelper(DDLogger):
               if (app and app!="/*/*/*"):
                   obj=obj.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                   obj=obj.outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                  print "app",app
                   empty,ver,fam,exe=string.split(app,"/")
                   if ver.lower()=="any" or ver.lower()=="all": ver="*"
                   if fam.lower()=="any" or fam.lower()=="all": fam="*"
