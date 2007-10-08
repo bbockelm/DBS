@@ -1233,6 +1233,14 @@ class DDServer(DDLogger,Controller):
         id=0
 
         page+=self.whereMsg('Navigator :: Results',userMode)
+        # check which date has been passed and format it accordingly
+        _date="Any"
+        if date.lower()!="*":
+           if date.find("_")!=-1:
+              d1,d2=date.split("_")
+              _date="%s<br/>%s"%(time.strftime("%Y/%m/%d",time.gmtime(int(d1))),time.strftime("%Y/%m/%d",time.gmtime(int(d2))))
+           else:
+              _date=time.strftime("%Y/%m/%d",time.gmtime(int(date)))
         # I re-use this dict for different templates
         _nameSpace = {
                      'nDatasets': nDatasets,
@@ -1248,7 +1256,7 @@ class DDServer(DDLogger,Controller):
                      'primType' : primType,
                      'group'    : group,
                      'app'      : app,
-                     'date'     : date,
+                     'date'     : _date,
                      'idx'      : _idx,
                      'ajax'     : ajax,
                      'phedex'   : phedex,
