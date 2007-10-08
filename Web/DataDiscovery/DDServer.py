@@ -1348,6 +1348,15 @@ class DDServer(DDLogger,Controller):
         t1=time.time()
         if string.lower(tier)=="all" or string.lower(tier)=="any": tier="*"
         if string.lower(site)=="all" or string.lower(site)=="any": site="*"
+        if string.lower(date)=="all" or string.lower(date)=="any": date="*"
+        if kwargs.has_key('cDate1') and kwargs.has_key('cDate2'):
+           # we got a date range
+           try:
+               d1=time.mktime(map(lambda x: int(x), kwargs['cDate1'].split("/"))+[0,0,0,0,0,0])
+               d2=time.mktime(map(lambda x: int(x), kwargs['cDate2'].split("/"))+[0,0,0,0,0,0])
+               date="%d_%d"%(d1,d2)
+           except:
+               return "Please check that you entered dates in correct format: yyyy/mm/dd"
         if type(phedex) is types.StringType and string.lower(phedex)=="off":
            phedex=0
         if phedex:
@@ -4104,11 +4113,19 @@ if __name__ == "__main__":
     if  int(string.split(cherrypy.__version__,".")[0])==3:
         cherrypy.config.update("CherryServer3.conf")
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
+        httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
+                               ('Accept-Encoding','gzip, deflate'),
+                               ('Content-Encoding','gzip, deflate'),
+                               ('TE','deflate, gzip, x-gzip, identity, trailer'),
+                               ('Cache-Control','max-age=315360000')]
+                               
         conf = {'/'         : {'tools.staticdir.root': os.getcwd(),
                                'tools.response_headers.on':True,
                                'tools.response_headers.headers':
                               [('Expires','Mon, 26 Jul 1997 05:00:00 GMT'),
                                ('Accept-Encoding','gzip, deflate'),
+                               ('Content-Encoding','gzip, deflate'),
+                               ('TE','deflate, gzip, x-gzip, identity, trailer'),
                                ('Cache-Control','no-store, no-cache, must-revalidate,post-check=0, pre-check=0')]
                               },
                 '/images'   : {'tools.gzip.on': True, 
@@ -4117,9 +4134,7 @@ if __name__ == "__main__":
                                'tools.staticdir.root': os.getcwd(),
                                'tools.staticdir.dir':'images',
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
                 '/rss'      : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'rss'},
                 '/css'      : {'tools.gzip.on': True, 
@@ -4128,9 +4143,7 @@ if __name__ == "__main__":
                                'tools.staticdir.root': os.getcwd(),
                                'tools.staticdir.dir':'css',
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
                 '/js'       : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
@@ -4138,9 +4151,7 @@ if __name__ == "__main__":
                                'tools.staticdir.dir':'js',
                                'tools.staticdir.content_types':{'js':'text/javascript'},
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
                 '/WEBTOOLS' : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
@@ -4148,20 +4159,14 @@ if __name__ == "__main__":
                                'tools.staticdir.dir':'WEBTOOLS',
                                'tools.staticdir.content_types':{'js':'text/javascript','':'text/javascript','css':'text/css'},
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
-#                '/Common'   : {'tools.staticdir.on': True, 'tools.staticdir.dir': 'WEBTOOLS/Common',
-#                               'tools.gzip.on': True},
                 '/Common'   : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
                                'tools.staticdir.on':True,
                                'tools.staticdir.dir':'WEBTOOLS/Common',
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
                 '/yui'      : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
@@ -4170,9 +4175,7 @@ if __name__ == "__main__":
                                'tools.staticdir.dir':'yui',
                                'tools.staticdir.content_types':{'js':'text/javascript'},
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
                 '/YUI'      : {'tools.gzip.on': True, 
                                'tools.gzip.mime_types':mime_types,
@@ -4181,13 +4184,9 @@ if __name__ == "__main__":
                                'tools.staticdir.dir':'YUI',
                                'tools.staticdir.content_types':{'js':'text/javascript'},
                                'tools.response_headers.on':True,
-                               'tools.response_headers.headers':
-                              [('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Cache-Control','max-age=315360000')]
+                               'tools.response_headers.headers':httpHeader
                               },
                }
-
-
     else:
         cherrypy.root = dbsManager
         cherrypy.config.update(file="CherryServer.conf")

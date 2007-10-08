@@ -1313,21 +1313,32 @@ function LoadGetRunsFromRange(dbsInst,primD,primType,minRun,maxRun,idx,ajax,user
    var url='getRunsFromRange?dbsInst='+dbsInst+'primD='+primD+'primType='+primType+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
-function Disable2Enable(tag1,tag2) {
+function Disable2Enable(tag1,tag2,tag3) {
    if($(tag1).disabled) {
       $(tag1).disabled='';
       $(tag1).setAttribute("class","enabled");
       $(tag2).disabled='disabled';
       $(tag2).setAttribute("class","disabled");
+      if(tag3) {
+          $(tag3).disabled='disabled';
+          $(tag3).setAttribute("class","disabled");
+      }
    } else {
       $(tag2).disabled='';
       $(tag2).setAttribute("class","enabled");
+      if(tag3) {
+          $(tag3).disabled='';
+          $(tag3).setAttribute("class","enabled");
+      }
       $(tag1).disabled='disabled';
       $(tag1).setAttribute("class","disabled");
    }
 }
 function D2E_tiers() {
    Disable2Enable('kw_tier','kw_cTier');
+}
+function D2E_dates() {
+   Disable2Enable('kw_date','kw_cDate1','kw_cDate2');
 }
 function resetUserNav() {
    $('kw_tier').disabled='';

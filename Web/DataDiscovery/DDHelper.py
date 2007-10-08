@@ -611,9 +611,14 @@ class DDHelper(DDLogger):
           if group and group!="*":
              sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
           if date and date!="*":
-             sel.append_whereclause(self.col(tprd,'CreationDate')>=date)
+             if date.find("_")!=-1:
+                d_low,d_up=date.split("_")
+                sel.append_whereclause(self.col(tprd,'CreationDate')>=d_low)
+                sel.append_whereclause(self.col(tprd,'CreationDate')<=d_up)
+             else:
+                sel.append_whereclause(self.col(tprd,'CreationDate')>=date)
           if userMode=="user":
-                sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
+             sel.append_whereclause(self.col(tblk,'NumberOfEvents')!=0)
           sel.append_whereclause(self.col(tblk,'Path')!=sqlalchemy.null())
           if not count and limit:
              if  self.dbManager.dbType[self.dbsInstance]=='oracle':
@@ -715,6 +720,7 @@ class DDHelper(DDLogger):
           raise "Fail in getProcDSForRss"
       for item in result:
           if not (item and item[0]): continue
+          print "Items in RSS:",len(item),item
           path,bSize,nFiles,nEvents,status,cDate,trigDesc,mcChannelDesc,mcProd,mcDecay=item
           if not path: continue
           cDate=timeGMT(cDate)

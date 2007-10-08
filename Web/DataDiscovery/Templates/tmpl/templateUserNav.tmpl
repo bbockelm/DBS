@@ -185,10 +185,14 @@
 ### Time selection
 <tr>
 <td valign="top" align="right">
-<div id="timeDef">
-<b>Date:</b>
+<div id="dateDef">
+<b>Date</b>
 </div>
 </td>
+<td>
+
+<table>
+<tr>
 <td>
 
 <div id="kw_date_holder">
@@ -203,6 +207,19 @@
 <option value="$long($time.time()-1*30*7*24*60*60)">In last month (30 days)</option>
 </select>
 </div>
+
+</td>
+<td>
+<input name="composedDateSelector" id="dateSelector" type="checkbox" onChange="javascript:Disable2Enable('kw_date','kw_cDate1','kw_cDate2')" />
+</td>
+<td>
+From:
+<input id="kw_cDate1" name="cDate1" type="text" size="10" style="disabled" disabled="disabled" value="yyyy/mm/dd" />
+to:
+<input id="kw_cDate2" name="cDate2" type="text" size="10" style="disabled" disabled="disabled" value="yyyy/mm/dd" />
+</td>
+</tr>
+</table>
 
 </td>
 </tr>
@@ -354,8 +371,8 @@ tooltip="<p>The processed dataset path contains a three component: primary, proc
 MakeTooltip("t_compTier","composedTierDef",tooltip);
 tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic for cosmic data, raw for raw data, data for real processed data.</p>";
 MakeTooltip("t_primType","primDSTypeDef",tooltip);
+tooltip="<p>The elapsed time since datasets creation date. The creation time for datasets is stored in seconds since epoch. The elapsed time calculated at CERN/Geneva timezone (UTC/GMT +2 or +1 hours in summer and winter respectively).</p>";
 MakeTooltip("t_date","dateDef",tooltip);
-tooltip="<p>The elapsed time since datasets creation date.</p>";
 SetAutoCompletion();
 // check if user uses IE and turn on warning message
 if(isInternetExplorer()) {
