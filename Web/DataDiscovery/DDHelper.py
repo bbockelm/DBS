@@ -529,17 +529,18 @@ class DDHelper(DDLogger):
           if  count:
               oSel = [sqlalchemy.func.count(self.col(tblk,'Path').distinct())]
           else:
-              oSel = [self.col(tblk,'Path')]
+              oSel = [self.col(tblk,'Path'),self.col(tprd,'CreationDate')]
 #          print "group,app,prim,tier,proc,site,primType",group,app,prim,tier,proc,site,primType
           # I need to decide which table to join based on input parameters
           obj=tblk
+          obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
           if  site and site!="*":
               obj=obj.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
               obj=obj.outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
           if (proc and proc!="*") or (app and app!="/*/*/*") or \
              (prim and prim!="*") or (primType and primType!="*") or \
              (group and group!="*") or (tier and tier!="*") or (date and date!="*"):
-              obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+#              obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
               if (app and app!="/*/*/*"):
                   obj=obj.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
                   obj=obj.outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
@@ -567,7 +568,8 @@ class DDHelper(DDLogger):
                   obj=obj.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                   obj=obj.outerjoin(tdt,onclause=self.col(tdt,'ID')==self.col(tpds,'DataTier'))
           sel = sqlalchemy.select(oSel,from_obj=[obj],
-                distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
+                distinct=True,order_by=[sqlalchemy.desc( self.col(tprd,'CreationDate') )] )
+#                distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
 
 #          if  group=="*" and (app=="*" or app=="/*/*/*") and prim=="*" and tier=="*" and \
 #              proc=="*" and site=="*" and primType=="*":
@@ -627,8 +629,9 @@ class DDHelper(DDLogger):
                  # select rownum, path from (select distinct path from Block where path is not null order by path desc) group by rownum,path having rownum between 1 and 5;
                  sel.use_labels=True
                  s=sel
-                 oSel=['rownum',s.c.tblk_path]
-                 sel = sqlalchemy.select(oSel,group_by=oSel,order_by=[sqlalchemy.desc(s.c.tblk_path)])
+                 oSel=['rownum',s.c.tblk_path,s.c.tprd_creationdate]
+#                 sel = sqlalchemy.select(oSel,group_by=oSel,order_by=[sqlalchemy.desc(s.c.tblk_path)])
+                 sel = sqlalchemy.select(oSel,group_by=oSel,order_by=[sqlalchemy.desc(s.c.tprd_creationdate)])
                  sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
              else:
                  sel.limit=limit
@@ -644,12 +647,11 @@ class DDHelper(DDLogger):
          self.closeConnection(con)
          return res
       for item in result:
-#          print item
           # since we queried oracle in different way we will retrieve results differently
           if  self.dbManager.dbType[self.dbsInstance]=='oracle' and limit:
-              rownum,path = item
+              rownum,path,prdDate = item
           else:
-              path = item[0]
+              path,prdDate = item[0]
           if not path: continue
           if not oList.count(path): oList.append(path)
       self.closeConnection(con)
@@ -720,7 +722,7 @@ class DDHelper(DDLogger):
           raise "Fail in getProcDSForRss"
       for item in result:
           if not (item and item[0]): continue
-          print "Items in RSS:",len(item),item
+#          print "Items in RSS:",len(item),item
           path,bSize,nFiles,nEvents,status,cDate,trigDesc,mcChannelDesc,mcProd,mcDecay=item
           if not path: continue
           cDate=timeGMT(cDate)
@@ -805,7 +807,7 @@ MCDescription:      %s
           tseb = self.alias('SEBlock','tseb')
           tse  = self.alias('StorageElement','tse')
 
-          oSel = [self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),self.col(tse,'SEName')]
+          oSel = [self.col(tprd,'CreationDate'),self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),self.col(tse,'SEName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
                           tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
@@ -857,7 +859,8 @@ MCDescription:      %s
       for item in result:
 #          print "blockList item result=",item
           if not item[0]: continue
-          blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
+          prdDate,blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
+          prdDate=timeGMT(prdDate)
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
           cBy=parseCreatedBy(cBy)
@@ -887,7 +890,7 @@ MCDescription:      %s
       self.closeConnection(con)
       if kwargs.has_key('fullOutput'):
          return aList
-      return aDict,totEvt,totFiles,totSize,siteList
+      return prdDate,aDict,totEvt,totFiles,totSize,siteList
 
   def numberOfEvents(self,datasetPath):
       prim=""
@@ -2244,8 +2247,8 @@ MCDescription:      %s
       """
 # This code is ready for use in DBS2, once SEnames will be in place
       kwargs={'datasetPath':dataset,'site':site,'idx':idx,'userMode':userMode}
-      blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
-      return siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
+      prdDate,blockInfoDict,totEvts,totFiles,totSize,siteList = self.listBlocks(kwargs)
+      return prdDate,siteList,blockInfoDict,totEvts,totFiles,sizeFormat(totSize)
 
   def getData_viaDLS(self,dataset,site="Any",userMode="user",idx=-1):
 # The backward compatible code to use DLS

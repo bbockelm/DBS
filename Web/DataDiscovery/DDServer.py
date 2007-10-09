@@ -1282,8 +1282,8 @@ class DDServer(DDLogger,Controller):
         try:
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
-                siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
-                page+= self.dataToHTML(dbsInst,dataset,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
+                prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
+                page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
         except:    
             page+="<verbatim>"+getExcept()+"</verbatim>"
 
@@ -1901,7 +1901,7 @@ class DDServer(DDLogger,Controller):
         t = templateLFN(searchList=[nameSpace]).respond()
         return str(t)
         
-    def dataToHTML(self,dbsInst,path,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot="",appPath="",userMode="user",phedex=0):
+    def dataToHTML(self,dbsInst,path,date,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot="",appPath="",userMode="user",phedex=0):
         """
            Forms output tables.
            @type  path: string 
@@ -1921,6 +1921,7 @@ class DDServer(DDLogger,Controller):
                      'nEvents'    : totEvt,
                      'totFiles'   : totFiles,
                      'totSize'    : totSize,
+                     'date'       : date,
                      'tid'        : id,
                      'snapshot'   : snapshot,
                      'appPath'    : appPath,
