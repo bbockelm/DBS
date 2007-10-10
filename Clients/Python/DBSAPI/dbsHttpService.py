@@ -150,9 +150,6 @@ class DbsHttpService:
    # All looks OK, still doesn't gurantee proxy's validity etc.
    return key, proxy
    
-
-
-
   def _call(self, args, typ, repeat = 3, delay = 2 ):
 	  try:
 		  return self._callOriginal(args, typ)
@@ -160,10 +157,6 @@ class DbsHttpService:
 		  return self.callAgain(args, typ, repeat, delay)
 	  except DbsProxyNotFound , ex:
 		  return self.callAgain(args, typ, repeat, delay)
-	  #except DbsExecutionError , ex:
-	  #	  return self.callAgain(args, typ, repeat, delay)
-	  #except DbsBadXMLData , ex:
-	  #	  return self.callAgain(args, typ, repeat, delay)
 		  
   def callAgain(self, args, typ, repeat, delay):
 	  print "I will retry in %s seconds" % delay
@@ -229,27 +222,19 @@ class DbsHttpService:
        # See if HTTP call succeeded 
        responseCode = int(response.status)
        if responseCode != 200:
+
          exmsg = "\nCall to DBS Server ("+self.Url+") failed"
          statusResponse = response.read()
+
          try:
            statusDetail = statusResponse.split('<body>')[1].split('</body>')[0].split('description')[1]  
 	   statusDetail = statusDetail.split('<u>')[1].split('</u>')[0]
          except:
-           statusDetail=statusResponse
-
+           statusDetail = http_responses[responseCode]
          exmsg += "\nHTTP ERROR Status '%s', \nStatus detail: '%s'" % (responseCode, statusDetail)
-         if responseCode == 300: raise DbsBadData (args=exmsg, code=responseCode)
-         elif responseCode == 302: raise DbsNoObject (args=exmsg, code=responseCode)
-         elif responseCode == 400: raise DbsExecutionError (args=exmsg, code=responseCode)
-         elif responseCode == 401 or responseCode == 404: 
-		raise DbsConnectionError (args=exmsg, code=responseCode)
-         elif responseCode == 403: 
-			#statusDetail = response.read()
-			#if statusDetail.find("DN provided not found in grid-mapfile") != -1:
-			#	exmsg += "\nDN provided not found in grid-mapfile"	
-			raise DbsConnectionError (args=exmsg, code=responseCode)
-         else: 
-		raise DbsToolError (args=exmsg, code=responseCode)
+
+         raise DbsConnectionError(args=exmsg, code=responseCode)
+
  
        # HTTP Call was presumly successful, and went throught to DBS Server 
        data = response.read()
@@ -285,14 +270,15 @@ class DbsHttpService:
 	raise DbsConnectionError (args=msg, code="505")            
 
     try:
-      # Error message would arrive in XML, if any
+      # DbsExecutionError message would arrive in XML, if any
       class Handler (xml.sax.handler.ContentHandler):
            def startElement(self, name, attrs):
+
              if name == 'exception':
                 statusCode = attrs['code']
                 exmsg = "DBS Server Raised An Error: %s, %s" \
                                  %(attrs['message'], attrs['detail'])
-                
+
                 if (int(statusCode) < 2000 and  int(statusCode) > 1000 ): 
                    raise DbsBadRequest (args=exmsg, code=statusCode)
 
@@ -316,6 +302,7 @@ class DbsHttpService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 logging.log(DBSINFO, info)
 
+      logging.log(DBSDEBUG, data)
       #print data
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data
@@ -323,14 +310,7 @@ class DbsHttpService:
 
     except SAXParseException, ex:
       msg = "Unable to parse XML response from DBS Server"
-      msg += "\n   Verify URL %s" % self.Url
+      msg += "\n   Verify URL %s or run in debug mode %s" % self.Url
       raise DbsBadXMLData (args=msg, code="5999")	
-
-    #except Exception, ex:
-    #    msg = "HTTP ERROR, Unable to make API call"
-    #    msg += "\n   Verify URL %s" % self.Url
-    #    if self.Secure == True : 
-    #		msg += "\n   Make sure you have a Valid Proxy"
-    #    raise DbsConnectionError (args=msg, code="505")
 
 
