@@ -32,7 +32,7 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplUpdateFileStatus(self, lfn, status):
+def dbsApiImplUpdateFileStatus(self, lfn, status, description =""):
     """
     Updates the Status filed of a File (lfn)
 
@@ -47,6 +47,7 @@ def dbsApiImplUpdateFileStatus(self, lfn, status):
     data = self._server._call ({ 'api' : 'updateFileStatus',
                          'lfn' : file_name(lfn),
                          'status' : status,
+			 'description': description,
                          }, 'POST')
 
     

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.67 $"
- $Id: DBSApiFileLogic.java,v 1.67 2007/10/02 19:23:53 sekhri Exp $"
+ $Revision: 1.68 $"
+ $Id: DBSApiFileLogic.java,v 1.68 2007/10/05 19:16:20 sekhri Exp $"
  *
  */
 
@@ -1206,7 +1206,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid, the database connection is unavailable or a procsssed dataset is not found.
 	 */
-	public void updateFileStatus(Connection conn, Writer out, String lfn, String value, Hashtable dbsUser) throws Exception {
+	public void updateFileStatus(Connection conn, Writer out, String lfn, String value, String descrp, Hashtable dbsUser) throws Exception {
+		String desc="updateFileStatus";
+		if (!isNull(descrp)) {
+			desc=descrp;
+		}
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		updateName(conn, out, "Files",  getFileID(conn, lfn, true),
 				                        "FileStatus", "FileStatus", "Status", value, personApi.getUserID(conn, dbsUser));
@@ -1220,6 +1224,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		} finally { 
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
+		}
+
+		if (this.data.instanceName.equals("GLOBAL")) { 
+			insertTimeLog(conn, "UpdateFileStatus", "UpdateFileStatus Called By User",
+                                                  "File: "+lfn+" Status Changed To: "+value,
+						   desc,
+                                                   dbsUser);
 		}
 	}
 

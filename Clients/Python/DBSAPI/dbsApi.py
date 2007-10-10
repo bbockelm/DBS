@@ -313,11 +313,11 @@ class DbsApi(DbsConfig):
        from dbsApiInsertRun import dbsApiImplInsertRun
        return  dbsApiImplInsertRun(self, run)
 
-  def updateFileStatus(self, lfn, status):
+  def updateFileStatus(self, lfn, status, description=""):
 
        #Calling the Implementation function
        from dbsApiUpdateFileStatus import dbsApiImplUpdateFileStatus
-       return  dbsApiImplUpdateFileStatus(self, lfn, status)
+       return  dbsApiImplUpdateFileStatus(self, lfn, status, description)
 
   def updateFileMetaData(self, lfn, metaData):
 

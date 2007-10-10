@@ -1,6 +1,6 @@
 /**
- $Revision: 1.105 $"
- $Id: DBSApi.java,v 1.105 2007/09/28 18:02:04 afaq Exp $"
+ $Revision: 1.106 $"
+ $Id: DBSApi.java,v 1.106 2007/10/05 19:16:20 sekhri Exp $"
  *
 */
 
@@ -167,6 +167,8 @@ public class DBSApi {
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
 				instanceName = rs.getString("InstanceName");
+				//Store it in Global data as well
+				api.data.instanceName = instanceName;
 			} else {
 				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
@@ -482,6 +484,7 @@ public class DBSApi {
 				(new DBSApiFileLogic(this.data)).updateFileStatus(conn, out,
 						get(table, "lfn", true),
 						get(table, "status", true),
+						get(table, "description", false),
 						dbsUser);
 				
 			} else if (apiStr.equals("updateFileMetaData")) {

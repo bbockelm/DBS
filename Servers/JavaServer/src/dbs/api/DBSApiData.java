@@ -1,6 +1,6 @@
 /**
- $Revision: 1.2 $"
- $Id: DBSApiData.java,v 1.2 2007/03/12 17:19:20 afaq Exp $"
+ $Revision: 1.3 $"
+ $Id: DBSApiData.java,v 1.3 2007/10/05 16:57:43 sekhri Exp $"
  *
  */
 
@@ -18,6 +18,7 @@ public class DBSApiData {
 	public Hashtable globalPDPath = new Hashtable();
 	public Vector dbOrderedList = new Vector();
 	public String apiName = "";
+	public String instanceName = "";
 	/**
 	* Constructs a DBSApiData object. The constructor does notthing.
 	*/
