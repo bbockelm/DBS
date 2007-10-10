@@ -1,6 +1,6 @@
 /**
- $Revision: 1.38 $"
- $Id: DBSApiAnaDSLogic.java,v 1.38 2007/06/14 19:15:52 afaq Exp $"
+ $Revision: 1.39 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.39 2007/09/28 18:02:04 afaq Exp $"
  *
  */
 
@@ -363,8 +363,6 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 				if(isNull(pathFromDef) && !isNull(pathFromDS)) 	path = pathFromDS;
 
 				procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true); 
-				System.out.println("procDSID " + procDSID);
-
 				lumiNumberList = get(rs, "LUMI_SECTIONS");
 				lumiRangeList = parseRangeList(get(rs, "LUMI_SECTION_RANGES"));
 				runNumberList = get(rs, "RUNS");
