@@ -651,7 +651,7 @@ class DDHelper(DDLogger):
           if  self.dbManager.dbType[self.dbsInstance]=='oracle' and limit:
               rownum,path,prdDate = item
           else:
-              path,prdDate = item[0]
+              path,prdDate = item
           if not path: continue
           if not oList.count(path): oList.append(path)
       self.closeConnection(con)

@@ -1021,7 +1021,7 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
         
-    def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",userMode='user'):
+    def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
         """
            Get all processed datasets for given set of input parameters
            @type  dbsInst: string
@@ -1059,7 +1059,7 @@ class DDServer(DDLogger,Controller):
             if  type(proc) is not types.ListType and len(proc) and proc!="*":
                 page+=proc+"\n"
             else:
-                procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,userMode=userMode,fromRow=0,limit=0,count=0)
+                procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=0,limit=0,count=0)
 #                procList = self.helper.getDatasetsFromApp(app,primD,tier)
                 for procD in procList:
                     page+=procD+"\n"
@@ -1257,6 +1257,7 @@ class DDServer(DDLogger,Controller):
                      'group'    : group,
                      'app'      : app,
                      'date'     : _date,
+                     'unm_date' : date,
                      'idx'      : _idx,
                      'ajax'     : ajax,
                      'phedex'   : phedex,
