@@ -195,16 +195,17 @@
 <tr>
 <td>
 
+#set lSecs=$eval(time.strftime("%H*60*60+%M*60+%S",$time.gmtime()))
 <div id="kw_date_holder">
 <select name="date" id="kw_date" style="$style">
 <option value="Any" selected="selected">Any</option>
-<option value="$long($time.time()-1*60*60)">In last 1 hour</option>
-<option value="$long($time.time()-5*60*60)">In last 5 hours</option>
-<option value="$long($time.time()-12*60*60)">In last 12 hours</option>
-<option value="$long($time.time()-1*24*60*60)">In last day</option>
-<option value="$long($time.time()-2*24*60*60)">In last 2 days</option>
-<option value="$long($time.time()-1*7*24*60*60)">In last week</option>
-<option value="$long($time.time()-1*30*7*24*60*60)">In last month (30 days)</option>
+<option value="$long($time.mktime($time.gmtime())-1*60*60)">In last 1 hour</option>
+<option value="$long($time.mktime($time.gmtime())-5*60*60)">In last 5 hours</option>
+<option value="$long($time.mktime($time.gmtime())-12*60*60)">In last 12 hours</option>
+<option value="$long($time.mktime($time.gmtime())-1*24*60*60-$lSecs)">In last day</option>
+<option value="$long($time.mktime($time.gmtime())-2*24*60*60-$lSecs)">In last 2 days</option>
+<option value="$long($time.mktime($time.gmtime())-1*7*24*60*60-$lSecs)">In last week</option>
+<option value="$long($time.mktime($time.gmtime())-1*30*7*24*60*60-$lSecs)">In last month (30 days)</option>
 </select>
 </div>
 
