@@ -856,6 +856,7 @@ MCDescription:      %s
       totSize=0
       oldse=""
       oldBlk=""
+      prdDate=""
       for item in result:
 #          print "blockList item result=",item
           if not item[0]: continue
