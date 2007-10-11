@@ -2521,6 +2521,7 @@ MCDescription:      %s
           tseb = self.alias('SEBlock','tseb')
           tse  = self.alias('StorageElement','tse')
           tf   = self.alias('Files','tf')
+          tfs  = self.alias('FileStatus','tfs')
 
           oSel = [self.col(tf,'LogicalFileName')]
           sel  = sqlalchemy.select(oSel,
@@ -2528,12 +2529,14 @@ MCDescription:      %s
                      tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
                      .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                      .outerjoin(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+                     .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
           if datasetPath!="*":
              sel.append_whereclause(self.col(tblk,'Path')==datasetPath)
+          sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
           result = self.getSQLAlchemyResult(con,sel)
       except:
           msg="\n### Query:\n"+str(sel)
