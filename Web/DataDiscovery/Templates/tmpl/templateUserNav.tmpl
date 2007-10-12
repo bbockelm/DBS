@@ -195,7 +195,10 @@
 <tr>
 <td>
 
-#set lSecs=$eval(time.strftime("%H*60*60+%M*60+%S",$time.gmtime()))
+###set lSecs=$eval(time.strftime("%H*60*60+%M*60+%S",$time.gmtime()))
+#set t=$time.gmtime()
+## calculate time in seconds t=time.gmtime() is tuple where hour,minute,sec is t[3],t[4],t[5]
+#set lSecs=$t[3]*60*60+$t[4]*60+$t[5]
 <div id="kw_date_holder">
 <select name="date" id="kw_date" style="$style">
 <option value="Any" selected="selected">Any</option>
