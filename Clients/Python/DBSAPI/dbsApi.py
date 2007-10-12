@@ -373,6 +373,16 @@ class DbsApi(DbsConfig):
        from dbsApiDeleteReplicaFromBlock import dbsApiImplDeleteReplicaFromBlock
        return  dbsApiImplDeleteReplicaFromBlock(self, block, storage_element)
 
+  def deleteProcDS(self, path):
+       #Calling the Implementation function
+       from dbsApiDeleteProcDS import dbsApiImplDeleteProcDS
+       return  dbsApiImplDeleteProcDS(self, path)
+
+  def undeleteProcDS(self, path):
+       #Calling the Implementation function
+       from dbsApiDeleteProcDS import dbsApiImplUndeleteProcDS
+       return  dbsApiImplUndeleteProcDS(self, path)
+
   def renameSE(self, storage_element_from, storage_element_to):
 
        #Calling the Implementation function
