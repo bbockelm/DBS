@@ -1,6 +1,6 @@
 /**
- $Revision: 1.106 $"
- $Id: DBSApi.java,v 1.106 2007/10/05 19:16:20 sekhri Exp $"
+ $Revision: 1.107 $"
+ $Id: DBSApi.java,v 1.107 2007/10/10 22:04:18 afaq Exp $"
  *
 */
 
@@ -578,6 +578,19 @@ public class DBSApi {
 				(new DBSApiBlockLogic(this.data)).closeBlock(conn, out,
 						get(table, "block_name", true),
 						dbsUser);
+			} else if (apiStr.equals("deleteProcDS")) {
+				(new DBSApiProcDSLogic(this.data)).deleteProcDS(conn, out,
+						get(table, "path", true),
+						dbsUser,
+						apiVersion);
+				
+			} else if (apiStr.equals("undeleteProcDS")) {
+				(new DBSApiProcDSLogic(this.data)).undeleteProcDS(conn, out,
+						get(table, "path", true),
+						dbsUser,
+						apiVersion);
+
+
                         } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),

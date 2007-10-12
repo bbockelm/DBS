@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.117 $"
- $Id: DBSSql.java,v 1.117 2007/09/28 18:02:05 afaq Exp $"
+ $Revision: 1.118 $"
+ $Id: DBSSql.java,v 1.118 2007/10/02 19:23:53 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -98,6 +98,16 @@ public class DBSSql {
                 return getInsertSQL(conn, "TimeLog", table);
         }
 
+       	public static PreparedStatement insertRecycleBin(Connection conn, String path, String blockName, String xml, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
+		Hashtable table = new Hashtable();
+		table.put("Path", path);
+		table.put("BlockName", blockName);
+		table.put("Xml", xml);
+		table.put("CreatedBy", cbUserID);
+		table.put("LastModifiedBy", lmbUserID);
+		table.put("CreationDate", cDate);
+		return getInsertSQL(conn, "RecycleBin", table);
+	}
 
 
        	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
@@ -972,6 +982,7 @@ public class DBSSql {
 		return ps;
         }
 
+
 	public static PreparedStatement deleteMap(Connection conn, String tableName, String key1, String key2, String value1, String value2) throws SQLException {	
 		String sql = "DELETE FROM \n" +
 			tableName + "\n" +
@@ -1629,7 +1640,30 @@ public class DBSSql {
 		return ps;
 	}
 
+	public static PreparedStatement listBlocks(Connection conn, String procDSID) throws SQLException {
+		String sql = "SELECT b.Name as NAME \n" +
+			"FROM Block b \n" +
+			"WHERE b.Dataset = ? \n";
 
+                int columnIndx = 1;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(columnIndx++, procDSID);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listBlockContentsInRecycleBin(Connection conn, String path) throws SQLException {
+		String sql = "SELECT rb.BlockName as BLOCK_NAME, \n" +
+			"rb.Xml as XML \n" +
+			"FROM RecycleBin rb \n" +
+			"WHERE rb.Path = ? \n";
+
+                int columnIndx = 1;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(columnIndx++, path);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
 
 	public static PreparedStatement listStorageElements(Connection conn, String seName) throws SQLException {

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.44 $"
- $Id: DBSApiProcDSLogic.java,v 1.44 2007/10/05 16:57:43 sekhri Exp $"
+ $Revision: 1.45 $"
+ $Id: DBSApiProcDSLogic.java,v 1.45 2007/10/05 19:16:20 sekhri Exp $"
  *
  */
 
@@ -8,12 +8,15 @@ package dbs.api;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import dbs.DBSConstants;
 import java.io.Writer;
+import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Vector;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import dbs.api.parser.DBSApiParser;
 
 /**
 * A class that has the core business logic of all the Processed dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -557,6 +560,116 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		if(!this.data.apiName.equals("transfer"))
 			if (listProcDSStatus(conn, out, procDSID).equals("RO"))
 				throw new DBSException("Operation NOT permitted", "1080", "Dataset " + path + " is read only dataset and CANNOT be altered. Further, the status of this dataset CANNOT be changed");
+
+	}
+
+
+	//private void insertRecycleBin(Connection conn, Writer out, String path, String blockName, String xml, Hashtable dbsUser) throws Exception {
+	private void insertRecycleBin(Connection conn, Writer out, String path, String blockName, String xml, String lmbUserID, String cbUserID, String creationDate) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertRecycleBin(conn, 
+				path,
+				blockName,
+				xml,
+				cbUserID,
+				cbUserID,
+				creationDate);
+			ps.execute();
+                } finally {
+			if (ps != null) ps.close();
+		}
+
+
+	}
+	
+	
+	public void deleteProcDS(Connection conn, Writer out, String path, Hashtable dbsUser, String clientVersion) throws Exception {
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = lmbUserID;
+		String creationDate = getTime(new Hashtable(), "creation_date", false);
+		boolean blockPresent = false;
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			String procDSID = getProcessedDSID(conn, path, true);
+			//Get all the Blocks from this dataset
+			ps =  DBSSql.listBlocks(conn, procDSID);
+			rs =  ps.executeQuery();
+			DBSApiTransferLogic transferApi = new DBSApiTransferLogic(this.data);
+			while(rs.next()) {
+				blockPresent = true;
+				StringWriter sout = new StringWriter();
+				sout.write(DBSConstants.XML_HEADER); 
+				String blockName = get(rs, "NAME");
+				//System.out.println("Block name is " + blockName);
+				transferApi.listDatasetContents(conn, sout, path,
+						blockName,
+						"DOES_NOT_MATTER",
+						clientVersion
+						);
+				sout.write(DBSConstants.XML_SUCCESS);
+				sout.write(DBSConstants.XML_FOOTER);
+				sout.flush();
+
+				//System.out.println("XML is " + sout.toString());
+				//Write the XML in Recycle Bin
+				insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
+				
+			}
+			if(!blockPresent) writeWarning(out, "No Blocks", "1021", "ProcessedDataset " + path + " has no blocks");
+			//Delete the actual dataset
+			deleteName(conn, out, "ProcessedDataset", "ID", procDSID);
+			//Record history in TimeLog
+			insertTimeLog(conn, "deleteProcDS", "Delete processed Dataset called By User",
+				"deleteProcDS",
+				"Dataset: " + path + " moved to RecycleBin ",
+				dbsUser);
+
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+
+	public void undeleteProcDS(Connection conn, Writer out, String path, Hashtable dbsUser, String clientVersion) throws Exception {
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = lmbUserID;
+		String creationDate = getTime(new Hashtable(), "creation_date", false);
+		boolean blockPresent = false;
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			//Get all the Blocks of this dataset from the recycle bin
+			ps =  DBSSql.listBlockContentsInRecycleBin(conn, path);
+			rs =  ps.executeQuery();
+			DBSApiTransferLogic transferApi = new DBSApiTransferLogic(this.data);
+			while(rs.next()) {
+				blockPresent = true;
+				String blockName = get(rs, "BLOCK_NAME");
+				//System.out.println("Block name is " + blockName);
+				//System.out.println("XML is " +get(rs, "XML"));
+				transferApi.insertDatasetContents(conn, out,
+						DBSApiParser.parseDatasetContents(get(rs, "XML")), 
+						dbsUser,
+						false,
+						clientVersion);
+			}
+			if(!blockPresent) throw new DBSException("Unavailable data", "3008", "No such dataset path : " + path + " in the Recycle Bin" );
+			//Delete the actual dataset from Recycle Bin
+			deleteName(conn, out, "RecycleBin", "Path", path);
+
+			//Record history in TimeLog
+			insertTimeLog(conn, "undeleteProcDS", "UNDelete processed Dataset called By User",
+				"undeleteProcDS",
+				"Dataset: " + path + " moved from RecycleBin back to DBS",
+				dbsUser);
+
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+
 
 	}
 

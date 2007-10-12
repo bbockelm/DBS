@@ -472,6 +472,22 @@ closeBlock () {
 	display "$out"
 }
 
+deleteProcDS () {
+	message="Executing deleteProcDS API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=deleteProcDS path=$path_child`
+	display "$out"
+}
+
+undeleteProcDS () {
+	message="Executing undeleteProcDS API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=undeleteProcDS path=$path_child`
+	#out=`$CMD api=undeleteProcDS "path=/This_is_a_test_primary_c6faf185-cc5e-4d45-9392-ad4d51d14dc2/CHILD_This_is_a_test_processed_c6faf185-cc5e-4d45-9392-ad4d51d14dc2/SIMaa"`
+	display "$out"
+}
+
+
 updateSEName () {
 	message="Executing updateSEName API ..."	
 	echo $message >> $outFile ; echo $message
@@ -504,7 +520,6 @@ insertFiles () {
 				<file_lumi_section lumi_section_number='1017' run_number='$run_number2' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
 				<file_lumi_section lumi_section_number='1028' run_number='$run_number1' start_event_number='4' end_event_number='7' lumi_start_time='1066729598999' lumi_end_time='1066333398999'/>
 				<file_data_tier name='$tier_name2'/>
-				<file_parent lfn='TEST_LFN_1_$rand'/>
 				$falgo3
 				$falgo4
 			</file>
@@ -656,11 +671,14 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
+
+deleteProcDS
+undeleteProcDS
 createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition
 listAnalysisDataset
-
+#
 listPrimaryDatasets
 listProcessedDatasets
 listAlgorithms
