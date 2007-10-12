@@ -4,9 +4,27 @@
 -- === Build : 729
 -- ======================================================================
 
-drop database if exists DBS_1_0_8_ANZAR;
-create database DBS_1_0_8_ANZAR;
-use DBS_1_0_8_ANZAR;
+drop database if exists DBS_1_0_8_Vijay;
+create database DBS_1_0_8_Vijay;
+use DBS_1_0_8_Vijay;
+
+-- ======================================================================
+CREATE TABLE RecycleBin
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Path                  varchar(500) ,
+    BlockName		  varchar(700) ,
+    Xml                   LONGTEXT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID),
+    unique(Path, BlockName)
+  ) ENGINE = InnoDB ;
+
+
 -- ======================================================================
 
 CREATE TABLE Person
@@ -920,6 +938,12 @@ CREATE TABLE BranchHashMap
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
 
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1348,7 +1372,7 @@ ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT
     AnalysisDSFileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
 ;
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
-    AnalysisDSFileLumi_Fileid_FK foreign key(Fileid) references Files(ID)
+    AnalysisDSFileLumi_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
 ;
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
     AnalysisDSFileLumiCreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1518,6 +1542,8 @@ ALTER TABLE BranchHashMap ADD CONSTRAINT
 ;
 
 -- =========== INSERT TRIGGERS FOR LastModificationDate ============================
+CREATE TRIGGER TR_RecycleBin BEFORE INSERT ON RecycleBin
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_Person BEFORE INSERT ON Person
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.118 $"
- $Id: DBSSql.java,v 1.118 2007/10/02 19:23:53 sekhri Exp $"
+ $Revision: 1.119 $"
+ $Id: DBSSql.java,v 1.119 2007/10/12 20:11:49 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1199,7 +1199,7 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws SQLException {
+	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, boolean all) throws SQLException {
 		String sql = "SELECT procds.id as id, \n" +
 			/*"concat( \n" +
 				"concat( \n" +
@@ -1312,9 +1312,11 @@ public class DBSSql {
 		}
 
 
-		if(useAnd) sql += " AND ";
-		sql +=	"pds.Status <> 'INVALID' \n" +
-			"ORDER BY procds.id, av.Version, af.FamilyName, ae.ExecutableName, ps.Name, dt.Name DESC";
+		if(!all) {
+			if(useAnd) sql += " AND ";
+			sql += " pds.Status <> 'INVALID' \n ";
+		}
+		sql +=	"ORDER BY procds.id, av.Version, af.FamilyName, ae.ExecutableName, ps.Name, dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		if(!patternPrim.equals("%")) ps.setString(columnIndx++, patternPrim);

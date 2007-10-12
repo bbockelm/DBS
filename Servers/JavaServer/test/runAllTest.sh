@@ -672,8 +672,8 @@ insertProcessedDataset
 insertBlock
 insertFiles
 
-deleteProcDS
-undeleteProcDS
+#deleteProcDS
+#undeleteProcDS
 createAnalysisDatasetDefinition
 createAnalysisDataset
 listAnalysisDatasetDefinition

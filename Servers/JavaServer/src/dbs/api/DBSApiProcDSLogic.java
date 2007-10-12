@@ -1,6 +1,6 @@
 /**
- $Revision: 1.45 $"
- $Id: DBSApiProcDSLogic.java,v 1.45 2007/10/05 19:16:20 sekhri Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSApiProcDSLogic.java,v 1.46 2007/10/12 20:11:48 sekhri Exp $"
  *
  */
 
@@ -53,6 +53,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied patterns are invalid or the database connection is unavailable.
 	 */
 	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws Exception {
+		listProcessedDatasets(conn, out, patternPrim, patternDT, patternProc, patternVer, patternFam, patternExe, patternPS, false);
+	}
+	public void listProcessedDatasets(Connection conn, Writer out, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, boolean all) throws Exception {
 		String prevDS = "";
 		/*String prevTier = "";
 		String prevExe = "";
@@ -80,7 +83,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 					getPattern(patternVer, "app_version"), 
 					getPattern(patternFam, "app_family_name"), 
 					getPattern(patternExe, "app_executable_name"), 
-					getPattern(patternPS, "ps_hash"));
+					getPattern(patternPS, "ps_hash"),
+					all);
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				//String path = "/" + get(rs, "primary_name") + "/" + get(rs, "data_tier") + "/" + get(rs, "processed_name");
@@ -606,7 +610,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				transferApi.listDatasetContents(conn, sout, path,
 						blockName,
 						"DOES_NOT_MATTER",
-						clientVersion
+						clientVersion,
+						true
 						);
 				sout.write(DBSConstants.XML_SUCCESS);
 				sout.write(DBSConstants.XML_FOOTER);

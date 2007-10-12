@@ -1,6 +1,6 @@
 /**
- $Revision: 1.27 $"
- $Id: DBSApiTransferLogic.java,v 1.27 2007/10/05 16:57:43 sekhri Exp $"
+ $Revision: 1.28 $"
+ $Id: DBSApiTransferLogic.java,v 1.28 2007/10/05 19:16:20 sekhri Exp $"
  *
  */
 
@@ -41,6 +41,9 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied path is invalid, the database connection is unavailable or processed dataset is not found.
 	 */
 	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName, String clientVersion) throws Exception {
+		listDatasetContents(conn, out, path, blockName, instanceName, clientVersion, false);
+	}
+	public void listDatasetContents(Connection conn, Writer out, String path, String blockName, String instanceName, String clientVersion, boolean all) throws Exception {
 		String data[] = parseDSPath(path);
 		DBSApiBlockLogic bApi = new DBSApiBlockLogic(this.data);
 		bApi.checkBlock(blockName);
@@ -59,7 +62,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		(new DBSApiPrimDSLogic(this.data)).listPrimaryDatasets(conn, out, data[1]);
 		DBSApiProcDSLogic pdApi = new DBSApiProcDSLogic(this.data);
 		//pdApi.listProcessedDatasets(conn, out, data[1], data[3], data[2], null, null, null, null);
-		pdApi.listProcessedDatasets(conn, out, data[1], "", data[2], null, null, null, null);
+		pdApi.listProcessedDatasets(conn, out, data[1], "", data[2], null, null, null, null, all);
 		(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out, path, clientVersion);
 		pdApi.listDatasetParents(conn, out, path);
 		pdApi.listRuns(conn, out, path);
