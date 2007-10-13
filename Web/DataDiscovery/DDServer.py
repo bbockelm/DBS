@@ -1020,6 +1020,18 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     genNavigatorMenuDict.exposed = True
+
+    def adminDataset(self,dataset,userMode,**kwargs):
+        page = self.genTopHTML(userMode=userMode)
+        page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin dataset',userMode)
+        nameSpace={
+                  'dataset':dataset
+                 }
+        t = templateAdminDatasets(searchList=[nameSpace]).respond()
+        page+= str(t)
+        page+= self.genBottomHTML()
+        return page
+    adminDataset.exposed=True
         
     def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
         """
@@ -4124,8 +4136,8 @@ if __name__ == "__main__":
         cherrypy.config.update("CherryServer3.conf")
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
         httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
-                               ('Accept-Encoding','gzip, deflate'),
-                               ('Content-Encoding','gzip, deflate'),
+                               ('Accept-Encoding','gzip'),
+#                               ('Content-Encoding','gzip'),
                                ('TE','deflate, gzip, x-gzip, identity, trailer'),
                                ('Cache-Control','max-age=315360000')]
                                
@@ -4133,8 +4145,8 @@ if __name__ == "__main__":
                                'tools.response_headers.on':True,
                                'tools.response_headers.headers':
                               [('Expires','Mon, 26 Jul 1997 05:00:00 GMT'),
-                               ('Accept-Encoding','gzip, deflate'),
-                               ('Content-Encoding','gzip, deflate'),
+                               ('Accept-Encoding','gzip'),
+#                               ('Content-Encoding','gzip'),
                                ('TE','deflate, gzip, x-gzip, identity, trailer'),
                                ('Cache-Control','no-store, no-cache, must-revalidate,post-check=0, pre-check=0')]
                               },
