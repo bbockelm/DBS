@@ -96,7 +96,7 @@ class DbsHttpService:
             spliturl = urlparse.urlparse(Url)
             callType = spliturl[0]
             if callType not in ['http', 'https']:
-                raise DbsConnectionError (args="HttpError, BAD URL: %s" %Url, code="200")
+                raise DbsConfigurationError(args="HttpError, BAD URL: %s" %Url, code="200")
             hostport=urllib2.splitport(spliturl[1])
             self.Host=hostport[0]
             self.Port=hostport[1]
@@ -104,7 +104,7 @@ class DbsHttpService:
                 self.Port = "80"
             self.Servlet=spliturl[2]
             if self.Servlet in ['None', '']:
-                raise DbsConnectionError (args="HttpError, BAD URL: %s  Missing Servlet Path" %Url, code="200")
+                raise DbsConfigurationError(args="HttpError, BAD URL: %s  Missing Servlet Path" %Url, code="200")
             if callType == 'https':
                ##Make a secure connection       
                self.Secure = True
@@ -158,7 +158,9 @@ class DbsHttpService:
 	  except DbsConnectionError ,  ex:
 		  ret = self.callAgain(args, typ, repeat, delay)
 		  if ret in ("EXP"):
-			raise ex
+			exmsg ="Failed to connect in 03 Attempts\n"
+			exmsg+=str(ex)
+			raise DbsConnectionError(args=exmsg, code=5999)
 		  else:
 		  	return ret 
 	  #except DbsProxyNotFound , ex:
@@ -234,7 +236,7 @@ class DbsHttpService:
 
          exmsg = "\nCall to DBS Server ("+self.Url+") failed"
          statusResponse = response.read()
-
+        
          try:
            statusDetail = statusResponse.split('<body>')[1].split('</body>')[0].split('description')[1]  
 	   statusDetail = statusDetail.split('<u>')[1].split('</u>')[0]
@@ -263,8 +265,6 @@ class DbsHttpService:
         raise DbsConnectionError (args=msg, code="505")   
   
     except (urllib2.URLError, httplib.HTTPException), ex:
-	import pdb
-        pdb.set_trace()
         msg = "HTTP ERROR, Unable to make API call"
         msg += "  \nVerify URL %s" % self.Url
         msg += "  \nError Message: %s" % ex
@@ -286,16 +286,23 @@ class DbsHttpService:
 
              if name == 'exception':
                 statusCode = attrs['code']
+		statusCode_i = int(statusCode)
                 exmsg = "DBS Server Raised An Error: %s, %s" \
                                  %(attrs['message'], attrs['detail'])
+		
+		if statusCode_i == 1018:
+		    raise DbsBadRequest (args=exmsg, code=statusCode)
 
-                if (int(statusCode) < 2000 and  int(statusCode) > 1000 ): 
+		elif statusCode_i in [1080, 3003, 2001, 4001]:
+		    raise DbsToolError(args=exmsg, code=statusCode)
+
+                if statusCode_i < 2000 and  statusCode_i > 1000 : 
                    raise DbsBadRequest (args=exmsg, code=statusCode)
 
-                if (int(statusCode) < 3000 and  int(statusCode) > 2000 ):
+                if statusCode_i < 3000 and  statusCode_i > 2000 :
                    raise DbsDatabaseError (args=exmsg, code=statusCode) 
              
-                if (int(statusCode) < 4000 and  int(statusCode) > 3000 ):
+                if statusCode_i < 4000 and  statusCode_i > 3000 :
                    raise DbsBadXMLData (args=exmsg, code=statusCode)
 
                 else: raise DbsExecutionError (args=exmsg, code=statusCode)
@@ -305,7 +312,6 @@ class DbsHttpService:
                 warn += "\n Waring Message: " + attrs['message']
                 warn += "\n Warning Detail: " + attrs['detail']+"\n"
                 logging.log(DBSWARNING, warn)
-
 
 	     if name =='info':
                 info = "\n DBS Info Message: %s " %attrs['message']
