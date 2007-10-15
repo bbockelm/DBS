@@ -163,8 +163,14 @@ class DbsHttpService:
 			raise DbsConnectionError(args=exmsg, code=5999)
 		  else:
 		  	return ret 
-	  #except DbsProxyNotFound , ex:
-	  #	  return self.callAgain(args, typ, repeat, delay)
+	 except DbsDatabaseError, ex:
+                  ret = self.callAgain(args, typ, repeat, delay)
+                  if ret in ("EXP"):
+                        exmsg ="Failed to connect in 03 Attempts\n"
+                        exmsg+=str(ex)
+                        raise DbsConnectionError(args=exmsg, code=5999)
+                  else:
+                        return ret
 		  
   def callAgain(self, args, typ, repeat, delay):
 	  print "I will retry in %s seconds" % delay
@@ -299,7 +305,7 @@ class DbsHttpService:
                 if statusCode_i < 2000 and  statusCode_i > 1000 : 
                    raise DbsBadRequest (args=exmsg, code=statusCode)
 
-                if statusCode_i < 3000 and  statusCode_i > 2000 :
+                if statusCode_i < 3000 and  statusCode_i >= 2000 :
                    raise DbsDatabaseError (args=exmsg, code=statusCode) 
              
                 if statusCode_i < 4000 and  statusCode_i > 3000 :
