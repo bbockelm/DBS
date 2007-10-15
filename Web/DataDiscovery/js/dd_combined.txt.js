@@ -1626,6 +1626,17 @@ function ChangeUserMode(mode) {
   } 
   load(newurl);
 }
+function GetValueFromSelect(tag) {
+  var elem=null;
+  var sel=document.getElementById(tag);
+  for(i=0;i<sel.length;i++) {
+      if(sel[i].selected) {
+         return sel[i].value;
+      }
+  }
+  return elem;
+}
+
 function MakeTooltip(_tag,_ctx,_text,autodismissdelay,width) {
   var delay=5000;
   if(autodismissdelay) {
