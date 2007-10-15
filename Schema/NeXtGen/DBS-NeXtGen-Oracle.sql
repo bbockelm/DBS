@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 730
+REM === Build : 719
 REM ======================================================================
 
 CREATE TABLE Person
@@ -122,6 +122,19 @@ CREATE TABLE LumiSection
     LastModificationDate  BIGINT,
     primary key(ID),
     unique(LumiSectionNumber,RunNumber)
+  );
+
+REM ======================================================================
+
+CREATE TABLE Branch
+  (
+    ID                    BIGINT UNSIGNED,
+    Name                  varchar(500)      unique not null,
+    LastModifiedBy        BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    primary key(ID)
   );
 
 REM ======================================================================
@@ -487,49 +500,6 @@ CREATE TABLE QualityVersion
 
 REM ======================================================================
 
-CREATE TABLE Branch
-  (
-    ID                    BIGINT UNSIGNED,
-    Name                  varchar(500)      unique not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE BranchHash
-  (
-    ID                    BIGINT UNSIGNED,
-    Hash                  varchar(700)      unique not null,
-    Description           varchar(1000),
-    Content               LONGTEXT,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID)
-  );
-
-REM ======================================================================
-
-CREATE TABLE BranchHashMap
-  (
-    ID                    BIGINT UNSIGNED,
-    BranchID              BIGINT UNSIGNED   not null,
-    BranchHashID          BIGINT UNSIGNED   not null,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-    primary key(ID),
-    unique(BranchID,BranchHashID)
-  );
-
-REM ======================================================================
-
 CREATE TABLE AlgorithmConfig
   (
     ID                    BIGINT UNSIGNED,
@@ -725,7 +695,6 @@ CREATE TABLE Files
     FileSize              BIGINT UNSIGNED   not null,
     FileStatus            BIGINT UNSIGNED   not null,
     FileType              BIGINT UNSIGNED   not null,
-    FileBranch            BIGINT UNSIGNED,
     ValidationStatus      BIGINT UNSIGNED,
     QueryableMetadata     varchar(1000)     default 'NOTSET',
     CreatedBy             BIGINT UNSIGNED,
@@ -794,6 +763,21 @@ CREATE TABLE FileAlgo
     LastModifiedBy        BIGINT UNSIGNED,
     primary key(ID),
     unique(Fileid,Algorithm)
+  );
+
+REM ======================================================================
+
+CREATE TABLE FileBranch
+  (
+    ID                    BIGINT UNSIGNED,
+    Fileid                BIGINT UNSIGNED   not null,
+    Branch                BIGINT UNSIGNED   not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID),
+    unique(Fileid,Branch)
   );
 
 REM ======================================================================
@@ -926,6 +910,13 @@ ALTER TABLE LumiSection ADD CONSTRAINT
 /
 ALTER TABLE LumiSection ADD CONSTRAINT 
     LumiSection_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+ALTER TABLE Branch ADD CONSTRAINT 
+    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
 /
 
 ALTER TABLE TimeLog ADD CONSTRAINT 
@@ -1136,33 +1127,6 @@ ALTER TABLE QualityVersion ADD CONSTRAINT
     QualityVersionLastModifiedB_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-ALTER TABLE Branch ADD CONSTRAINT 
-    Branch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE Branch ADD CONSTRAINT 
-    Branch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE BranchHash ADD CONSTRAINT 
-    BranchHash_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE BranchHash ADD CONSTRAINT 
-    BranchHash_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMap_BranchID_FK foreign key(BranchID) references Branch(ID) on delete CASCADE
-/
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMap_BranchHashID_FK foreign key(BranchHashID) references BranchHash(ID)
-/
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMap_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-/
-ALTER TABLE BranchHashMap ADD CONSTRAINT 
-    BranchHashMapLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-/
-
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
     AlgorithmConfigExecutableNa_FK foreign key(ExecutableName) references AppExecutable(ID)
 /
@@ -1337,9 +1301,6 @@ ALTER TABLE Files ADD CONSTRAINT
     Files_FileType_FK foreign key(FileType) references FileType(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
-    Files_FileBranch_FK foreign key(FileBranch) references BranchHash(ID)
-/
-ALTER TABLE Files ADD CONSTRAINT 
     Files_ValidationStatus_FK foreign key(ValidationStatus) references FileValidStatus(ID)
 /
 ALTER TABLE Files ADD CONSTRAINT 
@@ -1402,6 +1363,19 @@ ALTER TABLE FileAlgo ADD CONSTRAINT
 /
 ALTER TABLE FileAlgo ADD CONSTRAINT 
     FileAlgo_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
+/
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_Branch_FK foreign key(Branch) references Branch(ID)
+/
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE FileBranch ADD CONSTRAINT 
+    FileBranch_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE FileTriggerTag ADD CONSTRAINT 

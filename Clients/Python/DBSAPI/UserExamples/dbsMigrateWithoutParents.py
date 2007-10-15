@@ -21,7 +21,7 @@ try:
 	if len(sys.argv) > 4 :
 		block = sys.argv[4]
 	
-	api.migrateDatasetContents(srcURL, dstURL, path, block, True, True)
+	api.migrateDatasetContents(srcURL, dstURL, path, block, True)
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )

@@ -898,9 +898,9 @@ apiObj.setVerboseLevel(opts.verbose)
 f.write("\n\n***********************renameSE API tests***************************")
 
 apiObj.run("MySE2", "MySE2New" + mytime, excep = False)
-apiObj.run("DOESNOTEXIST", "MySE", excep = True)
-apiObj.run("abcd;edf", "ANTHING", excep = True)
-apiObj.run("/does/no", "MySE1", excep = True)
+apiObj.run("DOESNOTEXIST", "MySE", excep = False)
+apiObj.run("abcd;edf", "ANTHING", excep = False)
+apiObj.run("/does/no", "MySE1", excep = False)
 
 f.write("\n\n***********************renameSE API tests***************************")
 

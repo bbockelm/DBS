@@ -17,7 +17,7 @@ optManager  = DbsOptionParser()
 api = DbsApi(opts.__dict__)
 
 try:
-    print api.updateFileStatus("NEW_TEST0001", "VALID", "No Description")
+    print api.updateFileStatus("1111-0909-9767-8764_20070315_09h34m11s", "PROMOTED")
 
 
 except DbsApiException, ex:

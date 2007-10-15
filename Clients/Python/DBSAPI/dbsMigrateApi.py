@@ -4,25 +4,23 @@
 import sys
 import os
 #from DBSAPI.dbsApi import DbsApi
-from dbsException import *
-from dbsApiException import *
-from dbsOptions import DbsOptionParser
+from DBSAPI.dbsException import *
+from DBSAPI.dbsApiException import *
+from DBSAPI.dbsOptions import DbsOptionParser
 from dbsLogger import *
 
 class DbsMigrateApi:
 	
 	apiSrc = None
 	apiDst = None
-	force = False
-	pBranches = False
+	force = False;
 	#def __init__(self, srcURL, dstURL, force = False):
-	def __init__(self, apiSrc, apiDst, force = False, pBranches = False):
+	def __init__(self, apiSrc, apiDst, force = False):
 		#self.apiSrc = self.makeAPI(srcURL)
 		#self.apiDst = self.makeAPI(dstURL)
 		self.apiSrc = apiSrc
 		self.apiDst = apiDst
 		self.force = force
-		self.pBranches = pBranches
 		
 	def getAPISrc(self):
 		return self.apiSrc
@@ -95,21 +93,11 @@ class DbsMigrateApi:
 			self.migrateBlockROBasic(path, block['Name'])
 
 	
-	
 	def migrateBlockBasic(self, path, blockName):
 		try:
 			print "Transferring path %s " %path
 			print "            block %s " %blockName
-			if( not self.pBranches):
-				self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName))
-			else:
-				fileName = blockName.replace('/', '_').replace('#', '_') + ".xml"
-				f = open(fileName, "w");
-				f.write(self.apiSrc.listDatasetContents(path,  blockName))
-				f.close()
-				#print self.pruneBranchesFromFile(fileName)
-				self.apiDst.insertDatasetContents(self.pruneBranchesFromFile(fileName))
-
+			self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName))
 		except DbsBadRequest, ex:
 			print ex
 			# If not block excep then raise it again
@@ -120,16 +108,7 @@ class DbsMigrateApi:
 		try:
 			print "Transferring path %s " %path
 			print "            block %s " %blockName
-			if(not self.pBranches):
-				self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName), True)
-			else:
-				fileName = blockName.replace('/', '_').replace('#', '_') + ".xml"
-				f = open(fileName, "w");
-				f.write(self.apiSrc.listDatasetContents(path,  blockName))
-				f.close()
-				#print self.pruneBranchesFromFile(fileName)
-				self.apiDst.insertDatasetContents(self.pruneBranchesFromFile(fileName), True)
-			
+			self.apiDst.insertDatasetContents(self.apiSrc.listDatasetContents(path,  blockName), True)
 		except DbsBadRequest, ex:
 			print ex
 			if int(ex.getErrorCode()) != 1024:
@@ -167,9 +146,7 @@ class DbsMigrateApi:
 	
 	def migratePathRO(self, path):
 		srcInstanceName = self.getInstanceName(self.apiSrc)
-		#srcInstanceName = "LOCAL"
 		dstInstanceName = self.getInstanceName(self.apiDst)
-		#dstInstanceName = "GLOBAL"
 		self.checkDatasetStatus(path)
 		self.checkInstances(srcInstanceName, dstInstanceName)
 		if not self.doesPathExist(self.apiDst, path):
@@ -186,10 +163,7 @@ class DbsMigrateApi:
 
 	def migrateBlockRO(self, path, blockName):
 		srcInstanceName = self.getInstanceName(self.apiSrc)
-		#srcInstanceName = "LOCAL"
 		dstInstanceName = self.getInstanceName(self.apiDst)
-		#dstInstanceName = "GLOBAL"
-
 		self.checkDatasetStatus(path)
 		self.checkInstances(srcInstanceName, dstInstanceName)
 		if dstInstanceName == "GLOBAL" and srcInstanceName == "LOCAL" :
@@ -220,21 +194,7 @@ class DbsMigrateApi:
 				raise DbsBadRequest (args = "Global to Global NOT allowed", code = 1224)
 	
 
-	def pruneBranchesFromFile(self, fileName):
-		f = open(fileName, "r")
-		tmp = f.readline()
-		content = ""
-		while(tmp):
-			content += self.pruneBranches(tmp)
-			tmp = f.readline()
-		return content
-		
 
-	def pruneBranches(self, line):
-		if(line.find('file_branch') == -1):
-			return line
-		else:
-			return ""
 		
 """
 usage = "\n****************************************************************" + \

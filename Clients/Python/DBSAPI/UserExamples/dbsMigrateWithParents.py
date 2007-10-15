@@ -3,17 +3,17 @@
 # Unit tests for the DBS CGI implementation.
 import sys
 import os
+from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser
-from DBSAPI.dbsApi import DbsApi
 
 
 try:
 	optManager  = DbsOptionParser()
 	(opts,args) = optManager.getOpt()
 	args = {}
-	args['url']='http://cmssrv17.fnal.gov:8989/DBS_1_0_5_STABLE/servlet/DBSServlet' 
+	args['url']='http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet' 
 	#args['version']='DBS_1_0_7'
 	args['mode']='POST'
 	api = DbsApi(args)
@@ -26,7 +26,7 @@ try:
 	if len(sys.argv) > 4 :
 		block = sys.argv[4]
 
-	api.migrateDatasetContents(srcURL, dstURL, path, block , False, True)
+	api.migrateDatasetContents(srcURL, dstURL, path, block )
 	#print api.listPrimaryDatasets();
 
 except DbsApiException, ex:

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.119 $"
- $Id: DBSSql.java,v 1.119 2007/10/12 20:11:49 sekhri Exp $"
+ $Revision: 1.114 $"
+ $Id: DBSSql.java,v 1.114 2007/09/05 22:16:22 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -98,16 +98,6 @@ public class DBSSql {
                 return getInsertSQL(conn, "TimeLog", table);
         }
 
-       	public static PreparedStatement insertRecycleBin(Connection conn, String path, String blockName, String xml, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
-		Hashtable table = new Hashtable();
-		table.put("Path", path);
-		table.put("BlockName", blockName);
-		table.put("Xml", xml);
-		table.put("CreatedBy", cbUserID);
-		table.put("LastModifiedBy", lmbUserID);
-		table.put("CreationDate", cDate);
-		return getInsertSQL(conn, "RecycleBin", table);
-	}
 
 
        	public static PreparedStatement insertName(Connection conn, String tableName, String key, String value, String cbUserID, String lmbUserID, String cDate) throws SQLException {	
@@ -579,19 +569,7 @@ public class DBSSql {
 		return getInsertSQL(conn, "Person", table);
 	}
 
-        public static PreparedStatement insertBranchHash(Connection conn, String hash, String content, String description,
-								String cbUserID, String lmbUserID, String cDate) throws SQLException {
 
-		Hashtable table = new Hashtable();
-                table.put("Hash", hash);
-                table.put("Content", content);
-                table.put("Description", description);
-		table.put("CreatedBy", cbUserID);
-                table.put("LastModifiedBy", lmbUserID);
-                table.put("CreationDate", cDate);
-                return getInsertSQL(conn, "BranchHash", table);
-
-	}
 
 	public static PreparedStatement insertParameterSet(Connection conn, String hash, String name, String version, String type, String annotation, String content, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
@@ -650,7 +628,7 @@ public class DBSSql {
 	// ____________________________________________________
 	
 	//public static String insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID) throws SQLException {
-	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String branchHash, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+	public static PreparedStatement insertFile(Connection conn, String procDSID, String blockID, String lfn, String checksum, String nOfEvents, String size, String fileStatusID, String typeID, String valStatusID, String qMetaData, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 		Hashtable table = new Hashtable();
 		table.put("LogicalFileName", lfn);
 		table.put("Dataset", procDSID);
@@ -662,7 +640,6 @@ public class DBSSql {
 		table.put("FileType", typeID);
 		table.put("ValidationStatus", valStatusID);
 		table.put("QueryableMetadata", qMetaData);
-		if (!DBSUtil.isNull(branchHash)) table.put("FileBranch", branchHash);
 		table.put("CreatedBy", cbUserID);
 		table.put("LastModifiedBy", lmbUserID);
 		table.put("CreationDate", cDate);
@@ -736,19 +713,6 @@ public class DBSSql {
 		return getInsertSQL(conn, "AnalysisDataset", table);
 	}
 
-        public static PreparedStatement insertCompADS(Connection conn, String compADSName,
-			String desc,
-			String cbUserID,
-                        String lmbUserID, String cDate) throws SQLException {
-                Hashtable table = new Hashtable();
-                table.put("Name", compADSName);
-                table.put("Description", desc);
-                table.put("CreatedBy", cbUserID);
-                table.put("LastModifiedBy", lmbUserID);
-                table.put("CreationDate", cDate);
-                return getInsertSQL(conn, "CompositeADS", table);
-        }
-
         public static PreparedStatement listExADSFileLumiIDs(Connection conn,  String adsID) throws SQLException {
 		String sql = "SELECT DISTINCT \n" +
                         "adsfl.Lumi as LUMIID, \n" +
@@ -775,20 +739,6 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
-
-        public static PreparedStatement getADSVersionID(Connection conn, String adsName, String version) throws SQLException {
-                String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
-                        "FROM AnalysisDataset ads \n " +
-                        "WHERE Name = ? \n" +
-                        "AND Version = ? \n";
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                ps.setString(1, adsName);
-                ps.setString(2, version);
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-                //return ((String)("SELECT ID AS id FROM " + table + " WHERE " + key + " = '" + value + "'")); 
-                return ps;
-        }
-
 
         public static PreparedStatement getADSID(Connection conn, String adsName) throws SQLException {
                 String sql = "SELECT DISTINCT ads.ID as ID, Version \n " +
@@ -981,7 +931,6 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
         }
-
 
 	public static PreparedStatement deleteMap(Connection conn, String tableName, String key1, String key2, String value1, String value2) throws SQLException {	
 		String sql = "DELETE FROM \n" +
@@ -1199,7 +1148,7 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS, boolean all) throws SQLException {
+	public static PreparedStatement listProcessedDatasets(Connection conn, String patternPrim, String patternDT, String patternProc, String patternVer, String patternFam, String patternExe, String patternPS) throws SQLException {
 		String sql = "SELECT procds.id as id, \n" +
 			/*"concat( \n" +
 				"concat( \n" +
@@ -1312,11 +1261,9 @@ public class DBSSql {
 		}
 
 
-		if(!all) {
-			if(useAnd) sql += " AND ";
-			sql += " pds.Status <> 'INVALID' \n ";
-		}
-		sql +=	"ORDER BY procds.id, av.Version, af.FamilyName, ae.ExecutableName, ps.Name, dt.Name DESC";
+		if(useAnd) sql += " AND ";
+		sql +=	"pds.Status <> 'INVALID' \n" +
+			"ORDER BY procds.id, av.Version, af.FamilyName, ae.ExecutableName, ps.Name, dt.Name DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx = 1; 
 		if(!patternPrim.equals("%")) ps.setString(columnIndx++, patternPrim);
@@ -1642,30 +1589,7 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listBlocks(Connection conn, String procDSID) throws SQLException {
-		String sql = "SELECT b.Name as NAME \n" +
-			"FROM Block b \n" +
-			"WHERE b.Dataset = ? \n";
 
-                int columnIndx = 1;
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(columnIndx++, procDSID);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
-	}
-
-	public static PreparedStatement listBlockContentsInRecycleBin(Connection conn, String path) throws SQLException {
-		String sql = "SELECT rb.BlockName as BLOCK_NAME, \n" +
-			"rb.Xml as XML \n" +
-			"FROM RecycleBin rb \n" +
-			"WHERE rb.Path = ? \n";
-
-                int columnIndx = 1;
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		ps.setString(columnIndx++, path);
-		DBSUtil.writeLog("\n\n" + ps + "\n\n");
-		return ps;
-	}
 
 
 	public static PreparedStatement listStorageElements(Connection conn, String seName) throws SQLException {
@@ -1693,7 +1617,8 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-        public static PreparedStatement listFiles(Connection conn, String procDSID, String path, String runID, boolean listInvalidFiles) throws SQLException {
+
+        public static PreparedStatement listFiles(Connection conn, String procDSID, String path,String runID) throws SQLException {
 
                 String sql = "SELECT DISTINCT f.ID as ID, \n " +
                         "f.LogicalFileName as LFN, \n" +
@@ -1731,8 +1656,8 @@ public class DBSSql {
                 sql += "WHERE b.Path = ? \n" ;
                 sql += "AND f.Dataset = ? \n";
 		if (!DBSUtil.isNull(runID)) sql += "AND fr.Run = ? \n";
-		if (!listInvalidFiles)	sql +=  "AND st.Status <> 'INVALID' \n";
-		sql += "ORDER BY f.LogicalFileName DESC";
+		sql +=  "AND st.Status <> 'INVALID' \n" +
+                        "ORDER BY f.LogicalFileName DESC";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
 
@@ -1823,7 +1748,7 @@ public class DBSSql {
 	}
 
 
-	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN, boolean listInvalidFiles) throws SQLException {
+	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN) throws SQLException {
 		String joinStrAna = "";
 		if(!DBSUtil.isNull(aDSID)) {
 			joinStrAna = "JOIN AnalysisDSFileLumi adfl \n" +
@@ -1885,9 +1810,8 @@ public class DBSSql {
 			sql += "AND adfl.AnalysisDataset = ? \n";
 		}
 
-		if (!listInvalidFiles)	sql +=  "AND st.Status <> 'INVALID' \n";
-		//sql +=	"AND st.Status <> 'INVALID' \n" +
-		sql +=	"ORDER BY f.LogicalFileName DESC";
+		sql +=	"AND st.Status <> 'INVALID' \n" +
+			"ORDER BY f.LogicalFileName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 
                 int columnIndx=1;
@@ -1911,8 +1835,8 @@ public class DBSSql {
 		return ps;
 	}
 
-	//public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
-	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild, boolean listInvalidFiles) throws SQLException {
+	//public static PreparedStatement listFileParents(Connection conn, String fileID) throws SQLException {
+	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
 		//parentOrChild if true means we need to get the parents of the file 
 		//parentOrChild if false means we need to get the childern of the file
 		String joinStr = "";
@@ -1958,7 +1882,6 @@ public class DBSSql {
 		if(!DBSUtil.isNull(fileID)) {
 			sql += whereStr;
 		}
-		if (!listInvalidFiles)	sql +=  "WHERE st.Status <> 'INVALID' \n";
 		sql +=	"ORDER BY f.LogicalFileName DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
