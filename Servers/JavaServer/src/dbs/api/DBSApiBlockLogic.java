@@ -1,6 +1,6 @@
 /**
- $Revision: 1.44 $"
- $Id: DBSApiBlockLogic.java,v 1.44 2007/09/06 21:06:19 sekhri Exp $"
+ $Revision: 1.45 $"
+ $Id: DBSApiBlockLogic.java,v 1.45 2007/10/05 20:28:20 sekhri Exp $"
  *
  */
 
@@ -358,8 +358,14 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	public void updateSEName(Connection conn, Writer out, String seNameFrom, String seNameTo, Hashtable dbsUser) throws Exception {
 		String seIDNew = getID(conn, "StorageElement", "SEName", seNameTo , false);
 		String seIDOld = getID(conn, "StorageElement", "SEName", seNameFrom , true);
+		String deleteSeMaps = "";
+		String updatedSE = "";
 		if (isNull(seIDNew)) {
 			updateName(conn, out, "StorageElement", "SEName", seNameFrom, seNameTo, personApi.getUserID(conn, dbsUser));
+			insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName", 
+						"Renamed "+seNameFrom+" to "+seNameTo,
+						"The new SE "+seNameTo+" provided was not in DBS, so older SE "+seNameFrom+" is changed to newer",
+						dbsUser);
 		} else {
 			Vector oldBlockIDs = getBlockIDListFromMap(conn, seIDOld);
 			Vector newBlockIDs = getBlockIDListFromMap(conn, seIDNew);
@@ -369,6 +375,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					//Delete this entry beacuse of duplication
 					deleteMap(conn, out, "SEBlock", "BlockID", "SEID", blockID, seIDOld);
 					//System.out.println("deleting SEID " + seIDOld + " blockID " + blockID);
+
+					deleteSeMaps+="blockID:"+blockID+"seID:"+seIDOld+" deleted ";
+					
 				} else {
 					//Just change the SE for this Block
 					updateMap(conn, out, "SEBlock", "BlockID", "SEID", 
@@ -376,10 +385,15 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 							seIDNew,
 							seIDOld,
 							personApi.getUserID(conn, dbsUser));
+					updatedSE+="Updating SEID:" + seIDOld + " blockID: " + blockID + " to SEID: " + seIDNew;
 					//System.out.println("updating SEID " + seIDOld + " blockID " + blockID + " to SEID " + seIDNew);
 
 				}
 			}
+			insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName",
+					"Some older SE-Block maps may have been deleted, or renamed",
+					deleteSeMaps+updatedSE,
+					dbsUser);
 	
 		}
 	}
