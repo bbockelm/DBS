@@ -49,9 +49,4 @@ def dbsApiImplRemap_DEPRECATED(self, files, outFile):
 		         'xmlinput' : input })
    logging.log(DBSDEBUG, data)
 
-#############################################################################
-#  All DQ API Calls are being put here, will be moved to a separate files soon !! 
-#############################################################################
-
-  #-------------------------------------------------------------------
   

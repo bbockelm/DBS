@@ -24,6 +24,7 @@ from dbsRunLumiDQ import DbsRunLumiDQ
 
 from dbsException import DbsException
 from dbsApiException import *
+from xml.sax import SAXParseException
 
 import logging
 import inspect
@@ -42,10 +43,20 @@ def dbsApiImplGetServerInfo(self):
     # Invoke Server.
     data = self._server._call ({ 'api' : 'getDBSServerVersion' }, 'GET')
 
+    """
+	if data in ('', None):
+	
+	msg = "Unable to parse XML response from DBS Server"
+      	msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
+      	raise DbsBadXMLData(args=msg, code="5999")
+    """
+
     logging.log(DBSDEBUG, data)
     # Parse the resulting xml output.
     result = {}
-    class Handler (xml.sax.handler.ContentHandler):
+
+    try:
+      class Handler (xml.sax.handler.ContentHandler):
 
         def startElement(self, name, attrs):
           if name == 'dbs_version':
@@ -54,12 +65,11 @@ def dbsApiImplGetServerInfo(self):
 			result['ServerVersion'] = 'PROBABLY_CVS_HEAD'
 		result['SchemaVersion'] = str(attrs['schema_version'])
 		result['InstanceName'] = str(attrs['instance_name'])
-    xml.sax.parseString (data, Handler ())
-    return result
+      xml.sax.parseString (data, Handler ())
+      return result
 
-  #-----------------------------------------------------------
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
+      raise DbsBadXMLData(args=msg, code="5999")
 
-
-  # ------------------------------------------------------------
-  #  dbsApi API Implementation follows
-  # ------------------------------------------------------------

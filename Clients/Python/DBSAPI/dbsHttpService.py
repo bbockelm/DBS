@@ -145,18 +145,24 @@ class DbsHttpService:
 
    #Set but not found
    if not os.path.exists(proxy) or not os.path.exists(key):
-	raise DbsProxyNotFound(args="Required Proxy for Secure Call \n("+self.Url+") not found for user '%s'" %os.getlogin(), code="9999")
+	raise DbsProxyNotFound(args="Required Proxy for Secure Call \n("+ \
+					self.Url+") not found for user '%s'" %os.getlogin(), code="9999")
 
    # All looks OK, still doesn't gurantee proxy's validity etc.
    return key, proxy
    
   def _call(self, args, typ, repeat = 3, delay = 2 ):
 	  try:
-		  return self._callOriginal(args, typ)
+		  ret = self._callOriginal(args, typ)
+                  return ret
 	  except DbsConnectionError ,  ex:
-		  return self.callAgain(args, typ, repeat, delay)
-	  except DbsProxyNotFound , ex:
-		  return self.callAgain(args, typ, repeat, delay)
+		  ret = self.callAgain(args, typ, repeat, delay)
+		  if ret in ("EXP"):
+			raise ex
+		  else:
+		  	return ret 
+	  #except DbsProxyNotFound , ex:
+	  #	  return self.callAgain(args, typ, repeat, delay)
 		  
   def callAgain(self, args, typ, repeat, delay):
 	  print "I will retry in %s seconds" % delay
@@ -165,7 +171,10 @@ class DbsHttpService:
 		  repeat -= 1
 		  time.sleep(delay)
 		  delay += 1
-		  return self._call(args, typ, repeat, delay*10)
+		  ret = self._call(args, typ, repeat, delay*10)
+		  return ret
+	  else:
+		return "EXP"
 
   
   def _callOriginal (self, args, typ):
@@ -247,13 +256,15 @@ class DbsHttpService:
         raise DbsConnectionError (args=msg, code="505")   
 
     except error, ex:
-	msg  = "HTTP(S) Error, Unable to make API call"
-        msg += "\nUnable to connect %s (Please verify!)" % self.Url
+	msg  = "HTTP(/S) Error, Unable to make API call"
+        msg += "\nUnable to connect to %s (Please verify!)" % self.Url
         msg += "\nMost probably url (host, port) specified is incorrect, or using http instead of https"
         msg += "\nError Message: %s" % ex
         raise DbsConnectionError (args=msg, code="505")   
   
     except (urllib2.URLError, httplib.HTTPException), ex:
+	import pdb
+        pdb.set_trace()
         msg = "HTTP ERROR, Unable to make API call"
         msg += "  \nVerify URL %s" % self.Url
         msg += "  \nError Message: %s" % ex
@@ -263,11 +274,10 @@ class DbsHttpService:
         if (isinstance(ex,DbsApiException)):
 		raise ex
 	msg = "HTTP ERROR, Unable to make API call"
-	msg += "\n         Verify URL %s" % self.Url
 	if str(ex) == "(-2, 'Name or service not known')":
-		msg += "\n   Error Message: %s" %ex.args[1]
+		msg += "\n   Error Message: %s, Verify URL %s" % (ex.args[1], self.Url)
 	else: msg += "\n     Error Message: %s" %ex
-	raise DbsConnectionError (args=msg, code="505")            
+	raise DbsExecutionError (args=msg, code="505")            
 
     try:
       # DbsExecutionError message would arrive in XML, if any
@@ -310,7 +320,7 @@ class DbsHttpService:
 
     except SAXParseException, ex:
       msg = "Unable to parse XML response from DBS Server"
-      msg += "\n   Verify URL %s or run in debug mode %s" % self.Url
-      raise DbsBadXMLData (args=msg, code="5999")	
+      msg += "\n  Server not responding as desired %s" % self.Url
+      raise DbsConnectionError (args=msg, code="505")
 
 

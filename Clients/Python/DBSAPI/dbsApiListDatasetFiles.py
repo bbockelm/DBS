@@ -47,7 +47,3 @@ def dbsApiImplListDatasetFiles(self, datasetPath):
    else:
 	return self.listFiles(analysisDataset=datasetPath)
 	
-
-  # ------------------------------------------------------------
-
-  #def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", runNumber="", details=None, branchNTrig=False):

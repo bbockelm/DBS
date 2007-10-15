@@ -56,5 +56,4 @@ def dbsApiImplOpenBlock(self, block=None ):
     logging.log(DBSDEBUG, data)
 
 
-   # ------------------------------------------------------------
 

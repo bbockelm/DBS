@@ -72,16 +72,6 @@ def dbsApiImplInsertDatasetContents(self, xmlinput, ignore_parent = False):
     if ignore_parent:
 	    ignoreParent = "true"
     data = self._server._call ({ 'api' : 'insertDatasetContents', 'xmlinput' : xmlinput, 'ignore_parent' : ignoreParent }, 'POST')
-    #logging.log(DBSDEBUG, data)
+    logging.log(DBSDEBUG, data)
 
     return data
-    """
-    #except Exception, ex:
-	    #import pdb
-	    #pdb.set_trace()
-	    #raise DbsBadResponse(exception=ex, code=ex.getErrorCode())
-    """
-
-  #-------------------------------------------------------------------
-
-  #def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", force=False, parents = True):

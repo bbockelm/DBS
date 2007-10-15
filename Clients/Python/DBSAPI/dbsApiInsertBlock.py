@@ -111,8 +111,6 @@ def dbsApiImplInsertBlock(self, dataset, block=None, storage_element_list=None, 
                          'xmlinput' : xmlinput }, 'POST')
     logging.log(DBSDEBUG, data)
 
-
-    
     # Parse the resulting xml output.
     try:
      result = []
@@ -126,6 +124,12 @@ def dbsApiImplInsertBlock(self, dataset, block=None, storage_element_list=None, 
         return result[0] 
      else: 
         return None   
+
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
+      raise DbsBadXMLData(args=msg, code="5999")
+
     except Exception, ex:
       raise DbsBadResponse(exception=ex)
 

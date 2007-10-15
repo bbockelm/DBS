@@ -18,6 +18,7 @@ from dbsExecService import DbsExecService
 
 from dbsException import DbsException
 from dbsApiException import *
+from xml.sax import SAXParseException
 
 #from dbsBaseObject import *
 #from dbsRun import DbsRun 
@@ -158,391 +159,662 @@ class DbsApi(DbsConfig):
   #------------------------------------------------------------
 
   def getServerInfo(self):
-
+     try:
        #Calling the Implementation function
        from dbsApiGetServerInfo import dbsApiImplGetServerInfo
        return  dbsApiImplGetServerInfo(self)
 
-  def listPrimaryDatasets(self, pattern="*"):
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex, SAXParseException)):
+                raise ex
+	else:
+		raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def listPrimaryDatasets(self, pattern="*"):
+     try:
        #Calling the Implementation function
        from dbsApiListPrimaryDatasets import dbsApiImplListPrimaryDatasets
        return  dbsApiImplListPrimaryDatasets(self, pattern)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listProcessedDatasets(self, patternPrim="*", patternDT="*", patternProc="*",  patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
-
+     try:
        #Calling the Implementation function
        from dbsApiListProcessedDatasets import dbsApiImplListProcessedDatasets
        return  dbsApiImplListProcessedDatasets(self, patternPrim, patternDT, patternProc,  patternVer, patternFam, patternExe, patternPS)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listAlgorithms(self, patternVer="*", patternFam="*", patternExe="*", patternPS="*"):
-
+     try:
        #Calling the Implementation function
        from dbsApiListAlgorithms import dbsApiImplListAlgorithms
        return  dbsApiImplListAlgorithms(self, patternVer, patternFam, patternExe, patternPS)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listRuns(self, dataset):
-
+     try:
        #Calling the Implementation function
        from dbsApiListRuns import dbsApiImplListRuns
        return  dbsApiImplListRuns(self, dataset)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listTiers(self, dataset):
-
+     try:
        #Calling the Implementation function
        from dbsApiListTiers import dbsApiImplListTiers
        return  dbsApiImplListTiers(self, dataset)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listBlocks(self, dataset=None, block_name="*", storage_element_name="*"):
-
+     try:
        #Calling the Implementation function
        from dbsApiListBlocks import dbsApiImplListBlocks
        return  dbsApiImplListBlocks(self, dataset, block_name, storage_element_name)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listStorageElements(self, storage_element_name="*"):
-
+     try:
        #Calling the Implementation function
        from dbsApiListStorageElements import dbsApiImplListStorageElements
        return  dbsApiImplListStorageElements(self, storage_element_name)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listLFNs(self, path="", queryableMetaData=""):
-
+     try:
        #Calling the Implementation function
        from dbsApiListLFNs import dbsApiImplListLFNs
        return  dbsApiImplListLFNs(self, path, queryableMetaData)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listDatasetFiles(self, datasetPath):
-
+     try:
        #Calling the Implementation function
        from dbsApiListDatasetFiles import dbsApiImplListDatasetFiles
        return  dbsApiImplListDatasetFiles(self, datasetPath)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", runNumber="", details=None):
-
+     try:
        #Calling the Implementation function
        from dbsApiListFiles import dbsApiImplListFiles
        return  dbsApiImplListFiles(self, path, primary, proc, tier_list, analysisDataset,blockName, patternLFN, runNumber, details)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listFileParents(self, lfn):
-
+     try:
        #Calling the Implementation function
        from dbsApiListFileParents import dbsApiImplListFileParents
        return  dbsApiImplListFileParents(self, lfn)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listFileAlgorithms(self, lfn):
-
+     try:
        #Calling the Implementation function
        from dbsApiListFileAlgorithms import dbsApiImplListFileAlgorithms
        return  dbsApiImplListFileAlgorithms(self, lfn)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listFileTiers(self, lfn):
-
+     try:
        #Calling the Implementation function
        from dbsApiListFileTiers import dbsApiImplListFileTiers
        return  dbsApiImplListFileTiers(self, lfn)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listFileBranches(self, lfn):
-
+     try:
        #Calling the Implementation function
        from dbsApiListFileBranches import dbsApiImplListFileBranches
        return  dbsApiImplListFileBranches(self, lfn)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listFileLumis(self, lfn):
-
+     try:
        #Calling the Implementation function
        from dbsApiListFileLumis import dbsApiImplListFileLumis
        return  dbsApiImplListFileLumis(self, lfn)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listAnalysisDatasetDefinition(self, pattern="*"):
-
+     try:
        #Calling the Implementation function
        from dbsApiListAnalysisDatasetDefinition import dbsApiImplListAnalysisDatasetDefinition
        return  dbsApiImplListAnalysisDatasetDefinition(self, pattern)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listAnalysisDataset(self, pattern="*", path="", version=None):
-
+     try:
        #Calling the Implementation function
        from dbsApiListAnalysisDataset import dbsApiImplListAnalysisDataset
        return  dbsApiImplListAnalysisDataset(self, pattern, path, version)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listDatasetParents(self, dataset):
-
+     try:
        #Calling the Implementation function
        from dbsApiListDatasetParents import dbsApiImplListDatasetParents
        return  dbsApiImplListDatasetParents(self, dataset)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listDatasetContents(self, path, block_name):
-
+     try:
        #Calling the Implementation function
        from dbsApiListDatasetContents import dbsApiImplListDatasetContents
        return  dbsApiImplListDatasetContents(self, path, block_name)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertDatasetContents(self, xmlinput, ignore_parent = False):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertDatasetContents import dbsApiImplInsertDatasetContents
        return  dbsApiImplInsertDatasetContents(self, xmlinput, ignore_parent)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def migrateDatasetContents(self, srcURL, dstURL, path, block_name="", noParentsReadOnly = False, pruneBranches = False):
-
+     try:
        #Calling the Implementation function
        from dbsApiMigrateDatasetContents import dbsApiImplMigrateDatasetContents
        return  dbsApiImplMigrateDatasetContents(self, srcURL, dstURL, path, block_name, noParentsReadOnly , pruneBranches )
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertPrimaryDataset(self, dataset):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertPrimaryDataset import dbsApiImplInsertPrimaryDataset
        return  dbsApiImplInsertPrimaryDataset(self, dataset)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertAlgorithm(self, algorithm):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertAlgorithm import dbsApiImplInsertAlgorithm
        return  dbsApiImplInsertAlgorithm(self, algorithm)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertProcessedDataset(self, dataset):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertProcessedDataset import dbsApiImplInsertProcessedDataset
        return  dbsApiImplInsertProcessedDataset(self, dataset)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertRun(self, run):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertRun import dbsApiImplInsertRun
        return  dbsApiImplInsertRun(self, run)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def updateFileStatus(self, lfn, status, description=""):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateFileStatus import dbsApiImplUpdateFileStatus
        return  dbsApiImplUpdateFileStatus(self, lfn, status, description)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def updateFileMetaData(self, lfn, metaData):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateFileMetaData import dbsApiImplUpdateFileMetaData
        return  dbsApiImplUpdateFileMetaData(self, lfn, metaData)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def updateProcDSStatus(self, dataset, status):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateProcDSStatus import dbsApiImplUpdateProcDSStatus
        return  dbsApiImplUpdateProcDSStatus(self, dataset, status)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def updateRun(self, run):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateRun import dbsApiImplUpdateRun
        return  dbsApiImplUpdateRun(self, run)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")     
   def updateLumiSection(self, lumi):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateLumiSection import dbsApiImplUpdateLumiSection
        return  dbsApiImplUpdateLumiSection(self, lumi)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertBranchInfo(self, branchInfo):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertBranchInfo import dbsApiImplInsertBranchInfo
        return  dbsApiImplInsertBranchInfo(self, branchInfo)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertFiles(self, dataset=None, files=[], block=None):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertFiles import dbsApiImplInsertFiles
        return  dbsApiImplInsertFiles(self, dataset, files, block)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def remapFiles_DEPRECATED(self, inFiles, outFile):
-
+     try:
        #Calling the Implementation function
        from dbsApiRemapFiles_DEPRECATED import dbsApiImplRemapFiles_DEPRECATED
        return  dbsApiImplRemapFiles_DEPRECATED(self, inFiles, outFile)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertBlock(self, dataset, block=None, storage_element_list=None, open_for_writing='y'):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertBlock import dbsApiImplInsertBlock
        return  dbsApiImplInsertBlock(self, dataset, block, storage_element_list, open_for_writing)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def deleteReplicaFromBlock(self, block, storage_element):
-
+     try:
        #Calling the Implementation function
        from dbsApiDeleteReplicaFromBlock import dbsApiImplDeleteReplicaFromBlock
        return  dbsApiImplDeleteReplicaFromBlock(self, block, storage_element)
-
-  def deleteProcDS(self, path):
-       #Calling the Implementation function
-       from dbsApiDeleteProcDS import dbsApiImplDeleteProcDS
-       return  dbsApiImplDeleteProcDS(self, path)
-
-  def undeleteProcDS(self, path):
-       #Calling the Implementation function
-       from dbsApiDeleteProcDS import dbsApiImplUndeleteProcDS
-       return  dbsApiImplUndeleteProcDS(self, path)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def renameSE(self, storage_element_from, storage_element_to):
-
+     try:
        #Calling the Implementation function
        from dbsApiRenameSE import dbsApiImplRenameSE
        return  dbsApiImplRenameSE(self, storage_element_from, storage_element_to)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def updateSEBlock(self, blockName, storage_element_from, storage_element_to):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateSEBlock import dbsApiImplUpdateSEBlock
        return  dbsApiImplUpdateSEBlock(self, blockName, storage_element_from, storage_element_to)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def openBlock(self, block=None ):
-
+     try:
        #Calling the Implementation function
        from dbsApiOpenBlock import dbsApiImplOpenBlock
        return  dbsApiImplOpenBlock(self, block )
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def closeBlock(self, block=None ):
-
+     try:
        #Calling the Implementation function
        from dbsApiCloseBlock import dbsApiImplCloseBlock
        return  dbsApiImplCloseBlock(self, block )
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def addReplicaToBlock(self, block, storageElement):
-
+     try:
        #Calling the Implementation function
        from dbsApiAddReplicaToBlock import dbsApiImplAddReplicaToBlock
        return  dbsApiImplAddReplicaToBlock(self, block, storageElement)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertTier(self, tier_name):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertTier import dbsApiImplInsertTier
        return  dbsApiImplInsertTier(self, tier_name)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertTierInPD(self, dataset, tier_name):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertTierInPD import dbsApiImplInsertTierInPD
        return  dbsApiImplInsertTierInPD(self, dataset, tier_name)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertTierInFile(self, lfn, tier_name):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertTierInFile import dbsApiImplInsertTierInFile
        return  dbsApiImplInsertTierInFile(self, lfn, tier_name)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertParentInPD(self, dataset, parentDS):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertParentInPD import dbsApiImplInsertParentInPD
        return  dbsApiImplInsertParentInPD(self, dataset, parentDS)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertAlgoInPD(self, dataset, algorithm):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertAlgoInPD import dbsApiImplInsertAlgoInPD
        return  dbsApiImplInsertAlgoInPD(self, dataset, algorithm)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertRunInPD(self, dataset, run):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertRunInPD import dbsApiImplInsertRunInPD
        return  dbsApiImplInsertRunInPD(self, dataset, run)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertLumiSection(self, lumi):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertLumiSection import dbsApiImplInsertLumiSection
        return  dbsApiImplInsertLumiSection(self, lumi)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertMergedDataset(self, dataset, merege_ds_name, merge_algo):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertMergedDataset import dbsApiImplInsertMergedDataset
        return  dbsApiImplInsertMergedDataset(self, dataset, merege_ds_name, merge_algo)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertMergedFile(self, parents, outputFile):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertMergedFile import dbsApiImplInsertMergedFile
        return  dbsApiImplInsertMergedFile(self, parents, outputFile)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def createAnalysisDataset(self, analysisdataset, defName):
-
+     try:
        #Calling the Implementation function
        from dbsApiCreateAnalysisDataset import dbsApiImplCreateAnalysisDataset
        return  dbsApiImplCreateAnalysisDataset(self, analysisdataset, defName)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def createAnalysisDatasetDefinition(self, analysisDatasetDefinition ):
-
+     try:
        #Calling the Implementation function
        from dbsApiCreateAnalysisDatasetDefinition import dbsApiImplCreateAnalysisDatasetDefinition
        return  dbsApiImplCreateAnalysisDatasetDefinition(self, analysisDatasetDefinition )
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def createCompADS(self, compADS):
+     try:
       #Calling the Implementation function
       from dbsApiCreateCompADS import dbsApiImplCreateCompADS
       dbsApiImplCreateCompADS(self, compADS)
-	
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def remap_DEPRECATED(self, files, outFile):
-
+     try:
        #Calling the Implementation function
        from dbsApiRemap_DEPRECATED import dbsApiImplRemap_DEPRECATED
        return  dbsApiImplRemap_DEPRECATED(self, files, outFile)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def versionDQ(self, version, description=""):
-
+     try:
        #Calling the Implementation function
        from dbsApiVersionDQ import dbsApiImplVersionDQ
        return  dbsApiImplVersionDQ(self, version, description)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertSubSystem(self, name, parent="CMS"):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertSubSystem import dbsApiImplInsertSubSystem
        return  dbsApiImplInsertSubSystem(self, name, parent)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listSubSystems(self):
-
+     try:
        #Calling the Implementation function
        from dbsApiListSubSystems import dbsApiImplListSubSystems
        return  dbsApiImplListSubSystems(self)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listRunLumiDQ(self, runLumiDQList=[], timeStamp="", dqVersion=""):
-
+     try:
        #Calling the Implementation function
        from dbsApiListRunLumiDQ import dbsApiImplListRunLumiDQ
        return  dbsApiImplListRunLumiDQ(self, runLumiDQList, timeStamp, dqVersion)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def updateRunLumiDQ(self, runLumiDQList):
-
+     try:
        #Calling the Implementation function
        from dbsApiUpdateRunLumiDQ import dbsApiImplUpdateRunLumiDQ
        return  dbsApiImplUpdateRunLumiDQ(self, runLumiDQList)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertRunLumiDQ(self, runLumiDQList):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertRunLumiDQ import dbsApiImplInsertRunLumiDQ
        return  dbsApiImplInsertRunLumiDQ(self, runLumiDQList)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertRunRangeDQ(self, startRun, endRun, dqFlagList):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertRunRangeDQ import dbsApiImplInsertRunRangeDQ
        return  dbsApiImplInsertRunRangeDQ(self, startRun, endRun, dqFlagList)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def insertLumiRangeDQ(self, runNumber, startLumi, endLumi, dqFlagList):
-
+     try:
        #Calling the Implementation function
        from dbsApiInsertLumiRangeDQ import dbsApiImplInsertLumiRangeDQ
        return  dbsApiImplInsertLumiRangeDQ(self, runNumber, startLumi, endLumi, dqFlagList)
-
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
   def listDQVersions(self):
-
+     try:
        #Calling the Implementation function
        from dbsApiListDQVersions import dbsApiImplListDQVersions
        return  dbsApiImplListDQVersions(self)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def deleteProcDS(self, path):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiDeleteProcDS import dbsApiImplDeleteProcDS
+        return  dbsApiImplDeleteProcDS(self, path)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+ 
+  def undeleteProcDS(self, path):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiDeleteProcDS import dbsApiImplUndeleteProcDS
+        return  dbsApiImplUndeleteProcDS(self, path)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
 
 #############################################################################
 # Unit testing: see $PWD/UnitTests

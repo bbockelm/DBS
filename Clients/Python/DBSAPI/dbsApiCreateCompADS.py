@@ -67,5 +67,3 @@ def dbsApiImplCreateCompADS(self, compADS):
     logging.log(DBSDEBUG, data)
 
 
-  # ------------------------------------------------------------
-  #def remap(self, eventCollections, outEventCollection, dataset):

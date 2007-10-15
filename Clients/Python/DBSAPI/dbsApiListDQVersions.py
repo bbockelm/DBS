@@ -44,53 +44,23 @@ def dbsApiImplListDQVersions(self):
 
     data = self._server._call ({ 'api' : 'listDQVersions'}, 'GET')
 
-    # Parse the resulting xml output.
-    result = []
+    try :
+      # Parse the resulting xml output.
+      result = []
 
-    class Handler (xml.sax.handler.ContentHandler):
+      class Handler (xml.sax.handler.ContentHandler):
 
         def startElement(self, name, attrs):
           if name == 'dq_version': 
                         dqVersion = str(attrs['version'])
 			dq_timestamp= str(attrs['time_stamp'])
                         result.append((dqVersion, dq_timestamp))
-    xml.sax.parseString (data, Handler ())
-    return result
+      xml.sax.parseString (data, Handler ())
+      return result
 
-  #def listRowsInTable(self):
-  # """
-  #	API is used to list RowsInTable
-  # """
-  # data = self._server._call ({ 'api' : 'listRowsInTable', 'table_name' : 'SubSystem', 'rows':'*'}, 'GET')
-  # print data
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
+      raise DbsBadXMLData(args=msg, code="5999")
 
-
-
-#############################################################################
-# Unit testing: see $PWD/UnitTests
-############################################################################
-
-from DBSAPI.dbsException import *
-from DBSAPI.dbsApiException import *
-from DBSAPI.dbsOptions import DbsOptionParser
-
-if __name__ == "__main__":
-
-  try:
-    optManager  = DbsOptionParser()
-    (opts,args) = optManager.getOpt()
-
-    api = DbsApi(opts.__dict__)
-    serverInfo = api.getServerInfo()
-    print "Server Version : ", serverInfo['ServerVersion']
-    print "Schema Version : ", serverInfo['SchemaVersion']
-
-    #print api.listSubSystems()
-    print api.listDQVersions()
-
-  except DbsApiException, ex:
-    print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
-    if ex.getErrorCode() not in (None, ""):
-      print "DBS Exception Error Code: ", ex.getErrorCode()
- 
 

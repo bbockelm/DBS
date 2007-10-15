@@ -97,9 +97,9 @@ def dbsApiImplListLFNs(self, path="", queryableMetaData=""):
       xml.sax.parseString (data, Handler ())
       return result
 
-    except Exception, ex:
-      raise DbsBadResponse(exception=ex)
+    except SAXParseException, ex:
+      msg = "Unable to parse XML response from DBS Server"
+      msg += "\n  Server has not responded as desired, try setting level=DBSDEBUG"
+      raise DbsBadXMLData(args=msg, code="5999")
 
-
-  # ------------------------------------------------------------
 
