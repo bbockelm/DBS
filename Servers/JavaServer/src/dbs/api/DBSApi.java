@@ -1,6 +1,6 @@
 /**
- $Revision: 1.107 $"
- $Id: DBSApi.java,v 1.107 2007/10/10 22:04:18 afaq Exp $"
+ $Revision: 1.102 $"
+ $Id: DBSApi.java,v 1.102 2007/08/28 19:45:19 sekhri Exp $"
  *
 */
 
@@ -116,7 +116,6 @@ public class DBSApi {
 	private DBSApiLogic api;
 	private DBSApiData data = null;
 	private String instanceName = null;
-	private String apiStr = null;
 
 	/**
 	* Constructs a DBSApi object that can be used to invoke call method that invokes several APIs from <code>dbs.api.DBSApiLogic</code> class. The constructor instantiates a private <code>dbs.api.DBSApiLogic</code> object.
@@ -124,7 +123,6 @@ public class DBSApi {
 	public DBSApi() {
 		data = new DBSApiData();
 		api = new DBSApiLogic(data);
-		apiStr = "";
 	}
 
         public Vector supportedClientApiVersions() throws Exception {
@@ -167,8 +165,6 @@ public class DBSApi {
 			if(rs.next()) {
 				dbsSchemaVersion = rs.getString("SchemaVersion");
 				instanceName = rs.getString("InstanceName");
-				//Store it in Global data as well
-				api.data.instanceName = instanceName;
 			} else {
 				throw new DBSException("Schema Version Failure", "1001", "Unable to get Schema Version from Database, cannot continue");
 			} 
@@ -243,7 +239,6 @@ public class DBSApi {
 
 			out.write(DBSConstants.XML_HEADER); 
 			String apiStr = get(table, "api", true);
-			this.apiStr = apiStr;
         	        String apiVersion = get(table, "apiversion", true);
                 	DBSUtil.writeLog("apiStr: "+apiStr);
 
@@ -323,8 +318,8 @@ public class DBSApi {
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
 						get(table, "run_number", false),
-						get(table, "detail", false)
-						//get(table, "branchNTrig", false)
+						get(table, "detail", false),
+						get(table, "branchNTrig", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {
 				(new DBSApiFileLogic(this.data)).listFileProvenence(conn, out, 
@@ -446,9 +441,6 @@ public class DBSApi {
 			} else if (apiStr.equals("createAnalysisDatasetDefinition")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDatasetDefinition(conn, out,  DBSApiParser.parseADD(getXml(table)), dbsUser);
 
-			} else if (apiStr.equals("createCompositeAnalysisDataset")) {
-                                (new DBSApiAnaDSLogic(this.data)).createCompositeAnalysisDataset(conn, out,  DBSApiParser.parseCompADS(getXml(table)), dbsUser);
-
 			} else if (apiStr.equals("createAnalysisDataset")) {
 				(new DBSApiAnaDSLogic(this.data)).createAnalysisDataset(conn, out,
 					DBSApiParser.parse(getXml(table), "analysis_dataset"),
@@ -476,15 +468,11 @@ public class DBSApi {
 				DBSApiParser.insertFiles(conn, out, get(table, "primary_dataset", false), 
 									get(table, "processed_dataset", false), 
 									getXml(table), dbsUser);
-			} else if (apiStr.equals("insertBranchInfo")) {
-				(new DBSApiFileLogic(this.data)).insertBranchInfo(conn, out, DBSApiParser.parseBranchInfo(getXml(table)), dbsUser);
-
 	
 			} else if (apiStr.equals("updateFileStatus")) {
 				(new DBSApiFileLogic(this.data)).updateFileStatus(conn, out,
 						get(table, "lfn", true),
 						get(table, "status", true),
-						get(table, "description", false),
 						dbsUser);
 				
 			} else if (apiStr.equals("updateFileMetaData")) {
@@ -578,19 +566,6 @@ public class DBSApi {
 				(new DBSApiBlockLogic(this.data)).closeBlock(conn, out,
 						get(table, "block_name", true),
 						dbsUser);
-			} else if (apiStr.equals("deleteProcDS")) {
-				(new DBSApiProcDSLogic(this.data)).deleteProcDS(conn, out,
-						get(table, "path", true),
-						dbsUser,
-						apiVersion);
-				
-			} else if (apiStr.equals("undeleteProcDS")) {
-				(new DBSApiProcDSLogic(this.data)).undeleteProcDS(conn, out,
-						get(table, "path", true),
-						dbsUser,
-						apiVersion);
-
-
                         } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),
@@ -699,8 +674,7 @@ public class DBSApi {
 	
 	public void writeException(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
-		message = " ____________ API Invoked " + this.apiStr + "____________\n" + message;
-		message = message.replace('\'',' ');
+		 message = message.replace('\'',' ');
 		message = message.replace('<',' ');
 		message = message.replace('>',' ');
                 detail= detail.replace('\'',' ');
@@ -715,9 +689,6 @@ public class DBSApi {
 		out.write(DBSConstants.XML_FOOTER);
 		out.flush();
 		//out.write(DBSConstants.XML_EXCEPTION_FOOTER); 
-       		DBSUtil.writeErrorLog("<exception message='" + message + "' ");
-		DBSUtil.writeErrorLog(" code ='" + code + "' ");
-		DBSUtil.writeErrorLog(" detail ='" + detail + "' />\n");
 	}
 
 

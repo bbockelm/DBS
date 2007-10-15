@@ -57,10 +57,6 @@ class DbsBadData(DbsApiException):
   def __init__ (self, **kwargs):
     DbsApiException.__init__(self, **kwargs)
 
-class DbsConfigurationError(DbsApiException):
-  def __init__ (self, **kwargs):
-    DbsApiException.__init__(self, **kwargs)
-
 class DbsExecutionError(DbsApiException):
   def __init__ (self, **kwargs):
     DbsApiException.__init__(self, **kwargs)

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiAlgoLogic.java,v 1.16 2007/08/28 19:45:19 sekhri Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSApiAlgoLogic.java,v 1.15 2007/08/27 21:12:37 afaq Exp $"
  *
  */
 
@@ -57,7 +57,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String ann = get(rs, "PS_ANNOTATION");
-				if(clientVersion.compareTo("DBS_1_0_7") >= 0) ann = Base64.encodeBytes(ann.getBytes());
+				if(clientVersion.equals("DBS_1_0_7")) ann = Base64.encodeBytes(ann.getBytes());
 				
 				out.write(((String) "<algorithm id='" + get(rs, "ID") + 
 						"' app_version='" + get(rs, "APP_VERSION") +
@@ -100,7 +100,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 			rs =  ps.executeQuery();
 			while(rs.next()) {
 				String ann = get(rs, "PS_ANNOTATION");
-				if(clientVersion.compareTo("DBS_1_0_7") >= 0 ) ann = Base64.encodeBytes(ann.getBytes());
+				if(clientVersion.equals("DBS_1_0_7")) ann = Base64.encodeBytes(ann.getBytes());
 
 				out.write(((String) "<processed_dataset_algorithm id='" + get(rs, "ID") + 
 						"' app_version='" + get(rs, "APP_VERSION") +
@@ -218,7 +218,7 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 				if(!isNull(contentBase64)) contentBase64 = new String(Base64.decode(contentBase64));
 
 				String annotationBase64 = get(algo, "ps_annotation");
-				if(clientVersion.compareTo("DBS_1_0_7") >= 0) {
+				if(clientVersion.equals("DBS_1_0_7")) {
 	                                if(!isNull(annotationBase64)) annotationBase64 = new String(Base64.decode(annotationBase64));
 				}
 

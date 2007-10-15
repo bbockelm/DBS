@@ -88,7 +88,6 @@ myfile1= DbsFile (
         AlgoList = [algo],
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
-	BranchHash="001234565798685",
         #ParentList = ['NEW_TEST0003']  
          )
 
@@ -106,7 +105,7 @@ myfile2= DbsFile (
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
-        #BranchList=['testbranch01', 'testbranch02'],
+        BranchList=['testbranch01', 'testbranch02'],
         #ParentList = ['NEW_TEST0004']  
          )
         
@@ -142,7 +141,7 @@ myfile22= DbsFile (
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
-        #BranchList=['testbranch01', 'testbranch02'],
+        BranchList=['testbranch01', 'testbranch02'],
         ParentList = ['NEW_TEST0002']  
          )
 
@@ -177,7 +176,7 @@ myfile4= DbsFile (
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
-        #BranchList=['testbranch01', 'testbranch02'],
+        BranchList=['testbranch01', 'testbranch02'],
         ParentList = ['NEW_TEST0002'],
         ##FileTriggerMap, Kept it disct may be there can be some future expansion and later we can turn it into Object 
  	FileTriggerMap=[{'TriggerTag':'TestTrig001', 'NumberOfEvents': 123 }, 
@@ -200,7 +199,7 @@ myfile44= DbsFile (
         LumiList= [lumi1, lumi2],
         TierList= ['SIM', 'GEN'],
         AlgoList = [algo],
-        #BranchList=['testbranch01', 'testbranch02'],
+        BranchList=['testbranch01', 'testbranch02'],
         ParentList = ['NEW_TEST0002'],
         ##FileTriggerMap, Kept it disct may be there can be some future expansion and later we can turn it into Object 
         FileTriggerMap=[{'TriggerTag':'TestTrig001', 'NumberOfEvents': 123 },
@@ -228,9 +227,6 @@ print "Inserting files in processDS %s" % proc
 
 try:
 
-    #api.insertFiles (proc, [myfile1], block)
-
-
     ##api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22])
     #Insert in a Block	
     api.insertFiles (proc, [myfile1, myfile2, myfile11, myfile22], block)
@@ -241,7 +237,7 @@ try:
 
     api.insertFiles(proc, [myfile44], block)  
 
-    #print "Result: %s" % myfile3
+    print "Result: %s" % myfile3
 
 except DbsApiException, ex:
   print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
