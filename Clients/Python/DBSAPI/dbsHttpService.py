@@ -13,7 +13,10 @@ from xml.sax import SAXParseException
 try:
   from socket import ssl, sslerror, error
 except:
-  print "Unable to support HTTPS"
+  print "Unable to import socket modules, \nStatement failed: \
+	\n      from socket import ssl, sslerror, error \
+	\n May not be able to support HTTPS \
+	\n continuing.."
   pass
 
 import urlparse
@@ -163,7 +166,7 @@ class DbsHttpService:
 			raise DbsConnectionError(args=exmsg, code=5999)
 		  else:
 		  	return ret 
-	 except DbsDatabaseError, ex:
+	  except DbsDatabaseError, ex:
                   ret = self.callAgain(args, typ, repeat, delay)
                   if ret in ("EXP"):
                         exmsg ="Failed to connect in 03 Attempts\n"
@@ -289,7 +292,6 @@ class DbsHttpService:
       # DbsExecutionError message would arrive in XML, if any
       class Handler (xml.sax.handler.ContentHandler):
            def startElement(self, name, attrs):
-
              if name == 'exception':
                 statusCode = attrs['code']
 		statusCode_i = int(statusCode)
@@ -324,8 +326,6 @@ class DbsHttpService:
 		info += "\n Detail: %s " %attrs['detail']+"\n"
                 logging.log(DBSINFO, info)
 
-      logging.log(DBSDEBUG, data)
-      #print data
       xml.sax.parseString (data, Handler ())
       # All is ok, return the data
       return data

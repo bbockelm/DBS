@@ -340,6 +340,18 @@ class DbsApi(DbsConfig):
                 raise ex
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
+  def listCompADS(self, pattern="*"):
+     try:
+       #Calling the Implementation function
+       from dbsApiListCompAnalysisDataset import dbsApiImplListCompADS 
+       return dbsApiImplListCompADS(self, pattern)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+
   def listDatasetParents(self, dataset):
      try:
        #Calling the Implementation function
