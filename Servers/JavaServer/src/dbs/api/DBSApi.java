@@ -1,6 +1,6 @@
 /**
- $Revision: 1.107 $"
- $Id: DBSApi.java,v 1.107 2007/10/10 22:04:18 afaq Exp $"
+ $Revision: 1.108 $"
+ $Id: DBSApi.java,v 1.108 2007/10/12 20:11:48 sekhri Exp $"
  *
 */
 
@@ -359,6 +359,10 @@ public class DBSApi {
 						get(table, "path", true),
 						get(table, "pattern_meta_data", false)
 						);
+                        } else if (apiStr.equals("listCompADS")) {
+                                (new DBSApiAnaDSLogic(this.data)).listCompADS(conn, out,
+                                                get(table, "pattern", false)
+                                                );
 
 
 			} else if (apiStr.equals("listAnalysisDataset")) {

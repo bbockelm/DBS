@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.119 $"
- $Id: DBSSql.java,v 1.119 2007/10/12 20:11:49 sekhri Exp $"
+ $Revision: 1.120 $"
+ $Id: DBSSql.java,v 1.120 2007/10/12 22:03:51 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -2219,6 +2219,64 @@ public class DBSSql {
 		return ps;
 	}
 
+        public static PreparedStatement listCompADS(Connection conn, String patternName) throws SQLException {
+                //String sql = "SELECT DISTINCT adsdef.ID as ID, \n " +
+                String sql = "SELECT comads.ID as ID, \n " +
+			"comads.Name as COMPADS_NAME, \n" +
+                        "comads.Description as DESCRIPTION, \n" +
+                        "comads.CreationDate as CREATION_DATE, \n" +
+                        "comads.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
+                        "FROM CompositeADS comads \n" +
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = comads.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = comads.LastModifiedBy \n" +
+                        "WHERE comads.Name like  ? \n" +
+                                "ORDER BY comads.Name DESC";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                ps.setString(1, patternName);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
+
+      public static PreparedStatement listADSForCompADS(Connection conn, String comADSID) throws SQLException {
+
+                String sql = "SELECT ads.ID as ID, \n " +
+                        "ads.Name as ANALYSIS_DATASET_NAME, \n " +
+                        "ads.Path as ANALYSIS_DATASET_PATH, \n " +
+                        "ads.ProcessedDS as PROCDSID, \n" +
+                        "ads.Definition as DEFID, \n" +
+                        "ads.Type as TYPE, \n" +
+                        "ads.Status as STATUS, \n" +
+                        "ads.Description as DESCRIPTION, \n" +
+                        "ads.CreationDate as CREATION_DATE, \n" +
+                        "ads.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
+                        "ads.Version as VERSION, \n" +
+                        "percb.DistinguishedName as CREATED_BY, \n" +
+                        "perlm.DistinguishedName as LAST_MODIFIED_BY, \n" +
+                        "pg.PhysicsGroupName as PHYSICS_GROUP_NAME \n" +
+
+                        "FROM AnalysisDataset ads \n" +
+                        "JOIN CompADSMap compadsmap \n"+
+                                "ON ads.ID = compadsmap.ADS \n"+
+                        "LEFT OUTER JOIN Person percb \n" +
+                                "ON percb.id = ads.CreatedBy \n" +
+                        "LEFT OUTER JOIN Person perlm \n" +
+                                "ON perlm.id = ads.LastModifiedBy \n" +
+                        "LEFT OUTER JOIN PhysicsGroup pg \n" +
+                                "ON pg.id = ads.PhysicsGroup \n" +
+                        "WHERE compadsmap.CompADS= ? \n";
+
+                sql += "ORDER BY ads.NAME, ads.Version DESC";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, comADSID);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
+	}
 
 
       public static PreparedStatement listAnalysisDataset(Connection conn, String patternName, String version, String procDSID) throws SQLException {

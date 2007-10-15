@@ -1,6 +1,6 @@
 /**
- $Revision: 1.39 $"
- $Id: DBSApiAnaDSLogic.java,v 1.39 2007/09/28 18:02:04 afaq Exp $"
+ $Revision: 1.40 $"
+ $Id: DBSApiAnaDSLogic.java,v 1.40 2007/10/10 21:20:41 afaq Exp $"
  *
  */
 
@@ -204,6 +204,67 @@ public class DBSApiAnaDSLogic extends DBSApiLogic {
 		}
 	}
 
+
+
+
+        /**
+         * Lists all the composite ADS .  
+         * <code> <""/></code>
+         * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+         * @param out an output stream <code>java.io.Writer</code> object where this method writes the results into.
+         * @param patternName a parameter passed in from the client that can contain wild card characters for COMP analysis dataset defination name. 
+         * This pattern is used to restrict the SQL query results by sustitution it in the WHERE clause.
+         * @throws Exception Various types of exceptions can be thrown. 
+         * Commonly they are thrown if the supplied lfn is invalid, the database connection is unavailable or the file is not found.
+         */
+         public void listCompADS(Connection conn, Writer out, String patternName) throws Exception {
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+		PreparedStatement ps1 = null;
+		ResultSet rs1 = null;
+                try {
+                        ps = DBSSql.listCompADS(conn, getPattern(patternName, "pattern_comp_ads"));
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+				String comAdsID = get(rs, "ID");
+                                out.write(((String) "<comp_analysis_dataset id='" + comAdsID +
+                                        "' name='" + get(rs, "COMPADS_NAME") +
+                                        "' description='" + get(rs, "DESCRIPTION") +
+                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                        "'>\n"));
+				
+				ps1 = DBSSql.listADSForCompADS(conn, comAdsID);
+				rs1= ps1.executeQuery();
+                        	while(rs1.next()) {
+                                        out.write(((String) "<analysis_dataset id='" +  get(rs1, "ID") +
+                                                                "' analysis_dataset_name='" + get(rs1, "ANALYSIS_DATASET_NAME") +
+                                                                "' path='" + get(rs1, "ANALYSIS_DATASET_PATH") +
+                                                                "' description='" + get(rs1, "DESCRIPTION") +
+                                                                "' type='" + get(rs1, "TYPE") +
+                                                                "' status='" + get(rs1, "STATUS") +
+                                                                "' version ='" + get(rs1, "VERSION") +
+                                                                "' physics_group_name='" + get(rs1, "PHYSICS_GROUP_NAME") +
+                                                                "' creation_date='" + getTime(rs1, "CREATION_DATE") +
+                                                                "' last_modification_date='" + get(rs1, "LAST_MODIFICATION_DATE") +
+                                                                "' created_by='" + get(rs1, "CREATED_BY") +
+                                                                "' last_modified_by='" + get(rs1, "LAST_MODIFIED_BY") +
+                                                                "'/>\n"));
+				}
+				out.write((String)"</comp_analysis_dataset>");
+				rs1.close();
+				ps1.close();
+                        } 
+                } finally { 
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                        if (rs1 != null) rs1.close();
+                        if (ps1 != null) ps1.close();
+
+                }
+         }
 
         public void createAnalysisDatasetDefinition(Connection conn, Writer out, Hashtable table, Hashtable dbsUser) throws Exception { 
 		String adsDefName = get(table, "analysisds_def_name", true);
