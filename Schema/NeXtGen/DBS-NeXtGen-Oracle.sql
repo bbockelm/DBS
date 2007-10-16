@@ -1,7 +1,7 @@
 REM ======================================================================
 REM ===   Sql Script for Database : DBS_NEW_ERA
 REM ===
-REM === Build : 730
+REM === Build : 745
 REM ======================================================================
 
 CREATE TABLE Person
@@ -147,6 +147,34 @@ CREATE TABLE DataTierOrder
     ID                    BIGINT UNSIGNED,
     DataTierOrder         varchar(250)      unique not null,
     Description           varchar(1000),
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ID)
+  );
+
+REM ======================================================================
+
+CREATE TABLE ReasonCode
+  (
+    ReasonCode            BIGINT UNSIGNED   not null,
+    Description           varchar(1000)     not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+    primary key(ReasonCode)
+  );
+
+REM ======================================================================
+
+CREATE TABLE RecycleBin
+  (
+    ID                    BIGINT UNSIGNED,
+    Path                  varchar(500)      not null,
+    Name                  varchar(700)      not null,
+    Xml                   LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
@@ -786,7 +814,7 @@ REM ======================================================================
 CREATE TABLE FileAlgo
   (
     ID                    BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED   not null,
+    Fileid                BIGINT UNSIGNED,
     Algorithm             BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -940,6 +968,20 @@ ALTER TABLE DataTierOrder ADD CONSTRAINT
 /
 ALTER TABLE DataTierOrder ADD CONSTRAINT 
     DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ReasonCode ADD CONSTRAINT 
+    ReasonCode_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ReasonCode ADD CONSTRAINT 
+    ReasonCode_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AppFamily ADD CONSTRAINT 
@@ -1456,9 +1498,3 @@ ALTER TABLE SEBlock ADD CONSTRAINT
     SEBlock_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
-
-CREATE INDEX  ON Person(Name);
-
-CREATE INDEX  ON ProcessedDataset(Name);
-
-CREATE INDEX  ON Files(QueryableMetadata);

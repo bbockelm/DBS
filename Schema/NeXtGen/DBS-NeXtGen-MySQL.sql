@@ -1,7 +1,7 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 730
+-- === Build : 745
 -- ======================================================================
 
 drop database if exists DBS_1_0_8;
@@ -232,6 +232,36 @@ CREATE TABLE DataTierOrder
 
 -- ======================================================================
 
+CREATE TABLE ReasonCode
+  (
+    ReasonCode            BIGINT UNSIGNED   not null,
+    Description           varchar(1000)     not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ReasonCode)
+  );
+
+-- ======================================================================
+
+CREATE TABLE RecycleBin
+  (
+    ID                    BIGINT UNSIGNED,
+    Path                  varchar(500)      not null,
+    Name                  varchar(700)      not null,
+    Xml                   LONGTEXT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  );
+
+-- ======================================================================
+
 CREATE TABLE AlgorithmConfig
   (
     ID                    BIGINT UNSIGNED,
@@ -440,7 +470,7 @@ CREATE TABLE FileRunLumi
 CREATE TABLE FileAlgo
   (
     ID                    BIGINT UNSIGNED,
-    Fileid                BIGINT UNSIGNED   not null,
+    Fileid                BIGINT UNSIGNED,
     Algorithm             BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -1055,6 +1085,20 @@ ALTER TABLE DataTierOrder ADD CONSTRAINT
 /
 ALTER TABLE DataTierOrder ADD CONSTRAINT 
     DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE ReasonCode ADD CONSTRAINT 
+    ReasonCode_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE ReasonCode ADD CONSTRAINT 
+    ReasonCode_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+/
+
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+/
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 /
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 

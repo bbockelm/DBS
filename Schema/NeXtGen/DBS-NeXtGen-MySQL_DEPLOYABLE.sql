@@ -1,30 +1,12 @@
 -- ======================================================================
 -- ===   Sql Script for Database : DBS_NEW_ERA
 -- ===
--- === Build : 729
+-- === Build : 745
 -- ======================================================================
 
-drop database if exists DBS_1_0_8_Vijay;
-create database DBS_1_0_8_Vijay;
-use DBS_1_0_8_Vijay;
-
--- ======================================================================
-CREATE TABLE RecycleBin
-  (
-    ID                    BIGINT UNSIGNED not null auto_increment,
-    Path                  varchar(500) ,
-    BlockName		  varchar(700) ,
-    Xml                   LONGTEXT,
-    CreationDate          BIGINT,
-    CreatedBy             BIGINT UNSIGNED,
-    LastModificationDate  BIGINT,
-    LastModifiedBy        BIGINT UNSIGNED,
-
-    primary key(ID),
-    unique(Path, BlockName)
-  ) ENGINE = InnoDB ;
-
-
+drop database if exists DBS_1_0_8;
+create database DBS_1_0_8;
+use DBS_1_0_8;
 -- ======================================================================
 
 CREATE TABLE Person
@@ -250,6 +232,36 @@ CREATE TABLE DataTierOrder
 
 -- ======================================================================
 
+CREATE TABLE ReasonCode
+  (
+    ReasonCode            BIGINT UNSIGNED   not null,
+    Description           varchar(1000)     not null,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ReasonCode)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
+CREATE TABLE RecycleBin
+  (
+    ID                    BIGINT UNSIGNED not null auto_increment,
+    Path                  varchar(500)      not null,
+    Name                  varchar(700)      not null,
+    Xml                   LONGTEXT,
+    CreationDate          BIGINT,
+    CreatedBy             BIGINT UNSIGNED,
+    LastModificationDate  BIGINT,
+    LastModifiedBy        BIGINT UNSIGNED,
+
+    primary key(ID)
+  ) ENGINE = InnoDB ;
+
+-- ======================================================================
+
 CREATE TABLE AlgorithmConfig
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
@@ -458,7 +470,7 @@ CREATE TABLE FileRunLumi
 CREATE TABLE FileAlgo
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Fileid                BIGINT UNSIGNED   not null,
+    Fileid                BIGINT UNSIGNED,
     Algorithm             BIGINT UNSIGNED   not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
@@ -938,12 +950,6 @@ CREATE TABLE BranchHashMap
   ) ENGINE = InnoDB ;
 
 -- ======================================================================
-ALTER TABLE RecycleBin ADD CONSTRAINT 
-    RecycleBin_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
-;
-ALTER TABLE RecycleBin ADD CONSTRAINT 
-    RecycleBin_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
-;
 
 ALTER TABLE Person ADD CONSTRAINT 
     Person_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1079,6 +1085,20 @@ ALTER TABLE DataTierOrder ADD CONSTRAINT
 ;
 ALTER TABLE DataTierOrder ADD CONSTRAINT 
     DataTierOrderLastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE ReasonCode ADD CONSTRAINT 
+    ReasonCode_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE ReasonCode ADD CONSTRAINT 
+    ReasonCode_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
+;
+
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_CreatedBy_FK foreign key(CreatedBy) references Person(ID)
+;
+ALTER TABLE RecycleBin ADD CONSTRAINT 
+    RecycleBin_LastModifiedBy_FK foreign key(LastModifiedBy) references Person(ID)
 ;
 
 ALTER TABLE AlgorithmConfig ADD CONSTRAINT 
@@ -1372,7 +1392,7 @@ ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT
     AnalysisDSFileLumi_Lumi_FK foreign key(Lumi) references LumiSection(ID)
 ;
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
-    AnalysisDSFileLumi_Fileid_FK foreign key(Fileid) references Files(ID) on delete CASCADE
+    AnalysisDSFileLumi_Fileid_FK foreign key(Fileid) references Files(ID)
 ;
 ALTER TABLE AnalysisDSFileLumi ADD CONSTRAINT 
     AnalysisDSFileLumiCreatedBy_FK foreign key(CreatedBy) references Person(ID)
@@ -1542,8 +1562,6 @@ ALTER TABLE BranchHashMap ADD CONSTRAINT
 ;
 
 -- =========== INSERT TRIGGERS FOR LastModificationDate ============================
-CREATE TRIGGER TR_RecycleBin BEFORE INSERT ON RecycleBin
-FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_Person BEFORE INSERT ON Person
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
@@ -1582,6 +1600,12 @@ CREATE TRIGGER TR_TimeLog BEFORE INSERT ON TimeLog
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_DataTierOrder BEFORE INSERT ON DataTierOrder
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_ReasonCode BEFORE INSERT ON ReasonCode
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER TR_RecycleBin BEFORE INSERT ON RecycleBin
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER TR_AlgorithmConfig BEFORE INSERT ON AlgorithmConfig
@@ -1750,6 +1774,12 @@ CREATE TRIGGER UTR_TimeLog BEFORE UPDATE ON TimeLog
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_DataTierOrder BEFORE UPDATE ON DataTierOrder
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_ReasonCode BEFORE UPDATE ON ReasonCode
+FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
+
+CREATE TRIGGER UTR_RecycleBin BEFORE UPDATE ON RecycleBin
 FOR EACH ROW SET NEW.LastModificationDate = UNIX_TIMESTAMP();
 
 CREATE TRIGGER UTR_AlgorithmConfig BEFORE UPDATE ON AlgorithmConfig

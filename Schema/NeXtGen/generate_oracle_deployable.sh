@@ -9,7 +9,7 @@ oracle_user=cms_dbs_????
 oracle_passwd=?????????
 oracle_db=devdb10
 #
-SchemaVersion=DBS_1_0_7
+SchemaVersion=DBS_1_0_8
 # By default the schema will be deployed as LOCAL, later on it could be changed to GLOBAL (as an adminstrative task)
 # I am not for changing this script all the time or interactively!
 InstanceName=LOCAL
