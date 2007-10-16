@@ -906,6 +906,12 @@ table.sortable span.sortarrow {
   background-color: AntiqueWhite; /* FAEBD7 */
 }
 
+.dbs_cell_warmred {
+  padding-left: 0.5ex; 
+  padding-right: 0.5ex;
+  background-color: #FFB9B9;
+}
+
 .dbs_cell_u {
   border: solid 0 #060; 
   border-bottom-width: 2px; 
