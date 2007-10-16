@@ -793,6 +793,7 @@ MCDescription:      %s
       # [{'Name':,'BlockSize':,'NumberOfFiles':,'NumberOfEvents':,'OpenForWriting':,'CreationDate','CreationDate':,'LastModificationDate':,'LastModifiedBy'}]
 #      print "\n\nlistBlocks",kwargs
       t1=time.time()
+      watchSite=""
       aDict = {}
       con = self.connectToDB()
       oList  = []
@@ -837,7 +838,11 @@ MCDescription:      %s
           if kwargs.has_key('blockName') and kwargs['blockName']:
              sel.append_whereclause(self.col(tblk,'Name')==kwargs['blockName'])
           if kwargs.has_key('site') and kwargs['site'] and kwargs['site']!="*" and string.lower(kwargs['site'])!='all':
-             sel.append_whereclause(self.col(tse,'SEName')==kwargs['site'])
+#             sel.append_whereclause(self.col(tse,'SEName')==kwargs['site'])
+             # instead of placing condition to query I'll identify which site to watch
+             # this will allow correctly calculate total size of dataset and then
+             # in results I'll filter sites wrt to watchSite
+             watchSite=kwargs['site']
           idx=-1
           if kwargs.has_key('idx'): idx=kwargs['idx']
           if kwargs.has_key('userMode') and kwargs['userMode']=="user":
@@ -872,7 +877,11 @@ MCDescription:      %s
              totFiles+=nFiles
              totSize+=blockSize
              oldBlk=blockName
-
+             
+          # if watchSite was defined, I will apply filter for sename
+          if watchSite and watchSite!=sename: 
+             continue
+             
           if not siteList.count(sename): siteList.append(sename)
 
           if kwargs.has_key('fullOutput'):
