@@ -1313,6 +1313,15 @@ function LoadGetRunsFromRange(dbsInst,primD,primType,minRun,maxRun,idx,ajax,user
    var url='getRunsFromRange?dbsInst='+dbsInst+'primD='+primD+'primType='+primType+'&minRun='+minRun+'&maxRun='+maxRun+'&_idx='+idx+'&ajax='+ajax+'&userMode='+userMode+'&pagerStep='+pagerStep;
    load(url);
 }
+function Disable2EnableTag(tag) {
+   if($(tag).disabled) {
+      $(tag).disabled='';
+      $(tag).setAttribute("class","enabled");
+   } else {
+      $(tag).disabled='disabled';
+      $(tag).setAttribute("class","disabled");
+   }
+}
 function Disable2Enable(tag1,tag2,tag3) {
    if($(tag1).disabled) {
       $(tag1).disabled='';
