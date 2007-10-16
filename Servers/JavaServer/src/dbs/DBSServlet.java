@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.33 $"
- $Id: DBSServlet.java,v 1.33 2007/10/05 16:57:42 sekhri Exp $"
+ $Revision: 1.34 $"
+ $Id: DBSServlet.java,v 1.34 2007/10/05 19:16:20 sekhri Exp $"
 
  */
 package dbs;
@@ -94,6 +94,7 @@ public class DBSServlet extends HttpServlet{
 		
 			api = new DBSApi();
 			api.call(out, getTable(request), userDN);
+
 		} catch(Exception e) {
 			try {
 	                        if (api != null) api.writeException(out, "Servlet Error", "500",  e.getMessage()); 

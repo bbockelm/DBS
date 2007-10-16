@@ -1,6 +1,6 @@
 /**
- $Revision: 1.108 $"
- $Id: DBSApi.java,v 1.108 2007/10/12 20:11:48 sekhri Exp $"
+ $Revision: 1.109 $"
+ $Id: DBSApi.java,v 1.109 2007/10/15 22:11:25 afaq Exp $"
  *
 */
 
@@ -234,9 +234,12 @@ public class DBSApi {
 	 * 
 	 * @param dbsUser a <code>java.util.Hashtable</code> that contains all the necessary key value pairs for a single user. The most import key in this table is the user_dn. This hashtable is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @throws Exception All the exceptions that are thrown by the underlying layesr are caught and written down in the output stream that goes back to the client in proper XML format. Only an un expected exception may be raised in this method when trying to wirte to the output stream, which may not propogate back to the client.
+
+
+	RETURNS 0 on Success, 1 on Failure
 	 */
 	public void call(Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
-                
+         
 		Connection conn = null;
 
 		try {
@@ -648,7 +651,7 @@ public class DBSApi {
 			}
 			//dbsEx.printStackTrace();
 			writeException(out, dbsEx.getMessage(), dbsEx.getCode(), dbsEx.getDetail());
-			return;
+			return; 
 		} catch (XMLException xmlEx) {
 			if(conn != null) conn.rollback();
 			if (xmlEx.getMessage() == null ) {
@@ -682,10 +685,11 @@ public class DBSApi {
 				conn.close();
 			}
 		}
-
+                
 		out.write(DBSConstants.XML_SUCCESS);
 		out.write(DBSConstants.XML_FOOTER);
 		out.flush();
+                return; 
 	}
 	
 	private String get(Hashtable table, String key, boolean excep) throws Exception {
