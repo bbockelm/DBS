@@ -35,7 +35,7 @@ Dataset:
 ###<p>
 contains $nEvents events, $totFiles files, $totSize. 
 #if $userMode!='user'
-Creation date: $date
+Creation date: $date.
 #end if
 ###</p>
 <p>
@@ -95,6 +95,15 @@ Details
 </table>
 
 </td>
+#*
+#if $userMode!='user'
+<td align="right">
+<span class="box_red">
+<a href="adminDataset?dataset=$path&amp;userMode=$userMode">Administrate</a>
+</span>
+</td>
+#end if
+*#
 </tr>
 </table>
 ###<script type="text/javascript">switchLink('_sum','$tableId')</script>
@@ -133,7 +142,11 @@ Details
 *#
 #end for
   <tr valign="top" class="sortable_yellow">
+#if $long($nEvents)!=$long($siteTotEvt) or $long($totFiles)!=$long($siteTotFiles)
+     <td><div class="dbs_cell_warmred">$site</div></td>
+#else
      <td><div class="dbs_cell">$site</div></td>
+#end if
      <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
