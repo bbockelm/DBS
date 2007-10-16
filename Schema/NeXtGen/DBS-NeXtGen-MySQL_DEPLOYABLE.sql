@@ -4,9 +4,9 @@
 -- === Build : 745
 -- ======================================================================
 
-drop database if exists DBS_1_0_8;
-create database DBS_1_0_8;
-use DBS_1_0_8;
+drop database if exists DBS_1_0_8_ANZAR;
+create database DBS_1_0_8_ANZAR;
+use DBS_1_0_8_ANZAR;
 -- ======================================================================
 
 CREATE TABLE Person

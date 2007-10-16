@@ -241,6 +241,7 @@ class DbsHttpService:
 
        # See if HTTP call succeeded 
        responseCode = int(response.status)
+
        if responseCode != 200:
 
          exmsg = "\nCall to DBS Server ("+self.Url+") failed"
