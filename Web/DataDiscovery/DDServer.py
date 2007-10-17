@@ -325,7 +325,7 @@ class DDServer(DDLogger,Controller):
                     }
         page = templateTop(searchList=[nameSpace]).respond()
         if intro:
-           page+=templateIntro().reapond()
+           page+=templateIntro().respond()
         return page
 
     def genResultsHTML(self):
@@ -1021,17 +1021,39 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
 
-    def adminDataset(self,dataset,userMode,**kwargs):
+    def adminDataset(self,dbsInst,dataset,userMode,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin dataset',userMode)
+
+        # auto-competion form for processed datasets
+        nameSearch={'tag':'blockName','inputId':'blockName','inputName':'blockName','size':'100','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Name','label':'','zIndex':9000,'method':'yuiGetBlocksForDataset'}
+        t = templateAutoComplete(searchList=[nameSearch]).respond()
+        blkForm=str(t)
+        
+        dbsList=list(self.dbsList)
+        dbsList.remove(dbsInst)
+        dbsList=[dbsInst]+dbsList
         nameSpace={
-                  'dataset':dataset
-                 }
+                  'dataset' : dataset,
+                  'dbsList' : dbsList,
+                  'dbsListOrig': self.dbsList,
+                  'style'   : "",
+                  'blkForm' : blkForm,
+                  'userMode': userMode,
+                  }
         t = templateAdminDatasets(searchList=[nameSpace]).respond()
         page+= str(t)
         page+= self.genBottomHTML()
         return page
     adminDataset.exposed=True
+
+    def adminMigration(self,userMode,**kwargs):
+        page = self.genTopHTML(userMode=userMode)
+        page+="Call adminMigration with parameters %s"%str(kwargs)
+        page+="<p>Here I can either call DBS API with DbsMigrationAPI, but I doubt that it can be run in background. Or I can invoke call to DBSServlet URL. For that I need to know list of parameters to pass</p>"
+        page+= self.genBottomHTML()
+        return page
+    adminMigration.exposed=True
         
     def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
         """
@@ -2192,6 +2214,24 @@ class DDServer(DDLogger,Controller):
         return page
     getBlocksFromSite.exposed=True
 
+    # this method can be used for auto-completion forms, it returns a string of columns
+    # see YUI, http://developer.yahoo.com/yui/autocomplete/
+    def yuiGetBlocksForDataset(self,dbsInst,table,column,**kwargs):
+        print "\n### getBlocksForDataset",kwargs
+        page=""
+        whereDict={}
+        if  kwargs.has_key('query'):
+            key='%s.Path'%table
+            whereDict[key]=kwargs['query']
+        # since this method is used only in auto-completion forms, restrict output to 10 results
+        row=0
+        limit=10
+        natList = natsort24(list(self.helper.getTableColumn(table,column,row,limit,whereDict) ))
+        for item in natList:
+            page+="%s\n"%item
+        return page
+    yuiGetBlocksForDataset.exposed=True
+
     def getAllPrimaryDatasets(self,**kwargs):
         """
            Generates AJAX response to get all primary datasets available in all DBS instances
@@ -2500,7 +2540,7 @@ class DDServer(DDLogger,Controller):
         return page
     getPrimaryDSTypes.exposed=True
 
-    def getDatasetProvenanceHelper(self,dataset,userMode='user',**kwargs):
+    def getDatasetProvenanceHelper(self,dbsInst,dataset,userMode='user',**kwargs):
         """
            Get dataset provenance
            @type  dataset: string
@@ -2510,10 +2550,13 @@ class DDServer(DDLogger,Controller):
         """
         try:
             page = self.whereMsg('Navigator :: Results :: Provenance information',userMode)
+            self.helperInit(dbsInst)
             parents  = self.helper.getDatasetProvenance(dataset)
             nameSpace={
                        'host'      : self.dbsdd, 
                        'dataset'   : dataset, 
+                       'userMode'  : userMode,
+                       'dbsInst'   : dbsInst,
                        'parentList': parents
                       }
             t = templateProvenance(searchList=[nameSpace]).respond()
@@ -2525,7 +2568,7 @@ class DDServer(DDLogger,Controller):
             page="No provenance information found at this time"
         return page
 
-    def getDatasetProvenance(self,dataset,userMode='user',ajax=1,**kwargs):
+    def getDatasetProvenance(self,dbsInst,dataset,userMode='user',ajax=1,**kwargs):
         """
            Generates AJAX response to get dataset provenance
         """
@@ -2535,7 +2578,7 @@ class DDServer(DDLogger,Controller):
             page ="""<ajax-response><response type="element" id="parentGraph">"""
         else:
             page=self.genTopHTML(userMode=userMode)
-        page+=self.getDatasetProvenanceHelper(dataset,userMode)
+        page+=self.getDatasetProvenanceHelper(dbsInst,dataset,userMode)
         if  int(ajax):
             page+="</response></ajax-response>"
         else:
@@ -2581,7 +2624,7 @@ class DDServer(DDLogger,Controller):
            className="show_inline"
         page+="""<div id="parents_response_%s" class="%s">"""%(_idx,className)
         for dataset in dList:
-            page+=self.getDatasetProvenanceHelper(dataset,userMode)
+            page+=self.getDatasetProvenanceHelper(dbsInst,dataset,userMode)
         page+="</div>"
         if int(ajax):
            page+="</response></ajax-response>"
