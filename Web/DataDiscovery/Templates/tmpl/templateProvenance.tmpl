@@ -1,5 +1,5 @@
 <!-- templateProvenance.tmpl -->
-
+#import urllib
 <div>
 #if len($parentList)
 
@@ -7,7 +7,11 @@ Dataset:
 <table class="offset_left">
 <tr>
 <td align="left">
-<b>$dataset</b>
+<b>
+<a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($dataset)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off">
+$dataset
+</a>
+</b>
 </td>
 <tr>
 </table>
@@ -16,7 +20,11 @@ has the following list of parents:
     #for parent in $parentList
     <tr>
     <td align="left">
-    <b>$parent</b>
+    <b>
+    <a href="$host/getData?dbsInst=$dbsInst&amp;proc=$urllib.quote($parent)&amp;userMode=$userMode&amp;ajax=0&amp;phedex=off">
+    $parent
+    </a>
+    </b>
     </td>
     </tr>
     #end for
