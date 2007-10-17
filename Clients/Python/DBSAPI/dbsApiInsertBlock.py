@@ -24,6 +24,7 @@ from dbsRunLumiDQ import DbsRunLumiDQ
 
 from dbsException import DbsException
 from dbsApiException import *
+from xml.sax import SAXParseException
 
 import logging
 import inspect

@@ -24,6 +24,7 @@ from dbsRunLumiDQ import DbsRunLumiDQ
 
 from dbsException import DbsException
 from dbsApiException import *
+from xml.sax import SAXParseException
 
 import logging
 import inspect
@@ -116,12 +117,20 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                     'pattern_lfn' : patternLFN, }, 'GET')
     logging.log(DBSDEBUG, data)
 
+    # 
+    #  Below contains HINTS as how to use DbsXmlBaseHandler to avoid "double parsing"
+    #
+
+
     # Parse the resulting xml output.
     try:
+      #from dbsXmlBaseHandler import DbsXmlBaseHandler
       result = []
+      #class Handler (DbsXmlBaseHandler):
       class Handler (xml.sax.handler.ContentHandler):
 
         def startElement(self, name, attrs):
+          #DbsXmlBaseHandler.startElement(self, name, attrs)
           if name == 'file':
              self.currFile = DbsFile (
                                        LogicalFileName=str(attrs['lfn']),

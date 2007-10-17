@@ -142,7 +142,7 @@ def _help_filelist():
                 print "   examples:"
                 print "         python dbsCommandLine.py -c lsf --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
                 print "         python dbsCommandLine.py -c lsf --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW --report"
-                print "         python dbsCommandLine.py -c lsf --lfnpattern=*root* --reporti (don't do that please !)"
+                print "         python dbsCommandLine.py -c lsf --lfnpattern=*root* --report (don't do that please !)"
                 print "         python dbsCommandLine.py -c lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
                 print "         python dbsCommandLine.py -c lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
                 print "   Note: --path takes precedece over --blockpattern and --lfnpattern (if --path provided rest are ignored)"

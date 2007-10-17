@@ -21,6 +21,7 @@ from dbsFileTriggerTag import DbsFileTriggerTag
 from dbsMigrateApi import DbsMigrateApi
 from dbsDQFlag import DbsDQFlag
 from dbsRunLumiDQ import DbsRunLumiDQ
+from xml.sax import SAXParseException
 
 from dbsException import DbsException
 from dbsApiException import *
