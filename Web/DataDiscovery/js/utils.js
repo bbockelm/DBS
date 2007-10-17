@@ -1521,3 +1521,18 @@ function GetValueFromSelect(tag) {
   return elem;
 }
 
+function ChangeDbsInst() {
+  var url=window.location.href;
+  var dbsInst=GetValueFromSelect('dbsInst');
+  var newurl;
+  if(url.search("dbsInst")>0) {
+     newurl=url.replace(/dbsInst=([^&]+)/g,'dbsInst='+dbsInst);
+  } else {
+    if(url.search(/\?/)>0) {
+       newurl=url+"&dbsInst="+dbsInst;
+    } else {
+       newurl=url+"?dbsInst="+dbsInst;
+    }
+  } 
+  load(newurl);
+}
