@@ -20,26 +20,6 @@ from dbsException import DbsException
 from dbsApiException import *
 from xml.sax import SAXParseException
 
-#from dbsBaseObject import *
-#from dbsRun import DbsRun 
-#from dbsQueryableParameterSet import DbsQueryableParameterSet
-#from dbsProcessedDataset import DbsProcessedDataset
-#from dbsPrimaryDataset import DbsPrimaryDataset
-#from dbsLumiSection import DbsLumiSection 
-#from dbsFile import DbsFile
-#from dbsFileBlock import DbsFileBlock
-#from dbsDataTier import DbsDataTier 
-#from dbsStorageElement import DbsStorageElement 
-#from dbsFileBranch import DbsFileBranch 
-#from dbsAlgorithm import DbsAlgorithm
-#from dbsAnalysisDataset import DbsAnalysisDataset
-#from dbsAnalysisDatasetDefinition import DbsAnalysisDatasetDefinition
-#from dbsFileTriggerTag import DbsFileTriggerTag
-#from dbsMigrateApi import DbsMigrateApi
-#from DBSAPI.dbsDQFlag import DbsDQFlag
-#from DBSAPI.dbsRunLumiDQ import DbsRunLumiDQ
-
-from dbsParent import DbsParent
 from dbsConfig import DbsConfig
 import urlparse
 import urllib2

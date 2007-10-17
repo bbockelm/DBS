@@ -4,8 +4,6 @@ import base64
 from xml.sax.saxutils import escape
 from cStringIO import StringIO
 
-from dbsAnalysisDataset import DbsAnalysisDataset
-
 from dbsException import DbsException
 from dbsApiException import *
 

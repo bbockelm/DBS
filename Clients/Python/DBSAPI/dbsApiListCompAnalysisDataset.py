@@ -5,11 +5,11 @@ from xml.sax.saxutils import escape
 from cStringIO import StringIO
 
 from dbsAnalysisDataset import DbsAnalysisDataset
+from dbsCompositeAnalysisDataset import DbsCompositeAnalysisDataset
 
 from dbsException import DbsException
 from dbsApiException import *
 from xml.sax import SAXParseException
-from dbsCompositeAnalysisDataset import DbsCompositeAnalysisDataset
 import logging
 import inspect
 
