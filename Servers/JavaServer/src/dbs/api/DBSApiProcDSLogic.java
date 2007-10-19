@@ -1,6 +1,6 @@
 /**
- $Revision: 1.46 $"
- $Id: DBSApiProcDSLogic.java,v 1.46 2007/10/12 20:11:48 sekhri Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSApiProcDSLogic.java,v 1.47 2007/10/12 22:03:50 sekhri Exp $"
  *
  */
 
@@ -13,6 +13,7 @@ import java.io.Writer;
 import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.HashSet;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
@@ -64,9 +65,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		String prevPS = "";*/
 		// When data is returned from the database, a bunch of tiers and application are returned in random order, so we need
 		// to store all of them in a vector so that while writing xml, previously written data tier does not get written again.
-		Vector dtVec = null; 
-		Vector pathVec = null; 
-		Vector algoVec = null; 
+		HashSet dtVec = null; 
+		HashSet pathVec = null; 
+		HashSet algoVec = null; 
                 String primDSName = null;
                 String procDSName = null;
 		
@@ -120,9 +121,9 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 							"'>\n"));
 					first = false;
 					prevDS = procDSID;
-		        		dtVec = new Vector();// Or dtVec.removeAllElements();
-		        		pathVec = new Vector();// Or pathVec.removeAllElements();
-					algoVec = new Vector();// Or algoVec.removeAllElements();
+		        		dtVec = new HashSet();// Or dtVec.removeAllElements();
+		        		pathVec = new HashSet();// Or pathVec.removeAllElements();
+					algoVec = new HashSet();// Or algoVec.removeAllElements();
 				}
 
                                 if( !pathVec.contains(path) && !isNull(path) ) {
