@@ -33,7 +33,7 @@ Dataset:
 ###set idPath=$path.replace("/","___")
 
 ###<p>
-contains $nEvents events, $totFiles files, $totSize. 
+contains $nEvents events, $totFiles files, $tot block(s), $totSize. 
 #if $userMode!='user'
 Creation date: $date.
 #end if
@@ -99,7 +99,7 @@ Details
 #if $userMode!='user'
 <td align="right">
 <span class="box_red">
-<a href="adminDataset?dataset=$path&amp;userMode=$userMode">Administrate</a>
+<a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">Administrate</a>
 </span>
 </td>
 #end if
