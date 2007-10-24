@@ -21,6 +21,15 @@ ORACLE:
          sqlplus cms_dbs_user_whatever/passwd@DBINSTANCE < DBS-NeXtGen-Oracle_DEPLOYABLE.sql
 
 
+4.
+  Run the **index**.sql file to create missing indexes.
+
+5. 
+  edit build.property file to give proper password and so on.
+
+6.
+  run build.sh to create proper roles and private synonyms.
+
 
 #############################  Expert ONLY Options #########################
 
