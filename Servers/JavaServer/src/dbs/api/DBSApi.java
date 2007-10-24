@@ -1,6 +1,6 @@
 /**
- $Revision: 1.109 $"
- $Id: DBSApi.java,v 1.109 2007/10/15 22:11:25 afaq Exp $"
+ $Revision: 1.110 $"
+ $Id: DBSApi.java,v 1.110 2007/10/16 17:22:24 afaq Exp $"
  *
 */
 
@@ -288,6 +288,9 @@ public class DBSApi {
 				(new DBSApiProcDSLogic(this.data)).listDatasetParents(conn, out, 
 						get(table, "path", true)
 						);
+
+			} else if (apiStr.equals("listDatasetPaths")) {
+				(new DBSApiProcDSLogic(this.data)).listDatasetPaths(conn, out);
 
 			} else if (apiStr.equals("listAlgorithms")) {
 				(new DBSApiAlgoLogic(this.data)).listAlgorithms(conn, out,

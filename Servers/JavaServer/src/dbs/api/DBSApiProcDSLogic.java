@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApiProcDSLogic.java,v 1.47 2007/10/12 22:03:50 sekhri Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApiProcDSLogic.java,v 1.48 2007/10/19 14:12:48 kosyakov Exp $"
  *
  */
 
@@ -169,6 +169,23 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 				out.write(((String) "</processed_dataset>\n"));
 		}
 	}
+
+	public void listDatasetPaths(Connection conn, Writer out) throws Exception {
+
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			ps = DBSSql.listDatasetPaths(conn);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				out.write(((String) "<processed_dataset path='" + get(rs, "PATH") + "'/>\n"));
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+
 
 
 	/**

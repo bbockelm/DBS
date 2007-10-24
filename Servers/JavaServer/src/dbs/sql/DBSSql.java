@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.120 $"
- $Id: DBSSql.java,v 1.120 2007/10/12 22:03:51 sekhri Exp $"
+ $Revision: 1.121 $"
+ $Id: DBSSql.java,v 1.121 2007/10/15 22:11:25 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1326,6 +1326,18 @@ public class DBSSql {
 		if(!patternFam.equals("%")) ps.setString(columnIndx++, patternFam);
 		if(!patternExe.equals("%")) ps.setString(columnIndx++, patternExe);
 		if(!patternPS.equals("%")) ps.setString(columnIndx++, patternPS);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
+
+	
+	public static PreparedStatement listDatasetPaths(Connection conn) throws SQLException {
+		String sql = "SELECT DISTINCT blk.Path as PATH \n" +
+			"FROM Block blk \n" +
+			"ORDER BY blk.Path DESC";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
