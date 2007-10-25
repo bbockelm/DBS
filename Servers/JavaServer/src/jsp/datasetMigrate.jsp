@@ -99,7 +99,7 @@
 
 
 							<rich:panel styleClass="dropTargetPanel">
-								<rich:dropSupport id="dstPath" acceptedTypes="path" dropListener="#{DatasetMigrate.processDstPathDrop}"/>
+								<rich:dropSupport id="dstPath" acceptedTypes="path" dropListener="#{DatasetMigrate.processDstPathDrop}" reRender="datasetDstTable"/>
 	
 								<rich:dataTable columnClasses="column-index"
 									id="datasetDstTable"
