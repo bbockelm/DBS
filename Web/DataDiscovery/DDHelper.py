@@ -2044,6 +2044,24 @@ MCDescription:      %s
               oSel = [self.col(trun,'RunNumber'),self.col(trun,'NumberOfEvents'),self.col(trun,'NumberOfLumiSections'),self.col(trun,'TotalLuminosity'),self.col(trun,'StoreNumber'),self.col(trun,'StartOfRun'),self.col(trun,'EndOfRun'),self.col(tp1,'DistinguishedName'),self.col(trun,'CreationDate'),self.col(trun,'LastModificationDate'),self.col(tpt,'Type'),self.col(tblk,'Path')]
               gBy=list(oSel)
               oSel+=[sqlalchemy.func.sum(self.col(tf,'FileSize').distinct()),sqlalchemy.func.count(self.col(tf,'LogicalFileName').distinct())]
+
+### New way, once I'll fix problem with data type
+#          obj=trun
+#          obj=obj.outerjoin(tblk,onclause=self.col(trun,'Block')==self.col(tblk,'ID'))
+#          if  not count:
+#              if dataset or (primD and primD!="*"):
+#                 obj=obj.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
+#                 empty,prim,proc,tier=string.split(dataset,"/")
+#                 if (prim and prim!="*") or (primD and primD!="*"):
+#                    obj=obj.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+#                 if tier and tier!="*":
+#                    obj=obj.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+#                    obj=obj.outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+#              if primType and primType!="*":
+#                 obj=obj.outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+#          sel = sqlalchemy.select(oSel,from_obj=[obj],distinct=True,group_by=gBy,
+#                                  order_by=[sqlalchemy.desc(self.col(trun,'RunNumber'))]
+#                                 )
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
@@ -2303,8 +2321,9 @@ MCDescription:      %s
       t1=time.time()
       aDict = {}
       tDict = {}
-      con = self.connectToDB()
-      oList  = []
+      con   = self.connectToDB()
+      oList = []
+      sel   = ""
       try:
           tpm  = tDict['PrimaryDatset']    = self.alias('PrimaryDataset','tpm')
           tpds = tDict['ProcDSTier']       = self.alias('ProcDSTier','tpds')
@@ -2322,7 +2341,6 @@ MCDescription:      %s
           if  cDict.has_key('max') and cDict['max']==1:
               oSel = [sqlalchemy.func.count(self.col(tad,'Name').distinct())]
           else:
-#              oSel = [self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
               oSel = [self.col(tad,'Name'),self.col(tadt,'Type'),
                       self.col(tads,'Status'),self.col(tadd,'Name'),
                       self.col(tadd,'LumiSections'),
@@ -2331,7 +2349,6 @@ MCDescription:      %s
                       self.col(tadd,'RunsRanges'),
                       self.col(tadd,'Algorithms'),
                       self.col(tadd,'LFNs'),
-                      self.col(tadd,'AnalysisDatasets'),
                       self.col(tadd,'UserCut'),
                       self.col(tadd,'Description'),
                       self.col(tp1,'DistinguishedName'),self.col(tad,'CreationDate'),
@@ -2407,7 +2424,7 @@ MCDescription:      %s
       aList=[]
       for item in result:
           if not item[0]: continue
-          name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate,group,path=item
+          name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dCut,dDesc,cBy,cDate,mBy,mDate,group,path=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
           cBy=parseCreatedBy(cBy)
@@ -2423,7 +2440,7 @@ MCDescription:      %s
           dLFN       = parseBLOBdata(dLFN)
           dCut       = parseBLOBdata(dCut)
           dDesc      = parseBLOBdata(dDesc)
-          aList.append((name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dADS,dCut,dDesc,cBy,cDate,mBy,mDate,group,path))
+          aList.append((name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dCut,dDesc,cBy,cDate,mBy,mDate,group,path))
       if self.verbose:
          self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
       self.closeConnection(con)

@@ -9,7 +9,6 @@ oSel = [
       self.col(tadd,'RunsRanges'),
       self.col(tadd,'Algorithms'),
       self.col(tadd,'LFNs'),
-      self.col(tadd,'AnalysisDatasets'),
       self.col(tadd,'UserCut'),
       self.col(tadd,'Description'),
       self.col(tp1,'DistinguishedName'),                  
@@ -31,15 +30,14 @@ oSel = [
 #set dRunRanges  = item[8]
 #set dAlg        = item[9]
 #set dLFN        = item[10]
-#set dADS        = item[11]
-#set dCut        = item[12]
-#set dDesc       = item[13]
-#set cBy         = item[14]
-#set cDate       = item[15]
-#set mBy         = item[16]
-#set mDate       = item[17]
-#set group       = item[18]
-#set dataset     = item[19]
+#set dCut        = item[11]
+#set dDesc       = item[12]
+#set cBy         = item[13]
+#set cDate       = item[14]
+#set mBy         = item[15]
+#set mDate       = item[16]
+#set group       = item[17]
+#set dataset     = item[18]
 
 ####set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
 ####set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
@@ -199,15 +197,6 @@ LFNs:
 </td>
 <td align="left">
 $dLFN
-</td>
-</tr>
-
-<tr>
-<td align="right">
-AnalysisDatasets:
-</td>
-<td align="left">
-$dADS
 </td>
 </tr>
 
