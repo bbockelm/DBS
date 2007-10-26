@@ -40,6 +40,19 @@ public class Util {
 		
 	}
 	
+	public void setExceptionMessage(String message, HtmlRichMessage generalInputMessage) {
+		try {
+			int startIndex = message.indexOf("<exception>") + 11;
+			if (startIndex < 0) startIndex = 0;
+			int endIndex = message.length();
+			message = message.substring(startIndex, endIndex);
+			generalInputMessage.setStyle("color:rgb(255,0,0);");
+			generalInputMessage.setPassedLabel(message);
+		} finally {
+			 generalInputMessage.setRendered(true);
+		}
+	}
+
 	public void setMessage(String message, HtmlRichMessage generalInputMessage) throws Exception {
 		int startIndex = message.indexOf("<dbs>") + 5;
 		int endIndex = message.indexOf("</dbs>");
@@ -47,6 +60,16 @@ public class Util {
 		if (isException(message)) generalInputMessage.setStyle("color:rgb(255,0,0);");
 		else generalInputMessage.setStyle("color:rgb(128,128,128);");
 		generalInputMessage.setPassedLabel(message);
+	}
+
+	public void setText(String message, HtmlRichMessage generalInputMessage) {
+		try {
+			generalInputMessage.setStyle("color:rgb(128,128,128);");
+			generalInputMessage.setPassedLabel(message);
+		} finally {
+			 generalInputMessage.setRendered(true);
+		}
+
 	}
 
 	public String getCall(Hashtable table) throws Exception {

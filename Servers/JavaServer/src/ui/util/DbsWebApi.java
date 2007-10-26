@@ -1,5 +1,8 @@
 package ui.util;
 
+import org.richfaces.component.html.HtmlRichMessage;
+//import javax.faces.context.FacesContext;
+
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.List;
@@ -23,13 +26,21 @@ public class DbsWebApi {
 	private String url;
 	private Util u;
 	private List<DbsDataset> paths = null;
+	private String str;
+	private HtmlRichMessage generalInputMessage;
 
 	public DbsWebApi(String url){
 		this.url = url;
 		u = new Util();
+		str = "";
+	}
+
+	public void setGeneralInputMessage(HtmlRichMessage generalInputMessage) {
+		this.generalInputMessage = generalInputMessage;
 	}
 
 	public List<DbsDataset> parsePaths(String inputXml) throws Exception {
+		if(u.isException(inputXml)) throw new Exception(inputXml);
 		Vector toReturn = new Vector();
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
@@ -38,7 +49,7 @@ public class DbsWebApi {
 			Element e = (Element)allElement.elementAt(i);
 			if (e.name.equals("processed_dataset") ) {
 				DbsDataset dbsDataset = new DbsDataset();
-				System.out.println("parsing .......");
+				//System.out.println("parsing .......");
 				dbsDataset.setDatasetName(DBSUtil.get(e.attributes, "path"));
 				toReturn.add(dbsDataset);
 			} 
@@ -47,6 +58,7 @@ public class DbsWebApi {
 	}
 
 	public List<String> parse(String inputXml, String tag, String key) throws Exception {
+		if(u.isException(inputXml)) throw new Exception(inputXml);
 		Vector toReturn = new Vector();
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
@@ -68,22 +80,22 @@ public class DbsWebApi {
 		table.put("path", path);
 		String instanceUrl = this.url + "?" + u.makeUrl(table);
 		String xml = u.readUrl(instanceUrl);
-		System.out.println("path " + path);
-		System.out.println("xml from listBlocks " + xml);
+		//System.out.println("path " + path);
+		//System.out.println("xml from listBlocks " + xml);
 		
 		return parse(xml, "block", "name");
 		
 	}
 	
 	public List<String> listProcessedDatasets(String primName, String procName) throws Exception {
-		System.out.println("primary_datatset_name_pattern " + primName + "  processed_datatset_name_pattern " + procName);
+		//System.out.println("primary_datatset_name_pattern " + primName + "  processed_datatset_name_pattern " + procName);
 		Hashtable table = new Hashtable();
 		table.put("api", "listProcessedDatasets");
 		table.put("primary_datatset_name_pattern", primName);
 		table.put("processed_datatset_name_pattern", procName);
 		String instanceUrl = this.url + "?" + u.makeUrl(table);
 		String xml = u.readUrl(instanceUrl);
-		System.out.println("xml from listProcessedDatasets " + xml);
+		//System.out.println("xml from listProcessedDatasets " + xml);
 		return parse(xml, "path", "dataset_path");
 		
 	}
@@ -95,7 +107,7 @@ public class DbsWebApi {
 		table.put("path", path);
 		String instanceUrl = this.url + "?" + u.makeUrl(table);
 		String xml = u.readUrl(instanceUrl);
-		System.out.println("xml from listDatasetParents " + xml);
+		//System.out.println("xml from listDatasetParents " + xml);
 		List<String> tmpPaths = parse(xml, "processed_dataset_parent", "path");
 		for (int i = 0; i != tmpPaths.size() ; ++i) {
 			StringTokenizer st = new StringTokenizer((String)tmpPaths.get(i), "/");
@@ -113,7 +125,7 @@ public class DbsWebApi {
 		table.put("api", "listDatasetPaths");
 		String instanceUrl = this.url + "?" + u.makeUrl(table);
 		String xml = u.readUrl(instanceUrl);
-		System.out.println("xml from listDatasetPaths " + xml);
+		//System.out.println("xml from listDatasetPaths " + xml);
 		return parsePaths(xml);
 	}
 
@@ -126,6 +138,7 @@ public class DbsWebApi {
 		String instanceUrl = this.url + "?" + u.makeUrl(table);
 		String xml = u.readUrl(instanceUrl);
 		System.out.println("xml from listDatasetContents " + xml);
+		if(u.isException(xml)) throw new Exception(xml);
 		return xml;
 		
 	}
@@ -137,6 +150,11 @@ public class DbsWebApi {
 		String data = u.makeUrl(table);
 		String xml = u.postUrl(this.url, data);
 		System.out.println("xml from insertDatasetContents " + xml);
+		if(u.isException(xml)) {
+			if(xml.indexOf("code ='1024'") == -1) {
+				throw new Exception(xml);
+			}
+		}
 		return xml;
 		
 	}
@@ -162,7 +180,7 @@ public class DbsWebApi {
 			List<String> parents = dwApiSrc.listDatasetParents(path);
 			for (int i = 0; i != parents.size() ; ++i) {
 				String parentPath = (String)parents.get(i);
-				System.out.println("Parent path " + parentPath);
+				//System.out.println("Parent path " + parentPath);
 				toReturn += migrateDataset(srcUrl, dstUrl, parentPath, withParents, force);
 			}
 		}
@@ -172,12 +190,24 @@ public class DbsWebApi {
 				transfer = true;
 			}
 		} else transfer = true;
+		System.out.println("************************************");
+		System.out.println("force " + force + "  parents " + withParents + " transfer " + transfer);
 		if(transfer) {
 			List<String> v = dwApiSrc.listBlocks(path);
 			for (int i = 0; i != v.size() ; ++i) {
 				String blockName = (String)v.get(i);
 				System.out.println("Transferring path " + path +  " \nBlock name " + blockName);
+				str += "  Transferring Path " + path +  " \nBlock name " + blockName;
+				u.setText(str, generalInputMessage);
+				//JSFUtils.setManagedBeanValue(FacesContext.getCurrentInstance(), "DatasetMigrate.logOutputText", str);
 				toReturn += dwApiDst.insertDatasetContents(dwApiSrc.listDatasetContents(path, blockName));
+				/*for (int k = 0 ; k != 999; ++k ){
+					for (int l = 0 ; l != 999; ++l ){
+						System.out.println("k " + k + " l " + l);
+					}
+				}*/
+				str += " Path " + path +  " \nBlock name " + blockName + " transfer complete\n\n";
+				u.setText(str, generalInputMessage);
 			}
 		}
 

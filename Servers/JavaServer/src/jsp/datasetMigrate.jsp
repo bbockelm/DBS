@@ -8,7 +8,8 @@
 	<h:form id="form1">
 		<rich:tabPanel id="datasetMigratePanel">
 			<rich:tab label="Dataset Migrate">
-				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To migrate a dataset first drap and drop the Local or Global DBS to source or destination DBS. This will populate the list of processed dataset in the selected source DBS. Then drag and drop any processed dataset from the source to destination DBS to start the migration. To reset the form click on Reset button"/>
+				<rich:toolTip followMouse="true" direction="top-right" delay="6000" style="width:250px" value="To migrate a dataset first drag and drop the Deployed DBS Instance  to source or destination DBS. This will populate the list of processed dataset in the selected source DBS. Then drag and drop any processed dataset from the source to destination DBS to start the migration."/>	
+
 				<h:panelGrid columns="1" columnClasses="gridContent" id="pg">
 					<rich:panel bodyClass="inpanelBody">
 						<rich:dataTable columnClasses="column-index"
@@ -46,7 +47,7 @@
 								<f:facet name="header">
 									<h:outputText styleClass="headerText" value="Source DBS Instance" style="font-size:xx-small;"/>
 								</f:facet>
-								<rich:dropSupport id="srcInstance" acceptedTypes="instance" dropListener="#{DatasetMigrate.processSrcInstanceDrop}" reRender="srcInstanceOutputText,datasetSrcTable"/>
+								<rich:dropSupport id="srcInstance" acceptedTypes="instance" dropListener="#{DatasetMigrate.processSrcInstanceDrop}" reRender="srcInstanceOutputText, datasetSrcTable, rm" limitToList="true"/>
 								<h:outputText id="srcInstanceOutputText" value="" binding="#{DatasetMigrate.srcInstanceNameOutputText}" style="font-size:xx-small;"/>
 							</rich:panel>
 							
@@ -93,13 +94,13 @@
 								<f:facet name="header">
 									<h:outputText styleClass="headerText" value="Destination DBS Instance" style="font-size:xx-small;"/>
 								</f:facet>
-								<rich:dropSupport id="dstInstance" acceptedTypes="instance" dropListener="#{DatasetMigrate.processDstInstanceDrop}" reRender="dstInstanceOutputText, datasetDstTable"/>
+								<rich:dropSupport id="dstInstance" acceptedTypes="instance" dropListener="#{DatasetMigrate.processDstInstanceDrop}" reRender="dstInstanceOutputText, datasetDstTable, rm" limitToList="true"/>
 								<h:outputText id="dstInstanceOutputText" value="" binding="#{DatasetMigrate.dstInstanceNameOutputText}" style="font-size:xx-small;"/>
 							</rich:panel>
 
 
 							<rich:panel styleClass="dropTargetPanel">
-								<rich:dropSupport id="dstPath" acceptedTypes="path" dropListener="#{DatasetMigrate.processDstPathDrop}" reRender="datasetDstTable"/>
+								<rich:dropSupport id="dstPath" acceptedTypes="path" dropListener="#{DatasetMigrate.processDstPathDrop}" reRender="datasetDstTable, rm" limitToList="true" ajaxSingle="false" />
 	
 								<rich:dataTable columnClasses="column-index"
 									id="datasetDstTable"
@@ -132,9 +133,31 @@
 						</h:panelGrid>
 
 					</h:panelGrid>
-							
+					<rich:panel bodyClass="inpanelBody">
+						<h:panelGrid columns="3" columnClasses="gridContent">
+							<h:outputText value="Dataset Path" style="font-size:small;"/>
+							<h:inputText id="datasetInputText" required="true" binding="#{DatasetMigrate.datasetInputText}"/>
+							<a4j:commandButton id="datasetMigrateButton" value="Migrate Dataset Status" action="#{DatasetMigrate.changeStatusAction}"/>
+							<h:selectManyCheckbox binding="#{DatasetMigrate.parameter}">
+								<f:selectItem itemValue="PARENTS" itemLabel="With Parents"/>
+								<f:selectItem itemValue="FORCE" itemLabel="Forcefully Transfer"/>
+								<f:selectItem itemValue="RO" itemLabel="Read Only Transfer"/>
+							</h:selectManyCheckbox>
+							<rich:message for="datasetInputText">
+								<f:facet name="passedMarker">
+									<h:graphicImage  value="/jsp/images/passed.gif" /> 
+								</f:facet>
+								<f:facet name="errorMarker">
+									<h:graphicImage value="/jsp/images/error.gif" />   
+								</f:facet>
+							</rich:message>
+
+						</h:panelGrid>
+					</rich:panel>
+
+
 				</h:panelGrid>
-				<rich:message for="pg" binding="#{DatasetMigrate.generalInputMessage}">
+				<rich:message id="rm" for="pg" binding="#{DatasetMigrate.generalInputMessage}">
 					<f:facet name="passedMarker">
 						<h:graphicImage  value="/jsp/images/passed.gif" /> 
 					</f:facet>
@@ -142,6 +165,7 @@
 						<h:graphicImage value="/jsp/images/error.gif" />   
 					</f:facet>
 				</rich:message>
+
 
 			</rich:tab>
 		</rich:tabPanel>
