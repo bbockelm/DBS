@@ -1021,7 +1021,7 @@ class DDServer(DDLogger,Controller):
         return page
     genNavigatorMenuDict.exposed = True
 
-    def adminDataset(self,dbsInst,dataset,userMode,**kwargs):
+    def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin dataset',userMode)
 
@@ -1033,10 +1033,17 @@ class DDServer(DDLogger,Controller):
         dbsList=list(self.dbsList)
         dbsList.remove(dbsInst)
         dbsList=[dbsInst]+dbsList
+        site="*"
+        if kwargs.has_key("site"):
+           site=kwargs["site"]
+        blkList=self.helper.getBlocksFromSite(site=site,datasetPath=dataset)
+        siteDict=sortSitesByDomain(siteList[1:-1].replace(" ","").replace("'","").split(","))
         nameSpace={
                   'dataset' : dataset,
                   'dbsList' : dbsList,
                   'dbsListOrig': self.dbsList,
+                  'blkList' : blkList,
+                  'siteDict': siteDict,
                   'style'   : "",
                   'blkForm' : blkForm,
                   'userMode': userMode,
@@ -1054,6 +1061,14 @@ class DDServer(DDLogger,Controller):
         page+= self.genBottomHTML()
         return page
     adminMigration.exposed=True
+        
+    def adminAdmin(self,userMode,**kwargs):
+        page = self.genTopHTML(userMode=userMode)
+        page+="Call adminAdmin with parameters %s"%str(kwargs)
+        page+="<p>Here I can either call DBS API with DbsAdminAPI, but I doubt that it can be run in background. Or I can invoke call to DBSServlet URL. For that I need to know list of parameters to pass</p>"
+        page+= self.genBottomHTML()
+        return page
+    adminAdmin.exposed=True
         
     def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
         """
@@ -2213,6 +2228,35 @@ class DDServer(DDLogger,Controller):
            self.writeLog(page)
         return page
     getBlocksFromSite.exposed=True
+
+    def getBlocksFromDataset(self, dbsInst, datasetPath, multiple="", **kwargs):
+        """
+           Gets block names for given dataset path
+           @type  site: string 
+           @param site: site name 
+           @rtype : string
+           @return: returns HTML code
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="object" id="results">"""
+        try:
+            self.helper.setDBSDLS(dbsInst)
+            bList = self.helper.getBlocksFromSite(site="any",datasetPath=datasetPath)
+            t="""<select %s size="5" style="width:200px">"""%multiple
+            for blk in bList:
+                t+="""<option value="%s">%s</option>"""%blk
+            t+="</select>"
+        except:
+            t=self.errorReport("Fail in getBlocksFromDataset function")
+            pass
+        page+= str(t)
+        page+="</response></ajax-response>"
+        print page
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getBlocksFromDataset.exposed=True
 
     # this method can be used for auto-completion forms, it returns a string of columns
     # see YUI, http://developer.yahoo.com/yui/autocomplete/
