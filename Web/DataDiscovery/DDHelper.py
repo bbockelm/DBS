@@ -866,6 +866,7 @@ MCDescription:      %s
 #          print "blockList item result=",item
           if not item[0]: continue
           prdDate,blockName,blockSize,nFiles,nEvts,blockStatus,cBy,cDate,mBy,mDate,sename=item
+          if not blockName: continue
           prdDate=timeGMT(prdDate)
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
