@@ -1,7 +1,7 @@
 <!-- templateAnalysisDS.tmpl -->
 #*
 oSel = [
-      self.col(tad,'Name'),self.col(tad,'Annotation'),self.col(tadt,'Type'),
+      self.col(tad,'Name'),self.col(tadt,'Type'),
       self.col(tads,'Status'),self.col(tadd,'Name'),
       self.col(tadd,'LumiSections'),
       self.col(tadd,'LumiSectionRanges'),
@@ -20,24 +20,23 @@ oSel = [
 <table class="valign_top">
 #for item in $dList
 #set name        = item[0]
-#set ann         = item[1]
-#set type        = item[2]
-#set status      = item[3]
-#set dName       = item[4]
-#set dLumi       = item[5]
-#set dLumiRanges = item[6]
-#set dRuns       = item[7]
-#set dRunRanges  = item[8]
-#set dAlg        = item[9]
-#set dLFN        = item[10]
-#set dCut        = item[11]
-#set dDesc       = item[12]
-#set cBy         = item[13]
-#set cDate       = item[14]
-#set mBy         = item[15]
-#set mDate       = item[16]
-#set group       = item[17]
-#set dataset     = item[18]
+#set type        = item[1]
+#set status      = item[2]
+#set dName       = item[3]
+#set dLumi       = item[4]
+#set dLumiRanges = item[5]
+#set dRuns       = item[6]
+#set dRunRanges  = item[7]
+#set dAlg        = item[8]
+#set dLFN        = item[9]
+#set dCut        = item[10]
+#set dDesc       = item[11]
+#set cBy         = item[12]
+#set cDate       = item[13]
+#set mBy         = item[14]
+#set mDate       = item[15]
+#set group       = item[16]
+#set dataset     = item[17]
 
 ####set idPath=$name.replace(" ","___")+"_ads_"+$path.replace("/","___")
 ####set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
@@ -114,7 +113,7 @@ $status
 </td>
 
 </tr>
-<tr>
+<tr valign="bottom">
 
 #if $full
 <td align="right">
@@ -124,7 +123,7 @@ Description name:
 $dName
 </td>
 </tr>
-<tr>
+<tr valign="bottom">
 #end if
 
 <td align="right">
@@ -133,7 +132,7 @@ path:
 <td align="left">
 
 <table>
-<tr>
+<tr valign="bottom">
 <td>$dataset</td>
 <td>
 <div id="$idPath"></div>
@@ -154,7 +153,6 @@ $dLumi
 </td>
 
 </tr>
-<tr>
 #if $full
 <td align="right">
 Lumi ranges:
@@ -217,42 +215,8 @@ Description:
 $dDesc
 </td>
 </tr>
-
-<tr>
 #end if
 
-#*
-<td align="right">
-CRAB:
-</td>
-<td align="left">
-crab.cfg
-</td>
-
-</tr>
-<tr>
-*#
-
-<td align="right">
-Annotation:
-</td>
-<td align="left">
-
-#if $full
-$ann
-#else
-#set words=$ann.split()
-#if len($words)>10
-#set text=' '.join($words[:10])
-#else
-#set text=$ann
-#end if
-$text ... <a href="getAnalysisDSFullInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;ads=$name&amp;userMode=$userMode">full information</a>
-#end if
-
-</td>
-
-</tr>
 </table>
 <!-- end of entry -->
 
@@ -260,6 +224,9 @@ $text ... <a href="getAnalysisDSFullInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;
 </tr>
 <tr>
 <td>
+#if not $full
+<a href="getAnalysisDSFullInfo?dbsInst=$dbsInst&amp;dataset=$path&amp;ads=$name&amp;userMode=$userMode">More information about analysis DS</a>
+#end if
 <hr class="dbs" />
 </td>
 </tr>

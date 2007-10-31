@@ -2424,7 +2424,7 @@ MCDescription:      %s
       aList=[]
       for item in result:
           if not item[0]: continue
-          name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dCut,dDesc,cBy,cDate,mBy,mDate,group,path=item
+          name,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dCut,dDesc,cBy,cDate,mBy,mDate,group,path=item
           cDate=timeGMT(cDate)
           mDate=timeGMT(mDate)
           cBy=parseCreatedBy(cBy)
@@ -2440,7 +2440,9 @@ MCDescription:      %s
           dLFN       = parseBLOBdata(dLFN)
           dCut       = parseBLOBdata(dCut)
           dDesc      = parseBLOBdata(dDesc)
-          aList.append((name,ann,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dCut,dDesc,cBy,cDate,mBy,mDate,group,path))
+          groupItem = (name,adtType,status,dName,dLumi,dLumiRange,dRuns,dRunRange,dAlg,dLFN,dCut,dDesc,cBy,cDate,mBy,mDate,group,path)
+          if not aList.count( groupItem ):
+             aList.append( groupItem )
       if self.verbose:
          self.writeLog("time getAnalysisDS: %s"%(time.time()-t1))
       self.closeConnection(con)
