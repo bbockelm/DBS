@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.121 $"
- $Id: DBSSql.java,v 1.121 2007/10/15 22:11:25 afaq Exp $"
+ $Revision: 1.122 $"
+ $Id: DBSSql.java,v 1.122 2007/10/24 21:55:13 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1969,8 +1969,11 @@ public class DBSSql {
 	
 		if(!DBSUtil.isNull(fileID)) {
 			sql += whereStr;
+			if (!listInvalidFiles) sql += " AND \n";
+		} else {
+			if (!listInvalidFiles) sql += " WHERE\n";
 		}
-		if (!listInvalidFiles)	sql +=  "WHERE st.Status <> 'INVALID' \n";
+		if (!listInvalidFiles)	sql +=  "st.Status <> 'INVALID' \n";
 		sql +=	"ORDER BY f.LogicalFileName DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
