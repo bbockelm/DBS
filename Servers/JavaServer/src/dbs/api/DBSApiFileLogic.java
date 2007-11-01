@@ -1,6 +1,6 @@
 /**
- $Revision: 1.68 $"
- $Id: DBSApiFileLogic.java,v 1.68 2007/10/05 19:16:20 sekhri Exp $"
+ $Revision: 1.69 $"
+ $Id: DBSApiFileLogic.java,v 1.69 2007/10/10 22:04:18 afaq Exp $"
  *
  */
 
@@ -214,7 +214,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					this.data.globalFile = new Hashtable();
 					this.data.globalFile.put(lfn, fileID);
 					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
-					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
+					//listInvalidFiles is set to true only while migration. So we do not need childeren
+					if(!listInvalidFiles) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
 					listFileAlgorithms(conn, out, lfn);
 					listFileTiers(conn, out, lfn);
 					listFileLumis(conn, out, lfn);
