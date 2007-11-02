@@ -1,6 +1,6 @@
 /**
- $Revision: 1.45 $"
- $Id: DBSApiBlockLogic.java,v 1.45 2007/10/05 20:28:20 sekhri Exp $"
+ $Revision: 1.46 $"
+ $Id: DBSApiBlockLogic.java,v 1.46 2007/10/15 16:24:48 afaq Exp $"
  *
  */
 
@@ -376,7 +376,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 					deleteMap(conn, out, "SEBlock", "BlockID", "SEID", blockID, seIDOld);
 					//System.out.println("deleting SEID " + seIDOld + " blockID " + blockID);
 
-					deleteSeMaps+="blockID:"+blockID+"seID:"+seIDOld+" deleted ";
+					deleteSeMaps += "blockID:" + blockID + "seID:" + seIDOld + " deleted ";
 					
 				} else {
 					//Just change the SE for this Block
@@ -385,17 +385,20 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 							seIDNew,
 							seIDOld,
 							personApi.getUserID(conn, dbsUser));
-					updatedSE+="Updating SEID:" + seIDOld + " blockID: " + blockID + " to SEID: " + seIDNew;
+					updatedSE += "Updating SEID:" + seIDOld + " blockID: " + blockID + " to SEID: " + seIDNew;
 					//System.out.println("updating SEID " + seIDOld + " blockID " + blockID + " to SEID " + seIDNew);
 
 				}
 			}
+			//Finally delete the old Storage Element
+			deleteName(conn, out, "StorageElement", "SEName", seNameFrom);
 			insertTimeLog(conn, "UpdateSEName", "User called UpdateSEName",
 					"Some older SE-Block maps may have been deleted, or renamed",
-					deleteSeMaps+updatedSE,
+					deleteSeMaps + updatedSE + ".Further Old Storage Element " + seNameFrom + "is deleted ",
 					dbsUser);
 	
 		}
+	
 	}
 
 	private Vector getBlockIDListFromMap(Connection conn, String seID) throws Exception {
