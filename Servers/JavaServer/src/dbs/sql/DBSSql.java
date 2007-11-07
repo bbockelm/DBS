@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.122 $"
- $Id: DBSSql.java,v 1.122 2007/10/24 21:55:13 sekhri Exp $"
+ $Revision: 1.123 $"
+ $Id: DBSSql.java,v 1.123 2007/10/31 17:02:35 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1711,6 +1711,7 @@ public class DBSSql {
                         "f.LogicalFileName as LFN, \n" +
                         "f.Checksum as CHECKSUM, \n" +
                         "f.FileSize as FILESIZE, \n" +
+                        "f.FileBranch as FILE_BRANCH, \n" +
                         "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
                         "f.CreationDate as CREATION_DATE, \n" +
                         "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -1765,6 +1766,7 @@ public class DBSSql {
                         "f.LogicalFileName as LFN, \n" +
                         "f.Checksum as CHECKSUM, \n" +
                         "f.FileSize as FILESIZE, \n" +
+                        "f.FileBranch as FILE_BRANCH, \n" +
                         "f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
                         "f.CreationDate as CREATION_DATE, \n" +
                         "f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -1797,6 +1799,17 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
+	}
+
+        public static PreparedStatement listFileBranchID(Connection conn, String lfn) throws SQLException {
+		String sql = "SELECT f.FileBranch as FILE_BRANCH \n" +
+				"FROM Files f \n" +
+				"WHERE f.LogicalFileName = ?\n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx = 1;
+                ps.setString(columnIndx++, lfn);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+                return ps;
 	}
 
 	public static PreparedStatement listLFNs(Connection conn, String procDSID, String patternMetaData) throws SQLException {
@@ -1854,6 +1867,7 @@ public class DBSSql {
 			"f.LogicalFileName as LFN, \n" +
 			"f.Checksum as CHECKSUM, \n" +
 			"f.FileSize as FILESIZE, \n" +
+                        "f.FileBranch as FILE_BRANCH, \n" +
 			"f.QueryableMetaData as QUERYABLE_META_DATA, \n" +
 			"f.CreationDate as CREATION_DATE, \n" +
 			"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
@@ -2010,32 +2024,28 @@ public class DBSSql {
 		return ps;
 	}
 
-        public static PreparedStatement listFileBranches(Connection conn, String fileID) throws SQLException {
-                String sql = "SELECT DISTINCT br.ID as ID, \n " +
-                        "br.Name as NAME, \n" +
+        public static PreparedStatement listBranch(Connection conn, String branchID) throws SQLException {
+                String sql = "SELECT br.ID as ID, \n " +
+			"br.Description as DESCRIPTION, \n" +
+                        "br.Hash as HASH, \n" +
+                        "br.Content as CONTENT, \n" +
                         "br.CreationDate as CREATION_DATE, \n" +
                         "br.LastModificationDate as LAST_MODIFICATION_DATE, \n" +
                         "percb.DistinguishedName as CREATED_BY, \n" +
                         "perlm.DistinguishedName as LAST_MODIFIED_BY \n" +
-                        "FROM Branch br \n" +
-                        "JOIN FileBranch fb \n" +
-                                "ON fb.Branch = br.id \n" +
+                        "FROM BranchHash br \n" +
                         "LEFT OUTER JOIN Person percb \n" +
                                 "ON percb.id = br.CreatedBy \n" +
                         "LEFT OUTER JOIN Person perlm \n" +
-                                "ON perlm.id = br.LastModifiedBy \n";
-                if(fileID != null) {
-                        sql += "WHERE fb.Fileid = ? \n";
-                }
+                                "ON perlm.id = br.LastModifiedBy \n" +
+                        "WHERE br.id = ? \n";
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                if(fileID != null) {
-                        ps.setString(1, fileID);
-                }
+                ps.setString(1, branchID);
+                
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
         }
-
 
        public static PreparedStatement listFileTrigs(Connection conn, String fileID) throws SQLException {
                 String sql = "SELECT DISTINCT ftrig.ID as ID, \n " +

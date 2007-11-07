@@ -75,13 +75,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         listFileProvenence(conn, out, lfn, false);//Children
                                         listFileAlgorithms(conn, out, lfn);
                                         listFileTiers(conn, out, lfn);
-                                        //if (branchNTrig.equals("true")) {
-					//	listFileBranches(conn, out, lfn);
 					listFileTrigs(conn, out, lfn);
-					//}
                                         listFileLumis(conn, out, lfn);
                                         listFileRuns(conn, out, lfn);
-					//listFileAssoc(conn, out, lfn);
+					listBranch(conn, out, get(rs, "FILE_BRANCH"));
                                 }
                                 out.write(((String) "</file>\n"));
                         }
@@ -214,18 +211,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					this.data.globalFile = new Hashtable();
 					this.data.globalFile.put(lfn, fileID);
 					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
-					//listInvalidFiles is set to true only while migration. So we do not need childeren
-					if(!listInvalidFiles) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
+					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
 					listFileAlgorithms(conn, out, lfn);
 					listFileTiers(conn, out, lfn);
 					listFileLumis(conn, out, lfn);
 					listFileRuns(conn, out, lfn);
-					//if (branchNTrig.equals("true")) {
-					//FIXME The branches
-					//listFileBranches(conn, out, lfn);
-                                        //        listFileTrigs(conn, out, lfn);
-                                        //}
-					//listFileAssoc(conn, out, lfn);
+					listBranch(conn, out, get(rs, "FILE_BRANCH"));
 				}
                 		out.write(((String) "</file>\n"));
       
@@ -285,37 +276,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 	 }
-
-	/*
-         public void listFileAssoc(Connection conn, Writer out, String lfn) throws Exception {
-                PreparedStatement ps = null;
-                ResultSet rs =  null;
-                try {
-                        ps = DBSSql.listFileAssoc(conn, getFileID(conn, lfn, true));
-                        rs =  ps.executeQuery();
-                        while(rs.next()) {
-                                out.write(((String) "<file_assoc id='" +  get(rs, "ID") +
-                                        "' lfn='" + get(rs, "LFN") +
-                                        "' checksum='" + get(rs, "CHECKSUM") +
-                                        "' size='" + get(rs, "FILESIZE") +
-                                        "' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
-                                        "' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") +
-                                        "' validation_status='" + get(rs, "VALIDATION_STATUS") +
-                                        "' type='" + get(rs, "TYPE") +
-                                        "' status='" + get(rs, "STATUS") +
-                                        "' block_name='" + get(rs, "BLOCK_NAME") +
-                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
-                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-                                        "' created_by='" + get(rs, "CREATED_BY") +
-                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-                                        "'/>\n"));
-                        }
-                } finally {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
-                }
-         }
-	*/
 
 
          public void listFileTrigs(Connection conn, Writer out, String lfn) throws Exception {
@@ -404,27 +364,56 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		}
 	 }
 
+        public void listBranch(Connection conn, Writer out, String branchId) throws Exception {
+
+		if (isNull(branchId)) return;
+
+                PreparedStatement ps = null;
+                ResultSet rs =  null;
+                try {
+                        ps = DBSSql.listBranch(conn, branchId);
+                        rs =  ps.executeQuery();
+                        while(rs.next()) {
+                                out.write(((String) "<file_branch id='" + get(rs, "ID") +
+                                                        "' hash='" + get(rs, "NAME") +
+							"' content='" + Base64.encodeBytes(get(rs, "CONTENT").getBytes()) +
+                                                        "' description='" + get(rs, "DESCRIPTION") +
+                                                        "' creation_date='" + getTime(rs, "CREATION_DATE") +
+                                                        "' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
+                                                        "' created_by='" + get(rs, "CREATED_BY") +
+                                                        "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
+                                                        "'/>\n"));
+                        }
+                } finally {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                }
+        }
 
 	public void listFileBranches(Connection conn, Writer out, String lfn) throws Exception {
+		String branchID = null;
+
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
-			ps = DBSSql.listFileBranches(conn, getFileID(conn, lfn, true));
+			ps = DBSSql.listFileBranchID(conn, lfn);
 			rs =  ps.executeQuery();
-			while(rs.next()) {
-				out.write(((String) "<file_branch id='" + get(rs, "ID") +
-							"' name='" + get(rs, "NAME") +
-							"' creation_date='" + getTime(rs, "CREATION_DATE") +
-							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE") +
-							"' created_by='" + get(rs, "CREATED_BY") +
-							"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
-							"'/>\n"));
-				
-			}
+			
+			if (rs.next()) branchID = get(rs, "FILE_BRANCH");
+			else throw new DBSException("Missing data", "1091", "File does not exist : " + lfn);
+
 		} finally {
 			if (rs != null) rs.close();
 			if (ps != null) ps.close();
 		}
+
+		if (!isNull(branchID)) {
+			listBranch(conn, out, branchID);
+		}
+		else {
+			throw new DBSException("Missing data", "1091", "File Branches do not exist for this file: " + lfn);
+		}
+
 	}
 
 
