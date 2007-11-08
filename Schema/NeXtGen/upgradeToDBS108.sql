@@ -104,13 +104,31 @@ END;
 /
 
 
+alter table TimeLog modify Action varchar(500);
+alter table TimeLog modify Cause varchar(500);
+alter table TimeLog modify Effect varchar(500);
+alter table TimeLog modify Description varchar(1000);
+
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_0_8';
 
+grant select on RecycleBin to CMS_DBS_PRODG_READER_ROLE;
+grant insert, update on RecycleBin to CMS_DBS_PRODG_WRITER_ROLE;
+grant delete on RecycleBin to CMS_DBS_PRODG_ADMIN_ROLE;
 
-PROMPT "Do the GRANTS and SYNONYMS NOW"
-PROMPT "Do the GRANTS and SYNONYMS NOW"
-PROMPT "Do the GRANTS and SYNONYMS NOW"
-PROMPT "Do the GRANTS and SYNONYMS NOW"
-PROMPT "Do the GRANTS and SYNONYMS NOW"
+grant select on BranchHash to CMS_DBS_PRODG_READER_ROLE;
+grant insert, update on BranchHash to CMS_DBS_PRODG_WRITER_ROLE;
+grant delete on BranchHash to CMS_DBS_PRODG_ADMIN_ROLE;
+
+
+-- CREATE SYNONYM RECYCLEBIN FOR CMS_DBS_PROD_GLOBAL.RECYCLEBIN;
+-- CREATE SYNONYM  BRANCHHASH FOR CMS_DBS_PROD_GLOBAL.BRANCHHASH;
+
+PROMPT "Do the SYNONYMS NOW"
+PROMPT "Do the SYNONYMS NOW"
+PROMPT "Do the SYNONYMS NOW"
+PROMPT "Do the SYNONYMS NOW"
+PROMPT "Do the SYNONYMS NOW"
+
+commit;
 
 
