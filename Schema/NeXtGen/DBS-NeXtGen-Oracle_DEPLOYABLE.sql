@@ -134,10 +134,10 @@ REM ======================================================================
 CREATE TABLE TimeLog
   (
     ID                    integer,
-    Action                varchar(100)      not null,
-    Cause                 varchar(100)      not null,
-    Effect                varchar(100)      not null,
-    Description           varchar(500)      not null,
+    Action                varchar(500)      not null,
+    Cause                 varchar(500)      not null,
+    Effect                varchar(500)      not null,
+    Description           varchar(1000)      not null,
     CreationDate          integer,
     CreatedBy             integer,
     LastModificationDate  integer,

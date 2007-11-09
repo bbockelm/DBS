@@ -203,10 +203,10 @@ CREATE TABLE LumiSection
 CREATE TABLE TimeLog
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
-    Action                varchar(100)      not null,
-    Cause                 varchar(100)      not null,
-    Effect                varchar(100)      not null,
-    Description           varchar(500)      not null,
+    Action                varchar(500)      not null,
+    Cause                 varchar(500)      not null,
+    Effect                varchar(500)      not null,
+    Description           varchar(1000)      not null,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
     LastModificationDate  BIGINT,
