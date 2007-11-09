@@ -74,7 +74,10 @@ try:
 
 	if ((op == "both") | (op == "set")) :
 		#Insert the saved contents into another DBS instance
+		print len(blocks)
 		for i in blocks:
+			if i['Name'] == '/Wmunu/CMSSW_1_6_7-CSA07-Tier1-ALCA-C1-ALCARECOMuAlZMuMu/ALCARECO#ac03b7e3-5eac-4b80-9ed9-32c4a7f773c3':
+				continue
 			print "blocks number of Files %s ", i['NumberOfFiles']
 			if(i['NumberOfFiles'] > 0):
 				blockName = i['Name']
@@ -89,8 +92,6 @@ try:
 				flog.write(apiTar.insertDatasetContents(xmlinput))
 				flog.close()
 				print "The transfer log for " + argsTar['url'] + " in XML format is saved in " + name + fileName + ".log"
-			#FIXME Check if the apiSrc is not Global DBS
-			apiSrc.updateProcDSStatus(path, "EXPORTED")
 
 except DbsApiException, ex:
 	print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
