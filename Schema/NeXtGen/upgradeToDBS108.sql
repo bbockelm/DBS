@@ -1,3 +1,6 @@
+spool upgrade_spool.txt
+
+
 -- DBS_1_0_8 Upgrade (from 1_0_7)
 -- Anzar Afaq (11/08/2007)
 
@@ -111,24 +114,22 @@ alter table TimeLog modify Description varchar(1000);
 
 UPDATE SchemaVersion SET SchemaVersion='DBS_1_0_8';
 
-grant select on RecycleBin to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on RecycleBin to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on RecycleBin to CMS_DBS_PRODG_ADMIN_ROLE;
+-- grant select on RecycleBin to CMS_DBS_PRODG_READER_ROLE;
+-- grant insert, update on RecycleBin to CMS_DBS_PRODG_WRITER_ROLE;
+-- grant delete on RecycleBin to CMS_DBS_PRODG_ADMIN_ROLE;
 
-grant select on BranchHash to CMS_DBS_PRODG_READER_ROLE;
-grant insert, update on BranchHash to CMS_DBS_PRODG_WRITER_ROLE;
-grant delete on BranchHash to CMS_DBS_PRODG_ADMIN_ROLE;
+-- grant select on BranchHash to CMS_DBS_PRODG_READER_ROLE;
+-- grant insert, update on BranchHash to CMS_DBS_PRODG_WRITER_ROLE;
+-- grant delete on BranchHash to CMS_DBS_PRODG_ADMIN_ROLE;
 
 
 -- CREATE SYNONYM RECYCLEBIN FOR CMS_DBS_PROD_GLOBAL.RECYCLEBIN;
 -- CREATE SYNONYM  BRANCHHASH FOR CMS_DBS_PROD_GLOBAL.BRANCHHASH;
+PROMPT "Doing index"
 
-PROMPT "Do the SYNONYMS NOW"
-PROMPT "Do the SYNONYMS NOW"
-PROMPT "Do the SYNONYMS NOW"
-PROMPT "Do the SYNONYMS NOW"
-PROMPT "Do the SYNONYMS NOW"
+@index.sql
 
 commit;
 
+spool off
 
