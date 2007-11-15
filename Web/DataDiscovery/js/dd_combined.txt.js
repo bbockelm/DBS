@@ -131,8 +131,7 @@ var GLOBAL_CELL='cell_1';
 
 function loadMasthead() {
   try {
-    insertMastHead('dbs', 'DBS Navigation :: ');
-    //insertMastHead('dbs','')
+    insertMastHead('dbs','')
   } catch(err) {
 //    txt="There was an error during masthead loading.\n\n";
 //    txt+="Error description: " + err.description + "\n\n";
