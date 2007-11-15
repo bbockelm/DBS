@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.14 $"
- $Id: DBSConfig.java,v 1.14 2007/04/12 19:27:06 sekhri Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSConfig.java,v 1.15 2007/04/13 21:42:03 afaq Exp $"
 *
 A singleton that reads a config file from $DBS_HOME/etc
 and creates a hash tables of k,v pairs there in.
@@ -47,6 +47,7 @@ public class DBSConfig {
         public static synchronized DBSConfig getInstance(String schemaVersion, String clientVersions)
         throws DBSException
          {
+		 //System.out.println("get instance called schemaVersion, clientVersions");
            if (ref == null)
                ref = new DBSConfig(schemaVersion, clientVersions);
            return ref;
@@ -55,6 +56,7 @@ public class DBSConfig {
         private DBSConfig(String schemaVersion, String clientVersions)
         throws DBSException
           {
+		// System.out.println("New DBSConfig is beig intiitialzed.... schemaVersion, clientVersions");
            supportedSchemaVersion = schemaVersion;
            supportedClientVersions = clientVersions;
           }
@@ -64,6 +66,7 @@ public class DBSConfig {
         public static synchronized DBSConfig getInstance(String conf)
         throws DBSException
          {
+		// System.out.println("get instance called conf");
            if (ref == null)
                ref = new DBSConfig(conf);
            return ref;
@@ -75,6 +78,7 @@ public class DBSConfig {
         public static synchronized DBSConfig getInstance()
         throws DBSException
          {
+		 //System.out.println("get instance called emtpy ");
            if (ref == null)
                ref = new DBSConfig(null);
            return ref;
@@ -83,8 +87,9 @@ public class DBSConfig {
         private DBSConfig(String confPath)
         throws DBSException 
           {
+		 //System.out.println("New DBSConfig is beig intiitialzed... ");
+
                 String dbs_config = null;
-                //See if configuration file path is passed
                 if ( confPath != null ) {
                    dbs_config = confPath;
                 }

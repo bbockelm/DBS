@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.123 $"
- $Id: DBSSql.java,v 1.123 2007/10/31 17:02:35 sekhri Exp $"
+ $Revision: 1.124 $"
+ $Id: DBSSql.java,v 1.124 2007/11/07 22:54:24 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1160,6 +1160,35 @@ public class DBSSql {
 		return ps;
 	}
 
+	public static PreparedStatement listPersons(Connection conn) throws SQLException {
+		String sql = "SELECT DISTINCT p.ID as ID, \n" +
+			"p.DistinguishedName as DN \n" +
+			"FROM Person p\n" +
+			"ORDER BY p.DistinguishedName DESC";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+
+	}
+
+	public static PreparedStatement listProcessedDatasets(Connection conn) throws SQLException {
+		String sql = "SELECT procds.id as ID, \n" +
+			"primds.Name as PRIMARY_DATATSET_NAME, \n" +
+			"procds.name as PROCESSED_DATATSET_NAME \n" +
+			"FROM ProcessedDataset procds \n" +
+			"JOIN PrimaryDataset primds \n" +
+				"ON primds.id = procds.PrimaryDataset \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+
+
+
+
+
+	
 	public static PreparedStatement listPrimaryDatasets(Connection conn, String pattern) throws SQLException {
 		String sql = "SELECT DISTINCT pd.ID as ID, \n" +
 			"pd.Annotation as ANNOTATION, \n" +

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.48 $"
- $Id: DBSApiProcDSLogic.java,v 1.48 2007/10/19 14:12:48 kosyakov Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSApiProcDSLogic.java,v 1.49 2007/10/24 21:55:11 sekhri Exp $"
  *
  */
 
@@ -710,6 +710,14 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		}
 		if(isNull(path) && !excep) return "";
 		String[] data = parseDSPath(path);
+		
+		//Looking in Global Cache 
+		if(!isNull( id = this.data.getCache().getProcessedDSID(conn, path)))  {
+			this.data.globalPDPath.put(path, id);
+			return id;
+		}
+
+
 		id = getProcessedDSID(conn, data[1], data[2], excep);
 		this.data.globalPDPath.put(path, id);
 		return  id;

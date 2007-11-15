@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.9 $"
- $Id: DBSUtil.java,v 1.9 2007/06/06 22:03:33 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSUtil.java,v 1.10 2007/10/05 19:16:21 sekhri Exp $"
  *
 */
 
@@ -130,6 +130,12 @@ public class DBSUtil {
 		rs.beforeFirst();
 		//rs.first();
 		return numberOfRows;
+	}
+
+	public static String get(ResultSet rs, String key) throws Exception {
+		String value = rs.getString(key);
+		if(isNull(value)) return "";
+		return value;
 	}
 
 }

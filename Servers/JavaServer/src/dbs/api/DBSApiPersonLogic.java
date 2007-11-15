@@ -1,6 +1,6 @@
 /**
- $Revision: 1.8 $"
- $Id: DBSApiPersonLogic.java,v 1.8 2007/02/09 20:09:47 sekhri Exp $"
+ $Revision: 1.9 $"
+ $Id: DBSApiPersonLogic.java,v 1.9 2007/04/12 19:27:05 sekhri Exp $"
  *
  */
 
@@ -81,11 +81,16 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 	public String getUserID(Connection conn, Hashtable dbsUser) throws Exception {
 		String id = "";
 		String userDN = get(dbsUser, "user_dn");
+
 		if(!isNull( id = get(this.data.globalUser, userDN) )) {
 			return id;
 		}
-		//checkWord(userDN, "user_dn");
-		//if ( (id = getID(conn, "Person", "DistinguishedName", userDN , false)) == null) {
+		//Looking in Global Cache 
+		if(!isNull( id = this.data.getCache().getUserID(conn, userDN)))  {
+			this.data.globalUser.put(userDN, id);
+			return id;
+		}
+
 		if ( (id = getIDNoCheck(conn, "Person", "DistinguishedName", userDN , false)) == null) {
 			//FIXME instead of passing null for out stream writer , pass the actual stream
 			insertPerson(conn, null,  
@@ -96,7 +101,6 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 					"",
 					""); //FIXME Get userName and contactInfo also and the lmbUserID shoudl be decicde?
 			id = getIDNoCheck(conn, "Person", "DistinguishedName", userDN , true);
-			//id = getID(conn, "Person", "DistinguishedName", userDN , true);
 		}
 		this.data.globalUser.put(userDN, id);
 		return id;

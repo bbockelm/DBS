@@ -1,6 +1,6 @@
 /**
- $Revision: 1.110 $"
- $Id: DBSApi.java,v 1.110 2007/10/16 17:22:24 afaq Exp $"
+ $Revision: 1.111 $"
+ $Id: DBSApi.java,v 1.111 2007/10/24 21:55:11 sekhri Exp $"
  *
 */
 
@@ -22,6 +22,7 @@ import dbs.DBSException;
 import dbs.util.DBSUtil;
 import db.DBManagement;
 import java.sql.ResultSet;
+import dbs.data.DBSDataCache;
 import dbs.util.DBSConfig;
 import dbs.api.parser.DBSApiParser;
 
@@ -122,8 +123,10 @@ public class DBSApi {
 	* Constructs a DBSApi object that can be used to invoke call method that invokes several APIs from <code>dbs.api.DBSApiLogic</code> class. The constructor instantiates a private <code>dbs.api.DBSApiLogic</code> object.
 	*/
 	public DBSApi() {
-		data = new DBSApiData();
-		api = new DBSApiLogic(data);
+		
+		data = new DBSApiData() ;
+		//this.data.setCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
+		//api = new DBSApiLogic(data);
 		apiStr = "";
 	}
 
@@ -243,7 +246,9 @@ public class DBSApi {
 		Connection conn = null;
 
 		try {
-
+			this.data.setCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
+			api = new DBSApiLogic(data);
+	
 			out.write(DBSConstants.XML_HEADER); 
 			String apiStr = get(table, "api", true);
 			this.apiStr = apiStr;

@@ -19,8 +19,10 @@ public class DBSDataCache {
 	private static DBSDataCache instance = null;
 	private static Boolean mutex = new Boolean(true);
 	private static Boolean mutexPerson = new Boolean(true);
-	private static Hashtable person = new Hashtable();
-	
+	private static Hashtable persons = new Hashtable();
+	private static Boolean mutexProcDS = new Boolean(true);
+	private static Hashtable procDS = new Hashtable();
+
 	public static DBSDataCache getDBSDataCacheInstance(Connection conn) throws Exception {
 		if( instance != null) return instance;
 		synchronized(mutex) {
@@ -32,12 +34,26 @@ public class DBSDataCache {
 	
 
 	private DBSDataCache(Connection conn) throws Exception {
+		System.out.println("\n\nLoading Person information in cache ......");
 		refreshPersons(conn);
+		System.out.println("\n\nLoading Processed DS information in cache ......");
+		refreshProcDS(conn);
+		
+	}
+
+	public String getUserID(Connection conn, String userDN) throws Exception {
+		String id = get(persons, userDN);
+		if (isNull(id)) { 
+			refreshPersons(conn);
+			System.out.println("CACHE-MIS getUserID " + userDN + " Reloading");
+			return get(persons, userDN);
+		} else 	System.out.println("CACHE-HIT getUserID " + userDN);
+		return id;
 	}
 
 	private void refreshPersons(Connection conn) throws Exception {
 		synchronized(mutexPerson) {
-			person = new Hashtable();
+			persons = new Hashtable();
 			PreparedStatement ps = null;
 			ResultSet rs =  null;
 			try {
@@ -45,7 +61,7 @@ public class DBSDataCache {
 				rs =  ps.executeQuery();
 				while(rs.next()) {
 					System.out.println("DN " + get(rs, "DN") + "  ID " + get(rs, "ID"));
-					person.put(get(rs, "DN") ,  get(rs, "ID"));
+					persons.put(get(rs, "DN") ,  get(rs, "ID"));
 				}
 			} finally { 
 				if (rs != null) rs.close();
@@ -54,6 +70,39 @@ public class DBSDataCache {
 		}
 	}
 	
+	public String getProcessedDSID(Connection conn, String path) throws Exception {
+		String[] data = path.split("/");
+		String pathToQuery = "/" + data[1] + "/" + data[2];
+		String id = get(procDS, pathToQuery);
+		if (isNull(id)) { 
+			refreshProcDS(conn);
+			System.out.println("CACHE-MIS getProcessedDSID " + pathToQuery + " Reloading");
+			return get(procDS, pathToQuery);
+		} else 	System.out.println("CACHE-HIT getProcessedDSID " + pathToQuery);
+		return id;
+
+	}
+
+	private void refreshProcDS(Connection conn) throws Exception {
+		synchronized(mutexProcDS) {
+			procDS = new Hashtable();
+			PreparedStatement ps = null;
+			ResultSet rs =  null;
+			try {
+				//ps = DBSSql.getProcessedDSID(conn, "", "");
+				ps = DBSSql.listProcessedDatasets(conn);
+				rs =  ps.executeQuery();
+				while(rs.next()) {
+					System.out.println("Path /" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") + "  ID " + get(rs, "ID"));
+					procDS.put("/" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") ,  get(rs, "ID"));
+				}
+			} finally { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			}
+		}
+	}
+
 	private String get(ResultSet rs, String key) throws Exception {
 		return DBSUtil.get(rs, key);
 	}
@@ -66,14 +115,6 @@ public class DBSDataCache {
 		return DBSUtil.isNull(pattern);
 	}
 	
-	public String getUserID(Connection conn, String userDN) throws Exception {
-		String id = get(person, userDN);
-		if (isNull(id)) { 
-			refreshPersons(conn);
-			return get(person, userDN);
-		}
-		return id;
-	}
 
 		
 

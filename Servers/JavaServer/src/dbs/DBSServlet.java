@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.34 $"
- $Id: DBSServlet.java,v 1.34 2007/10/05 19:16:20 sekhri Exp $"
+ $Revision: 1.35 $"
+ $Id: DBSServlet.java,v 1.35 2007/10/16 17:22:23 afaq Exp $"
 
  */
 package dbs;
@@ -9,15 +9,19 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.sql.Connection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
+
 import dbs.api.DBSApi;
 import dbs.util.DBSUtil;
 import dbs.util.DBSConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletConfig;
+import dbs.data.DBSDataCache;
+import db.DBManagement;
 
 
 /**
@@ -48,7 +52,24 @@ public class DBSServlet extends HttpServlet{
                  System.out.println("SEREVER INFO: "+context.getServerInfo() );
                  //Instatiate the DBSConfig to it gets parameters from Servlet instead of $DBS_SERVER_CONFIG
                  //DBSConfig dbsconfig = DBSConfig.getInstance(supportedSchemaVersion, supportedClientVersions);
+		 System.out.println("---------------------------------------------------------------");
+                 System.out.println("DBS reading configuration file");
                  DBSConfig dbsconfig = DBSConfig.getInstance(configFilePath);
+                 System.out.println("DBS configuration file read successfully");
+		 System.out.println("---------------------------------------------------------------\n");
+                 System.out.println("DBS making database connection");
+		 Connection conn = DBManagement.getDBConnManInstance().getConnection();
+ 		 if (conn != null) {
+                 	System.out.println("DBS database connection made successfully");
+		 	System.out.println("---------------------------------------------------------------\n");
+                 	System.out.println("DBS loading data into cache");
+			DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+                 	System.out.println("DBS loaded data into cache successfully ");
+		 	System.out.println("---------------------------------------------------------------\n");
+		 } else {
+			  throw new ServletException(new Exception("Database connection could not be established"));
+		 }
+       	
                  System.out.println("DBS READY");
 
             } catch(Exception e) {
