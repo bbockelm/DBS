@@ -191,8 +191,8 @@ class DDServer(DDLogger,Controller):
         self.baseUrl = opts.baseUrl
 #        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
-        self.mastheadUrl=self.baseUrl+"Common/masthead"
-        self.footerUrl=self.baseUrl+"Common/footer"
+        self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
+        self.footerUrl=self.baseUrl+"sitedb/Common/footer"
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
@@ -1039,6 +1039,7 @@ class DDServer(DDLogger,Controller):
         blkList=self.helper.getBlocksFromSite(site=site,datasetPath=dataset)
         siteDict=sortSitesByDomain(siteList[1:-1].replace(" ","").replace("'","").split(","))
         nameSpace={
+                  'dbsInst' : dbsInst,
                   'dataset' : dataset,
                   'dbsList' : dbsList,
                   'dbsListOrig': self.dbsList,
@@ -1109,6 +1110,7 @@ class DDServer(DDLogger,Controller):
                 page+=proc+"\n"
             else:
                 procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=0,limit=0,count=0)
+                procList.sort()
 #                procList = self.helper.getDatasetsFromApp(app,primD,tier)
                 for procD in procList:
                     page+=procD+"\n"
@@ -1178,6 +1180,7 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
 #        t1=time.time()
+        nDatasets=0
         pagerStep=int(pagerStep)
         if not proc: proc="*"
         if  type(proc) is types.ListType:
@@ -1196,8 +1199,18 @@ class DDServer(DDLogger,Controller):
 
         if type(proc) is not types.ListType and len(proc)>1:
            if (proc.find("*")!=-1 or proc.find("%")!=-1):
-               # we got a pattern
-               proc=self.getMatch("Block","Path",proc)
+               if proc.lower().find("regexp:")!=-1:
+                  # we got regular expression pattern
+                  op,pat=proc.split("regexp:")
+                  nDatasets=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=0,limit=0,count=1)
+                  print "RegExp n",nDatasets
+                  proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+               else:
+                  # we got a pattern
+                  whereClause="%s"%proc.replace('*','%')
+                  nDatasets=self.helper.countQuery("Block","Path","LIKE",whereClause)
+                  proc=self.helper.getDatasetPathFromMatch("tblk.Path LIKE :p",whereClause,row=_idx*pagerStep,limit=pagerStep)
+#                  proc=self.getMatch("Block","Path",proc,row=_idx*pagerStep,limit=pagerStep)
            else:
                if proc[0]!="/":
                   page=self.genTopHTML()
@@ -1236,10 +1249,12 @@ class DDServer(DDLogger,Controller):
         prevPage=""
         oldDataset=oldTotEvt=oldTotFiles=oldTotSize=0
         if  type(proc) is types.ListType:
-            nDatasets = len(proc)
-            i=int(_idx)*pagerStep
-            j=i+pagerStep
-            datasetsList=proc[i:j]
+            if not nDatasets:
+               nDatasets = len(proc)
+            datasetsList = proc
+#            i=int(_idx)*pagerStep
+#            j=i+pagerStep
+#            datasetsList=proc[i:j]
             proc=proc_orig
         else:
 #            ttt=time.time()
@@ -1709,6 +1724,44 @@ class DDServer(DDLogger,Controller):
         return page
     getParameterSet.exposed=True
 
+    def getLFNs(self,dbsInst,blockName,**kwargs):
+        """
+           Retrieves LFN list.
+           @type  dataset: string 
+           @param dataset: dataset name
+           @type blockName: string
+           @param blockName: block name
+           @rtype : string
+           @return: returns HTML code
+        """
+        # AJAX wants response as "text/xml" type
+        self.setContentType('xml')
+        page="""<ajax-response><response type="element" id="blockLFNs">"""
+        dataset="*" # I don't retrieve all LFNs from dataset
+        run="*"
+        try:
+            self.helperInit(dbsInst)
+            lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
+            page+="""
+<select multiple="multiple" name="blockLFNlist" id="blockLFNlist" style="width:1000px" size="10">
+<option value="All">
+All LFNs in a block
+</option>\n"""
+            for lfn in lfnList:
+                lName = lfn[0]
+                page+="""<option value="%s">%s</option>\n"""%(lName,lName)
+            page+="</select>\n"
+        except:
+            if self.verbose:
+               self.writeLog(getExcept())
+            printExcept()
+            pass
+        page+="</response></ajax-response>"
+        if self.verbose==2:
+           print page
+        return page
+    getLFNs.exposed = True
+ 
     def getLFNlist(self,dbsInst,blockName,dataset="",userMode='user',run='*'):
         """
            Retrieves and represents LFN list. The list is formed by L{lfnToHTML}.
@@ -3431,6 +3484,9 @@ class DDServer(DDLogger,Controller):
     def getTableColumn(self,dbsInst,table,column,**kwargs):
         self.helperInit(dbsInst)
         page=""
+        if kwargs.has_key('autocomplete'):
+           if kwargs['autocomplete']=="off":
+              return page
         whereDict={}
         if  kwargs.has_key('query'):
             key='%s.%s'%(table,column)

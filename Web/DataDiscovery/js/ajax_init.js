@@ -495,6 +495,8 @@ function registerAjaxObjectCalls() {
     ajaxEngine.registerRequest('ajaxGetRunDBInfo','getRunDBInfo');
 //    ajaxEngine.registerRequest('ajaxGetUserNav','genUserNavigator');
 //    ajaxEngine.registerAjaxElement('kw_userNavigator');
+    ajaxEngine.registerRequest('ajaxGetLFNs','getLFNs');
+    ajaxEngine.registerAjaxElement('blockLFNs');
 }
 function registerAjaxUserMenuCalls() {
     ajaxEngine.registerRequest('ajaxGetPrimDSTypes','getPrimaryDSTypes');
@@ -520,10 +522,12 @@ function registerAjaxUserMenuCalls() {
 
 }
 
+function ajaxGetLFNs(dbsInst,blockName) {
+  ajaxEngine.sendRequest('ajaxGetLFNs','dbsInst='+dbsInst,'blockName='+blockName);
+}
 function ajaxGetRunDBInfo(run) {
   ajaxEngine.sendRequest('ajaxGetRunDBInfo','run='+run);
 }
-
 function ajaxMakeLine(id) {
   ajaxEngine.sendRequest('ajaxMakeLine','id='+id);
 }

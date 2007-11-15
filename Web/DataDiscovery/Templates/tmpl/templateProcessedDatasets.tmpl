@@ -34,10 +34,17 @@ Dataset:
 
 ###<p>
 contains $nEvents events, $totFiles files, $tot block(s), $totSize. 
-#if $userMode!='user'
+####if $userMode!='user'
 Creation date: $date.
-#end if
+####end if
 ###</p>
+
+
+####if $userMode!='user' #### BEGIN OF userMode
+
+
+
+
 <p>
 <span id="parentGraph"></span>
 </p>
@@ -95,15 +102,13 @@ Details
 </table>
 
 </td>
-#*
 #if $userMode!='user'
 <td align="right">
 <span class="box_red">
-<a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;userMode=$userMode">Administrate</a>
+<a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;siteList=$str($siteList)&amp;userMode=$userMode">Administrate</a>
 </span>
 </td>
 #end if
-*#
 </tr>
 </table>
 ###<script type="text/javascript">switchLink('_sum','$tableId')</script>
@@ -236,4 +241,9 @@ Details
 ShowPhedexStatusOutput();
 </script>
 #end if
+
+
+
+####end if ###### END OF userMode
+
 <!-- end of templateProcessedDatasets.tmpl -->

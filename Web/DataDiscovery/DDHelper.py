@@ -1262,7 +1262,6 @@ MCDescription:      %s
       self.closeConnection(con)
       return oList
 
-
   def exeQuery(self,q):
       """
          Set DBS instance and
@@ -1403,16 +1402,86 @@ MCDescription:      %s
   def getTableColumns(self,tableName):
       res=[]
       try:
-#          res = ['All']+self.dbManager.getColumns(self.dbsInstance,tableName)
           res = self.dbManager.getColumns(self.dbsInstance,tableName)
       except:
-#          printExcept()
-#          raise "Fail to get columns for table='%s'"%tableName
           msg="Fail to get columns for table='%s'\n"%tableName
           msg+=getExceptionInHTML()
           res=msg
       return res
 
+  #### This section contains method which use plain SQL
+  def countQuery(self,tableName,colName,op,whereClause):
+      sel   = "select COUNT(DISTINCT %s) from %s where %s.%s %s :rval"%(colName,tableName,tableName,colName,op)
+      query = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
+      try:
+          result = query.execute(rval=whereClause)
+          for path in result:
+              return path[0]
+      except:
+          msg="\n### Query:\n"+str(query)
+          self.printExcept(msg)
+          raise "Fail in count query %s"%query
+
+  def getDatasetPathFromMatch(self,whereCond,pattern,row=0,limit=0):
+      oList=[]
+      query=""
+      try:
+          if self.dbManager.dbType[self.dbsInstance]=='oracle':
+             sel="select DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate from Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id where %s ORDER BY tprd.CreationDate DESC"%whereCond
+             sel="select rownum, tblk_path, tprd_cdate from (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
+          else:
+             sel="select DISTINCT Path,CreationDate from Block where %s order by CreationDate DESC limit %s, %s"%(whereCod,row,row+limit)
+          query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
+          result = query.execute(p=pattern)
+          for path in result:
+              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                 id,p,mdate = path
+                 print p,timeGMT(mdate)
+              else:
+                 p,mdate = path
+              oList.append(p)
+      except:
+          msg="\n### Query:\n"+str(query)
+          self.printExcept(msg)
+          raise "Fail in getDatasetPathMatch %s"%pattern
+      return oList
+
+  def buildRegExpQuery(self,tableName,colName,pattern,op="",fromRow=0,limit=0,count=0):
+      if self.dbManager.dbType[self.dbsInstance]=='oracle':
+         regExp="REGEXP_LIKE(Path,:p)"
+         if op.find("no")!=-1:
+            regExp="NOT "+regExp
+      else: # MySQL
+         regExp="Path REGEXP :p"
+#      oList=[]
+      query=""
+      try:
+          if count:
+             query  = sqlalchemy.text("select COUNT(DISTINCT Path) from Block where %s"%regExp, bind=self.dbManager.engine[self.dbsInstance])
+             result = query.execute(p=pattern)
+             for r in result:
+                 return r[0]
+          else:
+             return self.getDatasetPathFromMatch(regExp,pattern,fromRow,limit)
+#             if self.dbManager.dbType[self.dbsInstance]=='oracle':
+#                sel="select DISTINCT rownum,Path,CreationDate from Block where %s group by rownum, Path, CreationDate having rownum between %s and %s"%(regExp,fromRow,fromRow+limit)
+#             else:
+#                sel="select DISTINCT Path,CreationDate from Block where %s group by Path, CreationDate limit %s,%s"%(regExp,fromRow,fromRow+limit)
+#             query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
+#          result = query.execute(p=pattern)
+#          for path in result:
+#              if self.dbManager.dbType[self.dbsInstance]=='oracle':
+#                 id,p,mdate = path
+#              else:
+#                 p,mdate = path
+#              oList.append(p)
+      except:
+          msg="\n### Query:\n"+str(query)
+          self.printExcept(msg)
+          raise "Fail to get content for table='%s'"%tableName
+      return oList
+  #########
+      
   def bindWhereClause(self,whereClause):
       # replace (,) with ___ to enable proper splitting
       whereList=whereClause.replace("(","___ ( ___").replace(")","___ ) ___").split("___")

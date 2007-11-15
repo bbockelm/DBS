@@ -6,15 +6,8 @@ var GLOBAL_CELL='cell_1';
 
 function loadMasthead() {
   try {
-    insertMastHead('dbs','')
-//    var myMenu=[ [ {text:'View', submenu:{id:"submenu_projects", itemdata:[
-//                       {text:'Physicists ',url: "index?userMode=user" }, 
-//                       {text:'Production ',url: "index?userMode=expert"}, 
-//                       {text:'Run Manager',url: "_runs?userMode=runManager"} 
-//                      ] }
-//                   }
-//               ] ];
-//    commonMenu('view_menu',myMenu);
+    insertMastHead('dbs', 'DBS Navigation :: ');
+    //insertMastHead('dbs','')
   } catch(err) {
 //    txt="There was an error during masthead loading.\n\n";
 //    txt+="Error description: " + err.description + "\n\n";
@@ -1449,12 +1442,23 @@ function getPhedexStatusForAllDatasets() {
 }
 function AutoTurnOn() {
    $('proccontainer').className='';
+   $('autocomplete').value='on';
+   myXHRDataSource.scriptQueryAppend =
+     myXHRDataSource.scriptQueryAppend.replace(/autocomplete=off/g,'autocomplete=on');
+   myAutoComp = new YAHOO.widget.AutoComplete('proc','proccontainer', myXHRDataSource);
+   myAutoComp.queryDelay = 1; 
+   myAutoComp.prehighlightClassName = "yui-ac-prehighlight"; 
+   myAutoComp.useShadow = true;
    $('autoOn').className='td_underline_pad';
    $('autoOff').className='';
    SetCookie('DBSDD_AutoCompletion','on');
 }
 function AutoTurnOff() {
    $('proccontainer').className='hide';
+   $('autocomplete').value='off';
+   myXHRDataSource.scriptQueryAppend =
+     myXHRDataSource.scriptQueryAppend.replace(/autocomplete=on/g,'autocomplete=off');
+   myAutoComp = null;
    $('autoOn').className='';
    $('autoOff').className='td_underline_pad';
    SetCookie('DBSDD_AutoCompletion','off');
