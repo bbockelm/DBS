@@ -10,26 +10,28 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 
+import db.DBManagement;
+import dbs.util.DBSConfig;
 import dbs.util.DBSUtil;
 import dbs.sql.DBSSql;
 
-public class DBSData {
-	private static DBSData instance = null;
+public class DBSDataCache {
+	private static DBSDataCache instance = null;
 	private static Boolean mutex = new Boolean(true);
 	private static Boolean mutexPerson = new Boolean(true);
 	private static Hashtable person = new Hashtable();
 	
-	public static DBSData getDBConnManInstance(Connection conn) throws Exception {
+	public static DBSDataCache getDBSDataCacheInstance(Connection conn) throws Exception {
 		if( instance != null) return instance;
 		synchronized(mutex) {
 			if( instance != null ) return instance;
-			instance = new DBSData(conn);
+			instance = new DBSDataCache(conn);
 		}
 		return instance;
 	}
 	
 
-	private DBSData(Connection conn) throws Exception {
+	private DBSDataCache(Connection conn) throws Exception {
 		refreshPersons(conn);
 	}
 
@@ -41,7 +43,10 @@ public class DBSData {
 			try {
 				ps = DBSSql.listPersons(conn);
 				rs =  ps.executeQuery();
-				while(rs.next()) person.put(get(rs, "DN") ,  get(rs, "ID"));
+				while(rs.next()) {
+					System.out.println("DN " + get(rs, "DN") + "  ID " + get(rs, "ID"));
+					person.put(get(rs, "DN") ,  get(rs, "ID"));
+				}
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -70,4 +75,24 @@ public class DBSData {
 		return id;
 	}
 
+		
+
+	public static void main (String args[]) {
+		try {
+			DBSConfig config = DBSConfig.getInstance();
+			Connection conn = DBManagement.getConnection( config.getDbDriver(),
+					config.getDbURL(), 
+					config.getDbUserName(),
+					config.getDbUserPasswd());
+					
+			DBSDataCache data = DBSDataCache.getDBSDataCacheInstance(conn);
+			System.out.println( "id for ANZARDN " + data.getUserID(conn, "ANZARDN"));
+			System.out.println( "again id for ANZARDN " + data.getUserID(conn, "ANZARDN"));
+			System.out.println( "again id for ANZARDN " + data.getUserID(conn, "ANZARDN"));
+			System.out.println( "new id for ANZARDNaaa " + data.getUserID(conn, "ANZARDNaaa"));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+	}
 }
