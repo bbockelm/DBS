@@ -1436,7 +1436,6 @@ MCDescription:      %s
           for path in result:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
                  id,p,mdate = path
-                 print p,timeGMT(mdate)
               else:
                  p,mdate = path
               oList.append(p)

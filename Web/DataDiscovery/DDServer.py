@@ -1203,7 +1203,6 @@ class DDServer(DDLogger,Controller):
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   nDatasets=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=0,limit=0,count=1)
-                  print "RegExp n",nDatasets
                   proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=_idx*pagerStep,limit=pagerStep,count=0)
                else:
                   # we got a pattern
