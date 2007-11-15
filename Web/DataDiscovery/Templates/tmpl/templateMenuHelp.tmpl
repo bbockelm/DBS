@@ -1,12 +1,13 @@
 <!-- templateMenuHelp.tmpl -->
 
-#set menuArr=['help_intro','help_glossary','help_resources','help_feedback','help_refs','help_browser']
+#set menuArr=['help_intro','help_glossary','help_regexp','help_resources','help_feedback','help_refs','help_browser']
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
 DBS Discovery :: Help
 - <a href="javascript:showResMenu('help_intro',$menuArr)">Introduction</a>
 | <a href="javascript:showResMenu('help_glossary',$menuArr)">Glossary</a>
+| <a href="javascript:showResMenu('help_regexp',$menuArr)">Regular expressions</a>
 | <a href="javascript:showResMenu('help_resources',$menuArr)">Resources</a>
 ##| <a href="javascript:showResMenu('help_feedback',$menuArr)">Feedback</a>
 | <a href="javascript:showResMenu('help_refs',$menuArr)">References</a>
@@ -88,6 +89,157 @@ All terms used on discovery page are defined in DBS glossary.
 </div>
 
 <div id="help_glossary" class="hide">$glossary</div>
+
+<div id="help_regexp" class="hide">
+
+<p>
+The data discovery page supports regular expressions in input for for
+processed datasets. Just visit
+<a href="_navigator?userMode=user">Navigator</a>
+and use bottom part of the form.
+</p>
+
+<p>
+The two keywords are supported:
+<ul>
+<li><b>regexp:</b> </li>
+<li><b>not regexp:</b> </li>
+</ul>
+</p>
+<p>
+After specifying one of them you can type your favorite regular
+expression to look up desired dataset. For example to look up all datasets
+whose name has RelVal and RECO you will type
+</p>
+<ul>
+<li>
+<pre>
+regexp:RelVal.*RECO
+</pre>
+</ul>
+<p>
+Complementary to lookup all datasets whose name does not contain RelVal and RECO
+you will use second keyword:
+</p>
+<ul>
+<li>
+<pre>
+not regexp:RelVal.*RECO
+</pre>
+</li>
+</ul>
+
+<p>
+Please be aware that regular expression are expensive operation to place. The
+lookup is done based on LIKE match with regular expression.
+</p>
+
+<p>
+The following table list is taken from ORACLE web site to provide quick refence on
+supported regular expression syntax. If you need to see a full description please
+follow this <a href="http://www.oracle.com/technology/oramag/webcolumns/2003/techarticles/rischert_regexp_pt2.html#t1">link.</a>
+</p>
+
+Table 1: Anchoring Metacharacters</A></span>
+<table align="center" cellpadding="5" vspace="5" hspace="5" border="1" bgcolor="#f7f7e7" width="100%">
+<TR><TD>
+<span class="boldbodycopy">Metacharacter</span></TD><TD><span class="boldbodycopy">Description</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+<TT>&#94;</TT></TD><TD><span class="bodycopy">Anchor the expression to the start of a line</span></TD></TR>
+
+<TR><TD>
+<TT>$</TT></TD><TD><span class="bodycopy">Anchor the expression to the end of a line</span>
+
+
+</TD></TR></TABLE>
+</P>
+<P>
+<span class="parahead1"><A NAME="t2">Table 2: Quantifiers, or Repetition Operators</A></span>
+<table align="center" cellpadding="5" vspace="5" hspace="5" border="1" bgcolor="#f7f7e7" width="100%">
+<TR><TD>
+<span class="boldbodycopy">Quantifier</span></TD><TD><span class="boldbodycopy">Description</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+<TT>*</TT></TD><TD><span class="bodycopy">Match 0 or more times</span></TD></TR>
+
+<TR><TD>
+<TT>?</TT></TD><TD><span class="bodycopy">Match 0 or 1 time</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+
+<TT>+</TT></TD><TD><span class="bodycopy">Match 1 or more times</span></TD></TR>
+
+<TR><TD>
+<TT>&#123;m&#125;</TT></TD><TD><span class="bodycopy">Match exactly <I>m</I> times</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+<TT>&#123;m,&#125;</TT></TD><TD><span class="bodycopy">Match at least <I>m</I> times</span></TD></TR>
+
+<TR><TD>
+<TT>&#123;m, n&#125;</TT></TD><TD><span class="bodycopy">Match at least <I>m</I> times but no more than <I>n</I> times</span></TD></TR>
+
+</TABLE>
+
+
+</P>
+<P>
+<span class="parahead1"><A NAME="t3">Table 3: Predefined POSIX Character Classes </A></span>
+<table align="center" cellpadding="5" vspace="5" hspace="5" border="1" bgcolor="#f7f7e7" width="100%">
+
+<TR><TD>
+<span class="boldbodycopy"> Character Class</span></TD><TD><span class="boldbodycopy">Description</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+<TT>[:alpha:]</TT></TD><TD><span class="bodycopy">Alphabetic characters</span></TD></TR>
+
+<TR><TD>
+<TT>[:lower:]</TT></TD><TD><span class="bodycopy">Lowercase alphabetic characters</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+<TT>[:upper:]</TT></TD><TD><span class="bodycopy">Uppercase alphabetic characters</span></TD></TR>
+
+<TR><TD>
+<TT>[:digit:]</TT></TD><TD><span class="bodycopy">Numeric digits</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+
+<TT>[:alnum:]</TT></TD><TD><span class="bodycopy">Alphanumeric characters</span></TD></TR>
+
+
+<TR><TD>
+<TT>[:space:]</TT></TD><TD><span class="bodycopy">Space characters (nonprinting), such as carriage return, newline, vertical tab, and form feed</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD><TT>[:punct:]</TT></TD><TD><span class="bodycopy">Punctuation characters</span></TD></TR>
+
+<TR><TD>
+<TT>[:cntrl:]</TT></TD><TD><span class="bodycopy">Control characters (nonprinting)</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD><TT>[:print:]</TT></TD><TD><span class="bodycopy">Printable characters</span></TD></TR>
+</TABLE>
+
+</P>
+<P>
+<span class="parahead1"><A NAME="t4">Table 4: Alternate Matching and Grouping of Expressions </A></span>
+<table align="center" cellpadding="5" vspace="5" hspace="5" border="1" bgcolor="#f7f7e7" width="100%">
+<TR><TD colspan="2">
+<span class="boldbodycopy"> Metacharacter</span></TD><TD><span class="boldbodycopy">Description</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+
+<TT>|</TT></TD><TD><span class="bodycopy">Alternation</span></TD><TD><span class="bodycopy">Separates alternates, often used with grouping operator </span><TT>()</TT></TD></TR>
+
+<TR><TD>
+<TT>( )</TT></TD><TD><span class="bodycopy">Group</span></TD><TD><span class="bodycopy">Groups subexpression into a unit for alternations, for quantifiers, or for backreferencing (see "<A HREF="#back"><span class="bodylink">Backreferences</span></A>" section)</span></TD></TR>
+
+<TR bgcolor="#FFFFFF"><TD>
+
+<TT>[char]</TT></TD><TD><span class="bodycopy">Character list</span></TD><TD><span class="bodycopy">Indicates a character list; most metacharacters inside a character list are understood as literals, with the exception of character classes, and the </span><TT>&#94;</TT><span class="bodycopy"> and </span><TT>-</TT><span class="bodycopy"> metacharacters</span></TD></TR>
+</TABLE>
+
+</P>
+
+</div>
 
 <div id="help_resources" class="hide">
           <table>
