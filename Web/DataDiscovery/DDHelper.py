@@ -1428,14 +1428,20 @@ MCDescription:      %s
       try:
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
              sel="select DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate from Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id where %s ORDER BY tprd.CreationDate DESC"%whereCond
-             sel="select rownum, tblk_path, tprd_cdate from (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
+             if row or limit:
+                sel="select rownum, tblk_path, tprd_cdate from (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
           else:
-             sel="select DISTINCT Path,CreationDate from Block where %s order by CreationDate DESC limit %s, %s"%(whereCod,row,row+limit)
+             sel="select DISTINCT Path,CreationDate from Block where %s order by CreationDate DESC"%whereCod
+             if row or limit:
+                sel+="limit %s, %s"%(row,row+limit)
           query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
           result = query.execute(p=pattern)
           for path in result:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
-                 id,p,mdate = path
+                 if row or limit:
+                    id,p,mdate = path
+                 else:
+                    p,mdate = path
               else:
                  p,mdate = path
               oList.append(p)
@@ -1452,7 +1458,6 @@ MCDescription:      %s
             regExp="NOT "+regExp
       else: # MySQL
          regExp="Path REGEXP :p"
-#      oList=[]
       query=""
       try:
           if count:
@@ -1462,18 +1467,6 @@ MCDescription:      %s
                  return r[0]
           else:
              return self.getDatasetPathFromMatch(regExp,pattern,fromRow,limit)
-#             if self.dbManager.dbType[self.dbsInstance]=='oracle':
-#                sel="select DISTINCT rownum,Path,CreationDate from Block where %s group by rownum, Path, CreationDate having rownum between %s and %s"%(regExp,fromRow,fromRow+limit)
-#             else:
-#                sel="select DISTINCT Path,CreationDate from Block where %s group by Path, CreationDate limit %s,%s"%(regExp,fromRow,fromRow+limit)
-#             query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
-#          result = query.execute(p=pattern)
-#          for path in result:
-#              if self.dbManager.dbType[self.dbsInstance]=='oracle':
-#                 id,p,mdate = path
-#              else:
-#                 p,mdate = path
-#              oList.append(p)
       except:
           msg="\n### Query:\n"+str(query)
           self.printExcept(msg)

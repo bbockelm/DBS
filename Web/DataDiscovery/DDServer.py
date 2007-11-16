@@ -1090,7 +1090,15 @@ class DDServer(DDLogger,Controller):
         if type(proc) is not types.ListType and len(proc)>1:
            if (proc.find("*")!=-1 or proc.find("%")!=-1):
                # we got a pattern
-               proc=self.getMatch("Block","Path",proc)
+#               proc=self.getMatch("Block","Path",proc)
+               if proc.lower().find("regexp:")!=-1:
+                  # we got regular expression pattern
+                  op,pat=proc.split("regexp:")
+                  proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip())
+               else:
+                  # we got a pattern
+                  whereClause="%s"%proc.replace('*','%')
+                  proc=self.helper.getDatasetPathFromMatch("tblk.Path LIKE :p",whereClause)
            else:
                if proc[0]!="/":
                   page=self.genTopHTML()
