@@ -1,6 +1,6 @@
 /**
- $Revision: 1.71 $"
- $Id: DBSApiFileLogic.java,v 1.71 2007/11/07 22:54:23 afaq Exp $"
+ $Revision: 1.72 $"
+ $Id: DBSApiFileLogic.java,v 1.72 2007/11/16 21:29:36 sekhri Exp $"
  *
  */
 
@@ -802,15 +802,18 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				//Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
 				//User will never know about this YUK
 				if( isNull(statusID = get(statusTable, fileStatus)) ) {
-					statusID = getID(conn, "FileStatus", "Status", fileStatus, true);
+					//statusID = getID(conn, "FileStatus", "Status", fileStatus, true);
+					statusID = getFileStatusID(conn,  fileStatus, true);
 					statusTable.put(fileStatus, statusID);
 				}
 				if( isNull(typeID = get(typeTable, type)) ) {
-					typeID = getID(conn, "FileType", "Type", type, true);
+					//typeID = getID(conn, "FileType", "Type", type, true);
+					typeID = getFileTypeID(conn, type, true);
 					typeTable.put(type, typeID);
 				}
 				if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
-					valStatusID = getID(conn, "FileValidStatus", "Status", valStatus, true);
+					//valStatusID = getID(conn, "FileValidStatus", "Status", valStatus, true);
+					valStatusID = getFileValStatusID(conn, valStatus, true);
 					valStatusTable.put(valStatus, valStatusID);
 				}
 
@@ -1259,5 +1262,44 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		return id;
 	}
 	
-	
+	private String getFileStatusID(Connection conn, String status, boolean excep) throws Exception {
+		String id = "";
+		if(!isNull( id = get(this.data.localFileStatus, status) )) {
+			return id;
+		}
+		//Looking in Global Cache 
+		if(!isNull( id = this.data.getGlobalCache().getFileStatusID(conn, status)))  {
+			this.data.localFileStatus.put(status, id);
+			return id;
+		}
+		return getID(conn, "FileStatus", "Status", status , excep);
+	}
+
+	private String getFileTypeID(Connection conn, String type, boolean excep) throws Exception {
+		String id = "";
+		if(!isNull( id = get(this.data.localFileType, type) )) {
+			return id;
+		}
+		//Looking in Global Cache 
+		if(!isNull( id = this.data.getGlobalCache().getFileTypeID(conn, type)))  {
+			this.data.localFileType.put(type, id);
+			return id;
+		}
+		return getID(conn, "FileType", "Type", type , excep);
+	}
+
+	private String getFileValStatusID(Connection conn, String status, boolean excep) throws Exception {
+		String id = "";
+		if(!isNull( id = get(this.data.localFileValStatus, status) )) {
+			return id;
+		}
+		//Looking in Global Cache 
+		if(!isNull( id = this.data.getGlobalCache().getFileValStatusID(conn, status)))  {
+			this.data.localFileValStatus.put(status, id);
+			return id;
+		}
+		return getID(conn, "FileValidStatus", "Status", status , excep);
+	}
+
+
 }

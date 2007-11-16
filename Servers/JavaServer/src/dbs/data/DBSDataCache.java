@@ -39,6 +39,22 @@ public class DBSDataCache {
 	private Lock writeTierLock = globalTierLock.writeLock();
 	private static Hashtable tiers = new Hashtable();
 
+	private ReadWriteLock globalFileStatusLock = new ReentrantReadWriteLock();
+	private Lock readFileStatusLock = globalFileStatusLock.readLock();
+	private Lock writeFileStatusLock = globalFileStatusLock.writeLock();
+	private static Hashtable fileStatus = new Hashtable();
+
+	private ReadWriteLock globalFileTypeLock = new ReentrantReadWriteLock();
+	private Lock readFileTypeLock = globalFileTypeLock.readLock();
+	private Lock writeFileTypeLock = globalFileTypeLock.writeLock();
+	private static Hashtable fileTypes = new Hashtable();
+
+	private ReadWriteLock globalFileValStatusLock = new ReentrantReadWriteLock();
+	private Lock readFileValStatusLock = globalFileValStatusLock.readLock();
+	private Lock writeFileValStatusLock = globalFileValStatusLock.writeLock();
+	private static Hashtable fileValStatus = new Hashtable();
+
+	
 	//private static ReadWriteLock globalInstanceLock = new ReentrantReadWriteLock();
 	//private static Lock readInstanceLock = globalInstanceLock.readLock();
 	//private static Lock writeInstanceLock = globalInstanceLock.writeLock();
@@ -91,7 +107,17 @@ public class DBSDataCache {
 		System.out.println("Done");
 		System.out.print("\nLoading Tier information in cache ...... ");
 		refreshTiers(conn);
+		System.out.println("Done");
+		System.out.print("\nLoading File Status information in cache ...... ");
+		refreshFileStatus(conn);
+		System.out.println("Done");
+		System.out.print("\nLoading File Type information in cache ...... ");
+		refreshFileTypes(conn);
+		System.out.println("Done");
+		System.out.print("\nLoading File ValStatus information in cache ...... ");
+		refreshFileValStatus(conn);
 		System.out.println("Done\n");
+
 
 	}
 
@@ -283,9 +309,163 @@ public class DBSDataCache {
 	
 
 	//----------------------------------------------------------------------------------------------------------------------------
+	// File Status cache
+	
+	
+	public String readFileStatusIDSycnronized(Connection conn, String status) throws Exception {
+		String id = "";
+		readFileStatusLock.lock();
+		try { 
+			id = get(fileStatus, status); 
+		} finally { 
+			readFileStatusLock.unlock();
+		}
+		return id;
+
+	}
+	
+	public String getFileStatusID(Connection conn, String status) throws Exception {
+		String id = readFileStatusIDSycnronized(conn, status);
+		if (isNull(id)) { 
+			System.out.println("CACHE-MIS getFileStatusID " + status + " .. Reloading ..");
+			refreshFileStatus(conn);
+			return readFileStatusIDSycnronized(conn, status);
+		} else 	System.out.println("CACHE-HIT getFileStatusID " + status);
+		return id;
+	}
+
+	private void refreshFileStatus(Connection conn) throws Exception {
+		writeFileStatusLock.lock();
+		try {
+			fileStatus = new Hashtable();
+			PreparedStatement ps = null;
+			ResultSet rs =  null;
+			try {
+				ps = DBSSql.listFileStatus(conn);
+				rs =  ps.executeQuery();
+				while(rs.next()) fileStatus.put(get(rs, "STATUS") ,  get(rs, "ID"));
+				//System.out.println("DN " + get(rs, "STATUS") + "  ID " + get(rs, "ID"));
+			} finally { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			}
+		} finally { 
+			writeFileStatusLock.unlock();
+		}
+	}
+	
+	//----------------------------------------------------------------------------------------------------------------------------
+	// File Type cache
+	
+	
+	public String readFileTypeIDSycnronized(Connection conn, String type) throws Exception {
+		String id = "";
+		readFileTypeLock.lock();
+		try { 
+			id = get(fileTypes, type); 
+		} finally { 
+			readFileTypeLock.unlock();
+		}
+		return id;
+
+	}
+	
+	public String getFileTypeID(Connection conn, String type) throws Exception {
+		String id = readFileTypeIDSycnronized(conn, type);
+		if (isNull(id)) { 
+			System.out.println("CACHE-MIS getFileTypeID " + type + " .. Reloading ..");
+			refreshFileTypes(conn);
+			return readFileTypeIDSycnronized(conn, type);
+		} else 	System.out.println("CACHE-HIT getFileTypeID " + type);
+		return id;
+	}
+
+	private void refreshFileTypes(Connection conn) throws Exception {
+		writeFileTypeLock.lock();
+		try {
+			fileTypes = new Hashtable();
+			PreparedStatement ps = null;
+			ResultSet rs =  null;
+			try {
+				ps = DBSSql.listFileTypes(conn);
+				rs =  ps.executeQuery();
+				while(rs.next()) fileTypes.put(get(rs, "TYPE") ,  get(rs, "ID"));
+				//System.out.println("DN " + get(rs, "TYPE") + "  ID " + get(rs, "ID"));
+			} finally { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			}
+		} finally { 
+			writeFileTypeLock.unlock();
+		}
+	}
+	
+
+	//----------------------------------------------------------------------------------------------------------------------------
+	// File ValStatus cache
+	
+	
+	public String readFileValStatusIDSycnronized(Connection conn, String status) throws Exception {
+		String id = "";
+		readFileValStatusLock.lock();
+		try { 
+			id = get(fileValStatus, status); 
+		} finally { 
+			readFileValStatusLock.unlock();
+		}
+		return id;
+
+	}
+	
+	public String getFileValStatusID(Connection conn, String status) throws Exception {
+		String id = readFileValStatusIDSycnronized(conn, status);
+		if (isNull(id)) { 
+			System.out.println("CACHE-MIS getFileValStatusID " + status + " .. Reloading ..");
+			refreshFileValStatus(conn);
+			return readFileValStatusIDSycnronized(conn, status);
+		} else 	System.out.println("CACHE-HIT getFileValStatusID " + status);
+		return id;
+	}
+
+	private void refreshFileValStatus(Connection conn) throws Exception {
+		writeFileValStatusLock.lock();
+		try {
+			fileValStatus = new Hashtable();
+			PreparedStatement ps = null;
+			ResultSet rs =  null;
+			try {
+				ps = DBSSql.listFileValStatus(conn);
+				rs =  ps.executeQuery();
+				while(rs.next()) fileValStatus.put(get(rs, "STATUS") ,  get(rs, "ID"));
+				//System.out.println("DN " + get(rs, "STATUS") + "  ID " + get(rs, "ID"));
+			} finally { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			}
+		} finally { 
+			writeFileValStatusLock.unlock();
+		}
+	}
+
+	//----------------------------------------------------------------------------------------------------------------------------
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 
 	private String get(ResultSet rs, String key) throws Exception {
 		return DBSUtil.get(rs, key);

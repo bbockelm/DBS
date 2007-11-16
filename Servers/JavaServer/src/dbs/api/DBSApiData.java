@@ -1,6 +1,6 @@
 /**
- $Revision: 1.5 $"
- $Id: DBSApiData.java,v 1.5 2007/11/15 21:02:27 sekhri Exp $"
+ $Revision: 1.6 $"
+ $Id: DBSApiData.java,v 1.6 2007/11/16 21:29:36 sekhri Exp $"
  *
  */
 
@@ -18,6 +18,9 @@ public class DBSApiData {
 	public Hashtable localUser = new Hashtable();
 	public Hashtable localTier = new Hashtable();
 	public Hashtable localFile = new Hashtable();
+	public Hashtable localFileStatus = new Hashtable();
+	public Hashtable localFileValStatus = new Hashtable();
+	public Hashtable localFileType = new Hashtable();
 	public Hashtable localPDPath = new Hashtable();
 	public Hashtable person = new Hashtable();
 	public Vector dbOrderedList = new Vector();

@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.125 $"
- $Id: DBSSql.java,v 1.125 2007/11/15 21:02:29 sekhri Exp $"
+ $Revision: 1.126 $"
+ $Id: DBSSql.java,v 1.126 2007/11/16 21:29:39 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1604,7 +1604,7 @@ public class DBSSql {
 
 
 	public static PreparedStatement listTiers(Connection conn) throws SQLException {
-		String sql = "SELECT DISTINCT dt.ID as ID, \n " +
+		String sql = "SELECT dt.ID as ID, \n " +
 			"dt.Name as NAME \n" +
 			"FROM DataTier dt \n" +
 			"ORDER BY dt.Name DESC";
@@ -1613,6 +1613,32 @@ public class DBSSql {
 		return ps;
 	}
 	
+	public static PreparedStatement listFileStatus(Connection conn) throws SQLException {
+		String sql = "SELECT fs.ID as ID, \n " +
+			"fs.Status as STATUS \n" +
+			"FROM FileStatus fs \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listFileTypes(Connection conn) throws SQLException {
+		String sql = "SELECT ft.ID as ID, \n " +
+			"ft.Type as TYPE \n" +
+			"FROM FileType ft \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listFileValStatus(Connection conn) throws SQLException {
+		String sql = "SELECT fs.ID as ID, \n " +
+			"fs.Status as STATUS \n" +
+			"FROM FileValidStatus fs \n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
 
 	public static PreparedStatement listTiers(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT DISTINCT dt.ID as ID, \n " +
