@@ -798,13 +798,18 @@ class DDServer(DDLogger,Controller):
             return str(t)
     _history.exposed=True
 
-    def _help(self,userMode="user"):
+    def _help(self,userMode="user",**kwargs):
         try:
+            section=""
+            if kwargs.has_key('section'):
+               section="""<script type="text/javascript">\nshowResMenu('%s',['help_intro', 'help_glossary', 'help_wild-card', 'help_like', 'help_regexp', 'help_resources', 'help_feedback', 'help_refs', 'help_browser'])</script>"""%kwargs['section']
+             
             page = self.genTopHTML(intro=False,userMode=userMode)
             nameSpace = {
                          'host'         : self.dbsdd,
                          'userMode'     : userMode,
                          'glossary'     : self.glossary(),
+                         'section'      : section,
                         }
             t = templateMenuHelp(searchList=[nameSpace]).respond()
             page+= str(t)
@@ -1088,13 +1093,18 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
         if type(proc) is not types.ListType and len(proc)>1:
-           if (proc.find("*")!=-1 or proc.find("%")!=-1):
+           if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
+               proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
                # we got a pattern
 #               proc=self.getMatch("Block","Path",proc)
                if proc.lower().find("regexp:")!=-1:
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip())
+               elif proc.lower().find("like:")!=-1:
+                  nDatasets=self.helper.countQueryWithCond("Block","Path",proc)
+                  wClause,bDict=parseKeywordInput(proc,"tblk.Path")
+                  proc=self.helper.getDatasetPathFromMatch(wClause,pattern="",bDict=bDict)
                else:
                   # we got a pattern
                   whereClause="%s"%proc.replace('*','%')
@@ -1206,12 +1216,17 @@ class DDServer(DDLogger,Controller):
 #        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
 
         if type(proc) is not types.ListType and len(proc)>1:
-           if (proc.find("*")!=-1 or proc.find("%")!=-1):
+           if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
+               proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
                if proc.lower().find("regexp:")!=-1:
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
                   nDatasets=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=0,limit=0,count=1)
                   proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+               elif proc.lower().find("like:")!=-1:
+                  nDatasets=self.helper.countQueryWithCond("Block","Path",proc)
+                  wClause,bDict=parseKeywordInput(proc,"tblk.Path")
+                  proc=self.helper.getDatasetPathFromMatch(wClause,pattern="",row=_idx*pagerStep,limit=pagerStep,bDict=bDict)
                else:
                   # we got a pattern
                   whereClause="%s"%proc.replace('*','%')

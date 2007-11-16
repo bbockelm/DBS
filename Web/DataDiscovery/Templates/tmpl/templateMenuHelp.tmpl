@@ -1,13 +1,15 @@
 <!-- templateMenuHelp.tmpl -->
 
-#set menuArr=['help_intro','help_glossary','help_regexp','help_resources','help_feedback','help_refs','help_browser']
+#set menuArr=['help_intro','help_glossary','help_wild-card','help_like','help_regexp','help_resources','help_feedback','help_refs','help_browser']
 <table class="table_box_white" border="0" width="100%">
 <tr valign="top">
 <td class="box_darkblue">
 DBS Discovery :: Help
 - <a href="javascript:showResMenu('help_intro',$menuArr)">Introduction</a>
 | <a href="javascript:showResMenu('help_glossary',$menuArr)">Glossary</a>
-| <a href="javascript:showResMenu('help_regexp',$menuArr)">Regular expressions</a>
+| <a href="javascript:showResMenu('help_wild-card',$menuArr)">Wild-card</a>
+| <a href="javascript:showResMenu('help_like',$menuArr)">Like search</a>
+| <a href="javascript:showResMenu('help_regexp',$menuArr)">Regexp</a>
 | <a href="javascript:showResMenu('help_resources',$menuArr)">Resources</a>
 ##| <a href="javascript:showResMenu('help_feedback',$menuArr)">Feedback</a>
 | <a href="javascript:showResMenu('help_refs',$menuArr)">References</a>
@@ -89,6 +91,36 @@ All terms used on discovery page are defined in DBS glossary.
 </div>
 
 <div id="help_glossary" class="hide">$glossary</div>
+
+<div id="help_wild-card" class="hide">
+<p>
+Wild-card search form with auto-completion. The
+'%' and '*' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent.
+The input form is case-insensitive, e.g. qcd and QCD are equivalent.
+</p>
+</div>
+
+<div id="help_like" class="hide">
+<p>
+The <b>like</b> keyword is supported in input form on data discovery page.
+It provides a quick way to search your favorite sample with native
+syntax. There are two ways to specify pattern in dataset path
+<ul>
+<li><b>like:</b> </li>
+<li><b>not like:</b> </li>
+</ul>
+In first case, it will search dataset paths
+who match the pattern, for example <b>like:RECO</b> match all datasets
+with RECO in a their path. The second case will do the opposite, for example
+<b>not like:RelVal</b>, will search for datasets whose path not match
+RelVal in a path name. Moreover you can construct a complex queries, like
+<pre>
+like:RECO and not like:RelVal
+</pre>
+In this case, you asked to look at all dataset with RECO without RelVal in
+dataset path.
+</p>
+</div>
 
 <div id="help_regexp" class="hide">
 
@@ -364,5 +396,7 @@ Below we list of some known issues with different browsers:
 </ul>
 
 </div>
+
+$section
 
 <!-- end of templateMenuHelp.tmpl -->

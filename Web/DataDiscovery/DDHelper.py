@@ -1410,6 +1410,21 @@ MCDescription:      %s
       return res
 
   #### This section contains method which use plain SQL
+  def countQueryWithCond(self,tableName,colName,whereClause):
+      bindparams=[]
+      wClause,oDict=parseKeywordInput(whereClause,"%s.%s"%(tableName,colName))
+      sel   = "select COUNT(DISTINCT %s) from %s where %s"%(colName,tableName,wClause)
+      for bind_param in oDict.keys():
+          bindparams.append(sqlalchemy.bindparam(key=bind_param,value=oDict[bind_param]))
+      query = sqlalchemy.text(sel, bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
+      try:
+          result = query.execute()
+          for path in result:
+              return path[0]
+      except:
+          msg="\n### Query:\n"+str(query)
+          self.printExcept(msg)
+          raise "Fail in contQueryWithCond '%s' '%s'"%(query,str(whereClause))
   def countQuery(self,tableName,colName,op,whereClause):
       sel   = "select COUNT(DISTINCT %s) from %s where %s.%s %s :rval"%(colName,tableName,tableName,colName,op)
       query = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
@@ -1422,7 +1437,7 @@ MCDescription:      %s
           self.printExcept(msg)
           raise "Fail in count query %s"%query
 
-  def getDatasetPathFromMatch(self,whereCond,pattern,row=0,limit=0):
+  def getDatasetPathFromMatch(self,whereCond,pattern,row=0,limit=0,bDict={}):
       oList=[]
       query=""
       try:
@@ -1434,8 +1449,16 @@ MCDescription:      %s
              sel="select DISTINCT Path,CreationDate from Block where %s order by CreationDate DESC"%whereCod
              if row or limit:
                 sel+="limit %s, %s"%(row,row+limit)
-          query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
-          result = query.execute(p=pattern)
+          result=[]
+          if pattern:
+             query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
+             result = query.execute(p=pattern)
+          else:
+             bParams= []
+             for bind_param in bDict.keys():
+                 bParams.append(sqlalchemy.bindparam(key=bind_param,value=bDict[bind_param]))
+             query  = sqlalchemy.text(sel,bindparams=bParams,bind=self.dbManager.engine[self.dbsInstance])
+             result = query.execute(p=pattern)
           for path in result:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
                  if row or limit:
