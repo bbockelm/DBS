@@ -1,6 +1,6 @@
 /**
- $Revision: 1.111 $"
- $Id: DBSApi.java,v 1.111 2007/10/24 21:55:11 sekhri Exp $"
+ $Revision: 1.112 $"
+ $Id: DBSApi.java,v 1.112 2007/11/15 21:02:27 sekhri Exp $"
  *
 */
 
@@ -125,7 +125,7 @@ public class DBSApi {
 	public DBSApi() {
 		
 		data = new DBSApiData() ;
-		//this.data.setCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
+		//this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
 		//api = new DBSApiLogic(data);
 		apiStr = "";
 	}
@@ -246,8 +246,7 @@ public class DBSApi {
 		Connection conn = null;
 
 		try {
-			this.data.setCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
-			api = new DBSApiLogic(data);
+			//this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(getConnection()));
 	
 			out.write(DBSConstants.XML_HEADER); 
 			String apiStr = get(table, "api", true);
@@ -255,13 +254,17 @@ public class DBSApi {
         	        String apiVersion = get(table, "apiversion", true);
                 	DBSUtil.writeLog("apiStr: "+apiStr);
 
-	                checkVersion(apiVersion);
- 
-        	        String dbsSchemaVersion = checkSchemaVersion();
 
 			
 			conn = getConnection();
 			conn.setAutoCommit(false);
+			DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+			this.data.setGlobalCache(DBSDataCache.getDBSDataCacheInstance(conn));
+			api = new DBSApiLogic(data);
+	                checkVersion(apiVersion);
+ 
+        	        String dbsSchemaVersion = checkSchemaVersion();
+
 			if (apiStr.equals("getDBSServerVersion")) {
 				String serverVersion = DBSConstants.DBSTag;
 				serverVersion = serverVersion.replace("$Name:", "");	
@@ -482,13 +485,14 @@ public class DBSApi {
 						dbsUser);
 
                         } else if (apiStr.equals("insertBlock")) {
+
 				(new DBSApiBlockLogic(this.data)).insertBlock(conn, out,
 						DBSApiParser.parseBlock(getXml(table)) , 
 						dbsUser);
 				
 			} else if (apiStr.equals("insertFiles")) {
 
-				DBSApiParser.insertFiles(conn, out, get(table, "primary_dataset", false), 
+				DBSApiParser.insertFiles(this.data, conn, out, get(table, "primary_dataset", false), 
 									get(table, "processed_dataset", false), 
 									getXml(table), dbsUser);
 			} else if (apiStr.equals("insertBranchInfo")) {
@@ -715,6 +719,7 @@ public class DBSApi {
 	
 	public void writeException(Writer out, String message, String code, String detail) throws Exception {
 		//out.write(DBSConstants.XML_EXCEPTION_HEADER); 
+		//System.out.println("FINISHED " + this.apiStr + " !!!!!!!!!!!!!");
 		message = " ____________ API Invoked " + this.apiStr + "____________\n" + message;
 		message = message.replace('\'',' ');
 		message = message.replace('<',' ');

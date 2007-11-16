@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.35 $"
- $Id: DBSServlet.java,v 1.35 2007/10/16 17:22:23 afaq Exp $"
+ $Revision: 1.36 $"
+ $Id: DBSServlet.java,v 1.36 2007/11/15 21:02:25 sekhri Exp $"
 
  */
 package dbs;
@@ -59,15 +59,22 @@ public class DBSServlet extends HttpServlet{
 		 System.out.println("---------------------------------------------------------------\n");
                  System.out.println("DBS making database connection");
 		 Connection conn = DBManagement.getDBConnManInstance().getConnection();
- 		 if (conn != null) {
-                 	System.out.println("DBS database connection made successfully");
-		 	System.out.println("---------------------------------------------------------------\n");
-                 	System.out.println("DBS loading data into cache");
-			DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
-                 	System.out.println("DBS loaded data into cache successfully ");
-		 	System.out.println("---------------------------------------------------------------\n");
-		 } else {
-			  throw new ServletException(new Exception("Database connection could not be established"));
+		 try {
+	 		 if (conn != null) {
+        	         	System.out.println("DBS database connection made successfully");
+			 	System.out.println("---------------------------------------------------------------\n");
+	                 	System.out.println("DBS loading data into cache");
+				DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+                	 	System.out.println("DBS loaded data into cache successfully ");
+		 		System.out.println("---------------------------------------------------------------\n");
+			 } else {
+				  throw new ServletException(new Exception("Database connection could not be established"));
+			 }
+		 } finally {
+			 if (conn != null)  {
+				 conn.clearWarnings();
+				 conn.close();
+			 }
 		 }
        	
                  System.out.println("DBS READY");

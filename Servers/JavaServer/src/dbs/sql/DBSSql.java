@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.124 $"
- $Id: DBSSql.java,v 1.124 2007/11/07 22:54:24 afaq Exp $"
+ $Revision: 1.125 $"
+ $Id: DBSSql.java,v 1.125 2007/11/15 21:02:29 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1461,6 +1461,28 @@ public class DBSSql {
 		return ps;
 	}
 */
+
+
+	public static PreparedStatement listAlgorithms(Connection conn) throws SQLException {
+		String sql = "SELECT algo.id as ID, \n" +
+			"av.Version as APP_VERSION, \n" +
+			"af.FamilyName as APP_FAMILY_NAME, \n" +
+			"ae.ExecutableName as APP_EXECUTABLE_NAME, \n" +
+			"ps.Hash as PS_HASH \n" +
+			"FROM AlgorithmConfig algo \n" +
+			"JOIN AppVersion av \n" +
+				"ON av.id = algo.ApplicationVersion \n" +
+			"JOIN AppFamily af \n" +
+				"ON af.id = algo.ApplicationFamily \n" +
+			"JOIN AppExecutable ae \n" +
+				"ON ae.id = algo.ExecutableName \n" +
+			"JOIN QueryableParameterSet ps \n" +
+				"ON ps.id = algo.ParameterSetID \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 	public static PreparedStatement listAlgorithms(Connection conn, String patternVer, String patternFam, String patternExe, String patternPS) throws SQLException {
 		String sql = "SELECT algo.id as ID, \n" +
 			"av.Version as APP_VERSION, \n" +
@@ -1579,6 +1601,18 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+
+	public static PreparedStatement listTiers(Connection conn) throws SQLException {
+		String sql = "SELECT DISTINCT dt.ID as ID, \n " +
+			"dt.Name as NAME \n" +
+			"FROM DataTier dt \n" +
+			"ORDER BY dt.Name DESC";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+	
 
 	public static PreparedStatement listTiers(Connection conn, String procDSID) throws SQLException {
 		String sql = "SELECT DISTINCT dt.ID as ID, \n " +

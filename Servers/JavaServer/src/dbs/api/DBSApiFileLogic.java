@@ -1,6 +1,6 @@
 /**
- $Revision: 1.69 $"
- $Id: DBSApiFileLogic.java,v 1.69 2007/10/10 22:04:18 afaq Exp $"
+ $Revision: 1.71 $"
+ $Id: DBSApiFileLogic.java,v 1.71 2007/11/07 22:54:23 afaq Exp $"
  *
  */
 
@@ -68,8 +68,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
                                         "'>\n"));
                                 if (!isNull(detail)) {
-                                        this.data.globalFile = new Hashtable();
-                                        this.data.globalFile.put(lfn, fileID);
+                                        this.data.localFile = new Hashtable();
+                                        this.data.localFile.put(lfn, fileID);
                                         //listFileParents(conn, out, lfn); 
                                         listFileProvenence(conn, out, lfn, true);//Parents
                                         listFileProvenence(conn, out, lfn, false);//Children
@@ -153,7 +153,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		for (int j = 0; j < tierList.length; ++j) {
 				if (!isNull(tierList[j]))
-					tierIDList.add(getID(conn, "DataTier", "Name", tierList[j] , true));
+					tierIDList.add(getTierID(conn, tierList[j] , true));
+					//tierIDList.add(getID(conn, "DataTier", "Name", tierList[j] , true));
 		}
 
 		//Search can be based on Analysis Dataset
@@ -208,8 +209,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					"' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") +
 					"'>\n"));
 				if (!isNull(detail)) {
-					this.data.globalFile = new Hashtable();
-					this.data.globalFile.put(lfn, fileID);
+					this.data.localFile = new Hashtable();
+					this.data.localFile.put(lfn, fileID);
 					listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
 					listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
 					listFileAlgorithms(conn, out, lfn);
@@ -899,9 +900,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			for (int j = 0; j < tierVector.size(); ++j) {
 				insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
 					fileID, 
-					getID(conn, "DataTier", "Name", 
+					//getID(conn, "DataTier", "Name", 
+					//	get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
+					//	true), 
+					getTierID(conn,  
 						get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
 						true), 
+	
 					cbUserID, lmbUserID, creationDate);
 			}
 			
@@ -1027,7 +1032,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	public void insertTierInFile(Connection conn, Writer out, Hashtable table, String tierName, Hashtable dbsUser) throws Exception {
 		insertMap(conn, out, "FileTier", "Fileid", "DataTier", 
 				getFileID(conn, get(table, "lfn", true), true), 
-				getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
+				//getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
+				getTierID(conn, tierName.toUpperCase() , true), 
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
@@ -1243,12 +1249,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 	private String getFileID(Connection conn, String lfn, boolean excep) throws Exception {
 		String id = "";
-		if(!isNull( id = get(this.data.globalFile, lfn) )) {
+		if(!isNull( id = get(this.data.localFile, lfn) )) {
 			return id;
 		}
 		if( !isNull(id = getID(conn, "Files", "LogicalFileName", lfn, excep)) ) {
-			this.data.globalFile = new Hashtable();//Just store one file id only
-			this.data.globalFile.put(lfn, id);
+			this.data.localFile = new Hashtable();//Just store one file id only
+			this.data.localFile.put(lfn, id);
 		}
 		return id;
 	}

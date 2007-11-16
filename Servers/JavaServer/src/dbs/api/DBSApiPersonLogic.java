@@ -1,6 +1,6 @@
 /**
- $Revision: 1.9 $"
- $Id: DBSApiPersonLogic.java,v 1.9 2007/04/12 19:27:05 sekhri Exp $"
+ $Revision: 1.10 $"
+ $Id: DBSApiPersonLogic.java,v 1.10 2007/11/15 21:02:27 sekhri Exp $"
  *
  */
 
@@ -82,12 +82,12 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 		String id = "";
 		String userDN = get(dbsUser, "user_dn");
 
-		if(!isNull( id = get(this.data.globalUser, userDN) )) {
+		if(!isNull( id = get(this.data.localUser, userDN) )) {
 			return id;
 		}
 		//Looking in Global Cache 
-		if(!isNull( id = this.data.getCache().getUserID(conn, userDN)))  {
-			this.data.globalUser.put(userDN, id);
+		if(!isNull( id = this.data.getGlobalCache().getUserID(conn, userDN)))  {
+			this.data.localUser.put(userDN, id);
 			return id;
 		}
 
@@ -102,7 +102,7 @@ public class DBSApiPersonLogic extends DBSApiLogic {
 					""); //FIXME Get userName and contactInfo also and the lmbUserID shoudl be decicde?
 			id = getIDNoCheck(conn, "Person", "DistinguishedName", userDN , true);
 		}
-		this.data.globalUser.put(userDN, id);
+		this.data.localUser.put(userDN, id);
 		return id;
 	}
 

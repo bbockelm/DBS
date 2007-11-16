@@ -1,6 +1,6 @@
 /**
- $Revision: 1.49 $"
- $Id: DBSApiProcDSLogic.java,v 1.49 2007/10/24 21:55:11 sekhri Exp $"
+ $Revision: 1.50 $"
+ $Id: DBSApiProcDSLogic.java,v 1.50 2007/11/15 21:02:27 sekhri Exp $"
  *
  */
 
@@ -34,6 +34,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 	public DBSApiProcDSLogic(DBSApiData data) {
 		super(data);
 		this.data = data;
+
 		personApi = new DBSApiPersonLogic(data);
 		//System.out.println("in proc const this.data.apiName is  "+ this.data.apiName);
 	}
@@ -419,7 +420,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 			//insertName(conn, out, "DataTier", "Name", tierName , lmbUserID);
 			insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 					procDSID, 
-					getID(conn, "DataTier", "Name", get(hashTable, "name", true).toUpperCase() , true), 
+					//getID(conn, "DataTier", "Name", get(hashTable, "name", true).toUpperCase() , true), 
+					getTierID(conn, get(hashTable, "name", true).toUpperCase() , true), 
 					cbUserID, lmbUserID, creationDate);
 		}
 
@@ -462,7 +464,8 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 		checkProcDSStatus(conn, out, path, procDSID);
 		insertMap(conn, out, "ProcDSTier", "Dataset", "DataTier", 
 				procDSID, 
-				getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
+				//getID(conn, "DataTier", "Name", tierName.toUpperCase() , true), 
+				getTierID(conn, tierName.toUpperCase() , true), 
 				personApi.getUserID(conn, get(table, "created_by"), dbsUser ),
 				personApi.getUserID(conn, dbsUser),
 				getTime(table, "creation_date", false));
@@ -705,21 +708,21 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 
 	public String getProcessedDSID(Connection conn, String path, boolean excep) throws Exception {
 		String id = "";
-		if(!isNull( id = get(this.data.globalPDPath, path) )) {
+		if(!isNull( id = get(this.data.localPDPath, path) )) {
 			return id;
 		}
 		if(isNull(path) && !excep) return "";
 		String[] data = parseDSPath(path);
 		
 		//Looking in Global Cache 
-		if(!isNull( id = this.data.getCache().getProcessedDSID(conn, path)))  {
-			this.data.globalPDPath.put(path, id);
+		if(!isNull( id = this.data.getGlobalCache().getProcessedDSID(conn, path)))  {
+			this.data.localPDPath.put(path, id);
 			return id;
 		}
 
 
 		id = getProcessedDSID(conn, data[1], data[2], excep);
-		this.data.globalPDPath.put(path, id);
+		this.data.localPDPath.put(path, id);
 		return  id;
 	}
 

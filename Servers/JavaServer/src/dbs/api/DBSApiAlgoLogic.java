@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiAlgoLogic.java,v 1.16 2007/08/28 19:45:19 sekhri Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiAlgoLogic.java,v 1.17 2007/10/05 19:16:20 sekhri Exp $"
  *
  */
 
@@ -264,6 +264,9 @@ public class DBSApiAlgoLogic extends DBSApiLogic {
 		checkWord(exe, "app_executable_name");
 		checkWord(psHash, "ps_hash");
 		String id = "";
+		//Looking in Global Cache 
+		if(!isNull( id = this.data.getGlobalCache().getAlgorithmID(conn, ver, fam, exe, psHash))) return id;
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {

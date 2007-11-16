@@ -1,6 +1,6 @@
 /**
- $Revision: 1.4 $"
- $Id: DBSApiData.java,v 1.4 2007/10/10 22:04:18 afaq Exp $"
+ $Revision: 1.5 $"
+ $Id: DBSApiData.java,v 1.5 2007/11/15 21:02:27 sekhri Exp $"
  *
  */
 
@@ -14,10 +14,11 @@ import dbs.data.DBSDataCache;
 */
 public class DBSApiData {
 	//We can store the path id once and everytime the id is needed it can be fetched from this table instead of fetching it through database.
-	private DBSDataCache cache ;
-	public Hashtable globalUser = new Hashtable();
-	public Hashtable globalFile = new Hashtable();
-	public Hashtable globalPDPath = new Hashtable();
+	private DBSDataCache globalCache ;
+	public Hashtable localUser = new Hashtable();
+	public Hashtable localTier = new Hashtable();
+	public Hashtable localFile = new Hashtable();
+	public Hashtable localPDPath = new Hashtable();
 	public Hashtable person = new Hashtable();
 	public Vector dbOrderedList = new Vector();
 	public String apiName = "";
@@ -25,11 +26,11 @@ public class DBSApiData {
 	/**
 	* Constructs a DBSApiData object. The constructor does notthing.
 	*/
-	public DBSDataCache getCache() {
-		return cache;
+	public DBSDataCache getGlobalCache() {
+		return globalCache;
 	}
-	public void setCache(DBSDataCache cache) {
-		this.cache = cache;
+	public void setGlobalCache(DBSDataCache globalCache) {
+		this.globalCache = globalCache;
 	}
 	public DBSApiData() {}
 
