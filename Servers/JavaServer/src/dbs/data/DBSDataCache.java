@@ -14,6 +14,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
 import db.DBManagement;
+import dbs.DBSConstants;
 import dbs.util.DBSConfig;
 import dbs.util.DBSUtil;
 import dbs.sql.DBSSql;
@@ -96,28 +97,29 @@ public class DBSDataCache {
 	
 
 	private DBSDataCache(Connection conn) throws Exception {
-		System.out.print("\nLoading Person information in cache ...... ");
-		refreshPersons(conn);
-		System.out.println("Done");
-		System.out.print("\nLoading Processed DS information in cache ...... ");
-		refreshProcDSs(conn);
-		System.out.println("Done");
-		System.out.print("\nLoading Algorithm information in cache ...... ");
-		refreshAlgos(conn);
-		System.out.println("Done");
-		System.out.print("\nLoading Tier information in cache ...... ");
-		refreshTiers(conn);
-		System.out.println("Done");
-		System.out.print("\nLoading File Status information in cache ...... ");
-		refreshFileStatus(conn);
-		System.out.println("Done");
-		System.out.print("\nLoading File Type information in cache ...... ");
-		refreshFileTypes(conn);
-		System.out.println("Done");
-		System.out.print("\nLoading File ValStatus information in cache ...... ");
-		refreshFileValStatus(conn);
-		System.out.println("Done\n");
-
+		if (DBSConstants.USECACHE) {
+			System.out.print("\nLoading Person information in cache ...... ");
+			refreshPersons(conn);
+			System.out.println("Done");
+			System.out.print("\nLoading Processed DS information in cache ...... ");
+			refreshProcDSs(conn);
+			System.out.println("Done");
+			System.out.print("\nLoading Algorithm information in cache ...... ");
+			refreshAlgos(conn);
+			System.out.println("Done");
+			System.out.print("\nLoading Tier information in cache ...... ");
+			refreshTiers(conn);
+			System.out.println("Done");
+			System.out.print("\nLoading File Status information in cache ...... ");
+			refreshFileStatus(conn);
+			System.out.println("Done");
+			System.out.print("\nLoading File Type information in cache ...... ");
+			refreshFileTypes(conn);
+			System.out.println("Done");
+			System.out.print("\nLoading File ValStatus information in cache ...... ");
+			refreshFileValStatus(conn);
+			System.out.println("Done\n");
+		}
 
 	}
 
@@ -135,6 +137,7 @@ public class DBSDataCache {
 	}
 	
 	public String getUserID(Connection conn, String userDN) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String id = readUserIDSycnronized(conn, userDN);
 		if (isNull(id)) { 
 			refreshPersons(conn);
@@ -181,6 +184,7 @@ public class DBSDataCache {
 
 
 	public String getProcessedDSID(Connection conn, String path) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String[] data = path.split("/");
 		String pathToQuery = "/" + data[1] + "/" + data[2];
 		String id = readProcessedDSIDSycnronized(conn, pathToQuery);
@@ -229,6 +233,7 @@ public class DBSDataCache {
 	}
 	
 	public String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String algoToQuery = "/" + ver + "/" + fam + "/" + exe + "/" + psHash;
 		String id = readAlgorithmIDSycnronized(conn, algoToQuery);
 		if (isNull(id)) { 
@@ -278,6 +283,7 @@ public class DBSDataCache {
 	}
 	
 	public String getTierID(Connection conn, String name) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String id = readTierIDSycnronized(conn, name);
 		if (isNull(id)) { 
 			System.out.println("CACHE-MIS getTierID " + name + " .. Reloading ..");
@@ -325,6 +331,7 @@ public class DBSDataCache {
 	}
 	
 	public String getFileStatusID(Connection conn, String status) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String id = readFileStatusIDSycnronized(conn, status);
 		if (isNull(id)) { 
 			System.out.println("CACHE-MIS getFileStatusID " + status + " .. Reloading ..");
@@ -371,6 +378,7 @@ public class DBSDataCache {
 	}
 	
 	public String getFileTypeID(Connection conn, String type) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String id = readFileTypeIDSycnronized(conn, type);
 		if (isNull(id)) { 
 			System.out.println("CACHE-MIS getFileTypeID " + type + " .. Reloading ..");
@@ -418,6 +426,7 @@ public class DBSDataCache {
 	}
 	
 	public String getFileValStatusID(Connection conn, String status) throws Exception {
+		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
 		String id = readFileValStatusIDSycnronized(conn, status);
 		if (isNull(id)) { 
 			System.out.println("CACHE-MIS getFileValStatusID " + status + " .. Reloading ..");
