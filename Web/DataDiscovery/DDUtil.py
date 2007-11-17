@@ -32,11 +32,12 @@ TIPS= [
 "to send found data to your buddy, use 'bare URL' link at bottom of the page"
 ]
 
-def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','not']):
+def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','not','(',')']):
     oDict={}
     c=0
-    s="%s"%tableCol
-    for item in input.split():
+    s=""
+    sList = input.replace("("," ( ").replace(")"," ) ").split()
+    for item in sList:
         if item.lower().find(keyword)!=-1:
            k,v=item.split(":")
            bindKey=":p%s"%c
@@ -45,13 +46,16 @@ def parseKeywordInput(input,tableCol,keyword='like',valList=['like','and','or','
            else: val="%%%s%%"%v
            oDict[bindKey[1:]]=val
            c+=1
-           s+=" %s %s "%(keyword,bindKey)
-        elif item.lower().find('and')!=-1 or item.lower().find('or')!=-1:
-           s+=" %s %s "%(item,tableCol)
-        else:
+           s+=" %s %s "%(keyword,bindKey) 
+        else: 
            if not valList.count(item):
               raise "Invalid input keyword='%s'"%item
            s+=" %s "%item
+    s=' '.join(s.split())
+    # insert tableCol in proper place of the statement
+    s=s.replace("like","%s like"%tableCol)
+    # now replace not tableCol to be tableCol not
+    s=s.replace("not %s"%tableCol,"%s not"%tableCol)
     return s,oDict
 
 def tip():

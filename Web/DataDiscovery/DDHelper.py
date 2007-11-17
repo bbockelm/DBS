@@ -1446,7 +1446,7 @@ MCDescription:      %s
              if row or limit:
                 sel="select rownum, tblk_path, tprd_cdate from (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
           else:
-             sel="select DISTINCT Path,CreationDate from Block where %s order by CreationDate DESC"%whereCod
+             sel="select DISTINCT Path,CreationDate from Block tblk where %s order by CreationDate DESC "%whereCond
              if row or limit:
                 sel+="limit %s, %s"%(row,row+limit)
           result=[]

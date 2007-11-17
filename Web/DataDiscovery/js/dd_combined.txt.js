@@ -1673,7 +1673,7 @@ function MakeTooltip(_tag,_ctx,_text,autodismissdelay,width) {
   if(width) {
      _width=width;
   }
-  t = new YAHOO.widget.Tooltip(_tag, { context: _ctx, text: '<div class="tooltip">'+_text+'</div>', width:_width, autodismissdelay:delay } );
+  t = new YAHOO.widget.Tooltip(_tag, { context: _ctx, text: '<div class="tooltip">'+_text+'</div>', width:_width, autodismissdelay:delay, zIndex:9999 } );
 }
 
 function PanelInit(myvar,tagName) {

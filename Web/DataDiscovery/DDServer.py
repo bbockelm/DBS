@@ -224,6 +224,11 @@ class DDServer(DDLogger,Controller):
            @rtype: none
            @return: none
         """
+        cherrypy.response.headers['Expires']="Thu, 15 Apr 2010 20:00:00 GMT"
+#        cherrypy.response.headers['Last-Modified']=time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime())
+        cherrypy.response.headers['Cache-Control']="no-store, no-cache, must-revalidate, max-age=315360000"
+        cherrypy.response.headers['Cache-Control']="post-check=0, pre-check=0"
+        
         if  int(string.split(cherrypy.__version__,".")[0])==3:
             if type=="xml":
                cherrypy.response.headers['Content-Type']='text/xml'
