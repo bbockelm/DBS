@@ -264,9 +264,21 @@ to:
 <tr valign="top">
 <td valign="top" align="left">
 This input form support: 
-<a href="_help?userMode=$userMode&section=help_wild-card">wild-card</a>, 
-<a href="_help?userMode=$userMode&section=help_regexp">regular expressions</a>, 
-<a href="_help?userMode=$userMode&section=help_like">like</a> searches.
+<a href="_help?userMode=$userMode&section=help_wild-card">
+<span id="wildcardDef">
+wild-card
+</span>
+</a>, 
+<a href="_help?userMode=$userMode&section=help_regexp">
+<span id="regexpDef">
+regular expressions
+</span>
+</a>, 
+<a href="_help?userMode=$userMode&section=help_like">
+<span id="likeDef">
+like
+</span>
+</a> searches.
 <!--
 Wild-card search form with auto-completion. The
 '%' and '*' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent.
@@ -391,6 +403,12 @@ tooltip="<p>List of know primary datasets types, e.g. mc for Monte Carlo, cosmic
 MakeTooltip("t_primType","primDSTypeDef",tooltip);
 tooltip="<p>The elapsed time since datasets creation date (GMT).</p>";
 MakeTooltip("t_date","dateDef",tooltip);
+tooltip="<p>Wild-card search form with auto-completion. The \'%\' and \'*\' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent. The input form is case-insensitive, e.g. qcd and QCD are equivalent.</p>";
+MakeTooltip("t_wildcard","wildcardDef",tooltip);
+tooltip="<p>Prepend the <em>regexp:</em> or <em>not regexp:</em> keyword. For example, <em>regexp:RelVal.*RECO</em> will match all samples who have RelVal and RECO somewhere in a path separated by any number of characters. And <em>not regexp:RelVal.*RECO</em> will do the opposite.</p>";
+MakeTooltip("t_regexp","regexpDef",tooltip);
+tooltip="<p>You can construct logical expression by using <em>like:</em> keyword. For example to search for all datasets who have RECO in their name, but not RelVal use <em>like:RECO and not like:RelVal</em></p>";
+MakeTooltip("t_like","likeDef",tooltip);
 SetAutoCompletion();
 // check if user uses IE and turn on warning message
 if(isInternetExplorer()) {
