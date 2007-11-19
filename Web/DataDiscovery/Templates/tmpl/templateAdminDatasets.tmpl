@@ -1,0 +1,347 @@
+<!-- templateAdminDatasets.tmpl -->
+<table>
+<tr>
+<td>
+Dataset:
+</td>
+<td>
+<b>$dataset</b>
+</td>
+</tr>
+<tr>
+<td>
+at sites:
+</td>
+<td>
+<select>
+<option value="any" selected="selected">Any</option>
+#set iList=$siteDict.keys()
+#silent $iList.sort()
+#for domain in $iList
+<optgroup label="$domain domain">
+#for site in $siteDict[$domain]
+<option value="$site">$site</option>
+#end for
+</optgroup>
+#end for
+</select>
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+Administrative tasks: 
+</td>
+<td>
+#set taskList=["Migration","Administration","LFN"]
+#set titleList=["Migrate dataset","Dataset/blocks management","LFNs management"]
+<script type="text/javascript">
+function ChangeTaskView() {
+#for task in $taskList
+  HideTag('$task');
+#end for
+  ShowTag(GetValueFromSelect("adminTask"));
+}
+</script>
+<select name="adminTask" id="adminTask" onchange="javascript:ChangeTaskView()">
+#for idx in xrange(0,len($taskList))
+#set task=$taskList[$idx]
+#set title=$titleList[$idx]
+<option value="$task">$title</option>
+#end for
+</select>
+</td>
+</tr>
+</table>
+
+<table class="table_box">
+<tr>
+<td>
+### Migration form
+<div class="show_inline" id="Migration">
+<p>
+<b>Migration tasks</b>
+</p>
+###<form src="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet?api=updateFileStatus&lfn=aLFName&status=INVALID">
+<form action="adminMigration" method="get">
+<input type="hidden" name="userMode" value=$userMode />
+
+<table>
+<tr>
+<td>
+
+<table>
+<tr>
+<td>
+From
+</td>
+<td>
+<select name="dbsInst" id="dbsInst" style="$style" onchange="javascript:ChangeDbsInst()">
+#for dbs in $dbsList
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+<td>
+to
+</td>
+<td>
+<select name="dbsInst_to" id="dbsInst_to" style="$style">
+#for dbs in $dbsListOrig
+<option value="$dbs">$dbs</option>
+#end for
+</select>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+
+<tr>
+<td>
+<input type="checkbox" name="all_blocks" id="all_blocks" onchange="Disable2EnableTag('blockName');"/>
+check to migrate all blocks OR specify block name below
+</td>
+</tr>
+
+<tr>
+<td>
+$blkForm
+</td>
+</tr>
+
+<tr>
+<td>
+<input type="checkbox" name="all_blocks" id="all_blocks" />with all parents
+</td>
+</tr>
+
+</table>
+
+<input type="submit" name="Submit request" />
+</form>
+</div>
+### end of Migration form
+</td>
+</tr>
+
+#*
+#set taskList=["changeDataset","changeBlock","changeLFN"]
+<script type="text/javascript">
+function ChangeAdminTaskView() {
+#for task in $taskList
+  HideTag('$task');
+#end for
+  ShowTag(GetValueFromSelect("adminTask"));
+}
+</script>
+*#
+
+<tr>
+<td>
+### Administration form
+<div class="hide" id="Administration">
+<script type="text/javascript">
+function D2E_adminTasks(tag1,tag2) {
+   \$(tag1).disabled="";
+   \$(tag2).disabled="disabled";
+
+   \$(tag1).setAttribute("class","enabled");
+   \$(tag2).setAttribute("class","disabled");
+
+   var arr = tag1.split("_");
+   if (arr.length==2) {
+       id=document.getElementById(arr[0]);
+       if(id) {
+          id.disabled="";
+          id.setAttribute("class","enabled");
+       }
+   }
+   
+   arr = tag2.split("_");
+   if (arr.length==2) {
+       id=document.getElementById(arr[0]);
+       if(id) {
+          id.disabled="disabled";
+          id.setAttribute("class","disabled");
+       }
+   }
+}
+function D2E43_adminTasks(tag1,tag2,tag3) {
+   \$(tag1).disabled="";
+   \$(tag2).disabled="disabled";
+   \$(tag3).disabled="disabled";
+
+   \$(tag1).setAttribute("class","enabled");
+   \$(tag2).setAttribute("class","disabled");
+   \$(tag3).setAttribute("class","disabled");
+
+   var arr = tag1.split("_");
+   if (arr.length==2) {
+       id=document.getElementById(arr[0]);
+       if(id) {
+          id.disabled="";
+          id.setAttribute("class","enabled");
+       }
+   }
+   
+   arr = tag2.split("_");
+   if (arr.length==2) {
+       id=document.getElementById(arr[0]);
+       if(id) {
+          id.disabled="disabled";
+          id.setAttribute("class","disabled");
+       }
+   }
+   
+   arr = tag3.split("_");
+   if (arr.length==2) {
+       id=document.getElementById(arr[0]);
+       if(id) {
+          id.disabled="disabled";
+          id.setAttribute("class","disabled");
+       }
+   }
+   
+}
+</script>
+
+<form action="adminAdmin" method="get">
+<input type="hidden" name="userMode" value=$userMode />
+<b>Dataset/Block(s) administration</b>
+
+<table>
+
+<!-- new row -->
+<tr>
+<td>
+
+<input type="radio" name="adminTask" checked="checked" onChange="javascript:D2E_adminTasks('datasets_Status','blocks_Status')"/>
+
+</td>
+<td>
+Change dataset status
+</td>
+
+<td>
+<select name="datasets_Status" id="datasets_Status" style="width:200px">
+<option value="Valid">Valid</option>
+<option value="Invalid">Invalid</option>
+<option value="Imported">Imported</option>
+<option value="Exported">Exported</option>
+<option value="Read">Read only</option>
+<option value="Delete">Delete</option>
+<option value="Undelete">Undelete</option>
+</select>
+</td>
+<td></td>
+
+</tr>
+
+<!-- new row -->
+<tr valign="top">
+<td>
+<input type="radio" name="adminTask" onChange="javascript:D2E_adminTasks('blocks_Status','datasets_Status')" />
+</td>
+
+<td>
+Change block(s) status
+</td>
+
+<td>
+<select name="blocks_Status" id="blocks_Status" style="width:200px" disabled="disabled">
+<option value="Open">Open</option>
+<option value="Closed">Closed</option>
+</select>
+</td>
+<td>
+<select multiple="multiple" name="blocks" id="blocks" size="5" disabled="disabled">
+<option value="All" selected="selected">All</option>
+#for blk in $blkList
+#set path,blkId=$blk.split('#')
+<option value="$blk">$blkId</option>
+#end for
+</select>
+</td>
+</tr>
+
+</table>
+
+<input type="submit" name="Submit request" />
+</form>
+</div>
+
+### end of Administration form
+</td>
+</tr>
+
+
+<tr>
+<td>
+### LFN form
+<div class="hide" id="LFN">
+<b>LFN(s) administration</b>
+<p />
+Choose one or more block id's by selecting them:
+<form action="adminAdmin" method="post">
+<input type="hidden" name="userMode" value=$userMode />
+###<select multiple="multiple" name="blocks" id="blocks" size="5">
+<script type="text/javascript">
+function getLFNs(dbsInst) {
+   var blkList=document.getElementById('LFN_form_blocks');
+   var blk = getSelectedOption(blkList.options);
+   ajaxGetLFNs(dbsInst,blk);
+}
+</script>
+<select name="LFN_form_blocks" id="LFN_form_blocks" onchange="javascript:getLFNs('$dbsInst')"> 
+<option value="All">All blocks in dataset</option>
+#for blk in $blkList
+#set path,blkId=$blk.split('#')
+<option value="$blk">$blkId</option>
+###<option value="$blk" onclick="javascript:ajaxGetLFNs('$dbsInst','$blk')">$blkId</option>
+#end for
+</select>
+<p>
+Choose one or more LFNs to perform the operation:
+</p>
+<div id="blockLFNs" name="blockLFNs">
+<select multiple="multiple" name="blockLFNlist" id="blockLFNlist" style="width:1000px" size="10">
+<option value="All">
+All LFNs in a block
+</option>
+</select>
+</div>
+
+<table>
+<td>
+Change LFN(s) status
+</td>
+
+<td>
+<select name="lfns_Status" id="lfns_Status" style="width:200px">
+<option value="Valid">Valid</option>
+<option value="Invalid">Invalid</option>
+<option value="Merged">Merged</option>
+<option value="Imported">Imported</option>
+<option value="Exported">Exported</option>
+<option value="Delete">Delete</option>
+<option value="Undelete">Undelete</option>
+</select>
+</td>
+</tr>
+</table>
+
+<input type="submit" name="Submit request" />
+</form>
+</div>
+### end of LFN form
+</td>
+</tr>
+
+
+</table>
+
+<!-- end of templateAdminDatasets.tmpl -->
