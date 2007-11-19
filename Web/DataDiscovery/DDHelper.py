@@ -380,10 +380,10 @@ class DDHelper(DDLogger):
           oSel = [self.col(tqps,'ID'),self.col(tqps,'Name'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                     tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
-                     .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
-                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     tqps.join(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
+                     .join(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .join(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
                      .outerjoin(tp1,onclause=self.col(tqps,'CreatedBy')==self.col(tp1,'ID'))
                      .outerjoin(tp2,onclause=self.col(tqps,'LastModifiedBy')==self.col(tp2,'ID'))
                             ],distinct=True,order_by=oSel
@@ -433,13 +433,13 @@ class DDHelper(DDLogger):
           oSel = [self.col(tapv,'Version'),self.col(tqps,'Name'),self.col(tqps,'Content'),self.col(tqps,'Version'),self.col(tqps,'Type'),self.col(tqps,'Annotation'),self.col(tqps,'CreationDate'),self.col(tp1,'DistinguishedName'),self.col(tqps,'LastModificationDate'),self.col(tp2,'DistinguishedName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                     tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
-                     .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
-                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
-                     .outerjoin(tpal,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                     .outerjoin(tprd,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                     tqps.join(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
+                     .join(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .join(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     .join(tpal,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .join(tprd,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tp1,onclause=self.col(tqps,'CreatedBy')==self.col(tp1,'ID'))
                      .outerjoin(tp2,onclause=self.col(tqps,'LastModifiedBy')==self.col(tp2,'ID'))
                             ]
@@ -533,64 +533,41 @@ class DDHelper(DDLogger):
 #          print "group,app,prim,tier,proc,site,primType",group,app,prim,tier,proc,site,primType
           # I need to decide which table to join based on input parameters
           obj=tblk
-          obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+          obj=obj.join(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
           if  site and site!="*":
-              obj=obj.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-              obj=obj.outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+              obj=obj.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+              obj=obj.join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
           if (proc and proc!="*") or (app and app!="/*/*/*") or \
              (prim and prim!="*") or (primType and primType!="*") or \
              (group and group!="*") or (tier and tier!="*") or (date and date!="*"):
-#              obj=obj.outerjoin(tprd,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
               if (app and app!="/*/*/*"):
-                  obj=obj.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                  obj=obj.outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                  obj=obj.join(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                  obj=obj.join(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
                   empty,ver,fam,exe=string.split(app,"/")
                   if ver.lower()=="any" or ver.lower()=="all": ver="*"
                   if fam.lower()=="any" or fam.lower()=="all": fam="*"
                   if exe.lower()=="any" or exe.lower()=="all": exe="*"
                   if ver!="*":
-                     obj=obj.outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     obj=obj.join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                   if fam!="*":
-                     obj=obj.outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     obj=obj.join(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
                   if exe!="*":
-                     obj=obj.outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     obj=obj.join(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
               primInc=0
               if (prim and prim!="*"):
-                  obj=obj.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                  obj=obj.join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                   primInc=1
               if (primType and primType!="*"):
                   if not primInc:
-                     obj=obj.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                  obj=obj.outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                     obj=obj.join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                  obj=obj.join(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
               if  group and group!="*":
-                  obj=obj.outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
+                  obj=obj.join(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
               if  tier and tier!="*":
-                  obj=obj.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                  obj=obj.outerjoin(tdt,onclause=self.col(tdt,'ID')==self.col(tpds,'DataTier'))
+                  obj=obj.join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                  obj=obj.join(tdt,onclause=self.col(tdt,'ID')==self.col(tpds,'DataTier'))
           sel = sqlalchemy.select(oSel,from_obj=[obj],
                 distinct=True,order_by=[sqlalchemy.desc( self.col(tprd,'CreationDate') )] )
-#                distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
-
-#          if  group=="*" and (app=="*" or app=="/*/*/*") and prim=="*" and tier=="*" and \
-#              proc=="*" and site=="*" and primType=="*":
-#              sel = sqlalchemy.select(oSel,from_obj=[tblk],
-#                    distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
-#          else:
-#              sel = sqlalchemy.select(oSel,
-#                     from_obj=[
-#                         tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-#                         .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-#                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-#                         .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
-#                         .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-#                         .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-#                         .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-#                         .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-#                         .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
-#                         .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
-#                         .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
-#                         .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
-#                         ],distinct=True,order_by=[sqlalchemy.desc( self.col(tblk,'Path') )] )
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
           if tier and tier!="*":
@@ -699,11 +676,11 @@ class DDHelper(DDLogger):
           oSel = [self.col(tblk,'Path'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tprd,'CreationDate'),self.col(ttrd,'TriggerPathDescription'),self.col(tmcd,'MCChannelDescription'),self.col(tmcd,'MCProduction'),self.col(tmcd,'MCDecayChain')]
           sel = sqlalchemy.select(oSel,
                  from_obj=[
-                     tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                     .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     tprd.join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                     .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .join(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .join(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                      .outerjoin(tpmd,onclause=self.col(tpm,'Description')==self.col(tpmd,'ID'))
                      .outerjoin(tmcd,onclause=self.col(tpmd,'MCChannelDescriptionID')==self.col(tmcd,'ID'))
                      .outerjoin(ttrd,onclause=self.col(tpmd,'TriggerDescriptionID')==self.col(ttrd,'ID'))
@@ -782,7 +759,7 @@ MCDescription:      %s
              aList.append(self.alias('DataTier','tdt%s'%idx))
              bList.append(self.alias('ProcDSTier','tpds%s'%idx))
              tierValue=tierList[idx]
-             sel.append_from( sqlalchemy.outerjoin( aList[-1],bList[-1],self.col(bList[-1],'DataTier')==self.col(aList[-1],'ID') ) )
+             sel.append_from( sqlalchemy.join( aList[-1],bList[-1],self.col(bList[-1],'DataTier')==self.col(aList[-1],'ID') ) )
              sel.append_whereclause(self.col(aList[-1],'Name')==tierValue)
              condDict[findLastBindVar(str(sel))]=tierValue
              sel.append_whereclause(self.col(tprd,'ID')==self.col(bList[-1],'Dataset'))
@@ -811,13 +788,13 @@ MCDescription:      %s
           oSel = [self.col(tprd,'CreationDate'),self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),self.col(tse,'SEName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                          tprd.outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                          tprd.join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                          .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                          .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                           .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
-                          .outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                          .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                          .join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                          .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
           if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
@@ -918,9 +895,9 @@ MCDescription:      %s
           tf   = self.alias('Files','tf')
           sel  = sqlalchemy.select([self.col(tf,'NumberOfEvents')],
                  from_obj=[
-                     tprd.outerjoin(tf,onclause=self.col(tf,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     tprd.join(tf,onclause=self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                         .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                         .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      ] )
           if proc and proc!="*":
              sel.append_whereclause(self.col(tprd,'Name')==proc)
@@ -966,7 +943,7 @@ MCDescription:      %s
           tpt  = self.alias('PrimaryDSType','tpt')
           sel  = sqlalchemy.select([self.col(tpt,'Type')],
                  from_obj=[
-                 tpm.outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                 tpm.join(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
                      ],distinct=True,use_labels=True)
           if prim and prim!="*":
              sel.append_whereclause(self.col(tpm,'Name')==prim)
@@ -983,7 +960,7 @@ MCDescription:      %s
              desc=mcDesc+trDesc
           sel  = sqlalchemy.select(desc,
                  from_obj=[
-                 tprd.outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                 tprd.join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
                      .outerjoin(tpdd,onclause=self.col(tpm,'Description')==self.col(tpdd,'ID'))
                      .outerjoin(tmcd,onclause=self.col(tpdd,'MCChannelDescriptionID')==self.col(tmcd,'ID'))
                      .outerjoin(tod,onclause=self.col(tpdd,'OtherDescriptionID')==self.col(tod,'ID'))
@@ -1028,15 +1005,15 @@ MCDescription:      %s
           tblk = self.alias('Block','tblk')
           sel  = sqlalchemy.select([self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name'),self.col(tblk,'Path')],
                    from_obj=[
-                      tprd.outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                      .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                      .outerjoin(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
-                      .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                      .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                      .outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
-                      .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
-                      .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
-                      .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                      tprd.join(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                      .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                      .join(tdt,onclause=self.col(tpds,'DataTier')==self.col(tdt,'ID'))
+                      .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                      .join(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                      .join(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                      .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                      .join(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                      .join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                             ],distinct=True,
                    order_by=[self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName'),self.col(tpm,'Name'),self.col(tdt,'Name'),self.col(tprd,'Name')]
                                  )
@@ -1072,9 +1049,9 @@ MCDescription:      %s
           talc = self.alias('AlgorithmConfig','talc')
           sel  = sqlalchemy.select([self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName')],
                    from_obj=[
-                     talc.outerjoin(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
-                     .outerjoin(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
+                     talc.join(tape,onclause=self.col(talc,'ExecutableName')==self.col(tape,'ID'))
+                     .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     .join(tapf,onclause=self.col(talc,'ApplicationFamily')==self.col(tapf,'ID'))
                             ],distinct=True,
                        order_by=[self.col(tapv,'Version'),self.col(tapf,'FamilyName'),self.col(tape,'ExecutableName')]
                                  )
@@ -1152,7 +1129,7 @@ MCDescription:      %s
               oSel = [self.col(tpm,'Name')]
               sel  = sqlalchemy.select(oSel,
                      from_obj=[
-                     tpm.outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                     tpm.join(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
                          ],distinct=True,order_by=oSel )
               if dsType and dsType!="*":
                  sel.append_whereclause(self.col(tpmt,'Type')==dsType)
@@ -1186,13 +1163,13 @@ MCDescription:      %s
               oSel = [self.col(tpm,'Name')]
               sel  = sqlalchemy.select(oSel,
                      from_obj=[
-                     tprd.outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                     .outerjoin(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
-                     .outerjoin(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
-                     .outerjoin(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     tprd.join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .join(tpmt,onclause=self.col(tpm,'Type')==self.col(tpmt,'ID'))
+                     .join(tpg,onclause=self.col(tprd,'PhysicsGroup')==self.col(tpg,'ID'))
+                     .join(tpal,onclause=self.col(tpal,'Dataset')==self.col(tprd,'ID'))
+                     .join(talc,onclause=self.col(tpal,'Algorithm')==self.col(talc,'ID'))
+                     .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                          ],distinct=True,order_by=oSel )
               if group and group!="*":
                  sel.append_whereclause(self.col(tpg,'PhysicsGroupName')==group)
@@ -1388,7 +1365,8 @@ MCDescription:      %s
               sel.append_whereclause(sqlalchemy.func.upper(lval).like("%s%%"%str(val.upper())))
           if len(iList)==1:
              sel.order_by=[sqlalchemy.desc(iList[0])]
-          sel.distinct=True
+          # NOTE: originally I used distinct here, but according to Yuyi, it's not required.
+#          sel.distinct=True
           # Due to bug in SQLAlchemy, I need to make a print statement, otherwise I'm not getting results.
           # should be fixed with usage of SQLAlchemy 0.3.7
 #          print "### getTableContent",self.printQuery(sel)
@@ -1409,7 +1387,7 @@ MCDescription:      %s
           res=msg
       return res
 
-  #### This section contains method which use plain SQL
+  #### This section contains methods which use plain SQL
   def countQueryWithCond(self,tableName,colName,whereClause):
       bindparams=[]
       wClause,oDict=parseKeywordInput(whereClause,"%s.%s"%(tableName,colName))
@@ -1700,8 +1678,8 @@ MCDescription:      %s
           tqps = self.alias('QueryableParameterSet','tqps')
           sel  = sqlalchemy.select([self.col(tqps,'Content')],
                    from_obj=[
-                     tqps.outerjoin(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
-                     .outerjoin(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
+                     tqps.join(talc,onclause=self.col(talc,'ParameterSetID')==self.col(tqps,'ID'))
+                     .join(tapv,onclause=self.col(talc,'ApplicationVersion')==self.col(tapv,'ID'))
                             ],distinct=True
                                  )
           if rel and rel!="*":
@@ -1739,10 +1717,10 @@ MCDescription:      %s
           oSel = [self.col(tf,'LogicalFileName'),self.col(tf,'FileSize'),self.col(tfs,'Status'),self.col(tft,'Type'),self.col(tf,'NumberOfEvents'),self.col(tf,'Checksum')]
           sel  = sqlalchemy.select(oSel,
                  from_obj=[
-                     tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                         .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                         .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                     tprd.join(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                         .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                         .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                         .join(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
                          .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
                          .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
                      ],distinct=True,order_by=oSel
@@ -1750,10 +1728,10 @@ MCDescription:      %s
           if  run and run!="*":                        
               sel  = sqlalchemy.select(oSel,
                      from_obj=[
-                         tprd.outerjoin(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
-                             .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                             .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                             .outerjoin(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
+                         tprd.join(tf,self.col(tf,'Dataset')==self.col(tprd,'ID'))
+                             .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                             .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                             .join(tb,onclause=self.col(tb,'Dataset')==self.col(tprd,'ID'))
                              .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
                              .outerjoin(tft,onclause=self.col(tf,'FileType')==self.col(tft,'ID'))
                              .outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
@@ -2150,14 +2128,14 @@ MCDescription:      %s
           sel  = sqlalchemy.select(oSel,
                        from_obj=[
                           tprd.outerjoin(tpdr,onclause=self.col(tpdr,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                          .join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                           .outerjoin(trun,onclause=self.col(tpdr,'Run')==self.col(trun,'ID'))
-                          .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                          .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                          .outerjoin(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
-                          .outerjoin(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
-                          .outerjoin(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
-                          .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+                          .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                          .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                          .join(tpt,onclause=self.col(tpm,'Type')==self.col(tpt,'ID'))
+                          .join(tfrl,onclause=self.col(tfrl,'Run')==self.col(trun,'ID'))
+                          .join(tf,onclause=self.col(tfrl,'Fileid')==self.col(tf,'ID'))
+                          .join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
                           .outerjoin(tp1,onclause=self.col(trun,'CreatedBy')==self.col(tp1,'ID'))
                           .outerjoin(tp2,onclause=self.col(trun,'LastModifiedBy')==self.col(tp2,'ID'))
                                 ],distinct=True,
@@ -2252,8 +2230,8 @@ MCDescription:      %s
           oSel = [self.col(tblk,'Path'),self.col(tse,'SEName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                      tblk.outerjoin(tsb,onclause=self.col(tsb,'BlockID')==self.col(tblk,'ID'))
-                          .outerjoin(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
+                      tblk.join(tsb,onclause=self.col(tsb,'BlockID')==self.col(tblk,'ID'))
+                          .join(tse,onclause=self.col(tsb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True )
           sel.append_whereclause(self.col(tse,'SEName')!=sqlalchemy.null())
           condList=[]   
@@ -2442,10 +2420,10 @@ MCDescription:      %s
                       self.col(tblk,'Path') ]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                     tad.outerjoin(tprd,onclause=self.col(tad,'ProcessedDS')==self.col(tprd,'ID'))
-                     .outerjoin(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
-                     .outerjoin(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                     .outerjoin(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                     tad.join(tprd,onclause=self.col(tad,'ProcessedDS')==self.col(tprd,'ID'))
+                     .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
+                     .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                     .join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                      .outerjoin(tadt,onclause=self.col(tad,'Type')==self.col(tadt,'ID'))
                      .outerjoin(tads,onclause=self.col(tad,'Status')==self.col(tads,'ID'))
                      .outerjoin(tadd,onclause=self.col(tad,'Definition')==self.col(tadd,'ID'))
@@ -2550,8 +2528,8 @@ MCDescription:      %s
           oSel = [self.col(tblk,'Path'),self.col(tblk,'Name'),self.col(tblk,'BlockSize'),self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),self.col(tblk,'OpenForWriting'),self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate'),self.col(tse,'SEName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                     tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                     tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                      .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
                      .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
                             ],distinct=True,order_by=oSel
@@ -2598,8 +2576,8 @@ MCDescription:      %s
           oSel = [self.col(tblk,'Name')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                     tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                     tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
           if site!="*":
@@ -2640,10 +2618,10 @@ MCDescription:      %s
           oSel = [self.col(tf,'LogicalFileName')]
           sel  = sqlalchemy.select(oSel,
                    from_obj=[
-                     tblk.outerjoin(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                     .outerjoin(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-                     .outerjoin(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
-                     .outerjoin(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+                     tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                     .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                     .join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+                     .join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
           if site!="*":
