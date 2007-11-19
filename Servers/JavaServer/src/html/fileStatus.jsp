@@ -1,17 +1,20 @@
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://richfaces.org/a4j" prefix="a4j"%>
-<%@ taglib uri="http://richfaces.org/rich" prefix="rich"%>
-    
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://java.sun.com/jsf/facelets"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:a4j="http://richfaces.org/a4j"
+xmlns:rich="http://richfaces.org/rich"><body>
+
 <f:view>
-	<jsp:include page="menu.jsp"/>
+	<ui:include src="menu.jsp"/>
 	<h:form id="form1">
 		<rich:tabPanel id="fileStatusPanel">
 			<rich:tab label="File Status">
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To change the status of the file, enter the logical file name, select status and click Change File Status button"/>
 				<h:panelGrid columns="4" columnClasses="gridContent" id="pg">
 					<h:outputText value="Logical File Name" style="font-size:small;"/>
-					<h:inputText id="lfnInputText" required="true" binding="#{FileStatus.lfnInputText}"/>
+					<h:inputText id="lfnInputText" size="100" required="true" binding="#{FileStatus.lfnInputText}"/>
 					<h:selectOneMenu value="File Status" binding="#{FileStatus.status}">
 						<f:selectItem itemValue="VALID" itemLabel="Valid"/>
 						<f:selectItem itemValue="INVALID" itemLabel="Invalid"/>
@@ -21,10 +24,10 @@
 					</h:selectOneMenu>
 					<rich:message for="lfnInputText">
 						<f:facet name="passedMarker">
-							<h:graphicImage  value="/jsp/images/passed.gif" /> 
+							<h:graphicImage  value="/html/images/passed.gif" /> 
 						</f:facet>
 						<f:facet name="errorMarker">
-							<h:graphicImage value="/jsp/images/error.gif" />   
+							<h:graphicImage value="/html/images/error.gif" />   
 						</f:facet>
 					</rich:message>
 					<f:facet name="footer">
@@ -34,10 +37,10 @@
 				</h:panelGrid>
 				<rich:message for="pg" binding="#{FileStatus.generalInputMessage}">
 					<f:facet name="passedMarker">
-						<h:graphicImage  value="/jsp/images/passed.gif" /> 
+						<h:graphicImage  value="/html/images/passed.gif" /> 
 					</f:facet>
 					<f:facet name="errorMarker">
-						<h:graphicImage value="/jsp/images/error.gif" />   
+						<h:graphicImage value="/html/images/error.gif" />   
 					</f:facet>
 				</rich:message>
 
@@ -47,3 +50,4 @@
 	</h:form>
 	    
 </f:view>
+</body></html>

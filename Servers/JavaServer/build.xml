@@ -1,13 +1,12 @@
 <project name="dbs" default="compile">
 	<property name="sourcedir" value="${basedir}/src"/>
 	<property name="targetdir" value="${basedir}/bin/WEB-INF/classes"/>
-	<property name="targetjspdir" value="${basedir}/bin/jsp"/>
+	<property name="targetjspdir" value="${basedir}/bin/html"/>
 	<property name="targetlibdir" value="${basedir}/bin/WEB-INF/lib"/>
 	<property name="configsrcdir" value="${basedir}/etc"/>
 	<property name="configtargetdir" value="${basedir}/bin/WEB-INF"/>
 	<property name="metatargetdir" value="${basedir}/bin/META-INF"/>
 	<property name="librarydir" value="${basedir}/bin/WEB-INF/lib"/>
-	<property name="jsflibrarydir" value="${basedir}/lib/JSF"/>
 	<property name="libraryolddir" value="${basedir}/lib"/>
 	<property name="app.name" value="DBS"/>
 	<property environment="env"/>
@@ -19,9 +18,6 @@
 		<fileset dir="${librarydir}">
 			<include name="*.jar"/>
 		</fileset>
-	                <fileset dir="${jsflibrarydir}">
-                        <include name="*.jar"/>
-                </fileset>
 
 		<fileset dir="${jredir}">
 			<include name="rt.jar"/>
@@ -43,11 +39,11 @@
 				<exclude name="**/*.java"/>
 				<exclude name="**/*.jsp"/>
 				<exclude name="**/.*"/>
-				<exclude name="jsp/"/>
+				<exclude name="html/"/>
 			</fileset>
 		</copy>
 		<copy todir="${targetjspdir}">
-			<fileset dir="${sourcedir}/jsp">
+			<fileset dir="${sourcedir}/html">
 				<exclude name="**/*.java"/>
 				<exclude name="**/*.class"/>
 				<exclude name="**/.*"/>
