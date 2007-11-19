@@ -359,7 +359,7 @@ class DDServer(DDLogger,Controller):
         t = templateBottom(searchList=[nameSpace]).respond()
         return str(t)
 
-    def index(self,dbsInst=DBSGLOBAL,userMode='user'): 
+    def index(self,dbsInst=DBSGLOBAL,userMode='user',**kwargs): 
         """
            Construct start up page by invoking L{init} call.
            @type  self: class object
@@ -370,7 +370,10 @@ class DDServer(DDLogger,Controller):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
-            userNav = self.genEmptyUserNavigator(dbsInst,userMode)
+            auto=0
+            if kwargs.has_key('auto') and kwargs['auto']=='on':
+               auto=1
+            userNav = self.genEmptyUserNavigator(dbsInst,userMode,auto)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -584,11 +587,14 @@ class DDServer(DDLogger,Controller):
 #    dbsExpert.exposed = True
 
     ################## Menu init methods
-    def _navigator(self,dbsInst=DBSGLOBAL,userMode="user"):
+    def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode,onload="resetUserNav();")
             page+= self.whereMsg('Navigator',userMode)
-            userNav = self.genEmptyUserNavigator(dbsInst,userMode)
+            auto=0
+            if kwargs.has_key('auto') and kwargs['auto']=='on':
+               auto=1
+            userNav = self.genEmptyUserNavigator(dbsInst,userMode,auto)
             t = templateMenuNavigator(searchList=[{'userNavigator':userNav}]).respond()
             page+= str(t)
             page+= self.genBottomHTML()
@@ -767,12 +773,15 @@ class DDServer(DDLogger,Controller):
         return page
     rssGenerator.exposed=True
 
-    def _siteSearch(self,userMode="expert"):
+    def _siteSearch(self,userMode="expert",**kwargs):
         try:
             page = self.genTopHTML(intro=False,userMode=userMode)
             page+= self.whereMsg('Site search',userMode)
             dbsInst,site=self.formDict['siteForm']
-            siteForm=self.siteForm(dbsInst,site,userMode)
+            auto=0
+            if kwargs.has_key('auto') and kwargs['auto']=="on":
+               auto=1
+            siteForm=self.siteForm(dbsInst,site,userMode,auto)
             nameSpace = {
                          'host'         : self.dbsdd,
                          'userMode'     : userMode,
@@ -902,12 +911,14 @@ class DDServer(DDLogger,Controller):
         oList = self.helper.search(keywords)
         return oList
         
-    def genEmptyUserNavigator(self,dbsInst,userMode="user",**kwargs):
-
-        # auto-competion form for processed datasets
-        nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
-        t = templateAutoComplete(searchList=[nameSearch]).respond()
-        prdForm=str(t)
+    def genEmptyUserNavigator(self,dbsInst,userMode="user",auto=0,**kwargs):
+        if auto:
+           # auto-competion form for processed datasets
+           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+           t = templateAutoComplete(searchList=[nameSearch]).respond()
+           prdForm=str(t)
+        else:
+           prdForm="""<input type="text" name="proc" id="proc" size="80">"""
 
         page=""
         emptyList=[]
@@ -927,6 +938,7 @@ class DDServer(DDLogger,Controller):
                     'siteDict'    : {},
                     'style'       : "width:200px",
                     'prdForm'     : prdForm,
+                    'autocomplete': auto,
                    }
         t = templateUserNav(searchList=[nameSearch]).respond()
         page+= str(t)
@@ -2801,18 +2813,19 @@ All LFNs in a block
 #        return page
 #    genSiteMenuDict.exposed = True
         
-    def siteForm(self,firstDBS="",firstSite="",userMode='expert'):
+    def siteForm(self,firstDBS="",firstSite="",userMode='expert',auto=0):
         """
            Generates site form request
         """
         if not firstDBS: firstDBS=DBSGLOBAL
         if firstSite=="*": firstSite="All"
-
-
-        # auto-competion form for processed datasets
-        nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':DBSGLOBAL,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
-        t = templateAutoComplete(searchList=[nameSearch]).respond()
-        prdForm=str(t)
+        if auto:
+           # auto-competion form for processed datasets
+           nameSearch={'tag':'proc','inputId':'proc','inputName':'proc','size':'80','userMode':userMode,'dbsInst':DBSGLOBAL,'table':'Block','column':'Path','label':'','zIndex':9000,'method':'getTableColumn'}
+           t = templateAutoComplete(searchList=[nameSearch]).respond()
+           prdForm=str(t)
+        else:
+           prdForm="""<input type="text" name="proc" id="proc" size="80">"""
 
 
 #        siteList=['Any']+self.helper.getSites()
@@ -2827,6 +2840,7 @@ All LFNs in a block
                      'siteDict' : siteDict,
                      'userMode' : userMode,
                      'prdForm'  : prdForm,
+                     'autocomplete': auto,
                     }
         t = templateSiteForm(searchList=[nameSpace]).respond()
         page = str(t)

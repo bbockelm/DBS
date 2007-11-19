@@ -1565,27 +1565,34 @@ function getPhedexStatusForAllDatasets() {
   // this function will be written in templateSnapshot.tmpl
 }
 function AutoTurnOn() {
-   $('proccontainer').className='';
-   $('autocomplete').value='on';
-   myXHRDataSource.scriptQueryAppend =
-     myXHRDataSource.scriptQueryAppend.replace(/autocomplete=off/g,'autocomplete=on');
-   myAutoComp = new YAHOO.widget.AutoComplete('proc','proccontainer', myXHRDataSource);
-   myAutoComp.queryDelay = 1; 
-   myAutoComp.prehighlightClassName = "yui-ac-prehighlight"; 
-   myAutoComp.useShadow = true;
-   $('autoOn').className='td_underline_pad';
-   $('autoOff').className='';
+   var myUrl=window.location.href;
+   var url;
+   if(myUrl.search("auto")>0) {
+     url=myUrl.replace(/auto=off/g,'auto=on');
+   } else {
+     if(myUrl.search(/\?/)>0) {
+       url=myUrl+"&auto=on";
+     } else {
+       url=myUrl+"?auto=on";
+     }
+   }
    SetCookie('DBSDD_AutoCompletion','on');
+   load(url);
 }
 function AutoTurnOff() {
-   $('proccontainer').className='hide';
-   $('autocomplete').value='off';
-   myXHRDataSource.scriptQueryAppend =
-     myXHRDataSource.scriptQueryAppend.replace(/autocomplete=on/g,'autocomplete=off');
-   myAutoComp = null;
-   $('autoOn').className='';
-   $('autoOff').className='td_underline_pad';
+   var myUrl=window.location.href;
+   var url;
+   if(myUrl.search("auto")>0) {
+     url=myUrl.replace(/auto=on/g,'auto=off');
+   } else {
+     if(myUrl.search(/\?/)>0) {
+       url=myUrl+"&auto=off";
+     } else {
+       url=myUrl+"?auto=off";
+     }
+   }
    SetCookie('DBSDD_AutoCompletion','off');
+   load(url);
 }
 function SetAutoCompletion() {
    var c=GetCookie('DBSDD_AutoCompletion');

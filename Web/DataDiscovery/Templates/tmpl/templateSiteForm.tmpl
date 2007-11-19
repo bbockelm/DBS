@@ -1,16 +1,24 @@
 <!-- templateSiteForm.tmpl -->
 <p>
 Use this form to show detailed information about particular site.
-<!--
-There are two types of output have been provided.
-<ul>
-<li><input type="checkbox" name="" /> Dataset-based output (default)
-<li><input type="checkbox" name="" /> Block-based output (default)
-</ul>
--->
-The <b>Processed dataset</b> form supports wild-card search with auto-completion. The
-'%' and '*' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent.
-The input form is case-insensitive, e.g. qcd and QCD are equivalent.
+</p>
+<p>
+The input form supports 
+<a href="_help?userMode=$userMode&section=help_wild-card">
+<span id="wildcardDef">
+wild-card
+</span>
+</a>, 
+<a href="_help?userMode=$userMode&section=help_regexp">
+<span id="regexpDef">
+regular expressions
+</span>
+</a>, 
+<a href="_help?userMode=$userMode&section=help_like">
+<span id="likeDef">
+like
+</span>
+</a> searches.
 </p>
 
 <!--
@@ -25,9 +33,16 @@ The input form is case-insensitive, e.g. qcd and QCD are equivalent.
 Auto-completion: 
 </td>
 <td>
-<a href="javascript:AutoTurnOn();"><span id="autoOn" class="td_underline_pad">on</span></a> 
+#if $autocomplete==1
+#set classOn="td_underline_pad"
+#set classOff=""
+#else
+#set classOff="td_underline_pad"
+#set classOn=""
+#end if
+<a href="javascript:AutoTurnOn();"><span id="autoOn" class="$classOn">on</span></a> 
 | 
-<a href="javascript:AutoTurnOff();"><span id="autoOff">off</span></a>
+<a href="javascript:AutoTurnOff();"><span id="autoOff" class="$classOff">off</span></a>
 </td>
 </tr>
 
@@ -134,7 +149,17 @@ $prdForm
 </form>
 
 <script type="text/javascript">
-SetAutoCompletion();
+tooltip="<p>Wild-card search form with auto-completion. The \'%\' and \'*\' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent. The input form is case-insensitive, e.g. qcd and QCD are equivalent.</p>";
+MakeTooltip("t_wildcard","wildcardDef",tooltip);
+tooltip="<p>Regular expression search can be done by using <em>regexp:</em> or <em>not regexp:</em> keywords. For example, <em>regexp:RelVal.*RECO</em> will match all samples who have RelVal and RECO somewhere in a path separated by any number of characters. And <em>not regexp:RelVal.*RECO</em> will first match RelVal and RECO sample and then select everything else.</p>";
+MakeTooltip("t_regexp","regexpDef",tooltip);
+tooltip="<p>Like-search allows you to search datasets whose name will match provided pattern. You can construct logical expressions by using <em>like:</em> keyword. For example to search for all datasets who have RECO in their name, but not RelVal use the following <em>like:RECO and not like:RelVal</em></p>";
+MakeTooltip("t_like","likeDef",tooltip);
+//SetAutoCompletion();
+// check if user uses IE and turn on warning message
+if(isInternetExplorer()) {
+ShowTag("isIE");
+}
 </script>
 
 <!-- end of templateSiteForm.tmpl -->
