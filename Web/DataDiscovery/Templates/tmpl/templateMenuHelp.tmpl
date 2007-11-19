@@ -132,34 +132,14 @@ and use bottom part of the form.
 </p>
 
 <p>
-The two keywords are supported:
-<ul>
-<li><b>regexp:</b> </li>
-<li><b>not regexp:</b> </li>
-</ul>
-</p>
-<p>
-After specifying one of them you can type your favorite regular
-expression to look up desired dataset. For example to look up all datasets
+In order to use regular expression just use <b>regexp:</b> keyword before
+placing your processing dataset pattern.
+For example to look up all datasets
 whose name has RelVal and RECO you will type
 </p>
-<ul>
-<li>
 <pre>
 regexp:RelVal.*RECO
 </pre>
-</ul>
-<p>
-Complementary to lookup all datasets whose name does not contain RelVal and RECO
-you will use second keyword:
-</p>
-<ul>
-<li>
-<pre>
-not regexp:RelVal.*RECO
-</pre>
-</li>
-</ul>
 
 <p>
 Please be aware that regular expression are expensive operation to place. The

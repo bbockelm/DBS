@@ -151,7 +151,7 @@ $prdForm
 <script type="text/javascript">
 tooltip="<p>Wild-card search form with auto-completion. The \'%\' and \'*\' wild-cards are supported, e.g. *QCD*LowLumi* or %QCD%LowLumi% are equivalent. The input form is case-insensitive, e.g. qcd and QCD are equivalent.</p>";
 MakeTooltip("t_wildcard","wildcardDef",tooltip);
-tooltip="<p>Regular expression search can be done by using <em>regexp:</em> or <em>not regexp:</em> keywords. For example, <em>regexp:RelVal.*RECO</em> will match all samples who have RelVal and RECO somewhere in a path separated by any number of characters. And <em>not regexp:RelVal.*RECO</em> will first match RelVal and RECO sample and then select everything else.</p>";
+tooltip="<p>Regular expression search can be done by using <em>regexp:</em> keyword. For example, <em>regexp:RelVal.*RECO</em> will match all samples who have RelVal and RECO somewhere in a path separated by any number of characters.</p>";
 MakeTooltip("t_regexp","regexpDef",tooltip);
 tooltip="<p>Like-search allows you to search datasets whose name will match provided pattern. You can construct logical expressions by using <em>like:</em> keyword. For example to search for all datasets who have RECO in their name, but not RelVal use the following <em>like:RECO and not like:RelVal</em></p>";
 MakeTooltip("t_like","likeDef",tooltip);

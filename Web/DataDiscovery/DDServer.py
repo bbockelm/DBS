@@ -1113,19 +1113,24 @@ class DDServer(DDLogger,Controller):
            if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
                proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
                # we got a pattern
-#               proc=self.getMatch("Block","Path",proc)
                if proc.lower().find("regexp:")!=-1:
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
-                  proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip())
+                  if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                     wClause=" REGEXP_LIKE(Path,:p0) "
+                  else:
+                     wClause=" Path REGEXP :p0 "
+                  bDict={'p0':"%s"%pat}
+                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict)
                elif proc.lower().find("like:")!=-1:
-                  nDatasets=self.helper.countQueryWithCond("Block","Path",proc)
+                  nDatasets=self.helper.countBlocks(proc,site)
                   wClause,bDict=parseKeywordInput(proc,"tblk.Path")
-                  proc=self.helper.getDatasetPathFromMatch(wClause,pattern="",bDict=bDict)
                else:
                   # we got a pattern
-                  whereClause="%s"%proc.replace('*','%')
-                  proc=self.helper.getDatasetPathFromMatch("tblk.Path LIKE :p",whereClause)
+                  nDatasets=self.helper.countBlocks("like:%s"%proc,site)
+                  wClause=" LIKE tblk.Path :p0 "
+                  bDict={'p0':"%s"%proc.replace('*','%')}
+               proc=self.helper.getDatasetPathFromMatch(wClause,row=_idx*pagerStep,limit=pagerStep,bDict=bDict,site=site)
            else:
                if proc[0]!="/":
                   page=self.genTopHTML()
@@ -1146,7 +1151,6 @@ class DDServer(DDLogger,Controller):
             else:
                 procList = self.getDatasetList(group=group,app=app,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=0,limit=0,count=0)
                 procList.sort()
-#                procList = self.helper.getDatasetsFromApp(app,primD,tier)
                 for procD in procList:
                     page+=procD+"\n"
             page+= "</pre>"
@@ -1238,18 +1242,21 @@ class DDServer(DDLogger,Controller):
                if proc.lower().find("regexp:")!=-1:
                   # we got regular expression pattern
                   op,pat=proc.split("regexp:")
-                  nDatasets=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=0,limit=0,count=1)
-                  proc=self.helper.buildRegExpQuery("Block","Path",pat.strip(),op.strip(),fromRow=_idx*pagerStep,limit=pagerStep,count=0)
+                  if self.dbManager.dbType[self.dbsInstance]=='oracle':
+                     wClause=" REGEXP_LIKE(Path,:p0) "
+                  else:
+                     wClause=" Path REGEXP :p0 "
+                  bDict={'p0':"%s"%pat}
+                  nDatasets=self.helper.countBlocks(whereClause="",site=site,explicitWClause=wClause,explicitDict=bDict)
                elif proc.lower().find("like:")!=-1:
-                  nDatasets=self.helper.countQueryWithCond("Block","Path",proc)
+                  nDatasets=self.helper.countBlocks(proc,site)
                   wClause,bDict=parseKeywordInput(proc,"tblk.Path")
-                  proc=self.helper.getDatasetPathFromMatch(wClause,pattern="",row=_idx*pagerStep,limit=pagerStep,bDict=bDict)
                else:
                   # we got a pattern
-                  whereClause="%s"%proc.replace('*','%')
-                  nDatasets=self.helper.countQuery("Block","Path","LIKE",whereClause)
-                  proc=self.helper.getDatasetPathFromMatch("tblk.Path LIKE :p",whereClause,row=_idx*pagerStep,limit=pagerStep)
-#                  proc=self.getMatch("Block","Path",proc,row=_idx*pagerStep,limit=pagerStep)
+                  nDatasets=self.helper.countBlocks("like:%s"%proc,site)
+                  wClause=" LIKE tblk.Path :p0 "
+                  bDict={'p0':"%s"%proc.replace('*','%')}
+               proc=self.helper.getDatasetPathFromMatch(wClause,row=_idx*pagerStep,limit=pagerStep,bDict=bDict,site=site)
            else:
                if proc[0]!="/":
                   page=self.genTopHTML()

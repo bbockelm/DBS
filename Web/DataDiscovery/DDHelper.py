@@ -1388,13 +1388,33 @@ MCDescription:      %s
       return res
 
   #### This section contains methods which use plain SQL
-  def countQueryWithCond(self,tableName,colName,whereClause):
+  def getSiteClause(self,site=""):
+      siteSel=""
+      siteWhere=""
+      if site=="*" or site.lower()=="any" or site.lower()=="all":
+         site=""
+      if site:
+         siteSel=" INNER JOIN SEBlock seb ON seb.BlockID=tblk.ID INNER JOIN StorageElement se ON se.ID=seb.SEID "
+         siteWhere=" AND se.SEName=:site "
+      return siteSel,siteWhere
+  def countBlocks(self,whereClause,site="",explicitWClause="",explicitDict={}):
+      siteSel,siteWhere=self.getSiteClause(site)
       bindparams=[]
-      wClause,oDict=parseKeywordInput(whereClause,"%s.%s"%(tableName,colName))
-      sel   = "select COUNT(DISTINCT %s) from %s where %s"%(colName,tableName,wClause)
+      if explicitWClause:
+         oDict=explicitDict
+         sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s"%(siteSel,explicitWClause,siteWhere)
+      else:
+         wClause,oDict=parseKeywordInput(whereClause,"tblk.Path")
+         sel = "select COUNT(DISTINCT Path) from Block tblk %s where %s %s"%(siteSel,wClause,siteWhere)
       for bind_param in oDict.keys():
           bindparams.append(sqlalchemy.bindparam(key=bind_param,value=oDict[bind_param]))
+      if siteWhere:
+          bindparams.append(sqlalchemy.bindparam(key="site",value=site))
+
       query = sqlalchemy.text(sel, bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
+      if self.verbose:
+         self.writeLog(query)
+         self.writeLog(bindParams)
       try:
           result = query.execute()
           for path in result:
@@ -1402,41 +1422,30 @@ MCDescription:      %s
       except:
           msg="\n### Query:\n"+str(query)
           self.printExcept(msg)
-          raise "Fail in contQueryWithCond '%s' '%s'"%(query,str(whereClause))
-  def countQuery(self,tableName,colName,op,whereClause):
-      sel   = "select COUNT(DISTINCT %s) from %s where %s.%s %s :rval"%(colName,tableName,tableName,colName,op)
-      query = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
-      try:
-          result = query.execute(rval=whereClause)
-          for path in result:
-              return path[0]
-      except:
-          msg="\n### Query:\n"+str(query)
-          self.printExcept(msg)
-          raise "Fail in count query %s"%query
-
-  def getDatasetPathFromMatch(self,whereCond,pattern,row=0,limit=0,bDict={}):
+          raise "Fail in countBlocks '%s' '%s'"%(query,str(whereClause))
+  def getDatasetPathFromMatch(self,whereCond,row=0,limit=0,bDict={},site=""):
+      siteSel,siteWhere=self.getSiteClause(site)
       oList=[]
       query=""
       try:
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
-             sel="select DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate from Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id where %s ORDER BY tprd.CreationDate DESC"%whereCond
+             sel="select DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate from Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id %s where %s %s ORDER BY tprd.CreationDate DESC"%(siteSel,whereCond,siteWhere)
              if row or limit:
                 sel="select rownum, tblk_path, tprd_cdate from (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
           else:
-             sel="select DISTINCT Path,CreationDate from Block tblk where %s order by CreationDate DESC "%whereCond
+             sel="select DISTINCT Path,CreationDate from Block tblk %s where %s %s order by CreationDate DESC "%(siteSel,whereCond,siteWhere)
              if row or limit:
                 sel+="limit %s, %s"%(row,row+limit)
-          result=[]
-          if pattern:
-             query  = sqlalchemy.text(sel, bind=self.dbManager.engine[self.dbsInstance])
-             result = query.execute(p=pattern)
-          else:
-             bParams= []
-             for bind_param in bDict.keys():
-                 bParams.append(sqlalchemy.bindparam(key=bind_param,value=bDict[bind_param]))
-             query  = sqlalchemy.text(sel,bindparams=bParams,bind=self.dbManager.engine[self.dbsInstance])
-             result = query.execute(p=pattern)
+          bParams= []
+          for bind_param in bDict.keys():
+              bParams.append(sqlalchemy.bindparam(key=bind_param,value=bDict[bind_param]))
+          if siteWhere:
+             bParams.append(sqlalchemy.bindparam(key="site",value=site))
+          query  = sqlalchemy.text(sel,bindparams=bParams,bind=self.dbManager.engine[self.dbsInstance])
+          if self.verbose:
+             self.writeLog(query)
+             self.writeLog(bParams)
+          result = query.execute()
           for path in result:
               if self.dbManager.dbType[self.dbsInstance]=='oracle':
                  if row or limit:
@@ -1455,7 +1464,7 @@ MCDescription:      %s
   def buildRegExpQuery(self,tableName,colName,pattern,op="",fromRow=0,limit=0,count=0):
       if self.dbManager.dbType[self.dbsInstance]=='oracle':
          regExp="REGEXP_LIKE(Path,:p)"
-         if op.find("no")!=-1:
+         if op.lower().find("no")!=-1:
             regExp="NOT "+regExp
       else: # MySQL
          regExp="Path REGEXP :p"
