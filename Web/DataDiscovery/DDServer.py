@@ -1128,7 +1128,7 @@ class DDServer(DDLogger,Controller):
                else:
                   # we got a pattern
                   nDatasets=self.helper.countBlocks("like:%s"%proc,site)
-                  wClause=" LIKE tblk.Path :p0 "
+                  wClause=" tblk.Path LIKE :p0 "
                   bDict={'p0':"%s"%proc.replace('*','%')}
                proc=self.helper.getDatasetPathFromMatch(wClause,bDict=bDict,site=site)
            else:
@@ -1254,7 +1254,7 @@ class DDServer(DDLogger,Controller):
                else:
                   # we got a pattern
                   nDatasets=self.helper.countBlocks("like:%s"%proc,site)
-                  wClause=" LIKE tblk.Path :p0 "
+                  wClause=" tblk.Path LIKE :p0 "
                   bDict={'p0':"%s"%proc.replace('*','%')}
                proc=self.helper.getDatasetPathFromMatch(wClause,row=_idx*pagerStep,limit=pagerStep,bDict=bDict,site=site)
            else:
