@@ -102,24 +102,40 @@ The input form is case-insensitive, e.g. qcd and QCD are equivalent.
 
 <div id="help_like" class="hide">
 <p>
-The <b>like</b> keyword is supported in input form on data discovery page.
-It provides a quick way to search your favorite sample with native
-syntax. There are two ways to specify pattern in dataset path
+Like-search allows you to search datasets whose name will match provided pattern. 
+You can construct logical expressions by using <em>like:</em> keyword.
+There are two ways to specify the pattern in the dataset path
 <ul>
 <li><b>like:</b> </li>
 <li><b>not like:</b> </li>
 </ul>
-In first case, it will search dataset paths
+In the first case, it will search dataset paths
 who match the pattern, for example <b>like:RECO</b> match all datasets
 with RECO in a their path. The second case will do the opposite, for example
-<b>not like:RelVal</b>, will search for datasets whose path not match
+<b>not like:RelVal</b>, will search for datasets whose path do not match
 RelVal in a path name. Moreover you can construct a complex queries, like
 <pre>
 like:RECO and not like:RelVal
 </pre>
-In this case, you asked to look at all dataset with RECO without RelVal in
-dataset path.
+In this case, you asked to look at all datasets who contain RECO and do not contain RelVal 
+strings in dataset path.
 </p>
+You can also construct more complex queries by using <em>AND</em> and <em>OR</em>
+as well as brackets. For example
+<pre>
+like:TEST1 or (like:TEST2 and not like:TEST3)
+</pre>
+Please not that the more complex query you provide, the longer lookup time is.
+This is done due to the fact that underneath your queries is construct to <em>LIKE '%pattern%'</em>
+DB where clause. To speed things up, you may explicitly specify where you'd like
+to place the pattern. For example, if you're looking for /ttbar-XXX/CMSSW/RECO sample
+and you know only know your keywords, ttbar and RECO, you can place query like this:
+<pre>
+like:/ttbar%RECO
+</pre>
+This will narrow down your search by knowing that your path is starts from /ttbar,
+rather then a ttbar somewhere in a string.
+
 </div>
 
 <div id="help_regexp" class="hide">
