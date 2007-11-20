@@ -1048,9 +1048,9 @@ class DDServer(DDLogger,Controller):
         page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin dataset',userMode)
 
         # auto-competion form for processed datasets
-        nameSearch={'tag':'blockName','inputId':'blockName','inputName':'blockName','size':'100','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Name','label':'','zIndex':9000,'method':'yuiGetBlocksForDataset'}
-        t = templateAutoComplete(searchList=[nameSearch]).respond()
-        blkForm=str(t)
+#        nameSearch={'tag':'blockName','inputId':'blockName','inputName':'blockName','size':'100','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Name','label':'','zIndex':9000,'method':'yuiGetBlocksForDataset'}
+#        t = templateAutoComplete(searchList=[nameSearch]).respond()
+#        blkForm=str(t)
         
         dbsList=list(self.dbsList)
         dbsList.remove(dbsInst)
@@ -1068,7 +1068,7 @@ class DDServer(DDLogger,Controller):
                   'blkList' : blkList,
                   'siteDict': siteDict,
                   'style'   : "",
-                  'blkForm' : blkForm,
+#                  'blkForm' : blkForm,
                   'userMode': userMode,
                   }
         t = templateAdminDatasets(searchList=[nameSpace]).respond()
@@ -1079,12 +1079,26 @@ class DDServer(DDLogger,Controller):
 
     def adminMigration(self,userMode,**kwargs):
         page = self.genTopHTML(userMode=userMode)
-        page+="Call adminMigration with parameters %s"%str(kwargs)
-        page+="<p>Here I can either call DBS API with DbsMigrationAPI, but I doubt that it can be run in background. Or I can invoke call to DBSServlet URL. For that I need to know list of parameters to pass</p>"
+        input = str(templateXML(searchList=[{'kwargs':kwargs}]).respond())
+        xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
+        nameSpace = {'kwargs':kwargs,'xmlOutput':xmlOutput,'userMode':userMode}
+        t = templateAdminMigration(searchList=[nameSpace]).respond()
+        page+= str(t)
         page+= self.genBottomHTML()
         return page
     adminMigration.exposed=True
         
+    def sendAdminRequest(self,*args,**kwargs):
+        xml=str(templateXML(searchList=[{'kwargs':kwargs}]).respond())
+        print "\n\nsendAdminRequest\n",xml
+        page = self.genTopHTML(userMode='expert')
+        page+="<h3>Your request has been send to DBS</h3>"
+        page+="<p>Confirmation number: XXXYYY</p>"
+        page+="""<p>You can visit this <a href="">page</a> to see and monitor progress of your request"""
+        page+= self.genBottomHTML()
+        return page
+    sendAdminRequest.exposed=True
+
     def adminAdmin(self,userMode,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         page+="Call adminAdmin with parameters %s"%str(kwargs)

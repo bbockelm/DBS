@@ -66,7 +66,8 @@ function ChangeTaskView() {
 </p>
 ###<form src="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet?api=updateFileStatus&lfn=aLFName&status=INVALID">
 <form action="adminMigration" method="get">
-<input type="hidden" name="userMode" value=$userMode />
+<input type="hidden" name="userMode" value="$userMode" />
+<input type="hidden" name="dataset" value="$dataset" />
 
 <table>
 <tr>
@@ -78,7 +79,7 @@ function ChangeTaskView() {
 From
 </td>
 <td>
-<select name="dbsInst" id="dbsInst" style="$style" onchange="javascript:ChangeDbsInst()">
+<select name="dbsInst_from" id="dbsInst_from" style="$style" onchange="javascript:ChangeDbsInst()">
 #for dbs in $dbsList
 <option value="$dbs">$dbs</option>
 #end for
@@ -102,14 +103,22 @@ to
 
 <tr>
 <td>
-<input type="checkbox" name="all_blocks" id="all_blocks" onchange="Disable2EnableTag('blockName');"/>
-check to migrate all blocks OR specify block name below
+<input type="checkbox" name="blocks" id="blocks" value="All" onchange="Disable2EnableTag('block');"/>
+check to migrate all blocks OR specify block id's below
 </td>
 </tr>
 
 <tr>
 <td>
-$blkForm
+###$blkForm
+<select multiple="multiple" name="block" id="block" size="5">
+#for blk in $blkList
+#set path,blkId=$blk.split('#')
+<option value="$blk">$blkId</option>
+#end for
+</select>
+
+
 </td>
 </tr>
 

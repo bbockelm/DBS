@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dbs-admin-request>
+#for key in $kwargs.keys()
+#if $key.lower().find("submit")==-1
+<$key>
+  $kwargs[$key]
+</$key>
+#end if
+#end for
+</dbs-admin-request>
+
