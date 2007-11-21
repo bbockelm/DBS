@@ -1,9 +1,10 @@
 <!-- templateAdminDatasets.tmpl -->
-<h3>Migrate dataset</h3>
+<h3>$kwargs['title']</h3>
 <p>We captured your request, transformed it to 
 <a href="javascript:ShowTag('xml')">XML</a> 
 and it's ready to go, please verify and confirm it
 </p>
+#*
 <table class="dbs_table">
 #for key in $kwargs.keys()
 #if key.lower().find("submit")==-1:
@@ -11,6 +12,16 @@ and it's ready to go, please verify and confirm it
 #end if
 #end for
 </table>
+*#
+#for key in $kwargs.keys()
+#if $skipList.count($key.lower())
+  #continue
+#end if
+<b>$key:</b>
+<br/>
+<span class="offset_left">$kwargs[$key]</span>
+<br/>
+#end for
 
 <p>
 <div id="xml" class="hide">

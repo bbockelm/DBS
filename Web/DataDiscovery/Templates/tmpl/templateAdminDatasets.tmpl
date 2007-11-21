@@ -65,7 +65,9 @@ function ChangeTaskView() {
 <b>Migration tasks</b>
 </p>
 ###<form src="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet?api=updateFileStatus&lfn=aLFName&status=INVALID">
-<form action="adminMigration" method="get">
+<form action="adminTask" method="get">
+<input type="hidden" name="title" value="Migrate dataset" />
+<input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value="$userMode" />
 <input type="hidden" name="dataset" value="$dataset" />
 
@@ -103,7 +105,7 @@ to
 
 <tr>
 <td>
-<input type="checkbox" name="blocks" id="blocks" value="All" onchange="Disable2EnableTag('block');"/>
+<input type="checkbox" name"block" value="All" onchange="Disable2EnableTag('block');"/>
 check to migrate all blocks OR specify block id's below
 </td>
 </tr>
@@ -136,18 +138,6 @@ check to migrate all blocks OR specify block id's below
 ### end of Migration form
 </td>
 </tr>
-
-#*
-#set taskList=["changeDataset","changeBlock","changeLFN"]
-<script type="text/javascript">
-function ChangeAdminTaskView() {
-#for task in $taskList
-  HideTag('$task');
-#end for
-  ShowTag(GetValueFromSelect("adminTask"));
-}
-</script>
-*#
 
 <tr>
 <td>
@@ -218,8 +208,11 @@ function D2E43_adminTasks(tag1,tag2,tag3) {
 }
 </script>
 
-<form action="adminAdmin" method="get">
+<form action="adminTask" method="get">
+<input type="hidden" name="title" value="Dataset/Block(s) admin task" />
+<input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
+<input type="hidden" name="dataset" value="$dataset" />
 <b>Dataset/Block(s) administration</b>
 
 <table>
@@ -228,7 +221,7 @@ function D2E43_adminTasks(tag1,tag2,tag3) {
 <tr>
 <td>
 
-<input type="radio" name="adminTask" checked="checked" onChange="javascript:D2E_adminTasks('datasets_Status','blocks_Status')"/>
+<input type="radio" checked="checked" onChange="javascript:D2E_adminTasks('dataset_Status','block_Status')"/>
 
 </td>
 <td>
@@ -236,7 +229,7 @@ Change dataset status
 </td>
 
 <td>
-<select name="datasets_Status" id="datasets_Status" style="width:200px">
+<select name="dataset_Status" id="dataset_Status" style="width:200px">
 <option value="Valid">Valid</option>
 <option value="Invalid">Invalid</option>
 <option value="Imported">Imported</option>
@@ -253,7 +246,7 @@ Change dataset status
 <!-- new row -->
 <tr valign="top">
 <td>
-<input type="radio" name="adminTask" onChange="javascript:D2E_adminTasks('blocks_Status','datasets_Status')" />
+<input type="radio" onChange="javascript:D2E_adminTasks('block_Status','dataset_Status')" />
 </td>
 
 <td>
@@ -261,13 +254,13 @@ Change block(s) status
 </td>
 
 <td>
-<select name="blocks_Status" id="blocks_Status" style="width:200px" disabled="disabled">
+<select name="block_Status" id="block_Status" style="width:200px" disabled="disabled">
 <option value="Open">Open</option>
 <option value="Closed">Closed</option>
 </select>
 </td>
 <td>
-<select multiple="multiple" name="blocks" id="blocks" size="5" disabled="disabled">
+<select multiple="multiple" name="block" id="block" size="5" disabled="disabled">
 <option value="All" selected="selected">All</option>
 #for blk in $blkList
 #set path,blkId=$blk.split('#')
@@ -293,37 +286,6 @@ Change block(s) status
 ### LFN form
 <div class="hide" id="LFN">
 <b>LFN(s) administration</b>
-<p />
-Choose one or more block id's by selecting them:
-<form action="adminAdmin" method="post">
-<input type="hidden" name="userMode" value=$userMode />
-###<select multiple="multiple" name="blocks" id="blocks" size="5">
-<script type="text/javascript">
-function getLFNs(dbsInst) {
-   var blkList=document.getElementById('LFN_form_blocks');
-   var blk = getSelectedOption(blkList.options);
-   ajaxGetLFNs(dbsInst,blk);
-}
-</script>
-<select name="LFN_form_blocks" id="LFN_form_blocks" onchange="javascript:getLFNs('$dbsInst')"> 
-<option value="All">All blocks in dataset</option>
-#for blk in $blkList
-#set path,blkId=$blk.split('#')
-<option value="$blk">$blkId</option>
-###<option value="$blk" onclick="javascript:ajaxGetLFNs('$dbsInst','$blk')">$blkId</option>
-#end for
-</select>
-<p>
-Choose one or more LFNs to perform the operation:
-</p>
-<div id="blockLFNs" name="blockLFNs">
-<select multiple="multiple" name="blockLFNlist" id="blockLFNlist" style="width:1000px" size="10">
-<option value="All">
-All LFNs in a block
-</option>
-</select>
-</div>
-
 <table>
 <td>
 Change LFN(s) status
@@ -342,6 +304,47 @@ Change LFN(s) status
 </td>
 </tr>
 </table>
+
+###<p />
+###Choose one or more block id's by selecting them:
+<form action="adminTask" method="post">
+<input type="hidden" name="title" value="LFN administration" />
+<input type="hidden" name="dbsInst" value="$dbsInst" />
+<input type="hidden" name="userMode" value=$userMode />
+<input type="hidden" name="dataset" value="$dataset" />
+##<p />
+<input type="checkbox" name="lfn" value="All" onchange="Disable2EnableTag('lfn')" />select all LFNs in a datasets
+<p />
+or provide a match pattern, e.g like:SomePattern
+<p />
+<input type="text" name="lfn" id='lfn' size="80" value="like:" />
+<p />
+#*
+<script type="text/javascript">
+function getLFNs(dbsInst) {
+   var blkList=document.getElementById('LFN_form_blocks');
+   var blk = getSelectedOption(blkList.options);
+   ajaxGetLFNs(dbsInst,blk);
+}
+</script>
+<select name="LFN_form_blocks" id="LFN_form_blocks" onchange="javascript:getLFNs('$dbsInst')"> 
+<option value="All">All blocks in dataset</option>
+#for blk in $blkList
+#set path,blkId=$blk.split('#')
+<option value="$blk">$blkId</option>
+#end for
+</select>
+<p>
+Choose one or more LFNs to perform the operation:
+</p>
+<div id="blockLFNs" name="blockLFNs">
+<select multiple="multiple" name="blockLFNlist" id="blockLFNlist" style="width:1000px" size="10">
+<option value="All">
+All LFNs in a block
+</option>
+</select>
+</div>
+*#
 
 <input type="submit" name="Submit request" />
 </form>

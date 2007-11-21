@@ -1077,19 +1077,35 @@ class DDServer(DDLogger,Controller):
         return page
     adminDataset.exposed=True
 
-    def adminMigration(self,userMode,**kwargs):
+    def adminTask(self,dbsInst,userMode,dataset,**kwargs):
         page = self.genTopHTML(userMode=userMode)
-        input = str(templateXML(searchList=[{'kwargs':kwargs}]).respond())
+        # analyse input kwargs
+        # lookup for lfn and find out a list
+        if kwargs.has_key('lfn'):
+           lfnList=[]
+           if kwargs['lfn'].lower()=="all":
+              for item in self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,run=""):
+                  lfnList.append(item[0])
+           elif kwargs['lfn'].lower().find("like")!=-1:
+              print "\n\n#### found pattern ",kwargs['lfn']
+           else:
+              print "\n\n#### found lfn",kwargs['lfn']
+           kwargs['lfnList']={'lfn':lfnList}
+           del kwargs['lfn'] # delete lfn key-pair from our dictionary
+
+        skipList=['submit','title','submit request']
+        input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
-        nameSpace = {'kwargs':kwargs,'xmlOutput':xmlOutput,'userMode':userMode}
+        nameSpace = {'kwargs':kwargs,'skipList':skipList,'xmlOutput':xmlOutput,'userMode':userMode}
         t = templateAdminMigration(searchList=[nameSpace]).respond()
         page+= str(t)
         page+= self.genBottomHTML()
         return page
-    adminMigration.exposed=True
+    adminTask.exposed=True
         
     def sendAdminRequest(self,*args,**kwargs):
-        xml=str(templateXML(searchList=[{'kwargs':kwargs}]).respond())
+        skipList=['submit','title','submit request']
+        xml=str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         print "\n\nsendAdminRequest\n",xml
         page = self.genTopHTML(userMode='expert')
         page+="<h3>Your request has been send to DBS</h3>"
@@ -1099,14 +1115,6 @@ class DDServer(DDLogger,Controller):
         return page
     sendAdminRequest.exposed=True
 
-    def adminAdmin(self,userMode,**kwargs):
-        page = self.genTopHTML(userMode=userMode)
-        page+="Call adminAdmin with parameters %s"%str(kwargs)
-        page+="<p>Here I can either call DBS API with DbsAdminAPI, but I doubt that it can be run in background. Or I can invoke call to DBSServlet URL. For that I need to know list of parameters to pass</p>"
-        page+= self.genBottomHTML()
-        return page
-    adminAdmin.exposed=True
-        
     def showProcDatasets(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",primType="*",date="*",userMode='user'):
         """
            Get all processed datasets for given set of input parameters
