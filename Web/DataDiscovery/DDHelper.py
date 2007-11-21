@@ -1705,7 +1705,7 @@ MCDescription:      %s
       self.closeConnection(con)
       return content
 
-  def getLFNs(self,dbsInst,blockName,dataset,run="*"):
+  def getLFNs(self,dbsInst,blockName,dataset,run="*",lfn="*"):
       prim="*"
       tier="*"
       proc="*"
@@ -1758,6 +1758,8 @@ MCDescription:      %s
              sel.append_whereclause(self.col(tb,'Name')==blockName)
           if run and run!="*":
              sel.append_whereclause(self.col(tr,'RunNumber')==run)
+          if lfn and lfn!="*":
+             sel.append_whereclause(self.col(tf,'LogicalFileName').like(lfn))
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
           result = self.getSQLAlchemyResult(con,sel)
       except:

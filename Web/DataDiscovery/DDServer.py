@@ -1084,12 +1084,14 @@ class DDServer(DDLogger,Controller):
         if kwargs.has_key('lfn'):
            lfnList=[]
            if kwargs['lfn'].lower()=="all":
-              for item in self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,run=""):
-                  lfnList.append(item[0])
+              lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,run="")
            elif kwargs['lfn'].lower().find("like")!=-1:
-              print "\n\n#### found pattern ",kwargs['lfn']
+              lfn=kwargs['lfn'].split("like:")[1]
+              lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,lfn="%%%s%%"%lfn)
            else:
-              print "\n\n#### found lfn",kwargs['lfn']
+              lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,lfn=lfn)
+           for item in lfns:
+              lfnList.append(item[0])
            kwargs['lfnList']={'lfn':lfnList}
            del kwargs['lfn'] # delete lfn key-pair from our dictionary
 
