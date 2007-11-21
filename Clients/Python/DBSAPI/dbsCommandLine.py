@@ -30,22 +30,35 @@ from dbsApiException import *
 
 import threading
 import sys
+from TermUtilities import TerminalController
+from TermUtilities import ProgressBar
+
+import StringIO
+
 
 class printDot ( threading.Thread ):
        def __init__(self):  
           threading.Thread.__init__(self)
           self.doIt = 1
-          self.write = sys.stdout.write
+          #self.write = sys.stdout.write
+	  term=TerminalController()
+	  self.mypb = ProgressBar(term, "API Progress")
 
        def run ( self ):
           last = int(str(time.time()).split('.')[0])
+	  update=0.0
           while ( self.doIt != 0 ) :
             curr = int(str(time.time()).split('.')[0])
-            if curr > last+5 :
-               self.write("-")
+            if curr > last+1 :
+               update+=0.01
+               self.mypb.update(update, "working")
+	       last=int(str(time.time()).split('.')[0])	
             else: 
               continue
-            last =  int(str(time.time()).split('.')[0])
+       def mark_done(self):
+	  self.doIt = 0
+          self.mypb.update(1.0, "Done")
+	  self.mypb.clear()
 
 
 #############################################################################
@@ -55,8 +68,8 @@ class printDot ( threading.Thread ):
 #
 #############################################################################
 
-saved_help="out.log"
-
+#saved_help="out.log"
+saved_help= StringIO.StringIO()
 
 # help related funcs
 
@@ -121,7 +134,7 @@ def _help_algolist():
                 print "   Arguments:"
                 print "         -c lsa, or --command=listAlgorithms or --command=lsa"
                 print "         --algopattern=</ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash>"
-                print "                       supports glob serach"
+                print "                       supports glob search"
 		print "         --help, displays this message"    
                 print "   examples:"
                 print "         python dbsCommandLine.py -c lsa"
@@ -136,7 +149,7 @@ def _help_filelist():
                 print "                     --lfnpattern=<LogicalFileName_Pattern>  "
                 print "                                          supports glob patterns"
                 print "                     --path=<dataset path>"
-                print "                     --blockpattern=<Block_Name_Pattern> in the form /prim/proc/dt(n)#<GUID>, supports glob patterns"
+                print "                     --blockpattern=<Block_Name_Pattern> in the form /prim/proc/dt(n)#<GUID>, DOES NOT support glob patterns"
                 print "                     --report, if provided a report for each file is generated"
 		print "                     --help, displays this message"    
                 print "   examples:"
@@ -145,7 +158,7 @@ def _help_filelist():
                 print "         python dbsCommandLine.py -c lsf --lfnpattern=*root* --report (don't do that please !)"
                 print "         python dbsCommandLine.py -c lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
                 print "         python dbsCommandLine.py -c lsf --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
-                print "   Note: --path takes precedece over --blockpattern and --lfnpattern (if --path provided rest are ignored)"
+                print "   Note: --path takes precedence over --blockpattern and --lfnpattern (if --path provided rest are ignored)"
 
 def _help_selist():
                 print "List all Storage Elements known to this DBS"
@@ -175,17 +188,34 @@ def _help_blocklist():
                 print "         python dbsCommandLine.py -c lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154 --report"
                 print "         python dbsCommandLine.py -c lsb --blockpattern=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219#1134f4e5-addd-4a45-8d28-fd491d0e6154"
                 print "   Note: --path takes precedece over --blockpattern and --lfnpattern (if --path provided rest are ignored)"
-
+def _help_deletePDS():
+		print "Delete a Processed Dataset from DBS instance"
+		print "   Arguments:"
+		print "         -c --deletePDS or --command=deletePDS"
+		print "         required: "
+		print "                     --path=<dataset path>, DOES NOT supports glob patterns"
+		print "         optional: "
+		print "                    --help, displays this message"
+                print "   examples:"
+                print "         python dbsCommandLine.py -c --deletePDS --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
+		print ""
+		print ""
+		print "            This command WILL NOT work on DBS Global"
+		
 def _help_search():
                 print "Search the data known to this DBS, based on the criteria provided"
                 print "   Arguments:"
-                print "         -c search, or --command=search or --command=search"
+                print "         -c --search, or --command=--search or --command=search"
                 print "         optional: "
                 print "                     --path=<dataset path>, supports glob patterns"
                 print "                     --blockpattern=<Block_Name_Pattern> in the form /prim/proc/dt(n)#<GUID>, supports glob patterns"
                 print "                     --algopattern=</ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash>, supports glob patterns"
                 print "                     --sepattern=<Storage element name pattern> for glob search"
                 print "                     --report, if provided a report is generated"
+                print "                     --searchtype, User can specify a search type (only that type of data will be looked for)"
+                print "        					--searchtype=block,datasets,files"
+                print "        					--searchtype=block,files or any other combinition"
+		print "						 option DEFAULT=datasets"
 		print "                    --help, displays this message"    
                 print "   examples:"
                 print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
@@ -201,7 +231,8 @@ def redirected_print_help(self):
       
 # This function just dumps the generic help text on screen
 def print_help(self):
-       print open(saved_help, 'r').read()
+	print saved_help.getvalue()
+       #print open(saved_help, 'r').read()
 
 class DbsOptionParser(optparse.OptionParser):
   """
@@ -222,7 +253,7 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--pattern", action="store", type="string", dest="pattern", default="*",
            help="some commands scope could be restricted with pattern, e.g. listPrimaryDataset, supports shell glob for Primary Dataset Names, "+ \
-						"Use --doc or individual commands wth --help")
+						"Use --doc or individual commands with --help")
 
       self.add_option("--algopattern", action="store", type="string", dest="algopattern",
            help="Algorithms can be specified as algopattern /appname/appversion/appfamily/pset_hash, supports shell glob")
@@ -231,20 +262,23 @@ class DbsOptionParser(optparse.OptionParser):
            help="BlockName pattern for listBlocks and other calls in format /primary/tier/processed#guid, supports shell glob")
 
       self.add_option("--sepattern", action="store", type="string", dest="sepattern",
-           help="Storage Element Name pattern for glob serach")
+           help="Storage Element Name pattern for glob search")
 
       self.add_option("--lfnpattern", action="store", type="string", dest="lfnpattern",
-           help="Logical File Name pattern for glob serach")
+           help="Logical File Name pattern for glob search")
 
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
 
-      #self.add_option("--searchtype", action="store", type="string", default="datasets", dest="searchtype",
-      #     help="User can specify a general DBS serach type --searchtype=block,datasets,files (--searchtype=block,files or  any other combinition) " + \
-      # 										"works with other parameters"+ \
-      #										",  --algopattern, --sepattern, --blockpattern and --path= "+ \
-      #										"(path can represent a path pattern here /*primary*/*/* whatever)," + \
-      #										" DEFAULT=datasets")
+      self.add_option("--search", action="store_true", default=False, dest="search",
+           help="Performs a COMPREHENSIVE search on DBS, use 'dbs serach --help' or 'dbs --doc' for details")
+
+      self.add_option("--searchtype", action="store", type="string", default="datasets", dest="searchtype",
+           help="User can specify a search type --searchtype=block,datasets,files (--searchtype=block,files or  any other combinition) " + \
+      							"works with '--search' option DEFAULT=datasets")
+
+      self.add_option("--deletePDS", action="store", type="string", dest="DatasetPATH",
+           help="Deletes Processed Dataset from DBS instance and moves it to Recycle Bin")
 
       self.add_option("--doc", action="store_true", default=False, dest="doc",
            help="Generates a detailed documentation for reference, overrides all other cmdline options")
@@ -260,12 +294,12 @@ class DbsOptionParser(optparse.OptionParser):
       optparse.OptionParser.print_help=redirected_print_help
 
   def capture_help(self):
+
       saveout = sys.stdout
-      savehere = open(saved_help, 'w')
-      sys.stdout = savehere
+      sys.stdout = saved_help
       self.print_help()
       sys.stdout = saveout
-      savehere.close()
+      #saved_help.close()
 
   def doc(self):
       print_help(self) 
@@ -278,12 +312,6 @@ class DbsOptionParser(optparse.OptionParser):
       command_help += "\n           listTiers or lst, can provide --path"
       command_help += "\n           listBlocks or lsb, can provide --path and/or --blockpattern"
       command_help += "\n           listFiles or lsf, must provide --path"
-      #command_help += "\n           listFileParents or lsfp, must be qualified with --pattern"
-      #command_help += "\n           listFileAlgorithms or lsfa"
-      #command_help += "\n           listFileTiers or lsft"
-      #command_help += "\n           listFileBranches or lsfb"
-      #command_help += "\n           listFileLumis or lsfl"
-      #command_help += "\n           listStorageElements or lsse"
       command_help += "\n           listAnalysisDatasetDefinition or lsadef"
       command_help += "\n           listAnalysisDataset or lsads"
       command_help += "\n           search --searchtype=block,files,datasets"
@@ -396,9 +424,20 @@ class Report(dict):
 
 # API Call Wrapper
 class ApiDispatcher:
+
+
+  def printRED(self, msg):
+    print self.term.RED+msg+self.term.NORMAL
+
+  def printGREEN(self, msg):
+    print self.term.GREEN+msg+self.term.NORMAL
+
+  def printBLUE(self, msg):
+    print self.term.BLUE+msg+self.term.NORMAL
+
   def __init__(self, args):
    try:
-    #print args
+    self.term = TerminalController()
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
 
@@ -407,13 +446,13 @@ class ApiDispatcher:
         del(opts.__dict__['url']) 
 
     self.api = DbsApi(opts.__dict__)
-    print "\nUsing DBS instance at: %s\n" %self.optdict.get('url', self.api.url())
+    self.printGREEN( "\nUsing DBS instance at: %s\n" %self.optdict.get('url', self.api.url()))
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
 
     elif apiCall in ("", None):
-       print "No command specified, use --help for details" 
+       self.printRED ("No command specified, use --help for details")
        return
 
     #Execute the proper API call
@@ -446,26 +485,42 @@ class ApiDispatcher:
 
     elif apiCall in ('listAnalysisDataset', 'lsads'):
         self.handlelistANDCall()
+    elif apiCall in ('deletePDS', '--deletePDS'):
+	self.handledeleteProcDSCall()
 
     ##Search data
-    elif apiCall in ('search'):
+    elif apiCall in ('search', '--search') or self.optdict.get('search'):
 	self.handleSearchCall()
     else:
-       print "Unsupported API Call, please use --doc or --help"
+       self.printRED( "Unsupported API Call '%s', please use --doc or --help" %str(apiCall))
 
    except DbsApiException, ex:
-      print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+      self.printRED("Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
       if ex.getErrorCode() not in (None, ""):
-          print "DBS Exception Error Code: ", ex.getErrorCode()
+          self.printRED("DBS Exception Error Code: %s "% str(ex.getErrorCode()))
 
    except DbsException, ex:
-      print "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
+      self.printRED( "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
       if ex.getErrorCode() not in (None, ""):
-          print "DBS Exception Error Code: ", ex.getErrorCode()
+          self.printRED( "DBS Exception Error Code: %s " % str(ex.getErrorCode()))
 
    except Exception, ex:
-        print "Unknow Exception in user code:"
+        self.printRED ("Unknow Exception in user code:")
         traceback.print_exc(file=sys.stdout)
+
+  def handledeleteProcDSCall(self):
+        if self.optdict.has_key('want_help'):
+                _help_deletePDS()
+                return
+	path=self.optdict['path']
+	if path in ('', None):
+		self.printRED("You must provide --path= with this call")
+		return	
+	if path not in ('', '*', '/*/*/*') and path.find('*')==-1:
+		self.printRED( "deleting proc dataset %s and moving it into recycle bin." %str(path))
+		print self.api.deleteProcDS(path)
+	else:
+		self.printRED("Please specifiy dataset in correct PATH format, --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW")
 
 
   def handlelistANDSDefCall(self):
@@ -558,8 +613,13 @@ class ApiDispatcher:
         if len(algoparam):
                 paramDict.update(algoparam)
 
-        print "listing datasets, please wait...\n"
+        #dot = printDot()
+        #dot.start()
+
+        #print "listing datasets, please wait...\n"
         apiret = self.api.listProcessedDatasets(**paramDict)
+
+        #dot.mark_done()
 
         if len(apiret) < 1 :
 		print "No Datasets found"
@@ -640,14 +700,14 @@ class ApiDispatcher:
 		_help_algolist()
                 return
 
-        print "Retrieving list of Algorithm, Please wait..." 
+        self.printBLUE( "Retrieving list of Algorithm, Please wait..." )
         algoparam = self.getAlgoPattern()
         if len(algoparam):
              apiret = self.api.listAlgorithms(**algoparam)
         else:
           apiret = self.api.listAlgorithms()
 
-        print "\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n"  
+        self.printGREEN ("\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n" )
         for anObj in apiret:
 		print anObj
 		print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
@@ -656,7 +716,7 @@ class ApiDispatcher:
 				+ "/" + anObj['ApplicationVersion']  \
 					+"/"+ anObj['ApplicationFamily'] \
 						+ "/" + anObj['ParameterSetID']['Hash']
-        if (len(apiret) > 10): print "\nListed as:      /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n\n"  
+        if (len(apiret) > 10): self.printGREEN( "\nListed as:      /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n\n" )
         return
 
 
@@ -669,23 +729,20 @@ class ApiDispatcher:
        lfnpattern=self.optdict.get('lfnpattern') or ''
 
        if path == '' and blockpattern == '' and lfnpattern=='' :
-         print "Can not list ALL files of ALL datasets, please specify a dataset path using --path= and/or --blockpattern= and/or --lfnpattern"
+         self.printRED( "Can not list ALL files of ALL datasets, please specify a dataset path using --path= and/or --blockpattern= and/or --lfnpattern")
        else:
          #dot = printDot()
          #dot.start()
-         print "Making api call, this may take sometime depending upon size of dataset, please wait....\n"
-         apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern)
-         #dot.doIt = 0
-         #dot.stop()
-         
-	 if self.optdict.get('report') :
-            for anObj in apiret:
-		self.reportFile(anObj)
-         else:
-              for anObj in apiret:
-		#print anObj
-                print "          %s" %anObj['LogicalFileName']
-         print "Total files listed: %s" %len(apiret)
+         self.printBLUE( "Making api call, this may take sometime depending upon size of dataset, please wait....\n")
+         #dot.mark_done()
+	 apiret = self.api.listFiles(path=path, blockName=blockpattern, patternLFN=lfnpattern)
+         if self.optdict.get('report') :
+		for anObj in apiret:
+			self.reportFile(anObj)
+	 else:
+                for anObj in apiret:
+                	print "          %s" %anObj['LogicalFileName']
+         self.printBLUE( "Total files listed: %s" %len(apiret))
          return
 
   def reportFile(self, anObj):
@@ -693,6 +750,7 @@ class ApiDispatcher:
               report.addSummary("                 LogicalFileName: %s" %anObj['LogicalFileName'])
               report.addLine("                    File Details:")
               report.addLine("                         Status : %s"  %anObj['Status'])
+              report.addLine("                         Size : %s"  %anObj['FileSize'])
               report.addLine("                         NumberOfEvents : %s"  %anObj['NumberOfEvents'])
               report.addLine("                         Checksum : %s"  %anObj['Checksum'])
               report.addLine("                         FileType : %s"  %anObj['FileType'])
@@ -708,7 +766,7 @@ class ApiDispatcher:
 
        sepattern=self.optdict.get('sepattern') or '*'
        apiret = self.api.listStorageElements(sepattern)
-       print "Listing storage elements, please wait..." 
+       self.printBLUE( "Listing storage elements, please wait..." )
        for anObj in apiret:
            print anObj['Name']
        return
@@ -723,10 +781,10 @@ class ApiDispatcher:
        sepattern=self.optdict.get('sepattern') or ''
 
        if path in ['/*/*/*', ''] and blockpattern in ['*', ''] and sepattern in ['*', '']:
-         print "Can not list ALL Blocks of ALL datasets, specify a dataset path (--path=) and/or a block name (--blockpattern=) and/or storage element (--sepattern)"
+         self.printRED( "Can not list ALL Blocks of ALL datasets, specify a dataset path (--path=) and/or a block name (--blockpattern=) and/or storage element (--sepattern)")
 	 return
        else:
-         print "Listing block, please wait..." 
+         self.printBLUE( "Listing block, please wait..." )
          apiret = self.api.listBlocks(dataset=path, block_name=blockpattern, storage_element_name=sepattern)
          if self.optdict.get('report') :
             for anObj in apiret:
@@ -739,7 +797,7 @@ class ApiDispatcher:
   def reportBlock(self, anObj):
                 sumry  = "\n     Block Name %s " %anObj['Name']
                 sumry += "\n     Block Path %s" %anObj['Path']
-		sumry += "\nCreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+		sumry += "\n     CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
                 #sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
                 report = Report()
                 report.addSummary(sumry)
@@ -747,7 +805,7 @@ class ApiDispatcher:
                 report.addLine("           BlockSize: %s" %anObj['BlockSize'])
                 report.addLine("           NumberOfFiles: %s" %anObj['NumberOfFiles'])
                 report.addLine("           OpenForWriting: %s" % anObj['OpenForWriting'])
-                report.addLine("           Storage Elements in this Block:")
+                report.addLine("           This block available at:")
                 for aSE in anObj['StorageElementList']:
                         report['lines'].append("                           %s" %aSE['Name'])
                 #Print it
@@ -764,9 +822,15 @@ class ApiDispatcher:
        blockpattern = self.optdict.get('blockpattern') or ''
        sepattern = self.optdict.get('sepattern') or ''
        algopattern = self.optdict.get('algopattern') or ''
-       #searchtype = self.optdict.get('searchtype') or '' 
+       searchtype = self.optdict.get('searchtype') or '' 
        ###########print searching for 
-       #if path in ['/*/*/*', ''] and blockpattern in ['*', ''] and sepattern in ['*', ''] and algopattern = :
+
+       if pathpattern in ['/*/*/*', ''] and blockpattern in ['*', ''] \
+		and sepattern in ['*', ''] and algopattern in ['/*/*/*/*', '']:
+		self.printRED("You must provide some options with --search, Please look at 'dbs --search --help', or use 'dbs --doc'. \nCannot list EVERYTHING in DBS\n\n")
+		_help_search()
+		return
+
        #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
        # See if any path is provided
        paramDict={}
@@ -777,16 +841,15 @@ class ApiDispatcher:
        algoparam=self.getAlgoPattern() 
        if len(algoparam):
                 paramDict.update(algoparam)
-       print "listing data, please wait...\n"
+       self.printBLUE( "listing data, please wait...\n")
        procret = self.api.listProcessedDatasets(**paramDict)
 
        if len(procret) < 1 :
-                print "No Datasets found..?"
+                self.printRED( "No Datasets found..?")
                 return  
        #avoid duplication, wonder thats must not be possible anyways.
        datasetPaths=[]
        for anObj in procret:
-		"""
 		print "---------------------------------------------------------------------------------------------------------"
 		print "Dataset PrimaryDataset=%s, ProcessedDataset=%s" %(anObj['Name'], anObj['PrimaryDataset']['Name'])
 		print "---------------------------------------------------------------------------------------------------------"
@@ -797,20 +860,17 @@ class ApiDispatcher:
                                 + "/" + anAlgo['ApplicationVersion']  \
                                         +"/"+ anAlgo['ApplicationFamily'] \
                                                 + "/" + anAlgo['ParameterSetID']['Hash']
-                """
 		for aPath in anObj['PathList']:
                       if aPath not in datasetPaths:
                          datasetPaths.append(aPath)
                          print "Dataset Path: %s " %aPath
-                continue  
-		"""       
                          # List the Blocks next
                          blockret = self.api.listBlocks(dataset=aPath, block_name=blockpattern, storage_element_name=sepattern)
 			 for aBlk in blockret:
          			if self.optdict.get('report') :
                 			self.reportBlock(aBlk)
          			else :
-                    			print "        Block:  %s" %anObj['Name']
+                    			print "        Block:  %s" %aBlk['Name']
 				#Lets list files for this Block
 				filesret = self.api.listFiles(blockName=aBlk['Name'])
 				print "              Files: "
@@ -819,20 +879,18 @@ class ApiDispatcher:
 						self.reportFile(aFile)
 					else: 
 						print "                    %s" %aFile['LogicalFileName']
-	        """
        return
 				
 #
 # main
 #
 if __name__ == "__main__":
-
+  
   opts = {}
   args = []
   try:
     optManager  = DbsOptionParser()
     (opts,args) = optManager.getOpt()
-
     #if opts.__dict__.get('doc'):
     #	print optManager.doc()
     #	sys.exit(0)
