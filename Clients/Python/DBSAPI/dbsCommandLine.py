@@ -34,7 +34,7 @@ from TermUtilities import TerminalController
 from TermUtilities import ProgressBar
 
 import StringIO
-
+import signal, os
 
 class printDot ( threading.Thread ):
        def __init__(self):  
@@ -60,13 +60,43 @@ class printDot ( threading.Thread ):
           self.mypb.update(1.0, "Done")
 	  self.mypb.clear()
 
-
+class showProgress( threading.Thread ):
+	def __init__(self):
+		threading.Thread.__init__(self)
+		self.doIt = 1
+	def run ( self ):
+		sys.stdout.write('Processing ... ')
+		chars = ('|', '/', '-', '\\')
+		while (self.doIt):
+		    	for char in chars:	
+				sys.stdout.write(char+'\b')
+				sys.stdout.flush()
+				time.sleep(0.1)
+	def stop(self):
+		if self.doIt == 1: print ""
+		self.doIt = 0
+	
 #############################################################################
 ##Default URL for the Service
 #
 # If NO URL is provided, URL from dbs.config will be used
 #
 #############################################################################
+
+
+def command_list():
+      command_help = "IMAGINE the possibilities:"
+      command_help = "\nSome possible commands are:"
+      command_help += "\n           listProcessedDatasets or lsd, can provide --path"
+      command_help += "\n           listAlgorithms or lsa, can provide --path"
+      command_help += "\n           listFiles or lsf, must provide --path"
+      command_help += "\n           listAnalysisDatasetDefinition or lsadef"
+      command_help += "\n           listAnalysisDataset or lsads"
+      command_help += "\n           search or --search\n"
+      command_help += "\n EXAMPLE: python dbsCommandLine.py -c lsd --path=/*/*/RAW" 
+      command_help += "\n Note: most commands can print greater details with --report"
+      command_help += "\n Please use --doc for details"
+      return command_help
 
 #saved_help="out.log"
 saved_help= StringIO.StringIO()
@@ -212,11 +242,7 @@ def _help_search():
                 print "                     --algopattern=</ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash>, supports glob patterns"
                 print "                     --sepattern=<Storage element name pattern> for glob search"
                 print "                     --report, if provided a report is generated"
-                print "                     --searchtype, User can specify a search type (only that type of data will be looked for)"
-                print "        					--searchtype=block,datasets,files"
-                print "        					--searchtype=block,files or any other combinition"
-		print "						 option DEFAULT=datasets"
-		print "                    --help, displays this message"    
+		print "                     --help, displays this message"    
                 print "   examples:"
                 print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/CMSSW_1_2_0-RAW-Run-00006219/RAW"
                 print "         python dbsCommandLine.py -c search --path=/TAC-TIBTOB-120-DAQ-EDM/*/RAW --report"
@@ -232,6 +258,9 @@ def redirected_print_help(self):
 # This function just dumps the generic help text on screen
 def print_help(self):
 	print saved_help.getvalue()
+	term=TerminalController()
+        print term.BLUE+command_list()+term.NORMAL
+
        #print open(saved_help, 'r').read()
 
 class DbsOptionParser(optparse.OptionParser):
@@ -240,7 +269,7 @@ class DbsOptionParser(optparse.OptionParser):
   """
 
   def __init__(self):
-      optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.1", conflict_handler="resolve")
+      optparse.OptionParser.__init__(self, usage="%prog --help or %prog --command [options]", version="%prog 1.0.9", conflict_handler="resolve")
 
       self.add_option("--url",action="store", type="string", dest="url", default="BADURL",
            help="specify URL, e.g. --url=http://cmssrv17.fnal.gov:8989/DBS/servlet/DBSServlet, If no url is provided default url from dbs.config is attempted")
@@ -269,16 +298,6 @@ class DbsOptionParser(optparse.OptionParser):
 
       self.add_option("--report", action="store_true", default=False, dest="report",
            help="If you add this option with some listCommands the output is generated in a detailed report format")
-
-      self.add_option("--search", action="store_true", default=False, dest="search",
-           help="Performs a COMPREHENSIVE search on DBS, use 'dbs serach --help' or 'dbs --doc' for details")
-
-      self.add_option("--searchtype", action="store", type="string", default="datasets", dest="searchtype",
-           help="User can specify a search type --searchtype=block,datasets,files (--searchtype=block,files or  any other combinition) " + \
-      							"works with '--search' option DEFAULT=datasets")
-
-      self.add_option("--deletePDS", action="store", type="string", dest="DatasetPATH",
-           help="Deletes Processed Dataset from DBS instance and moves it to Recycle Bin")
 
       self.add_option("--doc", action="store_true", default=False, dest="doc",
            help="Generates a detailed documentation for reference, overrides all other cmdline options")
@@ -435,9 +454,13 @@ class ApiDispatcher:
   def printBLUE(self, msg):
     print self.term.BLUE+msg+self.term.NORMAL
 
+  def makeTIME(self, intime):
+    return time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(intime)))
+
   def __init__(self, args):
    try:
     self.term = TerminalController()
+    self.progress=showProgress()
     self.optdict=args.__dict__
     apiCall = self.optdict.get('command', '')
 
@@ -446,11 +469,13 @@ class ApiDispatcher:
         del(opts.__dict__['url']) 
 
     self.api = DbsApi(opts.__dict__)
-    self.printGREEN( "\nUsing DBS instance at: %s\n" %self.optdict.get('url', self.api.url()))
+    self.printGREEN( "Using DBS instance at: %s" %self.optdict.get('url', self.api.url()))
     if apiCall in ('', 'notspecified') and self.optdict.has_key('want_help'):
 	print_help(self)
 	return
-
+    elif apiCall in ("--version", "version", "-ver", "--ver"):
+	print "DBS API Version: %s" %self.api.getApiVersion()
+	return 
     elif apiCall in ("", None):
        self.printRED ("No command specified, use --help for details")
        return
@@ -495,18 +520,26 @@ class ApiDispatcher:
        self.printRED( "Unsupported API Call '%s', please use --doc or --help" %str(apiCall))
 
    except DbsApiException, ex:
+      self.progress.stop()
       self.printRED("Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
       if ex.getErrorCode() not in (None, ""):
           self.printRED("DBS Exception Error Code: %s "% str(ex.getErrorCode()))
 
    except DbsException, ex:
+      self.progress.stop()
       self.printRED( "Caught DBS Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() ))
       if ex.getErrorCode() not in (None, ""):
           self.printRED( "DBS Exception Error Code: %s " % str(ex.getErrorCode()))
 
    except Exception, ex:
+        self.progress.stop()
         self.printRED ("Unknow Exception in user code:")
         traceback.print_exc(file=sys.stdout)
+
+   except KeyboardInterrupt:
+        self.progress.stop()
+        print "Interrupted."
+        sys.exit(1)
 
   def handledeleteProcDSCall(self):
         if self.optdict.has_key('want_help'):
@@ -539,7 +572,7 @@ class ApiDispatcher:
   def reportAnDSDef(self, anObj):
 	print "\n  Analysis Dataset Definition: %s" %anObj['Name']
 	print "      Dataset Path: %s" %str(anObj['ProcessedDatasetPath'])
-	print "         CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+	print "         CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
 	print "         CreatedBy: %s" %anObj['CreatedBy']
 	print "         Runs Included: %s" % str(anObj['RunsList'])
 	print "         RunRanges Included: %s" % str(anObj['RunRangeList'])
@@ -555,7 +588,6 @@ class ApiDispatcher:
                                 + "/" + algo[0]  \
                                         +"/"+ algo[1] \
                                                 + "/" + algo[3]
-
 	return	
 	         
   def handlelistANDCall(self):
@@ -571,7 +603,7 @@ class ApiDispatcher:
 
   def reportAnDS(self, anObj):
         print "\n\nAnalysis Dataset: %s" %anObj['Name']
-        print "         CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+        print "         CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
         print "         CreatedBy: %s" %anObj['CreatedBy']
         #Lets print the definition too.
         self.reportAnDSDef(anObj['Definition'])
@@ -586,8 +618,8 @@ class ApiDispatcher:
           apiret = self.api.listPrimaryDatasets("*")
        	for anObj in apiret:
         	print anObj['Name']
-		#print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
-                #print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['LastModificationDate'])))
+		#print "CreationDate: %s" %self.makeTIME(anObj['CreationDate'])
+                #print "LastModificationDate: %s" % self.makeTIME(anObj['LastModificationDate'])
 
         return
 
@@ -616,8 +648,10 @@ class ApiDispatcher:
         #dot = printDot()
         #dot.start()
 
-        #print "listing datasets, please wait...\n"
+        print "Listing datasets, please wait..."
+	self.progress.start()
         apiret = self.api.listProcessedDatasets(**paramDict)
+	self.progress.stop()
 
         #dot.mark_done()
 
@@ -627,19 +661,23 @@ class ApiDispatcher:
 
 	    if self.optdict.get('report'):	
 		self.reportProcessedDatasets(anObj)
-            else:
-                  for aPath in anObj['PathList']:
-                      if aPath not in datasetPaths:
-                         #datasetPaths.append(aPath)
-                         #Print on screen as well
-                         print aPath
+            else:  
+		  path_list = anObj['PathList']
+		  if len(path_list) == 0: 
+			pass
+		  	#print anObj['Name'] +" No Blocks Found ?? "
+		  else:	
+                  	for aPath in anObj['PathList']:
+                      		if aPath not in datasetPaths:
+                         		datasetPaths.append(aPath)
+                         		#Print on screen as well
+                         		print aPath
         return
 
   def reportProcessedDatasets(self, anObj):
 		sumry  = "\n\n\nProcessed Dataset %s " %anObj['Name']
-		sumry += "\nCreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
-		#sumry += "\nCreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
-		#sumry += "\nLastModificationDate: %s" % str(time.ctime(long(anObj['LastModificationDate'])))
+		sumry += "\nCreationDate: %s" % self.makeTIME(anObj['CreationDate'])
+		#sumry += "\nLastModificationDate: %s" % self.makeTIME(anObj['LastModificationDate'])
 		
         	report = Report()
 		report.addSummary(sumry)
@@ -710,8 +748,8 @@ class ApiDispatcher:
         self.printGREEN ("\nListed as:     /ExecutableName/ApplicationVersion/ApplicationFamily/PSet-Hash\n" )
         for anObj in apiret:
 		print anObj
-		print "CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
-		print "LastModificationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
+		print "CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
+		print "LastModificationDate: %s" % self.makeTIME(anObj['CreationDate'])
                 print "       /"+ anObj['ExecutableName'] \
 				+ "/" + anObj['ApplicationVersion']  \
 					+"/"+ anObj['ApplicationFamily'] \
@@ -797,8 +835,7 @@ class ApiDispatcher:
   def reportBlock(self, anObj):
                 sumry  = "\n     Block Name %s " %anObj['Name']
                 sumry += "\n     Block Path %s" %anObj['Path']
-		sumry += "\n     CreationDate: %s" % time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(long(anObj['CreationDate'])))
-                #sumry += "\n     CreationDate: %s" % str(time.ctime(long(anObj['CreationDate'])))
+		sumry += "\n     CreationDate: %s" % self.makeTIME(anObj['CreationDate'])
                 report = Report()
                 report.addSummary(sumry)
                 report.addLine("     Block Details:")
@@ -822,8 +859,6 @@ class ApiDispatcher:
        blockpattern = self.optdict.get('blockpattern') or ''
        sepattern = self.optdict.get('sepattern') or ''
        algopattern = self.optdict.get('algopattern') or ''
-       searchtype = self.optdict.get('searchtype') or '' 
-       ###########print searching for 
 
        if pathpattern in ['/*/*/*', ''] and blockpattern in ['*', ''] \
 		and sepattern in ['*', ''] and algopattern in ['/*/*/*/*', '']:
@@ -864,7 +899,7 @@ class ApiDispatcher:
                       if aPath not in datasetPaths:
                          datasetPaths.append(aPath)
                          print "Dataset Path: %s " %aPath
-                         # List the Blocks next
+                         self.printGREEN("Listing the Blocks next..")
                          blockret = self.api.listBlocks(dataset=aPath, block_name=blockpattern, storage_element_name=sepattern)
 			 for aBlk in blockret:
          			if self.optdict.get('report') :
@@ -880,7 +915,6 @@ class ApiDispatcher:
 					else: 
 						print "                    %s" %aFile['LogicalFileName']
        return
-				
 #
 # main
 #
