@@ -1,7 +1,7 @@
 /**
  * 
- $Revision: 1.36 $"
- $Id: DBSServlet.java,v 1.36 2007/11/15 21:02:25 sekhri Exp $"
+ $Revision: 1.37 $"
+ $Id: DBSServlet.java,v 1.37 2007/11/16 21:29:32 sekhri Exp $"
 
  */
 package dbs;
@@ -29,68 +29,57 @@ import db.DBManagement;
 * @author sekhri
 */
 public class DBSServlet extends HttpServlet{
+	public void init(ServletConfig config) throws ServletException {
+    		try {
+       			super.init(config);
+       			ServletContext context = getServletContext();
+       			//context.log("DBS Servlet Initializing..");
+			System.out.println("DBS Servlet INIT is CALLED");
+       			//FIXME: WE must checks the Schema version here
+			//Verify why can't we make DBSApi object here ??\
+	                //Lets get serever parameters here
+			//supportedSchemaVersion = config.getInitParameter("SupportedSchemaVersion");
+			//supportedClientVersions = config.getInitParameter("SupportedClientVersions");
 
-        public void init(ServletConfig config) throws ServletException {
-            try {
-                 super.init(config);
-                 ServletContext context = getServletContext();
-                 //context.log("DBS Servlet Initializing..");
-                 System.out.println("DBS Servlet INIT is CALLED");
+			//System.out.println("supportedSchemaVersion: "+supportedSchemaVersion);
+			//System.out.println("supportedClientVersions: "+supportedClientVersions);
 
-                 //FIXME: WE must checks the Schema version here
-                 //Verify why can't we make DBSApi object here ??
-                 //Lets get serever parameters here
-                 //supportedSchemaVersion = config.getInitParameter("SupportedSchemaVersion");
-                 //supportedClientVersions = config.getInitParameter("SupportedClientVersions");
-
-                 //System.out.println("supportedSchemaVersion: "+supportedSchemaVersion);
-                 //System.out.println("supportedClientVersions: "+supportedClientVersions);
-
-                 String configFilePath = context.getRealPath("META-INF/context.xml");
-                 System.out.println("configFilePath : "+configFilePath);
-
-                 System.out.println("SEREVER INFO: "+context.getServerInfo() );
-                 //Instatiate the DBSConfig to it gets parameters from Servlet instead of $DBS_SERVER_CONFIG
-                 //DBSConfig dbsconfig = DBSConfig.getInstance(supportedSchemaVersion, supportedClientVersions);
-		 System.out.println("---------------------------------------------------------------");
-                 System.out.println("DBS reading configuration file");
-                 DBSConfig dbsconfig = DBSConfig.getInstance(configFilePath);
-                 System.out.println("DBS configuration file read successfully");
-		 System.out.println("---------------------------------------------------------------\n");
-                 System.out.println("DBS making database connection");
-		 Connection conn = DBManagement.getDBConnManInstance().getConnection();
-		 try {
-	 		 if (conn != null) {
-        	         	System.out.println("DBS database connection made successfully");
-			 	System.out.println("---------------------------------------------------------------\n");
-	                 	System.out.println("DBS loading data into cache");
-				DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
-                	 	System.out.println("DBS loaded data into cache successfully ");
-		 		System.out.println("---------------------------------------------------------------\n");
-			 } else {
-				  throw new ServletException(new Exception("Database connection could not be established"));
-			 }
-		 } finally {
-			 if (conn != null)  {
-				 conn.clearWarnings();
-				 conn.close();
-			 }
-		 }
-       	
-                 System.out.println("DBS READY");
-
-            } catch(Exception e) {
-                        throw new ServletException(e);
-            }
-        }
-
-        private String supportedSchemaVersion;
-        private String supportedClientVersions;
-
+			String configFilePath = context.getRealPath("META-INF/context.xml");
+       			System.out.println("configFilePath : "+configFilePath);
+       			System.out.println("SEREVER INFO: "+context.getServerInfo() );
+       			System.out.println("---------------------------------------------------------------");
+       			System.out.println("DBS reading configuration file");
+       			DBSConfig dbsconfig = DBSConfig.getInstance(configFilePath);
+       			System.out.println("DBS configuration file read successfully");
+       			System.out.println("---------------------------------------------------------------\n");
+       			System.out.println("DBS making database connection");
+       			Connection conn = DBManagement.getDBConnManInstance().getConnection();
+       			try {
+       				if (conn != null) {
+					System.out.println("DBS database connection made successfully");
+					System.out.println("---------------------------------------------------------------\n");
+					System.out.println("DBS loading data into cache");
+					DBSDataCache cache = DBSDataCache.getDBSDataCacheInstance(conn);
+					System.out.println("DBS loaded data into cache successfully ");
+					System.out.println("---------------------------------------------------------------\n");
+       				} else {
+      					throw new ServletException(new Exception("Database connection could not be established"));
+       				}
+       			} finally {
+       				if (conn != null)  {
+       					conn.clearWarnings();
+       					conn.close();
+       				}
+	       		}
+			System.out.println("DBS READY");
+    		} catch(Exception e) {
+			throw new ServletException(e);
+    		}
+	}
+	private String supportedSchemaVersion;
+	private String supportedClientVersions;
 
 	
-         //We must have a better way of responding in XML    ANZAR
-         //following is interim solution
 	 
 	/**
 	 * a method that takes the servlet request and packs all the parameters passed in the request into a <code>java.util.Hashtable</code> and then calls the <code>dbs.api.DBSApi</code> object that handles all the client requests. It also makes a <code>java.util.Hashtable</code> that contains user information. Eventually this user infomation will come from the security context established between the client and the server. The tomcat contaier provides api to retrive the user DN from this context. This table is aslo passed to the DBSApi that uses it for bookekeeping purposes.
@@ -105,13 +94,15 @@ public class DBSServlet extends HttpServlet{
 			Hashtable userDN = new Hashtable();
 			String dn = (String)request.getAttribute("org.globus.gsi.authorized.user.dn");
 			
+			/*
+			 * If the DN is not set properly then look for DN in the http header sent by the client. If still DN is not found then set the dn to web-client
+			 */
 			if (dn == null) {
 	                        dn = request.getHeader("UserID");
 				if (dn == null) {
 					dn = "web-client";
 				}
-				DBSUtil.writeLog("NO DN, using UserID: "+dn+" from HTTP header");
-	                        //System.out.println("UserID: "+dn);
+				DBSUtil.writeLog("NO DN, using UserID: " + dn + " from HTTP header");
 			}
 			DBSUtil.writeLog("DN of the user is " + dn);
 			userDN.put("user_dn", dn);

@@ -7,7 +7,7 @@ xmlns:a4j="http://richfaces.org/a4j"
 xmlns:rich="http://richfaces.org/rich"><body>
 
 <f:view>
-	<jsp:include page="menu.jsp"/>
+	<ui:include src="menu.jsp"/>
 	<h:form id="form1">
 		<rich:tabPanel id="blockStatusPanel">
 			<rich:tab label="Block Status">

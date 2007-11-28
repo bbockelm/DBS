@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.10 $"
- $Id: DBSUtil.java,v 1.10 2007/10/05 19:16:21 sekhri Exp $"
+ $Revision: 1.11 $"
+ $Id: DBSUtil.java,v 1.11 2007/11/15 21:02:31 sekhri Exp $"
  *
 */
 
@@ -107,17 +107,15 @@ public class DBSUtil {
 	 * a static method that write logText to stdout if the <code>DBSConstants.DEBUG</code> is set to be true. If <code>DBSConstants.DEBUG</code> is false then it does not write logText to stdout. This method is needed when the server is run in debug mode. In production mode  <code>DBSConstants.DEBUG</code> will be set to true and logText will not get printed on stdout.
 	 * @param logText a <code>java.lang.String</code> that is written on stdout depending upon the <code>DBSConstants.DEBUG</code> flag.
 	 */
-        public static void writeLog(String logText) {
-                if (DBSConstants.DEBUG) {
-                          System.out.println(logText);
-                }
-        }
-	
-        public static void writeErrorLog(String logText) {
-                if (DBSConstants.ERROR) {
-                          System.err.println(logText);
-                }
-        }
+	public static void writeLog(String logText) {
+		if (DBSConstants.DEBUG) System.out.println(logText);
+	}
+	public static void writeErrorLog(String logText) {
+		if (DBSConstants.ERROR) System.err.println(logText);
+	}
+	public static void writeCacheLog(String logText) {
+		if (DBSConstants.DEBUGCACHE) System.out.println(logText);
+	}
 
 	public static int getNumberOfRows(ResultSet rs) throws SQLException {
 		/*int count = 0;

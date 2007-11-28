@@ -19,6 +19,30 @@ import dbs.util.DBSConfig;
 import dbs.util.DBSUtil;
 import dbs.sql.DBSSql;
 
+/**
+* A class that maintains a cache of hastables in memory. This cache is loaded in the memory at the servlet startup time. The following tables are cached
+* Person (DN)<br>
+* Algorithm Config (family,psethash, version, exe) <br>
+* ProcessedDataset (Path in format /primary/processed) <br>
+* DataTier (TierName) <br>
+* FileStatus (Status) <br>
+* FileValidStatus (Status) <br>
+* FileType (Type) <br>
+*
+* More can be easily added . <br>
+*
+*
+* There is a constant defined in DBSConstant.java file called USECACHE. If set to true it uses the cache before looking in the database. If set to false it bypass the cache and goes to the database directly. <br>
+*
+* The cache is synchronized using read write locks. Many readers can read at the same time but only one write can write at a time. When a new writer comes, it wait for all the readers to finish. Any new readers requesting access will be given low priority than the waiting writer. After all the readers finishes, the writes locks the cache and at that time readers wait to get access. So this way writer does not wait forever and readers can read simultaneously. Notice that for each table described above a separate read write locks are used. This way if any thread is writing to algoconfig, it has no affect on other tables (Person, FileTyep etc) . They can still be accessed. <br>
+*
+* When an entry is accessed , it is first looked into the local cache of the thread. This cache has the lifetime of the thread itself that is when the API finishes. Very few entries, on the need basis, goes into this local cache. If this local cache have the entry , it is returned <br>
+* If the local cache does not have the entry, then the global cache is queried. <br>
+* If the global cache has the entry then that entry is written into the local cache and returned <br>
+* If the global cache does not have the entry, then it is reloaded from the database <br>
+*
+* This way the most frequently used entries within the API are accessed via the local cache. <br>
+*/
 public class DBSDataCache {
 	private ReadWriteLock globalPersonLock = new ReentrantReadWriteLock();
 	private Lock readPersonLock = globalPersonLock.readLock();
@@ -86,6 +110,11 @@ public class DBSDataCache {
 		return instance;
 	}*/
 
+	/**
+	 * Since this cache is a static singleton there is no public constructor and the only way one can make a abject of this cache is via this method
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable .
+	 */
 	public static DBSDataCache getDBSDataCacheInstance(Connection conn) throws Exception {
 		if( instance != null) return instance;
 		synchronized(mutex) {
@@ -136,14 +165,20 @@ public class DBSDataCache {
 		return id;
 	}
 	
+	/**
+	 * Gets a id of a user from the Cache in a sycnronized way. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param userDN The user DN in  <code>java.lang.String</code> format.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid or  the database connection is unavailable.
+	 */
 	public String getUserID(Connection conn, String userDN) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String id = readUserIDSycnronized(conn, userDN);
 		if (isNull(id)) { 
 			refreshPersons(conn);
-			System.out.println("CACHE-MIS getUserID " + userDN + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getUserID " + userDN + " .. Reloading ..");
 			return readUserIDSycnronized(conn, userDN);
-		} else 	System.out.println("CACHE-HIT getUserID " + userDN);
+		} else 	writeCacheLog("CACHE-HIT getUserID " + userDN);
 		return id;
 	}
 
@@ -157,7 +192,7 @@ public class DBSDataCache {
 				ps = DBSSql.listPersons(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) persons.put(get(rs, "DN") ,  get(rs, "ID"));
-				//System.out.println("DN " + get(rs, "DN") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("DN " + get(rs, "DN") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -171,7 +206,7 @@ public class DBSDataCache {
 	//----------------------------------------------------------------------------------------------------------------------------
 	// Processed dataset cache
 
-	public String readProcessedDSIDSycnronized(Connection conn, String pathToQuery) throws Exception {
+	private String readProcessedDSIDSycnronized(Connection conn, String pathToQuery) throws Exception {
 		String id = "";
 		readProcDSLock.lock();
 		try { 
@@ -182,17 +217,22 @@ public class DBSDataCache {
 		return id;
 	}
 
-
+	/**
+	 * Gets a processed data set ID from the Cache in a sycnronized way. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param path a dataset path in the format of /primary/tier/processed. 
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable.
+	 */
 	public String getProcessedDSID(Connection conn, String path) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String[] data = path.split("/");
 		String pathToQuery = "/" + data[1] + "/" + data[2];
 		String id = readProcessedDSIDSycnronized(conn, pathToQuery);
 		if (isNull(id)) { 
-			System.out.println("CACHE-MIS getProcessedDSID " + pathToQuery + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getProcessedDSID " + pathToQuery + " .. Reloading ..");
 			refreshProcDSs(conn);
 			return readProcessedDSIDSycnronized(conn, pathToQuery);
-		} else 	System.out.println("CACHE-HIT getProcessedDSID " + pathToQuery);
+		} else 	writeCacheLog("CACHE-HIT getProcessedDSID " + pathToQuery);
 		return id;
 
 	}
@@ -207,7 +247,7 @@ public class DBSDataCache {
 				ps = DBSSql.listProcessedDatasets(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) procDSs.put("/" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") ,  get(rs, "ID"));
-				//System.out.println("Path /" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("Path /" + get(rs, "PRIMARY_DATATSET_NAME") + "/" +  get(rs, "PROCESSED_DATATSET_NAME") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -221,7 +261,7 @@ public class DBSDataCache {
 	//----------------------------------------------------------------------------------------------------------------------------
 	// Algorithm cache
 	
-	public String readAlgorithmIDSycnronized(Connection conn, String algoToQuery) throws Exception {
+	private String readAlgorithmIDSycnronized(Connection conn, String algoToQuery) throws Exception {
 		String id = "";
 		readAlgoLock.lock(); 
 		try { 
@@ -232,15 +272,25 @@ public class DBSDataCache {
 		return id;
 	}
 	
+
+	/**
+	 * Gets a algorithm id from the from the Cache in a sycnronized way using the application version, application family, application executable and parameter set name. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param ver the name of the application version whose algorithm configuration id needs to be fetched.
+	 * @param fam the name of the application family whose algorithm configuration id needs to be fetched.
+	 * @param exe the name of the application executable whose algorithm configuration id needs to be fetched.
+	 * @param psHash the hash of the parameter set whose algorithm configuration id needs to be fetched.
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable.
+	 */
 	public String getAlgorithmID(Connection conn, String ver, String fam, String exe, String psHash) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String algoToQuery = "/" + ver + "/" + fam + "/" + exe + "/" + psHash;
 		String id = readAlgorithmIDSycnronized(conn, algoToQuery);
 		if (isNull(id)) { 
-			System.out.println("CACHE-MIS getAlgorithmID " + algoToQuery + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getAlgorithmID " + algoToQuery + " .. Reloading ..");
 			refreshAlgos(conn);
 			return readAlgorithmIDSycnronized(conn, algoToQuery);
-		} else 	System.out.println("CACHE-HIT getAlgorithmID " + algoToQuery);
+		} else 	writeCacheLog("CACHE-HIT getAlgorithmID " + algoToQuery);
 		return id;
 
 	}
@@ -256,7 +306,7 @@ public class DBSDataCache {
 				ps = DBSSql.listAlgorithms(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) algos.put("/" + get(rs, "APP_VERSION") + "/" +  get(rs, "APP_FAMILY_NAME") + "/" +  get(rs, "APP_EXECUTABLE_NAME") + "/" + get(rs, "PS_HASH") ,  get(rs, "ID"));
-				//System.out.println("Algorithm /" +  get(rs, "APP_VERSION") + "/" +  get(rs, "APP_FAMILY_NAME") + "/" +  get(rs, "APP_EXECUTABLE_NAME") + "/" + get(rs, "PS_HASH") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("Algorithm /" +  get(rs, "APP_VERSION") + "/" +  get(rs, "APP_FAMILY_NAME") + "/" +  get(rs, "APP_EXECUTABLE_NAME") + "/" + get(rs, "PS_HASH") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -270,7 +320,7 @@ public class DBSDataCache {
 	// Tier cache
 	
 	
-	public String readTierIDSycnronized(Connection conn, String name) throws Exception {
+	private String readTierIDSycnronized(Connection conn, String name) throws Exception {
 		String id = "";
 		readTierLock.lock();
 		try { 
@@ -282,14 +332,20 @@ public class DBSDataCache {
 
 	}
 	
+	/**
+	 * Gets a data tier set ID from the Cache in a sycnronized way. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param name a data tier name in <code>java.lang.String</code> format. 
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable.
+	 */
 	public String getTierID(Connection conn, String name) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String id = readTierIDSycnronized(conn, name);
 		if (isNull(id)) { 
-			System.out.println("CACHE-MIS getTierID " + name + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getTierID " + name + " .. Reloading ..");
 			refreshTiers(conn);
 			return readTierIDSycnronized(conn, name);
-		} else 	System.out.println("CACHE-HIT getTierID " + name);
+		} else 	writeCacheLog("CACHE-HIT getTierID " + name);
 		return id;
 	}
 
@@ -303,7 +359,7 @@ public class DBSDataCache {
 				ps = DBSSql.listTiers(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) tiers.put(get(rs, "NAME") ,  get(rs, "ID"));
-				//System.out.println("DN " + get(rs, "DN") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("DN " + get(rs, "DN") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -318,7 +374,7 @@ public class DBSDataCache {
 	// File Status cache
 	
 	
-	public String readFileStatusIDSycnronized(Connection conn, String status) throws Exception {
+	private String readFileStatusIDSycnronized(Connection conn, String status) throws Exception {
 		String id = "";
 		readFileStatusLock.lock();
 		try { 
@@ -330,14 +386,21 @@ public class DBSDataCache {
 
 	}
 	
+
+	/**
+	 * Gets a file status ID from the Cache in a sycnronized way. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param status a file status name in <code>java.lang.String</code> format. 
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable.
+	 */
 	public String getFileStatusID(Connection conn, String status) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String id = readFileStatusIDSycnronized(conn, status);
 		if (isNull(id)) { 
-			System.out.println("CACHE-MIS getFileStatusID " + status + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getFileStatusID " + status + " .. Reloading ..");
 			refreshFileStatus(conn);
 			return readFileStatusIDSycnronized(conn, status);
-		} else 	System.out.println("CACHE-HIT getFileStatusID " + status);
+		} else 	writeCacheLog("CACHE-HIT getFileStatusID " + status);
 		return id;
 	}
 
@@ -351,7 +414,7 @@ public class DBSDataCache {
 				ps = DBSSql.listFileStatus(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) fileStatus.put(get(rs, "STATUS") ,  get(rs, "ID"));
-				//System.out.println("DN " + get(rs, "STATUS") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("DN " + get(rs, "STATUS") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -365,7 +428,7 @@ public class DBSDataCache {
 	// File Type cache
 	
 	
-	public String readFileTypeIDSycnronized(Connection conn, String type) throws Exception {
+	private String readFileTypeIDSycnronized(Connection conn, String type) throws Exception {
 		String id = "";
 		readFileTypeLock.lock();
 		try { 
@@ -377,14 +440,21 @@ public class DBSDataCache {
 
 	}
 	
+
+	/**
+	 * Gets a file type ID from the Cache in a sycnronized way. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param type a file type name in <code>java.lang.String</code> format. 
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable.
+	 */
 	public String getFileTypeID(Connection conn, String type) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String id = readFileTypeIDSycnronized(conn, type);
 		if (isNull(id)) { 
-			System.out.println("CACHE-MIS getFileTypeID " + type + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getFileTypeID " + type + " .. Reloading ..");
 			refreshFileTypes(conn);
 			return readFileTypeIDSycnronized(conn, type);
-		} else 	System.out.println("CACHE-HIT getFileTypeID " + type);
+		} else 	writeCacheLog("CACHE-HIT getFileTypeID " + type);
 		return id;
 	}
 
@@ -398,7 +468,7 @@ public class DBSDataCache {
 				ps = DBSSql.listFileTypes(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) fileTypes.put(get(rs, "TYPE") ,  get(rs, "ID"));
-				//System.out.println("DN " + get(rs, "TYPE") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("DN " + get(rs, "TYPE") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -413,7 +483,7 @@ public class DBSDataCache {
 	// File ValStatus cache
 	
 	
-	public String readFileValStatusIDSycnronized(Connection conn, String status) throws Exception {
+	private String readFileValStatusIDSycnronized(Connection conn, String status) throws Exception {
 		String id = "";
 		readFileValStatusLock.lock();
 		try { 
@@ -425,14 +495,21 @@ public class DBSDataCache {
 
 	}
 	
+
+	/**
+	 * Gets a file validation status ID from the Cache in a sycnronized way. If the ID is not found in the cache, then the cache is reloaded from the database.
+	 * @param conn a database connection <code>java.sql.Connection</code> object created externally.
+	 * @param status a file validation status name in <code>java.lang.String</code> format. 
+	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the database connection is unavailable.
+	 */
 	public String getFileValStatusID(Connection conn, String status) throws Exception {
-		if (!DBSConstants.USECACHE) {System.out.println("CACHE-DISABLED"); return "";}
+		if (!DBSConstants.USECACHE) {writeCacheLog("CACHE-DISABLED"); return "";}
 		String id = readFileValStatusIDSycnronized(conn, status);
 		if (isNull(id)) { 
-			System.out.println("CACHE-MIS getFileValStatusID " + status + " .. Reloading ..");
+			writeCacheLog("CACHE-MIS getFileValStatusID " + status + " .. Reloading ..");
 			refreshFileValStatus(conn);
 			return readFileValStatusIDSycnronized(conn, status);
-		} else 	System.out.println("CACHE-HIT getFileValStatusID " + status);
+		} else 	writeCacheLog("CACHE-HIT getFileValStatusID " + status);
 		return id;
 	}
 
@@ -446,7 +523,7 @@ public class DBSDataCache {
 				ps = DBSSql.listFileValStatus(conn);
 				rs =  ps.executeQuery();
 				while(rs.next()) fileValStatus.put(get(rs, "STATUS") ,  get(rs, "ID"));
-				//System.out.println("DN " + get(rs, "STATUS") + "  ID " + get(rs, "ID"));
+				//writeCacheLog("DN " + get(rs, "STATUS") + "  ID " + get(rs, "ID"));
 			} finally { 
 				if (rs != null) rs.close();
 				if (ps != null) ps.close();
@@ -488,7 +565,9 @@ public class DBSDataCache {
 		return DBSUtil.isNull(pattern);
 	}
 	
-
+	private void writeCacheLog(String log) {
+		DBSUtil.writeCacheLog(log);
+	}
 		
 
 	public static void main (String args[]) {
