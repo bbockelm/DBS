@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 #
+# Revision: 1.3 $"
+# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
 #
-
 import os, re, string, xml.sax, xml.sax.handler, sys
 from xml.sax.saxutils import escape
 from cStringIO import StringIO

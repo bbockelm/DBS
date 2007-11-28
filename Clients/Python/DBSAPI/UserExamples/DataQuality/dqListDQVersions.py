@@ -1,3 +1,7 @@
+#
+# Revision: 1.3 $"
+# Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
+#
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsOptions import DbsOptionParser

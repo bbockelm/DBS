@@ -4,11 +4,6 @@
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
 #
-# Unit tests for the DBS CGI implementation.
-#
-#   Mind that examples here are more elaborate and can be compacted
-
-
 import sys
 import random
 from DBSAPI.dbsApi import DbsApi
@@ -26,7 +21,9 @@ api = DbsApi(opts.__dict__)
 
 
 block = DbsFileBlock (
-         Name="/test_primary_001/TestProcessedDS001/GEN-SIM#12345"
+        #Name="/Wmunu/CMSSW_1_6_0-CSA07-2479/RAW#dd92dc6f-7538-4bde-9168-0a47922d83af"
+        Name="/Wmunu/CMSSW_1_6_0-HLT-1191261655/GEN-SIM-DIGI-RECO#0c8376b7-3467-48e5-ace1-31f53492d6c1"
+
          )
 
 print "Closing block %s" % block
