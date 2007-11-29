@@ -1,6 +1,6 @@
 /**
- $Revision: 1.72 $"
- $Id: DBSApiFileLogic.java,v 1.72 2007/11/16 21:29:36 sekhri Exp $"
+ $Revision: 1.73 $"
+ $Id: DBSApiFileLogic.java,v 1.73 2007/11/16 22:20:35 sekhri Exp $"
  *
  */
 
@@ -633,6 +633,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
         public void insertFiles(Connection conn, Writer out, String path, String primary, 
 							String proc, Hashtable block, Vector files, Hashtable dbsUser, boolean ignoreParent) throws Exception { 
 
+
 		//The presedence order is Block, then Path, then (Primary, Process Dataset)
 
                 String blockName = DBSUtil.get(block, "block_name");
@@ -870,136 +871,137 @@ public class DBSApiFileLogic extends DBSApiLogic {
 					if (ps != null) ps.close();
 				}
 
-			} else {
-				//Write waring message that file exists already
-				writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
-			}
+				//if(isNull(fileID)) fileID = getFileID(conn, lfn);
+				//Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
+				//FileID is needed if any of the other table information is provided i.e the vector size is > 0
+				if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0) 
+					if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
+					//fileID = getFileID(conn, lfn, true);
 
-			//if(isNull(fileID)) fileID = getFileID(conn, lfn);
-			//Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
-			//FileID is needed if any of the other table information is provided i.e the vector size is > 0
-			if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0) 
-				if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
-				//fileID = getFileID(conn, lfn, true);
+				//Insert FileAlgo table by fetching application ID. 
+				//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
+				for (int j = 0; j < algoVector.size(); ++j) {
+					Hashtable hashTable = (Hashtable)algoVector.get(j);
+					String psHash = get(hashTable, "ps_hash", false);
+					if (isNull (psHash) ) psHash =  "NO_PSET_HASH";
 
-			//Insert FileAlgo table by fetching application ID. 
-			//Use get with 2 params so that it does not do type checking, since it will be done in getID call.
-			for (int j = 0; j < algoVector.size(); ++j) {
-				Hashtable hashTable = (Hashtable)algoVector.get(j);
-				String psHash = get(hashTable, "ps_hash", false);
-				if (isNull (psHash) ) psHash =  "NO_PSET_HASH";
-
-				insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
-						fileID, 
-						(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"), 
-								get(hashTable, "app_family_name"), 
-								get(hashTable, "app_executable_name"),
-								psHash,
-							       	true), 
-						cbUserID, lmbUserID, creationDate);
-			}
-
-			//Insert FileTier table by fetching data tier ID
-			for (int j = 0; j < tierVector.size(); ++j) {
-				insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
-					fileID, 
-					//getID(conn, "DataTier", "Name", 
-					//	get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
-					//	true), 
-					getTierID(conn,  
-						get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
-						true), 
-	
-					cbUserID, lmbUserID, creationDate);
-			}
-			
-			//Insert FileParentage table by fetching parent File ID
-			if(!ignoreParent)
-				for (int j = 0; j < parentVector.size(); ++j) {
-					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+					insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm", 
 							fileID, 
-							getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
+							(new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"), 
+									get(hashTable, "app_family_name"), 
+									get(hashTable, "app_executable_name"),
+									psHash,
+								       	true), 
+							cbUserID, lmbUserID, creationDate, false);
+				}
+
+				//Insert FileTier table by fetching data tier ID
+				for (int j = 0; j < tierVector.size(); ++j) {
+					insertMap(conn, out,	"FileTier", "Fileid", "DataTier", 
+						fileID, 
+						//getID(conn, "DataTier", "Name", 
+						//	get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
+						//	true), 
+						getTierID(conn,  
+							get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
+							true), 
+		
+						cbUserID, lmbUserID, creationDate, false);
+				}
+				
+				//Insert FileParentage table by fetching parent File ID
+				if(!ignoreParent)
+					for (int j = 0; j < parentVector.size(); ++j) {
+						insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+								fileID, 
+								getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
+								cbUserID, lmbUserID, creationDate, false);
+					}	
+
+				//Insert FileParentage for all the child of give by the client. Used during Merge operation
+				for (int j = 0; j < childVector.size(); ++j) {
+					insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
+							getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true),
+							fileID, 
+							cbUserID, lmbUserID, creationDate, false);
+				}
+
+				//TODO Discussion about Lumi section is needed
+				//Insert FileLumi table by first inserting and then fetching Lumi Section ID
+				for (int j = 0; j < lumiVector.size(); ++j) {
+					Hashtable hashTable = (Hashtable)lumiVector.get(j);
+
+					//No need to add a LumiSection, User will never provide lumisection TO be added at this stage
+					//All Lumi Scetions will already be in DBS (SV#28264). Anzar Afaq (08/20/2007)
+
+					//Only when User provides a lumi section, MAP it
+					//There can be cases when NO lumi Section number is give (Run only)
+					String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
+					String lsNumber = get(hashTable, "lumi_section_number", false);
+					if ( !isNull(lsNumber) ) {
+						String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
+					 	if( isNull(lumiID)) {
+							insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+						}	
+
+						insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
+							fileID, 
+							getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true), 
+							runID,
+							cbUserID, lmbUserID, creationDate, false);
+					}
+					//Just add Run-Fileid map
+					else {
+						insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
+							fileID, 
+                                        	        runID,
+							cbUserID, lmbUserID, creationDate, false);
+					}
+					// Insert ProcDS-Run Map, if its already not there	
+					insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+                        	        		procDSID, runID,
 							cbUserID, lmbUserID, creationDate);
 				}
 
-			//Insert FileParentage for all the child of give by the client. Used during Merge operation
-			for (int j = 0; j < childVector.size(); ++j) {
-				insertMap(conn, out, "FileParentage", "ThisFile", "itsParent", 
-						getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true),
-						fileID, 
-						cbUserID, lmbUserID, creationDate);
-			}
-
-			//TODO Discussion about Lumi section is needed
-			//Insert FileLumi table by first inserting and then fetching Lumi Section ID
-			for (int j = 0; j < lumiVector.size(); ++j) {
-				Hashtable hashTable = (Hashtable)lumiVector.get(j);
-
-				//No need to add a LumiSection, User will never provide lumisection TO be added at this stage
-				//All Lumi Scetions will already be in DBS (SV#28264). Anzar Afaq (08/20/2007)
-
-				//Only when User provides a lumi section, MAP it
-				//There can be cases when NO lumi Section number is give (Run only)
-				String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
-				String lsNumber = get(hashTable, "lumi_section_number", false);
-				if ( !isNull(lsNumber) ) {
-					String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
-				 	if( isNull(lumiID)) {
-						insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-					}
-
-					insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
-						fileID, 
-						getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true), 
-						runID,
-						cbUserID, lmbUserID, creationDate);
-				}
-				//Just add Run-Fileid map
-				else {
-					insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
-						fileID, 
-                                                runID,
-						cbUserID, lmbUserID, creationDate);
-				}
-				// Insert ProcDS-Run Map, if its already not there	
-				insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
-                                		procDSID, runID,
-						cbUserID, lmbUserID, creationDate);
-			}
-
 
 			
-			//Insert Branch and then FileBranch (Map)
-			//for (int j = 0; j < branchVector.size(); ++j) {
-			//	//insert Branch, if not already there
-			//	String branchName = get((Hashtable)branchVector.get(j), "name");
-			//	insertName(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
-			//	//insert File-Branch Map now.
-			//	insertMap(conn, out,  "FileBranch", "Fileid", "Branch",
-			//			fileID,
-			//			getID(conn, "Branch", "Name", branchName, true),
-			//			cbUserID, lmbUserID, creationDate);
-			//}
+				//Insert Branch and then FileBranch (Map)
+				//for (int j = 0; j < branchVector.size(); ++j) {
+				//	//insert Branch, if not already there
+				//	String branchName = get((Hashtable)branchVector.get(j), "name");
+				//	insertName(conn, out, "Branch", "Name", branchName, cbUserID, lmbUserID, creationDate);
+				//	//insert File-Branch Map now.
+				//	insertMap(conn, out,  "FileBranch", "Fileid", "Branch",
+				//			fileID,
+				//			getID(conn, "Branch", "Name", branchName, true),
+				//			cbUserID, lmbUserID, creationDate);
+				//}
 
-			//Insert Trigger tags (if present)
-                        for (int j = 0; j < trigTagVector.size(); ++j) {
-				Hashtable hashTable = (Hashtable)trigTagVector.get(j);
-                                //insert File-Trigger-Tag Map now.
-                                insertMap(conn, out,  "FileTriggerTag", "Fileid", "TriggerTag", "NumberOfEvents",
-                                                fileID,
-						get(hashTable, "trigger_tag"),
-						get(hashTable, "number_of_events"),
-                                                cbUserID, lmbUserID, creationDate);
+				//Insert Trigger tags (if present)
+                	        for (int j = 0; j < trigTagVector.size(); ++j) {
+					Hashtable hashTable = (Hashtable)trigTagVector.get(j);
+                                	//insert File-Trigger-Tag Map now.
+	                                insertMap(conn, out,  "FileTriggerTag", "Fileid", "TriggerTag", "NumberOfEvents",
+        	                                        fileID,
+							get(hashTable, "trigger_tag"),
+							get(hashTable, "number_of_events"),
+                                	                cbUserID, lmbUserID, creationDate, false);
+	                        }
+
+			        //Insert the file association	
+				String fileAssoc = get(file, "file_assoc", false);
+				if (! isNull(fileAssoc)) {
+					insertMap(conn, out, "FileAssoc", "ThisFile", "ItsAssoc", 
+								fileID, 
+								getID(conn, "Files", "LogicalFileName", fileAssoc, true),				
+                                                		cbUserID, lmbUserID, creationDate, false);
+				}
+
+
+                        } else {
+                                //Write waring message that file exists already
+                                writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
                         }
-
-		        //Insert the file association	
-			String fileAssoc = get(file, "file_assoc", false);
-			if (! isNull(fileAssoc)) {
-				insertMap(conn, out, "FileAssoc", "ThisFile", "ItsAssoc", 
-							fileID, 
-							getID(conn, "Files", "LogicalFileName", fileAssoc, true),				
-                                                	cbUserID, lmbUserID, creationDate);
-			}
 
 
 			if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes

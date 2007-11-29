@@ -1,6 +1,6 @@
 /**
- $Revision: 1.109 $"
- $Id: DBSApiLogic.java,v 1.109 2007/11/16 21:29:36 sekhri Exp $"
+ $Revision: 1.110 $"
+ $Id: DBSApiLogic.java,v 1.110 2007/11/16 22:20:35 sekhri Exp $"
  *
  */
 
@@ -498,7 +498,19 @@ public class DBSApiLogic {
 	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 */
 	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		if( isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
+		insertMap(conn, out, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate, true);
+	}
+
+	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String value1, String value2, String cbUserID, String lmbUserID, String creationDate, boolean check) throws Exception {
+		boolean goForward = true;
+		if(check) {
+			if( !isNull(getMapID(conn, tableName, key1, key2, value1, value2, false)) ) {
+				writeWarning(out, "Already Exists", "1020", "Table " + tableName + 
+						" " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " Already Exists");
+				goForward = false;
+			}	
+		}
+		if(goForward) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertMap(conn, tableName, key1, key2, value1, value2, cbUserID, lmbUserID, creationDate);
@@ -506,11 +518,11 @@ public class DBSApiLogic {
 			} finally {
 				if (ps != null) ps.close();
 			}
-		} else {
-			writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2 + " with values " + value1 + " " + value2 + " Already Exists");
-		}	
-
+		}
 	}
+
+
+
 
 	/**
 	 * This is a generic method that can delete entry from any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it exist, it goes ahead and performs the delete.
@@ -569,20 +581,37 @@ public class DBSApiLogic {
 	 * @param lmbUserID a user id of the person who is updating this new row into this given database table. The user id correspond to the Person table id in database. This is used to insert the bookkeeping information with each row in the database. This is to know which user did the insert at the first place.
 	 * @param creationDate a user provided date that will be inserted along with the row. If this date is not provided, then the system date is used instead.
 	 */
-	protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String key3, String value1, String value2, String value3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		if( isNull(getMapID(conn, tableName, key1, key2, key3, value1, value2, value3, false)) ) {
-			PreparedStatement ps = null;
-			try {
-				ps = DBSSql.insertMap(conn, tableName, key1, key2, key3, value1, value2, value3, cbUserID, lmbUserID, creationDate);
-				ps.execute();
-			} finally {
-				if (ps != null) ps.close();
-			}
-		} else {
-			writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2 +  " " + key3 + " with values " + value1 + " " + value2 +  " " + value3 + " Already Exists");
-		}	
 
+
+
+        protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String key3, String value1, String value2, String value3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		insertMap(conn, out, tableName, key1, key2, key3, value1, value2, value3, cbUserID, lmbUserID, creationDate, true);
 	}
+
+        protected void insertMap(Connection conn, Writer out, String tableName, String key1, String key2, String key3, String value1, String value2, String value3, String cbUserID, String lmbUserID, String creationDate, boolean check) throws Exception {
+		boolean goForward = true;
+		if(check) {
+	                if( !isNull(getMapID(conn, tableName, key1, key2, key3, value1, value2, value3, false)) ) {
+                        	writeWarning(out, "Already Exists", "1020", "Table " + tableName + " " + key1 + " " + key2 
+					+  " " + key3 + " with values " + value1 + " " + value2 +  " " + value3 + " Already Exists");
+				goForward = false;
+                	}
+		}
+		if (goForward) {
+                        PreparedStatement ps = null;
+                        try {
+                                ps = DBSSql.insertMap(conn, tableName, key1, key2, key3, value1, 
+							value2, value3, cbUserID, lmbUserID, creationDate);
+                                ps.execute();
+                        } finally {
+                                if (ps != null) ps.close();
+                        }
+		}
+        }
+
+
+
+
 
 	/**
 	 * Insert a physics group whose parameters. This method inserts entry into just one PhysicsGroup table. The the main query that it executes to insert in PhysicsGroup table, get generated by <code>dbs.DBSSql.insertPhysicsGroup</code> method.<br> 
