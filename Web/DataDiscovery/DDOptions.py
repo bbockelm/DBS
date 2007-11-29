@@ -30,6 +30,8 @@ class DDOptionParser:
          help="perform profiling of the code")
     self.parser.add_option("--iface",action="store", type="string", default=False, dest="iface",
          help="specify server name, e.g. cgi or JavaServer")
+    self.parser.add_option("--ssl",action="store_true", default=False, dest="ssl",
+         help="run data discovery in secure mode, you must define DD_CRT/DD_PEM environments for host certificate and private keys respectively")
 
     # options specific to DDHelper
     if  service=="DDHelper":

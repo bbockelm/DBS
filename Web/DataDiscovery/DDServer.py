@@ -39,6 +39,12 @@ except:
     print "WARNING! Cannot load DDTables, your persistent history will be turned off"
     pass
 
+# support for SSL
+try:
+    import OpenSSL
+except:
+    pass
+
 # webtools framework
 from Framework import Controller
 from Framework.PluginManager import DeclarePlugin
@@ -100,10 +106,11 @@ class DDServer(DDLogger,Controller):
             if context:
                context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 
                default=0, dest="verbose",help="specify verbosity level, 0-none, 1-info, 2-debug")
+               self.securityApi=SecurityDBApi(context)
             Controller.__init__ (self, context, __file__)
-            self.securityApi=SecurityDBApi(context)
         except:
-            printExcept()
+            if verbose:
+                printExcept()
             pass
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
@@ -148,8 +155,8 @@ class DDServer(DDLogger,Controller):
         except:
             self.hostname = 'localhost'
             pass
-        self.port       = 8001
-        for line in open('CherryServer.conf').readlines():
+        self.port       = 8003
+        for line in open('CherryServer3.conf').readlines():
             if string.find(line,'server.socketPort')!=-1:
                self.port=string.strip(string.split(string.replace(line,'\n',''),'=')[1])
                break
@@ -4191,6 +4198,7 @@ if __name__ == "__main__":
     (opts,args) = optManager.getOpt()
     context="" # we pass empty context here to be able to run in stand-alone mode
     dbsManager = DDServer(context,opts.verbose,opts.profile)
+    print "Using CherryPy:",cherrypy.__version__
     if opts.quiet:
        dbsManager.setQuiet()
     if  int(string.split(cherrypy.__version__,".")[0])==3:
@@ -4270,11 +4278,25 @@ if __name__ == "__main__":
                                'tools.response_headers.headers':httpHeader
                               },
                }
+        if opts.ssl:
+           try:
+               cherrypy.config.update({'server.ssl_certificate': '%s'%os.environ['DD_CRT'],
+                                       'server.ssl_private_key': '%s'%os.environ['DD_PEM']})
+               print "+++ Run in secure mode"
+           except:
+               printExcept()
+               pass
     else:
         cherrypy.root = dbsManager
         cherrypy.config.update(file="CherryServer.conf")
         cherrypy.config.update({'global': {'static_filter.root' : os.getcwd() }})
 
+    if opts.verbose:
+        print "CherryPy config:"
+        if  int(string.split(cherrypy.__version__,".")[0])==3:
+            print cherrypy.config
+        else:
+            print cherrypy.config.__dict__
     if opts.profile:
        import hotshot                   # Python profiler
        import hotshot.stats             # profiler statistics
