@@ -1,6 +1,6 @@
 /**
- $Revision: 1.50 $"
- $Id: DBSApiProcDSLogic.java,v 1.50 2007/11/15 21:02:27 sekhri Exp $"
+ $Revision: 1.51 $"
+ $Id: DBSApiProcDSLogic.java,v 1.51 2007/11/16 21:29:36 sekhri Exp $"
  *
  */
 
@@ -681,7 +681,7 @@ public class DBSApiProcDSLogic extends DBSApiLogic {
 						false,
 						clientVersion);
 			}
-			if(!blockPresent) throw new DBSException("Unavailable data", "3008", "No such dataset path : " + path + " in the Recycle Bin" );
+			if(!blockPresent) throw new DBSException("Unavailable data", "1046", "No such dataset path : " + path + " in the Recycle Bin" );
 			//Delete the actual dataset from Recycle Bin
 			deleteName(conn, out, "RecycleBin", "Path", path);
 

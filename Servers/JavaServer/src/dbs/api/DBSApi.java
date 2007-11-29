@@ -1,6 +1,6 @@
 /**
- $Revision: 1.112 $"
- $Id: DBSApi.java,v 1.112 2007/11/15 21:02:27 sekhri Exp $"
+ $Revision: 1.113 $"
+ $Id: DBSApi.java,v 1.113 2007/11/16 21:29:36 sekhri Exp $"
  *
 */
 
@@ -150,16 +150,6 @@ public class DBSApi {
 	       return suppSchemaVer;
 	}
 
-        //This func must move to Utility
-        private boolean isIn(String param, Enumeration e) {
-                while (e.hasMoreElements()) {
-                        if( param.equals((String)e.nextElement()) ) {
-                                return true;
-                        }
-                }
-                return false;
-        }
-
 	private String checkSchemaVersion() throws Exception {
 		Connection conn =  getConnection();
 		String dbsSchemaVersion="";
@@ -195,7 +185,7 @@ public class DBSApi {
                     msg += " "+(String)e.nextElement();
                 }
 
-                if ( ! isIn(apiversion, verEnum ) ) {
+                if ( ! DBSUtil.isIn(apiversion, verEnum ) ) {
                         throw new DBSException("BAD Api Version", "1003",  msg);
                         //return;
                 }
@@ -239,7 +229,6 @@ public class DBSApi {
 	 * @throws Exception All the exceptions that are thrown by the underlying layesr are caught and written down in the output stream that goes back to the client in proper XML format. Only an un expected exception may be raised in this method when trying to wirte to the output stream, which may not propogate back to the client.
 
 
-	RETURNS 0 on Success, 1 on Failure
 	 */
 	public void call(Writer out, Hashtable table, Hashtable dbsUser) throws Exception {
          
