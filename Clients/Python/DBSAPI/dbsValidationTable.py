@@ -226,13 +226,25 @@ ValidationTable = {
 
 }
 
-# To generate the doc uncomment these lines
-"""
-for aTable in ValidationTable:
-    print "\n      ", aTable, ":"
-    for aKey in ValidationTable[aTable].keys():
-        print "           ", aKey, ":" #, ValidationTable[aTable][aKey]["Comment"]
-        print "                      ", ValidationTable[aTable][aKey]["Comment"]
+if __name__ == "__main__":
+
+	# To generate the doc uncomment these lines
+	header="""*DBS Client Data Structures, used by DBS API*
+
+<hr>
+%TOC{title="Contents:"}%
+<hr>
+
+---++ Previous Version(s)
+
+[[CDS_DBS_1_0_1][Client data structures for DBS_1_0_1]]"""
+	print header
+	for aTable in ValidationTable:
+    		print "\n---++ !%s " %aTable
+		print "<verbatim>"
+    		for aKey in ValidationTable[aTable].keys():
+        		print "           ", aKey, ":" , ValidationTable[aTable][aKey]["Comment"]
+        		#print "                      ", ValidationTable[aTable][aKey]["Comment"]
+		print "</verbatim>"
  
-"""      
 
