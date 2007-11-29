@@ -43,6 +43,12 @@ except:
 from Framework import Controller
 from Framework.PluginManager import DeclarePlugin
 
+from Tools.SecurityModuleCore import encryptCookie, decryptCookie
+from Tools.SecurityModuleCore import SecurityDBApi
+from Tools.SecurityModuleCore.SecurityDBApi import SecurityDBApi
+from Framework import Context
+from Framework.Logger import Logger
+
 from Tools.SecurityModuleCore import SecurityToken, RedirectToLocalPage, RedirectAway, RedirectorToLogin
 from Tools.SecurityModuleCore import Group, Role, NotAuthenticated, FetchFromArgs
 from Tools.SecurityModuleCore import is_authorized, is_authenticated, has_site
@@ -89,24 +95,23 @@ class DDServer(DDLogger,Controller):
         DDLogger.__init__(self,self.ddConfig.loggerDir(),"DDServer",verbose)
         setSQLAlchemyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
         setCherryPyLogger(super(DDServer,self).getHandler(),super(DDServer,self).getLogLevel())
+        self.securityApi=""
         try:
             if context:
                context.OptionParser ().add_option("-v","--verbose",action="store",type="int", 
                default=0, dest="verbose",help="specify verbosity level, 0-none, 1-info, 2-debug")
             Controller.__init__ (self, context, __file__)
+            self.securityApi=SecurityDBApi(context)
         except:
+            printExcept()
             pass
 #        self.lucene = DDLucene(verbose)
         self.pServer= DDParamServer(server="edge.fnal.gov:8888",verbose=verbose)
 # ProdRequest URL https://cmsdoc.cern.ch/cms/test/aprom/DBS/prodrequest/ProdRequest/getHome
         self.prodRequestServer= DDParamServer(server="cmslcgco01.cern.ch:8030",verbose=verbose)
-#        self.phedexServer= DDParamServer(server="cmsdoc.cern.ch/cms/test/aprom/phedex/",verbose=verbose)
         self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
-#        self.phedexServer= DDParamServer(server="cmslcgco03.cern.ch",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
-#        self.mastheadUrl = "http://cmsdbs.cern.ch/WEBTOOLS/Common/masthead"
-#        self.footerUrl   = "http://cmsdbs.cern.ch/WEBTOOS/Common/footer"
         self.mastheadUrl = self.ddConfig.masthead()
         self.footerUrl   = self.ddConfig.mastfooter()
         self.site = ""
@@ -191,8 +196,10 @@ class DDServer(DDLogger,Controller):
         self.baseUrl = opts.baseUrl
 #        self.baseUrl = self.context.CmdLineArgs ().opts.baseUrl
         if self.baseUrl[-1]!="/": self.baseUrl+="/"
-        self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
-        self.footerUrl=self.baseUrl+"sitedb/Common/footer"
+#        self.mastheadUrl=self.baseUrl+"sitedb/Common/masthead"
+#        self.footerUrl=self.baseUrl+"sitedb/Common/footer"
+        self.mastheadUrl=self.baseUrl+"Common/masthead"
+        self.footerUrl=self.baseUrl+"Common/footer"
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
@@ -297,19 +304,6 @@ class DDServer(DDLogger,Controller):
         self.dbs = dbsInst
         self.helper.setDBSDLS(dbsInst)
 
-#    def htmlInit(self):
-#        """
-#           Initialize top/bottom common structures of HTML page and cache it.
-#           @type  self: class object
-#           @param self: none 
-#           @rtype : none 
-#           @return: none
-#        """
-#        if not self.topHTML:
-#           self.topHTML=self.genTopHTML()
-#        if not self.bottomHTML:
-#           self.bottomHTML=self.genBottomHTML()
-
     def genTopHTML(self,intro=False,userMode='user',onload=''):
         """
            Generates top structure of HTML page using Cheetah template.
@@ -410,52 +404,6 @@ class DDServer(DDLogger,Controller):
         self.sendErrorReport(msg+"\n"+getExcept())
         return str(t)
 
-#    def genVisiblePanel(self,view):
-#        """
-#           Generate code for Navigation Panel which is visible by default
-#           @type view: string
-#           @param view: specify view to be visible at front, e.g. keyword search
-#           @rtype: string
-#           @return: returns HTML code
-#        """
-#        try:
-#            nameSpace = {
-#                         'host'    : self.dbsdd,
-#                         'panel'   : self.genPanelHelper(), 
-#                         'view'    : view
-#                        }
-#            t = templateVisiblePanel(searchList=[nameSpace]).respond()
-#            page = str(t)
-#            return page
-#        except:
-#            t=self.errorReport("Fail in genVisiblePanel function")
-#            pass
-#            return str(t)
-#    genVisiblePanel.exposed=True
-
-#    def genHiddenPanel(self,view):
-#        """
-#           Generate code for Navigation Panel which is hidden by default
-#           @type view: string
-#           @param view: specify view to be visible at front, e.g. keyword search
-#           @rtype: string
-#           @return: returns HTML code
-#        """
-#        try:
-#            nameSpace = {
-#                         'host'    : self.dbsdd,
-#                         'panel'   : self.genPanelHelper(), 
-#                         'view'    : view
-#                        }
-#            t = templateHiddenPanel(searchList=[nameSpace]).respond()
-#            page = str(t)
-#            return page
-#        except:
-#            t=self.errorReport("Fail in genHiddenPanel function")
-#            pass
-#            return str(t)
-#    genHiddenPanel.exposed=True
-
     def glossary(self):
         """
            Generate DBS glossary page
@@ -464,127 +412,25 @@ class DDServer(DDLogger,Controller):
         t = templateGlossary(searchList=[nameSpace]).respond()
         return str(t)
         
-#    def genPanelHelper(self):
-#        """
-#           Navigator Panel helper function which perform all the work
-#        """
-#        msg,dbsInst,site,app,primD,tier=self.formDict['menuForm']
-#        menuForm=self.genMenuForm(0,msg,dbsInst,site,app,primD,tier)
-#        dbsInst,site=self.formDict['siteForm']
-#        siteForm=self.siteForm(dbsInst,site)
-#        dbsInst=self.formDict['searchForm']
-#        searchForm=self.searchForm(dbsInst)
+    def getUserName(self):
+        """
+           Get userName from stored cookie, should be run within WEBTOOLS framework
+        """
+        userName=""
+        try:
+            cookie=cherrypy.request.cookie
+            userName = decryptCookie (cookie["dn"].value, self.securityApi)
+        except:
+            if self.verbose:
+               self.writeLog(getExcept())
+            pass
+        return userName
 
-#        userNav = self.genUserNavigator(DBSGLOBAL)
-
-#        t = templateSearchEngine(searchList=[{}]).respond()
-#        luceneForm=str(t)
-#        dbsTables = self.helper.dbManager.getTableNames(dbsInst)
-#        dbsTables.sort()
-
-#        nameSpace = {
-#                     'host'         : self.dbsdd,
-#                     'userMode'     : self.userMode,
-#                     'userNavigator': userNav,
-#                     'searchForm'   : searchForm,
-#                     'siteForm'     : siteForm,
-#                     'dbsNames'     : self.dbsList,
-#                     'glossary'     : self.glossary(),
-#                     'frontPage'    : 0,
-#                     'dbsGlobal'    : DBSGLOBAL,
-#                     'dbsList'      : self.dbsList,
-#                     'DBSDD'        : self.dbsdd,
-#                     'step'         : GLOBAL_STEP,
-#                     'iface'        : self.ddConfig.iface(),
-#                     'tip'          : tip(),
-#                     'luceneForm'   : luceneForm,
-#                     'dbsInst'      : dbsInst,
-#                     'dbsTables'    : dbsTables
-#                    }
-#        t = templateFrontPage(searchList=[nameSpace]).respond()
-#        return str(t)
-        
-#    def genPanel(self):
-#        """
-#           Construct Init service page, which includes L{genMenuForm}.
-#           @type  self: class object
-#           @param self: none
-#           @rtype : string
-#           @return: returns HTML code
-#        """
-#        try:
-#            nameSpace = {
-#                         'host'         : self.dbsdd,
-#                         'userMode'     : self.userMode,
-#                         'navigatorForm': self.genMenuForm(),
-#                         'searchForm'   : self.searchForm(),
-#                         'siteForm'     : self.siteForm(),
-#                         'dbsNames'     : self.dbsList,
-#                         'frontPage'    : 1,
-#                         'dbsGlobal'    : DBSGLOBAL,
-#                         'glossary'     : self.glossary(),
-#                         'tip'          : tip()
-#                        }
-#            t = templateFrontPage(searchList=[nameSpace]).respond()
-#            return str(t)
-#        except:
-#            t=self.errorReport("Fail in genPanel function")
-#            pass
-#            return str(t)
-
-#    def init(self,view='Navigator'):
-#        """
-#           Construct Init service page, which includes L{genMenuForm}.
-#           @type  self: class object
-#           @param self: none
-#           @rtype : string
-#           @return: returns HTML code
-#        """
-#        try:
-#            page = self.genTopHTML(intro=False)
-#            page+= self.genVisiblePanel(view)
-#            page+= self.genResultsHTML()
-#            page+= self.genBottomHTML()
-#            return page
-#        except:
-#            t=self.errorReport("Fail in init function")
-#            pass
-#            return str(t)
-#    init.exposed = True
-    
-#    def expert(self):
-#        """
-#           Constructs 'expert' service page. 
-#           @type  self: class object
-#           @param self: none
-#           @rtype : string
-#           @return: returns HTML code
-#        """
-#        try:
-#            self.userMode = False
-#            return self.init()
-#        except:
-#            t=self.errorReport("Fail in expert function")
-#            pass
-#            return str(t)
-#    expert.exposed = True
-
-#    def dbsExpert(self):
-#        """
-#           Constructs 'dbsExpert' service page. 
-#           @type  self: class object
-#           @param self: none
-#           @rtype : string
-#           @return: returns HTML code
-#        """
-#        try:
-#            self.userMode = "dbsExpert"
-#            return self.init('SQL')
-#        except:
-#            t=self.errorReport("Fail in dbsExpert function")
-#            pass
-#            return str(t)
-#    dbsExpert.exposed = True
+    def getDN(self,userName):
+        """
+           Get user DN, for that we use WEBTOOLS SecurityAPI.
+        """
+        return self.securityApi.getDNFromUsername(userName)
 
     ################## Menu init methods
     def _navigator(self,dbsInst=DBSGLOBAL,userMode="user",**kwargs):
