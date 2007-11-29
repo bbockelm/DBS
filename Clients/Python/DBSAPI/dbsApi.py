@@ -822,15 +822,49 @@ if __name__ == "__main__":
 
     optManager  = DbsOptionParser()
     (opts,args) = optManager.getOpt()
+    args={}
+    url_list=['https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_01_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_03_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_04_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_05_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_06_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_07_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_08_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_09_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_10_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_tier0_writer/servlet/DBSServlet',
+		'https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_global_writer/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_01/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_02/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_03/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_04/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_05/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_06/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_07/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_08/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_09/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_local_10/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_tier0/servlet/DBSServlet',
+		'http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet']
 
-    api = DbsApi(opts.__dict__)
-    serverInfo = api.getServerInfo()
-    print api.getServerUrl()
-    print "Server Version : ", serverInfo['ServerVersion']
-    print "Schema Version : ", serverInfo['SchemaVersion']
+    args['mode']='POST'
+    args['version']='DBS_1_0_8'
+    args['level']='DBSINFO'
+    #api = DbsApi(args)
 
-    #print api.listSubSystems()
-    #print api.listDQVersions()
+    for aurl in url_list:
+       args['url']=aurl
+       print aurl
+       api = DbsApi(args) 
+       serverInfo = api.getServerInfo()
+       print api.getServerUrl()
+       print "Server Version : ", serverInfo['ServerVersion']
+       print "Schema Version : ", serverInfo['SchemaVersion']
+
+      #print api.listSubSystems()
+      #print api.listDQVersions()
 
   except DbsApiException, ex:
     print "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
