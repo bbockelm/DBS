@@ -14,7 +14,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To update the file meta data, enter the locical file name, enter the queryable meta data information and  click Update File Meta Data button"/>
 				<h:panelGrid columns="3" columnClasses="gridContent" id="pg">
 					<h:outputText value="Logical File Name" style="font-size:small;"/>
-					<h:inputText id="lfnInputText" size="100" required="true" binding="#{FileMetaData.lfnInputText}"/>
+					<h:inputText id="lfnInputText" size="100" required="true" binding="#{FileMetaData.lfnInputText}" value="#{UrlParam.lfn}"/>
 					<rich:message for="lfnInputText">
 						<f:facet name="passedMarker">
 							<h:graphicImage  value="/html/images/passed.gif" /> 
@@ -25,7 +25,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 					</rich:message>
 					
 					<h:outputText value="Queryable Meta Data" style="font-size:small;"/>
-					<h:inputText id="qmdInputText" size="100" required="true" binding="#{FileMetaData.qmdInputText}"/>
+					<h:inputText id="qmdInputText" size="100" required="true" binding="#{FileMetaData.qmdInputText}" value="#{UrlParam.qmd}"/>
 					<rich:message for="qmdInputText">
 						<f:facet name="passedMarker">
 							<h:graphicImage  value="/html/images/passed.gif" /> 

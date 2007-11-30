@@ -15,7 +15,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<h:panelGrid columns="3" columnClasses="gridContent" id="pg">
 
 					<h:outputText value="Run Number" style="font-size:small;"/>
-					<h:inputText id="runInputText"  required="true" binding="#{RunUpdate.runInputText}">
+					<h:inputText id="runInputText"  required="true" binding="#{RunUpdate.runInputText}" value="#{UrlParam.run}">
 						<f:convertNumber integerOnly="true"/>
 					</h:inputText>
 	

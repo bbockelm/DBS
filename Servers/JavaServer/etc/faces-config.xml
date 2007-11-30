@@ -14,6 +14,48 @@
 		  <managed-bean-scope>request</managed-bean-scope>
 	  </managed-bean>
 
+	  <managed-bean>
+		  <managed-bean-name>UrlParam</managed-bean-name>
+		  <managed-bean-class>ui.UrlParam</managed-bean-class>
+		  <managed-bean-scope>request</managed-bean-scope>
+		  <managed-property>
+			  <property-name>lfn</property-name>
+			  <value>#{param.lfn}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>qmd</property-name>
+			  <value>#{param.qmd}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>blockName</property-name>
+			  <value>#{param.blockName}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>tier</property-name>
+			  <value>#{param.tier}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>path</property-name>
+			  <value>#{param.path}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>oldSe</property-name>
+			  <value>#{param.oldSe}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>newSe</property-name>
+			  <value>#{param.newSe}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>lumi</property-name>
+			  <value>#{param.lumi}</value>
+		  </managed-property>
+		  <managed-property>
+			  <property-name>run</property-name>
+			  <value>#{param.run}</value>
+		  </managed-property>
+	  </managed-bean>
+
 
 
 	  <managed-bean>

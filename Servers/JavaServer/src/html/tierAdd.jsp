@@ -14,7 +14,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="500" style="width:250px" value="To add a new Tier and Tier order, enter the tier name in the form tier1-tier2-tier3 and click Add Tier button. This will add tier1, tier2, tier3 as 3 separate tiers and tier1-tier2-tier3 as a new tier order"/>
 				<h:panelGrid columns="3" columnClasses="gridContent" id="pg">
 					<h:outputText value="Tier Name (tier1-tier2)" style="font-size:small;"/>
-					<h:inputText id="tierInputText"  required="true" binding="#{TierAdd.tierInputText}"/>
+					<h:inputText id="tierInputText"  required="true" binding="#{TierAdd.tierInputText}" value="#{UrlParam.tier}"/>
 					<rich:message for="tierInputText">
 						<f:facet name="passedMarker">
 							<h:graphicImage  value="/html/images/passed.gif" /> 

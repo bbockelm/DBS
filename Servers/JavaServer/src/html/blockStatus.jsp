@@ -14,7 +14,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To change the status of the block, enter the block name, select status and click Change Block Status button"/>
 				<h:panelGrid columns="4" columnClasses="gridContent" id="pg">
 					<h:outputText value="Block Name" style="font-size:small;"/>
-					<h:inputText id="blockInputText" size="100" required="true" binding="#{BlockStatus.blockInputText}"/>
+					<h:inputText id="blockInputText" size="100" required="true" binding="#{BlockStatus.blockInputText}" value="#{UrlParam.blockName}"/>
 					<h:selectOneMenu value="Block Status" binding="#{BlockStatus.status}">
 						<f:selectItem itemValue="OPEN" itemLabel="Open"/>
 						<f:selectItem itemValue="CLOSE" itemLabel="Close"/>

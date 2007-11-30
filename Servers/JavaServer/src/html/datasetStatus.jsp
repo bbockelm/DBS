@@ -14,7 +14,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To change the status of the dataset, enter the dataset path, select status and click Change Dataset Status button"/>
 				<h:panelGrid columns="4" columnClasses="gridContent" id="pg">
 					<h:outputText value="Dataset Path" style="font-size:small;"/>
-					<h:inputText id="datasetInputText" size="100" required="true" binding="#{DatasetStatus.datasetInputText}"/>
+					<h:inputText id="datasetInputText" size="100" required="true" binding="#{DatasetStatus.datasetInputText}" value="#{UrlParam.path}"/>
 					<h:selectOneMenu value="Dataset Status" binding="#{DatasetStatus.status}">
 						<f:selectItem itemValue="VALID" itemLabel="Valid"/>
 						<f:selectItem itemValue="INVALID" itemLabel="Invalid"/>

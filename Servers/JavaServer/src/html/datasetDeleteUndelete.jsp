@@ -15,7 +15,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To delete or undelete a dataset , enter the dataset path, select operation and click Submit button. The path should be of the format /primary/processed/tier. Deleting a dataset moves it into recycle bin and undeleting a dataset recovers the dataset from the recycle bin"/>
 				<h:panelGrid columns="4" columnClasses="gridContent" id="pg">
 					<h:outputText value="Dataset Path" style="font-size:small;"/>
-					<h:inputText id="datasetInputText" size="100" required="true" binding="#{DatasetDeleteUndelete.datasetInputText}"/>
+					<h:inputText id="datasetInputText" size="100" required="true" binding="#{DatasetDeleteUndelete.datasetInputText}" value="#{UrlParam.path}"/>
 					<h:selectOneMenu value="Dataset Operation" binding="#{DatasetDeleteUndelete.op}">
 						<f:selectItem itemValue="DELETE" itemLabel="Delete"/>
 						<f:selectItem itemValue="UNDELETE" itemLabel="Undelete"/>

@@ -14,7 +14,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To rename a storage element, enter the old Storage element name, the new Storage element name and click Rename Storage Element button"/>
 				<h:panelGrid columns="3" columnClasses="gridContent" id="pg">
 					<h:outputText value="Old Storage Element Name" style="font-size:small;"/>
-					<h:inputText id="seOldInputText"  required="true" binding="#{StorageElementRename.seOldInputText}"/>
+					<h:inputText id="seOldInputText"  required="true" binding="#{StorageElementRename.seOldInputText}" value="#{UrlParam.oldSe}"/>
 					<rich:message for="seOldInputText">
 						<f:facet name="passedMarker">
 							<h:graphicImage  value="/html/images/passed.gif" /> 
@@ -25,7 +25,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 					</rich:message>
 	
 					<h:outputText value="New Storage Element Name" style="font-size:small;"/>
-					<h:inputText id="seNewInputText"  required="true" binding="#{StorageElementRename.seNewInputText}"/>
+					<h:inputText id="seNewInputText"  required="true" binding="#{StorageElementRename.seNewInputText}" value="#{UrlParam.newSe}"/>
 					<rich:message for="seNewInputText">
 						<f:facet name="passedMarker">
 							<h:graphicImage  value="/html/images/passed.gif" /> 

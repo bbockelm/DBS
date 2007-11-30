@@ -13,7 +13,7 @@ xmlns:rich="http://richfaces.org/rich"><body>
 				<rich:toolTip followMouse="true" direction="top-right" delay="2500" style="width:250px" value="To delete a file, enter the locical file name click Delete File button"/>
 				<h:panelGrid columns="3" columnClasses="gridContent" id="pg">
 					<h:outputText value="Logical File Name" style="font-size:small;"/>
-					<h:inputText id="lfnInputText" size="100" required="true" binding="#{FileDelete.lfnInputText}"/>
+					<h:inputText id="lfnInputText" size="100" required="true" binding="#{FileDelete.lfnInputText}" value="#{UrlParam.lfn}"/>
 			
 					<rich:message for="lfnInputText">
 						<f:facet name="passedMarker">
