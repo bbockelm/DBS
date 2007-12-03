@@ -86,6 +86,16 @@ public class DBSUtil {
 		return (Hashtable)tmp;
 	}
 
+	public static boolean isIn(String param, Enumeration e) {
+                while (e.hasMoreElements()) {
+                        if( param.equals((String)e.nextElement()) ) {
+                                return true;
+                        }
+                }
+                return false;
+        }
+
+
 	/**
 	 * a static method that check for if the given parameter is null or empty <code>java.lang.String</code> 
 	 * @param pattern a <code>java.lang.String</code> that is check for being null or empty.
@@ -111,9 +121,19 @@ public class DBSUtil {
 	public static void writeLog(String logText) {
 		if (DBSConstants.DEBUG) System.out.println(logText);
 	}
+
+	/**
+	 * a static method that write logText to stderr if the <code>DBSConstants.ERROR</code> is set to be true. If <code>DBSConstants.ERROR</code> is false then it does not write logText to stderr. This method is needed when the server is run in debug mode. In production mode  <code>DBSConstants.ERROR</code> will be set to true and logText will not get printed on stdout.
+	 * @param logText a <code>java.lang.String</code> that is written on stdout depending upon the <code>DBSConstants.ERROR</code> flag.
+	 */
 	public static void writeErrorLog(String logText) {
 		if (DBSConstants.ERROR) System.err.println(logText);
 	}
+
+	/**
+	 * a static method that write logText to stdout if the <code>DBSConstants.DEBUGCACHE</code> is set to be true. If <code>DBSConstants.DEBUGCACHE</code> is false then it does not write logText to stdout. This method is needed when the server is run in debug mode. In production mode  <code>DBSConstants.DEBUGCACHE</code> will be set to true and logText will not get printed on stdout.
+	 * @param logText a <code>java.lang.String</code> that is written on stdout depending upon the <code>DBSConstants.DEBUGCACHE</code> flag.
+	 */
 	public static void writeCacheLog(String logText) {
 		if (DBSConstants.DEBUGCACHE) System.out.println(logText);
 	}
@@ -136,15 +156,5 @@ public class DBSUtil {
 		if(isNull(value)) return "";
 		return value;
 	}
-
-        public static boolean isIn(String param, Enumeration e) {
-                while (e.hasMoreElements()) {
-                        if( param.equals((String)e.nextElement()) ) {
-                                return true;
-                        }
-                }
-                return false;
-        }
-
 
 }
