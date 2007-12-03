@@ -250,7 +250,7 @@ CREATE TABLE RecycleBin
   (
     ID                    BIGINT UNSIGNED not null auto_increment,
     Path                  varchar(500)      not null,
-    Name                  varchar(700)      not null,
+    BlockName                  varchar(700)      not null,
     Xml                   LONGTEXT,
     CreationDate          BIGINT,
     CreatedBy             BIGINT UNSIGNED,
