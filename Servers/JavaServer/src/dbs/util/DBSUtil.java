@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.11 $"
- $Id: DBSUtil.java,v 1.11 2007/11/15 21:02:31 sekhri Exp $"
+ $Revision: 1.12 $"
+ $Id: DBSUtil.java,v 1.12 2007/11/28 17:06:43 sekhri Exp $"
  *
 */
 
@@ -9,6 +9,7 @@ package dbs.util;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Date;
+import java.util.Enumeration;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -135,5 +136,15 @@ public class DBSUtil {
 		if(isNull(value)) return "";
 		return value;
 	}
+
+        public static boolean isIn(String param, Enumeration e) {
+                while (e.hasMoreElements()) {
+                        if( param.equals((String)e.nextElement()) ) {
+                                return true;
+                        }
+                }
+                return false;
+        }
+
 
 }
