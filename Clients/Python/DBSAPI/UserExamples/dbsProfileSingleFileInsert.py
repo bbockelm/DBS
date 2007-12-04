@@ -4,7 +4,7 @@
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
 #
-import sys
+import sys, os
 from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsException import *
 from DBSAPI.dbsApiException import *
@@ -20,7 +20,7 @@ from DBSAPI.dbsOptions import DbsOptionParser
 import profile
 import hotshot, hotshot.stats
 
-HOW_MANY_FILES=10
+HOW_MANY_FILES=1000
 
 optManager  = DbsOptionParser()
 (opts,args) = optManager.getOpt()
@@ -92,15 +92,18 @@ block = DbsFileBlock (
 
 block['Name']="/test_primary_001/TestProcessedDS001/GEN-SIM#12345-"+str(HOW_MANY_FILES)
 print "Inserting Files Into", api.insertBlock (proc, block)
-print "Wait........"
+#print "Wait........"
 try:
     time_taken=0.0
     for i in range(HOW_MANY_FILES):
-        myfile1['LogicalFileName'] = 'NEW_TEST0008'+str(i)
-	p = hotshot.Profile("out.prof")
+	rnd=str(os.popen('uuidgen').readline().strip())
+        myfile1['LogicalFileName'] = 'NEW_TEST'+rnd
+	#print myfile1['LogicalFileName']
+	prf=rnd+'.prof'
+	p = hotshot.Profile(prf)
     	#Insert in a Block	
     	out=p.run("api.insertFiles (proc, [myfile1], block)")
-        stats = hotshot.stats.load("out.prof")
+        stats = hotshot.stats.load(prf)
         stats.strip_dirs()
         stats.sort_stats('time', 'calls')
         #stats.print_stats(1)
