@@ -1,6 +1,6 @@
 /**
- $Revision: 1.73 $"
- $Id: DBSApiFileLogic.java,v 1.73 2007/11/16 22:20:35 sekhri Exp $"
+ $Revision: 1.74 $"
+ $Id: DBSApiFileLogic.java,v 1.74 2007/11/29 22:45:06 afaq Exp $"
  *
  */
 
@@ -599,6 +599,319 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	}
 
 
+	//Simple API that takes a BlockName as input and checks to see if:
+	// 1-Block exists
+	// 2-Block's Path tier-list matches File-Tier list
+	// 3-Block is open and has sufficient "space" to hold this file
+	//Then it insert files with all information
+	//Makes is pretty speedy operation
+	//ANZAR: 12/03/2007
+        public void insertFilesInBlock(Connection conn, Writer out, Hashtable block, Vector files, Hashtable dbsUser, boolean ignoreParent) throws Exception {
+
+		//Verify Block Name
+                String blockName = getBlockPattern(DBSUtil.get(block, "block_name"));
+                if (isNull(blockName) )
+                        throw new DBSException("Wrong Parameters", "1038",
+                                                        "User must provide a valid blockName");
+
+		//Tier List Check, matchWithFileTiers throws exception in case of error
+		String blockPath = blockName.split("#")[0];
+                String[] blockPathTokens = blockPath.split("/");
+                matchWithFileTiers(files, parseTierVec(blockPathTokens[3]), blockName);
+
+                String blockID = null;
+                String procDSID = null;
+		long number_of_files=0;
+		long size = 0;
+		long number_of_events;
+		int open_for_writing;
+		String path;
+		
+		//Lets get inf. about Block
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+                        ps =  DBSSql.listBlockInfo(conn, getBlockPattern(blockName));
+                        rs =  ps.executeQuery();
+                        if (rs.next()) {
+                                blockID = get(rs, "ID");
+                                path= get(rs, "PATH");
+				procDSID = get(rs, "DATASET");
+                                size= Long.parseLong((String)get(rs, "BLOCKSIZE"));
+                                number_of_files= Long.parseLong((String)get(rs, "NUMBER_OF_FILES"));
+                                number_of_events= Long.parseLong((String)get(rs, "NUMBER_OF_EVENTS"));
+                                open_for_writing= Integer.parseInt((String)get(rs, "OPEN_FOR_WRITING"));
+			}
+			else {
+				throw new DBSException("Do Not Exist", "1039",
+                                                        "Provide BlockName do not exist in DBS, please verify");
+                        }
+                } catch(Exception e) {
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+			throw new DBSException("Database Exception", "1039", e.getMessage());
+                }
+
+
+		rs.close();
+
+		//We have ALL infor about the Block, lets decide if its OK to write to this Block
+
+
+		//Is it OK to write to this Block ?
+		if ( open_for_writing == 0 )
+			throw new DBSException("Block Closed");
+
+		//Block can hold more files  ??
+		//Leaving the code commenetd as this may not be handled by DBS !!
+		//DBSConfig config = DBSConfig.getInstance();
+		//long configuredBlkSize = config.getMaxBlockSize();
+		//long configuredNumFiles = config.getMaxBlockFiles();
+		//if (size >= configuredBlkSize || number_of_files >= configuredNumFiles ) 
+		//	throw new DBSException("Block is FULL");
+
+                DBSApiProcDSLogic procDSApiObj = new DBSApiProcDSLogic(this.data);
+
+		//Is it OK to write to this Dataset ??
+		procDSApiObj.checkProcDSStatus(conn, out, path, procDSID);
+
+                //File insert will happen now     **************************
+
+                //Get the User ID from USERDN
+                String lmbUserID = personApi.getUserID(conn, dbsUser);
+
+                //These tables are used to store the types and staus fileds along with thier id
+                //If the id can be fetched from here then we do not have to fietch it from database again and again
+                boolean newFileInserted = false;
+                Hashtable statusTable = new Hashtable();
+                Hashtable typeTable = new Hashtable();
+                Hashtable valStatusTable = new Hashtable();
+                String statusID = "";
+                String typeID = "";
+                String valStatusID = "";
+                                
+                String thisBranchHash = null;
+                String lastBranchHash = null;
+                String branchID = null;
+
+                for (int i = 0; i < files.size() ; ++i) {
+                        Hashtable file = (Hashtable)files.get(i);
+
+                        String fileID = "";
+                        String lfn = get(file, "lfn", true);
+                        String fileStatus = get(file, "file_status", false).toUpperCase();
+                        String type = get(file, "type", true).toUpperCase();
+                        String valStatus = get(file, "validation_status", false).toUpperCase();
+                        String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
+                        String creationDate = getTime(file, "creation_date", false);
+                        Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
+                        Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
+                        Vector parentVector = DBSUtil.getVector(file,"file_parent");
+                        Vector childVector = DBSUtil.getVector(file,"file_child");
+                        Vector algoVector = DBSUtil.getVector(file,"file_algorithm");
+                        Vector trigTagVector = DBSUtil.getVector(file,"file_trigger_tag");
+
+                        //Set defaults Values
+                        if (isNull(fileStatus)) fileStatus = "VALID";
+                        //if (isNull(type)) type = "EVD";
+                        if (isNull(valStatus)) valStatus = "VALID";
+
+                        //Insert a File by fetching the fileStatus, type and validationStatus
+                        if( (fileID = getFileID(conn, lfn, false)) == null ) {
+                                newFileInserted = true;
+                                //TODO Exception of null status or type should be catched and parsed and 
+                                //a proper message should be returned back to the user. Different Database can have different error message YUK
+                                //Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
+                                //User will never know about this YUK
+                                if( isNull(statusID = get(statusTable, fileStatus)) ) {
+                                        statusID = getFileStatusID(conn,  fileStatus, true);
+                                        statusTable.put(fileStatus, statusID);
+                                }
+                                if( isNull(typeID = get(typeTable, type)) ) {
+                                        typeID = getFileTypeID(conn, type, true);
+                                        typeTable.put(type, typeID);
+                                }
+                                if( isNull(valStatusID = get(valStatusTable, valStatus)) ) {
+                                        valStatusID = getFileValStatusID(conn, valStatus, true);
+                                        valStatusTable.put(valStatus, valStatusID);
+                                }
+
+                                thisBranchHash = get(file, "branch_hash", false);
+                                if (! thisBranchHash.equals(lastBranchHash) ) {
+                                        branchID = getID(conn, "BranchHash", "Hash", thisBranchHash, false);
+                                        lastBranchHash = thisBranchHash;
+                                }
+
+                                ps = DBSSql.insertFile(conn,
+                                            procDSID,
+                                            blockID,
+                                            lfn,
+                                            get(file, "checksum", false),
+                                            get(file, "number_of_events", false),
+                                            get(file, "size", false),
+                                            statusID,
+                                            typeID,
+                                            valStatusID,
+                                            get(file, "queryable_meta_data", false),
+                                            branchID,
+                                            cbUserID, lmbUserID, creationDate);
+
+				//////////////////////////////ps.addBatch();
+                                ps.execute();
+                                ps.close();
+
+                                //if(isNull(fileID)) fileID = getFileID(conn, lfn);
+                                //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
+                                //FileID is needed if any of the other table information is provided i.e the vector size is > 0
+                                if(algoVector.size() > 0 || tierVector.size() > 0 || parentVector.size() > 0 || lumiVector.size() > 0)
+                                        if(isNull(fileID)) fileID = getFileID(conn, lfn, true);
+                                        //fileID = getFileID(conn, lfn, true);
+
+                                //Insert FileAlgo table by fetching application ID. 
+                                //Use get with 2 params so that it does not do type checking, since it will be done in getID call.
+
+
+                                for (int j = 0; j < algoVector.size(); ++j) {
+                                        Hashtable hashTable = (Hashtable)algoVector.get(j);
+                                        String psHash = get(hashTable, "ps_hash", false);
+                                        if (isNull (psHash) ) psHash =  "NO_PSET_HASH";
+                                       insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm",
+                                                        fileID,
+                                                        (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"),
+                                                                        get(hashTable, "app_family_name"),
+                                                                        get(hashTable, "app_executable_name"),
+                                                                        psHash,
+                                                                        true),
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                }
+
+                                //Insert FileTier table by fetching data tier ID
+                                for (int j = 0; j < tierVector.size(); ++j) {
+                                        insertMap(conn, out,    "FileTier", "Fileid", "DataTier",
+                                                fileID,
+                                                //getID(conn, "DataTier", "Name", 
+                                                //      get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
+                                                //      true), 
+                                                getTierID(conn,
+                                                        get((Hashtable)tierVector.get(j), "name").toUpperCase() ,
+                                                        true),
+
+                                                cbUserID, lmbUserID, creationDate, false);
+                                }
+
+         
+                                //Insert FileParentage table by fetching parent File ID
+                                if(!ignoreParent)
+					insertMapBatch(conn, ps, out, "FileParentage", "ThisFile", "itsParent",
+							parentVector, cbUserID, lmbUserID, creationDate);
+					/*
+                                        for (int j = 0; j < parentVector.size(); ++j) {
+                                                insertMap(conn, out, "FileParentage", "ThisFile", "itsParent",
+                                                                fileID,
+                                                                getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
+                                                                cbUserID, lmbUserID, creationDate, false);
+                                        }*/
+
+                                //Insert FileParentage for all the child of give by the client. Used during Merge operation
+				insertMapBatch(conn, ps, out, "FileParentage", "ThisFile", "itsParent",
+							childVector, cbUserID, lmbUserID, creationDate);
+				/*
+                                for (int j = 0; j < childVector.size(); ++j) {
+                                        insertMap(conn, out, "FileParentage", "ThisFile", "itsParent",
+                                                        getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true),
+                                                        fileID,
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                }*/
+                                //TODO Discussion about Lumi section is needed
+                                //Insert FileLumi table by first inserting and then fetching Lumi Section ID
+                                for (int j = 0; j < lumiVector.size(); ++j) {
+                                        Hashtable hashTable = (Hashtable)lumiVector.get(j);
+
+                                        //No need to add a LumiSection, User will never provide lumisection TO be added at this stage
+                                        //All Lumi Scetions will already be in DBS (SV#28264). Anzar Afaq (08/20/2007)
+
+                                        //Only when User provides a lumi section, MAP it
+                                        //There can be cases when NO lumi Section number is give (Run only)
+                                        String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
+                                        String lsNumber = get(hashTable, "lumi_section_number", false);
+                                        if ( !isNull(lsNumber) ) {
+                                                String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
+                                                if( isNull(lumiID)) {
+                                                        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+                                                }
+
+                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
+                                                        fileID,
+                                                        getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true),
+                                                        runID,
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                        }
+                                        //Just add Run-Fileid map
+                                        else {
+                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
+                                                        fileID,
+                                                        runID,
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                        }
+                                        // Insert ProcDS-Run Map, if its already not there      
+                                        insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+                                                        procDSID, runID,
+                                                        cbUserID, lmbUserID, creationDate);
+                               }
+
+                                //Insert Trigger tags (if present)
+                                for (int j = 0; j < trigTagVector.size(); ++j) {
+                                        Hashtable hashTable = (Hashtable)trigTagVector.get(j);
+                                        //insert File-Trigger-Tag Map now.
+                                        insertMap(conn, out,  "FileTriggerTag", "Fileid", "TriggerTag", "NumberOfEvents",
+                                                        fileID,
+                                                        get(hashTable, "trigger_tag"),
+                                                        get(hashTable, "number_of_events"),
+                                                        cbUserID, lmbUserID, creationDate, false);
+                                }
+
+                                //Insert the file association   
+                                String fileAssoc = get(file, "file_assoc", false);
+                                if (! isNull(fileAssoc)) {
+                                        insertMap(conn, out, "FileAssoc", "ThisFile", "ItsAssoc",
+                                                                fileID,
+                                                                getID(conn, "Files", "LogicalFileName", fileAssoc, true),
+                                                                cbUserID, lmbUserID, creationDate, false);
+                                }
+
+
+                        } else {
+                                //Write waring message that file exists already
+                                writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
+                        }
+
+
+                        if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
+                }//For loop
+
+                DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
+                //Update Block numberOfFiles and Size
+                if (newFileInserted) {
+                        blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
+                        /*PreparedStatement ps = null;
+                        try {
+                                ps = DBSSql.updateBlock(conn, blockID);
+                                ps.executeUpdate();
+                        } finally { 
+                                if (ps != null) ps.close();
+                        }*/
+                }
+
+		if (rs != null) rs.close();
+                if (ps != null) ps.close();
+
+
+	}
+
+
+
+
+
        /**
 	 * Insert a list of Files whose parameters are provided in the passed files <code>java.util.Vector</code>. This vector contains a list of hashtable and is generated externally and filled in with the file parameters by parsing the xml input provided by the client. This method inserts entries into more than one table associated with File table. The the main query that it executes to insert in File table, get generated by <code>dbs.DBSSql.insertFile</code> method.<br> 
 	 * First it fetches the userID by using the parameters specified in the dbsUser <code>java.util.Hashtable</code> and if the user does not exists then it insert the new user in the Person table. All this user operation is done by a private method getUserID. <br>
@@ -637,6 +950,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		//The presedence order is Block, then Path, then (Primary, Process Dataset)
 
                 String blockName = DBSUtil.get(block, "block_name");
+
+
+		//If Block is provided, cut the crap and jump to simpler implementation.
+		if (!isNull(blockName)) {
+			System.out.println("Caling NEW Implementation....Cut the CRAP!!!!");
+			 insertFilesInBlock(conn, out, block, files, dbsUser, ignoreParent);
+			return;
+		}
+
                 if (isNull(blockName) && isNull(primary) && isNull(proc) && isNull(path) ) 
                         throw new DBSException("Wrong Parameters", "1038",
 							"User must provide either of a blockName, path or (primaryDataset, processedDataset)");

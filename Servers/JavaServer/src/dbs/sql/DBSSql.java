@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.126 $"
- $Id: DBSSql.java,v 1.126 2007/11/16 21:29:39 sekhri Exp $"
+ $Revision: 1.127 $"
+ $Id: DBSSql.java,v 1.127 2007/11/16 22:20:37 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -139,6 +139,16 @@ public class DBSSql {
 		table.put("CreationDate", cDate);
 		return getInsertSQL(conn, tableName, table);
 	}
+
+
+        public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, 
+			String cbUserID, String lmbUserID, String cDate) throws SQLException {
+		String sql = "INSERT INTO "+tableName+" \n"+ 
+				"("+key1+","+key2+") values (?, ?) \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		return ps;
+	}
+
 
         public static PreparedStatement insertDQFlagHistory(Connection conn, String rowID) throws SQLException {
 
@@ -1680,6 +1690,26 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+
+        public static PreparedStatement listBlockInfo(Connection conn, String blockName) throws SQLException {
+		String sql = "SELECT b.ID as ID, \n " +
+                        "b.Name as NAME, \n" +
+                        "b.Path as PATH, \n" +
+                        "b.Dataset as DATASET, \n" +
+                        "b.NumberOfEvents as NUMBER_OF_EVENTS, \n" +
+                        "b.BlockSize as BLOCKSIZE, \n" +
+                        "b.NumberOfFiles as NUMBER_OF_FILES, \n" +
+                        "b.OpenForWriting as OPEN_FOR_WRITING \n" +
+			"FROM Block b \n" +
+			"WHERE \n"+
+			"b.Name = ? \n";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, blockName);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+        }
+
 
 	public static PreparedStatement listBlocks(Connection conn, String procDSID, String patternPath, String blockName, String seName) throws SQLException {
 		String sql = "SELECT DISTINCT b.ID as ID, \n " +

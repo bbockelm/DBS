@@ -1,6 +1,6 @@
 /**
- $Revision: 1.110 $"
- $Id: DBSApiLogic.java,v 1.110 2007/11/16 22:20:35 sekhri Exp $"
+ $Revision: 1.111 $"
+ $Id: DBSApiLogic.java,v 1.111 2007/11/29 22:45:07 afaq Exp $"
  *
  */
 
@@ -519,6 +519,27 @@ public class DBSApiLogic {
 				if (ps != null) ps.close();
 			}
 		}
+	}
+
+        protected void insertMapBatch(Connection conn, PreparedStatement ps, Writer out, String tableName, String key1, String key2, 
+			Vector values, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+		//No point if vector ain't has any values !
+		if (values.size() <= 0) return;
+
+		try {
+                	ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, cbUserID, lmbUserID, creationDate);
+			int columnIndx = 1;
+
+			for (int j = 0; j < values.size(); ++j) {
+				ps.setString(columnIndx++, get((Hashtable)values.get(j), key1, true));
+				ps.setString(columnIndx++, get((Hashtable)values.get(j), key2, true));
+				ps.addBatch();
+			}
+			DBSUtil.writeLog("\n\n" + ps + "\n\n");
+			ps.execute();
+		} finally {
+                               if (ps != null) ps.close();
+                }				
 	}
 
 
