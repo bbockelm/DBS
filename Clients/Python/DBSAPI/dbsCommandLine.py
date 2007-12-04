@@ -543,6 +543,7 @@ class ApiDispatcher:
 
   def __init__(self, args):
    try:
+    self.helper = cmd_doc_writer()
     self.term = TerminalController()
     self.progress=showProgress()
     self.optdict=args.__dict__
@@ -631,7 +632,7 @@ class ApiDispatcher:
 
   def handledeleteProcDSCall(self):
         if self.optdict.has_key('want_help'):
-                _help_deletePDS()
+                self.helper._help_deletePDS()
                 return
 	path=self.optdict['path']
 	if path in ('', None):
@@ -646,7 +647,7 @@ class ApiDispatcher:
 
   def handlelistANDSDefCall(self):
         if self.optdict.has_key('want_help'):
-                _help_andsdeflist()
+                self.helper._help_andsdeflist()
                 return
         if self.optdict.get('pattern'):
 	  self.progress.start()
@@ -684,7 +685,7 @@ class ApiDispatcher:
 	         
   def handlelistANDCall(self):
         if self.optdict.has_key('want_help'):
-                _help_andslist()
+                self.helper._help_andslist()
                 return
         print self.optdict.get('path') 
         self.progress.start()
@@ -704,7 +705,7 @@ class ApiDispatcher:
  
   def handleListPrimaryDatasets(self):
 	if self.optdict.has_key('want_help'):
-		_help_primarylist()
+		self.helper._help_primarylist()
 		return
        	if self.optdict.get('pattern'):
 	  self.progress.start()
@@ -723,7 +724,7 @@ class ApiDispatcher:
 
   def handleListProcessedDatasets(self):
         if self.optdict.has_key('want_help'):
-		_help_procdslist()
+		self.helper._help_procdslist()
                 return
 
 	datasetPaths = []
@@ -833,7 +834,7 @@ class ApiDispatcher:
           
   def handleListAlgorithms(self):
         if self.optdict.has_key('want_help'):
-		_help_algolist()
+		self.helper._help_algolist()
                 return
 
         self.printBLUE( "Retrieving list of Algorithm, Please wait..." )
@@ -862,7 +863,7 @@ class ApiDispatcher:
 
   def handleListFiles(self):
        if self.optdict.has_key('want_help'):
-		_help_filelist()
+		self.helper._help_filelist()
                 return
        path=self.optdict.get('path') or ''
        blockpattern=self.optdict.get('blockpattern') or ''
@@ -900,7 +901,7 @@ class ApiDispatcher:
 
   def handlelistSECall(self):
        if self.optdict.has_key('want_help'):
-		_help_selist()
+		self.helper._help_selist()
                 return
 
        sepattern=self.optdict.get('sepattern') or '*'
@@ -914,7 +915,7 @@ class ApiDispatcher:
 
   def handleBlockCall(self):
        if self.optdict.has_key('want_help'):
-		_help_blocklist()
+		self.helper._help_blocklist()
                 return
 
        path=self.optdict.get('path') or ''
@@ -957,7 +958,7 @@ class ApiDispatcher:
 
   def handleSearchCall(self):
        if self.optdict.has_key('want_help'):
-		_help_search()
+		self.helper._help_search()
                 return
 
        pathpattern = self.optdict.get('path') or ''
@@ -968,7 +969,7 @@ class ApiDispatcher:
        if pathpattern in ['/*/*/*', ''] and blockpattern in ['*', ''] \
 		and sepattern in ['*', ''] and algopattern in ['/*/*/*/*', '']:
 		self.printRED("You must provide some options with --search, Please look at 'dbs --search --help', or use 'dbs --doc'. \nCannot list EVERYTHING in DBS\n\n")
-		_help_search()
+		self.helper._help_search()
 		return
 
        #### Lets locate all matching PATH and then for each Path List (Blocks, Runs, Algos etc) and then for each Block 
