@@ -1,6 +1,6 @@
 /**
- $Revision: 1.74 $"
- $Id: DBSApiFileLogic.java,v 1.74 2007/11/29 22:45:06 afaq Exp $"
+ $Revision: 1.75 $"
+ $Id: DBSApiFileLogic.java,v 1.75 2007/12/04 18:05:20 afaq Exp $"
  *
  */
 
@@ -651,12 +651,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         if (ps != null) ps.close();
 			throw new DBSException("Database Exception", "1039", e.getMessage());
                 }
-
-
+		ps.close();
 		rs.close();
 
 		//We have ALL infor about the Block, lets decide if its OK to write to this Block
-
 
 		//Is it OK to write to this Block ?
 		if ( open_for_writing == 0 )
@@ -693,6 +691,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 String thisBranchHash = null;
                 String lastBranchHash = null;
                 String branchID = null;
+		//Vector that just hold some cache values for insertMap function.
+		Vector valueVec = new Vector();
+		//Simple vector that keeps track of what runs have already been added to this dataset
+		Vector runsMapped = new Vector();
 
                 for (int i = 0; i < files.size() ; ++i) {
                         Hashtable file = (Hashtable)files.get(i);
@@ -756,7 +758,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             branchID,
                                             cbUserID, lmbUserID, creationDate);
 
-				//////////////////////////////ps.addBatch();
                                 ps.execute();
                                 ps.close();
 
@@ -769,61 +770,46 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                                 //Insert FileAlgo table by fetching application ID. 
                                 //Use get with 2 params so that it does not do type checking, since it will be done in getID call.
-
-
-                                for (int j = 0; j < algoVector.size(); ++j) {
+				valueVec.clear();
+				for (int j = 0; j < algoVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)algoVector.get(j);
                                         String psHash = get(hashTable, "ps_hash", false);
                                         if (isNull (psHash) ) psHash =  "NO_PSET_HASH";
-                                       insertMap(conn, out, "FileAlgo", "Fileid", "Algorithm",
-                                                        fileID,
-                                                        (new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"),
+					valueVec.add((new DBSApiAlgoLogic(this.data)).getAlgorithmID(conn, get(hashTable, "app_version"),
                                                                         get(hashTable, "app_family_name"),
                                                                         get(hashTable, "app_executable_name"),
                                                                         psHash,
-                                                                        true),
-                                                        cbUserID, lmbUserID, creationDate, false);
-                                }
+                                                                        true));
+				}
+				insertMapBatch(conn, out, "FileAlgo", "Fileid", "Algorithm", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 
                                 //Insert FileTier table by fetching data tier ID
-                                for (int j = 0; j < tierVector.size(); ++j) {
-                                        insertMap(conn, out,    "FileTier", "Fileid", "DataTier",
-                                                fileID,
-                                                //getID(conn, "DataTier", "Name", 
-                                                //      get((Hashtable)tierVector.get(j), "name").toUpperCase() , 
-                                                //      true), 
-                                                getTierID(conn,
+
+				valueVec.clear();
+				for (int j = 0; j < tierVector.size(); ++j) {
+					valueVec.add(getTierID(conn,
                                                         get((Hashtable)tierVector.get(j), "name").toUpperCase() ,
-                                                        true),
-
-                                                cbUserID, lmbUserID, creationDate, false);
-                                }
-
-         
+                                                        true));
+				}
+				insertMapBatch(conn, out, "FileTier", "Fileid", "DataTier", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				
                                 //Insert FileParentage table by fetching parent File ID
-                                if(!ignoreParent)
-					insertMapBatch(conn, ps, out, "FileParentage", "ThisFile", "itsParent",
-							parentVector, cbUserID, lmbUserID, creationDate);
-					/*
-                                        for (int j = 0; j < parentVector.size(); ++j) {
-                                                insertMap(conn, out, "FileParentage", "ThisFile", "itsParent",
-                                                                fileID,
-                                                                getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true),
-                                                                cbUserID, lmbUserID, creationDate, false);
-                                        }*/
-
+                                if(!ignoreParent) {
+					valueVec.clear();
+					for (int j = 0; j < parentVector.size(); ++j) 
+						valueVec.add(getFileID(conn, get((Hashtable)parentVector.get(j), "lfn"), true));
+					insertMapBatch(conn, out, "FileParentage", "ThisFile", "itsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+				}
+				
                                 //Insert FileParentage for all the child of give by the client. Used during Merge operation
-				insertMapBatch(conn, ps, out, "FileParentage", "ThisFile", "itsParent",
-							childVector, cbUserID, lmbUserID, creationDate);
-				/*
-                                for (int j = 0; j < childVector.size(); ++j) {
-                                        insertMap(conn, out, "FileParentage", "ThisFile", "itsParent",
-                                                        getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true),
-                                                        fileID,
-                                                        cbUserID, lmbUserID, creationDate, false);
-                                }*/
-                                //TODO Discussion about Lumi section is needed
+				valueVec.clear();
+				for (int j = 0; j < childVector.size(); ++j)
+					valueVec.add(getFileID(conn, get((Hashtable)childVector.get(j), "lfn"), true));
+				insertMapBatch(conn, out, "FileParentage", "ThisFile", "itsParent", fileID, valueVec, cbUserID, lmbUserID, creationDate);
+
                                 //Insert FileLumi table by first inserting and then fetching Lumi Section ID
+				valueVec.clear();
+				String runID = null;
                                 for (int j = 0; j < lumiVector.size(); ++j) {
                                         Hashtable hashTable = (Hashtable)lumiVector.get(j);
 
@@ -832,32 +818,41 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
                                         //Only when User provides a lumi section, MAP it
                                         //There can be cases when NO lumi Section number is give (Run only)
-                                        String runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
+                                        runID = getID(conn, "Runs", "RunNumber",  get(hashTable, "run_number", true), true);
                                         String lsNumber = get(hashTable, "lumi_section_number", false);
                                         if ( !isNull(lsNumber) ) {
                                                 String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
-                                                if( isNull(lumiID)) {
-                                                        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-                                                }
+						valueVec.add(getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true));
 
-                                                insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
-                                                        fileID,
-                                                        getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true),
-                                                        runID,
-                                                        cbUserID, lmbUserID, creationDate, false);
+                                                //if( isNull(lumiID)) {
+                                                //        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
+                                                //}
+
+                                                //insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
+                                                //        fileID,
+                                                //        getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true),
+                                                //        runID,
+                                                //        cbUserID, lmbUserID, creationDate, false);
                                         }
-                                        //Just add Run-Fileid map
+
+                                        //Just add Run-Fileid map (Rare case!)
                                         else {
                                                 insertMap(conn, out, "FileRunLumi", "Fileid", "Run",
                                                         fileID,
                                                         runID,
                                                         cbUserID, lmbUserID, creationDate, false);
                                         }
+					
                                         // Insert ProcDS-Run Map, if its already not there      
-                                        insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
+					if (!runsMapped.contains(runID)) {
+						runsMapped.add(runID);
+                                        	insertMap(conn, out, "ProcDSRuns", "Dataset", "Run",
                                                         procDSID, runID,
                                                         cbUserID, lmbUserID, creationDate);
-                               }
+					}
+                                }
+				//insert LumiRun Map now
+				insertMapBatch(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run", fileID, valueVec, runID, cbUserID, lmbUserID, creationDate);
 
                                 //Insert Trigger tags (if present)
                                 for (int j = 0; j < trigTagVector.size(); ++j) {
@@ -878,13 +873,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                 getID(conn, "Files", "LogicalFileName", fileAssoc, true),
                                                                 cbUserID, lmbUserID, creationDate, false);
                                 }
-
-
                         } else {
                                 //Write waring message that file exists already
                                 writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
                         }
-
 
                         if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
                 }//For loop
@@ -907,10 +899,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 
 	}
-
-
-
-
 
        /**
 	 * Insert a list of Files whose parameters are provided in the passed files <code>java.util.Vector</code>. This vector contains a list of hashtable and is generated externally and filled in with the file parameters by parsing the xml input provided by the client. This method inserts entries into more than one table associated with File table. The the main query that it executes to insert in File table, get generated by <code>dbs.DBSSql.insertFile</code> method.<br> 
@@ -954,7 +942,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 
 		//If Block is provided, cut the crap and jump to simpler implementation.
 		if (!isNull(blockName)) {
-			System.out.println("Caling NEW Implementation....Cut the CRAP!!!!");
 			 insertFilesInBlock(conn, out, block, files, dbsUser, ignoreParent);
 			return;
 		}

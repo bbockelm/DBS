@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.128 $"
- $Id: DBSSql.java,v 1.128 2007/12/04 18:05:24 afaq Exp $"
+ $Revision: 1.129 $"
+ $Id: DBSSql.java,v 1.129 2007/12/07 22:24:44 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -141,14 +141,58 @@ public class DBSSql {
 	}
 
 
-        public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, 
-			String cbUserID, String lmbUserID, String cDate) throws SQLException {
-		String sql = "INSERT INTO "+tableName+" \n"+ 
-				"("+key1+","+key2+") values (?, ?) \n";
-		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		return ps;
-	}
 
+c static PreparedStatement insertMapBatch_OLD(Connection conn, String tableName,
+                                String key1, String key2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+                String sql = "INSERT INTO "+tableName+" \n"+
+                        "("+key1+","+key2+", \n"+
+                                "CreatedBy, LastModifiedBy, CreationDate) \n"+
+                                "values (?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                return ps;
+        }
+
+        public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String mapTo,
+                        Vector values, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+
+                String sql = "INSERT INTO "+tableName+" \n"+
+                        "("+key1+","+key2+", \n"+
+                                "CreatedBy, LastModifiedBy, CreationDate) \n"+
+                                "values (?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                for (int j = 0; j < values.size(); ++j) {
+                        int columnIndx = 1;
+                        ps.setString(columnIndx++, mapTo);
+                        ps.setString(columnIndx++, (String)values.get(j));
+                        ps.addBatch();
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
+
+        //3-Key version
+         public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String key3,
+                        String mapTo, Vector values, String mapK3, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+
+                String sql = "INSERT INTO "+tableName+" \n"+
+                        "("+key1+","+key2+","+key3+", \n"+
+                                "CreatedBy, LastModifiedBy, CreationDate) \n"+
+                                "values (?, ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                for (int j = 0; j < values.size(); ++j) {
+                        int columnIndx = 1;
+                        ps.setString(columnIndx++, mapTo);
+                        ps.setString(columnIndx++, (String)values.get(j));
+                        ps.setString(columnIndx++, mapK3);
+                        ps.addBatch();
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
 
         public static PreparedStatement insertDQFlagHistory(Connection conn, String rowID) throws SQLException {
 

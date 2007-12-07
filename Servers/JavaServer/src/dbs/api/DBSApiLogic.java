@@ -1,6 +1,6 @@
 /**
- $Revision: 1.112 $"
- $Id: DBSApiLogic.java,v 1.112 2007/12/04 18:05:21 afaq Exp $"
+ $Revision: 1.113 $"
+ $Id: DBSApiLogic.java,v 1.113 2007/12/07 22:24:43 sekhri Exp $"
  *
  */
 
@@ -521,29 +521,40 @@ public class DBSApiLogic {
 		}
 	}
 
-        protected void insertMapBatch(Connection conn, PreparedStatement ps, Writer out, String tableName, String key1, String key2, 
-			Vector values, String cbUserID, String lmbUserID, String creationDate) throws Exception {
-		//No point if vector ain't has any values !
-		if (values.size() <= 0) return;
 
-		try {
-                	ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, cbUserID, lmbUserID, creationDate);
-			int columnIndx = 1;
-
-			for (int j = 0; j < values.size(); ++j) {
-				ps.setString(columnIndx++, get((Hashtable)values.get(j), key1, true));
-				ps.setString(columnIndx++, get((Hashtable)values.get(j), key2, true));
-				ps.addBatch();
-			}
-			DBSUtil.writeLog("\n\n" + ps + "\n\n");
-			ps.execute();
-		} finally {
-                               if (ps != null) ps.close();
-                }				
-	}
+        protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2,
+                        String mapTo, Vector values, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+                //No point if vector ain't has any values !
+                if (values.size() <= 0) return;
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, mapTo, values, cbUserID, lmbUserID, creationDate);
+                        ps.executeBatch();
+                } catch (Exception e) {
+                        throw new SQLException("'"+e.getMessage()+"' insertMapBatch failed for Table:"+
+                                tableName+ "key1: "+key1+" key2: "+key2+"Query failed is"+ps);
+                } finally {
+                                if (ps != null) ps.close();
+                }
+        }
 
 
 
+        protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2, String key3,
+                        String mapTo, Vector values, String mapK3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+                //No point if vector ain't has any values !
+                if (values.size() <= 0) return;
+                PreparedStatement ps = null;
+                try {
+                        ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, key3, mapTo, values, mapK3, cbUserID, lmbUserID, creationDate);
+                        ps.executeBatch();
+                } catch (Exception e) {
+                        throw new SQLException("'"+e.getMessage()+"' insertMapBatch failed for Table:"+
+                                tableName+ "key1: "+key1+" key2: "+key2+" key3: "+key3+" Query failed is"+ps);
+                } finally {
+                                if (ps != null) ps.close();
+                }
+        }
 
 	/**
 	 * This is a generic method that can delete entry from any table that has just two coloum in it which are unique. Since there are many such tables in the schema that has such kind of tables, therefore this method is resued several times to insert rows in them. It first checks if the row already exist in the database or not. Only if it exist, it goes ahead and performs the delete.
