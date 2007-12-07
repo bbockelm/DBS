@@ -1,6 +1,6 @@
 /**
- $Revision: 1.46 $"
- $Id: DBSApiBlockLogic.java,v 1.46 2007/10/15 16:24:48 afaq Exp $"
+ $Revision: 1.47 $"
+ $Id: DBSApiBlockLogic.java,v 1.47 2007/11/02 15:54:22 sekhri Exp $"
  *
  */
 
@@ -9,13 +9,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.io.Writer;
+import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.UUID;
+import dbs.DBSConstants;
 import dbs.sql.DBSSql;
 import dbs.util.DBSConfig;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import dbs.api.parser.DBSApiParser;
 
 /**
 * A class that has the core business logic of all the Block APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -625,6 +628,112 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		return  id;
 	}
 
+	private void insertRecycleBin(Connection conn, Writer out, String path, String blockName, String xml, String lmbUserID, String cbUserID, String creationDate) throws Exception {
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.insertRecycleBin(conn, 
+				path,
+				blockName,
+				xml,
+				cbUserID,
+				cbUserID,
+				creationDate);
+			ps.execute();
+                } finally {
+			if (ps != null) ps.close();
+		}
+	}
+
+	private void deleteRecycleBin(Connection conn, Writer out, String path, String blockName) throws Exception {
+		//NOTE no checling if this entry already exists because it is called when the entry actaully exists
+		PreparedStatement ps = null;
+		try {
+			ps = DBSSql.deleteMap(conn, "RecycleBin", "Path", "BlockName", path, blockName);
+			ps.execute();
+                } finally {
+			if (ps != null) ps.close();
+		}
+	}
+
+
+	private void checkFilesChildern(Connection conn, Writer out, String blockName) throws Exception {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = DBSSql.listFilesChildern(conn, getBlockID(conn, blockName, false, true));
+			rs =  ps.executeQuery();
+			if(rs.next()) 
+				throw new DBSException("Files cannot be Orphaned", "1091", "This Block " + blockName + " has files which have childern. Delete those files/datatset first " );
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+	
+	public void deleteBlock(Connection conn, Writer out, String path, String blockName, Hashtable dbsUser, String clientVersion) throws Exception {
+		checkPath(path);
+		checkFilesChildern(conn, out, blockName);
+		String lmbUserID = personApi.getUserID(conn, dbsUser);
+		String cbUserID = lmbUserID;
+		String creationDate = getTime(new Hashtable(), "creation_date", false);
+		DBSApiTransferLogic transferApi = new DBSApiTransferLogic(this.data);
+		StringWriter sout = new StringWriter();
+		sout.write(DBSConstants.XML_HEADER); 
+		//System.out.println("Block name is " + blockName);
+		transferApi.listDatasetContents(conn, sout, path,
+				blockName,
+				"DOES_NOT_MATTER",
+				clientVersion,
+				true
+				);
+		sout.write(DBSConstants.XML_SUCCESS);
+		sout.write(DBSConstants.XML_FOOTER);
+		sout.flush();
+
+		//System.out.println("XML is " + sout.toString());
+		//Write the XML in Recycle Bin
+		insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
+		//Record history in TimeLog
+		insertTimeLog(conn, "deleteBlock", "Delete Block called By User",
+			"deleteBlock",
+			"Block " + blockName + " moved to RecycleBin ",
+			dbsUser);
+	}
+
+	public void undeleteBlock(Connection conn, Writer out, String path, String blockName, Hashtable dbsUser, String clientVersion) throws Exception {
+		checkPath(path);
+		checkBlock(blockName);
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			//Get the xml of the Blocks from the recycle bin
+			ps =  DBSSql.listBlockContentsInRecycleBin(conn, path, blockName);
+			rs =  ps.executeQuery();
+			if(rs.next()) {
+			       	undeleteBlock(conn, out, path, blockName, get(rs, "XML"), dbsUser, clientVersion);
+				//Delete the actual block from Recycle Bin
+				deleteRecycleBin(conn, out, path, blockName);
+			}
+
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+	}
+
+	public void undeleteBlock(Connection conn, Writer out, String path, String blockName, String xml, Hashtable dbsUser, String clientVersion) throws Exception {
+			(new DBSApiTransferLogic(this.data)).insertDatasetContents(conn, out,
+				DBSApiParser.parseDatasetContents(xml), 
+				dbsUser,
+				false,
+				clientVersion);
+
+			//Record history in TimeLog
+			insertTimeLog(conn, "undeleteBlock", "UNDelete Block called By User",
+				"undeleteBlock",
+				"Block: " + blockName + " moved from RecycleBin back to DBS",
+				dbsUser);
+	}
 
 
 }

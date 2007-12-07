@@ -1,6 +1,6 @@
 /**
- $Revision: 1.111 $"
- $Id: DBSApiLogic.java,v 1.111 2007/11/29 22:45:07 afaq Exp $"
+ $Revision: 1.112 $"
+ $Id: DBSApiLogic.java,v 1.112 2007/12/04 18:05:21 afaq Exp $"
  *
  */
 
@@ -726,7 +726,6 @@ public class DBSApiLogic {
 	 */
 	protected String getID(Connection conn, String tableName, String key, String value, boolean excep) throws Exception {
 		if (excep) checkWord(value, key);
-		else if(!isNull(value)) checkWord(value, key);
 
 		if(isNull(tableName) || isNull(key) || isNull(value)) {
 			if(excep) throw new DBSException("Unavailable data", "1011", "No such " + 
@@ -893,7 +892,7 @@ public class DBSApiLogic {
 	 * @param path a dataset path in the format of /primary/tier/processed. If this path is not provided or the dataset id could not be found then an exception is thrown.
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters are invalid.
 	 */
-	private void checkPath(String path) throws Exception {
+	protected void checkPath(String path) throws Exception {
 		if(isNull(path)) 
 			throw new DBSException("Missing data", "1006", "Null Fields. Expected a valid path in format /PRIMARY/PROCESSED/TIER1-TIER2");
 		if (! Pattern.matches(VALID_PATH, path) ) 

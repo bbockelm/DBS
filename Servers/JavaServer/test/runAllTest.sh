@@ -472,6 +472,22 @@ closeBlock () {
 	display "$out"
 }
 
+deleteBlock () {
+	message="Executing deleteBlock API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=deleteBlock path=$path_child block_name=$block_name`
+	display "$out"
+}
+
+undeleteBlock () {
+	message="Executing undeleteBlock API..."
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=undeleteBlock path=$path_child block_name=$block_name`
+	display "$out"
+}
+
+
+
 deleteProcDS () {
 	message="Executing deleteProcDS API..."
 	echo $message >> $outFile ; echo $message
@@ -671,6 +687,8 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
+#deleteBlock
+#undeleteBlock
 
 #deleteProcDS
 #undeleteProcDS

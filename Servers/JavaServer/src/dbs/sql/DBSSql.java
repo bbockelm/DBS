@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.127 $"
- $Id: DBSSql.java,v 1.127 2007/11/16 22:20:37 sekhri Exp $"
+ $Revision: 1.128 $"
+ $Id: DBSSql.java,v 1.128 2007/12/04 18:05:24 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -1381,7 +1381,21 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
+	//public static PreparedStatement listDatasetParents(Connection conn, String procDSID) throws SQLException {
+	public static PreparedStatement listDatasetProvenence(Connection conn, String procDSID, boolean parentOrChild) throws SQLException {
+		//parentOrChild if true means we need to get the parents of the dataset
+		//parentOrChild if false means we need to get the childern of the dataset
+
+		String joinStr = "";
+		String whereStr = "";
+		if (parentOrChild) {
+			joinStr = "ON dp.ItsParent = procds.id \n";
+			whereStr = "WHERE dp.ThisDataset = ? \n";
+		} else {
+			joinStr = "ON dp.ThisDataset = procds.id \n";
+			whereStr = "WHERE dp.ItsParent = ? \n";
+		}
+
 		String sql = "SELECT DISTINCT procds.id as id, \n" +
 			"primds.Name as PRIMARY_DATASET_NAME, \n" +
 			"procds.name as PROCESSED_DATASET_NAME, \n" +
@@ -1399,7 +1413,7 @@ public class DBSSql {
 			"LEFT OUTER JOIN PhysicsGroup pg \n" +
 				"ON pg.id = procds.PhysicsGroup \n" +
 			"JOIN ProcDSParent dp \n" +
-				"ON dp.ItsParent = procds.id \n" +
+				joinStr +
 			"LEFT OUTER JOIN Person perpg \n" +
 				"ON perpg.id = pg.PhysicsGroupConvener \n" +
 			"LEFT OUTER JOIN Person percb \n" +
@@ -1407,15 +1421,12 @@ public class DBSSql {
 			"LEFT OUTER JOIN Person perlm \n" +
 				"ON perlm.id = procds.LastModifiedBy \n";
 		
-		if(procDSID != null) {
-			sql += "WHERE dp.ThisDataset = ? \n";
-		}
+		if(!DBSUtil.isNull(procDSID)) sql += whereStr;
+
 		sql +=	"ORDER BY primds.Name, procds.name DESC";
 		
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
-		if(procDSID != null) {
-			ps.setString(1, procDSID);
-		}
+		if(!DBSUtil.isNull(procDSID)) ps.setString(1, procDSID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -1785,15 +1796,17 @@ public class DBSSql {
 		return ps;
 	}
 
-	public static PreparedStatement listBlockContentsInRecycleBin(Connection conn, String path) throws SQLException {
+	public static PreparedStatement listBlockContentsInRecycleBin(Connection conn, String path, String blockName) throws SQLException {
 		String sql = "SELECT rb.BlockName as BLOCK_NAME, \n" +
 			"rb.Xml as XML \n" +
 			"FROM RecycleBin rb \n" +
 			"WHERE rb.Path = ? \n";
 
+		if(!DBSUtil.isNull(blockName)) sql += "AND rb.BlockName = ? \n";
                 int columnIndx = 1;
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
 		ps.setString(columnIndx++, path);
+		if(!DBSUtil.isNull(blockName)) ps.setString(columnIndx++, blockName);
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
@@ -2113,6 +2126,21 @@ public class DBSSql {
 		if(!DBSUtil.isNull(fileID)) {
 			ps.setString(1, fileID);
 		}
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
+	public static PreparedStatement listFilesChildern(Connection conn, String blockID) throws SQLException {
+			
+		String sql = "SELECT DISTINCT f.ID as ID \n " +
+			"FROM Files f \n" +
+			"JOIN FileParentage fp \n" +
+				"ON fp.ThisFile = f.ID \n" +
+			" WHERE\n" +
+			"fp.ItsParent IN (SELECT ID from Files where Block = ?)\n";
+		
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		ps.setString(1, blockID);
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}

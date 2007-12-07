@@ -1,6 +1,6 @@
 /**
- $Revision: 1.113 $"
- $Id: DBSApi.java,v 1.113 2007/11/16 21:29:36 sekhri Exp $"
+ $Revision: 1.114 $"
+ $Id: DBSApi.java,v 1.114 2007/11/29 17:40:32 sekhri Exp $"
  *
 */
 
@@ -595,6 +595,20 @@ public class DBSApi {
 			} else if (apiStr.equals("undeleteProcDS")) {
 				(new DBSApiProcDSLogic(this.data)).undeleteProcDS(conn, out,
 						get(table, "path", true),
+						dbsUser,
+						apiVersion);
+
+			} else if (apiStr.equals("deleteBlock")) {
+				(new DBSApiBlockLogic(this.data)).deleteBlock(conn, out,
+						get(table, "path", true),
+						get(table, "block_name", true),
+						dbsUser,
+						apiVersion);
+	
+			} else if (apiStr.equals("undeleteBlock")) {
+				(new DBSApiBlockLogic(this.data)).undeleteBlock(conn, out,
+						get(table, "path", true),
+						get(table, "block_name", true),
 						dbsUser,
 						apiVersion);
 
