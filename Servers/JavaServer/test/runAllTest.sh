@@ -31,6 +31,7 @@ run_number1="9999"
 run_number2="9998"
 #block_name="/test/test/test#$rand"
 block_name="$path_child#$rand"
+block_name1="$path#$rand"
 block_name2="$path_child#2_$rand"
 lfn1="TEST_LFN_1_$rand"
 lfn2="TEST_LFN_2_$rand"
@@ -462,6 +463,17 @@ insertBlock () {
 	out=`$CMD api=insertBlock "xmlinput=$xmlString"`
 	display "$out"
 
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+			<block path='$path' name='$block_name1' open_for_writing='1' created_by='Let_me_try_this' creation_date='1066729598999'/>
+			<storage_element storage_element_name='SE3_$rand'/>
+			<storage_element storage_element_name='SE4_$rand'/>
+		</dbs>"
+	message="Executing insertBlock API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=insertBlock "xmlinput=$xmlString"`
+	display "$out"
+
 	#echo "$out"
 }
 
@@ -475,7 +487,8 @@ closeBlock () {
 deleteBlock () {
 	message="Executing deleteBlock API..."
 	echo $message >> $outFile ; echo $message
-	out=`$CMD api=deleteBlock path=$path_child block_name=$block_name`
+	#out=`$CMD api=deleteBlock path=$path_child block_name=$block_name`
+	out=`$CMD api=deleteBlock path=$path block_name=$block_name1`
 	display "$out"
 }
 
@@ -492,6 +505,7 @@ deleteProcDS () {
 	message="Executing deleteProcDS API..."
 	echo $message >> $outFile ; echo $message
 	out=`$CMD api=deleteProcDS path=$path_child`
+	#out=`$CMD api=deleteProcDS path=$path`
 	display "$out"
 }
 
@@ -538,6 +552,22 @@ insertFiles () {
 				<file_data_tier name='$tier_name2'/>
 				$falgo3
 				$falgo4
+			</file>
+		</processed_datatset>
+		</dbs>"
+		
+	message="Executing insertFiles API ..."	
+	echo $message >> $outFile ; echo $message
+	out=`$CMD api=insertFiles "xmlinput=$xmlString"`
+	display "$out"
+
+	xmlString="<?xml version='1.0' standalone='yes'?>
+		<dbs>
+		<processed_datatset path='$path'>
+			<file lfn='abcd_$lfn1' checksum='CHKSUM' number_of_events='200' size='200' file_status='VALID' type= 'EDM' validation_status='VALID' queryable_meta_data='any' created_by='Let_me_try_this' creation_date='1066729598999'>
+				<file_parent lfn='$lfn1'/>
+				$falgo1
+				$falgo1
 			</file>
 		</processed_datatset>
 		</dbs>"
@@ -687,15 +717,15 @@ insertLumiSection
 insertProcessedDataset
 insertBlock
 insertFiles
+
 #deleteBlock
 #undeleteBlock
-
 #deleteProcDS
 #undeleteProcDS
-createAnalysisDatasetDefinition
-createAnalysisDataset
-listAnalysisDatasetDefinition
-listAnalysisDataset
+#createAnalysisDatasetDefinition
+#createAnalysisDataset
+#listAnalysisDatasetDefinition
+#listAnalysisDataset
 #
 listPrimaryDatasets
 listProcessedDatasets
@@ -705,7 +735,7 @@ listTiers
 listBlocks
 listFiles
 listLFNs
-##listDatasetContents
+#listDatasetContents
 listDatasetParents
 listFileParents
 listFileAlgorithms
@@ -720,11 +750,11 @@ updateFileStatus
 updateFileMetaData
 updateAnalDSType
 updateFileType
-updateSEName
-updateSEBlock
-closeBlock
-updateRun
-updateLumiSection
+#updateSEName
+#updateSEBlock
+#closeBlock
+#updateRun
+#updateLumiSection
 ##
 ##	
 #												
