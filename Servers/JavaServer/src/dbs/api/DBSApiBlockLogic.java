@@ -1,6 +1,6 @@
 /**
- $Revision: 1.48 $"
- $Id: DBSApiBlockLogic.java,v 1.48 2007/12/07 22:24:43 sekhri Exp $"
+ $Revision: 1.49 $"
+ $Id: DBSApiBlockLogic.java,v 1.49 2007/12/10 18:17:27 sekhri Exp $"
  *
  */
 
@@ -628,35 +628,6 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		return  id;
 	}
 
-	private void insertRecycleBin(Connection conn, Writer out, String path, String blockName, String xml, String lmbUserID, String cbUserID, String creationDate) throws Exception {
-		if( !isNull(getMapIDNoCheck(conn, "RecycleBin", "Path", "BlockName", path, blockName, false))) 
-			throw new DBSException("Already Exists", "1020", "RecycleBin with Path " + path + " and block " + blockName + " Already Exists. Remove this entry first");
-
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.insertRecycleBin(conn, 
-				path,
-				blockName,
-				xml,
-				cbUserID,
-				cbUserID,
-				creationDate);
-			ps.execute();
-                } finally {
-			if (ps != null) ps.close();
-		}
-	}
-
-	private void deleteRecycleBin(Connection conn, Writer out, String path, String blockName) throws Exception {
-		//NOTE no checling if this entry already exists because it is called when the entry actaully exists
-		PreparedStatement ps = null;
-		try {
-			ps = DBSSql.deleteMap(conn, "RecycleBin", "Path", "BlockName", path, blockName);
-			ps.execute();
-                } finally {
-			if (ps != null) ps.close();
-		}
-	}
 
 
 	private void checkFilesChildern(Connection conn, Writer out, String blockName) throws Exception {
@@ -695,7 +666,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 
 		//System.out.println("XML is " + sout.toString());
 		//Write the XML in Recycle Bin
-		insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
+		(new DBSApiRecycleBin(this.data)).insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
 		//Delete the actual Block
 		deleteName(conn, out, "Block", "Name", blockName);
 		//Record history in TimeLog
@@ -717,7 +688,7 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 			if(rs.next()) {
 			       	undeleteBlock(conn, out, path, blockName, get(rs, "XML"), dbsUser, clientVersion);
 				//Delete the actual block from Recycle Bin
-				deleteRecycleBin(conn, out, path, blockName);
+				(new DBSApiRecycleBin(this.data)).deleteRecycleBin(conn, out, path, blockName);
 			}
 
 		} finally {

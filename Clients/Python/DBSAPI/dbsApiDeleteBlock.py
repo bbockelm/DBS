@@ -28,7 +28,7 @@ def dbsApiImplDeleteBlock(self, dataset, block):
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
            
     examples:
-         api.deleteBlock ("/this/hahah/SIM")
+         api.deleteBlock ("/this/hahah/SIM", "/this/hahah/SIM#1234")
  
     """   
 
@@ -58,7 +58,7 @@ def dbsApiImplUndeleteBlock(self, dataset, block):
            DbsToolError, DbsDatabaseError, DbsBadXMLData, InvalidDatasetPathName, DbsException  
            
     examples:
-         api.deleteBlock ("/this/hahah/SIM")
+         api.deleteBlock ("/this/hahah/SIM", "/this/hahah/SIM#1234")
  
     """   
 

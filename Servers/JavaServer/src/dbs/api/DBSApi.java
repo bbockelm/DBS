@@ -1,6 +1,6 @@
 /**
- $Revision: 1.114 $"
- $Id: DBSApi.java,v 1.114 2007/11/29 17:40:32 sekhri Exp $"
+ $Revision: 1.115 $"
+ $Id: DBSApi.java,v 1.115 2007/12/07 22:24:43 sekhri Exp $"
  *
 */
 
@@ -612,7 +612,11 @@ public class DBSApi {
 						dbsUser,
 						apiVersion);
 
-
+			} else if (apiStr.equals("deleteRecycleBin")) {
+				(new DBSApiRecycleBin(this.data)).deleteRecycleBin(conn, out,
+						get(table, "path", true),
+						get(table, "block_name", true));
+	
                         } else if (apiStr.equals("insertRunLumiDQ"))  {
                                 (new DBSApiDQLogic(this.data)).insertRunLumiDQ(conn, out,
                                                 DBSApiParser.parseDQRunLumi(getXml(table)),

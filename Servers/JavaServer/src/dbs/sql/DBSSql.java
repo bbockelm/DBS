@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.129 $"
- $Id: DBSSql.java,v 1.129 2007/12/07 22:24:44 sekhri Exp $"
+ $Revision: 1.130 $"
+ $Id: DBSSql.java,v 1.130 2007/12/07 23:00:42 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -142,7 +142,7 @@ public class DBSSql {
 
 
 
-c static PreparedStatement insertMapBatch_OLD(Connection conn, String tableName,
+	public static PreparedStatement insertMapBatch_OLD(Connection conn, String tableName,
                                 String key1, String key2, String cbUserID, String lmbUserID, String cDate) throws SQLException {
                 String sql = "INSERT INTO "+tableName+" \n"+
                         "("+key1+","+key2+", \n"+
