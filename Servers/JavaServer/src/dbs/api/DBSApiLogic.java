@@ -1,6 +1,6 @@
 /**
- $Revision: 1.113 $"
- $Id: DBSApiLogic.java,v 1.113 2007/12/07 22:24:43 sekhri Exp $"
+ $Revision: 1.114 $"
+ $Id: DBSApiLogic.java,v 1.114 2007/12/07 23:00:42 afaq Exp $"
  *
  */
 
@@ -17,6 +17,7 @@ import java.sql.ResultSetMetaData;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import java.sql.SQLException;
 import dbs.DBSConstants;
 import java.util.Arrays;
 import java.util.Vector;
