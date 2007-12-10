@@ -1,6 +1,6 @@
 /**
- $Revision: 1.116 $"
- $Id: DBSApiLogic.java,v 1.116 2007/12/10 18:17:28 sekhri Exp $"
+ $Revision: 1.117 $"
+ $Id: DBSApiLogic.java,v 1.117 2007/12/10 19:44:19 sekhri Exp $"
  *
  */
 
@@ -524,7 +524,7 @@ public class DBSApiLogic {
 
 
         protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2,
-                        String mapTo, Vector values, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+			String mapTo, java.util.ArrayList values, String cbUserID, String lmbUserID, String creationDate) throws Exception {
                 //No point if vector ain't has any values !
                 if (values.size() <= 0) return;
                 PreparedStatement ps = null;
@@ -542,7 +542,7 @@ public class DBSApiLogic {
 
 
         protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2, String key3,
-                        String mapTo, Vector values, String mapK3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
+			String mapTo, java.util.ArrayList values, String mapK3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
                 //No point if vector ain't has any values !
                 if (values.size() <= 0) return;
                 PreparedStatement ps = null;

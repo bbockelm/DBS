@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.130 $"
- $Id: DBSSql.java,v 1.130 2007/12/07 23:00:42 afaq Exp $"
+ $Revision: 1.131 $"
+ $Id: DBSSql.java,v 1.131 2007/12/10 19:44:19 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -140,6 +140,34 @@ public class DBSSql {
 		return getInsertSQL(conn, tableName, table);
 	}
 
+        public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String mapTo,
+                        java.util.ArrayList values, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+
+                String sql = "INSERT INTO "+tableName+" \n"+
+                                "("+key1+","+key2+", \n"+
+                                " CreatedBy, LastModifiedBy, CreationDate) \n"+
+                                " select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n" +
+                                " WHERE not exists \n" +
+                                " (select * from " + tableName + " \n" +
+                                " where " + key1 + "=? AND " + key2 + "=?) \n" ;
+
+                PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                for (int j = 0; j < values.size(); ++j) {
+                        int columnIndx = 1;
+                        String value=(String)values.get(j);
+
+                        ps.setString(columnIndx++, mapTo);
+                        ps.setString(columnIndx++, value);
+
+                        //For the WHERE not exists Clause
+                        ps.setString(columnIndx++, mapTo);
+                        ps.setString(columnIndx++, value);
+                        ps.addBatch();
+                }
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+
+                return ps;
+        }
 
 
 	public static PreparedStatement insertMapBatch_OLD(Connection conn, String tableName,
@@ -152,41 +180,33 @@ public class DBSSql {
                 return ps;
         }
 
-        public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String mapTo,
-                        Vector values, String cbUserID, String lmbUserID, String cDate) throws SQLException {
-
-                String sql = "INSERT INTO "+tableName+" \n"+
-                        "("+key1+","+key2+", \n"+
-                                "CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                "values (?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
-
-                PreparedStatement ps = DBManagement.getStatement(conn, sql);
-                for (int j = 0; j < values.size(); ++j) {
-                        int columnIndx = 1;
-                        ps.setString(columnIndx++, mapTo);
-                        ps.setString(columnIndx++, (String)values.get(j));
-                        ps.addBatch();
-                }
-                DBSUtil.writeLog("\n\n" + ps + "\n\n");
-
-                return ps;
-        }
-
         //3-Key version
          public static PreparedStatement insertMapBatch(Connection conn, String tableName, String key1, String key2, String key3,
-                        String mapTo, Vector values, String mapK3, String cbUserID, String lmbUserID, String cDate) throws SQLException {
+                        String mapTo, java.util.ArrayList values, String mapK3, String cbUserID, String lmbUserID, String cDate) throws SQLException {
 
                 String sql = "INSERT INTO "+tableName+" \n"+
                         "("+key1+","+key2+","+key3+", \n"+
-                                "CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                "values (?, ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+") \n";
+                                " CreatedBy, LastModifiedBy, CreationDate) \n"+
+                                " select ?, ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n" +
+				" WHERE not exists \n" +
+                                " (select * from " + tableName + " \n" +
+                                " where " + key1 + "=? AND " + key2 + "=? AND " + key3 + "=?) \n" ;
+
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 for (int j = 0; j < values.size(); ++j) {
                         int columnIndx = 1;
+			
                         ps.setString(columnIndx++, mapTo);
                         ps.setString(columnIndx++, (String)values.get(j));
                         ps.setString(columnIndx++, mapK3);
+
+
+                       //For the WHERE not exists Clause
+			ps.setString(columnIndx++, mapTo);
+                        ps.setString(columnIndx++, (String)values.get(j));
+                        ps.setString(columnIndx++, mapK3);
+
                         ps.addBatch();
                 }
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.75 $"
- $Id: DBSApiFileLogic.java,v 1.75 2007/12/04 18:05:20 afaq Exp $"
+ $Revision: 1.76 $"
+ $Id: DBSApiFileLogic.java,v 1.76 2007/12/07 23:00:42 afaq Exp $"
  *
  */
 
@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.ArrayList;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import codec.Base64;
@@ -515,11 +516,13 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 }
 
         //Checks if files have same tiers as provided in tierVecToCheckWithFile
-	private boolean matchWithFileTiers(Vector files, Vector tierVecToCheckWithFile, String path)  throws Exception {
+	//private boolean matchWithFileTiers(Vector files, Vector tierVecToCheckWithFile, String path)  throws Exception {
+	private boolean matchWithFileTiers(ArrayList files, Vector tierVecToCheckWithFile, String path)  throws Exception {
 
                 //File Tiers must be within ProcDS Tiers
                 for (int i = 0; i != files.size() ; ++i) {
-                        Vector tierVector = DBSUtil.getVector((Hashtable)files.get(i) ,"file_data_tier");
+                        ArrayList tierVector = DBSUtil.getArrayList((Hashtable)files.get(i) ,"file_data_tier");
+                        //Vector tierVector = DBSUtil.getVector((Hashtable)files.get(i) ,"file_data_tier");
                         if(tierVector.size() != tierVecToCheckWithFile.size())
                                 throw new DBSException("Tier Mismatch", "1039", "Number of Tiers in file " + tierVector.size() +
                                                 " is not equal to the number of tiers " + tierVecToCheckWithFile.size() +
@@ -606,7 +609,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	//Then it insert files with all information
 	//Makes is pretty speedy operation
 	//ANZAR: 12/03/2007
-        public void insertFilesInBlock(Connection conn, Writer out, Hashtable block, Vector files, Hashtable dbsUser, boolean ignoreParent) throws Exception {
+        public void insertFilesInBlock(Connection conn, Writer out, Hashtable block, ArrayList files, Hashtable dbsUser, boolean ignoreParent) throws Exception {
 
 		//Verify Block Name
                 String blockName = getBlockPattern(DBSUtil.get(block, "block_name"));
@@ -692,9 +695,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
                 String lastBranchHash = null;
                 String branchID = null;
 		//Vector that just hold some cache values for insertMap function.
-		Vector valueVec = new Vector();
+		ArrayList valueVec = new ArrayList();
+		//Vector valueVec = new Vector();
 		//Simple vector that keeps track of what runs have already been added to this dataset
-		Vector runsMapped = new Vector();
+		//Vector runsMapped = new Vector();
+		ArrayList runsMapped = new ArrayList();
 
                 for (int i = 0; i < files.size() ; ++i) {
                         Hashtable file = (Hashtable)files.get(i);
@@ -706,12 +711,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         String valStatus = get(file, "validation_status", false).toUpperCase();
                         String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
                         String creationDate = getTime(file, "creation_date", false);
-                        Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
-                        Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
-                        Vector parentVector = DBSUtil.getVector(file,"file_parent");
-                        Vector childVector = DBSUtil.getVector(file,"file_child");
-                        Vector algoVector = DBSUtil.getVector(file,"file_algorithm");
-                        Vector trigTagVector = DBSUtil.getVector(file,"file_trigger_tag");
+                        ArrayList lumiVector = DBSUtil.getArrayList(file,"file_lumi_section");
+                        ArrayList tierVector = DBSUtil.getArrayList(file,"file_data_tier");
+                        ArrayList parentVector = DBSUtil.getArrayList(file,"file_parent");
+                        ArrayList childVector = DBSUtil.getArrayList(file,"file_child");
+                        ArrayList algoVector = DBSUtil.getArrayList(file,"file_algorithm");
+                        ArrayList trigTagVector = DBSUtil.getArrayList(file,"file_trigger_tag");
 
                         //Set defaults Values
                         if (isNull(fileStatus)) fileStatus = "VALID";
@@ -824,15 +829,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                 String lumiID = getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , false);
 						valueVec.add(getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true));
 
-                                                //if( isNull(lumiID)) {
-                                                //        insertLumiSection(conn, out, hashTable, cbUserID, lmbUserID, creationDate);
-                                                //}
-
-                                                //insertMap(conn, out, "FileRunLumi", "Fileid", "Lumi", "Run",
-                                                //        fileID,
-                                                //        getID(conn, "LumiSection", "LumiSectionNumber", lsNumber , true),
-                                                //        runID,
-                                                //        cbUserID, lmbUserID, creationDate, false);
                                         }
 
                                         //Just add Run-Fileid map (Rare case!)
@@ -927,12 +923,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 	 * @throws Exception Various types of exceptions can be thrown. Commonly they are thrown if the supplied parameters in the hashtable are invalid, the database connection is unavailable or a duplicate entry is being added.
 	 */
 	public void insertFiles(Connection conn, Writer out, String path, String primary, 
-							String proc, Hashtable block, Vector files, Hashtable dbsUser) throws Exception { 
+							String proc, Hashtable block, ArrayList files, Hashtable dbsUser) throws Exception { 
 		insertFiles(conn, out, path, primary, proc, block, files, dbsUser, false);
 	}
 
         public void insertFiles(Connection conn, Writer out, String path, String primary, 
-							String proc, Hashtable block, Vector files, Hashtable dbsUser, boolean ignoreParent) throws Exception { 
+							String proc, Hashtable block, ArrayList files, Hashtable dbsUser, boolean ignoreParent) throws Exception { 
 
 
 		//The presedence order is Block, then Path, then (Primary, Process Dataset)
@@ -1081,13 +1077,12 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String valStatus = get(file, "validation_status", false).toUpperCase();
 			String cbUserID = personApi.getUserID(conn, get(file, "created_by"), dbsUser );
 			String creationDate = getTime(file, "creation_date", false);
-			Vector lumiVector = DBSUtil.getVector(file,"file_lumi_section");
-			Vector tierVector = DBSUtil.getVector(file,"file_data_tier");
-			Vector parentVector = DBSUtil.getVector(file,"file_parent");
-			Vector childVector = DBSUtil.getVector(file,"file_child");
-			Vector algoVector = DBSUtil.getVector(file,"file_algorithm");
-			//Vector branchVector = DBSUtil.getVector(file,"file_branch");
-			Vector trigTagVector = DBSUtil.getVector(file,"file_trigger_tag");
+			ArrayList lumiVector = DBSUtil.getArrayList(file,"file_lumi_section");
+			ArrayList tierVector = DBSUtil.getArrayList(file,"file_data_tier");
+			ArrayList parentVector = DBSUtil.getArrayList(file,"file_parent");
+			ArrayList childVector = DBSUtil.getArrayList(file,"file_child");
+			ArrayList algoVector = DBSUtil.getArrayList(file,"file_algorithm");
+			ArrayList trigTagVector = DBSUtil.getArrayList(file,"file_trigger_tag");
 		
 
 			//Set defaults Values
@@ -1326,7 +1321,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				if (ps != null) ps.close();
                 	}*/
 		}
-
 	}
 
 

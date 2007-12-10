@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.12 $"
- $Id: DBSUtil.java,v 1.12 2007/11/28 17:06:43 sekhri Exp $"
+ $Revision: 1.14 $"
+ $Id: DBSUtil.java,v 1.14 2007/12/03 18:04:49 sekhri Exp $"
  *
 */
 
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.io.Writer;
 import dbs.DBSConstants;
-
+import java.util.ArrayList;
 /**
 * A util class that has a few utility menthods. All of the methods are static methods and do not need instance of this class to be called.
 * @author sekhri
@@ -56,7 +56,10 @@ public class DBSUtil {
 	 * an string value of the key in the table.
 	 *
 	 */
+
+	/***
 	public static Vector getVector(Hashtable table, String key) {
+
 		Vector v = new Vector();
 		if(key == null ||  table == null) {
 			return v;
@@ -69,8 +72,36 @@ public class DBSUtil {
 			return v;
 		}
 		return (Vector)tmp;
+	}**/
+
+
+	//This may save some Vector CTOR instantiations -- AA 12/10/2007
+        public static Vector getVector(Hashtable table, String key) {
+		if(key == null ||  table == null || !table.containsKey(key) )
+			return new Vector();
+		Object tmp = table.get(key);
+		if (tmp == null)
+			tmp = new Vector();
+		return (Vector)tmp;
 	}
 
+
+        public static ArrayList getArrayList(Hashtable table, String key) {
+
+		//Avoid calling a CTOR when its not really needed !
+		if(key == null ||  table == null || !table.containsKey(key) )
+			return new ArrayList();
+
+		Object tmp = table.get(key);
+		if (tmp == null) 
+			tmp = new ArrayList();
+		return (ArrayList)tmp;
+
+        }
+
+
+
+	/**
 	public static Hashtable getTable(Hashtable table, String key) {
 		Hashtable t = new Hashtable();
 		if(key == null ||  table == null) {
@@ -83,6 +114,18 @@ public class DBSUtil {
 		if(tmp == null) {
 			return t;
 		}
+		return (Hashtable)tmp;
+	}
+	**/
+
+	//This may save some Hashtable CTOR instantiations -- AA 12/10/2007
+        public static Hashtable getTable(Hashtable table, String key) {
+		if(key == null ||  table == null || !table.containsKey(key))
+			return new Hashtable();
+
+		Object tmp = table.get(key);
+		if (tmp == null)
+			tmp = new Hashtable();
 		return (Hashtable)tmp;
 	}
 

@@ -1,7 +1,7 @@
 /*
 * @author anzar
- $Revision: 1.7 $"
- $Id: DBSXMLParser.java,v 1.7 2006/12/01 18:47:43 sekhri Exp $"
+ $Revision: 1.8 $"
+ $Id: DBSXMLParser.java,v 1.8 2006/12/05 19:39:40 sekhri Exp $"
 *
 */
 
@@ -36,6 +36,7 @@ public class DBSXMLParser extends DefaultHandler {
 		elements = new Vector();
 	}
 
+
 	/**
 	* Returns a <code>java.util.Vector</code> of <code>xml.Element</code> . 
 	* @return 
@@ -44,6 +45,12 @@ public class DBSXMLParser extends DefaultHandler {
 	public Vector getElements() {
 		return(elements);
 	}
+	
+	public java.util.ArrayList getArrayElements() {
+		java.util.ArrayList list = new java.util.ArrayList (elements);
+		return list;
+	}
+
 
 	/**
 	 * Receive notification of the start of an element when parsing beguns. This method takes in th avules returned by the standard SAX parser and stores it in a <code>java.util.Vector</code> of  <code>xml.Element</code>

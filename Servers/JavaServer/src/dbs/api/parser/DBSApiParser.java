@@ -1,6 +1,6 @@
 /**
- $Revision: 1.16 $"
- $Id: DBSApiParser.java,v 1.16 2007/09/28 18:02:04 afaq Exp $"
+ $Revision: 1.17 $"
+ $Id: DBSApiParser.java,v 1.17 2007/11/16 21:29:37 sekhri Exp $"
  *
 */
 
@@ -9,6 +9,7 @@ package dbs.api.parser;
 import java.sql.Connection;
 import java.io.Writer;
 import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import xml.DBSXMLParser;
 import xml.Element;
@@ -186,26 +187,29 @@ public class DBSApiParser {
 	}
 
 	public static void insertFiles(DBSApiData data, Connection conn, Writer out, String primary, String proc, String inputXml, Hashtable dbsUser) throws Exception {
-		Vector topLevel = new Vector();
+		ArrayList topLevel = new ArrayList();
 		int index = -1;
 		DBSXMLParser dbsParser = new DBSXMLParser();
 		dbsParser.parseString(inputXml); 
-    		Vector allElement = dbsParser.getElements();
+    		ArrayList allElement = dbsParser.getArrayElements();
 		Hashtable psDS = null;
                 Hashtable block = null;
 
 		for (int i=0; i<allElement.size(); ++i) {
-			Element e = (Element)allElement.elementAt(i);
+			Element e = (Element)allElement.get(i);
+			//Element e = (Element)allElement.elementAt(i);
 			String name = e.name;
 			if (name.equals("file") ) {
 				Hashtable file = e.attributes;
-				file.put("file_lumi_section", new Vector());
-				file.put("file_data_tier", new Vector());
-				file.put("file_parent", new Vector());
-				file.put("file_child", new Vector());
-				file.put("file_algorithm", new Vector());
-				file.put("file_branch", new Vector());
-				file.put("file_trigger_tag", new Vector());
+
+                                file.put("file_lumi_section", new ArrayList());
+                                file.put("file_data_tier", new ArrayList());
+                                file.put("file_parent", new ArrayList());
+                                file.put("file_child", new ArrayList());
+                                file.put("file_algorithm", new ArrayList());
+                                file.put("file_branch", new ArrayList());
+                                file.put("file_trigger_tag", new ArrayList());
+
 				topLevel.add(file);
 				++index;
 			} 
@@ -213,25 +217,24 @@ public class DBSApiParser {
                         if (name.equals("block") ) {
                                 block = e.attributes;
                                 //Keep the storage_elements
-                                block.put("storage_element", new Vector());
+                                block.put("storage_element", new ArrayList());
                         }
                         if (name.equals("storage_element") )
-                                ((Vector) get(block, "storage_element", "block")).add(e.attributes);
-
+                                ((ArrayList) get(block, "storage_element", "block")).add(e.attributes);
 			if (name.equals("file_lumi_section") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_lumi_section", "file"))).add(e.attributes);
+				((ArrayList)( get((Hashtable) get(topLevel, index, "file"), "file_lumi_section", "file"))).add(e.attributes);
 			if (name.equals("file_data_tier") )
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_data_tier", "file"))).add(e.attributes);
+				((ArrayList)( get((Hashtable) get(topLevel, index, "file"), "file_data_tier", "file"))).add(e.attributes);
 			if (name.equals("file_parent") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_parent", "file"))).add(e.attributes);
+				((ArrayList)( get((Hashtable) get(topLevel, index, "file"), "file_parent", "file"))).add(e.attributes);
 			if (name.equals("file_child") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_child", "file"))).add(e.attributes);
+				((ArrayList)( get((Hashtable) get(topLevel, index, "file"), "file_child", "file"))).add(e.attributes);
 			if (name.equals("file_algorithm") ) 
-				((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
+				((ArrayList)( get((Hashtable) get(topLevel, index, "file"), "file_algorithm", "file"))).add(e.attributes);
                         //if (name.equals("file_branch") ) 
                         //        ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_branch", "file"))).add(e.attributes);
                         if (name.equals("file_trigger_tag") )
-                                ((Vector)( get((Hashtable) get(topLevel, index, "file"), "file_trigger_tag", "file"))).add(e.attributes);
+                                ((ArrayList)( get((Hashtable) get(topLevel, index, "file"), "file_trigger_tag", "file"))).add(e.attributes);
 			if (name.equals("processed_datatset") ) {
 				psDS = e.attributes;
 			}
@@ -412,6 +415,20 @@ public class DBSApiParser {
 		
 		return tmp;
 	}
+
+
+        private static Object get(java.util.ArrayList v, int index, String missingKey) throws Exception {
+                if((index < 0) || (v.size() <= index))
+                        throw new XMLException("Invalid XML", "3002", "The given xml is not a valid DBS XML. Most likely the tag " + missingKey + " is missing");
+
+                Object tmp = v.get(index);
+                if(tmp == null)
+                        throw new XMLException("Invalid XML", "3002", "The given xml is not a valid DBS XML. Most likely the tag " + missingKey + " is missing");
+
+                return tmp;
+        }
+
+
 
 	private static Object get(Vector v, int index, String missingKey) throws Exception {
 		if((index < 0) || (v.size() <= index)) 
