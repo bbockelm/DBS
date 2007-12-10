@@ -1,6 +1,6 @@
 /**
- $Revision: 1.114 $"
- $Id: DBSApiLogic.java,v 1.114 2007/12/07 23:00:42 afaq Exp $"
+ $Revision: 1.115 $"
+ $Id: DBSApiLogic.java,v 1.115 2007/12/10 15:55:57 afaq Exp $"
  *
  */
 
@@ -812,8 +812,9 @@ public class DBSApiLogic {
 			if(!isNull(value1)) checkWord(value1, key1);
 			if(!isNull(value2)) checkWord(value2, key2);
 		}
+		return getMapIDNoCheck(conn, tableName, key1, key2, value1, value2, excep);
 		//ResultSet rs =  DBManagement.executeQuery(conn, DBSSql.getMapID(tableName, key1, key2, value1, value2));
-		String id = "";
+		/*String id = "";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -829,6 +830,28 @@ public class DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 
+		return  id;*/
+	}
+
+
+
+	public String getMapIDNoCheck(Connection conn, String tableName, String key1, String key2, String value1, String value2,  boolean excep) throws Exception {
+		if(isNull(tableName) || isNull(key1) || isNull(value1) || isNull(key2) || isNull(key2) ) return null;
+		String id = "";
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps =  DBSSql.getMapID(conn, tableName, key1, key2, value1, value2);
+			rs =  ps.executeQuery();
+			if(!rs.next()) {
+				if(excep) throw new DBSException("Unavailable data", "1012", "No such " + tableName + " : " + key1 + " : " + value1 + " : " + key2 + " : " + value2);
+				else return null;
+			}
+			id = get(rs, "ID");
+		} finally {
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
 		return  id;
 	}
 

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.47 $"
- $Id: DBSApiBlockLogic.java,v 1.47 2007/11/02 15:54:22 sekhri Exp $"
+ $Revision: 1.48 $"
+ $Id: DBSApiBlockLogic.java,v 1.48 2007/12/07 22:24:43 sekhri Exp $"
  *
  */
 
@@ -629,6 +629,9 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 	}
 
 	private void insertRecycleBin(Connection conn, Writer out, String path, String blockName, String xml, String lmbUserID, String cbUserID, String creationDate) throws Exception {
+		if( !isNull(getMapIDNoCheck(conn, "RecycleBin", "Path", "BlockName", path, blockName, false))) 
+			throw new DBSException("Already Exists", "1020", "RecycleBin with Path " + path + " and block " + blockName + " Already Exists. Remove this entry first");
+
 		PreparedStatement ps = null;
 		try {
 			ps = DBSSql.insertRecycleBin(conn, 
@@ -693,6 +696,8 @@ public class DBSApiBlockLogic extends DBSApiLogic {
 		//System.out.println("XML is " + sout.toString());
 		//Write the XML in Recycle Bin
 		insertRecycleBin(conn, out, path, blockName, sout.toString(), lmbUserID, cbUserID, creationDate);
+		//Delete the actual Block
+		deleteName(conn, out, "Block", "Name", blockName);
 		//Record history in TimeLog
 		insertTimeLog(conn, "deleteBlock", "Delete Block called By User",
 			"deleteBlock",
