@@ -2,7 +2,7 @@
 # Revision: 1.3 $"
 # Id: DBSXMLParser.java,v 1.3 2006/10/26 18:26:04 afaq Exp $"
 #
-import os, re, string, httplib, urllib, urllib2, gzip, time
+import os, re, string, httplib, urllib, urllib2, gzip, time, socket
 from dbsException import DbsException
 from dbsApiException import *
 from dbsExecHandler import DbsExecHandler
@@ -103,6 +103,7 @@ class DbsHttpService:
             hostport=urllib2.splitport(spliturl[1])
             self.Host=hostport[0]
             self.Port=hostport[1]
+	    self.ipList = socket.gethostbyname_ex(self.Host)[2]
             if self.Port in [None, ""]:
                 self.Port = "80"
             self.Servlet=spliturl[2]
@@ -154,7 +155,7 @@ class DbsHttpService:
    # All looks OK, still doesn't gurantee proxy's validity etc.
    return key, proxy
    
-  def _call(self, args, typ, repeat = 3, delay = 2 ):
+  def _call(self, args, typ, repeat = 4, delay = 2 ):
 	  try:
 		  ret = self._callOriginal(args, typ)
                   return ret
@@ -179,6 +180,7 @@ class DbsHttpService:
 	  print "I will retry in %s seconds" % delay
 
 	  if(repeat!=0):
+		  self.Host = self.ipList[repeat % len(self.ipList)]
 		  repeat -= 1
 		  time.sleep(delay)
 		  delay += 1
@@ -207,6 +209,7 @@ class DbsHttpService:
 
     try:
        request_string = self.Servlet+'?apiversion='+self.ApiVersion
+       print "self.Host ", self.Host
 
        for key, value in args.items():
           if key == 'api':
