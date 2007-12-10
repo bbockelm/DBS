@@ -783,6 +783,30 @@ class DbsApi(DbsConfig):
         else:
                 raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
 
+  def deleteBlock(self, path, block):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiDeleteBlock import dbsApiImplDeleteBlock
+        return  dbsApiImplDeleteBlock(self, path, block)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+ 
+  def undeleteBlock(self, path, block):
+
+     try:
+        #Calling the Implementation function
+        from dbsApiDeleteBlock import dbsApiImplUndeleteBlock
+        return  dbsApiImplUndeleteBlock(self, path, block)
+     except Exception, ex:
+        if (isinstance(ex,DbsApiException) or isinstance(ex,SAXParseException)):
+                raise ex
+        else:
+                raise DbsApiException(args="Unhandled Exception: "+str(ex), code="5991")
+ 
   def deleteProcDS(self, path):
 
      try:
