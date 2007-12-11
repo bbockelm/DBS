@@ -1264,10 +1264,8 @@ class DDServer(DDLogger,Controller):
         page+=snapshot
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
-
 #        print "Paging step",time.time()-t1
 #        t2=time.time()
-
         if  not nDatasets:
             page+="""<p><span class="box_red">No data found</span></p>"""
 #        print "####",nDatasets,len(datasetsList)
@@ -1277,8 +1275,11 @@ class DDServer(DDLogger,Controller):
                 if userMode=='user':
                     #### TEST
                     dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
-                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex}]).respond()
-                    page+=str(t)
+                    if mDict:
+                        t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex}]).respond()
+                        page+=str(t)
+                    else:
+                        page+="""<hr class="dbs" /><br/><b>%s</b><br />No data found"""%dataset
                 else:
                     prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
                     page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
@@ -1290,7 +1291,7 @@ class DDServer(DDLogger,Controller):
         _nameSpace['style']="" # change style for the pager
         t = templatePagerStep(searchList=[_nameSpace]).respond()
         page+=str(t)
-
+        
 #        print "Data step",time.time()-t1, time.time()-t2
 
         return page
