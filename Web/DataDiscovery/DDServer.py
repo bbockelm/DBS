@@ -108,6 +108,7 @@ class DDServer(DDLogger,Controller):
                default=0, dest="verbose",help="specify verbosity level, 0-none, 1-info, 2-debug")
                self.securityApi=SecurityDBApi(context)
             Controller.__init__ (self, context, __file__)
+            self.config=self.setConfig(base="DDServer")
         except:
             if verbose:
                 printExcept()
@@ -119,6 +120,7 @@ class DDServer(DDLogger,Controller):
         self.phedexServer= DDParamServer(server="cmsdoc.cern.ch",verbose=verbose)
         self.dbs  = DBSGLOBAL
         self.baseUrl = ""
+        self.topUrl= ""
         self.mastheadUrl = self.ddConfig.masthead()
         self.footerUrl   = self.ddConfig.mastfooter()
         self.site = ""
@@ -207,6 +209,7 @@ class DDServer(DDLogger,Controller):
 #        self.footerUrl=self.baseUrl+"sitedb/Common/footer"
         self.mastheadUrl=self.baseUrl+"Common/masthead"
         self.footerUrl=self.baseUrl+"Common/footer"
+        self.topUrl=self.baseUrl+"DDServer/"
         try:
            self.verbose=opts.verbose
            self.helper.setVerbose(self.verbose)
@@ -321,7 +324,8 @@ class DDServer(DDLogger,Controller):
         """
         nameSpace = {
                      'host'        : self.dbsdd,
-                     'baseUrl'     : self.baseUrl,
+#                     'baseUrl'     : self.baseUrl,
+                     'baseUrl'     : self.topUrl,
                      'mastheadUrl' : self.mastheadUrl,
                      'footerUrl'   : self.footerUrl,
                      'title'       : 'DBS Data Discovery Page',
@@ -1270,8 +1274,14 @@ class DDServer(DDLogger,Controller):
         try:
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
-                prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
-                page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
+                if userMode=='user':
+                    #### TEST
+                    dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
+                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex}]).respond()
+                    page+=str(t)
+                else:
+                    prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
+                    page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
         except:    
             page+="<verbatim>"+getExcept()+"</verbatim>"
 
@@ -4190,32 +4200,21 @@ Save query as:
            self.writeLog(page)
         return page
     getRunDBInfo.exposed=True 
-#
-# main
-#
-if __name__ == "__main__":
-    optManager  = DDOptions.DDOptionParser('DDServer')
-    (opts,args) = optManager.getOpt()
-    context="" # we pass empty context here to be able to run in stand-alone mode
-    dbsManager = DDServer(context,opts.verbose,opts.profile)
-    print "Using CherryPy:",cherrypy.__version__
-    if opts.quiet:
-       dbsManager.setQuiet()
-    if  int(string.split(cherrypy.__version__,".")[0])==3:
-        cherrypy.config.update("CherryServer3.conf")
+
+    def setConfig(self,base=""):
         mime_types=['text/css','text/javascript','application/javascript','application/x-javascript','image/gif','image/png','image/jpg','image/jpeg']
         httpHeader=[('Expires',time.strftime("%a, %d %b %Y %H:%M:%S GMT",time.gmtime(time.time()+315360000))),
                                ('Accept-Encoding','gzip'),
-#                               ('Content-Encoding','gzip'),
                                ('TE','deflate, gzip, x-gzip, identity, trailer'),
-                               ('Cache-Control','max-age=315360000')]
+                               ('Cache-Control','max-age=315360000'),
+                               ('Authorization','Basic')
+                   ]
                                
         conf = {'/'         : {'tools.staticdir.root': os.getcwd(),
                                'tools.response_headers.on':True,
                                'tools.response_headers.headers':
                               [('Expires','Mon, 26 Jul 1997 05:00:00 GMT'),
                                ('Accept-Encoding','gzip'),
-#                               ('Content-Encoding','gzip'),
                                ('TE','deflate, gzip, x-gzip, identity, trailer'),
                                ('Cache-Control','no-store, no-cache, must-revalidate,post-check=0, pre-check=0')]
                               },
@@ -4278,6 +4277,30 @@ if __name__ == "__main__":
                                'tools.response_headers.headers':httpHeader
                               },
                }
+        if  base:
+            newConf={}
+            for key in conf.keys():
+                newConf[key]=conf[key]
+                if key=="/":
+                   newKey="/%s"%base.replace("/","")
+                else:
+                   newKey="/%s/%s"%(base.replace("/",""),key.replace("/",""))
+                newConf[newKey]=conf[key]
+            return newConf
+        return conf
+#
+# main
+#
+if __name__ == "__main__":
+    optManager  = DDOptions.DDOptionParser('DDServer')
+    (opts,args) = optManager.getOpt()
+    context="" # we pass empty context here to be able to run in stand-alone mode
+    dbsManager = DDServer(context,opts.verbose,opts.profile)
+    print "Using CherryPy:",cherrypy.__version__
+    if opts.quiet:
+       dbsManager.setQuiet()
+    if  int(string.split(cherrypy.__version__,".")[0])==3:
+        cherrypy.config.update("CherryServer3.conf")
         if opts.ssl:
            try:
                cherrypy.config.update({'server.ssl_certificate': '%s'%os.environ['DD_CRT'],
@@ -4312,6 +4335,7 @@ if __name__ == "__main__":
        stats.print_stats()
     else:       
        if  int(string.split(cherrypy.__version__,".")[0])==3:
-           cherrypy.quickstart(dbsManager, '/', config=conf)
+#           cherrypy.quickstart(dbsManager, '/', config=conf)
+           cherrypy.quickstart(dbsManager, '/', config=dbsManager.setConfig())
        else:
            cherrypy.server.start()
