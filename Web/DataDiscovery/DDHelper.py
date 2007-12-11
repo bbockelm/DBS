@@ -804,9 +804,11 @@ MCDescription:      %s
       totSize=0
       totFiles=0
       totEvts=0
+      masterSE=""
       for item in result:
           if not item[0]: continue
           prdDate,cBy,path,sename,nblks,blkSize,nFiles,nEvts=item
+          if not masterSE: masterSE=sename
           if blkSize>totSize and nFiles>totFiles and nEvts>totEvts:
              masterSE=sename
           prdDate = timeGMT(prdDate)
@@ -816,7 +818,10 @@ MCDescription:      %s
              continue
           oDict[sename]=(prdDate,cBy,long(nblks),long(blkSize),long(nFiles),long(nEvts))
       self.closeConnection(con)
-      return oDict,{'%s'%masterSE:oDict[masterSE]}
+      mDict={}
+      if masterSE:
+         mDict={'%s'%masterSE:oDict[masterSE]}
+      return oDict,mDict
 
   def listBlocks(self,kwargs):
       # {'blockName': (nEvt,blockStatus,nFiles,blockSize)}
@@ -845,10 +850,10 @@ MCDescription:      %s
                           tprd.join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
                           .join(tpds,onclause=self.col(tpds,'Dataset')==self.col(tprd,'ID'))
                           .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
-                          .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
-                          .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
                           .join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
                           .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                          .outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
+                          .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
                             ],distinct=True,order_by=oSel
                                  )
           if kwargs.has_key('datasetPath') and kwargs['datasetPath']:
