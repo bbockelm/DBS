@@ -764,6 +764,60 @@ MCDescription:      %s
              condDict[findLastBindVar(str(sel))]=tierValue
              sel.append_whereclause(self.col(tprd,'ID')==self.col(bList[-1],'Dataset'))
 
+  def datasetSummary(self,dataset,watchSite="",htmlMode=""):
+      if watchSite.lower()=="any" or watchSite.lower()=="all" or watchSite=="*": watchSite=""
+      con   = self.connectToDB()
+      oDict = {}
+      sel   = ""
+      try:
+          tprd = self.alias('ProcessedDataset','tprd')
+          tpm  = self.alias('PrimaryDataset','tpm')
+          tblk = self.alias('Block','tblk')
+          tp   = self.alias('Person','tp')
+          tseb = self.alias('SEBlock','tseb')
+          tse  = self.alias('StorageElement','tse')
+
+          oSel = [self.col(tprd,'CreationDate'),self.col(tp,'DistinguishedName'),
+                  self.col(tblk,'Path'),self.col(tse,'SEName')]
+          gBy  = list(oSel)
+          oSel+= [sqlalchemy.func.count(self.col(tblk,'Name').distinct()),
+                  sqlalchemy.func.sum(self.col(tblk,'BlockSize')),
+                  sqlalchemy.func.sum(self.col(tblk,'NumberOfFiles')),
+                  sqlalchemy.func.sum(self.col(tblk,'NumberOfEvents')) ]
+          oBy  = [sqlalchemy.desc(self.col(tprd,'CreationDate'))]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                          tprd.join(tblk,onclause=self.col(tblk,'Dataset')==self.col(tprd,'ID'))
+                          .join(tpm,onclause=self.col(tprd,'PrimaryDataset')==self.col(tpm,'ID'))
+                          .join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+                          .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+                          .outerjoin(tp,onclause=self.col(tprd,'CreatedBy')==self.col(tp,'ID'))
+                            ],distinct=True,order_by=oBy,group_by=gBy
+                                 )
+          if dataset and dataset!="*":
+             sel.append_whereclause(self.col(tblk,'Path')==dataset)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in datasetSummary"
+      totSize=0
+      totFiles=0
+      totEvts=0
+      for item in result:
+          if not item[0]: continue
+          prdDate,cBy,path,sename,nblks,blkSize,nFiles,nEvts=item
+          if blkSize>totSize and nFiles>totFiles and nEvts>totEvts:
+             masterSE=sename
+          prdDate = timeGMT(prdDate)
+          cBy     = parseCreatedBy(cBy)
+          # if watchSite was defined, I will apply filter for sename
+          if watchSite and watchSite!="*" and watchSite!=sename: 
+             continue
+          oDict[sename]=(prdDate,cBy,long(nblks),long(blkSize),long(nFiles),long(nEvts))
+      self.closeConnection(con)
+      return oDict,{'%s'%masterSE:oDict[masterSE]}
+
   def listBlocks(self,kwargs):
       # {'blockName': (nEvt,blockStatus,nFiles,blockSize)}
       # second output:
@@ -1414,7 +1468,7 @@ MCDescription:      %s
       query = sqlalchemy.text(sel, bindparams=bindparams, bind=self.dbManager.engine[self.dbsInstance])
       if self.verbose:
          self.writeLog(query)
-         self.writeLog(bindParams)
+         self.writeLog(bindparams)
       try:
           result = query.execute()
           for path in result:
