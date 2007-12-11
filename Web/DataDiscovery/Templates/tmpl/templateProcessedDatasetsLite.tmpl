@@ -1,0 +1,129 @@
+<!-- templateProcessedDatasetsLite.tmpl -->
+<hr class="dbs" />
+<table>
+#set empty,prim,proc,tier=$path.split("/")
+#set idPath=$path.replace("/","___")
+<tr>
+<td align="left">
+<b>$path</b>
+</td>
+<td>
+<div id="$idPath"></div>
+</td>
+<td align="center">
+#set histLoc="moreInfo"+$idPath
+#set action=$dbsInst+","+$path+","+$appPath+","+$idPath+","+$userMode
+<a href="javascript:ajaxEngine.registerAjaxElement('$idPath');ajaxMoreInfo('$dbsInst','$path','$appPath','$idPath','$userMode');ajax_dhtmlHistory('$histLoc','$action');">&#171; more &#187;</a>
+
+</td>
+
+#if $userMode!='user'
+<td>
+<span class="box_red">
+#set siteList=dDict.keys()
+<a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;siteList=$str($siteList)&amp;userMode=$userMode">Administrate</a>
+</span>
+</td>
+#end if
+
+</tr>
+</table>
+
+#from DDUtil import sizeFormat, colorSizeHTMLFormat
+#set values=$masterDict.values()[0]
+#set prdDate=$values[0]
+#set cBy=$values[1]
+#set nblks=$values[2]
+#set size=$colorSizeHTMLFormat($values[3])
+#set nFiles=$values[4]
+#set nEvts=$values[5]
+#set keys=$masterDict.keys()
+#set se=$keys[0]
+Created $prdDate,
+contains $nEvts events, $nFiles files, $nblks block(s), $size, 
+<br />
+Site(s): $se 
+(<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>,
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>)
+
+#for site in $dDict.keys()
+#if $site==$se
+#continue
+#end if
+#set val=$dDict[$site]
+#set siteTotEvt=$val[5]
+#set siteTotFiles=$val[4]
+#set siteTotSize=$val[3]
+#if $long($nEvts)!=$long($siteTotEvt) or $long($nFiles)!=$long($siteTotFiles)
+<span class="dbs_cell_warmred">$site</span>
+#else
+$site
+#end if
+(<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>,
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>)
+#end for
+
+### Phedex status
+<div name="phedexStatusField" class="hide">
+PhEDEx status:<br>
+<div class="offset_left">
+#if $phedex
+#set phedexResponse=$phedex+":"+$path
+#else
+#set phedexResponse="multiple:"+$path
+#end if
+<div id="$phedexResponse"><img src="images/loading.gif" alt="Loading data" />&nbsp;Please wait, while we retrieve PhEDEx data</div>
+</div>
+</div>
+<script type="text/javascript">
+var phedexUpdater = new PhedexUpdater('$phedexResponse');
+ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
+</script>
+##
+
+#*
+#if $nEvts
+
+
+<!-- Summary -->
+<table cellspacing="0" cellpadding="0" border="1">
+  <tr valign="top" align="center">
+     <th>Location</th>
+     <th>Events</th>
+     <th>Files</th>
+     <th>size</th>
+     <th>LFNs</th>
+  </tr>
+#for site in $dDict.keys()
+#set val=$dDict[$site]
+#set siteTotEvt=$val[5]
+#set siteTotFiles=$val[4]
+#set siteTotSize=$val[3]
+  <tr valign="top" class="sortable_yellow">
+#if $long($nEvts)!=$long($siteTotEvt) or $long($nFiles)!=$long($siteTotFiles)
+     <td><div class="dbs_cell_warmred">$site</div></td>
+#else
+     <td><div class="dbs_cell">$site</div></td>
+#end if
+     <td align="right"><div class="dbs_cell">$siteTotEvt</div></td>
+     <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
+     <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
+     <td align="center">
+     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>
+     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>
+     </td>
+  </tr>
+#end for
+</table>
+<!-- End of Summary table -->
+#end if #### end of if $nEvts
+*#
+
+##
+#if $phedex
+<script type="text/javascript">
+ShowPhedexStatusOutput();
+</script>
+#end if
+
+<!-- end of templateProcessedDatasetsLite.tmpl -->
