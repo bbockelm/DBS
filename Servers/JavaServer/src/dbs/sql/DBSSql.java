@@ -1,13 +1,14 @@
 
 /**
- $Revision: 1.132 $"
- $Id: DBSSql.java,v 1.132 2007/12/10 23:10:10 afaq Exp $"
+ $Revision: 1.133 $"
+ $Id: DBSSql.java,v 1.133 2007/12/12 19:50:24 afaq Exp $"
  *
  */
 package dbs.sql;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.ArrayList;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -2132,6 +2133,126 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+
+	public static PreparedStatement listFiles(Connection conn, 
+			String procDSID, 
+			String path, 
+			String runID, 
+			String aDSID, 
+			String blockID, 
+			Vector tierIDList, 
+			String patternLFN, 
+			ArrayList attributes) throws SQLException {
+		String sql = "SELECT DISTINCT f.ID as ID, \n " +
+			"f.LogicalFileName as LFN, \n" +
+			"f.Checksum as CHECKSUM, \n" +
+			"f.FileSize as FILESIZE, \n" +
+                        "f.FileBranch as FILE_BRANCH, \n" +
+			"f.QueryableMetaData as QUERYABLE_META_DATA, \n";
+		if(DBSUtil.contains(attributes, "retrive_date")) 
+			sql += "f.CreationDate as CREATION_DATE, \n" + 
+				"f.LastModificationDate as LAST_MODIFICATION_DATE, \n" ;
+		if(DBSUtil.contains(attributes, "retrive_status") || !DBSUtil.contains(attributes, "retrive_invalid_files")) 
+			sql += "vst.Status as VALIDATION_STATUS, \n" +
+				"st.Status as STATUS, \n" ;
+		if(DBSUtil.contains(attributes, "retrive_type")) 
+			sql += "ty.Type as TYPE, \n";
+		if(DBSUtil.contains(attributes, "retrive_block")) 
+			sql += "b.Name as BLOCK_NAME, \n";
+		if(DBSUtil.contains(attributes, "retrive_person")) 
+			sql += "percb.DistinguishedName as CREATED_BY, \n" +
+				"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" ;
+			sql += "f.NumberOfEvents as NUMBER_OF_EVENTS \n" +
+				"FROM Files f \n";
+		if(DBSUtil.contains(attributes, "retrive_block")) 
+			sql += "JOIN Block b \n" +
+					"ON b.id = f.Block \n ";
+		if(DBSUtil.contains(attributes, "retrive_type")) 
+			sql += "JOIN FileType ty \n" +
+					"ON ty.id = f.FileType \n" ;
+		if(DBSUtil.contains(attributes, "retrive_status") || !DBSUtil.contains(attributes, "retrive_invalid_files")) 
+			sql += "JOIN FileStatus st \n" +
+					"ON st.id = f.FileStatus \n" +
+				"JOIN FileValidStatus vst \n" +
+					"ON vst.id = f.ValidationStatus \n" ;
+		if(DBSUtil.contains(attributes, "retrive_person")) 
+			sql += "JOIN Person percb \n" +
+					"ON percb.id = f.CreatedBy \n" +
+				"JOIN Person perlm \n" +
+					"ON perlm.id = f.LastModifiedBy \n";
+		if(!DBSUtil.isNull(aDSID)) 
+			sql += "JOIN AnalysisDSFileLumi adfl \n" +
+					"ON adfl.fileid = f.ID \n";
+		if(!DBSUtil.isNull(runID)) 
+			sql += "JOIN FileRunLumi fr \n" + 
+					"ON fr.Fileid = f.id \n" +
+				"JOIN Runs r \n" +
+					"ON r.ID = fr.Run \n";
+
+		for(int i = 0 ; i != tierIDList.size(); ++i) {
+			String index = String.valueOf(i);
+			sql += "LEFT OUTER JOIN FileTier fdt" + index + "\n" +
+				"ON fdt" + index + ".Fileid = f.id \n";
+		}
+
+		sql += "WHERE ";
+		boolean useAnd = false;
+		if(!DBSUtil.isNull(patternLFN))  {
+			sql += "f.LogicalFileName like ? \n" ;
+			useAnd = true;
+		}
+		if(!DBSUtil.isNull(procDSID)) {
+			if(useAnd) sql += " AND ";
+			sql += "f.Dataset = ? \n";
+			useAnd = true;
+		}
+		if(!DBSUtil.isNull(blockID)) {
+			if(useAnd) sql += " AND ";
+			sql += "f.Block = ? \n";
+			useAnd = true;
+		}
+		for(int i = 0 ; i != tierIDList.size(); ++i) {
+			if(useAnd) sql += " AND ";
+			sql += "fdt" + String.valueOf(i) + ".DataTier = ?\n\t";
+			useAnd = true;
+		}
+		if(!DBSUtil.isNull(aDSID)) {
+			if(useAnd) sql += " AND ";
+			sql += "adfl.AnalysisDataset = ? \n";
+			useAnd = true;
+		}
+		if (!DBSUtil.isNull(runID)) {
+			if(useAnd) sql += " AND ";
+			sql += "fr.Run = ? \n";
+			useAnd = true;
+		}
+		if (!DBSUtil.isNull(path)) {
+			if(useAnd) sql += " AND ";
+			sql += "f.Block IN (SELECT bl.ID from Block bl where bl.Path = ? ) \n" ;
+			useAnd = true;
+		}
+		if (!DBSUtil.contains(attributes, "retrive_invalid_files")) {
+			if(useAnd) sql += " AND ";
+			sql +=  "st.Status <> 'INVALID' \n";
+			useAnd = true;
+		}
+
+
+		//sql +=	"ORDER BY f.LogicalFileName DESC";
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+                int columnIndx=1;
+		if(!DBSUtil.isNull(patternLFN)) ps.setString(columnIndx++, patternLFN);
+		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
+		if(!DBSUtil.isNull(blockID)) ps.setString(columnIndx++, blockID);
+		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
+		if(!DBSUtil.isNull(aDSID)) ps.setString(columnIndx++, aDSID);
+		if(!DBSUtil.isNull(runID)) ps.setString(columnIndx++, runID);
+		if(!DBSUtil.isNull(path)) ps.setString(columnIndx++, path);
+		
+                DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
+	}
+
 
 	//public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild) throws SQLException {
 	public static PreparedStatement listFileProvenence(Connection conn, String fileID, boolean parentOrChild, boolean listInvalidFiles) throws SQLException {

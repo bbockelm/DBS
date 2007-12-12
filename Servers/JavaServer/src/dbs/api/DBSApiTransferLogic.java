@@ -1,6 +1,6 @@
 /**
- $Revision: 1.29 $"
- $Id: DBSApiTransferLogic.java,v 1.29 2007/10/12 22:03:50 sekhri Exp $"
+ $Revision: 1.30 $"
+ $Id: DBSApiTransferLogic.java,v 1.30 2007/12/10 23:10:08 afaq Exp $"
  *
  */
 
@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.io.Writer;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.ArrayList;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 
@@ -77,7 +78,11 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//	branchNTrig = "false";
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", branchNTrig);
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true");
-		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
+		ArrayList attributes = new ArrayList();
+		attributes.add("all");
+		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
+		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes);
 
 	}
 	

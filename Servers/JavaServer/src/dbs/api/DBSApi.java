@@ -1,6 +1,6 @@
 /**
- $Revision: 1.115 $"
- $Id: DBSApi.java,v 1.115 2007/12/07 22:24:43 sekhri Exp $"
+ $Revision: 1.116 $"
+ $Id: DBSApi.java,v 1.116 2007/12/10 19:44:19 sekhri Exp $"
  *
 */
 
@@ -12,6 +12,8 @@ import java.io.Writer;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 import xml.DBSXMLParser;
 import xml.Element;
 import xml.XMLException;
@@ -317,6 +319,18 @@ public class DBSApi {
 						);
 
 			} else if (apiStr.equals("listFiles")) {
+				ArrayList attributes = new ArrayList();
+				String retriveList = get(table, "retrive_list", false);
+				if(!DBSUtil.isNull(retriveList)) {
+					StringTokenizer st = new StringTokenizer(retriveList, ",");
+					while(st.hasMoreTokens()) attributes.add(st.nextToken());
+				}
+				//Setup a default retrive list if detail is set to true
+				String detail = get(table, "detail", false);
+				if (detail.equals("True")) {
+					attributes.add("retrive_lumi");
+					attributes.add("retrive_run");
+				}
 				(new DBSApiFileLogic(this.data)).listFiles(conn, out, 
 						get(table, "path", false),
 						get(table, "primary_dataset", false),
@@ -326,7 +340,8 @@ public class DBSApi {
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
 						get(table, "run_number", false),
-						get(table, "detail", false)
+						attributes
+						//get(table, "detail", false)
 						//get(table, "branchNTrig", false)
 						);
 			} else if (apiStr.equals("listFileParents")) {

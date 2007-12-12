@@ -1,6 +1,6 @@
 /**
- $Revision: 1.77 $"
- $Id: DBSApiFileLogic.java,v 1.77 2007/12/10 23:10:08 afaq Exp $"
+ $Revision: 1.78 $"
+ $Id: DBSApiFileLogic.java,v 1.78 2007/12/12 19:50:23 afaq Exp $"
  *
  */
 
@@ -36,7 +36,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		personApi = new DBSApiPersonLogic(data);
 	}
 
-
+/*
 	//This api call WILL only take into consideration the PATH parameter
         //private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail) throws Exception {
         private void listFiles(Connection conn, Writer out, String path, String runNumber, String detail, boolean listInvalidFiles) throws Exception {
@@ -229,7 +229,125 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			if (ps != null) ps.close();
 		}
 
+	}*/
+
+	private boolean contains(ArrayList attributes, String param) {
+		return DBSUtil.contains(attributes, param);
 	}
+	
+	public void listFiles(Connection conn, 
+			Writer out, 
+			String path, 
+			String primary, 
+			String proc, 
+			String dataTierList, 
+			String aDSName, 
+			String blockName, 
+			String patternLFN, 
+			String runNumber,
+			ArrayList attributes
+			) throws Exception {
+
+		
+		boolean listInvalidFiles = false;
+		boolean useJustPath = false;
+		String procDSID = null;
+		String aDSID = null;
+		String blockID = null;
+		String runID = null;
+		String patternlfn = "";
+		Vector tierIDList = new Vector();
+			
+		if(contains(attributes, "retrive_invalid_files")) listInvalidFiles = true;
+		//Search can be based on LFN pattern
+		if(!isNull(patternLFN)) patternlfn = getPattern(patternLFN, "pattern_lfn");
+
+		//if path is given we will only regard it to be sufficient criteria for listing files.
+		if (!isNull(path)) { 
+			procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, path, true);
+			if (!isNull(runNumber)) runID = getID(conn, "Runs", "RunNumber", runNumber , true);
+			useJustPath = true;
+			//listFiles(conn, out, path, runNumber, detail, listInvalidFiles);
+			//return;
+		}
+		if (!useJustPath) {
+			//User asks to search on Other parameters then.
+		
+			//Get the procDSID and TierIDs if Tiers are given
+			if(!isNull(primary) && !isNull(proc) ) procDSID = (new DBSApiProcDSLogic(this.data)).getProcessedDSID(conn, primary, proc, true);
+	
+			//dataTierList is a "-" separated list of ALLL tiers that user wants to look for
+			String[] tierList = parseTier(dataTierList);
+			for (int j = 0; j < tierList.length; ++j) {
+				if (!isNull(tierList[j])) tierIDList.add(getTierID(conn, tierList[j] , true));
+			}
+	
+			//Search can be based on Analysis Dataset
+			if (!isNull(aDSName)) aDSID = (new DBSApiAnaDSLogic(this.data)).getADSID(conn, aDSName, true);
+	
+			//Search can be based on Block Name
+			if(!isNull(blockName)) 	blockID = (new DBSApiBlockLogic(this.data)).getBlockID(conn, blockName, false, true);
+	
+	
+			if(isNull(blockID) && isNull(procDSID) && isNull(aDSID) && (patternlfn.equals("%") || isNull(patternlfn))) 
+				throw new DBSException("Missing data", "1005", 
+						"Null Fields. Expected either a (Primary, Processed) Dataset, Analysis Dataset, Block or LFN pattern");
+	
+			if(!isNull(procDSID) && !isNull(aDSName)) {
+				writeWarning(out, "Both Processed dataset and Analysis dataset given", "1090", 
+							"If Analysis dataset is given then there is no need for a processed dataset. " + 
+							"While fetcing the files processed dataset will be ignored." +
+							" Given Processed Dataset is  " +proc+ " and given Analysis Dataset is " + aDSName);
+				procDSID = "";
+			}
+		} //if userJustPath
+		
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
+		try {
+			//ps = DBSSql.listFiles(conn, procDSID, aDSID, blockID, tierIDList, patternlfn, listInvalidFiles);
+			ps = DBSSql.listFiles(conn, procDSID, path, runID, aDSID, blockID, tierIDList, patternlfn, attributes);
+			rs =  ps.executeQuery();
+			while(rs.next()) {
+				String fileID = get(rs, "ID");
+				String lfn = get(rs, "LFN");
+				//out.write(((String) "<file id='" + fileID +
+				String toSend = "<file id='" + fileID +
+					"' lfn='" + lfn +
+					"' checksum='" + get(rs, "CHECKSUM") +
+					"' size='" + get(rs, "FILESIZE") +
+					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
+					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") ;
+					if(DBSUtil.contains(attributes, "retrive_status")) toSend += "' validation_status='" + get(rs, "VALIDATION_STATUS") +
+						"' status='" + get(rs, "STATUS");
+					if(DBSUtil.contains(attributes, "retrive_type")) toSend += "' type='" + get(rs, "TYPE") ;
+					if(DBSUtil.contains(attributes, "retrive_block")) toSend += "' block_name='" + get(rs, "BLOCK_NAME") ;
+					if(DBSUtil.contains(attributes, "retrive_date")) toSend += "' creation_date='" + getTime(rs, "CREATION_DATE") +
+						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE");
+					if(DBSUtil.contains(attributes, "retrive_person")) toSend += "' created_by='" + get(rs, "CREATED_BY") +
+						 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") ;
+					toSend += "'>\n";
+				out.write(toSend);
+				this.data.localFile = new Hashtable();
+				this.data.localFile.put(lfn, fileID);
+				if(DBSUtil.contains(attributes, "retrive_parent")) listFileProvenence(conn, out, lfn, true, listInvalidFiles);//Parents
+				if(DBSUtil.contains(attributes, "retrive_child")) listFileProvenence(conn, out, lfn, false, listInvalidFiles);//Children
+				if(DBSUtil.contains(attributes, "retrive_algo")) listFileAlgorithms(conn, out, lfn);
+				if(DBSUtil.contains(attributes, "retrive_tier")) listFileTiers(conn, out, lfn);
+				if(DBSUtil.contains(attributes, "retrive_lumi")) listFileLumis(conn, out, lfn);
+				if(DBSUtil.contains(attributes, "retrive_run")) listFileRuns(conn, out, lfn);
+				if(DBSUtil.contains(attributes, "retrive_branch")) listBranch(conn, out, get(rs, "FILE_BRANCH"));
+                		out.write(((String) "</file>\n"));
+      
+			}
+		} finally { 
+			if (rs != null) rs.close();
+			if (ps != null) ps.close();
+		}
+
+	}
+
+
 
 
 	/**

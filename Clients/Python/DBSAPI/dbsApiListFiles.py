@@ -22,7 +22,8 @@ from dbsLogger import *
 
 from dbsUtil import *
 
-def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="*", runNumber="", details=None):
+
+def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analysisDataset="",blockName="", patternLFN="", runNumber="", details=None, retriveList=[]):
     """
     Retrieve list of files in a dataset, in a block, or matching pattern of LFNs, 
     or any combinition of dataset, block and or LFN pattern.
@@ -85,6 +86,28 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
     #if branchNTrig not in ("", None, False):
     #	branchNTrig = "True"
 
+    allowedRetriveValue = ['all',
+		    'retrive_invalid_files', 
+		    'retrive_status',
+		    'retrive_type',
+		    'retrive_block',
+		    'retrive_date',
+		    'retrive_person',
+		    'retrive_parent',
+		    'retrive_child',
+		    'retrive_algo',
+		    'retrive_tier',
+		    'retrive_lumi',
+		    'retrive_run',
+		    'retrive_branch',
+		    ]
+    retrive_list = ""
+    for i in retriveList:
+	    if i not in allowedRetriveValue:
+		    raise DbsBadRequest (args="The argument " + i + "  is not allowed argument. The allowed values are " + str(allowedRetriveValue) , code=1500)
+	    retrive_list += i + ","
+	
+
     if details not in ("", None, False):
        data = self._server._call ({ 'api' : 'listFiles', 'path' : path, 
 				    'primary_dataset' : primary, 
@@ -93,7 +116,8 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 		                    'analysis_dataset_name' : analysisDataset,
                                     'block_name' : blockName, 
 				    'run_number' : str(get_run(runNumber)),
-                                    'pattern_lfn' : patternLFN, 'detail' : 'True' }, 'GET')
+                                    'pattern_lfn' : patternLFN, 'detail' : 'True',
+				    'retrive_list' : retrive_list }, 'GET')
                                     #'pattern_lfn' : patternLFN, 'detail' : 'True', 'branchNTrig' : str(branchNTrig) }, 'GET')
     else:
        data = self._server._call ({ 'api' : 'listFiles', 
@@ -104,7 +128,8 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
 		                    'analysis_dataset_name' : analysisDataset,
 				    'run_number' : str(get_run(runNumber)),
                                     #'pattern_lfn' : patternLFN, 'branchNTrig' : str(branchNTrig) }, 'GET')
-                                    'pattern_lfn' : patternLFN, }, 'GET')
+                                    'pattern_lfn' : patternLFN, 
+				    'retrive_list' : retrive_list}, 'GET')
     logging.log(DBSDEBUG, data)
 
     # 
@@ -119,6 +144,11 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
       #class Handler (DbsXmlBaseHandler):
       class Handler (xml.sax.handler.ContentHandler):
 
+        def get(self, attrs, key):
+		if key in attrs.keys():
+			return attrs[key]
+		return ""
+
         def startElement(self, name, attrs):
           #DbsXmlBaseHandler.startElement(self, name, attrs)
           if name == 'file':
@@ -126,15 +156,15 @@ def dbsApiImplListFiles(self, path="", primary="", proc="", tier_list=[], analys
                                        LogicalFileName=str(attrs['lfn']),
                                        FileSize=getLong(attrs['size']),
                                        NumberOfEvents=getLong(attrs['number_of_events']),
-                                       Status=str(attrs['status']),
-                                       Block=DbsFileBlock(Name=str(attrs['block_name'])),
-                                       FileType=str(attrs['type']),
+                                       Status=str(self.get(attrs,'status')),
+                                       Block=DbsFileBlock(Name=str(self.get(attrs, 'block_name'))),
+                                       FileType=str(self.get(attrs,'type')),
                                        Checksum=str(attrs['checksum']),
                                        QueryableMetadata=str(attrs['queryable_meta_data']),
-                                       CreationDate=str(attrs['creation_date']),
-                                       CreatedBy=str(attrs['created_by']),
-                                       LastModificationDate=str(attrs['last_modification_date']),
-                                       LastModifiedBy=str(attrs['last_modified_by']),
+                                       CreationDate=str(self.get(attrs,'creation_date')),
+                                       CreatedBy=str(self.get(attrs,'created_by')),
+                                       LastModificationDate=str(self.get(attrs,'last_modification_date')),
+                                       LastModifiedBy=str(self.get(attrs,'last_modified_by')),
                                        )
 
           if name == 'file_data_tier':

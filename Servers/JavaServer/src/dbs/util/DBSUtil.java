@@ -1,7 +1,7 @@
 /**
  * @author sekhri
- $Revision: 1.14 $"
- $Id: DBSUtil.java,v 1.14 2007/12/03 18:04:49 sekhri Exp $"
+ $Revision: 1.15 $"
+ $Id: DBSUtil.java,v 1.15 2007/12/10 23:10:11 afaq Exp $"
  *
 */
 
@@ -198,6 +198,16 @@ public class DBSUtil {
 		String value = rs.getString(key);
 		if(isNull(value)) return "";
 		return value;
+	}
+
+
+	public static boolean contains(ArrayList attributes, String param) {
+		if(attributes.contains("all")) return true;
+		if(attributes.contains(param)) return true;
+		return false;
+	}
+	public static void add(ArrayList attributes, String value) {
+		if(!isNull(value)) attributes.add(value);
 	}
 
 }
