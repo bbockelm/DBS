@@ -1,6 +1,6 @@
 /**
- $Revision: 1.117 $"
- $Id: DBSApiLogic.java,v 1.117 2007/12/10 19:44:19 sekhri Exp $"
+ $Revision: 1.118 $"
+ $Id: DBSApiLogic.java,v 1.118 2007/12/10 23:10:08 afaq Exp $"
  *
  */
 
@@ -522,7 +522,6 @@ public class DBSApiLogic {
 		}
 	}
 
-
         protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2,
 			String mapTo, java.util.ArrayList values, String cbUserID, String lmbUserID, String creationDate) throws Exception {
                 //No point if vector ain't has any values !
@@ -531,15 +530,20 @@ public class DBSApiLogic {
                 try {
                         ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, mapTo, values, cbUserID, lmbUserID, creationDate);
                         ps.executeBatch();
-                } catch (Exception e) {
-                        throw new SQLException("'"+e.getMessage()+"' insertMapBatch failed for Table:"+
-                                tableName+ "key1: "+key1+" key2: "+key2+"Query failed is"+ps);
+                } catch (SQLException ex) {
+                        String exmsg = ex.getMessage();
+                        if ( exmsg.startsWith("Duplicate entry") ||
+                                exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                ps.close();
+                                return;
+                         }
+			 else
+				throw new SQLException("'"+ex.getMessage()+"' insertMapBatch failed for Table:"+
+                                	tableName+ "key1: "+key1+" key2: "+key2+"Query failed is"+ps);
                 } finally {
                                 if (ps != null) ps.close();
                 }
         }
-
-
 
         protected void insertMapBatch(Connection conn, Writer out, String tableName, String key1, String key2, String key3,
 			String mapTo, java.util.ArrayList values, String mapK3, String cbUserID, String lmbUserID, String creationDate) throws Exception {
@@ -549,9 +553,16 @@ public class DBSApiLogic {
                 try {
                         ps = DBSSql.insertMapBatch(conn, tableName, key1, key2, key3, mapTo, values, mapK3, cbUserID, lmbUserID, creationDate);
                         ps.executeBatch();
-                } catch (Exception e) {
-                        throw new SQLException("'"+e.getMessage()+"' insertMapBatch failed for Table:"+
-                                tableName+ "key1: "+key1+" key2: "+key2+" key3: "+key3+" Query failed is"+ps);
+                } catch (SQLException ex) {
+                        String exmsg = ex.getMessage();
+                        if ( exmsg.startsWith("Duplicate entry") ||
+                                exmsg.startsWith("ORA-00001: unique constraint") ) {
+                                ps.close();
+                                return;
+                         }
+                         else
+                        	throw new SQLException("'"+ex.getMessage()+"' insertMapBatch failed for Table:"+
+                                	tableName+ "key1: "+key1+" key2: "+key2+" key3: "+key3+" Query failed is"+ps);
                 } finally {
                                 if (ps != null) ps.close();
                 }

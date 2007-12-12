@@ -1,6 +1,6 @@
 /**
- $Revision: 1.76 $"
- $Id: DBSApiFileLogic.java,v 1.76 2007/12/07 23:00:42 afaq Exp $"
+ $Revision: 1.77 $"
+ $Id: DBSApiFileLogic.java,v 1.77 2007/12/10 23:10:08 afaq Exp $"
  *
  */
 
@@ -16,6 +16,7 @@ import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import codec.Base64;
 import dbs.DBSException;
+import java.sql.SQLException;
 
 /**
 * A class that has the core business logic of all the File APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -724,7 +725,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         if (isNull(valStatus)) valStatus = "VALID";
 
                         //Insert a File by fetching the fileStatus, type and validationStatus
-                        if( (fileID = getFileID(conn, lfn, false)) == null ) {
+                        //if( (fileID = getFileID(conn, lfn, false)) == null ) {
                                 newFileInserted = true;
                                 //TODO Exception of null status or type should be catched and parsed and 
                                 //a proper message should be returned back to the user. Different Database can have different error message YUK
@@ -748,8 +749,9 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                         branchID = getID(conn, "BranchHash", "Hash", thisBranchHash, false);
                                         lastBranchHash = thisBranchHash;
                                 }
-
-                                ps = DBSSql.insertFile(conn,
+				//Try to insert a Fille if its already there (Break out!), For all other reasons throw exception.
+				try {
+                                	ps = DBSSql.insertFile(conn,
                                             procDSID,
                                             blockID,
                                             lfn,
@@ -763,8 +765,26 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                             branchID,
                                             cbUserID, lmbUserID, creationDate);
 
-                                ps.execute();
-                                ps.close();
+                                	ps.execute();
+				} catch (SQLException ex) {
+					String exmsg = ex.getMessage();
+					if ( exmsg.startsWith("Duplicate entry") || 
+						exmsg.startsWith("ORA-00001: unique constraint") ) {
+						writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
+						ps.close();
+						return; 
+					} else {
+						
+ 						throw new SQLException("'"+ex.getMessage()+"' insertFile for LogicalFileName:"+lfn+
+                                        		" Query failed is"+ps);
+
+					}
+				}
+				finally {
+
+                                	if (ps != null) ps.close();
+					if (rs != null) rs.close();
+				}
 
                                 //if(isNull(fileID)) fileID = getFileID(conn, lfn);
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
@@ -869,10 +889,11 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                 getID(conn, "Files", "LogicalFileName", fileAssoc, true),
                                                                 cbUserID, lmbUserID, creationDate, false);
                                 }
-                        } else {
-                                //Write waring message that file exists already
-                                writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
-                        }
+                        //} else {
+//
+  //                              //Write waring message that file exists already
+    //                            writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
+      //                  }
 
                         if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
                 }//For loop
@@ -890,8 +911,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         }*/
                 }
 
-		if (rs != null) rs.close();
-                if (ps != null) ps.close();
+		//if (rs != null) rs.close();
+                //if (ps != null) ps.close();
 
 
 	}

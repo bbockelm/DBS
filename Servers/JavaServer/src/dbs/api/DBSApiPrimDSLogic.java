@@ -1,6 +1,6 @@
 /**
- $Revision: 1.19 $"
- $Id: DBSApiPrimDSLogic.java,v 1.19 2007/03/28 21:59:33 afaq Exp $"
+ $Revision: 1.20 $"
+ $Id: DBSApiPrimDSLogic.java,v 1.20 2007/04/13 17:24:42 afaq Exp $"
  *
  */
 
@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import dbs.sql.DBSSql;
 import dbs.util.DBSUtil;
 import dbs.DBSException;
+import java.sql.SQLException;
 
 /**
 * A class that has the core business logic of all the Primary dataset APIs.  The signature for the API is internal to DBS and is not exposed to the clients. There is another class <code>dbs.api.DBSApi</code> that has an interface for the clients. All these low level APIs are invoked from <code>dbs.api.DBSApi</code>. This class inherits from DBSApiLogic class.
@@ -123,7 +124,7 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 
 		//TODO Insert PrimaryDatasetDescription table also
 		String primDSID;
-		if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
+		//if( (primDSID = getID(conn, "PrimaryDataset", "Name", name, false)) == null ) {
 			PreparedStatement ps = null;
 			try {
 				ps = DBSSql.insertPrimaryDataset(conn, 
@@ -135,12 +136,14 @@ public class DBSApiPrimDSLogic extends DBSApiLogic {
 					getID(conn, "PrimaryDSType", "Type", type, true), 
 					cbUserID, lmbUserID, creationDate);
 				ps.execute();
+			} catch (SQLException ex) {
+				System.out.println("Exception: "+ex.getMessage());
 			} finally { 
 				if (ps != null) ps.close();
 			}
-		} else {
-			writeWarning(out, "Already Exists", "1020", "Primary Dataset " + name + " Already Exists");
-		}
+		//} else {
+		//	writeWarning(out, "Already Exists", "1020", "Primary Dataset " + name + " Already Exists");
+		//}
 
 	}
 

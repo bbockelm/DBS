@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.131 $"
- $Id: DBSSql.java,v 1.131 2007/12/10 19:44:19 sekhri Exp $"
+ $Revision: 1.132 $"
+ $Id: DBSSql.java,v 1.132 2007/12/10 23:10:10 afaq Exp $"
  *
  */
 package dbs.sql;
@@ -146,10 +146,10 @@ public class DBSSql {
                 String sql = "INSERT INTO "+tableName+" \n"+
                                 "("+key1+","+key2+", \n"+
                                 " CreatedBy, LastModifiedBy, CreationDate) \n"+
-                                " select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n" +
-                                " WHERE not exists \n" +
-                                " (select * from " + tableName + " \n" +
-                                " where " + key1 + "=? AND " + key2 + "=?) \n" ;
+                                " select ?, ?, "+cbUserID+", "+lmbUserID+", "+cDate+" FROM DUAL \n";
+                                //" WHERE not exists \n" +
+                                //" (select * from " + tableName + " \n" +
+                                //" where " + key1 + "=? AND " + key2 + "=?) \n" ;
 
                 PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 for (int j = 0; j < values.size(); ++j) {
@@ -160,8 +160,8 @@ public class DBSSql {
                         ps.setString(columnIndx++, value);
 
                         //For the WHERE not exists Clause
-                        ps.setString(columnIndx++, mapTo);
-                        ps.setString(columnIndx++, value);
+                        //ps.setString(columnIndx++, mapTo);
+                        //ps.setString(columnIndx++, value);
                         ps.addBatch();
                 }
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
