@@ -1272,17 +1272,15 @@ class DDServer(DDLogger,Controller):
         try:
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
-                if userMode=='user':
-                    #### TEST
-                    dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
-                    if mDict:
-                        t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex}]).respond()
-                        page+=str(t)
-                    else:
-                        page+="""<hr class="dbs" /><br/><b>%s</b><br />No data found"""%dataset
+                #### TEST
+                dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
+                if mDict:
+                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex}]).respond()
+                    page+=str(t)
                 else:
-                    prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
-                    page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
+                    page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
+#                prdDate, siteList, blockDict, totEvt, totFiles, totSize = self.helper.getData(dataset,site,userMode)
+#                page+= self.dataToHTML(dbsInst,dataset,prdDate,siteList,blockDict,totEvt,totFiles,totSize,id,snapshot,appPath,userMode,phedex)
         except:    
             page+="<verbatim>"+getExcept()+"</verbatim>"
 
@@ -1417,6 +1415,33 @@ class DDServer(DDLogger,Controller):
 #           self.writeLog(page)
 #        return page
 #    getUserData.exposed=True
+
+    def getBlocksInfo(self,dbsInst,dataset,userMode):
+        """
+           Retreive block information for give dataset
+        """
+        t1=time.time()
+        page=self.genTopHTML(userMode=userMode)
+        try:
+            page+= self.whereMsg('Navigator :: Results :: File block information',userMode)
+            blkList = self.helper.getBlocksInfo(dataset)
+            nameSpace = {
+                         'blkList'  : blkList,
+                         'proc'     : dataset,
+                         'host'     : self.dbsdd,
+                         'dbsInst'  : dbsInst,
+                         'userMode' : userMode
+                        }
+            t = templateBlocksInfo(searchList=[nameSpace]).respond()
+            page+=str(t)
+        except:
+            t=self.errorReport("Fail in getBlocksInfo function")
+            page+=str(t)
+        page+=self.genBottomHTML()
+        if self.verbose==2:
+           self.writeLog(page)
+        return page
+    getBlocksInfo.exposed = True 
 
     def getDbsData(self,dbsInst,site="All",group="*",app="*",primD="*",tier="*",proc="*",_idx=0,ajax=1,userMode="user",pagerStep=RES_PER_PAGE,**kwargs): 
         """

@@ -764,6 +764,44 @@ MCDescription:      %s
              condDict[findLastBindVar(str(sel))]=tierValue
              sel.append_whereclause(self.col(tprd,'ID')==self.col(bList[-1],'Dataset'))
 
+  def getBlocksInfo(self,dataset):
+      con   = self.connectToDB()
+      oList = []
+      sel   = ""
+      try:
+          tblk = self.alias('Block','tblk')
+          tp1  = self.alias('Person','tp1')
+          tp2  = self.alias('Person','tp2')
+          oSel =[self.col(tblk,'Name'),self.col(tblk,'BlockSize'),
+                 self.col(tblk,'NumberOfFiles'),self.col(tblk,'NumberOfEvents'),
+                 self.col(tblk,'OpenForWriting'),
+                 self.col(tp1,'DistinguishedName'),self.col(tblk,'CreationDate'),
+                 self.col(tp2,'DistinguishedName'),self.col(tblk,'LastModificationDate')
+                ]
+          oBy  = [sqlalchemy.desc(self.col(tblk,'LastModificationDate'))]
+          sel  = sqlalchemy.select(oSel,
+                   from_obj=[
+                          tblk.outerjoin(tp1,onclause=self.col(tblk,'CreatedBy')==self.col(tp1,'ID'))
+                          .outerjoin(tp2,onclause=self.col(tblk,'LastModifiedBy')==self.col(tp2,'ID'))
+                            ],distinct=True,order_by=oBy
+                                 )
+          sel.append_whereclause(self.col(tblk,'Path')==dataset)
+          result = self.getSQLAlchemyResult(con,sel)
+      except:
+          msg="\n### Query:\n"+str(sel)
+          self.printExcept(msg)
+          raise "Fail in getBlocksSummary"
+      for item in result:
+          if not item[0]: continue
+          name,blkSize,nFiles,nEvts,status,cBy,cDate,mBy,mDate=item
+          cDate = timeGMT(cDate)
+          cBy   = parseCreatedBy(cBy)
+          mDate = timeGMT(mDate)
+          mBy   = parseCreatedBy(mBy)
+          oList.append((name,long(blkSize),long(nFiles),long(nEvts),status,cBy,cDate,mBy,mDate))
+      self.closeConnection(con)
+      return oList
+
   def datasetSummary(self,dataset,watchSite="",htmlMode=""):
       if watchSite.lower()=="any" or watchSite.lower()=="all" or watchSite=="*": watchSite=""
       con   = self.connectToDB()
@@ -811,6 +849,9 @@ MCDescription:      %s
           if not masterSE: masterSE=sename
           if blkSize>totSize and nFiles>totFiles and nEvts>totEvts:
              masterSE=sename
+             totSize=blkSize
+             totFiles=nFiles
+             totEvts=nEvts
           prdDate = timeGMT(prdDate)
           cBy     = parseCreatedBy(cBy)
           # if watchSite was defined, I will apply filter for sename

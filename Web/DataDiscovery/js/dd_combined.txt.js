@@ -238,6 +238,34 @@ function HideProcDetails()  {
       ChangeNameTags('_detailsTable','td_plain');
    }
 }
+function ShowSumTablesDetails()  {
+   browser=CheckBrowser();
+   var procNames=new Array;
+   if(browser.match('IE')) {
+      var tags=document.getElementsByTagName('div');
+      for(i=0;i<tags.length;i++) {
+          if(tags[i].name=='summaryTables') {
+             tags[i].className='show_inline';
+          }
+      }
+   }  else {
+      ChangeNameTags('summaryTables','show_inline');
+   }
+}
+function HideSumTablesDetails()  {
+   browser=CheckBrowser();
+   var procNames=new Array;
+   if(browser.match('IE')) {
+      var tags=document.getElementsByTagName('div');
+      for(i=0;i<tags.length;i++) {
+          if(tags[i].name=='summaryTables') {
+             tags[i].className='hide';
+          }
+      }
+   }  else {
+      ChangeNameTags('summaryTables','hide');
+   }
+}
 function ResetTag(tag) {
   ClearTag(tag);
   ShowTag(tag);

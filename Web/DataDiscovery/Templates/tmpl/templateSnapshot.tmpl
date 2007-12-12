@@ -108,17 +108,27 @@ here</a>
 
 <tr>
 <td>
-Datasets table details:
+##Datasets table details:
+Datasets summary tables:
 </td>
 <td>
+#*
 <span id="showProcDatasetDetails">
 <a href="javascript:ShowProcDetails();ajax_dhtmlHistory('__showProcDatasetDetails','ShowProcDetails()')">show</a>
 </span> |
 <span id="hideProcDatasetDetails">
 <a href="javascript:HideProcDetails();ajax_dhtmlHistory('__hideProcDatasetDetails','HideProcDetails()')">hide</a>
 </span>
+*#
+<span id="showSumTablesDatasetDetails">
+<a href="javascript:ShowSumTablesDetails();ajax_dhtmlHistory('__showSumTablesDatasetDetails','ShowSumTablesDetails()')">show</a>
+</span> |
+<span id="hideSumTablesDatasetDetails">
+<a href="javascript:HideSumTablesDetails();ajax_dhtmlHistory('__hideSumTablesDatasetDetails','HideSumTablesDetails()')">hide</a>
+</span>
 </td>
 </tr>
+#if $userMode!='user'
 <tr>
 <td>
 ProdRequest status for all datasets:
@@ -134,6 +144,7 @@ ProdRequest status for all datasets:
 </span>
 </td>
 </tr>
+#end if
 #if $phedex or $userMode!='user'
 <tr>
 <td>
