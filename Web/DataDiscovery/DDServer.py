@@ -902,7 +902,8 @@ class DDServer(DDLogger,Controller):
 
     def adminDataset(self,dbsInst,dataset,userMode,siteList,**kwargs):
         page = self.genTopHTML(userMode=userMode)
-        page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin dataset',userMode)
+        page+= """<div class="box_red">THIS IS PROTOTYPE VERSION OF FRONT-END INTERFACE, ACTUAL FUNCTIONALITY IS NOT YET WORKING!<br />Please send comments to cms-dbs-support@cern.ch</div><p></p>\n"""
+        page+= self.whereMsg('Navigator :: Results :: list of datasets :: admin tasks',userMode)
 
         # auto-competion form for processed datasets
 #        nameSearch={'tag':'blockName','inputId':'blockName','inputName':'blockName','size':'100','userMode':userMode,'dbsInst':dbsInst,'table':'Block','column':'Name','label':'','zIndex':9000,'method':'yuiGetBlocksForDataset'}
