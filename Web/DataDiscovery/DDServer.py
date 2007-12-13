@@ -1025,7 +1025,7 @@ class DDServer(DDLogger,Controller):
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: list of datasets',userMode)
-            page+= self.genResultsHTML()
+#            page+= self.genResultsHTML()
             page+= "<pre>"
             if  type(proc) is not types.ListType and len(proc) and proc!="*":
                 page+=proc+"\n"
@@ -1181,10 +1181,7 @@ class DDServer(DDLogger,Controller):
         if  type(proc) is types.ListType:
             if not nDatasets:
                nDatasets = len(proc)
-            datasetsList = proc
-#            i=int(_idx)*pagerStep
-#            j=i+pagerStep
-#            datasetsList=proc[i:j]
+            datasetsList = proc[_idx:_idx+pagerStep]
             proc=proc_orig
         else:
 #            ttt=time.time()
@@ -1212,7 +1209,6 @@ class DDServer(DDLogger,Controller):
            if index==_idx:
               ref="""<span class="gray_box">%s</span>"""%(index+1)
            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,index,userMode,pagerStep,ref)
-#        if nDatasets>tot*pagerStep:
         if nDatasets>(_idx+1)*pagerStep:
            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx+1,userMode,pagerStep)
 
@@ -1275,7 +1271,6 @@ class DDServer(DDLogger,Controller):
         try:
             for id in xrange(0,len(datasetsList)):
                 dataset=datasetsList[id]
-                #### TEST
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
                 if mDict:
                     t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
@@ -3597,7 +3592,7 @@ Save query as:
             
 #        t=templateLookupFromFinder(searchList=[{'dbsInst':dbsInst,'params':parameters,'userMode':userMode}]).respond()
 #        page+=str(t)
-        lookup="""Lookup <a href="findDSFromFinder?dbsInst=%s&userMode=%s&%s">processed</a> or <a href="findADSFromFinder?dbsInst=%s&userMode=%s&%s">analysis</a> datasets from this results"""%(dbsInst,userMode,parameters,dbsInst,userMode,parameters)
+        lookup="""Lookup <a href="findDSFromFinder?dbsInst=%s&amp;userMode=%s&amp;%s">processed</a> or <a href="findADSFromFinder?dbsInst=%s&amp;userMode=%s&amp;%s">analysis</a> datasets from this results"""%(dbsInst,userMode,parameters,dbsInst,userMode,parameters)
         # retrieve actual column names from tables
         tList=[]
         dateIdxList=[]
@@ -3643,14 +3638,6 @@ Save query as:
         self.helperInit(dbsInst)
         parameters,iList,whereClause=self.constructQueryParameters(kwargs)
         if not iList.count('Block.Path'): iList.append('Block.Path')
-#        aList=['Block.Path']
-#        for item in aList:
-#            try:
-#                iList.remove(item)
-#            except:
-#                pass
-#        for item in aList:
-#            iList.append(item)
         query,oList = self.helper.queryMaker(iList,whereClause)
         pList=[]
         for item in oList:
