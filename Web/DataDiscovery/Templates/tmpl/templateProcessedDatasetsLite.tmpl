@@ -51,8 +51,8 @@ $_site
 ${_site},
 #end if
 LFNs:
-<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>,
-<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
+<a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
 
 ### Phedex status
 #if $userMode!='user'
@@ -104,8 +104,8 @@ ajaxEngine.registerAjaxObject('$phedexResponse',phedexUpdater);
      <td align="right"><div class="dbs_cell">$siteTotFiles</div></td>
      <td align="right"><div class="dbs_cell">$colorSizeHTMLFormat($siteTotSize)</div></td>
      <td align="center">
-     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode">cff</a>
-     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode">plain</a>
+     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>
+     <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$site&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
      </td>
   </tr>
 #end for

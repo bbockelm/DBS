@@ -1100,6 +1100,9 @@ class DDServer(DDLogger,Controller):
            @return: returns HTML code
         """
 #        t1=time.time()
+        run=""
+        if kwargs.has_key('run'):
+           run=kwargs['run']
         nDatasets=0
         pagerStep=int(pagerStep)
         if not proc: proc="*"
@@ -1275,7 +1278,7 @@ class DDServer(DDLogger,Controller):
                 #### TEST
                 dDict,mDict = self.helper.datasetSummary(dataset,watchSite=site,htmlMode=userMode)
                 if mDict:
-                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex}]).respond()
+                    t = templateProcessedDatasetsLite(searchList=[{'dbsInst':dbsInst,'path':dataset,'appPath':appPath,'dDict':dDict,'masterDict':mDict,'host':self.dbsdd,'userMode':userMode,'phedex':phedex,'run':run}]).respond()
                     page+=str(t)
                 else:
                     page+="""<hr class="dbs" /><br/><b>%s</b><br /><span class="box_red">No data found</span>"""%dataset
@@ -1395,7 +1398,7 @@ class DDServer(DDLogger,Controller):
            page=self.genTopHTML(userMode=userMode)
            if hist:
               page+=hist
-           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex)
+           result = self.getDataHelper(dbsInst,site,group,app,primD,tier,proc,primType,date,hist,_idx,ajax,userMode,pagerStep,phedex,**kwargs)
            page+= result
            page+=self.genBottomHTML()
         if self.verbose==2:
@@ -1788,29 +1791,21 @@ All LFNs in a block
             return str(t)
     getLFN_txt.exposed = True
     
-#    def getLFNsForSite(self,dbsInst,site,blockList="",what="cff",userMode='user'):
-    def getLFNsForSite(self,dbsInst,site,datasetPath,what="cff",userMode='user'):
+    def getLFNsForSite(self,dbsInst,site,datasetPath,what="cff",userMode='user',run="*"):
         """
            Generates a list of LFNs for given site
         """
         try:
-#            self.htmlInit()
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
-            page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
+            if run and run!="*":
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s, run %s'%(site,run),userMode)
+            else:
+               page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
             page+="""<pre>\n"""
             bList=[]
-#            if  blockList:
-#                bList=blockList.split(",")
-#            else:
             try:
-#                blocks=[]
-#                if blockList:
-#                   blocks=blockList.split(",")
-#                bList=self.helper.getBlocksFromSite(site,blocks)
-
-#                bList=self.helper.getBlocksFromSite(site,datasetPath)
-                lfnList=self.helper.getLFNsFromSite(site,datasetPath)
+                lfnList=self.helper.getLFNsFromSite(site,datasetPath,run)
             except:
                 if self.verbose:
                    self.writeLog(getExcept())

@@ -2898,8 +2898,9 @@ MCDescription:      %s
       self.closeConnection(con)
       return aList
 
-  def getLFNsFromSite(self,site,datasetPath):
+  def getLFNsFromSite(self,site,datasetPath,run="*"):
       if site.lower()=='all' or site.lower()=='any': site="*"
+      if run.lower()=='all' or run.lower()=='any': run="*"
       t1=time.time()
       aDict = {}
       con = self.connectToDB()
@@ -2910,20 +2911,31 @@ MCDescription:      %s
           tse  = self.alias('StorageElement','tse')
           tf   = self.alias('Files','tf')
           tfs  = self.alias('FileStatus','tfs')
+          tfrl = self.alias('FileRunLumi','tfrl')
+          tr   = self.alias('Runs','tr')
 
           oSel = [self.col(tf,'LogicalFileName')]
+          obj  = tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+          obj  = obj.join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+          obj  = obj.join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+          obj  = obj.join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+          if run and run!="*":
+             obj=obj.outerjoin(tfrl,onclause=self.col(tf,'ID')==self.col(tfrl,'Fileid'))
+             obj=obj.outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
           sel  = sqlalchemy.select(oSel,
-                   from_obj=[
-                     tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-                     .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-                     .join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
-                     .join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
-                            ],distinct=True,order_by=oSel
+                   from_obj=[obj],distinct=True,order_by=oSel
+#                     tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
+#                     .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
+#                     .join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
+#                     .join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
+#                            ],distinct=True,order_by=oSel
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
           if datasetPath!="*":
              sel.append_whereclause(self.col(tblk,'Path')==datasetPath)
+          if run and run!="*":
+             sel.append_whereclause(self.col(tr,'RunNumber')==run)
           sel.append_whereclause(self.col(tfs,'Status')!="INVALID")   
           result = self.getSQLAlchemyResult(con,sel)
       except:
