@@ -87,6 +87,25 @@ class DDHelper(DDLogger):
 
   def printQuery(self,sel):
       return self.dbManager.printQuery(self.dbsInstance,sel).replace("\n","")
+      
+  def addQueryLimits(self,query,offset,limit):
+      if  self.dbManager.dbType[self.dbsInstance]=='oracle':
+          # SQLAlchemy incorrectly wrap queries using ORACLE back-end
+          # see bug report, http://www.sqlalchemy.org/trac/ticket/536
+          # on ORACLE there is no LIMIT/OFFSET and in order to make it with column who may
+          # have the same values we need to do
+          # select path from (select distinct path from Block where path)
+          #        group by rownum,path having rownum between 1 and 5;
+          query.use_labels=True
+          sel=query.select()
+          s=str(sel).replace("\n","").replace(" AS ","")
+          gBy=''.join(s.split('FROM')[0].split('SELECT'))
+          fromRow=long(offset)
+          query=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
+      else:
+          query.limit=long(limit)
+          query.offset=long(offset)
+      return query
   
   def printExcept(self,msg=None):
       if self.verbose:
@@ -606,9 +625,8 @@ class DDHelper(DDLogger):
                  # select rownum, path from (select distinct path from Block where path is not null order by path desc) group by rownum,path having rownum between 1 and 5;
                  sel.use_labels=True
                  s=sel
-                 oSel=['rownum',s.c.tblk_path,s.c.tprd_creationdate]
-#                 sel = sqlalchemy.select(oSel,group_by=oSel,order_by=[sqlalchemy.desc(s.c.tblk_path)])
-                 sel = sqlalchemy.select(oSel,group_by=oSel,order_by=[sqlalchemy.desc(s.c.tprd_creationdate)])
+                 oSel=[s.c.tblk_path,s.c.tprd_creationdate]
+                 sel = sqlalchemy.select(oSel,group_by=['rownum']+oSel,order_by=[sqlalchemy.desc(s.c.tprd_creationdate)])
                  sel.append_having( 'rownum>%s and rownum<=%s'%(fromRow,fromRow+limit) )
              else:
                  sel.limit=limit
@@ -624,11 +642,7 @@ class DDHelper(DDLogger):
          self.closeConnection(con)
          return res
       for item in result:
-          # since we queried oracle in different way we will retrieve results differently
-          if  self.dbManager.dbType[self.dbsInstance]=='oracle' and limit:
-              rownum,path,prdDate = item
-          else:
-              path,prdDate = item
+          path,prdDate = item
           if not path: continue
           if not oList.count(path): oList.append(path)
       self.closeConnection(con)
@@ -1526,17 +1540,18 @@ MCDescription:      %s
           msg="\n### Query:\n"+str(query)
           self.printExcept(msg)
           raise "Fail in countBlocks '%s' '%s'"%(query,str(whereClause))
+
   def getDatasetPathFromMatch(self,whereCond,row=0,limit=0,bDict={},site=""):
       siteSel,siteWhere=self.getSiteClause(site)
       oList=[]
       query=""
       try:
           if self.dbManager.dbType[self.dbsInstance]=='oracle':
-             sel="select DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate from Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id %s where %s %s ORDER BY tprd.CreationDate DESC"%(siteSel,whereCond,siteWhere)
+             sel="SELECT DISTINCT tblk.path tblk_path, tprd.CreationDate tprd_cdate FROM Block tblk LEFT OUTER JOIN ProcessedDataset tprd ON tblk.dataset = tprd.id %s where %s %s ORDER BY tprd.CreationDate DESC"%(siteSel,whereCond,siteWhere)
              if row or limit:
-                sel="select rownum, tblk_path, tprd_cdate from (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
+                sel="SELECT tblk_path, tprd_cdate FROM (%s) group by rownum, tblk_path, tprd_cdate having rownum>%s and rownum<=%s ORDER BY tprd_cdate DESC"%(sel,row,row+limit)
           else:
-             sel="select DISTINCT Path,CreationDate from Block tblk %s where %s %s order by CreationDate DESC "%(siteSel,whereCond,siteWhere)
+             sel="SELECT DISTINCT Path,CreationDate FROM Block tblk %s where %s %s order by CreationDate DESC "%(siteSel,whereCond,siteWhere)
              if row or limit:
                 sel+="limit %s, %s"%(row,row+limit)
           bParams= []
@@ -1550,13 +1565,7 @@ MCDescription:      %s
              self.writeLog(bParams)
           result = query.execute()
           for path in result:
-              if self.dbManager.dbType[self.dbsInstance]=='oracle':
-                 if row or limit:
-                    id,p,mdate = path
-                 else:
-                    p,mdate = path
-              else:
-                 p,mdate = path
+              p,mdate = path
               oList.append(p)
       except:
           msg="\n### Query:\n"+str(query)
@@ -1657,10 +1666,9 @@ MCDescription:      %s
           textClause=self.bindWhereClause(whereClause)
           query.append_whereclause(textClause)
 
+      query.distinct=True
       if long(limit):
-         query.limit=long(limit)
-         query.offset=long(offset)
-      query.Distinct=True
+         query=self.addQueryLimits(query,offset,limit)
 #      print "\n\n###queryMaker",self.printQuery(query)
 #      print str(query)
       if  execute:
