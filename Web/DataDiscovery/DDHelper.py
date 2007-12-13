@@ -843,6 +843,7 @@ MCDescription:      %s
       totFiles=0
       totEvts=0
       masterSE=""
+      _oDict={} # back-up dict
       for item in result:
           if not item[0]: continue
           prdDate,cBy,path,sename,nblks,blkSize,nFiles,nEvts=item
@@ -854,6 +855,8 @@ MCDescription:      %s
              totEvts=nEvts
           prdDate = timeGMT(prdDate)
           cBy     = parseCreatedBy(cBy)
+          # I need back-up in a case if someone ask for specific site and masterSE is not that one
+          _oDict[sename]=(prdDate,cBy,long(nblks),long(blkSize),long(nFiles),long(nEvts))
           # if watchSite was defined, I will apply filter for sename
           if watchSite and watchSite!="*" and watchSite!=sename: 
              continue
@@ -861,7 +864,7 @@ MCDescription:      %s
       self.closeConnection(con)
       mDict={}
       if masterSE:
-         mDict={'%s'%masterSE:oDict[masterSE]}
+         mDict={'%s'%masterSE:_oDict[masterSE]}
       return oDict,mDict
 
   def listBlocks(self,kwargs):
@@ -2924,11 +2927,6 @@ MCDescription:      %s
              obj=obj.outerjoin(tr,onclause=self.col(tr,'ID')==self.col(tfrl,'Run'))
           sel  = sqlalchemy.select(oSel,
                    from_obj=[obj],distinct=True,order_by=oSel
-#                     tblk.join(tseb,onclause=self.col(tseb,'BlockID')==self.col(tblk,'ID'))
-#                     .join(tse,onclause=self.col(tseb,'SEID')==self.col(tse,'ID'))
-#                     .join(tf,onclause=self.col(tblk,'ID')==self.col(tf,'Block'))
-#                     .join(tfs,onclause=self.col(tf,'FileStatus')==self.col(tfs,'ID'))
-#                            ],distinct=True,order_by=oSel
                                  )
           if site!="*":
              sel.append_whereclause(self.col(tse,'SEName')==site)
