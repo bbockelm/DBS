@@ -1,6 +1,6 @@
 /**
- $Revision: 1.78 $"
- $Id: DBSApiFileLogic.java,v 1.78 2007/12/12 19:50:23 afaq Exp $"
+ $Revision: 1.79 $"
+ $Id: DBSApiFileLogic.java,v 1.79 2007/12/12 22:31:07 sekhri Exp $"
  *
  */
 
@@ -1657,6 +1657,7 @@ public class DBSApiFileLogic extends DBSApiLogic {
 		String lmbUserID = personApi.getUserID(conn, dbsUser);
 		updateName(conn, out, "Files",  getFileID(conn, lfn, true),
 				                        "FileStatus", "FileStatus", "Status", value, personApi.getUserID(conn, dbsUser));
+
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {

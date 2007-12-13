@@ -1,6 +1,6 @@
 /**
- $Revision: 1.116 $"
- $Id: DBSApi.java,v 1.116 2007/12/10 19:44:19 sekhri Exp $"
+ $Revision: 1.117 $"
+ $Id: DBSApi.java,v 1.117 2007/12/12 22:31:07 sekhri Exp $"
  *
 */
 
@@ -328,6 +328,7 @@ public class DBSApi {
 				//Setup a default retrive list if detail is set to true
 				String detail = get(table, "detail", false);
 				if (detail.equals("True")) {
+					attributes.add("retrive_block");
 					attributes.add("retrive_lumi");
 					attributes.add("retrive_run");
 				}

@@ -1,6 +1,6 @@
 /**
- $Revision: 1.30 $"
- $Id: DBSApiTransferLogic.java,v 1.30 2007/12/10 23:10:08 afaq Exp $"
+ $Revision: 1.31 $"
+ $Id: DBSApiTransferLogic.java,v 1.31 2007/12/12 22:31:07 sekhri Exp $"
  *
  */
 
@@ -79,8 +79,21 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", branchNTrig);
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
+		
+		//I dont want to retrive Block information for each file during migration
 		ArrayList attributes = new ArrayList();
-		attributes.add("all");
+		
+		attributes.add("retrive_invalid_files");
+		attributes.add("retrive_status");
+		attributes.add("retrive_type");
+		attributes.add("retrive_date");
+		attributes.add("retrive_person");
+		attributes.add("retrive_parent");
+		attributes.add("retrive_algo");
+		attributes.add("retrive_tier");
+		attributes.add("retrive_lumi");
+		attributes.add("retrive_run");
+		attributes.add("retrive_branch");
 		//(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, "true", true);
 		(new DBSApiFileLogic(this.data)).listFiles(conn, out, "", data[1], data[2], data[3], "", blockName, null, null, attributes);
 

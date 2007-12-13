@@ -1,7 +1,7 @@
 
 /**
- $Revision: 1.133 $"
- $Id: DBSSql.java,v 1.133 2007/12/12 19:50:24 afaq Exp $"
+ $Revision: 1.134 $"
+ $Id: DBSSql.java,v 1.134 2007/12/12 22:31:09 sekhri Exp $"
  *
  */
 package dbs.sql;
@@ -1902,6 +1902,7 @@ public class DBSSql {
 		DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
+	/*
         public static PreparedStatement listFiles(Connection conn, String procDSID, String path, String runID, boolean listInvalidFiles) throws SQLException {
 
                 String sql = "SELECT DISTINCT f.ID as ID, \n " +
@@ -1996,6 +1997,21 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
                 return ps;
 
+	}*/
+
+	
+	public static PreparedStatement listFiles(Connection conn, String lfn) throws SQLException {
+ 		String sql = "SELECT f.ID as ID, \n " +
+			"b.ID as BLOCK_ID \n"+
+			"FROM Files f \n" +
+			"JOIN Block b \n" +
+				"ON b.id = f.Block \n "+
+			"WHERE f.LogicalFileName = ?\n" ;
+		PreparedStatement ps = DBManagement.getStatement(conn, sql);
+		int columnIndx = 1;
+		ps.setString(columnIndx++, lfn);
+		DBSUtil.writeLog("\n\n" + ps + "\n\n");
+		return ps;
 	}
 
         public static PreparedStatement listFileBranchID(Connection conn, String lfn) throws SQLException {
@@ -2044,7 +2060,7 @@ public class DBSSql {
 		return ps;
 	}
 
-
+/*
 	public static PreparedStatement listFiles(Connection conn, String procDSID, String aDSID, String blockID, Vector tierIDList, String patternLFN, boolean listInvalidFiles) throws SQLException {
 		String joinStrAna = "";
 		if(!DBSUtil.isNull(aDSID)) {
@@ -2101,10 +2117,11 @@ public class DBSSql {
 		if(!DBSUtil.isNull(blockID)) sql += "AND f.Block = ? \n";
 		for(int i = 0 ; i != tierIDList.size(); ++i) sql += "AND fdt" + String.valueOf(i) + ".DataTier = ?\n\t";
 
+		*/
 		/*if(!DBSUtil.isNull(tierID)){
 			sql += "AND fdt.DataTier = ? \n";
 		}*/
-		if(!DBSUtil.isNull(aDSID)) {
+/*		if(!DBSUtil.isNull(aDSID)) {
 			sql += "AND adfl.AnalysisDataset = ? \n";
 		}
 
@@ -2122,10 +2139,11 @@ public class DBSSql {
 		if(!DBSUtil.isNull(blockID)){
 			ps.setString(columnIndx++, blockID);
 		}
+*/
 		/*if(!DBSUtil.isNull(tierID)){
 			ps.setString(columnIndx++, tierID);
 		}*/
-		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
+/*		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
 		if(!DBSUtil.isNull(aDSID)) {
 			ps.setString(columnIndx++, aDSID);
 		}
@@ -2133,7 +2151,7 @@ public class DBSSql {
                 DBSUtil.writeLog("\n\n" + ps + "\n\n");
 		return ps;
 	}
-
+*/
 	public static PreparedStatement listFiles(Connection conn, 
 			String procDSID, 
 			String path, 
@@ -2164,9 +2182,13 @@ public class DBSSql {
 				"perlm.DistinguishedName as LAST_MODIFIED_BY, \n" ;
 			sql += "f.NumberOfEvents as NUMBER_OF_EVENTS \n" +
 				"FROM Files f \n";
-		if(DBSUtil.contains(attributes, "retrive_block")) 
-			sql += "JOIN Block b \n" +
+		if(DBSUtil.contains(attributes, "retrive_block")) { 
+			String whereClause = "";
+			if(!DBSUtil.isNull(path)) whereClause = "WHERE Path = ? ";
+			else if(!DBSUtil.isNull(procDSID)) whereClause = "WHERE Dataset = ? ";
+			sql += "JOIN (SELECT Name, ID from Block " + whereClause + ") b \n" +
 					"ON b.id = f.Block \n ";
+		}
 		if(DBSUtil.contains(attributes, "retrive_type")) 
 			sql += "JOIN FileType ty \n" +
 					"ON ty.id = f.FileType \n" ;
@@ -2194,14 +2216,13 @@ public class DBSSql {
 			sql += "LEFT OUTER JOIN FileTier fdt" + index + "\n" +
 				"ON fdt" + index + ".Fileid = f.id \n";
 		}
-
 		sql += "WHERE ";
 		boolean useAnd = false;
 		if(!DBSUtil.isNull(patternLFN))  {
 			sql += "f.LogicalFileName like ? \n" ;
 			useAnd = true;
 		}
-		if(!DBSUtil.isNull(procDSID)) {
+		if(!DBSUtil.isNull(procDSID) && DBSUtil.isNull(path)) {
 			if(useAnd) sql += " AND ";
 			sql += "f.Dataset = ? \n";
 			useAnd = true;
@@ -2241,8 +2262,12 @@ public class DBSSql {
 		//sql +=	"ORDER BY f.LogicalFileName DESC";
 		PreparedStatement ps = DBManagement.getStatement(conn, sql);
                 int columnIndx=1;
+		if(DBSUtil.contains(attributes, "retrive_block")) { 
+			if(!DBSUtil.isNull(path)) ps.setString(columnIndx++, path);
+			else if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
+		}
 		if(!DBSUtil.isNull(patternLFN)) ps.setString(columnIndx++, patternLFN);
-		if(!DBSUtil.isNull(procDSID)) ps.setString(columnIndx++, procDSID);
+		if(!DBSUtil.isNull(procDSID) && DBSUtil.isNull(path)) ps.setString(columnIndx++, procDSID);
 		if(!DBSUtil.isNull(blockID)) ps.setString(columnIndx++, blockID);
 		for(int i = 0 ; i != tierIDList.size(); ++i) ps.setString(columnIndx++, (String)tierIDList.get(i));
 		if(!DBSUtil.isNull(aDSID)) ps.setString(columnIndx++, aDSID);
