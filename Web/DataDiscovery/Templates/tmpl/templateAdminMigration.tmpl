@@ -1,4 +1,4 @@
-<!-- templateAdminDatasets.tmpl -->
+<!-- templateAdminMigration.tmpl -->
 <h3>$kwargs['title']</h3>
 <p>We captured your request, transformed it to 
 <a href="javascript:ShowTag('xml')">XML</a> 
@@ -32,10 +32,23 @@ $xmlOutput
 </div>
 </p>
 <p>
+#*
 <form action="sendAdminRequest" method="post">
 <input type="hidden" name="userMode" value="$userMode">
 #for key in $kwargs.keys()
 <input type="hidden" name="$key" value="$kwargs[$key]" />
+#end for
+<input type="submit" value="Submit request"/>
+</form>
+*#
+
+<form action="$adminUrl" method="get">
+#for key in $kwargs.keys()
+#if $skipList.count($key.lower())
+#continue
+#else
+<input type="hidden" name="$key" value="$kwargs[$key]" />
+#end if
 #end for
 <input type="submit" value="Submit request"/>
 </form>

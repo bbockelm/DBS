@@ -32,7 +32,7 @@ class DDConfig:
        # mode is not -rw-------
        print "WARNING: permission of %s is set to 0600 mode (-rw-------)"%uFileName
        os.chmod(uFileName,0600)
-    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter']
+    iList=['engine','user','password','verbose','dbname','url','iface','querylimit','loggerdir','masthead','mastfooter','admin_url','admin_ver']
     self.configDict={}
     for read in open(uFileName).readlines():
         line = string.split(read,"\n")[0]
@@ -44,6 +44,14 @@ class DDConfig:
                self.configDict[item] = string.split(line,"%s="%keyword)[1]
             if iConfig.has_key(item) and iConfig[item]:
                self.configDict[item] = iConfig[item]
+  def adminUrl(self):
+    if not self.configDict.has_key('admin_url'):
+       return ""
+    return self.configDict['admin_url']
+  def adminVer(self):
+    if not self.configDict.has_key('admin_ver'):
+       return ""
+    return self.configDict['admin_ver']
   def masthead(self):
     if not self.configDict.has_key('masthead'):
        raise DDException(args="DBS configuration missing masthead parameter")

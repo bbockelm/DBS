@@ -123,6 +123,8 @@ class DDServer(DDLogger,Controller):
         self.topUrl= ""
         self.mastheadUrl = self.ddConfig.masthead()
         self.footerUrl   = self.ddConfig.mastfooter()
+        self.adminUrl = self.ddConfig.adminUrl()
+        self.adminVer = self.ddConfig.adminVer()
         self.site = ""
         self.app  = ""
         self.primD= ""
@@ -956,7 +958,8 @@ class DDServer(DDLogger,Controller):
         skipList=['submit','title','submit request']
         input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
-        nameSpace = {'kwargs':kwargs,'skipList':skipList,'xmlOutput':xmlOutput,'userMode':userMode}
+        kwargs['apiversion']=self.adminVer
+        nameSpace = {'kwargs':kwargs,'skipList':skipList,'xmlOutput':xmlOutput,'userMode':userMode,'adminUrl':self.adminUrl}
         t = templateAdminMigration(searchList=[nameSpace]).respond()
         page+= str(t)
         page+= self.genBottomHTML()

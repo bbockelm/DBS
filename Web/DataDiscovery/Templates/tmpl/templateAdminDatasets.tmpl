@@ -64,8 +64,8 @@ function ChangeTaskView() {
 <p>
 <b>Migration tasks</b>
 </p>
-###<form src="https://cmsdbsprod.cern.ch:8443/cms_dbs_prod_local_02_writer/servlet/DBSServlet?api=updateFileStatus&lfn=aLFName&status=INVALID">
 <form action="adminTask" method="get">
+<input type="hidden" name="api" value="migrateDataset" />
 <input type="hidden" name="title" value="Migrate dataset" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value="$userMode" />
@@ -144,67 +144,21 @@ check to migrate all blocks OR specify block id's below
 ### Administration form
 <div class="hide" id="Administration">
 <script type="text/javascript">
-function D2E_adminTasks(tag1,tag2) {
-   \$(tag1).disabled="";
-   \$(tag2).disabled="disabled";
-
-   \$(tag1).setAttribute("class","enabled");
-   \$(tag2).setAttribute("class","disabled");
-
-   var arr = tag1.split("_");
-   if (arr.length==2) {
-       id=document.getElementById(arr[0]);
-       if(id) {
-          id.disabled="";
-          id.setAttribute("class","enabled");
-       }
+function changeAttribute(tag,att) {
+   var id=document.getElementById(tag);
+   if(att=="disabled") {
+      id.disabled="disabled";
+      id.checked="";
    }
-   
-   arr = tag2.split("_");
-   if (arr.length==2) {
-       id=document.getElementById(arr[0]);
-       if(id) {
-          id.disabled="disabled";
-          id.setAttribute("class","disabled");
-       }
+   if(att=="enabled") {
+      id.disabled="";
+      id.checked="checked";
    }
+   id.setAttribute("class",att);
 }
-function D2E43_adminTasks(tag1,tag2,tag3) {
-   \$(tag1).disabled="";
-   \$(tag2).disabled="disabled";
-   \$(tag3).disabled="disabled";
-
-   \$(tag1).setAttribute("class","enabled");
-   \$(tag2).setAttribute("class","disabled");
-   \$(tag3).setAttribute("class","disabled");
-
-   var arr = tag1.split("_");
-   if (arr.length==2) {
-       id=document.getElementById(arr[0]);
-       if(id) {
-          id.disabled="";
-          id.setAttribute("class","enabled");
-       }
-   }
-   
-   arr = tag2.split("_");
-   if (arr.length==2) {
-       id=document.getElementById(arr[0]);
-       if(id) {
-          id.disabled="disabled";
-          id.setAttribute("class","disabled");
-       }
-   }
-   
-   arr = tag3.split("_");
-   if (arr.length==2) {
-       id=document.getElementById(arr[0]);
-       if(id) {
-          id.disabled="disabled";
-          id.setAttribute("class","disabled");
-       }
-   }
-   
+function changeButton(tag,att) {
+   var id=document.getElementById(tag);
+   id.checked=att;
 }
 </script>
 
@@ -221,7 +175,7 @@ function D2E43_adminTasks(tag1,tag2,tag3) {
 <tr>
 <td>
 
-<input type="radio" checked="checked" onChange="javascript:D2E_adminTasks('dataset_Status','block_Status')"/>
+<input type="radio" id="dRadio" checked="checked" onChange="javascript:changeAttribute('dataset_Status','enabled');changeAttribute('block_Status','disabled');changeAttribute('block_name','disabled');changeButton('dRadio','checked');changeButton('bRadio','')"/>
 
 </td>
 <td>
@@ -246,7 +200,7 @@ Change dataset status
 <!-- new row -->
 <tr valign="top">
 <td>
-<input type="radio" onChange="javascript:D2E_adminTasks('block_Status','dataset_Status')" />
+<input type="radio" id="bRadio" onChange="javascript:changeAttribute('dataset_Status','disabled');changeAttribute('block_Status','enabled');changeAttribute('block_name','enabled');changeButton('bRadio','checked');changeButton('dRadio','')"/>
 </td>
 
 <td>
@@ -254,13 +208,14 @@ Change block(s) status
 </td>
 
 <td>
-<select name="block_Status" id="block_Status" style="width:200px" disabled="disabled">
-<option value="Open">Open</option>
-<option value="Closed">Closed</option>
+<select name="api" id="block_Status" style="width:200px" disabled="disabled">
+<option value="openBlock">Open</option>
+<option value="closeBlock">Closed</option>
 </select>
 </td>
 <td>
-<select multiple="multiple" name="block" id="block" size="5" disabled="disabled">
+##<select multiple="multiple" name="block" id="block" size="5" disabled="disabled">
+<select multiple="multiple" name="name" id="block_name" size="5" disabled="disabled">
 <option value="All" selected="selected">All</option>
 #for blk in $blkList
 #set path,blkId=$blk.split('#')
@@ -308,6 +263,7 @@ Change LFN(s) status
 ###<p />
 ###Choose one or more block id's by selecting them:
 <form action="adminTask" method="post">
+<input type="hidden" name="api" value="lfnAdmin" />
 <input type="hidden" name="title" value="LFN administration" />
 <input type="hidden" name="dbsInst" value="$dbsInst" />
 <input type="hidden" name="userMode" value=$userMode />
