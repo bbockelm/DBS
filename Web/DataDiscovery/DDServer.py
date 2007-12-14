@@ -11,7 +11,7 @@ DBS data discovery server module.
 
 # system modules
 import os, string, logging, types, time, socket, socket, urlparse, random, urllib, difflib
-import smtplib, tempfile
+import smtplib, tempfile, zlib
 import xml.sax, xml.sax.handler
 from   xml.sax.saxutils import escape
 
@@ -1119,8 +1119,6 @@ class DDServer(DDLogger,Controller):
         if string.lower(date) =="all" or string.lower(date)=="any": date="*"
         if string.lower(primType)=="all" or string.lower(primType)=="any": primType="*"
         if type(proc) is not types.ListType and (string.lower(proc)=="any" or string.lower(proc)=="any"): proc="*"
-#        if type(proc) is not types.ListType and len(proc)>1 and (proc[0]=="*" or proc[0]=="%"):
-
         if type(proc) is not types.ListType and len(proc)>1:
            if  proc.find("*")!=-1 or proc.find("%")!=-1 or \
                proc.lower().find("regexp:")!=-1 or proc.lower().find("like:")!=-1:
@@ -1184,13 +1182,13 @@ class DDServer(DDLogger,Controller):
                nDatasets = len(proc)
             datasetsList = proc[_idx:_idx+pagerStep]
             proc=proc_orig
+        elif kwargs.has_key('zstring'):
+           zproc=eval( zlib.decompress(urllib.unquote(kwargs['zstring'])) )
+           nDatasets=len(zproc)
+           datasetsList = zproc[_idx:_idx+pagerStep]
         else:
-#            ttt=time.time()
             nDatasets = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,count=1)
-#            print "Time to get all dataset",time.time()-ttt
-#            ttt=time.time()
             datasetsList = self.getDatasetList(group=group,app=appPath,prim=primD,tier=tier,proc=proc,site=site,primType=primType,date=date,userMode=userMode,fromRow=_idx*pagerStep,limit=pagerStep,count=0)
-#            print "Time to get N datasets",time.time()-ttt
 
         # Construct result page
         rPage=""
@@ -1198,9 +1196,13 @@ class DDServer(DDLogger,Controller):
            rPage+="Result page:"
 
 #        print "Paging step before loop",time.time()-t1
+        moreParams=""
+        if kwargs:
+           for k in kwargs.keys():
+               moreParams+="&amp;%s=%s"%(k,kwargs[k])
         # the progress bar for all results
         if _idx:
-            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx-1,userMode,pagerStep)
+            rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s%s">&#171; Prev</a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx-1,userMode,pagerStep,moreParams)
         tot=_idx
         for x in xrange(_idx,_idx+GLOBAL_STEP):
             if nDatasets>x*pagerStep:
@@ -1209,9 +1211,9 @@ class DDServer(DDLogger,Controller):
            ref=index+1
            if index==_idx:
               ref="""<span class="gray_box">%s</span>"""%(index+1)
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,index,userMode,pagerStep,ref)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s%s"> %s </a> """%(dbsInst,site,group,app,primD,tier,proc,primType,date,index,userMode,pagerStep,moreParams,ref)
         if nDatasets>(_idx+1)*pagerStep:
-           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx+1,userMode,pagerStep)
+           rPage+="""<a href="getData?dbsInst=%s&amp;site=%s&amp;group=%s&amp;app=%s&amp;primD=%s&amp;tier=%s&amp;proc=%s&amp;primType=%s&amp;date=%s&amp;_idx=%s&amp;ajax=0&amp;userMode=%s&amp;pagerStep=%s%s">Next &#187;</a>"""%(dbsInst,site,group,app,primD,tier,proc,primType,date,_idx+1,userMode,pagerStep,moreParams)
 
         if _idx and _idx*pagerStep>nDatasets:
            return "No data found for this request"
@@ -1751,7 +1753,29 @@ All LFNs in a block
             return str(t)
     getLFNlist.exposed = True
  
-    def getLFN_txt(self,dbsInst,blockName,dataset="",userMode='user',run='*'):
+    def formatLFNList(self,lfnList,what="txt",idx=-1):
+        page="""<pre>\n"""
+        if what=="cff":
+           page+="replace PoolSource.fileNames = {\n"
+        lastItem=lfnList[-1]
+        if idx>=0:
+           lastItem=lastItem[idx]
+        for item in lfnList:
+            lfn=item
+            if idx>=0:
+               lfn=item[idx]
+            if  what=="cff":
+                if lfn==lastItem:
+                   page+="'%s'\n"%lfn
+                else:
+                   page+="'%s',\n"%lfn
+            else:
+                page+="%s\n"%lfn
+        if what=="cff": page+="}"
+        page+="\n</pre>"
+        return page
+
+    def getLFN_txt(self,dbsInst,blockName,dataset="",userMode='user',run='*',what="txt"):
         """
            Retrieves and represents LFN list in ASCII form
            @type  dataset: string 
@@ -1773,12 +1797,8 @@ All LFNs in a block
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s :: run %s'%(t,v,run),userMode)
             else:
                page+= self.whereMsg('Navigator :: Results :: LFN list :: %s %s'%(t,v),userMode)
-            page+="""<pre>\n"""
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset,run)
-            for item in lfnList:
-                lfn=item[0]
-                page+="%s\n"%lfn
-            page+="\n</pre>"
+            page+=self.formatLFNList(lfnList,what,idx=0)
             page+= self.genBottomHTML()
             return page
         except:
@@ -1798,7 +1818,6 @@ All LFNs in a block
                page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s, run %s'%(site,run),userMode)
             else:
                page+= self.whereMsg('Navigator :: Results :: LFN list :: site %s'%site,userMode)
-            page+="""<pre>\n"""
             bList=[]
             try:
                 lfnList=self.helper.getLFNsFromSite(site,datasetPath,run)
@@ -1808,42 +1827,7 @@ All LFNs in a block
                 printExcept()
                 page+="No LFNs found for site '%s'\n"%site
                 pass
-            if what=="cff":
-               page+="replace PoolSource.fileNames = {\n"
-
-            # loop over files
-            for item in lfnList:
-                if  what=="cff":
-                    lfn=item
-                    if lfn==lfnList[-1]:
-                       page+="'%s'\n"%lfn
-                    else:
-                       page+="'%s',\n"%lfn
-                else:
-                    lfn=item
-                    page+="%s\n"%lfn
-#            for blockName in bList:
-#                try:
-#                    lfnList = self.helper.getLFNs(dbsInst,blockName,"")
-#                    if not lfnList: page+="No LFNs found in '%s' on site='%s' for blockName='%s'\n"%(dbsInst,site,blockName)
-#                    for item in lfnList:
-#                        if  what=="cff":
-#                            lfn=item[0]
-#                            if lfn==lfnList[-1][0] and blockName==bList[-1]:
-#                               page+="'%s'\n"%lfn
-#                            else:
-#                               page+="'%s',\n"%lfn
-#                        else:
-#                            lfn=item[0]
-#                            page+="%s\n"%lfn
-#                except:
-#                    if self.verbose:
-#                       self.writeLog(getExcept())
-#                    printExcept()
-#                    page+="No LFNs found int DBS for block='%s'\n"%blockName
-#                    pass
-            if what=="cff": page+="}"
-            page+="\n</pre>"
+            page+=self.formatLFNList(lfnList,"cff")
             page+= self.genBottomHTML()
             return page
         except:
@@ -1877,27 +1861,6 @@ All LFNs in a block
             return str(t)
     getConfigContent.exposed = True
 
-#    def getBlocksForSite(self,site):
-#        """
-#           Generates list of file blocks for given site
-#        """
-#        try:
-#            self.htmlInit()
-#            page = self.genTopHTML()
-#            t = templateWhere(searchList=[{'where':'Navigator :: Results :: Blocks at site=%s'%site}]).respond()
-#            page+=str(t)
-#            page ="""<pre>\n"""
-#            for blockName in self.helper.getBlocksFromSite(site):
-#                page+="%s\n"%blockName
-#            page+="\n</pre>"
-#            page+=self.genBottomHTML()
-#            return page
-#        except:
-#            t=self.errorReport("Fail in getBlocksForSite function")
-#            pass
-#            return str(t)
-#    getBlocksForSite.exposed=True
-    
     def getLFN_cfg(self,dbsInst,blockName,dataset="",userMode='user'):
         """
            Retrieves and represents LFN list in 'cff' framework form
@@ -1913,16 +1876,8 @@ All LFNs in a block
             self.helperInit(dbsInst)
             page = self.genTopHTML(userMode=userMode)
             page+= self.whereMsg('Navigator :: Results :: LFN list :: block %s'%blockName,userMode)
-            page+="""<pre>\n"""
-            page+="replace PoolSource.fileNames = {\n"
             lfnList = self.helper.getLFNs(dbsInst,blockName,dataset)
-            for item in lfnList:
-                lfn=item[0]
-                if lfn==lfnList[-1][0]:
-                   page+="'%s'\n"%lfn
-                else:
-                   page+="'%s',\n"%lfn
-            page+="}\n</pre>"
+            page+=self.formatLFNList(lfnList,what="cff",idx=0)
             page+= self.genBottomHTML()
             return page
         except:
@@ -3645,7 +3600,12 @@ Save query as:
             if item==oList[0]: continue # we skip first row since it's column names
             path=item.values()[-1] # get only last item from results which is Block.Path
             if not pList.count(path): pList.append(path)
-        page=self.getData(dbsInst,proc=pList,ajax=0,userMode=userMode)
+        z=zlib.compress(str(pList))
+        zstring=urllib.quote(z)
+        if len(pList)>50:
+           page=self.getData(dbsInst,zstring=zstring,ajax=0,userMode=userMode)
+        else:
+           page=self.getData(dbsInst,proc=pList,ajax=0,userMode=userMode)
         return page
     findDSFromFinder.exposed=True
 
