@@ -14,7 +14,7 @@
 </td>
 
 <td align="right">
-#if $userMode!='user'
+#if $userMode=='expert'
 <a href="adminDataset?dbsInst=$dbsInst&amp;dataset=$path&amp;siteList=$str($siteList)&amp;userMode=$userMode">Administrate</a>
 |
 #end if
@@ -53,6 +53,11 @@ ${_site},
 LFNs:
 <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=cff&amp;userMode=$userMode&amp;run=$run">cff</a>,
 <a href="$host/getLFNsForSite?dbsInst=$dbsInst&amp;site=$se&amp;datasetPath=$path&amp;what=txt&amp;userMode=$userMode&amp;run=$run">plain</a>
+#if $run and not ($run=="*" or $str($run).lower()=="all" or $str($run).lower()=="any")
+<br />
+All data provided for full dataset, while LFNs links given wrt run=$run
+#end if
+<p></p>
 
 ### Phedex status
 #if $userMode!='user'
