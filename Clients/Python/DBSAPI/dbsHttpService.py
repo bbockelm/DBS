@@ -209,7 +209,7 @@ class DbsHttpService:
 
     try:
        request_string = self.Servlet+'?apiversion='+self.ApiVersion
-       print "self.Host ", self.Host
+       #print "self.Host ", self.Host
 
        for key, value in args.items():
           if key == 'api':
