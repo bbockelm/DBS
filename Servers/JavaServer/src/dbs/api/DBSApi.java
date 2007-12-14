@@ -1,6 +1,6 @@
 /**
- $Revision: 1.117 $"
- $Id: DBSApi.java,v 1.117 2007/12/12 22:31:07 sekhri Exp $"
+ $Revision: 1.118 $"
+ $Id: DBSApi.java,v 1.118 2007/12/13 17:11:01 sekhri Exp $"
  *
 */
 
@@ -341,7 +341,8 @@ public class DBSApi {
 						get(table, "block_name", false),
 						get(table, "pattern_lfn", false),
 						get(table, "run_number", false),
-						attributes
+						attributes,
+						apiVersion
 						//get(table, "detail", false)
 						//get(table, "branchNTrig", false)
 						);

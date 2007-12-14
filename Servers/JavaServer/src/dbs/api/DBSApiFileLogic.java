@@ -1,6 +1,6 @@
 /**
- $Revision: 1.79 $"
- $Id: DBSApiFileLogic.java,v 1.79 2007/12/12 22:31:07 sekhri Exp $"
+ $Revision: 1.80 $"
+ $Id: DBSApiFileLogic.java,v 1.80 2007/12/13 17:11:01 sekhri Exp $"
  *
  */
 
@@ -245,7 +245,8 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			String blockName, 
 			String patternLFN, 
 			String runNumber,
-			ArrayList attributes
+			ArrayList attributes,
+			String clientVersion
 			) throws Exception {
 
 		
@@ -301,7 +302,10 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				procDSID = "";
 			}
 		} //if userJustPath
-		
+		//if old client then send empty xml
+		boolean oldClients = false;
+		System.out.println("clientVersion " + clientVersion + " clientVersion.compareTo DBS_1_0_8 " + clientVersion.compareTo("DBS_1_0_8") );
+		if(clientVersion.compareTo("DBS_1_0_8") < 0) oldClients = true;
 		PreparedStatement ps = null;
 		ResultSet rs =  null;
 		try {
@@ -311,21 +315,29 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			while(rs.next()) {
 				String fileID = get(rs, "ID");
 				String lfn = get(rs, "LFN");
-				//out.write(((String) "<file id='" + fileID +
 				String toSend = "<file id='" + fileID +
 					"' lfn='" + lfn +
 					"' checksum='" + get(rs, "CHECKSUM") +
 					"' size='" + get(rs, "FILESIZE") +
 					"' queryable_meta_data='" + get(rs, "QUERYABLE_META_DATA") +
 					"' number_of_events='" + get(rs, "NUMBER_OF_EVENTS") ;
-					if(DBSUtil.contains(attributes, "retrive_status")) toSend += "' validation_status='" + get(rs, "VALIDATION_STATUS") +
-						"' status='" + get(rs, "STATUS");
-					if(DBSUtil.contains(attributes, "retrive_type")) toSend += "' type='" + get(rs, "TYPE") ;
-					if(DBSUtil.contains(attributes, "retrive_block")) toSend += "' block_name='" + get(rs, "BLOCK_NAME") ;
-					if(DBSUtil.contains(attributes, "retrive_date")) toSend += "' creation_date='" + getTime(rs, "CREATION_DATE") +
-						"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE");
-					if(DBSUtil.contains(attributes, "retrive_person")) toSend += "' created_by='" + get(rs, "CREATED_BY") +
-						 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") ;
+					if(oldClients) {
+						toSend += "' validation_status='' status=''" +
+						" type=''"  + 
+						" creation_date='0' last_modification_date='0'" +
+						" created_by='' last_modified_by=''" ;
+						if(DBSUtil.contains(attributes, "retrive_block")) toSend += " block_name='" + get(rs, "BLOCK_NAME");
+						else toSend += " block_name='";
+					} else {
+						if(DBSUtil.contains(attributes, "retrive_status")) toSend += "' validation_status='" + get(rs, "VALIDATION_STATUS") +
+							"' status='" + get(rs, "STATUS");
+						if(DBSUtil.contains(attributes, "retrive_type")) toSend += "' type='" + get(rs, "TYPE") ;
+						if(DBSUtil.contains(attributes, "retrive_block")) toSend += "' block_name='" + get(rs, "BLOCK_NAME") ;
+						if(DBSUtil.contains(attributes, "retrive_date")) toSend += "' creation_date='" + getTime(rs, "CREATION_DATE") +
+							"' last_modification_date='" + get(rs, "LAST_MODIFICATION_DATE");
+						if(DBSUtil.contains(attributes, "retrive_person")) toSend += "' created_by='" + get(rs, "CREATED_BY") +
+							 "' last_modified_by='" + get(rs, "LAST_MODIFIED_BY") ;
+					}
 					toSend += "'>\n";
 				out.write(toSend);
 				this.data.localFile = new Hashtable();
