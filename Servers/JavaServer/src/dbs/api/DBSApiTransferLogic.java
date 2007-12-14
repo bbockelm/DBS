@@ -1,6 +1,6 @@
 /**
- $Revision: 1.32 $"
- $Id: DBSApiTransferLogic.java,v 1.32 2007/12/13 17:11:01 sekhri Exp $"
+ $Revision: 1.33 $"
+ $Id: DBSApiTransferLogic.java,v 1.33 2007/12/14 17:26:19 sekhri Exp $"
  *
  */
 
@@ -158,7 +158,7 @@ public class DBSApiTransferLogic extends  DBSApiLogic {
 
 
 
-                /////////////(new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getVector(table, "file"), dbsUser, ignoreParent);
+                (new DBSApiFileLogic(this.data)).insertFiles(conn, out, path, "", "", fileblock, DBSUtil.getArrayList(table, "file"), dbsUser, ignoreParent);
  
 		//Close all the block which were created as open block
 		for (int j = 0; j < closeBlockVector.size(); ++j) {
