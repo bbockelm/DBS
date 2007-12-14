@@ -1,6 +1,6 @@
 /**
- $Revision: 1.80 $"
- $Id: DBSApiFileLogic.java,v 1.80 2007/12/13 17:11:01 sekhri Exp $"
+ $Revision: 1.81 $"
+ $Id: DBSApiFileLogic.java,v 1.81 2007/12/14 17:26:19 sekhri Exp $"
  *
  */
 
@@ -778,15 +778,15 @@ public class DBSApiFileLogic extends DBSApiLogic {
 			}
 			else {
 				throw new DBSException("Do Not Exist", "1039",
-                                                        "Provide BlockName do not exist in DBS, please verify");
+                                                        "Provided BlockName do not exist in DBS, please verify");
                         }
+
                 } catch(Exception e) {
-                        if (rs != null) rs.close();
-                        if (ps != null) ps.close();
 			throw new DBSException("Database Exception", "1039", e.getMessage());
-                }
-		ps.close();
-		rs.close();
+                } finally {
+			if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+		}
 
 		//We have ALL infor about the Block, lets decide if its OK to write to this Block
 
@@ -854,9 +854,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
                         //if (isNull(type)) type = "EVD";
                         if (isNull(valStatus)) valStatus = "VALID";
 
-                        //Insert a File by fetching the fileStatus, type and validationStatus
-                        //if( (fileID = getFileID(conn, lfn, false)) == null ) {
-                                newFileInserted = true;
                                 //TODO Exception of null status or type should be catched and parsed and 
                                 //a proper message should be returned back to the user. Different Database can have different error message YUK
                                 //Status should be defaulted to something in the database itself. A wrong status may insert a dafult value.
@@ -904,17 +901,16 @@ public class DBSApiFileLogic extends DBSApiLogic {
 						ps.close();
 						return; 
 					} else {
-						
  						throw new SQLException("'"+ex.getMessage()+"' insertFile for LogicalFileName:"+lfn+
                                         		" Query failed is"+ps);
-
 					}
 				}
 				finally {
 
                                 	if (ps != null) ps.close();
-					if (rs != null) rs.close();
 				}
+
+                                newFileInserted = true;
 
                                 //if(isNull(fileID)) fileID = getFileID(conn, lfn);
                                 //Fetch the File ID that was just inseted to be used for subsequent insert of other tables only if it is needed.
@@ -939,7 +935,6 @@ public class DBSApiFileLogic extends DBSApiLogic {
 				insertMapBatch(conn, out, "FileAlgo", "Fileid", "Algorithm", fileID, valueVec, cbUserID, lmbUserID, creationDate);
 
                                 //Insert FileTier table by fetching data tier ID
-
 				valueVec.clear();
 				for (int j = 0; j < tierVector.size(); ++j) {
 					valueVec.add(getTierID(conn,
@@ -1019,32 +1014,14 @@ public class DBSApiFileLogic extends DBSApiLogic {
                                                                 getID(conn, "Files", "LogicalFileName", fileAssoc, true),
                                                                 cbUserID, lmbUserID, creationDate, false);
                                 }
-                        //} else {
-//
-  //                              //Write waring message that file exists already
-    //                            writeWarning(out, "Already Exists", "1020", "File " + lfn + " Already Exists");
-      //                  }
-
                         if ( i%100 == 0) conn.commit(); //For Every 100 files commit the changes
                 }//For loop
 
-                DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
                 //Update Block numberOfFiles and Size
                 if (newFileInserted) {
+                	DBSApiBlockLogic blockApiObj = new DBSApiBlockLogic(this.data);
                         blockApiObj.updateBlock(conn, out, blockID, lmbUserID);
-                        /*PreparedStatement ps = null;
-                        try {
-                                ps = DBSSql.updateBlock(conn, blockID);
-                                ps.executeUpdate();
-                        } finally { 
-                                if (ps != null) ps.close();
-                        }*/
                 }
-
-		//if (rs != null) rs.close();
-                //if (ps != null) ps.close();
-
-
 	}
 
        /**
