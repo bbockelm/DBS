@@ -98,7 +98,7 @@ class DDHelper(DDLogger):
           #        group by rownum,path having rownum between 1 and 5;
           query.use_labels=True
           sel=query.select()
-          s=str(sel).replace("\n","").replace(" AS ","")
+          s=str(sel).replace("\n","")
           gBy=''.join(s.split('FROM')[0].split('SELECT'))
           fromRow=long(offset)
           query=s+" GROUP BY rownum, "+gBy+'HAVING rownum>%s and rownum<=%s'%(fromRow,fromRow+limit)
