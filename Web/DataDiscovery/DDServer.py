@@ -928,7 +928,6 @@ class DDServer(DDLogger,Controller):
                   'blkList' : blkList,
                   'siteDict': siteDict,
                   'style'   : "",
-#                  'blkForm' : blkForm,
                   'userMode': userMode,
                   }
         t = templateAdminDatasets(searchList=[nameSpace]).respond()
@@ -955,7 +954,7 @@ class DDServer(DDLogger,Controller):
            kwargs['lfnList']={'lfn':lfnList}
            del kwargs['lfn'] # delete lfn key-pair from our dictionary
 
-        skipList=['submit','title','submit request']
+        skipList=['submit','title','submit request','choice']
         input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
         kwargs['apiversion']=self.adminVer
