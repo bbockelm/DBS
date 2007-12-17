@@ -1,4 +1,4 @@
-<!-- templateAdminMigration.tmpl -->
+<!-- templateAdminTask.tmpl -->
 <h3>$kwargs['title']</h3>
 <p>We captured your request, transformed it to 
 <a href="javascript:ShowTag('xml')">XML</a> 
@@ -52,9 +52,9 @@ $xmlOutput
 #if type($val) is types.ListType
 #for item in $val
 <input type="hidden" name="$key" value="$item" />
+#end for
 #else
 <input type="hidden" name="$key" value="$val" />
-#end for
 #end if
 #end if
 #end for
@@ -63,5 +63,5 @@ $xmlOutput
 </p>
 
 
-<!-- end of templateAdminMigration.tmpl -->
+<!-- end of templateAdminTask.tmpl -->
 
