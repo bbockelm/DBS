@@ -112,7 +112,7 @@ to
 <tr>
 <td>
 
-<input type="radio" name="choice" checked="checked" onchange="javascript:changeAttribute('status','enabled');changeAttribute('block_Status','disabled');changeAttribute('block_name','disabled');HideTag('blockStatus_SelectBlocks')"/>
+<input type="radio" name="choice" checked="checked" onchange="javascript:changeAttribute('status','enabled');changeAttribute('block_Status','disabled');changeAttribute('block_name','disabled');HideTag('blockStatus_SelectBlocks');changeAttribute('datasetStatusApi','enabled');changeAttribute('datasetStatusPath','enabled')"/>
 
 </td>
 <td>
@@ -120,8 +120,16 @@ Change dataset status
 </td>
 
 <td>
-<input type="hidden" name="api" value="updateProcDSStatus" />
-<input type="hidden" name="path" value="$dataset" />
+<span id="datasetInputs" class="hide">
+<select name="api" id="datasetStatusApi">
+<option>updateProcDSStatus</option>
+</select>
+<select name="path" id="datasetStatusPath">
+<option>$dataset</option>
+</select>
+##<input type="checkbox" name="api" id="datasetStatusApi" value="updateProcDSStatus" checked="checked" />
+##<input type="checkbox" name="path" id="datasetStatusPath" value="$dataset" checked="checked" />
+</span>
 <select name="status" id="status" style="width:200px">
 <option value="VALID">Valid</option>
 <option value="INVALID">Invalid</option>
@@ -138,7 +146,7 @@ Change dataset status
 <!-- new row -->
 <tr valign="top">
 <td>
-<input type="radio" name="choice" onchange="javascript:changeAttribute('status','disabled');changeAttribute('block_Status','enabled');changeAttribute('block_name','enabled');ShowTag('blockStatus_SelectBlocks')"/>
+<input type="radio" name="choice" onchange="javascript:changeAttribute('status','disabled');changeAttribute('block_Status','enabled');changeAttribute('block_name','enabled');ShowTag('blockStatus_SelectBlocks');changeAttribute('datasetStatusApi','disabled');changeAttribute('datasetStatusPath','disabled')"/>
 </td>
 
 <td>

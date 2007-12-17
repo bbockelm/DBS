@@ -939,6 +939,7 @@ class DDServer(DDLogger,Controller):
     def adminTask(self,dbsInst,userMode,dataset,**kwargs):
         page = self.genTopHTML(userMode=userMode)
         # analyse input kwargs
+        print kwargs
         # lookup for lfn and find out a list
         if kwargs.has_key('lfn'):
            lfnList=[]
@@ -951,15 +952,22 @@ class DDServer(DDLogger,Controller):
               lfns=self.helper.getLFNs(dbsInst,blockName="",dataset=dataset,lfn=lfn)
            for item in lfns:
               lfnList.append(item[0])
-           kwargs['lfnList']={'lfn':lfnList}
            del kwargs['lfn'] # delete lfn key-pair from our dictionary
+           kwargs['lfn']=lfnList
+        # lookup for block_name and find out a list
+        if kwargs.has_key('block_name'):
+           block_name=""
+           if kwargs['block_name'].lower()=="all":
+              block_names=self.helper.getBlocksFromSite(site="*",datasetPath=dataset)
+           del kwargs['block_name'] # delete block_name key-pair from our dictionary
+           kwargs['block_name']=block_names
 
         skipList=['submit','title','submit request','choice']
         input = str(templateXML(searchList=[{'kwargs':kwargs,'skipList':skipList}]).respond())
         xmlOutput=urllib.unquote(input).replace("<","&lt;").replace(">","&gt;<br />").replace("&lt;/","<br/>&lt;/").replace("&lt;","<b>&lt;").replace("&gt;","&gt;</b>")
         kwargs['apiversion']=self.adminVer
         nameSpace = {'kwargs':kwargs,'skipList':skipList,'xmlOutput':xmlOutput,'userMode':userMode,'adminUrl':self.adminUrl}
-        t = templateAdminMigration(searchList=[nameSpace]).respond()
+        t = templateAdminTask(searchList=[nameSpace]).respond()
         page+= str(t)
         page+= self.genBottomHTML()
         return page

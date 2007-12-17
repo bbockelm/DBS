@@ -42,12 +42,20 @@ $xmlOutput
 </form>
 *#
 
+#import types
 <form action="$adminUrl" method="get">
 #for key in $kwargs.keys()
 #if $skipList.count($key.lower())
 #continue
 #else
-<input type="hidden" name="$key" value="$kwargs[$key]" />
+#set val=$kwargs[$key]
+#if type($val) is types.ListType
+#for item in $val
+<input type="hidden" name="$key" value="$item" />
+#else
+<input type="hidden" name="$key" value="$val" />
+#end for
+#end if
 #end if
 #end for
 <input type="submit" value="Submit request"/>
