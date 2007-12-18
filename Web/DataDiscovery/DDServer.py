@@ -821,7 +821,7 @@ class DDServer(DDLogger,Controller):
                          'userMode' : userMode,
                          'ddList'   : self.ddUrls,
                         }
-            page+= templateTop(searchList=[nameSpace]).respond()
+            page+= templateRemoteDD(searchList=[nameSpace]).respond()
             page+= self.genBottomHTML()
             return page
         except:
